@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Card Sync Watchdog every 20s
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=20s
+Unit=card-sync-watchdog.service
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target

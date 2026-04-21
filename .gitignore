@@ -1,0 +1,32 @@
+# ─── Node / PWA ───────────────────────────────────────────
+card_pwa/node_modules/
+card_pwa/dist/
+card_pwa/logs/
+card_pwa/.cert/
+card_pwa/.env
+card_pwa/.env.local
+card_pwa/.env.*.local
+card_pwa/all_src.txt
+
+# ─── Python / Server ──────────────────────────────────────
+card-sync-server/.venv/
+card-sync-server/__pycache__/
+card-sync-server/**/__pycache__/
+card-sync-server/**/*.pyc
+card-sync-server/**/*.pyo
+card-sync-server/.pytest_cache/
+card-sync-server/logs/
+card-sync-server/sync.db
+card-sync-server/sync.db-shm
+card-sync-server/sync.db-wal
+card-sync-server/certs/
+card-sync-server/.env.sync-server
+
+# ─── Allgemein ────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+*.swo
+.vscode/
+.idea/

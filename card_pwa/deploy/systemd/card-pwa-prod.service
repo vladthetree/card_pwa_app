@@ -1,0 +1,25 @@
+[Unit]
+Description=Card_PWA Production HTTPS Server
+After=network.target
+
+[Service]
+Type=simple
+User=_vb
+Group=_vb
+WorkingDirectory=/home/_vb/card_pwa_app/card_pwa
+Environment=NODE_ENV=production
+Environment=PWA_HOST=0.0.0.0
+Environment=PWA_PORT=8443
+Environment=PWA_CERT_FILE=.cert/prod-cert.pem
+Environment=PWA_KEY_FILE=.cert/prod-key.pem
+Environment=PWA_LOG_DIR=logs
+ExecStart=/usr/bin/node /home/_vb/card_pwa_app/card_pwa/scripts/prod-server.mjs
+Restart=always
+RestartSec=3
+
+# Persist logs in project directory (systemd 249+ supports append:)
+StandardOutput=append:/home/_vb/card_pwa_app/card_pwa/logs/systemd-stdout.log
+StandardError=append:/home/_vb/card_pwa_app/card_pwa/logs/systemd-stderr.log
+
+[Install]
+WantedBy=multi-user.target

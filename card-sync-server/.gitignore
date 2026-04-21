@@ -1,0 +1,20 @@
+# Zertifikate – niemals einchecken
+certs/
+
+# Datenbank
+sync.db
+*.db-shm
+*.db-wal
+
+# Logs
+logs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+
+# IDE
+.env.sync-server
