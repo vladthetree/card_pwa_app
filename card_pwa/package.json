@@ -1,0 +1,47 @@
+{
+  "name": "card-pwa",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:https": "DEV_HTTPS=1 vite --host 0.0.0.0 --port 5173",
+    "dev:https:setup": "./scripts/generate-dev-cert.sh",
+    "build": "tsc && vite build",
+    "build:prod": "npm run build",
+    "prod:cert:setup": "./scripts/setup-prod-cert.sh",
+    "prod:start": "node ./scripts/prod-server.mjs",
+    "prod:ufw:home": "./scripts/setup-ufw-home-only.sh",
+    "preview": "vite preview",
+    "test": "vitest",
+    "verify:phase5": "npm run build && npm test -- --run",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage"
+  },
+  "dependencies": {
+    "dexie": "^4.0.8",
+    "framer-motion": "^11.3.8",
+    "jszip": "^3.10.1",
+    "lucide-react": "^0.441.0",
+    "papaparse": "^5.4.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sql.js": "^1.12.0",
+    "ts-fsrs": "^5.3.2"
+  },
+  "devDependencies": {
+    "@types/papaparse": "^5.3.14",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@types/sql.js": "^1.4.9",
+    "@vitejs/plugin-react": "^4.3.1",
+    "@vitest/ui": "^4.1.3",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.10",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.2",
+    "vite-plugin-pwa": "^0.20.5",
+    "vitest": "^4.1.3"
+  }
+}

@@ -1,0 +1,10 @@
+[Unit]
+Description=Card Sync Health Watchdog
+After=card-sync-server.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/card_pwa_app/card-sync-server
+Environment=ROOT_DIR=%h/card_pwa_app/card-sync-server
+EnvironmentFile=-%h/card_pwa_app/card-sync-server/.env.sync-server
+ExecStart=/bin/bash %h/card_pwa_app/card-sync-server/ops/watchdog_healthcheck.sh

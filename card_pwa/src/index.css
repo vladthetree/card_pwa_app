@@ -1,0 +1,481 @@
+/* Fonts loaded via <link> in index.html for parallel early fetch */
+/* Creative animated border for DeckCard */
+/* .deck-card-creative Effekt entfernt */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  :root {
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --theme-notch: #050505;
+    --brand-primary: rgb(249, 115, 22);
+    --brand-primary-08: rgba(249, 115, 22, 0.08);
+    --brand-primary-12: rgba(249, 115, 22, 0.12);
+    --brand-primary-15: rgba(249, 115, 22, 0.15);
+    --brand-primary-20: rgba(249, 115, 22, 0.20);
+    --brand-primary-25: rgba(249, 115, 22, 0.25);
+    --brand-primary-50: rgba(249, 115, 22, 0.50);
+    --brand-primary-80: rgba(249, 115, 22, 0.80);
+    --brand-secondary: rgb(59, 130, 246);
+    --brand-secondary-08: rgba(59, 130, 246, 0.08);
+    --brand-secondary-12: rgba(59, 130, 246, 0.12);
+    --brand-secondary-15: rgba(59, 130, 246, 0.15);
+    --brand-secondary-20: rgba(59, 130, 246, 0.20);
+    --brand-secondary-25: rgba(59, 130, 246, 0.25);
+    --app-font-family: 'Share Tech Mono', 'IBM Plex Mono', monospace;
+    --app-font-family-sans: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    --app-font-family-mono: 'Share Tech Mono', 'IBM Plex Mono', monospace;
+  }
+
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  html {
+    background: var(--theme-notch);
+    overscroll-behavior: none;
+    overscroll-behavior-x: none;
+    overscroll-behavior-y: none;
+    scrollbar-width: none;
+  }
+
+  body {
+    min-height: 100vh;
+    min-height: 100svh;
+    min-height: 100dvh;
+    overflow: hidden;
+    background: var(--theme-background);
+    color: var(--theme-text);
+    font-family: var(--app-font-family);
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: none;
+    touch-action: pan-y;
+    scrollbar-width: none;
+  }
+
+  button, input, select, textarea {
+    font: inherit;
+  }
+
+  @supports (-webkit-touch-callout: none) {
+    input,
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
+  }
+
+  .font-sans,
+  .font-serif {
+    font-family: var(--app-font-family-sans) !important;
+  }
+
+  .font-mono,
+  kbd {
+    font-family: var(--app-font-family-mono) !important;
+  }
+
+  #root {
+    min-height: 100vh;
+    min-height: 100svh;
+    min-height: 100dvh;
+    overflow: hidden;
+    overscroll-behavior-y: none;
+    background: var(--theme-background);
+    touch-action: pan-y;
+    scrollbar-width: none;
+  }
+
+  /* Hide scrollbars */
+  ::-webkit-scrollbar { display: none; }
+  ::-webkit-scrollbar-track { display: none; }
+  ::-webkit-scrollbar-thumb { display: none; }
+  ::-webkit-scrollbar-thumb:hover { display: none; }
+}
+
+@layer base {
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role='button'] {
+    /* Restrict to only the properties that actually animate to avoid
+       triggering composite-layer promotion on every tap (iOS perf). */
+    transition-property: color, background-color, border-color, opacity, transform, box-shadow;
+    transition-duration: 300ms;
+    transition-timing-function: ease-out;
+    /* Eliminate the 300ms tap delay on older iOS (<13) and prevent the
+       blue/grey highlight flash that appears on tap in Safari/WebView. */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  :is(button, a, [role='button']):focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.55);
+  }
+
+  :is(input, select, textarea):focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.35);
+  }
+}
+
+@layer utilities {
+  .safe-area-content {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-top {
+    position: fixed;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    height: env(safe-area-inset-top);
+    background: #050505;
+  }
+
+  .safe-area-bottom {
+    position: fixed;
+    bottom: 0;
+    z-index: 100;
+    width: 100%;
+    height: env(safe-area-inset-bottom);
+    background: #050505;
+  }
+
+  .view-container {
+    position: relative;
+  }
+
+  .view {
+    position: absolute;
+    inset: 0;
+    will-change: transform, opacity;
+  }
+
+  .home-view.is-exiting {
+    animation: home-exit 280ms ease-in forwards;
+    pointer-events: none;
+  }
+
+  .study-view.is-entering {
+    animation: study-enter 320ms ease-out 120ms both;
+  }
+
+  .study-view.is-exiting {
+    animation: study-exit 260ms ease-in forwards;
+    pointer-events: none;
+  }
+
+  .home-view.is-entering {
+    animation: home-enter 300ms ease-out 100ms both;
+  }
+
+  .home-view.is-hidden {
+    display: none;
+  }
+
+  .answer-view {
+    animation: card-reveal 250ms ease-out;
+  }
+
+  @keyframes home-exit {
+    to {
+      opacity: 0;
+      transform: translateY(-24px);
+    }
+  }
+
+  @keyframes study-enter {
+    from {
+      opacity: 0;
+      transform: translateY(32px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes study-exit {
+    to {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
+
+  @keyframes home-enter {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes card-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-view.is-exiting,
+    .study-view.is-entering,
+    .study-view.is-exiting,
+    .home-view.is-entering {
+      animation-duration: 0ms !important;
+    }
+  }
+
+  .animate-in {
+    animation-duration: 300ms;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both;
+  }
+
+  .slide-in-from-top-2 {
+    animation-name: slide-in-from-top-2;
+  }
+
+  @keyframes slide-in-from-top-2 {
+    from {
+      opacity: 0;
+      transform: translateY(-0.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Override Tailwind's 100vh utility for mobile Safari toolbar behavior. */
+  .min-h-screen {
+    min-height: 100vh;
+    min-height: 100svh;
+    min-height: 100dvh;
+  }
+
+  .server-status-lamp {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    display: inline-block;
+  }
+
+  .server-status-lamp--connected {
+    background: #22c55e;
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .server-status-lamp--disconnected {
+    background: rgb(63 63 70);
+    box-shadow: none;
+  }
+
+  .deck-title-marquee__track {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    width: max-content;
+    animation: deck-title-marquee var(--deck-title-duration, 10s) linear infinite;
+    will-change: transform;
+  }
+
+  .deck-title-marquee__item {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  @keyframes deck-title-marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(calc(-1 * var(--deck-title-distance, 120px)));
+    }
+  }
+
+  /* ── Study-card mockup animations ─────────────────────────── */
+  @keyframes study-flip-out {
+    0%   { transform: scale(1) translateZ(0); filter: blur(0px); opacity: 1; }
+    40%  { transform: scale(0.95) translateZ(-50px); filter: blur(2px); opacity: 0.8; }
+    100% { transform: scale(1.1) translateZ(100px); filter: blur(10px); opacity: 0; }
+  }
+
+  @keyframes study-flip-in {
+    0%   { transform: scale(0.9) translateZ(-100px); filter: blur(10px); opacity: 0; }
+    70%  { transform: scale(1.02) translateZ(20px); filter: blur(0px); opacity: 1; }
+    100% { transform: scale(1) translateZ(0); }
+  }
+
+  @keyframes study-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-10px) rotate(-1deg); }
+    40% { transform: translateX(10px) rotate(1deg); }
+    60% { transform: translateX(-5px) rotate(-0.5deg); }
+    80% { transform: translateX(5px) rotate(0.5deg); }
+  }
+
+  @keyframes study-wrong-flash {
+    0% { box-shadow: 0 0 0 rgba(225, 29, 72, 0); background-color: rgba(225, 29, 72, 0); }
+    35% { box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.28), 0 0 32px rgba(225, 29, 72, 0.2); background-color: rgba(225, 29, 72, 0.08); }
+    100% { box-shadow: 0 0 0 rgba(225, 29, 72, 0); background-color: rgba(225, 29, 72, 0); }
+  }
+
+  @keyframes study-confetti-fall {
+    0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+    10%  { opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity: 0; }
+  }
+
+  @keyframes study-glow-success {
+    0%   { box-shadow: 0 0 0px rgba(16, 185, 129, 0); }
+    50%  { box-shadow: 0 0 60px rgba(16, 185, 129, 0.4), inset 0 0 20px rgba(16, 185, 129, 0.2); }
+    100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.1); }
+  }
+
+  @keyframes study-glow-error {
+    0%   { box-shadow: 0 0 0px rgba(225, 29, 72, 0); }
+    50%  { box-shadow: 0 0 60px rgba(225, 29, 72, 0.4), inset 0 0 20px rgba(225, 29, 72, 0.2); }
+    100% { box-shadow: 0 0 20px rgba(225, 29, 72, 0.1); }
+  }
+
+  .study-flip-out  { animation: study-flip-out 200ms cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+  .study-flip-in   { animation: study-flip-in 320ms cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+  .study-shake     { animation: study-shake 400ms ease-in-out forwards; }
+  .study-wrong-flash { animation: study-wrong-flash 520ms ease-out; }
+  .study-confetti-fall { animation: study-confetti-fall cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+
+  @keyframes streak-badge-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.35); }
+    50%      { box-shadow: 0 0 0 4px rgba(244, 63, 94, 0); }
+  }
+
+  @keyframes streak-flame-flicker {
+    0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 3px rgba(251, 146, 60, 0.7)); }
+    25%      { transform: translateY(-0.5px) scale(1.05); filter: drop-shadow(0 0 5px rgba(251, 146, 60, 0.9)); }
+    50%      { transform: translateY(0) scale(1.02); filter: drop-shadow(0 0 4px rgba(251, 146, 60, 0.8)); }
+    75%      { transform: translateY(-0.3px) scale(1.04); filter: drop-shadow(0 0 6px rgba(251, 146, 60, 1)); }
+  }
+
+  @keyframes perfect-session-pop {
+    0%   { transform: scale(0.6); opacity: 0; }
+    60%  { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes perfect-session-shine {
+    0%   { background-position: -180% 0; }
+    100% { background-position: 180% 0; }
+  }
+
+  @keyframes daily-goal-ring-burst {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.12); }
+    100% { transform: scale(1); }
+  }
+
+  .streak-badge-active { animation: streak-badge-pulse 2.4s ease-in-out infinite; }
+  .streak-flame-glow   { animation: streak-flame-flicker 1.6s ease-in-out infinite; transform-origin: 50% 80%; }
+  .daily-goal-ring-reached { animation: daily-goal-ring-burst 600ms cubic-bezier(0.22, 1, 0.36, 1); }
+  .perfect-session-pop { animation: perfect-session-pop 520ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .perfect-session-shine {
+    background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.25) 50%, transparent 80%);
+    background-size: 200% 100%;
+    animation: perfect-session-shine 1.8s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0%   { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+  }
+
+  @keyframes progress-fill {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+
+  .skeleton-shimmer {
+    background: linear-gradient(90deg,
+      rgba(255,255,255,0.04) 0%,
+      rgba(255,255,255,0.09) 40%,
+      rgba(255,255,255,0.04) 80%
+    );
+    background-size: 800px 100%;
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+
+  .progress-bar-shimmer {
+    background: linear-gradient(90deg,
+      var(--brand-primary-80) 0%,
+      var(--brand-primary) 50%,
+      var(--brand-primary-80) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+  }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Prevent text-selection ghosts on iOS when tapping/swiping flashcards. */
+  .card-no-select {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .study-flip-out, .study-flip-in, .study-shake { animation-duration: 0ms !important; }
+    .streak-badge-active, .streak-flame-glow, .daily-goal-ring-reached,
+    .perfect-session-pop, .perfect-session-shine,
+    .skeleton-shimmer, .progress-bar-shimmer { animation: none !important; }
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl;
+  }
+
+  .glass-hover {
+    @apply hover:bg-white/[0.08] hover:border-white/20 transition-all duration-300 ease-out;
+  }
+
+  .btn-rating {
+    @apply flex-1 rounded-[16px] font-bold text-[14px] duration-300 ease-out
+           border
+           active:scale-95 focus:outline-none;
+    transition-property: color, background-color, border-color, opacity, transform, box-shadow;
+  }
+  /* Restrict hover lift to pointer-capable devices — on touch screens :hover
+     sticks after tap and produces a permanently elevated button (iOS bug). */
+  @media (hover: hover) {
+    .btn-rating:hover { transform: translateY(-2px); }
+    .btn-rating-hover-scale:hover { transform: scale(1.02); }
+  }
+
+  /* Neon glow helpers */
+  .glow-purple { box-shadow: 0 0 20px rgba(155,93,229,0.35); }
+  .glow-blue   { box-shadow: 0 0 20px rgba(76,201,240,0.35); }
+  .glow-green  { box-shadow: 0 0 20px rgba(6,214,160,0.35);  }
+}
+

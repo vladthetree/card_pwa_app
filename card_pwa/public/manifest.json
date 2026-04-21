@@ -1,0 +1,104 @@
+{
+  "name": "Card_PWA - Intelligentes Lernen",
+  "short_name": "Card_PWA",
+  "description": "High-End Lernplattform mit SM2 & FSRS Algorithmen. Vollständig offline mit Indexierter Datenbank.",
+  "start_url": "/",
+  "scope": "/",
+  "id": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "prefer_related_applications": false,
+  "orientation": "portrait-primary",
+  "dir": "ltr",
+  "lang": "de-DE",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "categories": ["productivity", "education"],
+  "screenshots": [
+    {
+      "src": "/pwa-icons/screenshot-square-300x300.png",
+      "sizes": "300x300",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/pwa-icons/screenshot-wide-620x300.png",
+      "sizes": "620x300",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/pwa-icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "share_target": {
+    "action": "/?view=import",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "file",
+          "accept": [".apkg", ".csv", "application/zip", "text/csv"]
+        }
+      ]
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "/?view=import",
+      "accept": {
+        "application/zip": [".apkg"],
+        "text/csv": [".csv"]
+      }
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Neues Deck importieren",
+      "short_name": "Importieren",
+      "description": "Decks direkt in Card_PWA importieren",
+      "url": "/?view=import",
+      "icons": [
+        {
+          "src": "/pwa-icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Lernen starten",
+      "short_name": "Lernen",
+      "description": "Beginne eine Lernsession mit deinen Decks",
+      "url": "/?view=study",
+      "icons": [
+        {
+          "src": "/pwa-icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

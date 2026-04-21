@@ -1,0 +1,950 @@
+import { db, type CardRecord, type DeckRecord, type ReviewRecord } from '../db'
+import type { SyncOperationType } from './syncQueue'
+import { flushSyncQueue, getSyncQueuePendingCount } from './syncQueue'
+import {
+  getSyncBaseEndpoint,
+  getSyncConfig,
+  makeAuthHeaders,
+  makeOpId,
+  getOrCreateSyncClientId,
+  fetchWithTimeout,
+} from './syncConfig'
+
+const SYNC_META_CURSOR_KEY = 'sync-cursor'
+const SYNC_META_APPLIED_OP_IDS_KEY = 'sync-applied-op-ids'
+const SYNC_META_APPLIED_OP_IDS_MAX = 500
+const LEGACY_CURSOR_KEY = 'card-pwa-sync-last-cursor'
+const LEGACY_APPLIED_OP_IDS_KEY = 'card-pwa-sync-applied-op-ids'
+const SYNC_META_LAST_PULL_KEY = 'sync-last-pull-at'
+const SYNC_META_LAST_PUSH_KEY = 'sync-last-push-at'
+const SYNC_META_BOOTSTRAP_KEY = 'bootstrap-completed-at'
+
+function getSyncAuthHeaders(): Record<string, string> {
+  return makeAuthHeaders(getSyncConfig())
+}
+
+function hasSyncMetaTable(): boolean {
+  return Boolean((db as unknown as { syncMeta?: unknown }).syncMeta)
+}
+
+function readLegacyCursor(): number {
+  const legacyRaw = localStorage.getItem(LEGACY_CURSOR_KEY)
+  const legacyParsed = Number(legacyRaw)
+  return Number.isFinite(legacyParsed) && legacyParsed >= 0 ? legacyParsed : 0
+}
+
+interface PulledOperation {
+  id: number
+  opId: string
+  type: SyncOperationType
+  payload: unknown
+  /** Server-side clientTimestamp – used as fallback for LWW on deletes */
+  clientTimestamp?: number
+}
+
+interface PullResponse {
+  ok?: boolean
+  operations?: PulledOperation[]
+  nextCursor?: number
+  hasMore?: boolean
+}
+
+interface HandshakeResponse {
+  ok?: boolean
+  needsSnapshot?: boolean
+  needsClientBootstrapUpload?: boolean
+  serverCursor?: number
+}
+
+interface SnapshotResponse {
+  ok?: boolean
+  cursor?: number
+  decks?: unknown[]
+  cards?: unknown[]
+  reviews?: unknown[]
+}
+
+interface BootstrapUploadResponse {
+  ok?: boolean
+  serverCursor?: number
+}
+
+// ─── Endpoint helpers ──────────────────────────────────────────────────
+
+function getPullEndpoint() {
+  const base = getSyncBaseEndpoint()
+  return base ? `${base}/pull` : null
+}
+
+function getHandshakeEndpoint() {
+  const base = getSyncBaseEndpoint()
+  return base ? `${base}/handshake` : null
+}
+
+function getSnapshotEndpoint() {
+  const base = getSyncBaseEndpoint()
+  return base ? `${base}/snapshot` : null
+}
+
+function getBootstrapUploadEndpoint() {
+  const base = getSyncBaseEndpoint()
+  return base ? `${base}/bootstrap/upload` : null
+}
+
+// ─── Cursor / applied-op bookkeeping ───────────────────────────────────
+
+async function readCursor(): Promise<number> {
+  if (!hasSyncMetaTable()) {
+    return readLegacyCursor()
+  }
+
+  try {
+    const entry = await db.syncMeta.get(SYNC_META_CURSOR_KEY)
+    const parsed = Number(entry?.value)
+    if (Number.isFinite(parsed) && parsed >= 0) return parsed
+
+    const legacyParsed = readLegacyCursor()
+    if (Number.isFinite(legacyParsed) && legacyParsed >= 0) {
+      await db.syncMeta.put({ key: SYNC_META_CURSOR_KEY, value: legacyParsed, updatedAt: Date.now() })
+      localStorage.removeItem(LEGACY_CURSOR_KEY)
+      return legacyParsed
+    }
+
+    return 0
+  } catch {
+    return 0
+  }
+}
+
+async function writeCursor(cursor: number): Promise<void> {
+  if (!hasSyncMetaTable()) {
+    localStorage.setItem(LEGACY_CURSOR_KEY, String(cursor))
+    return
+  }
+
+  try {
+    await db.syncMeta.put({ key: SYNC_META_CURSOR_KEY, value: cursor, updatedAt: Date.now() })
+  } catch {
+    localStorage.setItem(LEGACY_CURSOR_KEY, String(cursor))
+  }
+}
+
+async function readAppliedOpIds(): Promise<Set<string>> {
+  if (!hasSyncMetaTable()) {
+    try {
+      const legacyRaw = localStorage.getItem(LEGACY_APPLIED_OP_IDS_KEY)
+      if (!legacyRaw) return new Set<string>()
+      const legacyParsed = JSON.parse(legacyRaw)
+      if (!Array.isArray(legacyParsed)) return new Set<string>()
+      return new Set(legacyParsed.filter((entry): entry is string => typeof entry === 'string'))
+    } catch {
+      return new Set<string>()
+    }
+  }
+
+  try {
+    const entry = await db.syncMeta.get(SYNC_META_APPLIED_OP_IDS_KEY)
+    const parsed = entry?.value
+    if (Array.isArray(parsed)) {
+      return new Set(parsed.filter((entry): entry is string => typeof entry === 'string'))
+    }
+
+    const legacyRaw = localStorage.getItem(LEGACY_APPLIED_OP_IDS_KEY)
+    if (!legacyRaw) return new Set<string>()
+
+    const legacyParsed = JSON.parse(legacyRaw)
+    if (!Array.isArray(legacyParsed)) return new Set<string>()
+
+    const migrated = new Set(legacyParsed.filter((entry): entry is string => typeof entry === 'string'))
+    await writeAppliedOpIds(migrated)
+    localStorage.removeItem(LEGACY_APPLIED_OP_IDS_KEY)
+    return migrated
+  } catch {
+    return new Set<string>()
+  }
+}
+
+async function writeAppliedOpIds(opIds: Set<string>): Promise<void> {
+  const limited = Array.from(opIds).slice(-SYNC_META_APPLIED_OP_IDS_MAX)
+
+  if (!hasSyncMetaTable()) {
+    localStorage.setItem(LEGACY_APPLIED_OP_IDS_KEY, JSON.stringify(limited))
+    return
+  }
+
+  try {
+    await db.syncMeta.put({ key: SYNC_META_APPLIED_OP_IDS_KEY, value: limited, updatedAt: Date.now() })
+  } catch {
+    localStorage.setItem(LEGACY_APPLIED_OP_IDS_KEY, JSON.stringify(limited))
+  }
+}
+
+function clearAppliedOpIds() {
+  localStorage.removeItem(LEGACY_APPLIED_OP_IDS_KEY)
+  if (!hasSyncMetaTable()) return
+
+  void db.syncMeta.delete(SYNC_META_APPLIED_OP_IDS_KEY).catch(() => {
+    // best effort
+  })
+}
+
+export function resetSyncPullState() {
+  localStorage.removeItem(LEGACY_CURSOR_KEY)
+  localStorage.removeItem(LEGACY_APPLIED_OP_IDS_KEY)
+  if (hasSyncMetaTable()) {
+    void db.syncMeta.delete(SYNC_META_CURSOR_KEY).catch(() => {
+      // best effort
+    })
+  }
+  clearAppliedOpIds()
+}
+
+// ─── Normalizers ───────────────────────────────────────────────────────
+
+function normalizeDeck(raw: unknown): DeckRecord | null {
+  if (!raw || typeof raw !== 'object') return null
+  const value = raw as Record<string, unknown>
+
+  const id = value.id
+  const name = value.name
+  if (typeof id !== 'string' || typeof name !== 'string' || !id || !name) {
+    return null
+  }
+
+  const createdAt = Number(value.createdAt ?? value.created_at)
+  const updatedAt = Number(value.updatedAt ?? value.updated_at ?? value.createdAt ?? value.created_at)
+  const sourceRaw = value.source
+  const source = sourceRaw === 'anki-import' ? 'anki-import' : 'manual'
+
+  return {
+    id,
+    name,
+    createdAt: Number.isFinite(createdAt) ? createdAt : Date.now(),
+    updatedAt: Number.isFinite(updatedAt) ? updatedAt : (Number.isFinite(createdAt) ? createdAt : Date.now()),
+    source,
+  }
+}
+
+function normalizeCard(raw: unknown): CardRecord | null {
+  if (!raw || typeof raw !== 'object') return null
+  const value = raw as Record<string, unknown>
+
+  const id = value.id
+  const noteId = value.noteId ?? value.note_id
+  const deckId = value.deckId ?? value.deck_id
+  const front = value.front
+  const back = value.back
+
+  if (
+    typeof id !== 'string'
+    || typeof noteId !== 'string'
+    || typeof deckId !== 'string'
+    || typeof front !== 'string'
+    || typeof back !== 'string'
+  ) {
+    return null
+  }
+
+  const tagsRaw = value.tags
+  const tags = Array.isArray(tagsRaw) ? tagsRaw.map(tag => String(tag)) : []
+
+  const extraRaw = value.extra
+  const extraObj = extraRaw && typeof extraRaw === 'object' ? extraRaw as Record<string, unknown> : {}
+
+  const parseMaybeNumber = (input: unknown) => {
+    if (input === null || input === undefined) return Number.NaN
+    return Number(input)
+  }
+
+  const due = parseMaybeNumber(value.due)
+  const dueAt = parseMaybeNumber(value.dueAt ?? value.due_at)
+  const deletedAt = parseMaybeNumber(value.deletedAt ?? value.deleted_at)
+  const createdAt = parseMaybeNumber(value.createdAt ?? value.created_at)
+  const updatedAt = parseMaybeNumber(value.updatedAt ?? value.updated_at ?? value.createdAt ?? value.created_at)
+  const rawType = Number(value.type)
+  const rawQueue = Number(value.queue)
+  const normalizedType = Number.isFinite(rawType) ? Math.max(0, Math.min(3, Math.round(rawType))) : 0
+  const normalizedQueue = Number.isFinite(rawQueue) ? Math.max(-1, Math.min(2, Math.round(rawQueue))) : normalizedType
+  const algorithmRaw = value.algorithm
+  const normalizedAlgorithm = algorithmRaw === 'fsrs' ? 'fsrs' : 'sm2'
+  const deletedFlag = Boolean(value.isDeleted ?? value.is_deleted)
+  const hasDeletedAt = Number.isFinite(deletedAt)
+
+  const card: CardRecord = {
+    id,
+    noteId,
+    deckId,
+    front,
+    back,
+    tags,
+    extra: {
+      acronym: typeof extraObj.acronym === 'string' ? extraObj.acronym : '',
+      examples: typeof extraObj.examples === 'string' ? extraObj.examples : '',
+      port: typeof extraObj.port === 'string' ? extraObj.port : '',
+      protocol: typeof extraObj.protocol === 'string' ? extraObj.protocol : '',
+    },
+    type: normalizedType,
+    queue: normalizedQueue,
+    due: Number.isFinite(due) ? due : Math.floor(Date.now() / 86_400_000),
+    dueAt: Number.isFinite(dueAt) ? dueAt : undefined,
+    interval: Number.isFinite(Number(value.interval)) ? Number(value.interval) : 0,
+    factor: Number.isFinite(Number(value.factor)) ? Number(value.factor) : 2500,
+    stability: Number.isFinite(Number(value.stability)) ? Number(value.stability) : undefined,
+    difficulty: Number.isFinite(Number(value.difficulty)) ? Number(value.difficulty) : undefined,
+    reps: Number.isFinite(Number(value.reps)) ? Number(value.reps) : 0,
+    lapses: Number.isFinite(Number(value.lapses)) ? Number(value.lapses) : 0,
+    createdAt: Number.isFinite(createdAt) ? createdAt : Date.now(),
+    updatedAt: Number.isFinite(updatedAt) ? updatedAt : (Number.isFinite(createdAt) ? createdAt : Date.now()),
+    algorithm: normalizedAlgorithm,
+    isDeleted: deletedFlag || hasDeletedAt,
+    deletedAt: Number.isFinite(deletedAt) ? deletedAt : undefined,
+    metadata: value.metadata && typeof value.metadata === 'object'
+      ? value.metadata as CardRecord['metadata']
+      : undefined,
+  }
+
+  if (!Number.isFinite(card.dueAt)) {
+    card.dueAt = Math.max(0, Math.floor(card.due)) * 86_400_000
+  }
+
+  return card
+}
+
+function normalizeReview(raw: unknown): Omit<ReviewRecord, 'id'> | null {
+  if (!raw || typeof raw !== 'object') return null
+  const value = raw as Record<string, unknown>
+  const cardId = value.cardId ?? value.card_id
+  const rating = Number(value.rating)
+  const timeMs = Number(value.timeMs ?? value.time_ms)
+  const timestamp = Number(value.timestamp ?? value.reviewedAt ?? value.reviewed_at)
+
+  if (typeof cardId !== 'string' || !cardId) return null
+  if (![1, 2, 3, 4].includes(rating)) return null
+
+  return {
+    cardId,
+    rating: rating as ReviewRecord['rating'],
+    timeMs: Number.isFinite(timeMs) ? timeMs : 0,
+    timestamp: Number.isFinite(timestamp) ? timestamp : Date.now(),
+  }
+}
+
+function normalizeCardUpdates(raw: unknown): Partial<CardRecord> {
+  if (!raw || typeof raw !== 'object') return {}
+
+  const value = raw as Record<string, unknown>
+  const updates: Partial<CardRecord> = {}
+  const parseMaybeNumber = (input: unknown) => {
+    if (input === null || input === undefined) return Number.NaN
+    return Number(input)
+  }
+
+  const setString = (key: keyof CardRecord, altKey?: string) => {
+    const source = key as string
+    const hasPrimary = source in value
+    const hasAlt = Boolean(altKey && altKey in value)
+    if (!hasPrimary && !hasAlt) return
+    const rawValue = value[source] ?? (altKey ? value[altKey] : undefined)
+    if (typeof rawValue === 'string') {
+      ;(updates as Record<string, unknown>)[source] = rawValue
+    }
+  }
+
+  setString('noteId', 'note_id')
+  setString('deckId', 'deck_id')
+  setString('front')
+  setString('back')
+
+  if ('tags' in value) {
+    updates.tags = Array.isArray(value.tags) ? value.tags.map(tag => String(tag)) : []
+  }
+
+  if ('extra' in value) {
+    const extraRaw = value.extra
+    const extraObj = extraRaw && typeof extraRaw === 'object' ? extraRaw as Record<string, unknown> : {}
+    updates.extra = {
+      acronym: typeof extraObj.acronym === 'string' ? extraObj.acronym : '',
+      examples: typeof extraObj.examples === 'string' ? extraObj.examples : '',
+      port: typeof extraObj.port === 'string' ? extraObj.port : '',
+      protocol: typeof extraObj.protocol === 'string' ? extraObj.protocol : '',
+    }
+  }
+
+  if ('type' in value) {
+    const rawType = Number(value.type)
+    if (Number.isFinite(rawType)) {
+      updates.type = Math.max(0, Math.min(3, Math.round(rawType)))
+    }
+  }
+
+  if ('queue' in value) {
+    const rawQueue = Number(value.queue)
+    if (Number.isFinite(rawQueue)) {
+      updates.queue = Math.max(-1, Math.min(2, Math.round(rawQueue)))
+    }
+  }
+
+  if ('due' in value) {
+    const rawDue = Number(value.due)
+    if (Number.isFinite(rawDue)) {
+      updates.due = Math.max(0, Math.floor(rawDue))
+    }
+  }
+
+  const dueAtRaw = parseMaybeNumber(value.dueAt ?? value.due_at)
+  if ('dueAt' in value || 'due_at' in value) {
+    if (Number.isFinite(dueAtRaw)) {
+      updates.dueAt = dueAtRaw
+    }
+  }
+
+  if (!Number.isFinite(updates.dueAt)) {
+    const baseDue = Number.isFinite(updates.due)
+      ? (updates.due as number)
+      : Number.isFinite(parseMaybeNumber(value.due))
+        ? Math.max(0, Math.floor(parseMaybeNumber(value.due)))
+        : undefined
+    if (baseDue !== undefined) {
+      updates.dueAt = baseDue * 86_400_000
+    }
+  }
+
+  const numericFields: Array<keyof CardRecord> = ['interval', 'factor', 'stability', 'difficulty', 'reps', 'lapses', 'createdAt', 'updatedAt']
+  for (const field of numericFields) {
+    const rawValue = parseMaybeNumber(value[field as string])
+    if (!Number.isFinite(rawValue)) continue
+    ;(updates as Record<string, unknown>)[field as string] = rawValue
+  }
+
+  if ('algorithm' in value) {
+    updates.algorithm = value.algorithm === 'fsrs' ? 'fsrs' : 'sm2'
+  }
+
+  const deletedAt = parseMaybeNumber(value.deletedAt ?? value.deleted_at)
+  const hasDeletedAt = Number.isFinite(deletedAt)
+  const hasDeletedFlag = 'isDeleted' in value || 'is_deleted' in value
+  if (hasDeletedFlag) {
+    updates.isDeleted = Boolean(value.isDeleted ?? value.is_deleted)
+  }
+  if (hasDeletedAt) {
+    updates.deletedAt = deletedAt
+    updates.isDeleted = true
+  }
+
+  if ('metadata' in value && value.metadata && typeof value.metadata === 'object') {
+    updates.metadata = value.metadata as CardRecord['metadata']
+  }
+
+  return updates
+}
+
+// ─── Operation appliers (reps-first for card state, LWW for deletes) ───────
+
+function shouldApplyIncomingCardState(
+  existing: Pick<CardRecord, 'createdAt' | 'updatedAt' | 'reps'> | undefined,
+  incoming: Partial<CardRecord>,
+  fallbackTimestamp = 0,
+): boolean {
+  if (!existing) return true
+
+  const localReps = Number.isFinite(existing.reps) ? Number(existing.reps) : 0
+  const incomingReps = Number.isFinite(incoming.reps) ? Number(incoming.reps) : localReps
+
+  if (incomingReps !== localReps) {
+    return incomingReps > localReps
+  }
+
+  const localTs = Number(existing.updatedAt ?? existing.createdAt ?? 0)
+  const incomingTs = Number(incoming.updatedAt ?? incoming.createdAt ?? fallbackTimestamp ?? 0)
+
+  if (!Number.isFinite(incomingTs) || incomingTs <= 0) return true
+  return incomingTs >= localTs
+}
+
+async function applyDeckCreate(payload: unknown) {
+  const deck = normalizeDeck(payload)
+  if (!deck) return
+
+  const existing = await db.decks.get(deck.id)
+  if (existing) {
+    const localTs = existing.updatedAt ?? existing.createdAt
+    const incomingTs = deck.updatedAt ?? deck.createdAt
+    if (localTs > incomingTs) return
+  }
+
+  await db.decks.put(deck)
+}
+
+async function applyDeckDelete(payload: unknown, fallbackTs = 0) {
+  if (!payload || typeof payload !== 'object') return
+  const value = payload as { deckId?: string; timestamp?: number; deletedAt?: number }
+  const deckId = value.deckId ? String(value.deckId) : ''
+  if (!deckId) return
+
+  // ── LWW guard: skip delete if local deck is newer ──
+  // fallbackTs comes from the pull response's clientTimestamp field
+  const deleteTs = Number(value.deletedAt ?? value.timestamp ?? fallbackTs ?? 0)
+  if (deleteTs > 0) {
+    const existing = await db.decks.get(deckId)
+    if (existing) {
+      const localTs = existing.updatedAt ?? existing.createdAt
+      if (localTs > deleteTs) return // local is newer → ignore remote delete
+    }
+  }
+
+  const cardIds = (await db.cards.where('deckId').equals(deckId).toArray()).map(card => card.id)
+  if (cardIds.length > 0) {
+    await db.reviews.where('cardId').anyOf(cardIds).delete()
+  }
+
+  await db.cards.where('deckId').equals(deckId).delete()
+  await db.decks.delete(deckId)
+}
+
+async function applyCardCreate(payload: unknown) {
+  const card = normalizeCard(payload)
+  if (!card) return
+
+  const existing = await db.cards.get(card.id)
+  if (existing && !shouldApplyIncomingCardState(existing, card, card.updatedAt ?? card.createdAt ?? 0)) return
+
+  await db.cards.put(card)
+}
+
+async function applyCardUpdate(payload: unknown) {
+  if (!payload || typeof payload !== 'object') return
+  const value = payload as { cardId?: string; updates?: Partial<CardRecord>; update?: Partial<CardRecord>; timestamp?: number }
+  const cardId = value.cardId ? String(value.cardId) : ''
+  const rawUpdates = value.updates && typeof value.updates === 'object' ? value.updates : value.update
+  if (!cardId || !rawUpdates) return
+
+  const normalizedUpdates = normalizeCardUpdates(rawUpdates)
+  if (Object.keys(normalizedUpdates).length === 0) return
+
+  const existing = await db.cards.get(cardId)
+  if (existing && !shouldApplyIncomingCardState(existing, normalizedUpdates, Number(value.timestamp ?? 0))) return
+
+  await db.cards.update(cardId, normalizedUpdates)
+}
+
+async function applyCardDelete(payload: unknown, fallbackTs = 0) {
+  if (!payload || typeof payload !== 'object') return
+  const value = payload as { cardId?: string; timestamp?: number; deletedAt?: number }
+  const cardId = value.cardId ? String(value.cardId) : ''
+  if (!cardId) return
+
+  // ── LWW guard: skip delete if local card is newer ──
+  const deleteTs = Number(value.deletedAt ?? value.timestamp ?? fallbackTs ?? 0)
+  if (deleteTs > 0) {
+    const existing = await db.cards.get(cardId)
+    if (existing) {
+      const localTs = existing.updatedAt ?? existing.createdAt
+      if (localTs > deleteTs) return // local is newer → ignore remote delete
+    }
+  }
+
+  await db.reviews.where('cardId').equals(cardId).delete()
+  const now = Date.now()
+  await db.cards.update(cardId, { isDeleted: true, deletedAt: now, updatedAt: now })
+}
+
+async function applyReview(payload: unknown) {
+  if (!payload || typeof payload !== 'object') return
+  const value = payload as {
+    cardId?: string
+    rating?: 1 | 2 | 3 | 4
+    timeMs?: number
+    timestamp?: number
+    updated?: Partial<CardRecord>
+  }
+
+  const cardId = value.cardId ? String(value.cardId) : ''
+  if (!cardId) return
+
+  const existing = await db.cards.get(cardId)
+  if (!existing) {
+    // Prevent orphan review rows when the referenced card does not exist locally.
+    return
+  }
+
+  if (value.updated && typeof value.updated === 'object') {
+    if (shouldApplyIncomingCardState(existing, value.updated as Partial<CardRecord>, Number(value.timestamp ?? 0))) {
+      await db.cards.update(cardId, value.updated)
+    }
+  }
+
+  const rating = Number(value.rating)
+  const normalizedRating = [1, 2, 3, 4].includes(rating) ? (rating as 1 | 2 | 3 | 4) : 3
+
+  await db.reviews.add({
+    cardId,
+    rating: normalizedRating,
+    timeMs: Number.isFinite(value.timeMs) ? Number(value.timeMs) : 0,
+    timestamp: Number.isFinite(value.timestamp) ? Number(value.timestamp) : Date.now(),
+  })
+}
+
+async function applyReviewUndo(payload: unknown) {
+  if (!payload || typeof payload !== 'object') return
+  const value = payload as { cardId?: string; reviewId?: number; restored?: Partial<CardRecord> }
+  const cardId = value.cardId ? String(value.cardId) : ''
+  if (!cardId) return
+
+  if (value.restored && typeof value.restored === 'object') {
+    await db.cards.update(cardId, value.restored)
+  }
+
+  const reviewId = Number(value.reviewId)
+  if (Number.isFinite(reviewId) && reviewId > 0) {
+    await db.reviews.delete(reviewId)
+    return
+  }
+
+  const latestReview = await db.reviews.where('cardId').equals(cardId).reverse().first()
+  if (latestReview?.id !== undefined) {
+    await db.reviews.delete(latestReview.id)
+  }
+}
+
+async function applyOperation(op: PulledOperation) {
+  const fallbackTs = Number(op.clientTimestamp ?? 0)
+
+  switch (op.type) {
+    case 'deck.create':
+      await applyDeckCreate(op.payload)
+      return
+    case 'deck.delete':
+      await applyDeckDelete(op.payload, fallbackTs)
+      return
+    case 'card.create':
+      await applyCardCreate(op.payload)
+      return
+    case 'card.update':
+      await applyCardUpdate(op.payload)
+      return
+    case 'card.schedule.forceTomorrow':
+      await applyCardUpdate(op.payload)
+      return
+    case 'card.delete':
+      await applyCardDelete(op.payload, fallbackTs)
+      return
+    case 'review':
+      await applyReview(op.payload)
+      return
+    case 'review.undo':
+      await applyReviewUndo(op.payload)
+      return
+  }
+}
+
+// ─── Bootstrap / Handshake ─────────────────────────────────────────────
+
+async function getLocalCounts() {
+  const [cards, decks] = await Promise.all([
+    db.cards.filter(card => !card.isDeleted).count(),
+    db.decks.filter(deck => !deck.isDeleted).count(),
+  ])
+  return { cards, decks }
+}
+
+async function runHandshake(clientId: string): Promise<HandshakeResponse | null> {
+  const endpoint = getHandshakeEndpoint()
+  if (!endpoint) return null
+
+  try {
+    const localCounts = await getLocalCounts()
+
+    const response = await fetchWithTimeout(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getSyncAuthHeaders(),
+      },
+      body: JSON.stringify({
+        clientId,
+        lastCursor: await readCursor(),
+        localCounts,
+      }),
+    })
+
+    if (!response.ok) return null
+    return (await response.json()) as HandshakeResponse
+  } catch {
+    return null
+  }
+}
+
+async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
+  const endpoint = getSnapshotEndpoint()
+  if (!endpoint) return false
+
+  try {
+    const query = `${endpoint}?clientId=${encodeURIComponent(clientId)}`
+    const response = await fetchWithTimeout(query, {
+      headers: {
+        ...getSyncAuthHeaders(),
+      },
+    })
+    if (!response.ok) return false
+
+    const data = (await response.json()) as SnapshotResponse
+    const rawDecks = Array.isArray(data.decks) ? data.decks : []
+    const rawCards = Array.isArray(data.cards) ? data.cards : []
+    const rawReviews = Array.isArray(data.reviews) ? data.reviews : []
+
+    const decks = rawDecks
+      .map(normalizeDeck)
+      .filter((entry): entry is DeckRecord => entry !== null)
+
+    const cards = rawCards
+      .map(normalizeCard)
+      .filter((entry): entry is CardRecord => entry !== null)
+
+    const cardIds = new Set(cards.map(card => card.id))
+    const reviews = rawReviews
+      .map(normalizeReview)
+      .filter((entry): entry is Omit<ReviewRecord, 'id'> => entry !== null && cardIds.has(entry.cardId))
+
+    const localCounts = await getLocalCounts()
+    const snapshotIsEmpty = decks.length === 0 && cards.length === 0
+    const localHasData = localCounts.decks > 0 || localCounts.cards > 0
+
+    if (snapshotIsEmpty && localHasData) {
+      return false
+    }
+
+    await db.transaction('rw', db.decks, db.cards, db.reviews, async () => {
+      const incomingCardIds = new Set(cards.map(c => c.id))
+      const orphanReviewIds: number[] = []
+      await db.reviews.each(review => {
+        if (!incomingCardIds.has(review.cardId) && review.id !== undefined) {
+          orphanReviewIds.push(review.id)
+        }
+      })
+      if (orphanReviewIds.length > 0) {
+        await db.reviews.bulkDelete(orphanReviewIds)
+      }
+      if (rawReviews.length > 0) {
+        await db.reviews.clear()
+      }
+
+      await db.cards.clear()
+      await db.decks.clear()
+
+      if (decks.length > 0) {
+        await db.decks.bulkPut(decks)
+      }
+      if (cards.length > 0) {
+        await db.cards.bulkPut(cards)
+      }
+      if (reviews.length > 0) {
+        await db.reviews.bulkAdd(reviews)
+      }
+    })
+
+    if (typeof data.cursor === 'number' && Number.isFinite(data.cursor)) {
+      await writeCursor(data.cursor)
+    } else {
+      await writeCursor(0)
+    }
+
+    clearAppliedOpIds()
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function runBootstrapUpload(clientId: string): Promise<BootstrapUploadResponse | null> {
+  const endpoint = getBootstrapUploadEndpoint()
+  if (!endpoint) return null
+
+  try {
+    const [decks, cards] = await Promise.all([
+      db.decks.toArray(),
+      db.cards.toArray(),
+    ])
+
+    const response = await fetchWithTimeout(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getSyncAuthHeaders(),
+      },
+      body: JSON.stringify({
+        clientId,
+        batchId: makeOpId(),
+        sentAt: Date.now(),
+        decks: decks.map(deck => ({
+          id: deck.id,
+          name: deck.name,
+          createdAt: deck.createdAt,
+          updatedAt: deck.updatedAt ?? deck.createdAt,
+          source: deck.source,
+          isDeleted: Boolean(deck.isDeleted),
+          deletedAt: deck.deletedAt,
+        })),
+        cards: cards.map(card => ({
+          id: card.id,
+          noteId: card.noteId,
+          deckId: card.deckId,
+          front: card.front,
+          back: card.back,
+          tags: card.tags,
+          extra: card.extra,
+          type: card.type,
+          queue: card.queue,
+          due: card.due,
+          dueAt: card.dueAt,
+          interval: card.interval,
+          factor: card.factor,
+          stability: card.stability,
+          difficulty: card.difficulty,
+          reps: card.reps,
+          lapses: card.lapses,
+          algorithm: card.algorithm,
+          metadata: card.metadata,
+          isDeleted: Boolean(card.isDeleted),
+          deletedAt: card.deletedAt,
+          createdAt: card.createdAt,
+          updatedAt: card.updatedAt ?? card.createdAt,
+        })),
+      }),
+    })
+
+    if (!response.ok) return null
+    return (await response.json()) as BootstrapUploadResponse
+  } catch {
+    return null
+  }
+}
+
+async function writeSyncMetaTimestamp(key: string): Promise<void> {
+  if (!hasSyncMetaTable()) return
+  try {
+    await db.syncMeta.put({ key, value: Date.now(), updatedAt: Date.now() })
+  } catch {
+    // best effort
+  }
+}
+
+async function readSyncMetaValue(key: string): Promise<unknown> {
+  if (!hasSyncMetaTable()) return null
+  try {
+    const entry = await db.syncMeta.get(key)
+    return entry?.value ?? null
+  } catch {
+    return null
+  }
+}
+
+async function bootstrapSyncIfNeeded(clientId: string) {
+  const handshake = await runHandshake(clientId)
+  if (!handshake) return
+
+  if (Boolean(handshake.needsClientBootstrapUpload)) {
+    // Skip if already successfully bootstrapped
+    const alreadyBootstrapped = await readSyncMetaValue(SYNC_META_BOOTSTRAP_KEY)
+    if (alreadyBootstrapped) return
+
+    const upload = await runBootstrapUpload(clientId)
+    if (!upload?.ok) return
+
+    if (typeof upload.serverCursor === 'number' && Number.isFinite(upload.serverCursor)) {
+      await writeCursor(upload.serverCursor)
+    }
+
+    await writeSyncMetaTimestamp(SYNC_META_BOOTSTRAP_KEY)
+    return
+  }
+
+  if (Boolean(handshake.needsSnapshot)) {
+    await fetchAndApplySnapshot(clientId)
+    return
+  }
+
+  if (typeof handshake.serverCursor === 'number' && Number.isFinite(handshake.serverCursor)) {
+    const localCursor = await readCursor()
+    if (handshake.serverCursor < localCursor) {
+      await writeCursor(handshake.serverCursor)
+    }
+  }
+}
+
+// ─── Delta pull ────────────────────────────────────────────────────────
+
+export async function pullAndApplySyncDeltas(limit = 200) {
+  const endpoint = getPullEndpoint()
+  if (!endpoint) return
+
+  const pendingBeforeFlush = await getSyncQueuePendingCount()
+  if (pendingBeforeFlush > 0 && navigator.onLine) {
+    const flushResult = await flushSyncQueue({ limit: 200 })
+    if (flushResult.processed > 0) {
+      await writeSyncMetaTimestamp(SYNC_META_LAST_PUSH_KEY)
+    }
+  }
+
+  const pendingAfterFlush = await getSyncQueuePendingCount()
+  if (pendingAfterFlush > 0) {
+    return
+  }
+
+  const clientId = getOrCreateSyncClientId()
+  await bootstrapSyncIfNeeded(clientId)
+
+  let cursor = await readCursor()
+  const appliedOpIds = await readAppliedOpIds()
+
+  try {
+    for (let page = 0; page < 20; page += 1) {
+      const query = `${endpoint}?since=${cursor}&limit=${limit}&clientId=${encodeURIComponent(clientId)}`
+      const response = await fetchWithTimeout(query, {
+        headers: {
+          ...getSyncAuthHeaders(),
+        },
+      })
+      if (!response.ok) break
+
+      const data = (await response.json()) as PullResponse
+      const operations = Array.isArray(data.operations) ? data.operations : []
+
+      if (operations.length === 0) {
+        if (typeof data.nextCursor === 'number' && Number.isFinite(data.nextCursor)) {
+          cursor = data.nextCursor
+        }
+        break
+      }
+
+      for (const operation of operations) {
+        if (!operation?.opId) continue
+        if (appliedOpIds.has(operation.opId)) continue
+
+        await applyOperation(operation)
+        appliedOpIds.add(operation.opId)
+      }
+
+      if (typeof data.nextCursor === 'number' && Number.isFinite(data.nextCursor)) {
+        cursor = data.nextCursor
+      } else {
+        const maxSeen = operations.reduce((max, op) => Math.max(max, op.id || 0), cursor)
+        cursor = maxSeen
+      }
+
+      if (!data.hasMore) break
+    }
+  } catch {
+    // Network/transient errors should not crash sync runtime.
+  }
+
+  await writeCursor(cursor)
+  await writeAppliedOpIds(appliedOpIds)
+  await writeSyncMetaTimestamp(SYNC_META_LAST_PULL_KEY)
+}
+
+/**
+ * @deprecated Use setupUnifiedSyncRuntime() from syncCoordinator instead.
+ */
+export function setupSyncPullRuntime(): () => void {
+  return () => {}
+}
