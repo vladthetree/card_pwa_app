@@ -229,12 +229,18 @@ def init_db():
     CREATE TABLE IF NOT EXISTS users (
       user_id TEXT PRIMARY KEY,
       display_name TEXT,
+      profile_name TEXT,
       recovery_code_hash TEXT NOT NULL,
       created_at INTEGER NOT NULL,
       last_seen_at INTEGER
     )
   """)
   conn.commit()
+
+  user_cols = [r[1] for r in conn.execute("PRAGMA table_info(users)").fetchall()]
+  if "profile_name" not in user_cols:
+    conn.execute("ALTER TABLE users ADD COLUMN profile_name TEXT")
+    conn.commit()
 
   conn.execute("""
     CREATE TABLE IF NOT EXISTS devices (
@@ -866,6 +872,8 @@ class Handler(BaseHTTPRequestHandler):
       path = urlparse(self.path).path
       if path == "/health":                        # GET  /health
         self._route_health()
+      elif path == "/auth/profiles":              # GET  /auth/profiles
+        self._route_auth_profiles()
       elif path == "/sync/pull":                   # GET  /sync/pull
         self._route_sync_pull()
       elif path == "/sync/snapshot":               # GET  /sync/snapshot
@@ -889,6 +897,8 @@ class Handler(BaseHTTPRequestHandler):
         self._route_auth_recover()
       elif path == "/auth/revoke":              # POST /auth/revoke
         self._route_auth_revoke()
+      elif path == "/auth/profile/switch":      # POST /auth/profile/switch
+        self._route_auth_profile_switch()
       elif path == "/sync":                          # POST /sync
         self._route_sync_push()
       elif path == "/sync/bootstrap/upload":       # POST /sync/bootstrap/upload
@@ -916,6 +926,7 @@ class Handler(BaseHTTPRequestHandler):
 
     device_id = str(data.get("deviceId") or "").strip()
     device_label = str(data.get("deviceLabel") or "Device").strip()[:80]
+    requested_profile_name = str(data.get("profileName") or "").strip()
     client_ip = self.client_address[0] if self.client_address else "?"
 
     if not device_id:
@@ -924,6 +935,7 @@ class Handler(BaseHTTPRequestHandler):
 
     import uuid as _uuid
     user_id = str(_uuid.uuid4())
+    profile_name = requested_profile_name[:80] if requested_profile_name else f"Profil {user_id[:8]}"
     now = int(time.time() * 1000)
 
     recovery_code = generate_recovery_code()
@@ -936,9 +948,9 @@ class Handler(BaseHTTPRequestHandler):
     conn = open_db()
     try:
       conn.execute(
-        """INSERT INTO users (user_id, recovery_code_hash, created_at, last_seen_at)
-           VALUES (?, ?, ?, ?)""",
-        (user_id, recovery_hash, now, now)
+        """INSERT INTO users (user_id, profile_name, recovery_code_hash, created_at, last_seen_at)
+          VALUES (?, ?, ?, ?, ?)""",
+        (user_id, profile_name, recovery_hash, now, now)
       )
       conn.execute(
         """INSERT INTO devices (device_id, user_id, label, linked_at, last_seen_at)
@@ -955,6 +967,7 @@ class Handler(BaseHTTPRequestHandler):
       self._send_json(201, {
         "ok": True,
         "userId": user_id,
+        "profileName": profile_name,
         "deviceId": device_id,
         "profileToken": profile_token,
         "recoveryCode": recovery_code,
@@ -962,6 +975,43 @@ class Handler(BaseHTTPRequestHandler):
     except sqlite3.IntegrityError:
       conn.rollback()
       self._send_json(409, {"ok": False, "error": "device_already_registered"})
+    finally:
+      conn.close()
+
+  # ---------------------------------------------------------------------------
+  # GET /auth/profiles  — list known profiles
+  # ---------------------------------------------------------------------------
+
+  def _route_auth_profiles(self):
+    qs = parse_qs(urlparse(self.path).query)
+    limit = parse_int(qs.get("limit", ["20"])[0] or "20", 20, min_value=1, max_value=100)
+
+    conn = open_db(sqlite3.Row)
+    try:
+      rows = conn.execute(
+        """
+        SELECT
+          u.user_id,
+          COALESCE(NULLIF(TRIM(u.profile_name), ''), NULLIF(TRIM(u.display_name), ''), 'Profil ' || SUBSTR(u.user_id, 1, 8)) AS profile_name,
+          u.last_seen_at,
+          u.created_at,
+          COUNT(d.device_id) AS linked_devices_count
+        FROM users u
+        LEFT JOIN devices d ON d.user_id = u.user_id
+        GROUP BY u.user_id
+        ORDER BY COALESCE(u.last_seen_at, u.created_at) DESC
+        LIMIT ?
+        """,
+        (limit,)
+      ).fetchall()
+
+      profiles = [{
+        "userId": row["user_id"],
+        "profileName": row["profile_name"],
+        "lastSeenAt": row["last_seen_at"],
+        "linkedDevicesCount": int(row["linked_devices_count"] or 0),
+      } for row in rows]
+      self._send_json(200, {"ok": True, "profiles": profiles})
     finally:
       conn.close()
 
@@ -1143,6 +1193,88 @@ class Handler(BaseHTTPRequestHandler):
       conn.commit()
       log(f"AUTH_REVOKE  ip={client_ip}  device={_client_short(self._current_device_id)}")
       self._send_json(200, {"ok": True})
+    finally:
+      conn.close()
+
+  # ---------------------------------------------------------------------------
+  # POST /auth/profile/switch  — switch this device to a target profile
+  # ---------------------------------------------------------------------------
+
+  def _route_auth_profile_switch(self):
+    # Best-effort auth resolution for audit context only.
+    self._resolve_auth()
+    from_user_id = self._current_user_id
+
+    data, error_status, error_code = self._read_json_body()
+    if error_code:
+      self._send_json(error_status, {"ok": False, "error": error_code})
+      return
+    if not isinstance(data, dict):
+      self._send_json(400, {"ok": False, "error": "invalid_json_object"})
+      return
+
+    user_id = str(data.get("userId") or "").strip()
+    device_id = str(data.get("deviceId") or "").strip()
+    device_label = str(data.get("deviceLabel") or "Device").strip()[:80]
+    client_ip = self.client_address[0] if self.client_address else "?"
+
+    if not user_id or not device_id:
+      self._send_json(400, {"ok": False, "error": "missing_fields"})
+      return
+
+    import uuid as _uuid
+    now = int(time.time() * 1000)
+    profile_token = generate_device_token()
+    token_hash = hash_token(profile_token)
+    token_id = str(_uuid.uuid4())
+
+    conn = open_db(sqlite3.Row)
+    try:
+      user = conn.execute(
+        "SELECT user_id, profile_name, display_name FROM users WHERE user_id=?",
+        (user_id,)
+      ).fetchone()
+      if not user:
+        self._send_json(404, {"ok": False, "error": "profile_not_found"})
+        return
+
+      conn.execute(
+        """
+        INSERT INTO devices (device_id, user_id, label, linked_at, last_seen_at)
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT(device_id) DO UPDATE SET
+          user_id=excluded.user_id,
+          label=excluded.label,
+          last_seen_at=excluded.last_seen_at
+        """,
+        (device_id, user_id, device_label, now, now)
+      )
+
+      conn.execute(
+        "UPDATE device_tokens SET revoked_at=? WHERE device_id=? AND revoked_at IS NULL",
+        (now, device_id)
+      )
+      conn.execute(
+        "INSERT INTO device_tokens (token_id, device_id, token_hash, created_at) VALUES (?, ?, ?, ?)",
+        (token_id, device_id, token_hash, now)
+      )
+      conn.execute("UPDATE users SET last_seen_at=? WHERE user_id=?", (now, user_id))
+      conn.commit()
+
+      to_short = _client_short(user_id)
+      from_short = _client_short(from_user_id) if from_user_id else "anon"
+      profile_name = user["profile_name"] or user["display_name"] or f"Profil {user_id[:8]}"
+      log(
+        f"AUTH_PROFILE_SWITCH  ip={client_ip}  from_user={from_short}  to_user={to_short}  "
+        f"device={_client_short(device_id)}"
+      )
+      self._send_json(200, {
+        "ok": True,
+        "userId": user_id,
+        "profileName": profile_name,
+        "deviceId": device_id,
+        "profileToken": profile_token,
+      })
     finally:
       conn.close()
 

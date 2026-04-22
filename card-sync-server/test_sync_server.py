@@ -14,6 +14,8 @@ import os
 import socket
 from pathlib import Path
 
+SERVER_DIR = Path(__file__).resolve().parent
+
 
 # ═════════════════════════════════════════════════════════════════════════════
 # Fixtures
@@ -43,7 +45,7 @@ def _start_server(temp_db, env_overrides=None):
 
     proc = subprocess.Popen(
         ["python3", "sync_server.py"],
-        cwd="/home/_vb/card-sync-server",
+        cwd=str(SERVER_DIR),
         env=env,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
@@ -110,6 +112,32 @@ def api(server):
     port = server["port"]
     
     class APIHelper:
+        def create_profile(self, device_id, device_label="Device", profile_name=None):
+            """POST /auth/profile"""
+            body = {
+                "deviceId": device_id,
+                "deviceLabel": device_label,
+            }
+            if profile_name:
+                body["profileName"] = profile_name
+            r = requests.post(f"http://localhost:{port}/auth/profile", json=body)
+            return r.json() if r.text else {}
+
+        def list_profiles(self, limit=20):
+            """GET /auth/profiles"""
+            r = requests.get(f"http://localhost:{port}/auth/profiles", params={"limit": limit})
+            return r.json() if r.text else {}
+
+        def switch_profile(self, user_id, device_id, device_label="Device"):
+            """POST /auth/profile/switch"""
+            body = {
+                "userId": user_id,
+                "deviceId": device_id,
+                "deviceLabel": device_label,
+            }
+            r = requests.post(f"http://localhost:{port}/auth/profile/switch", json=body)
+            return r.json() if r.text else {}
+
         def push(self, op_id, op_type, payload, client_id="test-client", client_timestamp=None):
             """POST /sync"""
             if client_timestamp is None:
@@ -1213,6 +1241,53 @@ class TestRecovery:
         assert snap["ok"] is True
         assert any(d["id"] == "recovery-deck" for d in snap["decks"])
         assert any(c["id"] == "recovery-card" for c in snap["cards"])
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# Tests: Profile List & Switching
+# ═════════════════════════════════════════════════════════════════════════════
+
+class TestProfileSwitch:
+
+    def test_create_profile_accepts_profile_name(self, api):
+        result = api.create_profile(device_id="dev-profile-1", profile_name="Anna")
+
+        assert result["ok"] is True
+        assert result["userId"]
+        assert result["profileToken"].startswith("dt_")
+        assert result["profileName"] == "Anna"
+
+    def test_list_profiles_returns_profile_metadata(self, api):
+        created = api.create_profile(device_id="dev-profile-2", profile_name="Ben")
+        user_id = created["userId"]
+
+        listed = api.list_profiles(limit=10)
+        assert listed["ok"] is True
+        match = next((p for p in listed["profiles"] if p["userId"] == user_id), None)
+        assert match is not None
+        assert match["profileName"] == "Ben"
+        assert isinstance(match["linkedDevicesCount"], int)
+
+    def test_switch_profile_rebinds_device_and_issues_new_token(self, api, db_helper):
+        first = api.create_profile(device_id="switch-dev-1", profile_name="First")
+        second = api.create_profile(device_id="switch-dev-2", profile_name="Second")
+
+        switched = api.switch_profile(user_id=second["userId"], device_id="switch-dev-1", device_label="Tablet")
+
+        assert switched["ok"] is True
+        assert switched["userId"] == second["userId"]
+        assert switched["profileName"] == "Second"
+        assert switched["profileToken"].startswith("dt_")
+
+        device_rows = db_helper.query("SELECT user_id, label FROM devices WHERE device_id='switch-dev-1'")
+        assert len(device_rows) == 1
+        assert device_rows[0][0] == second["userId"]
+        assert device_rows[0][1] == "Tablet"
+
+        active_tokens = db_helper.query(
+            "SELECT COUNT(*) FROM device_tokens WHERE device_id='switch-dev-1' AND revoked_at IS NULL"
+        )
+        assert active_tokens[0][0] == 1
     
     def test_snapshot_after_rebuild_not_empty_with_entities_in_log(self, api, db_helper):
         """After rebuild, snapshot contains reconstructed entities."""
