@@ -2,20 +2,29 @@
 
 ## Struktur
 
-Wichtige Dateien im Projektroot:
+Wichtige Bereiche:
 - `sync_server.py`: Server
 - `.env.sync-server`: Laufzeitkonfiguration
-- `run-https.sh`: HTTPS-Start mit Port-Neustartlogik
-- `setup-https.sh`: Self-signed Zertifikat erzeugen
-- `verify-https.sh`: Setup prüfen
+- `server/common/helpers.py`: Extrahierte Basis-Helper (Zeit/Env/Parsing)
+- `server/auth/tokens.py`: Extrahierte Token-/Profil-Auth-Helper
+- `server/db/profile_scope.py`: Extrahierte Profile-Scoping-/Tabellenmigrations-Helper
+- `scripts/run/run-https.sh`: HTTPS-Start mit Port-Neustartlogik
+- `scripts/https/setup-https.sh`: Self-signed Zertifikat erzeugen
+- `scripts/https/verify-https.sh`: Setup prüfen
 - `ops/`: systemd-Units und Watchdog-Skripte
+- `maintenance/`: Wartungs- und Hilfsskripte
+- `tests/`: Server-Tests
 - `logs/`: Server- und Watchdog-Logs
+
+Kompatibilitaet:
+- `run-https.sh`, `setup-https.sh`, `verify-https.sh`, `repair_due_at.py`, `wipe_db_entries.py`
+	bleiben als Wrapper im Projektroot erhalten.
 
 ## Lokal starten
 
 ```bash
 cd ~/card-sync-server
-bash run-https.sh
+bash scripts/run/run-https.sh
 ```
 
 Das Skript:
@@ -41,7 +50,7 @@ Zertifikat neu erzeugen:
 
 ```bash
 cd ~/card-sync-server
-bash setup-https.sh
+bash scripts/https/setup-https.sh
 ```
 
 Healthcheck lokal:
@@ -104,7 +113,7 @@ tail -f ~/card-sync-server/logs/systemd-sync-server.err.log
 
 ```bash
 cd ~/card-sync-server
-bash verify-https.sh
+bash scripts/https/verify-https.sh
 sh ops/check_server_running.sh
 ```
 
@@ -112,7 +121,7 @@ sh ops/check_server_running.sh
 
 Port ist belegt:
 ```bash
-bash run-https.sh
+bash scripts/run/run-https.sh
 ```
 Das Skript beendet den alten Prozess und startet sauber neu.
 

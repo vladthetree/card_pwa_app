@@ -11,11 +11,15 @@ import requests
 import sqlite3
 import tempfile
 import os
+import sys
 import socket
 from pathlib import Path
-import sync_server
 
-SERVER_DIR = Path(__file__).resolve().parent
+SERVER_DIR = Path(__file__).resolve().parents[1]
+if str(SERVER_DIR) not in sys.path:
+    sys.path.insert(0, str(SERVER_DIR))
+
+import sync_server
 
 
 # ═════════════════════════════════════════════════════════════════════════════
