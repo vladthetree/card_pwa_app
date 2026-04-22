@@ -8,9 +8,29 @@ import os
 import logging
 import ssl
 import hmac
-import secrets
-import hashlib
 from logging.handlers import TimedRotatingFileHandler
+from server.common.helpers import (
+  client_short as _client_short,
+  now_ms,
+  env_truthy,
+  env_int,
+  parse_int,
+  to_int_or_default as _to_int_or_default,
+)
+from server.auth.tokens import (
+  generate_device_token,
+  generate_recovery_code,
+  generate_pairing_code,
+  hash_token,
+  resolve_device_token,
+  issue_device_token,
+)
+from server.db.profile_scope import (
+  scope_user_id,
+  profile_auth_required,
+  has_profile_scoped_primary_key,
+  ensure_profile_scoped_state_tables,
+)
 
 DB_PATH = os.environ.get("SYNC_DB_PATH", "sync.db")
 HOST = os.environ.get("SYNC_HOST", "0.0.0.0")
@@ -35,14 +55,6 @@ CORS_ALLOWED_ORIGINS = os.environ.get("SYNC_CORS_ALLOWED_ORIGINS", "*")
 LOGGER = logging.getLogger("card-sync-server")
 HEALTH_LOG_EVERY_MS = os.environ.get("SYNC_HEALTH_LOG_EVERY_MS", "60000")
 _LAST_HEALTH_LOG_BY_IP = {}
-
-def _client_short(client_id):
-  if not client_id:
-    return "?"
-  txt = str(client_id)
-  if len(txt) <= 12:
-    return txt
-  return f"{txt[:8]}...{txt[-4:]}"
 
 def setup_logging():
   os.makedirs(SERVER_LOG_DIR, exist_ok=True)
@@ -76,98 +88,8 @@ def setup_logging():
   stderr_handler.setLevel(level)
   LOGGER.addHandler(stderr_handler)
 
-def now_ms():
-  return int(time.time() * 1000)
-
-def env_truthy(value):
-  return str(value).strip().lower() in ("1", "true", "yes", "on")
-
-def env_int(value, default):
-  try:
-    return int(value)
-  except Exception:
-    return default
-
 def log(msg):
   LOGGER.info(msg)
-
-def parse_int(value, default=0, min_value=None, max_value=None):
-  try:
-    parsed = int(value)
-  except Exception:
-    parsed = default
-  if min_value is not None:
-    parsed = max(min_value, parsed)
-  if max_value is not None:
-    parsed = min(max_value, parsed)
-  return parsed
-
-# ─── Token / Auth helpers ──────────────────────────────────────────────────
-
-def generate_device_token() -> str:
-  """Return a new opaque device token prefixed with 'dt_'."""
-  return "dt_" + secrets.token_urlsafe(32)
-
-def generate_recovery_code() -> str:
-  """Return a human-readable 24-char recovery code in groups of 4."""
-  raw = secrets.token_urlsafe(18)[:24]
-  groups = [raw[i:i+4].upper() for i in range(0, 24, 4)]
-  return "-".join(groups)
-
-def generate_pairing_code() -> str:
-  """Return an 8-char uppercase pairing code."""
-  alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
-  return "".join(secrets.choice(alphabet) for _ in range(8))
-
-def hash_token(token: str) -> str:
-  """Return a SHA-256 hex digest of the token."""
-  return hashlib.sha256(token.encode("utf-8")).hexdigest()
-
-def resolve_device_token(conn, token: str):
-  """Resolve a 'dt_...' bearer token to (user_id, device_id) or None."""
-  if not token or not token.startswith("dt_"):
-    return None
-  token_hash = hash_token(token)
-  row = conn.execute(
-    """SELECT dt.device_id, d.user_id FROM device_tokens dt
-       JOIN devices d ON d.device_id = dt.device_id
-       WHERE dt.token_hash = ? AND dt.revoked_at IS NULL
-         AND (dt.expires_at IS NULL OR dt.expires_at > ?)""",
-    (token_hash, int(time.time() * 1000))
-  ).fetchone()
-  if not row:
-    return None
-  return (row[1], row[0])  # (user_id, device_id)
-
-def issue_device_token(conn, user_id, device_id, device_label, now):
-  """Bind device to user, revoke old device tokens, and return a new token."""
-  import uuid as _uuid
-  profile_token = generate_device_token()
-  token_hash = hash_token(profile_token)
-  token_id = str(_uuid.uuid4())
-
-  conn.execute(
-    """
-    INSERT INTO devices (device_id, user_id, label, linked_at, last_seen_at)
-    VALUES (?, ?, ?, ?, ?)
-    ON CONFLICT(device_id) DO UPDATE SET
-      user_id=excluded.user_id,
-      label=excluded.label,
-      last_seen_at=excluded.last_seen_at
-    """,
-    (device_id, user_id, device_label, now, now)
-  )
-  conn.execute(
-    "UPDATE device_tokens SET revoked_at=? WHERE device_id=? AND revoked_at IS NULL",
-    (now, device_id)
-  )
-  conn.execute(
-    """INSERT INTO device_tokens (token_id, device_id, token_hash, created_at)
-       VALUES (?, ?, ?, ?)""",
-    (token_id, device_id, token_hash, now)
-  )
-  conn.execute("UPDATE users SET last_seen_at=? WHERE user_id=?", (now, user_id))
-  return profile_token
 
 def open_db(row_factory=None):
   conn = sqlite3.connect(DB_PATH, timeout=max(1, env_int(DB_BUSY_TIMEOUT_MS, 10000) / 1000))
@@ -176,94 +98,6 @@ def open_db(row_factory=None):
   if row_factory is not None:
     conn.row_factory = row_factory
   return conn
-
-def scope_user_id(user_id):
-  """Normalize nullable legacy user ids for profile-scoped state tables."""
-  return str(user_id or "")
-
-def profile_auth_required(conn):
-  """Return True once the server contains any profile data."""
-  try:
-    return (conn.execute("SELECT 1 FROM users LIMIT 1").fetchone() is not None)
-  except Exception:
-    return False
-
-def has_profile_scoped_primary_key(conn, table_name):
-  rows = conn.execute(f"PRAGMA table_info({table_name})").fetchall()
-  pk_cols = [row[1] for row in sorted((row for row in rows if row[5] > 0), key=lambda row: row[5])]
-  return pk_cols == ["user_id", "id"]
-
-def ensure_profile_scoped_state_tables(conn):
-  """Migrate state tables from global id PKs to (user_id, id) PKs."""
-  if not has_profile_scoped_primary_key(conn, "server_decks"):
-    conn.execute("""
-      CREATE TABLE server_decks_profile_scoped (
-        id TEXT NOT NULL,
-        name TEXT,
-        created_at INTEGER,
-        source TEXT,
-        updated_at INTEGER NOT NULL,
-        deleted_at INTEGER NULL,
-        last_source_client TEXT,
-        user_id TEXT NOT NULL DEFAULT '',
-        PRIMARY KEY (user_id, id)
-      )
-    """)
-    conn.execute("""
-      INSERT OR REPLACE INTO server_decks_profile_scoped
-      (id, name, created_at, source, updated_at, deleted_at, last_source_client, user_id)
-      SELECT id, name, created_at, source, updated_at, deleted_at, last_source_client, COALESCE(user_id, '')
-      FROM server_decks
-    """)
-    conn.execute("DROP TABLE server_decks")
-    conn.execute("ALTER TABLE server_decks_profile_scoped RENAME TO server_decks")
-    conn.commit()
-
-  if not has_profile_scoped_primary_key(conn, "server_cards"):
-    conn.execute("""
-      CREATE TABLE server_cards_profile_scoped (
-        id TEXT NOT NULL,
-        note_id TEXT,
-        deck_id TEXT,
-        front TEXT,
-        back TEXT,
-        tags_json TEXT,
-        extra_json TEXT,
-        type INTEGER,
-        queue INTEGER,
-        due INTEGER,
-        due_at INTEGER,
-        interval INTEGER,
-        factor INTEGER,
-        stability REAL,
-        difficulty REAL,
-        retrievability REAL,
-        reps INTEGER,
-        lapses INTEGER,
-        algorithm TEXT,
-        metadata_json TEXT,
-        is_deleted INTEGER NOT NULL DEFAULT 0,
-        created_at INTEGER,
-        updated_at INTEGER NOT NULL,
-        deleted_at INTEGER NULL,
-        last_source_client TEXT,
-        user_id TEXT NOT NULL DEFAULT '',
-        PRIMARY KEY (user_id, id)
-      )
-    """)
-    conn.execute("""
-      INSERT OR REPLACE INTO server_cards_profile_scoped
-      (id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due, due_at, interval, factor,
-       stability, difficulty, retrievability, reps, lapses, algorithm, metadata_json, is_deleted, created_at,
-       updated_at, deleted_at, last_source_client, user_id)
-      SELECT id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due, due_at, interval, factor,
-       stability, difficulty, retrievability, reps, lapses, algorithm, metadata_json, IFNULL(is_deleted, 0),
-       created_at, updated_at, deleted_at, last_source_client, COALESCE(user_id, '')
-      FROM server_cards
-    """)
-    conn.execute("DROP TABLE server_cards")
-    conn.execute("ALTER TABLE server_cards_profile_scoped RENAME TO server_cards")
-    conn.commit()
 
 def _push_detail(op_type, payload):
   """One-line summary of what a push operation touches."""
@@ -304,14 +138,6 @@ def lww_should_apply(existing_ts, existing_source_client, candidate_ts, candidat
   if (existing_source_client or "") >= (candidate_source_client or ""):
     return False
   return True
-
-def _to_int_or_default(value, default=0):
-  try:
-    if value is None:
-      return default
-    return int(float(value))
-  except Exception:
-    return default
 
 def card_should_apply(existing_ts, existing_source_client, existing_reps, candidate_ts, candidate_source_client, candidate_reps):
   """
@@ -2301,7 +2127,7 @@ if __name__ == "__main__":
       log(f"ERROR  HTTPS aktiviert aber Zertifikat nicht gefunden:")
       log(f"       CERT_FILE: {CERT_FILE}")
       log(f"       KEY_FILE: {KEY_FILE}")
-      log(f"       Bitte führe 'bash setup-https.sh' aus")
+      log(f"       Bitte führe 'bash scripts/https/setup-https.sh' aus")
       sys.exit(1)
     
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
