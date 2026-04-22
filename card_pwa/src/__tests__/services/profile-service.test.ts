@@ -76,4 +76,36 @@ describe('profileService', () => {
       15_000,
     )
   })
+
+  it('sends Authorization header when listing protected server profiles', async () => {
+    state.response = jsonResponse({ ok: true, profiles: [] })
+
+    const { listServerProfiles } = await import('../../services/profileService')
+    await listServerProfiles('/sync', 'dt_list_token', 20)
+
+    expect(fetchWithTimeoutMock).toHaveBeenCalledWith(
+      '/auth/profiles?limit=20',
+      expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({ Authorization: 'Bearer dt_list_token' }),
+      }),
+      15_000,
+    )
+  })
+
+  it('sends Authorization header when switching protected server profile', async () => {
+    state.response = jsonResponse({ ok: true, userId: 'profile-1', profileToken: 'dt_switch' })
+
+    const { switchServerProfile } = await import('../../services/profileService')
+    await switchServerProfile('/sync', 'profile-1', 'device-1', 'Phone', 'dt_switch_token')
+
+    expect(fetchWithTimeoutMock).toHaveBeenCalledWith(
+      '/auth/profile/switch',
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({ Authorization: 'Bearer dt_switch_token' }),
+      }),
+      15_000,
+    )
+  })
 })

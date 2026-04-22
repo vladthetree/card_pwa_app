@@ -345,16 +345,21 @@ export async function removeDeviceFromServer(
 /** GET /auth/profiles — list selectable profiles from server. */
 export async function listServerProfiles(
   endpoint: string,
+  profileToken?: string,
   limit = 20,
 ): Promise<ListProfilesResponse> {
   const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
   try {
     const query = `${base}/auth/profiles?limit=${encodeURIComponent(String(limit))}`
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    if (profileToken?.trim()) {
+      headers.Authorization = `Bearer ${profileToken.trim()}`
+    }
     const res = await fetchWithTimeout(
       query,
       {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
@@ -376,14 +381,19 @@ export async function switchServerProfile(
   userId: string,
   deviceId: string,
   deviceLabel?: string,
+  profileToken?: string,
 ): Promise<SwitchProfileResponse> {
   const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
   try {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    if (profileToken?.trim()) {
+      headers.Authorization = `Bearer ${profileToken.trim()}`
+    }
     const res = await fetchWithTimeout(
       `${base}/auth/profile/switch`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ userId, deviceId, deviceLabel: deviceLabel ?? 'Browser' }),
       },
       SYNC_FETCH_TIMEOUT_MS,

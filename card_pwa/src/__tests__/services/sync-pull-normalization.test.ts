@@ -10,6 +10,7 @@ const state = vi.hoisted(() => ({
   responses: [] as unknown[],
   authToken: '',
   profileRecord: null as ProfileRecord | null,
+  syncMeta: new Map<string, unknown>(),
 }))
 
 function mockResponse(body: unknown): Response {
@@ -23,11 +24,13 @@ const mockDb = vi.hoisted(() => ({
   decks: {
     filter: vi.fn(() => ({ count: async () => 0 })),
     clear: vi.fn(async () => {}),
+    get: vi.fn(async () => undefined),
+    delete: vi.fn(async () => 1),
     bulkPut: vi.fn(async (decks: DeckRecord[]) => {
       state.savedDecks = decks
     }),
     toArray: vi.fn(async () => []),
-    where: vi.fn(() => ({ anyOf: vi.fn(() => ({ delete: vi.fn(async () => 0) })) })),
+    where: vi.fn((..._args: unknown[]) => ({ anyOf: vi.fn(() => ({ delete: vi.fn(async () => 0) })) })),
   },
   cards: {
     filter: vi.fn(() => ({ count: async () => 0 })),
@@ -39,9 +42,15 @@ const mockDb = vi.hoisted(() => ({
     get: vi.fn<() => Promise<CardRecord | undefined>>(async () => undefined),
     put: vi.fn(async () => {}),
     update: vi.fn(async () => 1),
-    where: vi.fn(() => ({
-      equals: vi.fn(() => ({ toArray: vi.fn(async () => []), delete: vi.fn(async () => 0) })),
-      anyOf: vi.fn(() => ({ toArray: vi.fn(async () => []), delete: vi.fn(async () => 0) })),
+    where: vi.fn((..._args: unknown[]) => ({
+      equals: vi.fn(() => ({
+        toArray: vi.fn(async (): Promise<Array<{ id: string; deckId: string }>> => []),
+        delete: vi.fn(async () => 0),
+      })),
+      anyOf: vi.fn(() => ({
+        toArray: vi.fn(async (): Promise<Array<{ id: string; deckId: string }>> => []),
+        delete: vi.fn(async () => 0),
+      })),
     })),
   },
   reviews: {
@@ -67,6 +76,27 @@ const mockDb = vi.hoisted(() => ({
       await callback()
     }
   }),
+  cardStats: {
+    bulkDelete: vi.fn(async () => {}),
+  },
+  deckProgress: {
+    bulkDelete: vi.fn(async () => {}),
+  },
+  activeSessions: {
+    bulkDelete: vi.fn(async () => {}),
+  },
+  syncMeta: {
+    get: vi.fn(async (key: string) => {
+      if (!state.syncMeta.has(key)) return undefined
+      return { key, value: state.syncMeta.get(key), updatedAt: Date.now() }
+    }),
+    put: vi.fn(async ({ key, value }: { key: string; value: unknown }) => {
+      state.syncMeta.set(key, value)
+    }),
+    delete: vi.fn(async (key: string) => {
+      state.syncMeta.delete(key)
+    }),
+  },
 }))
 
 vi.mock('../../db', () => ({
@@ -122,6 +152,7 @@ describe('syncPull normalization', () => {
     state.responses = []
     state.authToken = ''
     state.profileRecord = null
+    state.syncMeta = new Map<string, unknown>()
     fetchWithTimeoutMock.mockClear()
     mockDb.cards.get.mockReset()
     mockDb.cards.get.mockImplementation(async () => undefined)
@@ -129,6 +160,12 @@ describe('syncPull normalization', () => {
     mockDb.reviews.bulkAdd.mockClear()
     mockDb.reviews.add.mockClear()
     mockDb.reviews.delete.mockClear()
+    mockDb.cardStats.bulkDelete.mockClear()
+    mockDb.deckProgress.bulkDelete.mockClear()
+    mockDb.activeSessions.bulkDelete.mockClear()
+    mockDb.syncMeta.get.mockClear()
+    mockDb.syncMeta.put.mockClear()
+    mockDb.syncMeta.delete.mockClear()
     vi.restoreAllMocks()
   })
 
@@ -802,5 +839,66 @@ describe('syncPull normalization', () => {
       'c-ts-apply',
       expect.objectContaining({ reps: 5, due: 71, dueAt: 71 * 86_400_000 })
     )
+  })
+
+  it('clears bootstrap completion state when sync pull state is reset', async () => {
+    state.syncMeta.set('bootstrap-completed-at', 12345)
+
+    const { resetSyncPullState } = await import('../../services/syncPull')
+    await resetSyncPullState()
+
+    expect(mockDb.syncMeta.delete).toHaveBeenCalledWith('bootstrap-completed-at')
+    expect(state.syncMeta.has('bootstrap-completed-at')).toBe(false)
+  })
+
+  it('removes derived local deck state when a deck.delete arrives', async () => {
+    mockDb.cards.where.mockImplementation((...args: unknown[]) => {
+      const field = String(args[0] ?? '')
+      if (field === 'deckId') {
+        return {
+          equals: vi.fn(() => ({
+            toArray: vi.fn(async () => [
+              { id: 'card-a', deckId: 'deck-a' },
+              { id: 'card-b', deckId: 'deck-a' },
+            ]),
+            delete: vi.fn(async () => 2),
+          })),
+          anyOf: vi.fn(() => ({ toArray: vi.fn(async () => []), delete: vi.fn(async () => 0) })),
+        }
+      }
+
+      return {
+        equals: vi.fn(() => ({ toArray: vi.fn(async () => []), delete: vi.fn(async () => 0) })),
+        anyOf: vi.fn(() => ({ toArray: vi.fn(async () => []), delete: vi.fn(async () => 0) })),
+      }
+    })
+
+    state.responses = [
+      { ok: true, needsSnapshot: false, serverCursor: 0 },
+      {
+        ok: true,
+        operations: [
+          {
+            id: 31,
+            opId: 'op-deck-delete',
+            type: 'deck.delete',
+            clientTimestamp: 5000,
+            payload: {
+              deckId: 'deck-a',
+              deletedAt: 5000,
+            },
+          },
+        ],
+        nextCursor: 31,
+        hasMore: false,
+      },
+    ]
+
+    const { pullAndApplySyncDeltas } = await import('../../services/syncPull')
+    await pullAndApplySyncDeltas()
+
+    expect(mockDb.cardStats.bulkDelete).toHaveBeenCalledWith(['card-a', 'card-b'])
+    expect(mockDb.deckProgress.bulkDelete).toHaveBeenCalledWith(['deck-a'])
+    expect(mockDb.activeSessions.bulkDelete).toHaveBeenCalledWith(['deck-a'])
   })
 })
