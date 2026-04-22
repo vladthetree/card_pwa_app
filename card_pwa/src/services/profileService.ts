@@ -89,6 +89,7 @@ export function makeLocalProfile(): ProfileRecord {
 
 interface CreateProfileResponse {
   ok: boolean
+  existingProfile?: boolean
   userId?: string
   profileName?: string
   deviceId?: string
@@ -316,6 +317,31 @@ export async function revokeDeviceToken(
   }
 }
 
+/** POST /auth/device/remove — hard-remove this device from its profile on the server. */
+export async function removeDeviceFromServer(
+  endpoint: string,
+  profileToken: string,
+): Promise<boolean> {
+  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  try {
+    const res = await fetchWithTimeout(
+      `${base}/auth/device/remove`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${profileToken}`,
+        },
+        body: '{}',
+      },
+      SYNC_FETCH_TIMEOUT_MS,
+    )
+    return res.ok
+  } catch {
+    return false
+  }
+}
+
 /** GET /auth/profiles — list selectable profiles from server. */
 export async function listServerProfiles(
   endpoint: string,
@@ -434,6 +460,28 @@ export async function resetLocalStudyDataForProfileSwitch(): Promise<void> {
   await db.cardStats.clear()
   await db.deckProgress.clear()
   await db.activeSessions.clear()
+}
+
+/** Removes local data for the given deck IDs (deck rows, their cards, stats, reviews, sessions). */
+export async function deleteLocalDataForDecks(deckIds: string[]): Promise<void> {
+  if (deckIds.length === 0) return
+  const deckIdSet = new Set(deckIds)
+
+  const cardIds = await db.cards
+    .filter(c => deckIdSet.has(c.deckId))
+    .primaryKeys() as string[]
+  const cardIdSet = new Set(cardIds)
+
+  await Promise.all([
+    db.decks.bulkDelete(deckIds),
+    db.cards.bulkDelete(cardIds),
+    db.cardStats.bulkDelete(cardIds),
+    db.deckProgress.bulkDelete(deckIds),
+    cardIds.length > 0
+      ? db.reviews.filter(r => cardIdSet.has(r.cardId)).delete()
+      : Promise.resolve(),
+    db.activeSessions.bulkDelete(deckIds),
+  ])
 }
 
 export async function snapshotLocalStudyDataForRollback(): Promise<LocalStudyDataSnapshot> {

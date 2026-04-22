@@ -1265,9 +1265,31 @@ class TestProfileSwitch:
         result = api.create_profile(device_id="dev-profile-1", profile_name="Anna")
 
         assert result["ok"] is True
+        assert result["existingProfile"] is False
         assert result["userId"]
         assert result["profileToken"].startswith("dt_")
         assert result["profileName"] == "Anna"
+
+    def test_create_profile_reconnects_existing_device_without_registration_error(self, api, db_helper):
+        first = api.create_profile(device_id="same-device", profile_name="Visible Again")
+        second = api.create_profile(device_id="same-device", profile_name="Ignored New Name")
+
+        assert first["ok"] is True
+        assert second["ok"] is True
+        assert second["existingProfile"] is True
+        assert second["userId"] == first["userId"]
+        assert second["profileName"] == "Visible Again"
+        assert second["profileToken"].startswith("dt_")
+        assert second["profileToken"] != first["profileToken"]
+
+        users = db_helper.query("SELECT COUNT(*) FROM users")
+        devices = db_helper.query("SELECT COUNT(*) FROM devices WHERE device_id='same-device'")
+        active_tokens = db_helper.query(
+            "SELECT COUNT(*) FROM device_tokens WHERE device_id='same-device' AND revoked_at IS NULL"
+        )
+        assert users[0][0] == 1
+        assert devices[0][0] == 1
+        assert active_tokens[0][0] == 1
 
     def test_list_profiles_returns_profile_metadata(self, api):
         created = api.create_profile(device_id="dev-profile-2", profile_name="Ben")
@@ -1432,6 +1454,86 @@ class TestProfileSwitch:
         assert [deck["name"] for deck in rebuilt_second["decks"]] == ["Deck B"]
         assert [card["front"] for card in rebuilt_first["cards"]] == ["Front A"]
         assert [card["front"] for card in rebuilt_second["cards"]] == ["Front B"]
+
+    def test_same_profile_second_device_sees_progress_and_review_history(self, api):
+        first = api.create_profile(device_id="progress-dev-a", profile_name="Progress")
+        second = api.switch_profile(
+            user_id=first["userId"],
+            device_id="progress-dev-b",
+            device_label="Phone",
+        )
+
+        api.push(
+            op_id="progress-deck",
+            op_type="deck.create",
+            payload={"id": "progress-deck", "name": "Progress Deck", "source": "manual", "createdAt": 1000, "updatedAt": 1000},
+            client_id="laptop",
+            client_timestamp=1000,
+            auth_token=first["profileToken"],
+        )
+        api.push(
+            op_id="progress-card",
+            op_type="card.create",
+            payload={
+                "id": "progress-card",
+                "deckId": "progress-deck",
+                "noteId": "progress-note",
+                "front": "Q",
+                "back": "A",
+                "tags": [],
+                "extra": {},
+                "type": 0,
+                "queue": 0,
+                "due": 0,
+                "dueAt": 0,
+                "interval": 0,
+                "factor": 2500,
+                "reps": 0,
+                "lapses": 0,
+                "algorithm": "sm2",
+                "createdAt": 1000,
+                "updatedAt": 1000,
+            },
+            client_id="laptop",
+            client_timestamp=1000,
+            auth_token=first["profileToken"],
+        )
+        api.push(
+            op_id="progress-review-1",
+            op_type="review",
+            payload={
+                "cardId": "progress-card",
+                "rating": 4,
+                "timeMs": 1200,
+                "timestamp": 2000,
+                "updated": {
+                    "type": 2,
+                    "queue": 2,
+                    "due": 3,
+                    "dueAt": 3000,
+                    "interval": 2,
+                    "factor": 2600,
+                    "reps": 1,
+                    "lapses": 0,
+                    "algorithm": "sm2",
+                    "updatedAt": 2000,
+                },
+            },
+            client_id="laptop",
+            client_timestamp=2000,
+            auth_token=first["profileToken"],
+        )
+
+        snap = api.snapshot("phone", auth_token=second["profileToken"])
+
+        assert snap["ok"] is True
+        assert [deck["id"] for deck in snap["decks"]] == ["progress-deck"]
+        card = next(card for card in snap["cards"] if card["id"] == "progress-card")
+        assert card["reps"] == 1
+        assert card["factor"] == 2600
+        review = next(review for review in snap["reviews"] if review["opId"] == "progress-review-1")
+        assert review["rating"] == 4
+        assert review["timeMs"] == 1200
 
     def test_switch_profile_rebinds_device_and_issues_new_token(self, api, db_helper):
         first = api.create_profile(device_id="switch-dev-1", profile_name="First")

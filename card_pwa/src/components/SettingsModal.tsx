@@ -24,8 +24,8 @@ import { clearErrorLogs, downloadErrorLogsAsTxt, getErrorLogs, type ErrorLogEntr
 import { UI_TOKENS } from '../constants/ui'
 import { subscribeToWebPushNotificationsWithStatus, type WebPushSubscribeStatus } from '../services/webPush'
 import { db } from '../db'
-import { STORAGE_KEYS } from '../constants/appIdentity'
-import { clearSyncQueue } from '../services/syncQueue'
+import { DATABASE_NAMES, STORAGE_KEYS } from '../constants/appIdentity'
+import { clearSyncQueue, closeSyncQueueDatabase } from '../services/syncQueue'
 import { resetSyncPullState } from '../services/syncPull'
 import { readSyncAuthTokenFromSettings, writeSyncAuthTokenToSettings } from '../services/syncConfig'
 import { formatBuildVersionTitle, formatServiceWorkerVersionLabel } from '../utils/buildInfo'
@@ -241,6 +241,97 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
           }, 300)
         } catch {
           setLocalDataStatus(t.service_worker_reset_failed)
+        }
+      },
+    })
+  }
+
+  const deleteCookieEverywhere = (name: string) => {
+    const expires = 'Thu, 01 Jan 1970 00:00:00 GMT'
+    const secure = window.location.protocol === 'https:' ? '; Secure' : ''
+    const hostParts = window.location.hostname.split('.').filter(Boolean)
+    const domains = new Set<string>([''])
+    for (let index = 0; index < hostParts.length - 1; index += 1) {
+      domains.add(`.${hostParts.slice(index).join('.')}`)
+    }
+
+    const pathParts = window.location.pathname.split('/').filter(Boolean)
+    const paths = new Set<string>(['/'])
+    let currentPath = ''
+    for (const part of pathParts) {
+      currentPath += `/${part}`
+      paths.add(currentPath)
+    }
+
+    domains.forEach(domain => {
+      paths.forEach(path => {
+        document.cookie = `${encodeURIComponent(name)}=; expires=${expires}; max-age=0; path=${path}${domain ? `; domain=${domain}` : ''}; SameSite=Lax${secure}`
+      })
+    })
+  }
+
+  const deleteAccessibleCookies = () => {
+    document.cookie
+      .split(';')
+      .map(cookie => cookie.split('=')[0]?.trim())
+      .filter((name): name is string => Boolean(name))
+      .forEach(deleteCookieEverywhere)
+  }
+
+  const deleteIndexedDbDatabase = (name: string) => new Promise<void>(resolve => {
+    if (!('indexedDB' in window)) {
+      resolve()
+      return
+    }
+
+    const request = indexedDB.deleteDatabase(name)
+    request.onsuccess = () => resolve()
+    request.onerror = () => resolve()
+    request.onblocked = () => resolve()
+  })
+
+  const resetEntirePwaState = () => {
+    setConfirmModal({
+      title: t.pwa_full_reset_title,
+      message: t.pwa_full_reset_confirm,
+      confirmLabel: t.pwa_full_reset_action,
+      variant: 'danger',
+      onConfirm: async () => {
+        try {
+          if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations()
+            await Promise.all(registrations.map(registration => registration.unregister()))
+          }
+
+          if (typeof caches !== 'undefined') {
+            const keys = await caches.keys()
+            await Promise.all(keys.map(key => caches.delete(key)))
+          }
+
+          try {
+            db.close()
+            closeSyncQueueDatabase()
+          } catch {
+            // best effort: continue clearing browser-owned storage
+          }
+
+          deleteAccessibleCookies()
+          localStorage.clear()
+          sessionStorage.clear()
+
+          await Promise.all([
+            deleteIndexedDbDatabase(DATABASE_NAMES.app),
+            deleteIndexedDbDatabase(DATABASE_NAMES.legacyApp),
+            deleteIndexedDbDatabase(DATABASE_NAMES.syncQueue),
+            deleteIndexedDbDatabase(DATABASE_NAMES.legacySyncQueue),
+          ])
+
+          setLocalDataStatus(t.pwa_full_reset_done)
+          window.setTimeout(() => {
+            window.location.replace(window.location.origin + window.location.pathname)
+          }, 300)
+        } catch {
+          setLocalDataStatus(t.pwa_full_reset_failed)
         }
       },
     })
@@ -1238,6 +1329,17 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                   <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
                     <p className="text-xs text-white/50 font-medium uppercase tracking-wide">{t.indexeddb_reset_title}</p>
                     <p className="text-xs text-white/40 leading-relaxed">{t.indexeddb_reset_description}</p>
+                    <div className="rounded-xl border border-rose-400/20 bg-rose-500/10 p-3 space-y-2">
+                      <p className="text-xs font-semibold text-rose-100">{t.pwa_full_reset_title}</p>
+                      <p className="text-xs text-rose-100/70 leading-relaxed">{t.pwa_full_reset_description}</p>
+                      <button
+                        type="button"
+                        onClick={() => { void resetEntirePwaState() }}
+                        className={`${UI_TOKENS.button.ghost} w-full py-2 border-rose-400/40 text-rose-100 hover:text-white hover:bg-rose-500/15`}
+                      >
+                        {t.pwa_full_reset_action}
+                      </button>
+                    </div>
                     <button
                       type="button"
                       onClick={() => { void resetLocalIndexedDb() }}

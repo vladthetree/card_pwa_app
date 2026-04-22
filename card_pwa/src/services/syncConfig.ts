@@ -73,9 +73,10 @@ export function isSyncActive(): boolean {
   // Profile-linked mode: device token + endpoint must be set.
   if (_cachedProfileToken && _cachedProfileEndpoint) return true
 
-  // Legacy fallback: existing manual sync config.
-  const { enabled, endpoint, mode } = getSyncConfig()
-  return enabled && mode === 'local' && !!endpoint
+  // Legacy fallback is opt-in only. A preconfigured endpoint like /sync must not
+  // start unauthenticated background sync while the PWA is in local profile mode.
+  const { enabled, endpoint, mode, authToken } = getSyncConfig()
+  return enabled && mode === 'local' && !!endpoint && !!authToken
 }
 
 export function getSyncBaseEndpoint(): string | null {
