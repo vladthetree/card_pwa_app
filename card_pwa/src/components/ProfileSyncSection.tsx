@@ -68,6 +68,8 @@ const STRINGS = {
     pre_sync_failed: 'Vorab-Sync fehlgeschlagen. Bitte Verbindung prüfen und erneut versuchen.',
     switch_failed: 'Profilwechsel fehlgeschlagen.',
     switch_bootstrap_failed: 'Profil wurde gewechselt, aber initialer Sync ist fehlgeschlagen. Rollback wurde ausgeführt.',
+    unlink_failed: 'Abmelden auf diesem Gerät ist fehlgeschlagen. Bitte erneut versuchen.',
+    remove_device_failed: 'Gerät konnte serverseitig nicht entfernt werden. Bitte erneut versuchen.',
     invalid_server_response: 'Server hat keine gültige JSON-Antwort geliefert. Bitte PWA neu bauen und Proxy/Server prüfen.',
   },
   en: {
@@ -107,6 +109,8 @@ const STRINGS = {
     pre_sync_failed: 'Pre-switch sync failed. Check connectivity and retry.',
     switch_failed: 'Profile switching failed.',
     switch_bootstrap_failed: 'Profile switched but initial sync failed. Rollback applied.',
+    unlink_failed: 'Signing out on this device failed. Please try again.',
+    remove_device_failed: 'Removing the device on the server failed. Please try again.',
     invalid_server_response: 'Server returned an invalid JSON response. Rebuild the PWA and check proxy/server setup.',
   },
 } as const
@@ -136,6 +140,10 @@ function resolveErrorMessage(error: string, t: typeof STRINGS['de'] | typeof STR
       return t.switch_failed
     case 'rollback_applied':
       return t.switch_bootstrap_failed
+    case 'unlink_failed':
+      return t.unlink_failed
+    case 'remove_device_failed':
+      return t.remove_device_failed
     case 'invalid_server_response':
       return t.invalid_server_response
     default:
@@ -161,9 +169,9 @@ export default function ProfileSyncSection({ language }: Props) {
   const effectiveEndpoint = profile?.endpoint?.trim() || getDefaultProfileSyncEndpoint()
 
   const loadProfiles = async () => {
-    if (!effectiveEndpoint) return
+    if (!effectiveEndpoint || profile?.mode !== 'linked' || !profile.profileToken) return
     setLoadingProfiles(true)
-    const listed = await listServerProfiles(effectiveEndpoint, 20)
+    const listed = await listServerProfiles(effectiveEndpoint, profile.profileToken, 20)
     if (!listed.ok) {
       setError(listed.error ?? t.switch_failed)
       setLoadingProfiles(false)
@@ -298,7 +306,12 @@ export default function ProfileSyncSection({ language }: Props) {
     setBusy(true)
     setError(null)
     setNotice(null)
-    await revokeDeviceToken(profile.endpoint, profile.profileToken)
+    const revoked = await revokeDeviceToken(profile.endpoint, profile.profileToken)
+    if (!revoked) {
+      setError('unlink_failed')
+      setBusy(false)
+      return
+    }
     await clearSyncQueue()
     await resetSyncPullState()
     setProfiles([])
@@ -315,7 +328,12 @@ export default function ProfileSyncSection({ language }: Props) {
     setRemovingDevice(true)
     setError(null)
     setNotice(null)
-    await removeDeviceFromServer(profile.endpoint, profile.profileToken)
+    const removed = await removeDeviceFromServer(profile.endpoint, profile.profileToken)
+    if (!removed) {
+      setError('remove_device_failed')
+      setRemovingDevice(false)
+      return
+    }
     await clearSyncQueue()
     await resetSyncPullState()
     setProfiles([])
@@ -362,6 +380,7 @@ export default function ProfileSyncSection({ language }: Props) {
       target.userId,
       deviceId,
       navigator.userAgent.slice(0, 60),
+      profile?.profileToken,
     )
 
     if (!switched.ok || !switched.userId || !switched.profileToken) {

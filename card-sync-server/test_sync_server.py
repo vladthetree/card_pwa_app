@@ -130,19 +130,19 @@ def api(server):
             r = requests.post(f"http://localhost:{port}/auth/profile", json=body)
             return r.json() if r.text else {}
 
-        def list_profiles(self, limit=20):
+        def list_profiles(self, limit=20, auth_token=None):
             """GET /auth/profiles"""
-            r = requests.get(f"http://localhost:{port}/auth/profiles", params={"limit": limit})
+            r = requests.get(f"http://localhost:{port}/auth/profiles", params={"limit": limit}, headers=self._headers(auth_token))
             return r.json() if r.text else {}
 
-        def switch_profile(self, user_id, device_id, device_label="Device"):
+        def switch_profile(self, user_id, device_id, device_label="Device", auth_token=None):
             """POST /auth/profile/switch"""
             body = {
                 "userId": user_id,
                 "deviceId": device_id,
                 "deviceLabel": device_label,
             }
-            r = requests.post(f"http://localhost:{port}/auth/profile/switch", json=body)
+            r = requests.post(f"http://localhost:{port}/auth/profile/switch", json=body, headers=self._headers(auth_token))
             return r.json() if r.text else {}
 
         def push(self, op_id, op_type, payload, client_id="test-client", client_timestamp=None, auth_token=None):
@@ -1295,12 +1295,21 @@ class TestProfileSwitch:
         created = api.create_profile(device_id="dev-profile-2", profile_name="Ben")
         user_id = created["userId"]
 
-        listed = api.list_profiles(limit=10)
+        listed = api.list_profiles(limit=10, auth_token=created["profileToken"])
         assert listed["ok"] is True
         match = next((p for p in listed["profiles"] if p["userId"] == user_id), None)
         assert match is not None
         assert match["profileName"] == "Ben"
         assert isinstance(match["linkedDevicesCount"], int)
+        assert len(listed["profiles"]) == 1
+
+    def test_list_profiles_requires_authentication(self, api, server):
+        api.create_profile(device_id="dev-profile-auth", profile_name="Auth")
+
+        r = requests.get(f"http://localhost:{server['port']}/auth/profiles", params={"limit": 10})
+
+        assert r.status_code == 401
+        assert r.json()["error"] == "unauthorized"
 
     def test_sync_requires_device_token_after_profile_exists(self, api, server):
         api.create_profile(device_id="auth-dev-1", profile_name="Auth Required")
@@ -1461,6 +1470,7 @@ class TestProfileSwitch:
             user_id=first["userId"],
             device_id="progress-dev-b",
             device_label="Phone",
+            auth_token=first["profileToken"],
         )
 
         api.push(
@@ -1535,26 +1545,22 @@ class TestProfileSwitch:
         assert review["rating"] == 4
         assert review["timeMs"] == 1200
 
-    def test_switch_profile_rebinds_device_and_issues_new_token(self, api, db_helper):
+    def test_switch_profile_forbids_switching_to_different_profile(self, api, server):
         first = api.create_profile(device_id="switch-dev-1", profile_name="First")
         second = api.create_profile(device_id="switch-dev-2", profile_name="Second")
 
-        switched = api.switch_profile(user_id=second["userId"], device_id="switch-dev-1", device_label="Tablet")
-
-        assert switched["ok"] is True
-        assert switched["userId"] == second["userId"]
-        assert switched["profileName"] == "Second"
-        assert switched["profileToken"].startswith("dt_")
-
-        device_rows = db_helper.query("SELECT user_id, label FROM devices WHERE device_id='switch-dev-1'")
-        assert len(device_rows) == 1
-        assert device_rows[0][0] == second["userId"]
-        assert device_rows[0][1] == "Tablet"
-
-        active_tokens = db_helper.query(
-            "SELECT COUNT(*) FROM device_tokens WHERE device_id='switch-dev-1' AND revoked_at IS NULL"
+        r = requests.post(
+            f"http://localhost:{server['port']}/auth/profile/switch",
+            json={
+                "userId": second["userId"],
+                "deviceId": "switch-dev-1",
+                "deviceLabel": "Tablet",
+            },
+            headers={"Authorization": f"Bearer {first['profileToken']}"},
         )
-        assert active_tokens[0][0] == 1
+
+        assert r.status_code == 403
+        assert r.json()["error"] == "forbidden_profile_switch"
     
     def test_snapshot_after_rebuild_not_empty_with_entities_in_log(self, api, db_helper):
         """After rebuild, snapshot contains reconstructed entities."""

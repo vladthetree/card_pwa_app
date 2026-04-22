@@ -246,6 +246,11 @@ export async function resetSyncPullState(): Promise<void> {
     } catch {
       // best effort
     }
+    try {
+      await db.syncMeta.delete(SYNC_META_BOOTSTRAP_KEY)
+    } catch {
+      // best effort
+    }
   }
   await clearAppliedOpIds()
 }
@@ -546,8 +551,11 @@ async function applyDeckDelete(payload: unknown, fallbackTs = 0) {
   const cardIds = (await db.cards.where('deckId').equals(deckId).toArray()).map(card => card.id)
   if (cardIds.length > 0) {
     await db.reviews.where('cardId').anyOf(cardIds).delete()
+    await db.cardStats.bulkDelete(cardIds)
   }
 
+  await db.activeSessions.bulkDelete([deckId])
+  await db.deckProgress.bulkDelete([deckId])
   await db.cards.where('deckId').equals(deckId).delete()
   await db.decks.delete(deckId)
 }

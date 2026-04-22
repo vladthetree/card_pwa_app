@@ -64,9 +64,9 @@ function notifyServiceWorkerAppVisible(): void {
     })
 }
 
-async function executeSyncCycle(): Promise<void> {
-  if (!isSyncActive()) return
-  if (!(await hasServerConnection())) return
+async function executeSyncCycle(): Promise<boolean> {
+  if (!isSyncActive()) return false
+  if (!(await hasServerConnection())) return false
 
   // Phase 1: push all pending local operations
   let pendingAfterFlush = 0
@@ -79,13 +79,17 @@ async function executeSyncCycle(): Promise<void> {
   if (navigator.onLine && pendingAfterFlush === 0) {
     await pullAndApplySyncDeltas()
   }
+
+  return true
 }
 
 async function executeSyncCycleSafe(): Promise<boolean> {
   try {
-    await executeSyncCycle()
-    lastSuccessfulSyncAt = Date.now()
-    return true
+    const didSync = await executeSyncCycle()
+    if (didSync) {
+      lastSuccessfulSyncAt = Date.now()
+    }
+    return didSync
   } catch {
     return false
   }

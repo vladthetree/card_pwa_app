@@ -1165,6 +1165,10 @@ class Handler(BaseHTTPRequestHandler):
   # ---------------------------------------------------------------------------
 
   def _route_auth_profiles(self):
+    if not self._resolve_auth() or not self._current_user_id:
+      self._send_json(401, {"ok": False, "error": "unauthorized"})
+      return
+
     qs = parse_qs(urlparse(self.path).query)
     limit = parse_int(qs.get("limit", ["20"])[0] or "20", 20, min_value=1, max_value=100)
 
@@ -1180,11 +1184,12 @@ class Handler(BaseHTTPRequestHandler):
           COUNT(d.device_id) AS linked_devices_count
         FROM users u
         LEFT JOIN devices d ON d.user_id = u.user_id
+        WHERE u.user_id = ?
         GROUP BY u.user_id
         ORDER BY COALESCE(u.last_seen_at, u.created_at) DESC
         LIMIT ?
         """,
-        (limit,)
+        (self._current_user_id, limit)
       ).fetchall()
 
       profiles = [{
@@ -1380,8 +1385,10 @@ class Handler(BaseHTTPRequestHandler):
   # ---------------------------------------------------------------------------
 
   def _route_auth_profile_switch(self):
-    # Best-effort auth resolution for audit context only.
-    self._resolve_auth()
+    if not self._resolve_auth() or not self._current_user_id:
+      self._send_json(401, {"ok": False, "error": "unauthorized"})
+      return
+
     from_user_id = self._current_user_id
 
     data, error_status, error_code = self._read_json_body()
@@ -1399,6 +1406,9 @@ class Handler(BaseHTTPRequestHandler):
 
     if not user_id or not device_id:
       self._send_json(400, {"ok": False, "error": "missing_fields"})
+      return
+    if user_id != self._current_user_id:
+      self._send_json(403, {"ok": False, "error": "forbidden_profile_switch"})
       return
 
     now = int(time.time() * 1000)
@@ -1565,14 +1575,14 @@ class Handler(BaseHTTPRequestHandler):
         (op_id, op_type, json.dumps(payload, ensure_ascii=False),
          client_ts, source, source_client, int(time.time()), self._current_user_id)
       )
-      conn.commit()
-      
-      # Apply operation to server state
       try:
         apply_operation(conn, op_type, payload or {}, client_ts, source_client, op_id=op_id, user_id=self._current_user_id)
         conn.commit()
       except Exception:
         LOGGER.exception("APPLY_FAILED op_id=%s op_type=%s", op_id, op_type)
+        conn.rollback()
+        self._send_json(500, {"ok": False, "error": "apply_failed"})
+        return
       
       detail = _push_detail(op_type, payload)
       log(
