@@ -7,7 +7,7 @@
 
 import { flushSyncQueue } from './syncQueue'
 import { pullAndApplySyncDeltas } from './syncPull'
-import { isSyncActive } from './syncConfig'
+import { fetchWithTimeout, getSyncBaseEndpoint, isSyncActive } from './syncConfig'
 
 let running = false
 let queued = false
@@ -15,6 +15,36 @@ let activeRunPromise: Promise<boolean> | null = null
 let lastSuccessfulSyncAt = 0
 
 const SYNC_FRESH_WINDOW_MS = 10_000
+const SERVER_REACHABILITY_CACHE_MS = 20_000
+const SERVER_REACHABILITY_TIMEOUT_MS = 4_000
+
+let lastReachabilityCheckAt = 0
+let lastReachabilityResult = false
+
+async function hasServerConnection(force = false): Promise<boolean> {
+  if (!navigator.onLine || !isSyncActive()) {
+    return false
+  }
+
+  const now = Date.now()
+  if (!force && now - lastReachabilityCheckAt < SERVER_REACHABILITY_CACHE_MS) {
+    return lastReachabilityResult
+  }
+
+  lastReachabilityCheckAt = now
+  try {
+    const res = await fetchWithTimeout(
+      `${getSyncBaseEndpoint()}/health`,
+      { method: 'GET' },
+      SERVER_REACHABILITY_TIMEOUT_MS,
+    )
+    lastReachabilityResult = res.ok
+    return res.ok
+  } catch {
+    lastReachabilityResult = false
+    return false
+  }
+}
 
 function notifyServiceWorkerAppVisible(): void {
   const payload = { type: 'APP_VISIBLE' }
@@ -36,6 +66,7 @@ function notifyServiceWorkerAppVisible(): void {
 
 async function executeSyncCycle(): Promise<void> {
   if (!isSyncActive()) return
+  if (!(await hasServerConnection())) return
 
   // Phase 1: push all pending local operations
   let pendingAfterFlush = 0
@@ -83,6 +114,7 @@ function scheduleCycleIfNeeded(): void {
 export async function runSyncCycleNow(options?: { force?: boolean }): Promise<boolean> {
   if (!navigator.onLine) return false
   if (!isSyncActive()) return false
+  if (!(await hasServerConnection(options?.force === true))) return false
 
   const force = options?.force === true
   const isFresh = Date.now() - lastSuccessfulSyncAt < SYNC_FRESH_WINDOW_MS
@@ -106,7 +138,7 @@ export function requestSyncCycle(): void {
 /**
  * Sets up the unified sync runtime (replaces both setupSyncRuntime and
  * setupSyncPullRuntime).  Listens to online, visibility-change, and
- * Service-Worker messages, plus a periodic 60 s interval.
+ * Service-Worker messages, plus a periodic 30 s interval.
  */
 export function setupUnifiedSyncRuntime(): () => void {
   const handleOnline = () => {
@@ -133,9 +165,13 @@ export function setupUnifiedSyncRuntime(): () => void {
 
   const interval = window.setInterval(() => {
     if (navigator.onLine) {
-      requestSyncCycle()
+      void hasServerConnection(true).then(reachable => {
+        if (reachable) {
+          requestSyncCycle()
+        }
+      })
     }
-  }, 60_000)
+  }, 30_000)
 
   // Kick off an initial sync immediately
   if (navigator.onLine) {
