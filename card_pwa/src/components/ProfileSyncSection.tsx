@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   User,
   Link,
@@ -20,9 +20,17 @@ import {
   getOrCreateDeviceId,
   makeLocalProfile,
   recoverWithCode,
+  listServerProfiles,
+  switchServerProfile,
+  resetLocalStudyDataForProfileSwitch,
+  writeProfileHintCookie,
+  snapshotLocalStudyDataForRollback,
+  restoreLocalStudyDataFromRollback,
+  type ServerProfileSummary,
 } from '../services/profileService'
 import { resetSyncPullState } from '../services/syncPull'
 import { clearSyncQueue } from '../services/syncQueue'
+import { runSyncCycleNow } from '../services/syncCoordinator'
 
 const STRINGS = {
   de: {
@@ -59,6 +67,15 @@ const STRINGS = {
     error_no_endpoint: 'Kein Sync-Server konfiguriert. Bitte zuerst den Endpunkt unter Diagnose → Sync-Token setzen.',
     copied: 'Kopiert',
     copy: 'Kopieren',
+    list_profiles: 'Profile vom Server laden',
+    list_profiles_refresh: 'Liste aktualisieren',
+    switch_to_profile: 'Auf dieses Profil wechseln',
+    switching: 'Profil wird gewechselt…',
+    profile_name_label: 'Profilname',
+    offline_blocked: 'Profilwechsel ist offline nicht erlaubt.',
+    pre_sync_failed: 'Vorab-Sync fehlgeschlagen. Bitte Verbindung prüfen und erneut versuchen.',
+    switch_failed: 'Profilwechsel fehlgeschlagen.',
+    switch_bootstrap_failed: 'Profil wurde gewechselt, aber initialer Sync ist fehlgeschlagen. Rollback wurde ausgeführt.',
   },
   en: {
     title: 'Profile & Sync',
@@ -94,6 +111,15 @@ const STRINGS = {
     error_no_endpoint: 'No sync server configured. Set endpoint under Diagnostics → Sync Token first.',
     copied: 'Copied',
     copy: 'Copy',
+    list_profiles: 'Load profiles from server',
+    list_profiles_refresh: 'Refresh list',
+    switch_to_profile: 'Switch to this profile',
+    switching: 'Switching profile…',
+    profile_name_label: 'Profile name',
+    offline_blocked: 'Profile switching is blocked while offline.',
+    pre_sync_failed: 'Pre-switch sync failed. Check connectivity and retry.',
+    switch_failed: 'Profile switching failed.',
+    switch_bootstrap_failed: 'Profile switched but initial sync failed. Rollback applied.',
   },
 } as const
 
@@ -142,6 +168,21 @@ function getEndpointFromSettings(): string {
   }
 }
 
+function resolveErrorMessage(error: string, t: typeof STRINGS['de'] | typeof STRINGS['en']): string {
+  switch (error) {
+    case 'offline_blocked':
+      return t.offline_blocked
+    case 'presync_failed':
+      return t.pre_sync_failed
+    case 'switch_denied':
+      return t.switch_failed
+    case 'rollback_applied':
+      return t.switch_bootstrap_failed
+    default:
+      return error
+  }
+}
+
 export default function ProfileSyncSection({ language }: Props) {
   const t = STRINGS[language]
   const { profile, setProfile } = useSettings()
@@ -157,8 +198,29 @@ export default function ProfileSyncSection({ language }: Props) {
   const [showRecover, setShowRecover] = useState(false)
   const [recoverInput, setRecoverInput] = useState('')
   const [endpointOverride, setEndpointOverride] = useState('')
+  const [profiles, setProfiles] = useState<ServerProfileSummary[]>([])
+  const [loadingProfiles, setLoadingProfiles] = useState(false)
+  const [switchingUserId, setSwitchingUserId] = useState<string | null>(null)
 
   const effectiveEndpoint = endpointOverride.trim() || getEndpointFromSettings()
+
+  const loadProfiles = async () => {
+    if (!effectiveEndpoint) return
+    setLoadingProfiles(true)
+    const listed = await listServerProfiles(effectiveEndpoint, 20)
+    if (!listed.ok) {
+      setError(listed.error ?? t.switch_failed)
+      setLoadingProfiles(false)
+      return
+    }
+    setProfiles(listed.profiles ?? [])
+    setLoadingProfiles(false)
+  }
+
+  useEffect(() => {
+    if (!effectiveEndpoint || !navigator.onLine) return
+    void loadProfiles()
+  }, [effectiveEndpoint])
 
   const handleCreateProfile = async () => {
     if (!effectiveEndpoint) {
@@ -189,6 +251,7 @@ export default function ProfileSyncSection({ language }: Props) {
       updatedAt: now,
     }
     setProfile(linked)
+    writeProfileHintCookie(linked.userId ?? '')
     setRecoveryCode(res.recoveryCode ?? null)
     setRecoveryConfirmed(false)
     setBusy(false)
@@ -249,6 +312,7 @@ export default function ProfileSyncSection({ language }: Props) {
       updatedAt: now,
     }
     setProfile(linked)
+    writeProfileHintCookie(linked.userId ?? '')
     setShowRedeem(false)
     setRedeemInput('')
     setBusy(false)
@@ -279,9 +343,90 @@ export default function ProfileSyncSection({ language }: Props) {
       updatedAt: now,
     }
     setProfile(linked)
+    writeProfileHintCookie(linked.userId ?? '')
     setShowRecover(false)
     setRecoverInput('')
     setBusy(false)
+  }
+
+  const handleSwitchToProfile = async (target: ServerProfileSummary) => {
+    if (!effectiveEndpoint) {
+      setError(t.error_no_endpoint)
+      return
+    }
+    if (!navigator.onLine) {
+      setError('offline_blocked')
+      return
+    }
+
+    setError(null)
+    setBusy(true)
+    setSwitchingUserId(target.userId)
+    const previousProfile = profile
+    const rollbackSnapshot = await snapshotLocalStudyDataForRollback()
+
+    if (profile?.mode === 'linked') {
+      const preSyncOk = await runSyncCycleNow({ force: true })
+      if (!preSyncOk) {
+        setError('presync_failed')
+        setBusy(false)
+        setSwitchingUserId(null)
+        return
+      }
+    }
+
+    const deviceId = getOrCreateDeviceId()
+    const switched = await switchServerProfile(
+      effectiveEndpoint,
+      target.userId,
+      deviceId,
+      navigator.userAgent.slice(0, 60),
+    )
+
+    if (!switched.ok || !switched.userId || !switched.profileToken) {
+      setError(switched.error ?? 'switch_denied')
+      setBusy(false)
+      setSwitchingUserId(null)
+      return
+    }
+
+    await clearSyncQueue()
+    resetSyncPullState()
+    await resetLocalStudyDataForProfileSwitch()
+
+    const now = Date.now()
+    const nextProfile: ProfileRecord = {
+      id: 'current',
+      mode: 'linked',
+      deviceId,
+      userId: switched.userId,
+      displayName: switched.profileName ?? target.profileName,
+      profileToken: switched.profileToken,
+      endpoint: effectiveEndpoint,
+      linkedAt: now,
+      recoveryCodeShown: true,
+      createdAt: previousProfile?.createdAt ?? now,
+      updatedAt: now,
+    }
+
+    setProfile(nextProfile)
+    writeProfileHintCookie(switched.userId)
+
+    const bootstrapOk = await runSyncCycleNow({ force: true })
+    if (!bootstrapOk) {
+      if (previousProfile) {
+        setProfile(previousProfile)
+      }
+      await restoreLocalStudyDataFromRollback(rollbackSnapshot)
+      setError('rollback_applied')
+      setBusy(false)
+      setSwitchingUserId(null)
+      return
+    }
+
+    await loadProfiles()
+    setBusy(false)
+    setSwitchingUserId(null)
   }
 
   const isLinked = profile?.mode === 'linked'
@@ -303,7 +448,7 @@ export default function ProfileSyncSection({ language }: Props) {
 
       {/* Error */}
       {error && (
-        <p className="text-xs text-red-400 bg-red-950/40 border border-red-800/40 rounded px-3 py-2">{error}</p>
+        <p className="text-xs text-red-400 bg-red-950/40 border border-red-800/40 rounded px-3 py-2">{resolveErrorMessage(error, t)}</p>
       )}
 
       {/* Recovery code display (shown once after profile creation) */}
@@ -454,6 +599,47 @@ export default function ProfileSyncSection({ language }: Props) {
 
       {/* Actions */}
       <div className="space-y-2">
+        {!!effectiveEndpoint && (
+          <div className="space-y-2 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold text-zinc-300">{t.list_profiles}</p>
+              <button
+                type="button"
+                onClick={() => void loadProfiles()}
+                disabled={busy || loadingProfiles || !navigator.onLine}
+                className="text-xs text-zinc-400 hover:text-white disabled:opacity-40 transition-colors"
+              >
+                {loadingProfiles ? t.linking : t.list_profiles_refresh}
+              </button>
+            </div>
+
+            {profiles.length === 0 && !loadingProfiles && (
+              <p className="text-xs text-zinc-500">—</p>
+            )}
+
+            {profiles.map(item => {
+              const isCurrent = profile?.userId === item.userId && profile?.mode === 'linked'
+              const isSwitchingThis = switchingUserId === item.userId
+              return (
+                <div key={item.userId} className="rounded border border-zinc-800 px-3 py-2">
+                  <p className="text-sm text-white font-medium">{item.profileName}</p>
+                  <p className="text-[11px] text-zinc-500 mt-0.5">{item.userId.slice(0, 8)}… · {item.linkedDevicesCount ?? 0} devices</p>
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      disabled={busy || isCurrent || isSwitchingThis || !navigator.onLine}
+                      onClick={() => void handleSwitchToProfile(item)}
+                      className="text-xs px-2.5 py-1.5 rounded border border-zinc-700 text-zinc-300 hover:text-white hover:border-zinc-500 disabled:opacity-40 transition-colors"
+                    >
+                      {isCurrent ? t.mode_linked : (isSwitchingThis ? t.switching : t.switch_to_profile)}
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
         {!isLinked && !showRedeem && !showRecover && (
           <>
             <button
