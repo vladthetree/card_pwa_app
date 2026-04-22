@@ -100,7 +100,7 @@ export async function enqueueSyncOperation(type: SyncOperationType, payload: unk
 async function sendOperation(record: SyncQueueRecord): Promise<boolean> {
   const config = getSyncConfig()
   const endpoint = getSyncBaseEndpoint()
-  if (!config.enabled || config.mode !== 'local' || !endpoint) {
+  if (!isSyncActive() || !endpoint) {
     return false
   }
 

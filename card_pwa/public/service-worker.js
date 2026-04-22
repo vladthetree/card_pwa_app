@@ -237,7 +237,6 @@ self.addEventListener('install', event => {
       .then(async cache => {
         await cacheUrlsIndividually(cache, CRITICAL_ASSETS)
         await precacheAppShellAssets(cache)
-        await self.skipWaiting()
       })
       .catch(err => {
         console.error('[SW] install failed', err)
@@ -581,13 +580,17 @@ async function broadcastHeartbeatState(state) {
 function getHealthEndpoint(rawEndpoint) {
   if (typeof rawEndpoint !== 'string' || !rawEndpoint) return ''
   try {
-    const url = new URL(rawEndpoint)
+    const base = self.location?.origin
+    const url = new URL(rawEndpoint, base)
     if (url.pathname.endsWith('/sync')) {
       url.pathname = url.pathname.slice(0, -5) || '/'
     }
     url.pathname = '/health'
     url.search = ''
     url.hash = ''
+    if (url.origin === base) {
+      return `${url.pathname}${url.search}${url.hash}`
+    }
     return url.toString()
   } catch {
     return ''

@@ -147,6 +147,94 @@ def open_db(row_factory=None):
     conn.row_factory = row_factory
   return conn
 
+def scope_user_id(user_id):
+  """Normalize nullable legacy user ids for profile-scoped state tables."""
+  return str(user_id or "")
+
+def profile_auth_required(conn):
+  """Return True once the server contains any profile data."""
+  try:
+    return (conn.execute("SELECT 1 FROM users LIMIT 1").fetchone() is not None)
+  except Exception:
+    return False
+
+def has_profile_scoped_primary_key(conn, table_name):
+  rows = conn.execute(f"PRAGMA table_info({table_name})").fetchall()
+  pk_cols = [row[1] for row in sorted((row for row in rows if row[5] > 0), key=lambda row: row[5])]
+  return pk_cols == ["user_id", "id"]
+
+def ensure_profile_scoped_state_tables(conn):
+  """Migrate state tables from global id PKs to (user_id, id) PKs."""
+  if not has_profile_scoped_primary_key(conn, "server_decks"):
+    conn.execute("""
+      CREATE TABLE server_decks_profile_scoped (
+        id TEXT NOT NULL,
+        name TEXT,
+        created_at INTEGER,
+        source TEXT,
+        updated_at INTEGER NOT NULL,
+        deleted_at INTEGER NULL,
+        last_source_client TEXT,
+        user_id TEXT NOT NULL DEFAULT '',
+        PRIMARY KEY (user_id, id)
+      )
+    """)
+    conn.execute("""
+      INSERT OR REPLACE INTO server_decks_profile_scoped
+      (id, name, created_at, source, updated_at, deleted_at, last_source_client, user_id)
+      SELECT id, name, created_at, source, updated_at, deleted_at, last_source_client, COALESCE(user_id, '')
+      FROM server_decks
+    """)
+    conn.execute("DROP TABLE server_decks")
+    conn.execute("ALTER TABLE server_decks_profile_scoped RENAME TO server_decks")
+    conn.commit()
+
+  if not has_profile_scoped_primary_key(conn, "server_cards"):
+    conn.execute("""
+      CREATE TABLE server_cards_profile_scoped (
+        id TEXT NOT NULL,
+        note_id TEXT,
+        deck_id TEXT,
+        front TEXT,
+        back TEXT,
+        tags_json TEXT,
+        extra_json TEXT,
+        type INTEGER,
+        queue INTEGER,
+        due INTEGER,
+        due_at INTEGER,
+        interval INTEGER,
+        factor INTEGER,
+        stability REAL,
+        difficulty REAL,
+        retrievability REAL,
+        reps INTEGER,
+        lapses INTEGER,
+        algorithm TEXT,
+        metadata_json TEXT,
+        is_deleted INTEGER NOT NULL DEFAULT 0,
+        created_at INTEGER,
+        updated_at INTEGER NOT NULL,
+        deleted_at INTEGER NULL,
+        last_source_client TEXT,
+        user_id TEXT NOT NULL DEFAULT '',
+        PRIMARY KEY (user_id, id)
+      )
+    """)
+    conn.execute("""
+      INSERT OR REPLACE INTO server_cards_profile_scoped
+      (id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due, due_at, interval, factor,
+       stability, difficulty, retrievability, reps, lapses, algorithm, metadata_json, is_deleted, created_at,
+       updated_at, deleted_at, last_source_client, user_id)
+      SELECT id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due, due_at, interval, factor,
+       stability, difficulty, retrievability, reps, lapses, algorithm, metadata_json, IFNULL(is_deleted, 0),
+       created_at, updated_at, deleted_at, last_source_client, COALESCE(user_id, '')
+      FROM server_cards
+    """)
+    conn.execute("DROP TABLE server_cards")
+    conn.execute("ALTER TABLE server_cards_profile_scoped RENAME TO server_cards")
+    conn.commit()
+
 def _push_detail(op_type, payload):
   """One-line summary of what a push operation touches."""
   p = payload or {}
@@ -323,13 +411,15 @@ def init_db():
   # ─────────────────────────────────────────────────────────────
   conn.execute("""
     CREATE TABLE IF NOT EXISTS server_decks (
-      id TEXT PRIMARY KEY,
+      id TEXT NOT NULL,
       name TEXT,
       created_at INTEGER,
       source TEXT,
       updated_at INTEGER NOT NULL,
       deleted_at INTEGER NULL,
-      last_source_client TEXT
+      last_source_client TEXT,
+      user_id TEXT NOT NULL DEFAULT '',
+      PRIMARY KEY (user_id, id)
     )
   """)
   conn.execute("CREATE INDEX IF NOT EXISTS idx_deck_updated_at ON server_decks(updated_at)")
@@ -342,7 +432,7 @@ def init_db():
   # ─────────────────────────────────────────────────────────────
   conn.execute("""
     CREATE TABLE IF NOT EXISTS server_cards (
-      id TEXT PRIMARY KEY,
+      id TEXT NOT NULL,
       note_id TEXT,
       deck_id TEXT,
       front TEXT,
@@ -366,7 +456,9 @@ def init_db():
       created_at INTEGER,
       updated_at INTEGER NOT NULL,
       deleted_at INTEGER NULL,
-      last_source_client TEXT
+      last_source_client TEXT,
+      user_id TEXT NOT NULL DEFAULT '',
+      PRIMARY KEY (user_id, id)
     )
   """)
   conn.execute("CREATE INDEX IF NOT EXISTS idx_card_updated_at ON server_cards(updated_at)")
@@ -387,7 +479,8 @@ def init_db():
       reviewed_at INTEGER NOT NULL,
       source_client TEXT,
       created_at INTEGER NOT NULL,
-      undone_at INTEGER NULL
+      undone_at INTEGER NULL,
+      user_id TEXT NOT NULL DEFAULT ''
     )
   """)
   conn.execute("CREATE INDEX IF NOT EXISTS idx_review_card_id ON server_reviews(card_id)")
@@ -413,6 +506,8 @@ def init_db():
   if "user_id" not in deck_cols:
     conn.execute("ALTER TABLE server_decks ADD COLUMN user_id TEXT")
     conn.commit()
+  conn.execute("UPDATE server_decks SET user_id='' WHERE user_id IS NULL")
+  conn.commit()
   conn.execute("CREATE INDEX IF NOT EXISTS idx_deck_user_id ON server_decks(user_id)")
   conn.commit()
 
@@ -420,6 +515,8 @@ def init_db():
   if "user_id" not in card_cols2:
     conn.execute("ALTER TABLE server_cards ADD COLUMN user_id TEXT")
     conn.commit()
+  conn.execute("UPDATE server_cards SET user_id='' WHERE user_id IS NULL")
+  conn.commit()
   conn.execute("CREATE INDEX IF NOT EXISTS idx_card_user_id ON server_cards(user_id)")
   conn.commit()
 
@@ -427,7 +524,21 @@ def init_db():
   if "user_id" not in review_cols:
     conn.execute("ALTER TABLE server_reviews ADD COLUMN user_id TEXT")
     conn.commit()
+  conn.execute("UPDATE server_reviews SET user_id='' WHERE user_id IS NULL")
+  conn.commit()
   conn.execute("CREATE INDEX IF NOT EXISTS idx_review_user_id ON server_reviews(user_id)")
+  conn.commit()
+
+  ensure_profile_scoped_state_tables(conn)
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_deck_updated_at ON server_decks(updated_at)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_deck_deleted_at ON server_decks(deleted_at)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_deck_snapshot_active ON server_decks(id) WHERE deleted_at IS NULL")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_deck_user_id ON server_decks(user_id)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_card_updated_at ON server_cards(updated_at)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_card_deleted_at ON server_cards(deleted_at)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_card_deck_id ON server_cards(deck_id)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_card_snapshot_active ON server_cards(id) WHERE deleted_at IS NULL AND is_deleted = 0")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_card_user_id ON server_cards(user_id)")
   conn.commit()
 
   # ─────────────────────────────────────────────────────────────
@@ -456,6 +567,7 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
   """
   now = now_ms()
   day_ms = 86_400_000
+  state_user_id = scope_user_id(user_id)
 
   def _to_int_or_none(value):
     try:
@@ -523,7 +635,10 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       return
     candidate_ts = _deck_candidate_ts()
 
-    existing = conn.execute("SELECT updated_at, last_source_client FROM server_decks WHERE id=?", (deck_id,)).fetchone()
+    existing = conn.execute(
+      "SELECT updated_at, last_source_client FROM server_decks WHERE id=? AND user_id=?",
+      (deck_id, state_user_id)
+    ).fetchone()
     if existing and not lww_should_apply(existing[0], existing[1], candidate_ts, source_client):
       return
 
@@ -534,7 +649,7 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
     conn.execute("""
       INSERT OR REPLACE INTO server_decks (id, name, created_at, source, updated_at, deleted_at, last_source_client, user_id)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """, (deck_id, name, payload.get("createdAt") or now, payload.get("source"), candidate_ts, deleted_at, source_client, user_id))
+    """, (deck_id, name, payload.get("createdAt") or now, payload.get("source"), candidate_ts, deleted_at, source_client, state_user_id))
 
   elif op_type == "deck.delete":
     deck_id = payload.get("deckId")
@@ -542,16 +657,19 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       return
     candidate_ts = _deck_candidate_ts()
 
-    existing = conn.execute("SELECT updated_at, last_source_client FROM server_decks WHERE id=?", (deck_id,)).fetchone()
+    existing = conn.execute(
+      "SELECT updated_at, last_source_client FROM server_decks WHERE id=? AND user_id=?",
+      (deck_id, state_user_id)
+    ).fetchone()
     if existing and not lww_should_apply(existing[0], existing[1], candidate_ts, source_client):
       return
 
     deleted_at = payload.get("deletedAt") or candidate_ts
 
-    conn.execute("UPDATE server_decks SET deleted_at=?, updated_at=?, last_source_client=? WHERE id=?",
-                 (deleted_at, candidate_ts, source_client, deck_id))
-    conn.execute("UPDATE server_cards SET deleted_at=?, is_deleted=1, updated_at=?, last_source_client=? WHERE deck_id=?",
-                 (deleted_at, candidate_ts, source_client, deck_id))
+    conn.execute("UPDATE server_decks SET deleted_at=?, updated_at=?, last_source_client=? WHERE id=? AND user_id=?",
+                 (deleted_at, candidate_ts, source_client, deck_id, state_user_id))
+    conn.execute("UPDATE server_cards SET deleted_at=?, is_deleted=1, updated_at=?, last_source_client=? WHERE deck_id=? AND user_id=?",
+                 (deleted_at, candidate_ts, source_client, deck_id, state_user_id))
 
   elif op_type == "card.create":
     card_id = payload.get("id")
@@ -559,7 +677,10 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       return
     candidate_ts = _card_candidate_ts()
 
-    existing = conn.execute("SELECT updated_at, last_source_client, reps FROM server_cards WHERE id=?", (card_id,)).fetchone()
+    existing = conn.execute(
+      "SELECT updated_at, last_source_client, reps FROM server_cards WHERE id=? AND user_id=?",
+      (card_id, state_user_id)
+    ).fetchone()
     if existing and not card_should_apply(existing[0], existing[1], existing[2], candidate_ts, source_client, payload.get("reps")):
       return
 
@@ -582,7 +703,7 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       payload.get("interval"), payload.get("factor"), payload.get("stability"), payload.get("difficulty"), payload.get("retrievability"),
       payload.get("reps"), payload.get("lapses"), payload.get("algorithm"),
       metadata_json, is_deleted,
-      payload.get("createdAt") or now, candidate_ts, deleted_at, source_client, user_id,
+      payload.get("createdAt") or now, candidate_ts, deleted_at, source_client, state_user_id,
     ))
 
   elif op_type in ("card.update", "card.schedule.forceTomorrow"):
@@ -594,7 +715,10 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       return
     candidate_ts = _update_candidate_ts(updates)
 
-    existing = conn.execute("SELECT updated_at, last_source_client, reps FROM server_cards WHERE id=?", (card_id,)).fetchone()
+    existing = conn.execute(
+      "SELECT updated_at, last_source_client, reps FROM server_cards WHERE id=? AND user_id=?",
+      (card_id, state_user_id)
+    ).fetchone()
     if existing and not card_should_apply(existing[0], existing[1], existing[2], candidate_ts, source_client, updates.get("reps")):
       return
 
@@ -635,8 +759,8 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
 
     if fields:
       fields += ["updated_at=?", "last_source_client=?"]
-      params  += [candidate_ts, source_client, card_id]
-      conn.execute(f"UPDATE server_cards SET {','.join(fields)} WHERE id=?", params)
+      params  += [candidate_ts, source_client, card_id, state_user_id]
+      conn.execute(f"UPDATE server_cards SET {','.join(fields)} WHERE id=? AND user_id=?", params)
 
       # Backfill due_at when updates omitted it but due is present.
       conn.execute(
@@ -646,9 +770,9 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
           WHEN due IS NOT NULL THEN max(0, CAST(due AS INTEGER)) * ?
           ELSE due_at
         END
-        WHERE id=? AND due_at IS NULL
+        WHERE id=? AND user_id=? AND due_at IS NULL
         """,
-        (day_ms, card_id),
+        (day_ms, card_id, state_user_id),
       )
 
   elif op_type == "card.delete":
@@ -657,14 +781,17 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       return
     candidate_ts = _card_candidate_ts()
 
-    existing = conn.execute("SELECT updated_at, last_source_client, reps FROM server_cards WHERE id=?", (card_id,)).fetchone()
+    existing = conn.execute(
+      "SELECT updated_at, last_source_client, reps FROM server_cards WHERE id=? AND user_id=?",
+      (card_id, state_user_id)
+    ).fetchone()
     if existing and not card_should_apply(existing[0], existing[1], existing[2], candidate_ts, source_client, payload.get("reps")):
       return
 
     deleted_at = payload.get("deletedAt") or candidate_ts
 
-    conn.execute("UPDATE server_cards SET deleted_at=?, is_deleted=1, updated_at=?, last_source_client=? WHERE id=?",
-           (deleted_at, candidate_ts, source_client, card_id))
+    conn.execute("UPDATE server_cards SET deleted_at=?, is_deleted=1, updated_at=?, last_source_client=? WHERE id=? AND user_id=?",
+           (deleted_at, candidate_ts, source_client, card_id, state_user_id))
 
   elif op_type == "review":
     card_id = payload.get("cardId")
@@ -673,7 +800,10 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       return
     candidate_ts = _review_candidate_ts(updated)
 
-    existing = conn.execute("SELECT updated_at, last_source_client, reps FROM server_cards WHERE id=?", (card_id,)).fetchone()
+    existing = conn.execute(
+      "SELECT updated_at, last_source_client, reps FROM server_cards WHERE id=? AND user_id=?",
+      (card_id, state_user_id)
+    ).fetchone()
     if existing and not card_should_apply(existing[0], existing[1], existing[2], candidate_ts, source_client, updated.get("reps")):
       return
 
@@ -681,12 +811,12 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       UPDATE server_cards SET
         type=?, queue=?, due=?, due_at=?, interval=?, factor=?, stability=?, difficulty=?, retrievability=?,
         reps=?, lapses=?, algorithm=?, updated_at=?, last_source_client=?
-      WHERE id=?
+      WHERE id=? AND user_id=?
     """, (
       updated.get("type"), updated.get("queue"), updated.get("due"), updated.get("dueAt"),
       updated.get("interval"), updated.get("factor"), updated.get("stability"), updated.get("difficulty"), updated.get("retrievability"),
       updated.get("reps"), updated.get("lapses"), updated.get("algorithm"),
-      candidate_ts, source_client, card_id,
+      candidate_ts, source_client, card_id, state_user_id,
     ))
 
     rating = _to_int_or_none(payload.get("rating"))
@@ -707,7 +837,7 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
           reviewed_at,
           source_client,
           int(time.time()),
-          user_id,
+          state_user_id,
         )
       )
 
@@ -718,7 +848,10 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       return
     candidate_ts = _review_candidate_ts(restored)
 
-    existing = conn.execute("SELECT updated_at, last_source_client FROM server_cards WHERE id=?", (card_id,)).fetchone()
+    existing = conn.execute(
+      "SELECT updated_at, last_source_client FROM server_cards WHERE id=? AND user_id=?",
+      (card_id, state_user_id)
+    ).fetchone()
     if existing and not lww_should_apply(existing[0], existing[1], candidate_ts, source_client):
       return
 
@@ -726,12 +859,12 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       UPDATE server_cards SET
         type=?, queue=?, due=?, due_at=?, interval=?, factor=?, stability=?, difficulty=?, retrievability=?,
         reps=?, lapses=?, algorithm=?, updated_at=?, last_source_client=?
-      WHERE id=?
+      WHERE id=? AND user_id=?
     """, (
       restored.get("type"), restored.get("queue"), restored.get("due"), restored.get("dueAt"),
       restored.get("interval"), restored.get("factor"), restored.get("stability"), restored.get("difficulty"), restored.get("retrievability"),
       restored.get("reps"), restored.get("lapses"), restored.get("algorithm"),
-      candidate_ts, source_client, card_id,
+      candidate_ts, source_client, card_id, state_user_id,
     ))
 
     conn.execute(
@@ -740,13 +873,13 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       SET undone_at=?
       WHERE id = (
         SELECT id FROM server_reviews
-        WHERE card_id=? AND undone_at IS NULL
+        WHERE card_id=? AND user_id=? AND undone_at IS NULL
           AND (source_client=? OR ? IS NULL)
         ORDER BY reviewed_at DESC, id DESC
         LIMIT 1
       )
       """,
-      (candidate_ts, card_id, source_client, source_client)
+      (candidate_ts, card_id, state_user_id, source_client, source_client)
     )
 
 def rebuild_server_state(conn):
@@ -762,20 +895,20 @@ def rebuild_server_state(conn):
 
   # Fetch all operations in order
   rows = conn.execute("""
-    SELECT op_id, op_type, payload_json, client_timestamp, source_client
+    SELECT op_id, op_type, payload_json, client_timestamp, source_client, COALESCE(user_id, '') AS user_id
     FROM sync_operations
     ORDER BY id ASC
   """).fetchall()
 
   # Replay each operation
-  for op_id, op_type, payload_json, client_ts, src_client in rows:
+  for op_id, op_type, payload_json, client_ts, src_client, user_id in rows:
     try:
       payload = json.loads(payload_json)
     except Exception:
       continue  # Skip unparseable payloads
 
     try:
-      apply_operation(conn, op_type, payload, client_ts, src_client, op_id=op_id, user_id=None)
+      apply_operation(conn, op_type, payload, client_ts, src_client, op_id=op_id, user_id=user_id)
     except Exception:
       LOGGER.exception("REBUILD_APPLY_FAILED op_id=%s op_type=%s", op_id, op_type)
 
@@ -876,6 +1009,8 @@ class Handler(BaseHTTPRequestHandler):
         self._route_auth_profiles()
       elif path == "/sync/pull":                   # GET  /sync/pull
         self._route_sync_pull()
+      elif path == "/sync/decks":                  # GET  /sync/decks
+        self._route_sync_decks()
       elif path == "/sync/snapshot":               # GET  /sync/snapshot
         self._route_sync_snapshot()
       else:
@@ -1468,6 +1603,7 @@ class Handler(BaseHTTPRequestHandler):
 
     conn = open_db(sqlite3.Row)
     try:
+      state_user_id = scope_user_id(self._current_user_id)
       existing_batch = conn.execute(
         "SELECT summary_json, server_cursor FROM sync_bootstrap_batches WHERE batch_id=?",
         (batch_id,)
@@ -1515,8 +1651,8 @@ class Handler(BaseHTTPRequestHandler):
 
         candidate_ts = parse_int(deck.get("updatedAt") or deck.get("createdAt") or sent_at, sent_at, min_value=0)
         existing = conn.execute(
-          "SELECT updated_at, last_source_client FROM server_decks WHERE id=?",
-          (deck_id,)
+          "SELECT updated_at, last_source_client FROM server_decks WHERE id=? AND user_id=?",
+          (deck_id, state_user_id)
         ).fetchone()
         if existing and not lww_should_apply(existing["updated_at"], existing["last_source_client"], candidate_ts, client_id):
           summary["decksSkippedOlder"] += 1
@@ -1540,7 +1676,7 @@ class Handler(BaseHTTPRequestHandler):
             candidate_ts,
             deck_deleted_at,
             client_id,
-            self._current_user_id,
+            state_user_id,
           )
         )
         if existing:
@@ -1558,8 +1694,8 @@ class Handler(BaseHTTPRequestHandler):
 
         candidate_ts = parse_int(card.get("updatedAt") or card.get("createdAt") or sent_at, sent_at, min_value=0)
         existing = conn.execute(
-          "SELECT updated_at, last_source_client, reps FROM server_cards WHERE id=?",
-          (card_id,)
+          "SELECT updated_at, last_source_client, reps FROM server_cards WHERE id=? AND user_id=?",
+          (card_id, state_user_id)
         ).fetchone()
         if existing and not card_should_apply(existing["updated_at"], existing["last_source_client"], existing["reps"], candidate_ts, client_id, card.get("reps")):
           summary["cardsSkippedOlder"] += 1
@@ -1604,7 +1740,7 @@ class Handler(BaseHTTPRequestHandler):
             candidate_ts,
             deleted_at,
             client_id,
-            self._current_user_id,
+            state_user_id,
           )
         )
         if existing:
@@ -1630,7 +1766,7 @@ class Handler(BaseHTTPRequestHandler):
           "card-pwa",
           client_id,
           int(time.time()),
-          self._current_user_id,
+          state_user_id,
         )
       )
 
@@ -1714,12 +1850,12 @@ class Handler(BaseHTTPRequestHandler):
       needs_client_bootstrap_upload = False
       reason = "ok"
 
-      if active_cards == 0 and local_cards > 0:
+      if active_cards == 0 and active_decks == 0 and (local_cards > 0 or local_decks > 0):
         needs_client_bootstrap_upload = True
         reason = "server-empty-client-has-data"
-      elif local_cards == 0 and active_cards > 0:
+      elif active_cards > local_cards or active_decks > local_decks:
         needs_snapshot = True
-        reason = "client-empty-server-has-data"
+        reason = "client-missing-server-data"
       elif wants_snapshot and active_cards > 0:
         needs_snapshot = True
         reason = "explicit-request"
@@ -1745,6 +1881,54 @@ class Handler(BaseHTTPRequestHandler):
         f"serverCards={active_cards}  serverDecks={active_decks}  "
         f"needsSnapshot={needs_snapshot}  needsUpload={needs_client_bootstrap_upload}  reason={reason}"
       )
+    finally:
+      conn.close()
+
+  # ---------------------------------------------------------------------------
+  # GET /sync/decks
+  # ---------------------------------------------------------------------------
+
+  def _route_sync_decks(self):
+    if not self._resolve_auth():
+      self._send_json(401, {"ok": False, "error": "unauthorized"})
+      return
+
+    qs = parse_qs(urlparse(self.path).query)
+    include_deleted = qs.get("includeDeleted", ["false"])[0].lower() in ("true", "1", "yes")
+    client_ip = self.client_address[0] if self.client_address else "?"
+
+    conn = open_db(sqlite3.Row)
+    try:
+      user_filter, user_params = self._user_filter_sql("d")
+      if include_deleted:
+        where_clause = f"WHERE 1=1 {user_filter}"
+      else:
+        where_clause = f"WHERE d.deleted_at IS NULL {user_filter}"
+
+      rows = conn.execute(
+        f"""
+        SELECT d.id, d.name, d.source, d.created_at, d.updated_at, d.deleted_at,
+               COALESCE(NULLIF(TRIM(u.profile_name), ''), NULLIF(TRIM(u.display_name), ''), 'Profil ' || SUBSTR(d.user_id, 1, 8)) AS owner_profile_name
+        FROM server_decks d
+        LEFT JOIN users u ON u.user_id = d.user_id
+        {where_clause}
+        ORDER BY LOWER(COALESCE(d.name, '')), d.id ASC
+        """,
+        user_params,
+      ).fetchall()
+
+      decks = [{
+        "id": row["id"],
+        "name": row["name"],
+        "source": row["source"],
+        "createdAt": row["created_at"],
+        "updatedAt": row["updated_at"],
+        "isDeleted": row["deleted_at"] is not None,
+        "ownerProfileName": row["owner_profile_name"],
+      } for row in rows]
+
+      log(f"SYNC_DECKS  ip={client_ip}  count={len(decks)}")
+      self._send_json(200, {"ok": True, "decks": decks})
     finally:
       conn.close()
 
@@ -1886,6 +2070,7 @@ class Handler(BaseHTTPRequestHandler):
           AND EXISTS (
             SELECT 1 FROM server_cards c
             WHERE c.id = server_reviews.card_id
+              AND c.user_id = server_reviews.user_id
               AND c.deleted_at IS NULL
               AND IFNULL(c.is_deleted, 0) = 0
           )
@@ -1957,6 +2142,7 @@ class Handler(BaseHTTPRequestHandler):
     self.send_header("Access-Control-Allow-Origin", self._cors_origin())
     self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Idempotency-Key, Authorization")
     self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+    self.send_header("Access-Control-Allow-Private-Network", "true")
     if self._cors_origin() != "*":
       self.send_header("Vary", "Origin")
 
@@ -1992,8 +2178,15 @@ class Handler(BaseHTTPRequestHandler):
 
     auth_header = self.headers.get("Authorization", "")
     if not auth_header:
-      # Allow unauthenticated only when neither API_TOKEN nor any device tokens exist.
-      return not API_TOKEN
+      if API_TOKEN:
+        return False
+      # Keep legacy no-token sync simple, but do not expose profile-scoped data
+      # once any server profile exists.
+      conn = open_db()
+      try:
+        return not profile_auth_required(conn)
+      finally:
+        conn.close()
 
     if auth_header.startswith("Bearer dt_"):
       token = auth_header[len("Bearer "):]

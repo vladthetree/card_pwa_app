@@ -2,6 +2,7 @@ import { STORAGE_KEYS } from '../constants/appIdentity'
 import { generateUuidV7 } from '../utils/id'
 
 const ENV_SYNC_ENDPOINT = import.meta.env.VITE_SYNC_ENDPOINT as string | undefined
+const ENV_PROFILE_SYNC_ENDPOINT = import.meta.env.VITE_PROFILE_SYNC_ENDPOINT as string | undefined
 const SYNC_CLIENT_ID_KEY = 'card-pwa-sync-client-id'
 
 export interface PersistedSettings {
@@ -37,6 +38,10 @@ export function getSyncConfig(): SyncConfig {
   const authToken = persisted?.sync?.authToken?.trim() || ''
 
   return { enabled, endpoint, mode, authToken }
+}
+
+export function getDefaultProfileSyncEndpoint(): string {
+  return (ENV_PROFILE_SYNC_ENDPOINT?.trim() || ENV_SYNC_ENDPOINT?.trim() || '')
 }
 
 // ─── Profile-aware auth helpers ───────────────────────────────────────────────

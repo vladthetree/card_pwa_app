@@ -40,10 +40,14 @@ function getSyncEndpoint(): string {
 
 function toHealthUrl(endpoint: string): string {
   try {
-    const url = new URL(endpoint)
+    const base = typeof window === 'undefined' ? undefined : window.location.origin
+    const url = new URL(endpoint, base)
     url.pathname = '/health'
     url.search = ''
     url.hash = ''
+    if (url.origin === base) {
+      return `${url.pathname}${url.search}${url.hash}`
+    }
     return url.toString()
   } catch {
     return ''

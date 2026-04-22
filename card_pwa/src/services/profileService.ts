@@ -23,6 +23,7 @@ import { fetchWithTimeout, SYNC_FETCH_TIMEOUT_MS } from './syncConfig'
 const DEVICE_ID_KEY = 'card-pwa-device-id'
 const LEGACY_CLIENT_ID_KEY = 'card-pwa-sync-client-id'
 const PROFILE_HINT_COOKIE_KEY = 'card_pwa_profile_hint'
+const PROFILE_SELECTED_DECKS_PREFIX = 'card-pwa-profile-selected-decks:'
 
 // ─── Device ID ────────────────────────────────────────────────────────────────
 
@@ -109,6 +110,21 @@ interface ListProfilesResponse {
   error?: string
 }
 
+export interface ServerDeckSummary {
+  id: string
+  name: string
+  source?: string
+  createdAt?: number
+  updatedAt?: number
+  ownerProfileName?: string
+}
+
+interface ListDecksResponse {
+  ok: boolean
+  decks?: ServerDeckSummary[]
+  error?: string
+}
+
 interface SwitchProfileResponse {
   ok: boolean
   userId?: string
@@ -150,6 +166,18 @@ interface RecoverResponse {
   error?: string
 }
 
+async function readJsonResponse<T extends { error?: string }>(res: Response): Promise<T | null> {
+  try {
+    return (await res.json()) as T
+  } catch {
+    return null
+  }
+}
+
+function httpError(res: Response, json: { error?: string } | null): string {
+  return json?.error ?? `http_${res.status}`
+}
+
 /** POST /auth/profile — create a new server profile. */
 export async function createServerProfile(
   endpoint: string,
@@ -172,8 +200,9 @@ export async function createServerProfile(
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    const json = await res.json() as CreateProfileResponse
-    if (!res.ok) return { ok: false, error: json.error ?? `http_${res.status}` }
+    const json = await readJsonResponse<CreateProfileResponse>(res)
+    if (!json) return { ok: false, error: 'invalid_server_response' }
+    if (!res.ok) return { ok: false, error: httpError(res, json) }
     return json
   } catch (e: unknown) {
     return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
@@ -199,8 +228,9 @@ export async function issuePairingCode(
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    const json = await res.json() as PairIssueResponse
-    if (!res.ok) return { ok: false, error: json.error ?? `http_${res.status}` }
+    const json = await readJsonResponse<PairIssueResponse>(res)
+    if (!json) return { ok: false, error: 'invalid_server_response' }
+    if (!res.ok) return { ok: false, error: httpError(res, json) }
     return json
   } catch (e: unknown) {
     return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
@@ -225,8 +255,9 @@ export async function redeemPairingCode(
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    const json = await res.json() as PairRedeemResponse
-    if (!res.ok) return { ok: false, error: json.error ?? `http_${res.status}` }
+    const json = await readJsonResponse<PairRedeemResponse>(res)
+    if (!json) return { ok: false, error: 'invalid_server_response' }
+    if (!res.ok) return { ok: false, error: httpError(res, json) }
     return json
   } catch (e: unknown) {
     return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
@@ -251,8 +282,9 @@ export async function recoverWithCode(
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    const json = await res.json() as RecoverResponse
-    if (!res.ok) return { ok: false, error: json.error ?? `http_${res.status}` }
+    const json = await readJsonResponse<RecoverResponse>(res)
+    if (!json) return { ok: false, error: 'invalid_server_response' }
+    if (!res.ok) return { ok: false, error: httpError(res, json) }
     return json
   } catch (e: unknown) {
     return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
@@ -300,8 +332,9 @@ export async function listServerProfiles(
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    const json = await res.json() as ListProfilesResponse
-    if (!res.ok) return { ok: false, error: json.error ?? `http_${res.status}` }
+    const json = await readJsonResponse<ListProfilesResponse>(res)
+    if (!json) return { ok: false, error: 'invalid_server_response' }
+    if (!res.ok) return { ok: false, error: httpError(res, json) }
     return {
       ok: true,
       profiles: Array.isArray(json.profiles) ? json.profiles : [],
@@ -329,11 +362,67 @@ export async function switchServerProfile(
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    const json = await res.json() as SwitchProfileResponse
-    if (!res.ok) return { ok: false, error: json.error ?? `http_${res.status}` }
+    const json = await readJsonResponse<SwitchProfileResponse>(res)
+    if (!json) return { ok: false, error: 'invalid_server_response' }
+    if (!res.ok) return { ok: false, error: httpError(res, json) }
     return json
   } catch (e: unknown) {
     return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
+  }
+}
+
+/** GET /sync/decks — list decks available for the currently linked profile. */
+export async function listServerDecks(
+  endpoint: string,
+  profileToken?: string,
+): Promise<ListDecksResponse> {
+  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    }
+    if (profileToken?.trim()) {
+      headers.Authorization = `Bearer ${profileToken.trim()}`
+    }
+
+    const res = await fetchWithTimeout(
+      `${base}/sync/decks`,
+      {
+        method: 'GET',
+        headers,
+      },
+      SYNC_FETCH_TIMEOUT_MS,
+    )
+    const json = await readJsonResponse<ListDecksResponse>(res)
+    if (!json) return { ok: false, error: 'invalid_server_response' }
+    if (!res.ok) return { ok: false, error: httpError(res, json) }
+    return {
+      ok: true,
+      decks: Array.isArray(json.decks) ? json.decks : [],
+    }
+  } catch (e: unknown) {
+    return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
+  }
+}
+
+export function readSelectedDeckIds(userId: string): string[] {
+  try {
+    const raw = localStorage.getItem(`${PROFILE_SELECTED_DECKS_PREFIX}${userId}`)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    return parsed.filter((id): id is string => typeof id === 'string' && id.trim().length > 0)
+  } catch {
+    return []
+  }
+}
+
+export function writeSelectedDeckIds(userId: string, deckIds: string[]): void {
+  try {
+    const unique = Array.from(new Set(deckIds.map(id => id.trim()).filter(Boolean)))
+    localStorage.setItem(`${PROFILE_SELECTED_DECKS_PREFIX}${userId}`, JSON.stringify(unique))
+  } catch {
+    // best effort
   }
 }
 

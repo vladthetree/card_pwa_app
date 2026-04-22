@@ -13,6 +13,7 @@ import tempfile
 import os
 import socket
 from pathlib import Path
+import sync_server
 
 SERVER_DIR = Path(__file__).resolve().parent
 
@@ -112,6 +113,12 @@ def api(server):
     port = server["port"]
     
     class APIHelper:
+        def _headers(self, auth_token=None):
+            headers = {}
+            if auth_token:
+                headers["Authorization"] = f"Bearer {auth_token}"
+            return headers
+
         def create_profile(self, device_id, device_label="Device", profile_name=None):
             """POST /auth/profile"""
             body = {
@@ -138,7 +145,7 @@ def api(server):
             r = requests.post(f"http://localhost:{port}/auth/profile/switch", json=body)
             return r.json() if r.text else {}
 
-        def push(self, op_id, op_type, payload, client_id="test-client", client_timestamp=None):
+        def push(self, op_id, op_type, payload, client_id="test-client", client_timestamp=None, auth_token=None):
             """POST /sync"""
             if client_timestamp is None:
                 client_timestamp = int(time.time() * 1000)
@@ -149,18 +156,18 @@ def api(server):
                 "clientId": client_id,
                 "clientTimestamp": client_timestamp
             }
-            r = requests.post(f"http://localhost:{port}/sync", json=body)
+            r = requests.post(f"http://localhost:{port}/sync", json=body, headers=self._headers(auth_token))
             return r.json() if r.text else {}
         
-        def pull(self, since=0, limit=50, client_id=None):
+        def pull(self, since=0, limit=50, client_id=None, auth_token=None):
             """GET /sync/pull"""
             params = {"since": since, "limit": limit}
             if client_id:
                 params["clientId"] = client_id
-            r = requests.get(f"http://localhost:{port}/sync/pull", params=params)
+            r = requests.get(f"http://localhost:{port}/sync/pull", params=params, headers=self._headers(auth_token))
             return r.json() if r.text else {}
         
-        def handshake(self, client_id, last_cursor=0, local_counts=None, wants_snapshot=False):
+        def handshake(self, client_id, last_cursor=0, local_counts=None, wants_snapshot=False, auth_token=None):
             """POST /sync/handshake"""
             body = {
                 "clientId": client_id,
@@ -169,15 +176,15 @@ def api(server):
             }
             if local_counts:
                 body["localCounts"] = local_counts
-            r = requests.post(f"http://localhost:{port}/sync/handshake", json=body)
+            r = requests.post(f"http://localhost:{port}/sync/handshake", json=body, headers=self._headers(auth_token))
             return r.json() if r.text else {}
         
-        def snapshot(self, client_id, include_deleted=False):
+        def snapshot(self, client_id, include_deleted=False, auth_token=None):
             """GET /sync/snapshot"""
             params = {"clientId": client_id}
             if include_deleted:
                 params["includeDeleted"] = "true"
-            r = requests.get(f"http://localhost:{port}/sync/snapshot", params=params)
+            r = requests.get(f"http://localhost:{port}/sync/snapshot", params=params, headers=self._headers(auth_token))
             return r.json() if r.text else {}
         
         def health(self):
@@ -185,7 +192,12 @@ def api(server):
             r = requests.get(f"http://localhost:{port}/health")
             return r.json() if r.text else {}
 
-        def bootstrap_upload(self, client_id, batch_id, decks=None, cards=None, sent_at=None):
+        def list_decks(self, auth_token=None):
+            """GET /sync/decks"""
+            r = requests.get(f"http://localhost:{port}/sync/decks", headers=self._headers(auth_token))
+            return r.json() if r.text else {}
+
+        def bootstrap_upload(self, client_id, batch_id, decks=None, cards=None, sent_at=None, auth_token=None):
             """POST /sync/bootstrap/upload"""
             body = {
                 "clientId": client_id,
@@ -195,7 +207,7 @@ def api(server):
             }
             if sent_at is not None:
                 body["sentAt"] = sent_at
-            r = requests.post(f"http://localhost:{port}/sync/bootstrap/upload", json=body)
+            r = requests.post(f"http://localhost:{port}/sync/bootstrap/upload", json=body, headers=self._headers(auth_token))
             return r.json() if r.text else {}
     
     return APIHelper()
@@ -1267,6 +1279,159 @@ class TestProfileSwitch:
         assert match is not None
         assert match["profileName"] == "Ben"
         assert isinstance(match["linkedDevicesCount"], int)
+
+    def test_sync_requires_device_token_after_profile_exists(self, api, server):
+        api.create_profile(device_id="auth-dev-1", profile_name="Auth Required")
+        base = f"http://localhost:{server['port']}"
+
+        pull = requests.get(f"{base}/sync/pull", params={"since": 0, "clientId": "anon"})
+        snapshot = requests.get(f"{base}/sync/snapshot", params={"clientId": "anon"})
+        push = requests.post(
+            f"{base}/sync",
+            json={
+                "opId": "anon-op",
+                "type": "deck.create",
+                "payload": {"id": "anon-deck", "name": "Anon"},
+                "clientId": "anon",
+                "clientTimestamp": 1,
+            },
+        )
+
+        assert pull.status_code == 401
+        assert snapshot.status_code == 401
+        assert push.status_code == 401
+
+    def test_handshake_requests_snapshot_when_local_decks_are_missing(self, api):
+        created = api.create_profile(device_id="missing-decks-dev", profile_name="Missing Decks")
+        token = created["profileToken"]
+
+        api.push(
+            op_id="missing-decks-deck",
+            op_type="deck.create",
+            payload={"id": "server-deck", "name": "Server Deck", "source": "manual", "createdAt": 1000, "updatedAt": 1000},
+            client_id="server-client",
+            client_timestamp=1000,
+            auth_token=token,
+        )
+        api.push(
+            op_id="missing-decks-card",
+            op_type="card.create",
+            payload={
+                "id": "server-card",
+                "deckId": "server-deck",
+                "noteId": "server-note",
+                "front": "Q",
+                "back": "A",
+                "tags": [],
+                "extra": {},
+                "type": 0,
+                "queue": 0,
+                "due": 0,
+                "dueAt": 0,
+                "interval": 0,
+                "factor": 2500,
+                "reps": 0,
+                "lapses": 0,
+                "algorithm": "sm2",
+                "createdAt": 1000,
+                "updatedAt": 1000,
+            },
+            client_id="server-client",
+            client_timestamp=1000,
+            auth_token=token,
+        )
+
+        handshake = api.handshake(
+            client_id="client-with-cards-no-decks",
+            local_counts={"cards": 1, "decks": 0},
+            auth_token=token,
+        )
+
+        assert handshake["ok"] is True
+        assert handshake["needsSnapshot"] is True
+        assert handshake["needsClientBootstrapUpload"] is False
+
+    def test_same_ids_are_isolated_between_profiles_and_rebuild(self, api, server):
+        first = api.create_profile(device_id="scoped-dev-1", profile_name="First")
+        second = api.create_profile(device_id="scoped-dev-2", profile_name="Second")
+
+        shared_deck_id = "shared-import-deck"
+        shared_card_id = "shared-import-card"
+
+        def push_profile(token, suffix, ts):
+            api.push(
+                op_id=f"deck-{suffix}",
+                op_type="deck.create",
+                payload={
+                    "id": shared_deck_id,
+                    "name": f"Deck {suffix}",
+                    "source": "anki-import",
+                    "createdAt": ts,
+                    "updatedAt": ts,
+                },
+                client_id=f"client-{suffix}",
+                client_timestamp=ts,
+                auth_token=token,
+            )
+            api.push(
+                op_id=f"card-{suffix}",
+                op_type="card.create",
+                payload={
+                    "id": shared_card_id,
+                    "deckId": shared_deck_id,
+                    "noteId": f"note-{suffix}",
+                    "front": f"Front {suffix}",
+                    "back": f"Back {suffix}",
+                    "tags": [],
+                    "extra": {},
+                    "type": 0,
+                    "queue": 0,
+                    "due": 0,
+                    "dueAt": 0,
+                    "interval": 0,
+                    "factor": 2500,
+                    "reps": 0,
+                    "lapses": 0,
+                    "algorithm": "sm2",
+                    "createdAt": ts,
+                    "updatedAt": ts,
+                },
+                client_id=f"client-{suffix}",
+                client_timestamp=ts,
+                auth_token=token,
+            )
+
+        push_profile(first["profileToken"], "A", 1000)
+        push_profile(second["profileToken"], "B", 2000)
+
+        snap_first = api.snapshot("reader-a", auth_token=first["profileToken"])
+        snap_second = api.snapshot("reader-b", auth_token=second["profileToken"])
+        decks_first = api.list_decks(auth_token=first["profileToken"])
+        decks_second = api.list_decks(auth_token=second["profileToken"])
+
+        assert [deck["name"] for deck in snap_first["decks"]] == ["Deck A"]
+        assert [deck["name"] for deck in snap_second["decks"]] == ["Deck B"]
+        assert [deck["name"] for deck in decks_first["decks"]] == ["Deck A"]
+        assert [deck["name"] for deck in decks_second["decks"]] == ["Deck B"]
+        assert [card["front"] for card in snap_first["cards"]] == ["Front A"]
+        assert [card["front"] for card in snap_second["cards"]] == ["Front B"]
+
+        old_db_path = sync_server.DB_PATH
+        sync_server.DB_PATH = server["db"]
+        conn = sync_server.open_db()
+        try:
+            sync_server.rebuild_server_state(conn)
+        finally:
+            conn.close()
+            sync_server.DB_PATH = old_db_path
+
+        rebuilt_first = api.snapshot("reader-a2", auth_token=first["profileToken"])
+        rebuilt_second = api.snapshot("reader-b2", auth_token=second["profileToken"])
+
+        assert [deck["name"] for deck in rebuilt_first["decks"]] == ["Deck A"]
+        assert [deck["name"] for deck in rebuilt_second["decks"]] == ["Deck B"]
+        assert [card["front"] for card in rebuilt_first["cards"]] == ["Front A"]
+        assert [card["front"] for card in rebuilt_second["cards"]] == ["Front B"]
 
     def test_switch_profile_rebinds_device_and_issues_new_token(self, api, db_helper):
         first = api.create_profile(device_id="switch-dev-1", profile_name="First")
