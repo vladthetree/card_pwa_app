@@ -139,6 +139,36 @@ def resolve_device_token(conn, token: str):
     return None
   return (row[1], row[0])  # (user_id, device_id)
 
+def issue_device_token(conn, user_id, device_id, device_label, now):
+  """Bind device to user, revoke old device tokens, and return a new token."""
+  import uuid as _uuid
+  profile_token = generate_device_token()
+  token_hash = hash_token(profile_token)
+  token_id = str(_uuid.uuid4())
+
+  conn.execute(
+    """
+    INSERT INTO devices (device_id, user_id, label, linked_at, last_seen_at)
+    VALUES (?, ?, ?, ?, ?)
+    ON CONFLICT(device_id) DO UPDATE SET
+      user_id=excluded.user_id,
+      label=excluded.label,
+      last_seen_at=excluded.last_seen_at
+    """,
+    (device_id, user_id, device_label, now, now)
+  )
+  conn.execute(
+    "UPDATE device_tokens SET revoked_at=? WHERE device_id=? AND revoked_at IS NULL",
+    (now, device_id)
+  )
+  conn.execute(
+    """INSERT INTO device_tokens (token_id, device_id, token_hash, created_at)
+       VALUES (?, ?, ?, ?)""",
+    (token_id, device_id, token_hash, now)
+  )
+  conn.execute("UPDATE users SET last_seen_at=? WHERE user_id=?", (now, user_id))
+  return profile_token
+
 def open_db(row_factory=None):
   conn = sqlite3.connect(DB_PATH, timeout=max(1, env_int(DB_BUSY_TIMEOUT_MS, 10000) / 1000))
   conn.execute(f"PRAGMA busy_timeout={max(1, env_int(DB_BUSY_TIMEOUT_MS, 10000))}")
@@ -1032,6 +1062,8 @@ class Handler(BaseHTTPRequestHandler):
         self._route_auth_recover()
       elif path == "/auth/revoke":              # POST /auth/revoke
         self._route_auth_revoke()
+      elif path == "/auth/device/remove":       # POST /auth/device/remove
+        self._route_auth_device_remove()
       elif path == "/auth/profile/switch":      # POST /auth/profile/switch
         self._route_auth_profile_switch()
       elif path == "/sync":                          # POST /sync
@@ -1076,31 +1108,46 @@ class Handler(BaseHTTPRequestHandler):
     recovery_code = generate_recovery_code()
     recovery_hash = hash_token(recovery_code)
 
-    profile_token = generate_device_token()
-    token_hash = hash_token(profile_token)
-    token_id = str(_uuid.uuid4())
-
-    conn = open_db()
+    conn = open_db(sqlite3.Row)
     try:
+      existing_device = conn.execute(
+        """
+        SELECT d.user_id,
+               COALESCE(NULLIF(TRIM(u.profile_name), ''), NULLIF(TRIM(u.display_name), ''), 'Profil ' || SUBSTR(u.user_id, 1, 8)) AS profile_name
+        FROM devices d
+        JOIN users u ON u.user_id = d.user_id
+        WHERE d.device_id=?
+        """,
+        (device_id,)
+      ).fetchone()
+      if existing_device:
+        profile_token = issue_device_token(conn, existing_device["user_id"], device_id, device_label, now)
+        conn.commit()
+        log(
+          f"AUTH_PROFILE_RECONNECT  ip={client_ip}  user={_client_short(existing_device['user_id'])}  "
+          f"device={_client_short(device_id)}"
+        )
+        self._send_json(200, {
+          "ok": True,
+          "existingProfile": True,
+          "userId": existing_device["user_id"],
+          "profileName": existing_device["profile_name"],
+          "deviceId": device_id,
+          "profileToken": profile_token,
+        })
+        return
+
       conn.execute(
         """INSERT INTO users (user_id, profile_name, recovery_code_hash, created_at, last_seen_at)
           VALUES (?, ?, ?, ?, ?)""",
         (user_id, profile_name, recovery_hash, now, now)
       )
-      conn.execute(
-        """INSERT INTO devices (device_id, user_id, label, linked_at, last_seen_at)
-           VALUES (?, ?, ?, ?, ?)""",
-        (device_id, user_id, device_label, now, now)
-      )
-      conn.execute(
-        """INSERT INTO device_tokens (token_id, device_id, token_hash, created_at)
-           VALUES (?, ?, ?, ?)""",
-        (token_id, device_id, token_hash, now)
-      )
+      profile_token = issue_device_token(conn, user_id, device_id, device_label, now)
       conn.commit()
       log(f"AUTH_CREATE_PROFILE  ip={client_ip}  user={_client_short(user_id)}  device={_client_short(device_id)}")
       self._send_json(201, {
         "ok": True,
+        "existingProfile": False,
         "userId": user_id,
         "profileName": profile_name,
         "deviceId": device_id,
@@ -1109,7 +1156,7 @@ class Handler(BaseHTTPRequestHandler):
       })
     except sqlite3.IntegrityError:
       conn.rollback()
-      self._send_json(409, {"ok": False, "error": "device_already_registered"})
+      self._send_json(409, {"ok": False, "error": "profile_conflict"})
     finally:
       conn.close()
 
@@ -1199,7 +1246,6 @@ class Handler(BaseHTTPRequestHandler):
       self._send_json(400, {"ok": False, "error": "missing_fields"})
       return
 
-    import uuid as _uuid
     now = int(time.time() * 1000)
 
     conn = open_db(sqlite3.Row)
@@ -1221,20 +1267,7 @@ class Handler(BaseHTTPRequestHandler):
 
       user_id = link["user_id"]
 
-      profile_token = generate_device_token()
-      token_hash = hash_token(profile_token)
-      token_id = str(_uuid.uuid4())
-
-      conn.execute(
-        """INSERT OR IGNORE INTO devices (device_id, user_id, label, linked_at, last_seen_at)
-           VALUES (?, ?, ?, ?, ?)""",
-        (device_id, user_id, device_label, now, now)
-      )
-      conn.execute(
-        """INSERT INTO device_tokens (token_id, device_id, token_hash, created_at)
-           VALUES (?, ?, ?, ?)""",
-        (token_id, device_id, token_hash, now)
-      )
+      profile_token = issue_device_token(conn, user_id, device_id, device_label, now)
       conn.execute(
         "UPDATE link_codes SET consumed_at=? WHERE code=?",
         (now, code)
@@ -1244,7 +1277,7 @@ class Handler(BaseHTTPRequestHandler):
       self._send_json(200, {"ok": True, "userId": user_id, "deviceId": device_id, "profileToken": profile_token})
     except sqlite3.IntegrityError:
       conn.rollback()
-      self._send_json(409, {"ok": False, "error": "device_already_registered"})
+      self._send_json(409, {"ok": False, "error": "token_conflict"})
     finally:
       conn.close()
 
@@ -1270,7 +1303,6 @@ class Handler(BaseHTTPRequestHandler):
       self._send_json(400, {"ok": False, "error": "missing_fields"})
       return
 
-    import uuid as _uuid
     recovery_hash = hash_token(recovery_code)
     now = int(time.time() * 1000)
 
@@ -1286,21 +1318,7 @@ class Handler(BaseHTTPRequestHandler):
         return
 
       user_id = user["user_id"]
-      profile_token = generate_device_token()
-      token_hash = hash_token(profile_token)
-      token_id = str(_uuid.uuid4())
-
-      conn.execute(
-        """INSERT OR IGNORE INTO devices (device_id, user_id, label, linked_at, last_seen_at)
-           VALUES (?, ?, ?, ?, ?)""",
-        (device_id, user_id, device_label, now, now)
-      )
-      conn.execute(
-        """INSERT INTO device_tokens (token_id, device_id, token_hash, created_at)
-           VALUES (?, ?, ?, ?)""",
-        (token_id, device_id, token_hash, now)
-      )
-      conn.execute("UPDATE users SET last_seen_at=? WHERE user_id=?", (now, user_id))
+      profile_token = issue_device_token(conn, user_id, device_id, device_label, now)
       conn.commit()
       log(f"AUTH_RECOVER  ip={client_ip}  user={_client_short(user_id)}  device={_client_short(device_id)}")
       self._send_json(200, {"ok": True, "userId": user_id, "deviceId": device_id, "profileToken": profile_token})
@@ -1332,6 +1350,32 @@ class Handler(BaseHTTPRequestHandler):
       conn.close()
 
   # ---------------------------------------------------------------------------
+  # POST /auth/device/remove  — hard-remove this device from its profile (requires auth)
+  # ---------------------------------------------------------------------------
+
+  def _route_auth_device_remove(self):
+    if not self._resolve_auth() or not self._current_device_id:
+      self._send_json(401, {"ok": False, "error": "unauthorized"})
+      return
+
+    client_ip = self.client_address[0] if self.client_address else "?"
+    now = int(time.time() * 1000)
+    device_id = self._current_device_id
+
+    conn = open_db()
+    try:
+      conn.execute(
+        "UPDATE device_tokens SET revoked_at=? WHERE device_id=? AND revoked_at IS NULL",
+        (now, device_id)
+      )
+      conn.execute("DELETE FROM devices WHERE device_id=?", (device_id,))
+      conn.commit()
+      log(f"AUTH_DEVICE_REMOVE  ip={client_ip}  device={_client_short(device_id)}")
+      self._send_json(200, {"ok": True})
+    finally:
+      conn.close()
+
+  # ---------------------------------------------------------------------------
   # POST /auth/profile/switch  — switch this device to a target profile
   # ---------------------------------------------------------------------------
 
@@ -1357,11 +1401,7 @@ class Handler(BaseHTTPRequestHandler):
       self._send_json(400, {"ok": False, "error": "missing_fields"})
       return
 
-    import uuid as _uuid
     now = int(time.time() * 1000)
-    profile_token = generate_device_token()
-    token_hash = hash_token(profile_token)
-    token_id = str(_uuid.uuid4())
 
     conn = open_db(sqlite3.Row)
     try:
@@ -1372,28 +1412,7 @@ class Handler(BaseHTTPRequestHandler):
       if not user:
         self._send_json(404, {"ok": False, "error": "profile_not_found"})
         return
-
-      conn.execute(
-        """
-        INSERT INTO devices (device_id, user_id, label, linked_at, last_seen_at)
-        VALUES (?, ?, ?, ?, ?)
-        ON CONFLICT(device_id) DO UPDATE SET
-          user_id=excluded.user_id,
-          label=excluded.label,
-          last_seen_at=excluded.last_seen_at
-        """,
-        (device_id, user_id, device_label, now, now)
-      )
-
-      conn.execute(
-        "UPDATE device_tokens SET revoked_at=? WHERE device_id=? AND revoked_at IS NULL",
-        (now, device_id)
-      )
-      conn.execute(
-        "INSERT INTO device_tokens (token_id, device_id, token_hash, created_at) VALUES (?, ?, ?, ?)",
-        (token_id, device_id, token_hash, now)
-      )
-      conn.execute("UPDATE users SET last_seen_at=? WHERE user_id=?", (now, user_id))
+      profile_token = issue_device_token(conn, user_id, device_id, device_label, now)
       conn.commit()
 
       to_short = _client_short(user_id)

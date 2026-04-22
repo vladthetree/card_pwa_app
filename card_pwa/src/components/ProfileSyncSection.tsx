@@ -9,12 +9,16 @@ import type { ProfileRecord } from '../db'
 import {
   createServerProfile,
   revokeDeviceToken,
+  removeDeviceFromServer,
   getOrCreateDeviceId,
   makeLocalProfile,
   listServerProfiles,
   listServerDecks,
   switchServerProfile,
+  readSelectedDeckIds,
   resetLocalStudyDataForProfileSwitch,
+  deleteLocalDataForDecks,
+  writeSelectedDeckIds,
   writeProfileHintCookie,
   snapshotLocalStudyDataForRollback,
   restoreLocalStudyDataFromRollback,
@@ -22,7 +26,7 @@ import {
   type ServerDeckSummary,
 } from '../services/profileService'
 import { resetSyncPullState } from '../services/syncPull'
-import { clearSyncQueue } from '../services/syncQueue'
+import { clearSyncQueue, wakeDeferredSyncQueue } from '../services/syncQueue'
 import { runSyncCycleNow } from '../services/syncCoordinator'
 import { getDefaultProfileSyncEndpoint } from '../services/syncConfig'
 
@@ -35,8 +39,11 @@ const STRINGS = {
     mode_linked: 'Mit Profil verknüpft',
     create_profile: 'Profil erstellen & Sync aktivieren',
     create_profile_desc: 'Verbindet dieses Gerät mit dem konfigurierten Sync-Server.',
-    unlink: 'Verknüpfung auf diesem Gerät lösen',
+    unlink: 'Auf diesem Gerät abmelden',
     unlink_confirm: 'Sync deaktivieren? Lokale Daten bleiben erhalten.',
+    remove_device: 'Gerät serverseitig vom Profil entfernen',
+    remove_device_confirm: 'Gerät wirklich serverseitig entfernen? Danach kann ein neues Profil erstellt werden. Dieser Vorgang kann nicht rückgängig gemacht werden.',
+    removing_device: 'Gerät wird entfernt…',
     user_id_label: 'Benutzer-ID',
     device_id_label: 'Geräte-ID',
     linked_at_label: 'Verknüpft am',
@@ -49,7 +56,11 @@ const STRINGS = {
     list_decks: 'Decks vom Server',
     list_decks_refresh: 'Decks aktualisieren',
     select_all_decks: 'Alle auswählen',
+    selected_all_decks: 'Alle Decks werden synchronisiert.',
+    selected_some_decks: 'Nur ausgewählte Decks werden synchronisiert.',
     decks_syncing: 'Deck-Auswahl wird synchronisiert…',
+    profile_created: 'Neues Profil wurde erstellt und verknüpft.',
+    existing_profile_reconnected: 'Dieses Gerät war bereits mit einem Profil verbunden. Bestehendes Profil wurde wieder verknüpft.',
     switch_to_profile: 'Auf dieses Profil wechseln',
     switching: 'Profil wird gewechselt…',
     profile_name_label: 'Profilname',
@@ -67,8 +78,11 @@ const STRINGS = {
     mode_linked: 'Linked to profile',
     create_profile: 'Create profile & enable sync',
     create_profile_desc: 'Links this device to the configured sync server.',
-    unlink: 'Unlink this device',
+    unlink: 'Sign out on this device',
     unlink_confirm: 'Disable sync? Local data is kept.',
+    remove_device: 'Remove device from profile on server',
+    remove_device_confirm: 'Really remove this device from the server? After this a new profile can be created. This cannot be undone.',
+    removing_device: 'Removing device…',
     user_id_label: 'User ID',
     device_id_label: 'Device ID',
     linked_at_label: 'Linked on',
@@ -81,7 +95,11 @@ const STRINGS = {
     list_decks: 'Decks from server',
     list_decks_refresh: 'Refresh decks',
     select_all_decks: 'Select all',
+    selected_all_decks: 'All decks are synced.',
+    selected_some_decks: 'Only selected decks are synced.',
     decks_syncing: 'Syncing selected decks…',
+    profile_created: 'New profile was created and linked.',
+    existing_profile_reconnected: 'This device was already linked to a profile. Existing profile was reconnected.',
     switch_to_profile: 'Switch to this profile',
     switching: 'Switching profile…',
     profile_name_label: 'Profile name',
@@ -131,11 +149,14 @@ export default function ProfileSyncSection({ language }: Props) {
 
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
   const [profiles, setProfiles] = useState<ServerProfileSummary[]>([])
   const [serverDecks, setServerDecks] = useState<ServerDeckSummary[]>([])
   const [loadingProfiles, setLoadingProfiles] = useState(false)
   const [loadingDecks, setLoadingDecks] = useState(false)
   const [switchingUserId, setSwitchingUserId] = useState<string | null>(null)
+  const [selectedDeckIds, setSelectedDeckIds] = useState<string[]>([])
+  const [removingDevice, setRemovingDevice] = useState(false)
 
   const effectiveEndpoint = profile?.endpoint?.trim() || getDefaultProfileSyncEndpoint()
 
@@ -152,14 +173,15 @@ export default function ProfileSyncSection({ language }: Props) {
     setLoadingProfiles(false)
   }
 
-  const loadDecks = async () => {
-    if (!effectiveEndpoint || profile?.mode !== 'linked' || !profile.userId) {
+  const loadDecks = async (activeProfile = profile) => {
+    const endpoint = activeProfile?.endpoint?.trim() || getDefaultProfileSyncEndpoint()
+    if (!endpoint || activeProfile?.mode !== 'linked' || !activeProfile.userId) {
       setServerDecks([])
       return
     }
 
     setLoadingDecks(true)
-    const listed = await listServerDecks(effectiveEndpoint, profile.profileToken)
+    const listed = await listServerDecks(endpoint, activeProfile.profileToken)
     if (!listed.ok) {
       setError(listed.error ?? t.switch_failed)
       setLoadingDecks(false)
@@ -168,7 +190,48 @@ export default function ProfileSyncSection({ language }: Props) {
 
     const decks = listed.decks ?? []
     setServerDecks(decks)
+    setSelectedDeckIds(readSelectedDeckIds(activeProfile.userId))
     setLoadingDecks(false)
+  }
+
+  const selectedDeckSet = selectedDeckIds.length > 0 ? new Set(selectedDeckIds) : null
+  const allServerDeckIds = serverDecks.map(deck => deck.id)
+  const selectedCount = selectedDeckSet
+    ? serverDecks.filter(deck => selectedDeckSet.has(deck.id)).length
+    : serverDecks.length
+
+  const persistSelectedDeckIds = async (nextIds: string[]) => {
+    if (!profile?.userId) return
+    const unique = Array.from(new Set(nextIds)).filter(id => allServerDeckIds.includes(id))
+    const normalized = unique.length === allServerDeckIds.length ? [] : unique
+
+    // Determine which decks were just deselected and remove their local data immediately
+    const previousSelected = selectedDeckIds.length > 0 ? selectedDeckIds : allServerDeckIds
+    const nextSet = new Set(normalized.length > 0 ? normalized : allServerDeckIds)
+    const removedDeckIds = previousSelected.filter(id => !nextSet.has(id))
+    if (removedDeckIds.length > 0) {
+      await deleteLocalDataForDecks(removedDeckIds)
+    }
+
+    writeSelectedDeckIds(profile.userId, normalized)
+    setSelectedDeckIds(normalized)
+    await wakeDeferredSyncQueue()
+    await resetSyncPullState()
+    if (navigator.onLine) {
+      void runSyncCycleNow({ force: true })
+    }
+  }
+
+  const handleToggleDeckSync = async (deckId: string) => {
+    const current = selectedDeckSet ? Array.from(selectedDeckSet) : allServerDeckIds
+    const next = current.includes(deckId)
+      ? current.filter(id => id !== deckId)
+      : [...current, deckId]
+    await persistSelectedDeckIds(next)
+  }
+
+  const handleSelectAllDecks = async () => {
+    await persistSelectedDeckIds(allServerDeckIds)
   }
 
   useEffect(() => {
@@ -184,14 +247,17 @@ export default function ProfileSyncSection({ language }: Props) {
   const handleCreateProfile = async () => {
     if (!effectiveEndpoint) {
       setError(t.error_no_endpoint)
+      setNotice(null)
       return
     }
     setBusy(true)
     setError(null)
+    setNotice(null)
     const deviceId = getOrCreateDeviceId()
     const res = await createServerProfile(effectiveEndpoint, deviceId, navigator.userAgent.slice(0, 60))
     if (!res.ok || !res.userId || !res.profileToken) {
       setError(res.error ?? 'unknown_error')
+      setNotice(null)
       setBusy(false)
       return
     }
@@ -202,51 +268,78 @@ export default function ProfileSyncSection({ language }: Props) {
       mode: 'linked',
       deviceId,
       userId: res.userId,
+      displayName: res.profileName,
       profileToken: res.profileToken,
       endpoint: effectiveEndpoint,
       linkedAt: now,
-      recoveryCodeShown: false,
+      recoveryCodeShown: res.existingProfile ? true : false,
       createdAt: now,
       updatedAt: now,
     }
     setProfile(linked)
     writeProfileHintCookie(linked.userId ?? '')
     await loadProfiles()
+    await loadDecks(linked)
+    setNotice(res.existingProfile ? t.existing_profile_reconnected : t.profile_created)
     setBusy(false)
   }
 
   const handleUnlink = async () => {
     if (!profile?.profileToken || !profile.endpoint) {
       setError(null)
+      setNotice(null)
       setProfiles([])
       setServerDecks([])
+      setSelectedDeckIds([])
       const local = makeLocalProfile()
       setProfile(local)
       return
     }
     setBusy(true)
     setError(null)
+    setNotice(null)
     await revokeDeviceToken(profile.endpoint, profile.profileToken)
     await clearSyncQueue()
     await resetSyncPullState()
     setProfiles([])
     setServerDecks([])
+    setSelectedDeckIds([])
     const local = makeLocalProfile()
     setProfile(local)
     setBusy(false)
   }
 
+  const handleRemoveDevice = async () => {
+    if (!window.confirm(t.remove_device_confirm)) return
+    if (!profile?.profileToken || !profile.endpoint) return
+    setRemovingDevice(true)
+    setError(null)
+    setNotice(null)
+    await removeDeviceFromServer(profile.endpoint, profile.profileToken)
+    await clearSyncQueue()
+    await resetSyncPullState()
+    setProfiles([])
+    setServerDecks([])
+    setSelectedDeckIds([])
+    const local = makeLocalProfile()
+    setProfile(local)
+    setRemovingDevice(false)
+  }
+
   const handleSwitchToProfile = async (target: ServerProfileSummary) => {
     if (!effectiveEndpoint) {
       setError(t.error_no_endpoint)
+      setNotice(null)
       return
     }
     if (!navigator.onLine) {
       setError('offline_blocked')
+      setNotice(null)
       return
     }
 
     setError(null)
+    setNotice(null)
     setBusy(true)
     setSwitchingUserId(target.userId)
     const previousProfile = profile
@@ -256,6 +349,7 @@ export default function ProfileSyncSection({ language }: Props) {
       const preSyncOk = await runSyncCycleNow({ force: true })
       if (!preSyncOk) {
         setError('presync_failed')
+        setNotice(null)
         setBusy(false)
         setSwitchingUserId(null)
         return
@@ -272,6 +366,7 @@ export default function ProfileSyncSection({ language }: Props) {
 
     if (!switched.ok || !switched.userId || !switched.profileToken) {
       setError(switched.error ?? 'switch_denied')
+      setNotice(null)
       setBusy(false)
       setSwitchingUserId(null)
       return
@@ -306,12 +401,14 @@ export default function ProfileSyncSection({ language }: Props) {
       }
       await restoreLocalStudyDataFromRollback(rollbackSnapshot)
       setError('rollback_applied')
+      setNotice(null)
       setBusy(false)
       setSwitchingUserId(null)
       return
     }
 
     await loadProfiles()
+    await loadDecks(nextProfile)
     setBusy(false)
     setSwitchingUserId(null)
   }
@@ -336,6 +433,9 @@ export default function ProfileSyncSection({ language }: Props) {
       {/* Error */}
       {error && (
         <p className="text-xs text-red-400 bg-red-950/40 border border-red-800/40 rounded px-3 py-2">{resolveErrorMessage(error, t)}</p>
+      )}
+      {notice && (
+        <p className="text-xs text-emerald-300 bg-emerald-950/40 border border-emerald-800/40 rounded px-3 py-2">{notice}</p>
       )}
 
       {/* Linked profile info */}
@@ -414,17 +514,43 @@ export default function ProfileSyncSection({ language }: Props) {
             )}
 
             {serverDecks.length > 0 && (
-              <div className="max-h-56 overflow-y-auto rounded border border-zinc-800">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-3 text-xs text-zinc-500">
+                  <span>
+                    {selectedDeckIds.length === 0
+                      ? t.selected_all_decks
+                      : `${t.selected_some_decks} (${selectedCount}/${serverDecks.length})`}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => void handleSelectAllDecks()}
+                    disabled={busy || loadingDecks || selectedDeckIds.length === 0}
+                    className="text-zinc-400 hover:text-white disabled:opacity-40 transition-colors"
+                  >
+                    {t.select_all_decks}
+                  </button>
+                </div>
+                <div className="max-h-56 overflow-y-auto rounded border border-zinc-800">
                 <ul>
                   {serverDecks.map(deck => (
                     <li
                       key={deck.id}
                       className="px-3 py-2 text-sm text-zinc-200 border-b border-zinc-800 last:border-b-0"
                     >
-                      {deck.name || deck.id}
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={!selectedDeckSet || selectedDeckSet.has(deck.id)}
+                          onChange={() => void handleToggleDeckSync(deck.id)}
+                          disabled={busy || loadingDecks}
+                          className="h-4 w-4 accent-emerald-500"
+                        />
+                        <span>{deck.name || deck.id}</span>
+                      </label>
                     </li>
                   ))}
                 </ul>
+                </div>
               </div>
             )}
           </div>
@@ -449,11 +575,20 @@ export default function ProfileSyncSection({ language }: Props) {
             <button
               type="button"
               onClick={() => void handleUnlink()}
-              disabled={busy}
+              disabled={busy || removingDevice}
               className="w-full flex items-center justify-center gap-2 text-sm text-zinc-500 hover:text-red-400 transition-colors py-2"
             >
               <Unlink size={13} />
               {t.unlink}
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleRemoveDevice()}
+              disabled={busy || removingDevice || !navigator.onLine}
+              className="w-full flex items-center justify-center gap-2 text-xs text-zinc-600 hover:text-red-500 transition-colors py-1.5"
+            >
+              {removingDevice ? <RefreshCw size={12} className="animate-spin" /> : <Unlink size={12} />}
+              {removingDevice ? t.removing_device : t.remove_device}
             </button>
           </>
         )}

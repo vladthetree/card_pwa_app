@@ -1,7 +1,9 @@
 import Dexie, { type Table } from 'dexie'
 import { BACKUP_METADATA, DATABASE_NAMES } from '../constants/appIdentity'
 import { supportsServiceWorker } from '../env'
+import { db } from '../db'
 import { logError } from './errorLog'
+import { readSelectedDeckIds } from './profileService'
 import {
   isSyncActive,
   getSyncConfig,
@@ -37,6 +39,8 @@ export interface SyncQueueRecord {
 export interface FlushOptions {
   limit?: number
 }
+
+type SendResult = 'sent' | 'deferred' | 'failed'
 
 class SyncQueueDB extends Dexie {
   queue!: Table<SyncQueueRecord, number>
@@ -80,6 +84,40 @@ function requestBackgroundDelivery() {
   navigator.serviceWorker.controller?.postMessage({ type: 'FORCE_SYNC_NOW' })
 }
 
+async function getSelectedDeckFilter(): Promise<Set<string> | null> {
+  try {
+    const profile = await db.profile.get('current')
+    if (!profile || profile.mode !== 'linked' || !profile.userId) return null
+    const selected = readSelectedDeckIds(profile.userId)
+    return selected.length > 0 ? new Set(selected) : null
+  } catch {
+    return null
+  }
+}
+
+async function shouldSyncOperation(type: SyncOperationType, payload: unknown): Promise<boolean> {
+  const selectedDecks = await getSelectedDeckFilter()
+  if (!selectedDecks) return true
+  if (!payload || typeof payload !== 'object') return true
+
+  const value = payload as Record<string, unknown>
+  const directDeckId = type === 'deck.create'
+    ? value.id
+    : value.deckId
+
+  if (typeof directDeckId === 'string' && directDeckId) {
+    return selectedDecks.has(directDeckId)
+  }
+
+  const cardId = value.cardId ?? value.id
+  if (typeof cardId === 'string' && cardId) {
+    const card = await db.cards.get(cardId)
+    return !card || selectedDecks.has(card.deckId)
+  }
+
+  return true
+}
+
 export async function enqueueSyncOperation(type: SyncOperationType, payload: unknown): Promise<void> {
   const ts = now()
   await syncDb.queue.add({
@@ -97,11 +135,22 @@ export async function enqueueSyncOperation(type: SyncOperationType, payload: unk
   }
 }
 
-async function sendOperation(record: SyncQueueRecord): Promise<boolean> {
+async function sendOperation(record: SyncQueueRecord): Promise<SendResult> {
   const config = getSyncConfig()
   const endpoint = getSyncBaseEndpoint()
   if (!isSyncActive() || !endpoint) {
-    return false
+    return 'failed'
+  }
+
+  const payload = JSON.parse(record.payload)
+  if (!await shouldSyncOperation(record.type, payload)) {
+    if (record.id !== undefined) {
+      await syncDb.queue.update(record.id, {
+        updatedAt: now(),
+        nextRetryAt: Number.MAX_SAFE_INTEGER,
+      })
+    }
+    return 'deferred'
   }
 
   const response = await fetchWithTimeout(endpoint, {
@@ -114,14 +163,14 @@ async function sendOperation(record: SyncQueueRecord): Promise<boolean> {
     body: JSON.stringify({
       opId: record.opId,
       type: record.type,
-      payload: JSON.parse(record.payload),
+      payload,
       clientTimestamp: record.createdAt,
       source: BACKUP_METADATA.app,
       clientId: getOrCreateSyncClientId(),
     }),
   })
 
-  return response.ok
+  return response.ok ? 'sent' : 'failed'
 }
 
 export async function flushSyncQueue(options: FlushOptions = {}): Promise<{ processed: number; pending: number }> {
@@ -154,13 +203,15 @@ export async function flushSyncQueue(options: FlushOptions = {}): Promise<{ proc
     }
 
     try {
-      const ok = await sendOperation(item)
+      const result = await sendOperation(item)
 
-      if (ok) {
+      if (result === 'sent') {
         if (item.id !== undefined) {
           await syncDb.queue.delete(item.id)
         }
         processed += 1
+      } else if (result === 'deferred') {
+        continue
       } else {
         const retries = item.retries + 1
         await syncDb.queue.update(item.id!, {
@@ -185,11 +236,28 @@ export async function flushSyncQueue(options: FlushOptions = {}): Promise<{ proc
 
 export async function getSyncQueuePendingCount(): Promise<number> {
   // Dead-letter entries are preserved for diagnostics/replay but must not block pull.
-  return syncDb.queue.filter(item => item.retries < SYNC_MAX_RETRIES).count()
+  return syncDb.queue
+    .filter(item => item.retries < SYNC_MAX_RETRIES && item.nextRetryAt < Number.MAX_SAFE_INTEGER)
+    .count()
+}
+
+export async function wakeDeferredSyncQueue(): Promise<void> {
+  const ts = now()
+  await syncDb.queue
+    .filter(item => item.retries < SYNC_MAX_RETRIES && item.nextRetryAt === Number.MAX_SAFE_INTEGER)
+    .modify({ nextRetryAt: ts, updatedAt: ts })
+
+  if (isSyncActive()) {
+    requestBackgroundDelivery()
+  }
 }
 
 export async function clearSyncQueue(): Promise<void> {
   await syncDb.queue.clear()
+}
+
+export function closeSyncQueueDatabase(): void {
+  syncDb.close()
 }
 
 /**

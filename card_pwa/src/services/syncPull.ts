@@ -9,6 +9,7 @@ import {
   getOrCreateSyncClientId,
   fetchWithTimeout,
 } from './syncConfig'
+import { readSelectedDeckIds } from './profileService'
 
 const SYNC_META_CURSOR_KEY = 'sync-cursor'
 const SYNC_META_APPLIED_OP_IDS_KEY = 'sync-applied-op-ids'
@@ -67,6 +68,54 @@ interface SnapshotResponse {
 interface BootstrapUploadResponse {
   ok?: boolean
   serverCursor?: number
+}
+
+async function readSelectedDeckFilter(): Promise<Set<string> | null> {
+  try {
+    const profile = await db.profile.get('current')
+    if (!profile || profile.mode !== 'linked' || !profile.userId) return null
+    const selected = readSelectedDeckIds(profile.userId)
+    return selected.length > 0 ? new Set(selected) : null
+  } catch {
+    return null
+  }
+}
+
+function filterSnapshotBySelectedDecks(
+  selectedDecks: Set<string> | null,
+  decks: DeckRecord[],
+  cards: CardRecord[],
+  reviews: Omit<ReviewRecord, 'id'>[],
+): { decks: DeckRecord[]; cards: CardRecord[]; reviews: Omit<ReviewRecord, 'id'>[] } {
+  if (!selectedDecks) return { decks, cards, reviews }
+
+  const filteredDecks = decks.filter(deck => selectedDecks.has(deck.id))
+  const filteredCards = cards.filter(card => selectedDecks.has(card.deckId))
+  const allowedCardIds = new Set(filteredCards.map(card => card.id))
+  const filteredReviews = reviews.filter(review => allowedCardIds.has(review.cardId))
+
+  return { decks: filteredDecks, cards: filteredCards, reviews: filteredReviews }
+}
+
+async function shouldApplyOperationForSelectedDecks(op: PulledOperation, selectedDecks: Set<string> | null): Promise<boolean> {
+  if (!selectedDecks) return true
+  if (!op.payload || typeof op.payload !== 'object') return true
+
+  const payload = op.payload as Record<string, unknown>
+  const directDeckId = op.type === 'deck.create'
+    ? payload.id
+    : payload.deckId
+  if (typeof directDeckId === 'string' && directDeckId) {
+    return selectedDecks.has(directDeckId)
+  }
+
+  const cardId = payload.cardId ?? payload.id
+  if (typeof cardId === 'string' && cardId) {
+    const existing = await db.cards.get(cardId)
+    return !existing || selectedDecks.has(existing.deckId)
+  }
+
+  return true
 }
 
 // ─── Endpoint helpers ──────────────────────────────────────────────────
@@ -707,8 +756,14 @@ async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
       .map(normalizeReview)
       .filter((entry): entry is Omit<ReviewRecord, 'id'> => entry !== null && cardIds.has(entry.cardId))
 
+    const selectedDecks = await readSelectedDeckFilter()
+    const filtered = filterSnapshotBySelectedDecks(selectedDecks, decks, cards, reviews)
+    const snapshotDecks = filtered.decks
+    const snapshotCards = filtered.cards
+    const snapshotReviews = filtered.reviews
+
     const localCounts = await getLocalCounts()
-    const snapshotIsEmpty = decks.length === 0 && cards.length === 0
+    const snapshotIsEmpty = snapshotDecks.length === 0 && snapshotCards.length === 0
     const localHasData = localCounts.decks > 0 || localCounts.cards > 0
 
     if (snapshotIsEmpty && localHasData) {
@@ -716,31 +771,42 @@ async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
     }
 
     await db.transaction('rw', db.decks, db.cards, db.reviews, async () => {
-      const incomingCardIds = new Set(cards.map(c => c.id))
-      const orphanReviewIds: number[] = []
-      await db.reviews.each(review => {
-        if (!incomingCardIds.has(review.cardId) && review.id !== undefined) {
-          orphanReviewIds.push(review.id)
+      if (selectedDecks) {
+        const selectedDeckIds = Array.from(selectedDecks)
+        const existingSelectedCards = await db.cards.where('deckId').anyOf(selectedDeckIds).toArray()
+        const existingCardIds = existingSelectedCards.map(card => card.id)
+        if (existingCardIds.length > 0) {
+          await db.reviews.where('cardId').anyOf(existingCardIds).delete()
         }
-      })
-      if (orphanReviewIds.length > 0) {
-        await db.reviews.bulkDelete(orphanReviewIds)
-      }
-      if (rawReviews.length > 0) {
-        await db.reviews.clear()
+        await db.cards.where('deckId').anyOf(selectedDeckIds).delete()
+        await db.decks.where('id').anyOf(selectedDeckIds).delete()
+      } else {
+        const incomingCardIds = new Set(snapshotCards.map(c => c.id))
+        const orphanReviewIds: number[] = []
+        await db.reviews.each(review => {
+          if (!incomingCardIds.has(review.cardId) && review.id !== undefined) {
+            orphanReviewIds.push(review.id)
+          }
+        })
+        if (orphanReviewIds.length > 0) {
+          await db.reviews.bulkDelete(orphanReviewIds)
+        }
+        if (rawReviews.length > 0) {
+          await db.reviews.clear()
+        }
+
+        await db.cards.clear()
+        await db.decks.clear()
       }
 
-      await db.cards.clear()
-      await db.decks.clear()
-
-      if (decks.length > 0) {
-        await db.decks.bulkPut(decks)
+      if (snapshotDecks.length > 0) {
+        await db.decks.bulkPut(snapshotDecks)
       }
-      if (cards.length > 0) {
-        await db.cards.bulkPut(cards)
+      if (snapshotCards.length > 0) {
+        await db.cards.bulkPut(snapshotCards)
       }
-      if (reviews.length > 0) {
-        await db.reviews.bulkAdd(reviews)
+      if (snapshotReviews.length > 0) {
+        await db.reviews.bulkAdd(snapshotReviews)
       }
     })
 
@@ -897,6 +963,7 @@ export async function pullAndApplySyncDeltas(limit = 200) {
 
   let cursor = await readCursor()
   const appliedOpIds = await readAppliedOpIds()
+  const selectedDecks = await readSelectedDeckFilter()
 
   try {
     for (let page = 0; page < 20; page += 1) {
@@ -921,6 +988,12 @@ export async function pullAndApplySyncDeltas(limit = 200) {
       for (const operation of operations) {
         if (!operation?.opId) continue
         if (appliedOpIds.has(operation.opId)) continue
+
+        const shouldApply = await shouldApplyOperationForSelectedDecks(operation, selectedDecks)
+        if (!shouldApply) {
+          appliedOpIds.add(operation.opId)
+          continue
+        }
 
         await applyOperation(operation)
         appliedOpIds.add(operation.opId)

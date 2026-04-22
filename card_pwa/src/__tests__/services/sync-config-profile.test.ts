@@ -42,4 +42,28 @@ describe('profile-aware sync config', () => {
     expect(getSyncBaseEndpoint()).toBe('http://sync.example.test/sync')
     expect(makeAuthHeaders()).toEqual({ Authorization: 'Bearer dt_profile-token' })
   })
+
+  it('does not activate background sync from a preconfigured endpoint without a profile token', () => {
+    installLocalStorage()
+    setCachedProfile(null, null)
+
+    expect(isSyncActive()).toBe(false)
+    expect(makeAuthHeaders()).toEqual({})
+  })
+
+  it('keeps explicit legacy sync active when an auth token is configured', () => {
+    installLocalStorage()
+    localStorage.setItem('card-pwa-settings', JSON.stringify({
+      sync: {
+        enabled: true,
+        endpoint: 'http://legacy-sync.test/sync',
+        mode: 'local',
+        authToken: 'legacy-token',
+      },
+    }))
+
+    expect(isSyncActive()).toBe(true)
+    expect(getSyncBaseEndpoint()).toBe('http://legacy-sync.test/sync')
+    expect(makeAuthHeaders()).toEqual({ Authorization: 'Bearer legacy-token' })
+  })
 })
