@@ -1,36 +1,30 @@
 import { useEffect, useState } from 'react'
 import {
   User,
-  Link,
   Unlink,
-  Copy,
-  Check,
   RefreshCw,
-  QrCode,
-  KeyRound,
-  LogIn,
 } from 'lucide-react'
 import { useSettings } from '../contexts/SettingsContext'
 import type { ProfileRecord } from '../db'
 import {
   createServerProfile,
-  issuePairingCode,
-  redeemPairingCode,
   revokeDeviceToken,
   getOrCreateDeviceId,
   makeLocalProfile,
-  recoverWithCode,
   listServerProfiles,
+  listServerDecks,
   switchServerProfile,
   resetLocalStudyDataForProfileSwitch,
   writeProfileHintCookie,
   snapshotLocalStudyDataForRollback,
   restoreLocalStudyDataFromRollback,
   type ServerProfileSummary,
+  type ServerDeckSummary,
 } from '../services/profileService'
 import { resetSyncPullState } from '../services/syncPull'
 import { clearSyncQueue } from '../services/syncQueue'
 import { runSyncCycleNow } from '../services/syncCoordinator'
+import { getDefaultProfileSyncEndpoint } from '../services/syncConfig'
 
 const STRINGS = {
   de: {
@@ -41,34 +35,21 @@ const STRINGS = {
     mode_linked: 'Mit Profil verknüpft',
     create_profile: 'Profil erstellen & Sync aktivieren',
     create_profile_desc: 'Verbindet dieses Gerät mit dem konfigurierten Sync-Server.',
-    link_device: 'Weiteres Gerät verbinden',
-    link_device_desc: 'Pairing-Code für ein zweites Gerät generieren.',
     unlink: 'Verknüpfung auf diesem Gerät lösen',
     unlink_confirm: 'Sync deaktivieren? Lokale Daten bleiben erhalten.',
     user_id_label: 'Benutzer-ID',
     device_id_label: 'Geräte-ID',
     linked_at_label: 'Verknüpft am',
-    recovery_code_title: 'Recovery-Code',
-    recovery_code_desc: 'Notiere diesen Code – er wird nur einmal angezeigt. Damit kannst du auf einem neuen Gerät dein Profil wiederherstellen.',
-    recovery_code_saved: 'Ich habe den Code notiert',
-    pair_code_title: 'Pairing-Code für zweites Gerät',
-    pair_code_expires: 'Gültig für 2 Minuten',
-    pair_code_input: 'Code vom anderen Gerät eingeben',
-    pair_code_redeem: 'Code einlösen',
-    pair_code_cancel: 'Abbrechen',
-    recover_title: 'Mit Recovery-Code verbinden',
-    recover_input: 'Recovery-Code eingeben',
-    recover_action: 'Verbinden',
-    endpoint_label: 'Server-Endpunkt',
-    endpoint_placeholder: 'https://sync.example.com',
-    endpoint_hint: 'Wird aus den Sync-Einstellungen übernommen wenn vorhanden.',
+    server_configured: 'Server-Endpunkt ist vorkonfiguriert.',
     creating: 'Profil wird erstellt…',
     linking: 'Wird verknüpft…',
-    error_no_endpoint: 'Kein Sync-Server konfiguriert. Bitte zuerst den Endpunkt unter Diagnose → Sync-Token setzen.',
-    copied: 'Kopiert',
-    copy: 'Kopieren',
+    error_no_endpoint: 'Kein Profil-Sync-Server konfiguriert. Bitte VITE_SYNC_ENDPOINT oder VITE_PROFILE_SYNC_ENDPOINT setzen.',
     list_profiles: 'Profile vom Server laden',
     list_profiles_refresh: 'Liste aktualisieren',
+    list_decks: 'Decks vom Server',
+    list_decks_refresh: 'Decks aktualisieren',
+    select_all_decks: 'Alle auswählen',
+    decks_syncing: 'Deck-Auswahl wird synchronisiert…',
     switch_to_profile: 'Auf dieses Profil wechseln',
     switching: 'Profil wird gewechselt…',
     profile_name_label: 'Profilname',
@@ -76,6 +57,7 @@ const STRINGS = {
     pre_sync_failed: 'Vorab-Sync fehlgeschlagen. Bitte Verbindung prüfen und erneut versuchen.',
     switch_failed: 'Profilwechsel fehlgeschlagen.',
     switch_bootstrap_failed: 'Profil wurde gewechselt, aber initialer Sync ist fehlgeschlagen. Rollback wurde ausgeführt.',
+    invalid_server_response: 'Server hat keine gültige JSON-Antwort geliefert. Bitte PWA neu bauen und Proxy/Server prüfen.',
   },
   en: {
     title: 'Profile & Sync',
@@ -85,34 +67,21 @@ const STRINGS = {
     mode_linked: 'Linked to profile',
     create_profile: 'Create profile & enable sync',
     create_profile_desc: 'Links this device to the configured sync server.',
-    link_device: 'Connect another device',
-    link_device_desc: 'Generate a pairing code for a second device.',
     unlink: 'Unlink this device',
     unlink_confirm: 'Disable sync? Local data is kept.',
     user_id_label: 'User ID',
     device_id_label: 'Device ID',
     linked_at_label: 'Linked on',
-    recovery_code_title: 'Recovery Code',
-    recovery_code_desc: 'Note this code – it is shown only once. Use it to restore your profile on a new device.',
-    recovery_code_saved: 'I have noted the code',
-    pair_code_title: 'Pairing code for second device',
-    pair_code_expires: 'Valid for 2 minutes',
-    pair_code_input: 'Enter code from other device',
-    pair_code_redeem: 'Redeem code',
-    pair_code_cancel: 'Cancel',
-    recover_title: 'Connect with recovery code',
-    recover_input: 'Enter recovery code',
-    recover_action: 'Connect',
-    endpoint_label: 'Server endpoint',
-    endpoint_placeholder: 'https://sync.example.com',
-    endpoint_hint: 'Taken from Sync settings if configured.',
+    server_configured: 'Server endpoint is preconfigured.',
     creating: 'Creating profile…',
     linking: 'Linking…',
-    error_no_endpoint: 'No sync server configured. Set endpoint under Diagnostics → Sync Token first.',
-    copied: 'Copied',
-    copy: 'Copy',
+    error_no_endpoint: 'No profile sync server configured. Set VITE_SYNC_ENDPOINT or VITE_PROFILE_SYNC_ENDPOINT.',
     list_profiles: 'Load profiles from server',
     list_profiles_refresh: 'Refresh list',
+    list_decks: 'Decks from server',
+    list_decks_refresh: 'Refresh decks',
+    select_all_decks: 'Select all',
+    decks_syncing: 'Syncing selected decks…',
     switch_to_profile: 'Switch to this profile',
     switching: 'Switching profile…',
     profile_name_label: 'Profile name',
@@ -120,6 +89,7 @@ const STRINGS = {
     pre_sync_failed: 'Pre-switch sync failed. Check connectivity and retry.',
     switch_failed: 'Profile switching failed.',
     switch_bootstrap_failed: 'Profile switched but initial sync failed. Rollback applied.',
+    invalid_server_response: 'Server returned an invalid JSON response. Rebuild the PWA and check proxy/server setup.',
   },
 } as const
 
@@ -129,25 +99,6 @@ interface Props {
   language: Lang
 }
 
-function CopyButton({ text, label, labelCopied }: { text: string; label: string; labelCopied: string }) {
-  const [copied, setCopied] = useState(false)
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(text).catch(() => {})
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-  return (
-    <button
-      type="button"
-      onClick={() => void handleCopy()}
-      className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition-colors"
-    >
-      {copied ? <Check size={13} /> : <Copy size={13} />}
-      {copied ? labelCopied : label}
-    </button>
-  )
-}
-
 function StatusRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between items-start gap-4 text-xs">
@@ -155,17 +106,6 @@ function StatusRow({ label, value }: { label: string; value: string }) {
       <span className="text-zinc-300 font-mono text-right break-all">{value}</span>
     </div>
   )
-}
-
-function getEndpointFromSettings(): string {
-  try {
-    const raw = localStorage.getItem('card-pwa-settings')
-    if (!raw) return ''
-    const parsed = JSON.parse(raw) as { sync?: { endpoint?: string } }
-    return parsed?.sync?.endpoint?.trim() ?? ''
-  } catch {
-    return ''
-  }
 }
 
 function resolveErrorMessage(error: string, t: typeof STRINGS['de'] | typeof STRINGS['en']): string {
@@ -178,6 +118,8 @@ function resolveErrorMessage(error: string, t: typeof STRINGS['de'] | typeof STR
       return t.switch_failed
     case 'rollback_applied':
       return t.switch_bootstrap_failed
+    case 'invalid_server_response':
+      return t.invalid_server_response
     default:
       return error
   }
@@ -189,20 +131,13 @@ export default function ProfileSyncSection({ language }: Props) {
 
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [recoveryCode, setRecoveryCode] = useState<string | null>(null)
-  const [recoveryConfirmed, setRecoveryConfirmed] = useState(false)
-  const [pairCode, setPairCode] = useState<string | null>(null)
-  const [pairExpiresAt, setPairExpiresAt] = useState<number | null>(null)
-  const [redeemInput, setRedeemInput] = useState('')
-  const [showRedeem, setShowRedeem] = useState(false)
-  const [showRecover, setShowRecover] = useState(false)
-  const [recoverInput, setRecoverInput] = useState('')
-  const [endpointOverride, setEndpointOverride] = useState('')
   const [profiles, setProfiles] = useState<ServerProfileSummary[]>([])
+  const [serverDecks, setServerDecks] = useState<ServerDeckSummary[]>([])
   const [loadingProfiles, setLoadingProfiles] = useState(false)
+  const [loadingDecks, setLoadingDecks] = useState(false)
   const [switchingUserId, setSwitchingUserId] = useState<string | null>(null)
 
-  const effectiveEndpoint = endpointOverride.trim() || getEndpointFromSettings()
+  const effectiveEndpoint = profile?.endpoint?.trim() || getDefaultProfileSyncEndpoint()
 
   const loadProfiles = async () => {
     if (!effectiveEndpoint) return
@@ -217,10 +152,34 @@ export default function ProfileSyncSection({ language }: Props) {
     setLoadingProfiles(false)
   }
 
+  const loadDecks = async () => {
+    if (!effectiveEndpoint || profile?.mode !== 'linked' || !profile.userId) {
+      setServerDecks([])
+      return
+    }
+
+    setLoadingDecks(true)
+    const listed = await listServerDecks(effectiveEndpoint, profile.profileToken)
+    if (!listed.ok) {
+      setError(listed.error ?? t.switch_failed)
+      setLoadingDecks(false)
+      return
+    }
+
+    const decks = listed.decks ?? []
+    setServerDecks(decks)
+    setLoadingDecks(false)
+  }
+
   useEffect(() => {
-    if (!effectiveEndpoint || !navigator.onLine) return
+    if (!effectiveEndpoint || !navigator.onLine || profile?.mode !== 'linked') return
     void loadProfiles()
-  }, [effectiveEndpoint])
+  }, [effectiveEndpoint, profile?.mode])
+
+  useEffect(() => {
+    if (!effectiveEndpoint || !navigator.onLine || profile?.mode !== 'linked') return
+    void loadDecks()
+  }, [effectiveEndpoint, profile?.mode, profile?.userId, profile?.profileToken])
 
   const handleCreateProfile = async () => {
     if (!effectiveEndpoint) {
@@ -252,100 +211,28 @@ export default function ProfileSyncSection({ language }: Props) {
     }
     setProfile(linked)
     writeProfileHintCookie(linked.userId ?? '')
-    setRecoveryCode(res.recoveryCode ?? null)
-    setRecoveryConfirmed(false)
+    await loadProfiles()
     setBusy(false)
   }
 
   const handleUnlink = async () => {
     if (!profile?.profileToken || !profile.endpoint) {
+      setError(null)
+      setProfiles([])
+      setServerDecks([])
       const local = makeLocalProfile()
       setProfile(local)
       return
     }
     setBusy(true)
+    setError(null)
     await revokeDeviceToken(profile.endpoint, profile.profileToken)
     await clearSyncQueue()
-    resetSyncPullState()
+    await resetSyncPullState()
+    setProfiles([])
+    setServerDecks([])
     const local = makeLocalProfile()
     setProfile(local)
-    setBusy(false)
-  }
-
-  const handleIssuePairCode = async () => {
-    if (!profile?.profileToken || !profile.endpoint) return
-    setBusy(true)
-    setError(null)
-    const res = await issuePairingCode(profile.endpoint, profile.profileToken)
-    if (!res.ok || !res.code) {
-      setError(res.error ?? 'unknown_error')
-      setBusy(false)
-      return
-    }
-    setPairCode(res.code)
-    setPairExpiresAt(res.expiresAt ?? null)
-    setBusy(false)
-  }
-
-  const handleRedeemCode = async () => {
-    if (!redeemInput.trim() || !effectiveEndpoint) return
-    setBusy(true)
-    setError(null)
-    const deviceId = getOrCreateDeviceId()
-    const res = await redeemPairingCode(effectiveEndpoint, redeemInput.trim(), deviceId, navigator.userAgent.slice(0, 60))
-    if (!res.ok || !res.userId || !res.profileToken) {
-      setError(res.error ?? 'unknown_error')
-      setBusy(false)
-      return
-    }
-    const now = Date.now()
-    const linked: ProfileRecord = {
-      id: 'current',
-      mode: 'linked',
-      deviceId,
-      userId: res.userId,
-      profileToken: res.profileToken,
-      endpoint: effectiveEndpoint,
-      linkedAt: now,
-      recoveryCodeShown: false,
-      createdAt: now,
-      updatedAt: now,
-    }
-    setProfile(linked)
-    writeProfileHintCookie(linked.userId ?? '')
-    setShowRedeem(false)
-    setRedeemInput('')
-    setBusy(false)
-  }
-
-  const handleRecover = async () => {
-    if (!recoverInput.trim() || !effectiveEndpoint) return
-    setBusy(true)
-    setError(null)
-    const deviceId = getOrCreateDeviceId()
-    const res = await recoverWithCode(effectiveEndpoint, recoverInput.trim(), deviceId, navigator.userAgent.slice(0, 60))
-    if (!res.ok || !res.userId || !res.profileToken) {
-      setError(res.error ?? 'unknown_error')
-      setBusy(false)
-      return
-    }
-    const now = Date.now()
-    const linked: ProfileRecord = {
-      id: 'current',
-      mode: 'linked',
-      deviceId,
-      userId: res.userId,
-      profileToken: res.profileToken,
-      endpoint: effectiveEndpoint,
-      linkedAt: now,
-      recoveryCodeShown: true,
-      createdAt: now,
-      updatedAt: now,
-    }
-    setProfile(linked)
-    writeProfileHintCookie(linked.userId ?? '')
-    setShowRecover(false)
-    setRecoverInput('')
     setBusy(false)
   }
 
@@ -391,7 +278,7 @@ export default function ProfileSyncSection({ language }: Props) {
     }
 
     await clearSyncQueue()
-    resetSyncPullState()
+    await resetSyncPullState()
     await resetLocalStudyDataForProfileSwitch()
 
     const now = Date.now()
@@ -451,33 +338,6 @@ export default function ProfileSyncSection({ language }: Props) {
         <p className="text-xs text-red-400 bg-red-950/40 border border-red-800/40 rounded px-3 py-2">{resolveErrorMessage(error, t)}</p>
       )}
 
-      {/* Recovery code display (shown once after profile creation) */}
-      {recoveryCode && !recoveryConfirmed && (
-        <div className="bg-amber-950/50 border border-amber-700/50 rounded-lg p-4 space-y-3">
-          <div className="flex items-center gap-2">
-            <KeyRound size={15} className="text-amber-400 shrink-0" />
-            <p className="text-sm font-semibold text-amber-300">{t.recovery_code_title}</p>
-          </div>
-          <p className="text-xs text-amber-200/80">{t.recovery_code_desc}</p>
-          <div className="font-mono text-base tracking-widest text-amber-200 bg-amber-950/70 rounded px-3 py-2 text-center">
-            {recoveryCode}
-          </div>
-          <div className="flex items-center justify-between">
-            <CopyButton text={recoveryCode} label={t.copy} labelCopied={t.copied} />
-            <button
-              type="button"
-              onClick={() => {
-                setRecoveryConfirmed(true)
-                if (profile) setProfile({ ...profile, recoveryCodeShown: true, updatedAt: Date.now() })
-              }}
-              className="text-xs bg-amber-600 hover:bg-amber-500 text-white rounded px-3 py-1.5 transition-colors"
-            >
-              {t.recovery_code_saved}
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Linked profile info */}
       {isLinked && profile && (
         <div className="space-y-2">
@@ -492,114 +352,9 @@ export default function ProfileSyncSection({ language }: Props) {
         </div>
       )}
 
-      {/* Pairing code display */}
-      {pairCode && (
-        <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-4 space-y-2">
-          <div className="flex items-center gap-2">
-            <QrCode size={14} className="text-zinc-400" />
-            <p className="text-xs font-semibold text-zinc-300">{t.pair_code_title}</p>
-          </div>
-
-          <div className="font-mono text-xl tracking-widest text-white text-center py-1">{pairCode}</div>
-          {pairExpiresAt && (
-            <p className="text-xs text-zinc-500 text-center">
-              {t.pair_code_expires} ({new Date(pairExpiresAt).toLocaleTimeString()})
-            </p>
-          )}
-          <div className="flex justify-between items-center">
-            <CopyButton text={pairCode} label={t.copy} labelCopied={t.copied} />
-            <button
-              type="button"
-              onClick={() => { setPairCode(null); setPairExpiresAt(null) }}
-              className="text-xs text-zinc-500 hover:text-white transition-colors"
-            >
-              {t.pair_code_cancel}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Redeem pairing code */}
-      {showRedeem && (
-        <div className="space-y-2">
-          <input
-            type="text"
-            value={redeemInput}
-            onChange={e => setRedeemInput(e.target.value.toUpperCase())}
-            placeholder={t.pair_code_input}
-            maxLength={16}
-            className="w-full bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-sm text-white placeholder:text-zinc-600 font-mono tracking-widest uppercase"
-          />
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => void handleRedeemCode()}
-              disabled={busy || !redeemInput.trim()}
-              className="flex-1 bg-white text-black text-sm font-semibold rounded py-2 hover:bg-zinc-200 disabled:opacity-40 transition-colors"
-            >
-              {busy ? t.linking : t.pair_code_redeem}
-            </button>
-            <button
-              type="button"
-              onClick={() => { setShowRedeem(false); setRedeemInput('') }}
-              className="px-4 text-sm text-zinc-400 hover:text-white transition-colors"
-            >
-              {t.pair_code_cancel}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Recovery flow */}
-      {showRecover && (
-        <div className="space-y-2">
-          <input
-            type="text"
-            value={recoverInput}
-            onChange={e => setRecoverInput(e.target.value)}
-            placeholder={t.recover_input}
-            className="w-full bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-sm text-white placeholder:text-zinc-600 font-mono"
-          />
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => void handleRecover()}
-              disabled={busy || !recoverInput.trim()}
-              className="flex-1 bg-white text-black text-sm font-semibold rounded py-2 hover:bg-zinc-200 disabled:opacity-40 transition-colors"
-            >
-              {busy ? t.linking : t.recover_action}
-            </button>
-            <button
-              type="button"
-              onClick={() => { setShowRecover(false); setRecoverInput('') }}
-              className="px-4 text-sm text-zinc-400 hover:text-white transition-colors"
-            >
-              {t.pair_code_cancel}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Endpoint input when not linked */}
-      {!isLinked && !showRedeem && !showRecover && (
-        <div className="space-y-1">
-          <label className="text-xs text-zinc-500">{t.endpoint_label}</label>
-          <input
-            type="url"
-            value={endpointOverride}
-            onChange={e => setEndpointOverride(e.target.value)}
-            placeholder={effectiveEndpoint || t.endpoint_placeholder}
-            className="w-full bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-sm text-white placeholder:text-zinc-600"
-          />
-          {!endpointOverride && effectiveEndpoint && (
-            <p className="text-xs text-zinc-600">{t.endpoint_hint}</p>
-          )}
-        </div>
-      )}
-
       {/* Actions */}
       <div className="space-y-2">
-        {!!effectiveEndpoint && (
+        {isLinked && !!effectiveEndpoint && (
           <div className="space-y-2 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3">
             <div className="flex items-center justify-between">
               <p className="text-xs font-semibold text-zinc-300">{t.list_profiles}</p>
@@ -640,7 +395,42 @@ export default function ProfileSyncSection({ language }: Props) {
           </div>
         )}
 
-        {!isLinked && !showRedeem && !showRecover && (
+        {isLinked && !!effectiveEndpoint && (
+          <div className="space-y-2 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold text-zinc-300">{t.list_decks}</p>
+              <button
+                type="button"
+                onClick={() => void loadDecks()}
+                disabled={busy || loadingDecks || !navigator.onLine}
+                className="text-xs text-zinc-400 hover:text-white disabled:opacity-40 transition-colors"
+              >
+                {loadingDecks ? t.linking : t.list_decks_refresh}
+              </button>
+            </div>
+
+            {serverDecks.length === 0 && !loadingDecks && (
+              <p className="text-xs text-zinc-500">—</p>
+            )}
+
+            {serverDecks.length > 0 && (
+              <div className="max-h-56 overflow-y-auto rounded border border-zinc-800">
+                <ul>
+                  {serverDecks.map(deck => (
+                    <li
+                      key={deck.id}
+                      className="px-3 py-2 text-sm text-zinc-200 border-b border-zinc-800 last:border-b-0"
+                    >
+                      {deck.name || deck.id}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
+        {!isLinked && (
           <>
             <button
               type="button"
@@ -651,38 +441,11 @@ export default function ProfileSyncSection({ language }: Props) {
               {busy ? <RefreshCw size={14} className="animate-spin" /> : <User size={14} />}
               {busy ? t.creating : t.create_profile}
             </button>
-            <button
-              type="button"
-              onClick={() => setShowRedeem(true)}
-              disabled={busy}
-              className="w-full flex items-center justify-center gap-2 text-sm text-zinc-400 hover:text-white border border-zinc-800 rounded-lg py-2.5 transition-colors"
-            >
-              <LogIn size={14} />
-              {t.pair_code_input}
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowRecover(true)}
-              disabled={busy}
-              className="w-full flex items-center justify-center gap-2 text-sm text-zinc-500 hover:text-zinc-300 transition-colors py-2"
-            >
-              <KeyRound size={13} />
-              {t.recover_title}
-            </button>
           </>
         )}
 
         {isLinked && (
           <>
-            <button
-              type="button"
-              onClick={() => void handleIssuePairCode()}
-              disabled={busy}
-              className="w-full flex items-center justify-center gap-2 text-sm text-zinc-300 hover:text-white border border-zinc-800 rounded-lg py-2.5 transition-colors"
-            >
-              <Link size={14} />
-              {t.link_device}
-            </button>
             <button
               type="button"
               onClick={() => void handleUnlink()}

@@ -179,24 +179,26 @@ async function writeAppliedOpIds(opIds: Set<string>): Promise<void> {
   }
 }
 
-function clearAppliedOpIds() {
+async function clearAppliedOpIds(): Promise<void> {
   localStorage.removeItem(LEGACY_APPLIED_OP_IDS_KEY)
   if (!hasSyncMetaTable()) return
 
-  void db.syncMeta.delete(SYNC_META_APPLIED_OP_IDS_KEY).catch(() => {
+  await db.syncMeta.delete(SYNC_META_APPLIED_OP_IDS_KEY).catch(() => {
     // best effort
   })
 }
 
-export function resetSyncPullState() {
+export async function resetSyncPullState(): Promise<void> {
   localStorage.removeItem(LEGACY_CURSOR_KEY)
   localStorage.removeItem(LEGACY_APPLIED_OP_IDS_KEY)
   if (hasSyncMetaTable()) {
-    void db.syncMeta.delete(SYNC_META_CURSOR_KEY).catch(() => {
+    try {
+      await db.syncMeta.delete(SYNC_META_CURSOR_KEY)
+    } catch {
       // best effort
-    })
+    }
   }
-  clearAppliedOpIds()
+  await clearAppliedOpIds()
 }
 
 // ─── Normalizers ───────────────────────────────────────────────────────
@@ -748,7 +750,7 @@ async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
       await writeCursor(0)
     }
 
-    clearAppliedOpIds()
+    await clearAppliedOpIds()
     return true
   } catch {
     return false

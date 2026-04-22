@@ -1,12 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { CardRecord } from '../../db'
+import type { CardRecord, DeckRecord, ProfileRecord, ReviewRecord } from '../../db'
 
 type CardGetterMock = ReturnType<typeof vi.fn<() => Promise<CardRecord | undefined>>>
 
 const state = vi.hoisted(() => ({
   savedCards: [] as CardRecord[],
+  savedDecks: [] as DeckRecord[],
+  savedReviews: [] as Omit<ReviewRecord, 'id'>[],
   responses: [] as unknown[],
   authToken: '',
+  profileRecord: null as ProfileRecord | null,
 }))
 
 function mockResponse(body: unknown): Response {
@@ -20,7 +23,9 @@ const mockDb = vi.hoisted(() => ({
   decks: {
     filter: vi.fn(() => ({ count: async () => 0 })),
     clear: vi.fn(async () => {}),
-    bulkPut: vi.fn(async () => {}),
+    bulkPut: vi.fn(async (decks: DeckRecord[]) => {
+      state.savedDecks = decks
+    }),
     toArray: vi.fn(async () => []),
   },
   cards: {
@@ -37,11 +42,16 @@ const mockDb = vi.hoisted(() => ({
   reviews: {
     each: vi.fn(async () => {}),
     bulkDelete: vi.fn(async () => {}),
-    bulkAdd: vi.fn(async () => {}),
+    bulkAdd: vi.fn(async (reviews: Omit<ReviewRecord, 'id'>[]) => {
+      state.savedReviews = reviews
+    }),
     where: vi.fn(() => ({ equals: vi.fn(() => ({ delete: vi.fn(async () => 0) })) })),
     delete: vi.fn(async () => 1),
     add: vi.fn(async () => 1),
     clear: vi.fn(async () => {}),
+  },
+  profile: {
+    get: vi.fn(async () => state.profileRecord),
   },
   transaction: vi.fn(async (_mode: string, ...args: unknown[]) => {
     const callback = args[args.length - 1]
@@ -99,8 +109,11 @@ describe('syncPull normalization', () => {
     })
 
     state.savedCards = []
+    state.savedDecks = []
+    state.savedReviews = []
     state.responses = []
     state.authToken = ''
+    state.profileRecord = null
     fetchWithTimeoutMock.mockClear()
     mockDb.cards.get.mockReset()
     mockDb.cards.get.mockImplementation(async () => undefined)
@@ -216,6 +229,73 @@ describe('syncPull normalization', () => {
         timestamp: now,
       }),
     ])
+  })
+
+  it('syncs all snapshot decks even when stale profile deck selection exists', async () => {
+    const now = Date.now()
+    state.profileRecord = {
+      id: 'current',
+      mode: 'linked',
+      deviceId: 'device-1',
+      userId: 'profile-1',
+      profileToken: 'dt_profile',
+      endpoint: 'http://localhost:8787',
+      createdAt: now,
+      updatedAt: now,
+    }
+    localStorage.setItem('card-pwa-profile-selected-decks:profile-1', JSON.stringify(['stale-deck-id']))
+
+    state.responses = [
+      { ok: true, needsSnapshot: true },
+      {
+        ok: true,
+        cursor: 7,
+        decks: [
+          { id: 'deck-keep', name: 'Keep', source: 'manual', createdAt: now },
+          { id: 'deck-skip', name: 'Skip', source: 'manual', createdAt: now },
+        ],
+        cards: [
+          {
+            id: 'card-keep',
+            noteId: 'note-keep',
+            deckId: 'deck-keep',
+            front: 'Q keep',
+            back: 'A keep',
+            tags: [],
+            extra: {},
+            type: 0,
+            queue: 0,
+            due: 0,
+            createdAt: now,
+          },
+          {
+            id: 'card-skip',
+            noteId: 'note-skip',
+            deckId: 'deck-skip',
+            front: 'Q skip',
+            back: 'A skip',
+            tags: [],
+            extra: {},
+            type: 0,
+            queue: 0,
+            due: 0,
+            createdAt: now,
+          },
+        ],
+        reviews: [
+          { cardId: 'card-keep', rating: 4, timeMs: 100, timestamp: now },
+          { cardId: 'card-skip', rating: 1, timeMs: 200, timestamp: now },
+        ],
+      },
+      { ok: true, operations: [], nextCursor: 7, hasMore: false },
+    ]
+
+    const { pullAndApplySyncDeltas } = await import('../../services/syncPull')
+    await pullAndApplySyncDeltas()
+
+    expect(state.savedDecks.map(deck => deck.id)).toEqual(['deck-keep', 'deck-skip'])
+    expect(state.savedCards.map(card => card.id)).toEqual(['card-keep', 'card-skip'])
+    expect(state.savedReviews.map(review => review.cardId)).toEqual(['card-keep', 'card-skip'])
   })
 
   it('forces tombstone when deletedAt is present without isDeleted', async () => {

@@ -202,7 +202,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
           })
 
           await clearSyncQueue()
-          resetSyncPullState()
+          await resetSyncPullState()
           localStorage.removeItem(STORAGE_KEYS.studySession)
           localStorage.removeItem(STORAGE_KEYS.legacyStudySession)
 
