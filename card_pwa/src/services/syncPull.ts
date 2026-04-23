@@ -100,13 +100,12 @@ function filterSnapshotBySelectedDecks(
 
 async function shouldApplyOperationForSelectedDecks(op: PulledOperation, selectedDecks: Set<string> | null): Promise<boolean> {
   if (!selectedDecks) return true
+  if (op.type === 'deck.create') return true
   if (op.type === 'shuffleCollection.upsert' || op.type === 'shuffleCollection.delete') return true
   if (!op.payload || typeof op.payload !== 'object') return true
 
   const payload = op.payload as Record<string, unknown>
-  const directDeckId = op.type === 'deck.create'
-    ? payload.id
-    : payload.deckId
+  const directDeckId = payload.deckId
   if (typeof directDeckId === 'string' && directDeckId) {
     return selectedDecks.has(directDeckId)
   }

@@ -107,6 +107,10 @@ export default function HomeView({
     if (stored === 'heatmap' || stored === 'life' || stored === 'pilot') return stored
     return window.localStorage.getItem(STORAGE_KEYS.homeShowHeatmap) === '1' ? 'heatmap' : 'kpi'
   })
+  const [showShuffleOnly, setShowShuffleOnly] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false
+    return window.localStorage.getItem(STORAGE_KEYS.homeShuffleOnlyMode) === '1'
+  })
   const {
     deckSearchQuery,
     setDeckSearchQuery,
@@ -133,6 +137,10 @@ export default function HomeView({
     window.localStorage.setItem(STORAGE_KEYS.homeDashboardMode, dashboardMode)
     window.localStorage.setItem(STORAGE_KEYS.homeShowHeatmap, dashboardMode === 'heatmap' ? '1' : '0')
   }, [dashboardMode])
+
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_KEYS.homeShuffleOnlyMode, showShuffleOnly ? '1' : '0')
+  }, [showShuffleOnly])
 
   useEffect(() => {
     if (!navigator.serviceWorker?.controller) return
@@ -462,11 +470,14 @@ export default function HomeView({
             <HomeDeckToolbar
               t={t}
               language={settings.language}
+              shuffleModeEnabled={settings.shuffleModeEnabled}
+              showShuffleOnly={showShuffleOnly}
               deckSearchQuery={deckSearchQuery}
               deckSortMode={deckSortMode}
               dashboardMode={dashboardMode}
               onDeckSearchQueryChange={setDeckSearchQuery}
               onDeckSortModeChange={setDeckSortMode}
+              onToggleShuffleOnly={() => setShowShuffleOnly(current => !current)}
               onDashboardModeChange={setDashboardMode}
               onReload={reload}
               onCreateDeck={() => {
@@ -474,6 +485,7 @@ export default function HomeView({
                 setCreateDeckError(null)
                 setShowCreateDeckModal(true)
               }}
+              onCreateVirtualDeck={openCreateShuffleCollection}
               onCreateCard={() => setShowCreateCard(true)}
               onImport={() => setShowImport(true)}
               onExport={() => setShowExportModal(true)}
@@ -511,7 +523,7 @@ export default function HomeView({
           </div>
         )}
 
-        {settings.shuffleModeEnabled && (
+        {settings.shuffleModeEnabled && isShuffleManageMode && (
           <HomeShuffleSection
             language={settings.language}
             collections={shuffleCollections}
@@ -556,9 +568,17 @@ export default function HomeView({
             filteredDecks={filteredDecks}
             visibleDecks={visibleDecks}
             deckScheduleOverview={deckScheduleOverview}
+            shuffleModeEnabled={settings.shuffleModeEnabled}
+            showShuffleOnly={showShuffleOnly}
+            shuffleCollections={shuffleCollections}
+            shuffleSummaries={shuffleSummaries}
             onReload={reload}
             onShowImport={() => setShowImport(true)}
             onStartStudy={onStartStudy}
+            onStartShuffleStudy={onStartShuffleStudy}
+            onEditShuffleCollection={openEditShuffleCollection}
+            onDeleteShuffleCollection={handleDeleteShuffleCollection}
+            onShowShuffleMetrics={setMetricsShuffleCollection}
             onDelete={handleDelete}
             onShowMetrics={setMetricsDeck}
             onManageCards={setCardsDeck}
