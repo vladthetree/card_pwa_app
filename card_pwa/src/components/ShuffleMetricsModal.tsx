@@ -66,9 +66,9 @@ export function ShuffleMetricsModal({ collection, decks, language, onClose }: Pr
         initial={{ opacity: 0, y: 10, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 10, scale: 0.98 }}
-        className={`${UI_TOKENS.modal.shell} max-w-3xl p-5 sm:p-6`}
+        className={`${UI_TOKENS.modal.shell} max-w-3xl`}
       >
-        <div className="flex items-start justify-between gap-3">
+        <div className={UI_TOKENS.modal.header}>
           <div>
             <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-amber-200/75">
               <BarChart3 size={14} />
@@ -86,18 +86,19 @@ export function ShuffleMetricsModal({ collection, decks, language, onClose }: Pr
           </button>
         </div>
 
-        <div className="mt-4 inline-flex overflow-hidden rounded-2xl border border-zinc-900 transition-all duration-300 ease-out">
+        <div className={UI_TOKENS.modal.body}>
+        <div className="mt-1 inline-flex w-full overflow-hidden rounded-2xl border border-zinc-900 transition-all duration-300 ease-out sm:w-auto">
           <button
             type="button"
             onClick={() => setPeriod('all')}
-            className={`px-3 py-1.5 text-xs sm:text-sm transition-all duration-300 ease-out active:scale-95 ${period === 'all' ? 'bg-white text-black' : 'text-white/75 hover:bg-white/10 hover:text-white'}`}
+            className={`flex-1 px-3 py-2 text-xs sm:text-sm transition-all duration-300 ease-out active:scale-95 ${period === 'all' ? 'bg-white text-black' : 'text-white/75 hover:bg-white/10 hover:text-white'}`}
           >
             {t.metrics_period_all}
           </button>
           <button
             type="button"
             onClick={() => setPeriod('7d')}
-            className={`px-3 py-1.5 text-xs sm:text-sm transition-all duration-300 ease-out active:scale-95 ${period === '7d' ? 'bg-white text-black' : 'text-white/75 hover:bg-white/10 hover:text-white'}`}
+            className={`flex-1 px-3 py-2 text-xs sm:text-sm transition-all duration-300 ease-out active:scale-95 ${period === '7d' ? 'bg-white text-black' : 'text-white/75 hover:bg-white/10 hover:text-white'}`}
           >
             {t.metrics_period_7d}
           </button>
@@ -109,8 +110,8 @@ export function ShuffleMetricsModal({ collection, decks, language, onClose }: Pr
           <>
             <div className="mt-5 rounded-[2.5rem] border border-zinc-900 bg-black p-5 sm:p-6 transition-all duration-300 ease-out">
               <p className="text-xs uppercase tracking-wide text-amber-100/70">{t.metrics_success_rate}</p>
-              <div className="mt-2 flex items-end gap-2">
-                <p className="text-8xl leading-none font-black text-amber-300">{metrics.successRate}%</p>
+              <div className="mt-2 flex flex-wrap items-end gap-2">
+                <p className="text-6xl leading-none font-black text-amber-300 sm:text-8xl">{metrics.successRate}%</p>
                 <p className="pb-2 text-xs font-light text-amber-100/70 sm:text-sm">
                   {t.metrics_reviews_total}: {metrics.totalReviews}
                 </p>
@@ -148,7 +149,7 @@ export function ShuffleMetricsModal({ collection, decks, language, onClose }: Pr
 
             <div className="mt-4 rounded-xl border border-zinc-900 bg-black p-3">
               <p className="mb-2 text-xs font-light text-white/55">{t.metrics_rating_distribution}</p>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {[1, 2, 3, 4].map(rating => (
                   <div key={rating} className="rounded-lg border border-zinc-900 bg-black px-2 py-2 text-center">
                     <p className="text-xs font-light text-white/50">{rating}</p>
@@ -186,6 +187,7 @@ export function ShuffleMetricsModal({ collection, decks, language, onClose }: Pr
             </div>
           </>
         )}
+        </div>
       </motion.div>
     </motion.div>
   )
