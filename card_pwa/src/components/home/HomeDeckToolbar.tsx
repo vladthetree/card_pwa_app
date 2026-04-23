@@ -1,7 +1,7 @@
 import { useCallback, useState, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
-import { Activity, BarChart3, CalendarDays, ChevronDown, Download, FolderPlus, Plus, RefreshCw, Search, Shuffle, Sparkles, Upload, X, ArrowUpDown } from 'lucide-react'
+import { Activity, BarChart3, CalendarDays, Check, ChevronDown, Download, FolderPlus, Plus, RefreshCw, Search, Shuffle, Sparkles, Upload, X } from 'lucide-react'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 import { useFloatingMenu } from '../../hooks/useFloatingMenu'
 import type { HomeDashboardMode } from './HomeStatsSection'
@@ -46,26 +46,100 @@ export function HomeDeckToolbar({
   onExport,
 }: Props) {
   const [showActionsMenu, setShowActionsMenu] = useState(false)
+  const [showFilterMenu, setShowFilterMenu] = useState(false)
+  const [showFeatureMenu, setShowFeatureMenu] = useState(false)
+
   const closeActionsMenu = useCallback(() => {
     setShowActionsMenu(false)
   }, [])
+
+  const closeFilterMenu = useCallback(() => {
+    setShowFilterMenu(false)
+  }, [])
+
+  const closeFeatureMenu = useCallback(() => {
+    setShowFeatureMenu(false)
+  }, [])
+
   const { anchorRef, menuRef, floatingStyle, updatePosition } = useFloatingMenu<HTMLDivElement, HTMLDivElement>({
     isOpen: showActionsMenu,
     onClose: closeActionsMenu,
     width: 248,
     maxHeight: 292,
   })
+
+  const {
+    anchorRef: filterAnchorRef,
+    menuRef: filterMenuRef,
+    floatingStyle: filterFloatingStyle,
+    updatePosition: updateFilterPosition,
+  } = useFloatingMenu<HTMLDivElement, HTMLDivElement>({
+    isOpen: showFilterMenu,
+    onClose: closeFilterMenu,
+    width: 236,
+    maxHeight: 260,
+  })
+
+  const {
+    anchorRef: featureAnchorRef,
+    menuRef: featureMenuRef,
+    floatingStyle: featureFloatingStyle,
+    updatePosition: updateFeaturePosition,
+  } = useFloatingMenu<HTMLDivElement, HTMLDivElement>({
+    isOpen: showFeatureMenu,
+    onClose: closeFeatureMenu,
+    width: 220,
+    maxHeight: 260,
+  })
+
   const handleToggleActionsMenu = useCallback((event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
     const willOpen = !showActionsMenu
 
     setShowActionsMenu(willOpen)
+    if (willOpen) {
+      closeFilterMenu()
+      closeFeatureMenu()
+    }
 
     if (willOpen) {
       updatePosition()
       window.requestAnimationFrame(updatePosition)
     }
-  }, [showActionsMenu, updatePosition])
+  }, [showActionsMenu, updatePosition, closeFeatureMenu, closeFilterMenu])
+
+  const handleToggleFilterMenu = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+    const willOpen = !showFilterMenu
+
+    setShowFilterMenu(willOpen)
+    if (willOpen) {
+      closeActionsMenu()
+      closeFeatureMenu()
+    }
+
+    if (willOpen) {
+      updateFilterPosition()
+      window.requestAnimationFrame(updateFilterPosition)
+    }
+  }, [showFilterMenu, updateFilterPosition, closeActionsMenu, closeFeatureMenu])
+
+  const handleToggleFeatureMenu = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+    const willOpen = !showFeatureMenu
+
+    setShowFeatureMenu(willOpen)
+    if (willOpen) {
+      closeActionsMenu()
+      closeFilterMenu()
+    }
+
+    if (willOpen) {
+      updateFeaturePosition()
+      window.requestAnimationFrame(updateFeaturePosition)
+    }
+  }, [showFeatureMenu, updateFeaturePosition, closeActionsMenu, closeFilterMenu])
+
   const dashboardOptions: Array<{
     key: HomeDashboardMode
     label: string
@@ -76,6 +150,13 @@ export function HomeDeckToolbar({
     { key: 'life', label: language === 'de' ? 'Life' : 'Life', icon: Activity },
     { key: 'pilot', label: language === 'de' ? 'Pilot' : 'Pilot', icon: Sparkles },
   ]
+
+  const filterLabel = language === 'de' ? 'Filter' : 'Filter'
+  const featureLabel = language === 'de' ? 'Feature' : 'Feature'
+  const activeFeatureLabel = dashboardOptions.find(option => option.key === dashboardMode)?.label ?? 'KPI'
+  const decksLabel = language === 'de' ? 'Decks' : 'Decks'
+  const shuffleDecksLabel = language === 'de' ? 'Shuffle-Decks' : 'Shuffle decks'
+  const activeFilterValue = showShuffleOnly ? shuffleDecksLabel : decksLabel
 
   return (
     <div className="sticky top-0 z-[90] mb-2 mt-2 flex-shrink-0 sm:mb-3 sm:mt-4">
@@ -108,87 +189,148 @@ export function HomeDeckToolbar({
         </label>
 
         <div className="flex min-w-0 flex-1 items-center justify-between gap-1.5 sm:ml-auto sm:shrink-0 sm:flex-none sm:justify-end sm:gap-1">
-          <div
-            className="inline-flex h-9 min-w-0 flex-1 items-center gap-1 rounded-2xl border border-white/15 bg-white/[0.03] p-1 sm:h-8 sm:flex-none"
-            role="group"
-            aria-label={t.sort_by}
-            title={t.sort_by}
-          >
-            <span className="hidden sm:inline-flex items-center px-1.5 text-white/45" aria-hidden="true">
-              <ArrowUpDown size={12} />
-            </span>
-            {([
-              { key: 'name', label: t.sort_name },
-              { key: 'due_today', label: t.sort_due_today },
-            ] as const).map(option => {
-              const active = deckSortMode === option.key
-              return (
-                <button
-                  key={option.key}
-                  type="button"
-                  onClick={() => onDeckSortModeChange(option.key)}
-                  aria-pressed={active}
-                  className={`inline-flex h-7 flex-1 items-center justify-center rounded-xl px-2 text-[10px] sm:h-6 sm:flex-none sm:px-2.5 sm:text-[11px] font-mono uppercase tracking-[0.08em] transition-all duration-200 ${
-                    active
-                      ? 'bg-white text-black shadow-sm'
-                      : 'text-white/60 hover:text-white/85 hover:bg-white/[0.06]'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              )
-            })}
-          </div>
-
-          {shuffleModeEnabled && (
+          <div className="relative shrink-0" ref={filterAnchorRef}>
             <button
               type="button"
-              onClick={onToggleShuffleOnly}
-              aria-pressed={showShuffleOnly}
-              className={`inline-flex h-9 shrink-0 items-center gap-1.5 rounded-2xl border px-2.5 text-[10px] font-mono uppercase tracking-[0.08em] transition-all duration-200 ${
-                showShuffleOnly
-                  ? 'border-amber-300/40 bg-amber-300/15 text-amber-100'
-                  : 'border-white/15 bg-white/[0.03] text-white/60 hover:bg-white/[0.06] hover:text-white/85'
-              }`}
-              title={showShuffleOnly
-                ? (language === 'de' ? 'Zu normalen Decks wechseln' : 'Switch to normal decks')
-                : (language === 'de' ? 'Nur Shuffle-Decks anzeigen' : 'Show only shuffle decks')}
+              onClick={handleToggleFilterMenu}
+              className="inline-flex h-9 items-center gap-1.5 rounded-2xl border border-white/15 bg-white/[0.03] px-2.5 text-[10px] font-mono uppercase tracking-[0.08em] text-white/85 transition-all duration-200 hover:border-white/30 hover:bg-white/[0.07]"
+              aria-haspopup="menu"
+              aria-expanded={showFilterMenu}
+              title={filterLabel}
             >
-              <Shuffle size={13} />
-              <span>
-                {showShuffleOnly
-                  ? (language === 'de' ? 'Decks' : 'Decks')
-                  : (language === 'de' ? 'Shuffle' : 'Shuffle')}
-              </span>
+              <span className="text-white/55">{filterLabel}</span>
+              <span className="text-white">{activeFilterValue}</span>
+              <ChevronDown size={12} className={`transition-transform duration-150 ${showFilterMenu ? 'rotate-180' : ''}`} />
             </button>
-          )}
 
-          <div
-            className="inline-flex h-9 shrink-0 items-center gap-1 rounded-2xl border border-white/15 bg-white/[0.03] p-1"
-            role="group"
-            aria-label={language === 'de' ? 'Dashboard-Ansicht' : 'Dashboard view'}
-          >
-            {dashboardOptions.map(option => {
-              const Icon = option.icon
-              const active = dashboardMode === option.key
-              return (
+            {showFilterMenu && filterFloatingStyle && createPortal(
+              <motion.div
+                ref={filterMenuRef}
+                initial={{ opacity: 0, y: -4, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -4, scale: 0.97 }}
+                transition={{ duration: 0.12 }}
+                className="fixed z-[1300] overflow-y-auto rounded-2xl border border-white/15 bg-zinc-950/98 py-1 shadow-[0_18px_56px_rgba(0,0,0,0.72)] backdrop-blur-xl"
+                style={filterFloatingStyle}
+                role="menu"
+              >
+                <div className="px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
+                  {filterLabel}
+                </div>
                 <button
-                  key={option.key}
                   type="button"
-                  onClick={() => onDashboardModeChange(option.key)}
-                  aria-pressed={active}
-                  title={option.label}
-                  className={`inline-flex h-7 items-center justify-center rounded-xl px-2 text-[10px] font-mono uppercase tracking-[0.08em] transition-all duration-200 sm:gap-1.5 ${
-                    active
-                      ? 'bg-white text-black shadow-sm'
-                      : 'text-white/60 hover:bg-white/[0.06] hover:text-white/85'
-                  }`}
+                  onClick={() => {
+                    if (showShuffleOnly) onToggleShuffleOnly()
+                    closeFilterMenu()
+                  }}
+                  className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-white/[0.08] transition text-left"
+                  role="menuitem"
                 >
-                  <Icon size={13} />
-                  <span className="hidden min-[430px]:inline sm:inline">{option.label}</span>
+                  <span>{decksLabel}</span>
+                  {!showShuffleOnly && <Check size={14} />}
                 </button>
-              )
-            })}
+                {shuffleModeEnabled && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onToggleShuffleOnly()
+                      closeFilterMenu()
+                    }}
+                    className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-white/[0.08] transition text-left"
+                    role="menuitem"
+                  >
+                    <span>{shuffleDecksLabel}</span>
+                    {showShuffleOnly && <Check size={14} />}
+                  </button>
+                )}
+
+                {!showShuffleOnly && (
+                  <>
+                    <div className="border-t border-white/10 my-1" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onDeckSortModeChange('name')
+                        closeFilterMenu()
+                      }}
+                      className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-white/[0.08] transition text-left"
+                      role="menuitem"
+                    >
+                      <span>{t.sort_name}</span>
+                      {deckSortMode === 'name' && <Check size={14} />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onDeckSortModeChange('due_today')
+                        closeFilterMenu()
+                      }}
+                      className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-white/[0.08] transition text-left"
+                      role="menuitem"
+                    >
+                      <span>{t.sort_due_today}</span>
+                      {deckSortMode === 'due_today' && <Check size={14} />}
+                    </button>
+                  </>
+                )}
+              </motion.div>,
+              document.body,
+            )}
+          </div>
+
+          <div className="relative shrink-0" ref={featureAnchorRef}>
+            <button
+              type="button"
+              onClick={handleToggleFeatureMenu}
+              className="inline-flex h-9 items-center gap-1.5 rounded-2xl border border-white/15 bg-white/[0.03] px-2.5 text-[10px] font-mono uppercase tracking-[0.08em] text-white/85 transition-all duration-200 hover:border-white/30 hover:bg-white/[0.07]"
+              aria-haspopup="menu"
+              aria-expanded={showFeatureMenu}
+              title={featureLabel}
+            >
+              <span className="text-white/55">{featureLabel}</span>
+              <span className="text-white">{activeFeatureLabel}</span>
+              <ChevronDown size={12} className={`transition-transform duration-150 ${showFeatureMenu ? 'rotate-180' : ''}`} />
+            </button>
+
+            {showFeatureMenu && featureFloatingStyle && createPortal(
+              <motion.div
+                ref={featureMenuRef}
+                initial={{ opacity: 0, y: -4, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -4, scale: 0.97 }}
+                transition={{ duration: 0.12 }}
+                className="fixed z-[1300] overflow-y-auto rounded-2xl border border-white/15 bg-zinc-950/98 py-1 shadow-[0_18px_56px_rgba(0,0,0,0.72)] backdrop-blur-xl"
+                style={featureFloatingStyle}
+                role="menu"
+              >
+                <div className="px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
+                  {featureLabel}
+                </div>
+                {dashboardOptions.map(option => {
+                  const Icon = option.icon
+                  const isActive = dashboardMode === option.key
+                  return (
+                    <button
+                      key={option.key}
+                      type="button"
+                      onClick={() => {
+                        onDashboardModeChange(option.key)
+                        closeFeatureMenu()
+                      }}
+                      className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-white/[0.08] transition text-left"
+                      role="menuitem"
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <Icon size={13} />
+                        {option.label}
+                      </span>
+                      {isActive && <Check size={14} />}
+                    </button>
+                  )
+                })}
+              </motion.div>,
+              document.body,
+            )}
           </div>
 
           <button
