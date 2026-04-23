@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { createDeck, deleteDeck, fetchDeckCards, getDeckScheduleOverview, getFutureDueForecast } from '../db/queries'
-import { useDecks, useGamificationProfile, useStats } from '../hooks/useCardDb'
+import { useDecks, useGamificationProfile, useShuffleCollections, useStats } from '../hooks/useCardDb'
 import { usePwaInstall } from '../hooks/usePwaInstall'
 import { useServerHeartbeat } from '../hooks/useServerHeartbeat'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
@@ -13,7 +13,7 @@ import FutureForecastModal from './FutureForecastModal.tsx'
 import ImportView from './ImportView.tsx'
 import ConfirmModal from './ConfirmModal.tsx'
 import InstallHintModal from './InstallHintModal.tsx'
-import type { Deck, DeckScheduleOverview } from '../types'
+import type { Deck, DeckScheduleOverview, ShuffleCollection } from '../types'
 import { STORAGE_KEYS } from '../constants/appIdentity'
 import { UI_TOKENS } from '../constants/ui'
 import { DeckMetricsModal } from './DeckMetricsModal'
@@ -26,14 +26,17 @@ import { HomeDeckListSection } from './home/HomeDeckListSection'
 import { HomeCreateDeckModal } from './home/HomeCreateDeckModal'
 import { HomeExportModal } from './home/HomeExportModal'
 import { HomeDeckCardsModal } from './home/HomeDeckCardsModal'
+import { HomeShuffleSection } from './home/HomeShuffleSection'
 import { useHomeDeckFilters } from '../hooks/home/useHomeDeckFilters'
 import { useHomeStorageEstimate } from '../hooks/home/useHomeStorageEstimate'
 
 interface Props {
   onStartStudy: (deck: Deck) => void
+  onStartShuffleStudy: (collection: ShuffleCollection) => void
 }
-export default function HomeView({ onStartStudy }: Props) {
+export default function HomeView({ onStartStudy, onStartShuffleStudy }: Props) {
   const { decks, loading, error, reload } = useDecks()
+  const { collections: shuffleCollections } = useShuffleCollections()
   const { settings } = useSettings()
   const prefersReducedMotion = useReducedMotion()
   const { stats } = useStats(settings.nextDayStartsAt, settings.studyCardLimit)
@@ -363,6 +366,12 @@ export default function HomeView({ onStartStudy }: Props) {
           onCreateCard={() => setShowCreateCard(true)}
           onImport={() => setShowImport(true)}
           onExport={() => setShowExportModal(true)}
+        />
+
+        <HomeShuffleSection
+          language={settings.language}
+          collections={shuffleCollections}
+          onStartShuffleStudy={onStartShuffleStudy}
         />
 
         <HomeDeckListSection

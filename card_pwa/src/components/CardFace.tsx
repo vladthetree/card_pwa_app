@@ -12,6 +12,7 @@ interface Props {
   onEdit?: () => void
   onAnswerEvaluated?: (isCorrect: boolean) => void
   compact?: boolean
+  originDeckName?: string
 }
 
 function CardSection({
@@ -172,7 +173,7 @@ function ConfettiBurst() {
  * CardFace: Renders front/back of flashcard with interactive elements
  * Memoized to prevent unnecessary re-renders on parent updates
  */
-const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false }: Props) {
+const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName }: Props) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
@@ -221,6 +222,14 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   const compactFrontLayoutStyle = compact
     ? { gridTemplateRows: 'minmax(46%, 1.3fr) minmax(0, 1fr)' }
     : undefined
+
+  const renderOriginDeckBadge = () => (
+    originDeckName ? (
+      <span className="max-w-[160px] truncate rounded-full border border-cyan-300/20 bg-cyan-400/10 px-2.5 py-0.5 text-[10px] font-medium text-cyan-100/85">
+        {originDeckName}
+      </span>
+    ) : null
+  )
 
   /**
    * Reset answer state and animation flags when card changes
@@ -326,9 +335,12 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                 {compact ? (
                   <div className="mb-2 rounded-2xl px-3 py-2">
                     <div className="flex items-center justify-between">
-                      <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${badge.cls}`}>
-                        {t[badge.labelKey]}
-                      </span>
+                      <div className="flex min-w-0 items-center gap-2">
+                        <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${badge.cls}`}>
+                          {t[badge.labelKey]}
+                        </span>
+                        {renderOriginDeckBadge()}
+                      </div>
                       {onEdit && (
                         <button
                           onClick={(e) => {
@@ -345,12 +357,13 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                   </div>
                 ) : (
                   <div className="shrink-0 px-6 py-4 flex justify-between items-center border-b border-white/5">
-                    <div className="flex items-center gap-2">
+                    <div className="flex min-w-0 items-center gap-2">
                       <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium ${badge.cls}`}>
                         {t[badge.labelKey]}
                       </span>
+                      {renderOriginDeckBadge()}
                       {card.tags.length > 0 && (
-                        <span className="font-sans text-[12px] text-zinc-500 hidden md:block">
+                        <span className="font-sans text-[12px] text-zinc-500 hidden md:block truncate">
                           {card.tags.slice(0, 2).join(' · ')}
                         </span>
                       )}
@@ -524,9 +537,12 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
               >
                 {compact ? (
                   <div className="flex items-center justify-between mb-2">
-                    <span className={`text-xs font-medium ${hasAnswered ? (isAnswerCorrect ? 'text-green-400/70' : 'text-red-400/70') : 'text-white/60'}`}>
-                      {hasAnswered ? (isAnswerCorrect ? t.answer : t.wrong_answer) : t.answer}
-                    </span>
+                    <div className="flex min-w-0 items-center gap-2">
+                      <span className={`text-xs font-medium ${hasAnswered ? (isAnswerCorrect ? 'text-green-400/70' : 'text-red-400/70') : 'text-white/60'}`}>
+                        {hasAnswered ? (isAnswerCorrect ? t.answer : t.wrong_answer) : t.answer}
+                      </span>
+                      {renderOriginDeckBadge()}
+                    </div>
                     {onEdit && (
                       <button
                         onClick={(e) => {
@@ -542,9 +558,12 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                   </div>
                 ) : (
                   <div className="shrink-0 px-6 py-4 flex justify-between items-center border-b border-white/5">
-                    <span className={`font-sans font-medium text-[13px] tracking-wide ${hasAnswered ? (isAnswerCorrect ? 'text-emerald-400/70' : 'text-rose-400/70') : 'text-zinc-500'}`}>
-                      {hasAnswered ? (isAnswerCorrect ? t.answer : t.wrong_answer) : t.answer}
-                    </span>
+                    <div className="flex min-w-0 items-center gap-2">
+                      <span className={`font-sans font-medium text-[13px] tracking-wide ${hasAnswered ? (isAnswerCorrect ? 'text-emerald-400/70' : 'text-rose-400/70') : 'text-zinc-500'}`}>
+                        {hasAnswered ? (isAnswerCorrect ? t.answer : t.wrong_answer) : t.answer}
+                      </span>
+                      {renderOriginDeckBadge()}
+                    </div>
                     {onEdit && (
                       <button
                         onClick={(e) => {

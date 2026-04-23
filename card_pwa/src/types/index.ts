@@ -38,6 +38,8 @@ export interface Deck extends DeckStats {
   name: string
 }
 
+export type ShuffleCollection = import('../db').ShuffleCollectionRecord
+
 export interface DeckDaySchedule {
   total: number
   new: number
@@ -131,4 +133,4 @@ export interface ReviewUndoToken {
   previous: CardSchedulingState
 }
 
-export type View = 'home' | 'study' | 'import'
+export type View = 'home' | 'study' | 'shuffle-study' | 'import'
