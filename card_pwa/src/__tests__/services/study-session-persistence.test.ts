@@ -3,6 +3,7 @@ import {
   DEFAULT_STUDY_CARD_LIMIT,
   STUDY_SESSION_TTL_MS,
   buildPersistedStudySession,
+  buildShuffleSessionId,
   parsePersistedStudySession,
   restoreCardsByOrder,
   sanitizeCardLimit,
@@ -48,6 +49,7 @@ describe('study session persistence helpers', () => {
     const parsed = parsePersistedStudySession(raw, 'deck-1', now)
     expect(parsed).not.toBeNull()
     expect(parsed?.cardIds).toEqual(['c1', 'c2'])
+    expect(parsed?.kind).toBe('deck')
   })
 
   it('rejects persisted session when deck id differs', () => {
@@ -130,9 +132,73 @@ describe('study session persistence helpers', () => {
 
     expect(payload.version).toBe(4)
     expect(payload.deckId).toBe('deck-1')
+    expect(payload.kind).toBe('deck')
     expect(payload.cardIds).toEqual(['c1', 'c2'])
     expect(payload.expiresAt).toBe(now + STUDY_SESSION_TTL_MS)
 
     vi.useRealTimers()
+  })
+
+  it('builds a namespaced shuffle session id', () => {
+    expect(buildShuffleSessionId('collection-1')).toBe('shuffle:collection-1')
+  })
+
+  it('preserves optional shuffle fields in persisted payloads', () => {
+    const payload = buildPersistedStudySession({
+      deckId: 'shuffle:collection-1',
+      kind: 'shuffle',
+      collectionId: 'collection-1',
+      deckIds: ['deck-a', 'deck-b'],
+      cardOrigins: { c1: 'deck-a', c2: 'deck-b' },
+      cardIds: ['c1', 'c2'],
+      cardLimit: 50,
+      sessionCount: 1,
+      isFlipped: false,
+      isDone: false,
+      lastRating: null,
+      lowRatingCounts: {},
+      relearnSuccessCounts: {},
+      forcedTomorrowCardIds: [],
+      againCounts: {},
+      startTime: 123,
+      nowMs: 200,
+    })
+
+    expect(payload.kind).toBe('shuffle')
+    expect(payload.collectionId).toBe('collection-1')
+    expect(payload.deckIds).toEqual(['deck-a', 'deck-b'])
+    expect(payload.cardOrigins).toEqual({ c1: 'deck-a', c2: 'deck-b' })
+  })
+
+  it('parses persisted shuffle sessions with namespaced ids', () => {
+    const sessionId = 'shuffle:collection-1'
+    const now = Date.UTC(2026, 3, 10, 12, 0, 0)
+    const raw = JSON.stringify({
+      version: 4,
+      deckId: sessionId,
+      kind: 'shuffle',
+      collectionId: 'collection-1',
+      deckIds: ['deck-a', 'deck-b'],
+      cardOrigins: { c1: 'deck-a' },
+      cardIds: ['c1', 'c2'],
+      cardLimit: 50,
+      sessionCount: 2,
+      isFlipped: false,
+      isDone: false,
+      lastRating: null,
+      lowRatingCounts: {},
+      relearnSuccessCounts: {},
+      forcedTomorrowCardIds: [],
+      againCounts: {},
+      expiresAt: now + 1_000,
+      startTime: now - 30_000,
+    })
+
+    const parsed = parsePersistedStudySession(raw, sessionId, now)
+    expect(parsed).not.toBeNull()
+    expect(parsed?.kind).toBe('shuffle')
+    expect(parsed?.collectionId).toBe('collection-1')
+    expect(parsed?.deckIds).toEqual(['deck-a', 'deck-b'])
+    expect(parsed?.cardOrigins).toEqual({ c1: 'deck-a' })
   })
 })

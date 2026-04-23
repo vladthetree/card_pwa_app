@@ -28,7 +28,14 @@ export {
 
 export { fetchGamificationProfile } from './gamification'
 
-export { readActiveSession, writeActiveSession, clearActiveSession } from './sessions'
+export {
+  readActiveSession,
+  writeActiveSession,
+  clearActiveSession,
+  readShuffleSession,
+  writeShuffleSession,
+  clearShuffleSession,
+} from './sessions'
 
 export {
   listShuffleCollections,
