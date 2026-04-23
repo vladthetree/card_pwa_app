@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { createDeck, deleteDeck, fetchDeckCards, getDeckScheduleOverview, getFutureDueForecast } from '../db/queries'
+import {
+  createDeck,
+  deleteDeck,
+  deleteShuffleCollection,
+  fetchDeckCards,
+  getDeckScheduleOverview,
+  getFutureDueForecast,
+} from '../db/queries'
 import { useDecks, useGamificationProfile, useShuffleCollections, useStats } from '../hooks/useCardDb'
 import { usePwaInstall } from '../hooks/usePwaInstall'
 import { useServerHeartbeat } from '../hooks/useServerHeartbeat'
@@ -26,9 +33,12 @@ import { HomeDeckListSection } from './home/HomeDeckListSection'
 import { HomeCreateDeckModal } from './home/HomeCreateDeckModal'
 import { HomeExportModal } from './home/HomeExportModal'
 import { HomeDeckCardsModal } from './home/HomeDeckCardsModal'
+import { HomeShuffleCollectionModal } from './home/HomeShuffleCollectionModal'
 import { HomeShuffleSection } from './home/HomeShuffleSection'
 import { useHomeDeckFilters } from '../hooks/home/useHomeDeckFilters'
 import { useHomeStorageEstimate } from '../hooks/home/useHomeStorageEstimate'
+import { buildSelectedShuffleCards } from '../services/ShuffleSessionManager'
+import { getSyncedDeckIds } from '../services/syncedDeckScope'
 
 interface Props {
   onStartStudy: (deck: Deck) => void
@@ -37,7 +47,7 @@ interface Props {
 export default function HomeView({ onStartStudy, onStartShuffleStudy }: Props) {
   const { decks, loading, error, reload } = useDecks()
   const { collections: shuffleCollections } = useShuffleCollections()
-  const { settings } = useSettings()
+  const { settings, profile } = useSettings()
   const prefersReducedMotion = useReducedMotion()
   const { stats } = useStats(settings.nextDayStartsAt, settings.studyCardLimit)
   const { profile: gamificationProfile } = useGamificationProfile(settings.nextDayStartsAt)
@@ -64,6 +74,10 @@ export default function HomeView({ onStartStudy, onStartShuffleStudy }: Props) {
   const [futureForecastLoading, setFutureForecastLoading] = useState(false)
   const [metricsDeck, setMetricsDeck] = useState<Deck | null>(null)
   const [cardsDeck, setCardsDeck] = useState<Deck | null>(null)
+  const [shuffleSummaries, setShuffleSummaries] = useState<Record<string, { selectedCount: number; inScopeDecks: number; outOfScopeDecks: number }>>({})
+  const [syncedDeckIds, setSyncedDeckIds] = useState<string[]>([])
+  const [editingShuffleCollection, setEditingShuffleCollection] = useState<ShuffleCollection | null>(null)
+  const [showShuffleCollectionModal, setShowShuffleCollectionModal] = useState(false)
   const [confirmModal, setConfirmModal] = useState<{
     title: string
     message: string
@@ -140,6 +154,64 @@ export default function HomeView({ onStartStudy, onStartShuffleStudy }: Props) {
       cancelled = true
     }
   }, [showFutureForecast, settings.nextDayStartsAt])
+
+  useEffect(() => {
+    let cancelled = false
+
+    const resolveUserId = profile?.mode === 'linked' ? profile.userId : undefined
+    const loadSyncedScope = async () => {
+      const ids = await getSyncedDeckIds(resolveUserId)
+      if (!cancelled) setSyncedDeckIds(ids)
+    }
+
+    void loadSyncedScope()
+
+    return () => {
+      cancelled = true
+    }
+  }, [decks, profile?.mode, profile?.userId])
+
+  useEffect(() => {
+    let cancelled = false
+
+    const resolveUserId = profile?.mode === 'linked' ? profile.userId : undefined
+
+    const loadShuffleSummaries = async () => {
+      if (shuffleCollections.length === 0) {
+        setShuffleSummaries({})
+        return
+      }
+
+      const syncedScope = new Set(await getSyncedDeckIds(resolveUserId))
+      const entries = await Promise.all(
+        shuffleCollections.map(async collection => {
+          const selectedCards = await buildSelectedShuffleCards(collection, {
+            userId: resolveUserId,
+            maxCards: settings.studyCardLimit,
+            nextDayStartsAt: settings.nextDayStartsAt,
+          })
+          const inScopeDecks = collection.deckIds.filter(deckId => syncedScope.has(deckId)).length
+          return [
+            collection.id,
+            {
+              selectedCount: selectedCards.length,
+              inScopeDecks,
+              outOfScopeDecks: Math.max(0, collection.deckIds.length - inScopeDecks),
+            },
+          ] as const
+        }),
+      )
+
+      if (!cancelled) {
+        setShuffleSummaries(Object.fromEntries(entries))
+      }
+    }
+
+    void loadShuffleSummaries()
+    return () => {
+      cancelled = true
+    }
+  }, [profile?.mode, profile?.userId, settings.nextDayStartsAt, settings.studyCardLimit, shuffleCollections])
 
   useEffect(() => {
     let cancelled = false
@@ -241,6 +313,30 @@ export default function HomeView({ onStartStudy, onStartShuffleStudy }: Props) {
     }
 
     setShowInstallHintModal(true)
+  }
+
+  const openCreateShuffleCollection = () => {
+    setEditingShuffleCollection(null)
+    setShowShuffleCollectionModal(true)
+  }
+
+  const openEditShuffleCollection = (collection: ShuffleCollection) => {
+    setEditingShuffleCollection(collection)
+    setShowShuffleCollectionModal(true)
+  }
+
+  const handleDeleteShuffleCollection = (collection: ShuffleCollection) => {
+    setConfirmModal({
+      title: settings.language === 'de' ? 'Shuffle-Sammlung löschen' : 'Delete shuffle collection',
+      message: settings.language === 'de'
+        ? `Soll "${collection.name}" wirklich gelöscht werden?`
+        : `Do you really want to delete "${collection.name}"?`,
+      confirmLabel: settings.language === 'de' ? 'Ja, löschen' : 'Yes, delete',
+      variant: 'danger',
+      onConfirm: async () => {
+        await deleteShuffleCollection(collection.id)
+      },
+    })
   }
 
   const selectedDeckIds = selectedDeckId === 'all' ? undefined : [selectedDeckId]
@@ -371,7 +467,11 @@ export default function HomeView({ onStartStudy, onStartShuffleStudy }: Props) {
         <HomeShuffleSection
           language={settings.language}
           collections={shuffleCollections}
+          summaries={shuffleSummaries}
           onStartShuffleStudy={onStartShuffleStudy}
+          onCreateCollection={openCreateShuffleCollection}
+          onEditCollection={openEditShuffleCollection}
+          onDeleteCollection={handleDeleteShuffleCollection}
         />
 
         <HomeDeckListSection
@@ -466,6 +566,27 @@ export default function HomeView({ onStartStudy, onStartShuffleStudy }: Props) {
           onSelectedDeckIdChange={setSelectedDeckId}
           onExportTxt={() => { void handleExportTxt() }}
           onExportCsv={() => { void handleExportCsv() }}
+        />
+      </AnimatePresence>
+
+      <AnimatePresence initial={false}>
+        <HomeShuffleCollectionModal
+          isOpen={showShuffleCollectionModal}
+          language={settings.language}
+          prefersReducedMotion={prefersReducedMotion}
+          decks={decks}
+          syncedDeckIds={syncedDeckIds}
+          studyCardLimit={settings.studyCardLimit}
+          nextDayStartsAt={settings.nextDayStartsAt}
+          linkedUserId={profile?.mode === 'linked' ? profile.userId : undefined}
+          collection={editingShuffleCollection}
+          onClose={() => {
+            setShowShuffleCollectionModal(false)
+            setEditingShuffleCollection(null)
+          }}
+          onSaved={() => {
+            void reload()
+          }}
         />
       </AnimatePresence>
 
