@@ -26,6 +26,7 @@ import { initialSessionState, sessionReducer } from '../services/studySessionRed
 import type { Card, Rating, ShuffleCollection } from '../types'
 import { formatDeckName } from '../utils/cardTextParser'
 import CardFace from './CardFace'
+import EditCardModal from './EditCardModal'
 import ProgressBar from './ProgressBar'
 import RatingBar from './RatingBar'
 
@@ -77,6 +78,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   const { decks } = useDecks()
 
   const [session, dispatch] = useReducer(sessionReducer, initialSessionState)
+  const [editingCard, setEditingCard] = useState<Card | null>(null)
   const [answerWasIncorrect, setAnswerWasIncorrect] = useState(false)
   const [sessionDeckCounts, setSessionDeckCounts] = useState<Record<string, number>>({})
   const sessionDoneRef = useRef(session.isDone)
@@ -97,12 +99,6 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     [decks],
   )
   const currentCard = useMemo(() => session.cards[0] ?? null, [session.cards])
-  const currentOriginDeckName = useMemo(() => {
-    if (!currentCard) return undefined
-    const latest = latestShuffleCardById.get(currentCard.id)
-    const deckId = latest?.deckId ?? (currentCard as Card & { deckId?: string }).deckId
-    return deckId ? deckNameById.get(deckId) : undefined
-  }, [currentCard, deckNameById, latestShuffleCardById])
   const sessionDeckSummary = useMemo(() => (
     Object.entries(sessionDeckCounts)
       .map(([deckId, count]) => ({
@@ -370,6 +366,15 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     dispatch({ type: 'INIT', cards })
   }, [cards, clearPersistedSession])
 
+  const handleEditCard = useCallback(() => {
+    if (!currentCard) return
+    setEditingCard(currentCard)
+  }, [currentCard])
+
+  const handleCardSaved = useCallback(() => {
+    reload()
+  }, [reload])
+
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
@@ -506,9 +511,9 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
                     card={currentCard}
                     flipped={session.isFlipped}
                     onFlip={handleFlip}
+                    onEdit={handleEditCard}
                     onAnswerEvaluated={handleAnswerEvaluated}
                     compact={isHandsetLayout}
-                    originDeckName={currentOriginDeckName}
                   />
                 </div>
               </div>
@@ -572,6 +577,16 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
           </motion.div>
         </AnimatePresence>
       )}
+
+      <AnimatePresence>
+        {editingCard && (
+          <EditCardModal
+            card={editingCard}
+            onClose={() => setEditingCard(null)}
+            onSaved={handleCardSaved}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }

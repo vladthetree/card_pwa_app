@@ -66,9 +66,9 @@ export function DeckMetricsModal({ deck, language, onClose }: { deck: Deck; lang
         initial={{ opacity: 0, y: 10, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 10, scale: 0.98 }}
-        className={`${UI_TOKENS.modal.shell} max-w-xl p-5 sm:p-6`}
+        className={`${UI_TOKENS.modal.shell} max-w-xl`}
       >
-        <div className="flex items-start justify-between gap-3">
+        <div className={UI_TOKENS.modal.header}>
           <div>
             <h3 className={UI_TOKENS.modal.title}>{t.metrics_success_rate}</h3>
             <p className={UI_TOKENS.modal.subtitle}>{formatDeckName(deck.name)}</p>
@@ -82,18 +82,19 @@ export function DeckMetricsModal({ deck, language, onClose }: { deck: Deck; lang
           </button>
         </div>
 
-        <div className="mt-4 inline-flex rounded-2xl border border-zinc-900 overflow-hidden transition-all duration-300 ease-out">
+        <div className={UI_TOKENS.modal.body}>
+        <div className="mt-1 inline-flex w-full rounded-2xl border border-zinc-900 overflow-hidden transition-all duration-300 ease-out sm:w-auto">
           <button
             type="button"
             onClick={() => setPeriod('all')}
-            className={`px-3 py-1.5 text-xs sm:text-sm transition-all duration-300 ease-out active:scale-95 ${period === 'all' ? 'bg-white text-black' : 'text-white/75 hover:text-white hover:bg-white/10'}`}
+            className={`flex-1 px-3 py-2 text-xs sm:text-sm transition-all duration-300 ease-out active:scale-95 ${period === 'all' ? 'bg-white text-black' : 'text-white/75 hover:text-white hover:bg-white/10'}`}
           >
             {t.metrics_period_all}
           </button>
           <button
             type="button"
             onClick={() => setPeriod('7d')}
-            className={`px-3 py-1.5 text-xs sm:text-sm transition-all duration-300 ease-out active:scale-95 ${period === '7d' ? 'bg-white text-black' : 'text-white/75 hover:text-white hover:bg-white/10'}`}
+            className={`flex-1 px-3 py-2 text-xs sm:text-sm transition-all duration-300 ease-out active:scale-95 ${period === '7d' ? 'bg-white text-black' : 'text-white/75 hover:text-white hover:bg-white/10'}`}
           >
             {t.metrics_period_7d}
           </button>
@@ -105,9 +106,9 @@ export function DeckMetricsModal({ deck, language, onClose }: { deck: Deck; lang
           <>
             <div className="mt-5 rounded-[2.5rem] border border-zinc-900 bg-black p-5 sm:p-6 transition-all duration-300 ease-out">
               <p className="text-xs uppercase tracking-wide text-emerald-100/70">{t.metrics_success_rate}</p>
-              <div className="mt-2 flex items-end gap-2">
-                <p className="text-8xl leading-none font-black text-emerald-400">{metrics.successRate}%</p>
-                <p className="text-xs sm:text-sm font-light text-emerald-200/70 pb-2">{t.metrics_reviews_total}: {metrics.totalReviews}</p>
+              <div className="mt-2 flex flex-wrap items-end gap-2">
+                <p className="text-6xl leading-none font-black text-emerald-400 sm:text-8xl">{metrics.successRate}%</p>
+                <p className="pb-1 text-xs font-light text-emerald-200/70 sm:pb-2 sm:text-sm">{t.metrics_reviews_total}: {metrics.totalReviews}</p>
               </div>
               {!hasReviews && (
                 <p className="mt-2 text-xs sm:text-sm text-emerald-100/70">{t.metrics_empty_with_cards.replace('{count}', String(metrics.cardCount))}</p>
@@ -142,7 +143,7 @@ export function DeckMetricsModal({ deck, language, onClose }: { deck: Deck; lang
 
             <div className="mt-4 rounded-xl border border-zinc-900 bg-black p-3">
               <p className="text-xs font-light text-white/55 mb-2">{t.metrics_rating_distribution}</p>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {[1, 2, 3, 4].map((rating) => (
                   <div key={rating} className="rounded-lg border border-zinc-900 bg-black px-2 py-2 text-center">
                     <p className="text-xs font-light text-white/50">{rating}</p>
@@ -155,6 +156,7 @@ export function DeckMetricsModal({ deck, language, onClose }: { deck: Deck; lang
             </div>
           </>
         )}
+        </div>
       </motion.div>
     </motion.div>
   )

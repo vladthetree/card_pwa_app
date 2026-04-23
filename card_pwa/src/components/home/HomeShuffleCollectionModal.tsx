@@ -208,7 +208,10 @@ export function HomeShuffleCollectionModal({
               <Layers3 size={14} />
               <span>{language === 'de' ? 'Deck-Auswahl' : 'Deck selection'}</span>
             </div>
-            <div className="grid gap-2">
+            <div
+              className="grid max-h-[min(46dvh,20rem)] gap-2 overflow-y-auto pr-1 sm:max-h-[24rem]"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
               {decks.map(deck => {
                 const selected = selectedDeckIds.includes(deck.id)
                 const isSynced = syncedDeckIdSet.has(deck.id)
