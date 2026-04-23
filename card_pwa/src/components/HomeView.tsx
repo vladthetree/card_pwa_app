@@ -24,6 +24,7 @@ import type { Deck, DeckScheduleOverview, ShuffleCollection } from '../types'
 import { STORAGE_KEYS } from '../constants/appIdentity'
 import { UI_TOKENS } from '../constants/ui'
 import { DeckMetricsModal } from './DeckMetricsModal'
+import { ShuffleMetricsModal } from './ShuffleMetricsModal'
 import { subscribeToWebPushNotifications } from '../services/webPush'
 import { formatBuildVersionTitle, formatServiceWorkerVersionLabel } from '../utils/buildInfo'
 import { HomeHeaderBar } from './home/HomeHeaderBar'
@@ -83,6 +84,7 @@ export default function HomeView({
   const [futureForecast, setFutureForecast] = useState<Array<{ dayStartMs: number; count: number }>>([])
   const [futureForecastLoading, setFutureForecastLoading] = useState(false)
   const [metricsDeck, setMetricsDeck] = useState<Deck | null>(null)
+  const [metricsShuffleCollection, setMetricsShuffleCollection] = useState<ShuffleCollection | null>(null)
   const [cardsDeck, setCardsDeck] = useState<Deck | null>(null)
   const [shuffleSummaries, setShuffleSummaries] = useState<Record<string, { selectedCount: number; inScopeDecks: number; outOfScopeDecks: number }>>({})
   const [syncedDeckIds, setSyncedDeckIds] = useState<string[]>([])
@@ -518,6 +520,7 @@ export default function HomeView({
             onCreateCollection={openCreateShuffleCollection}
             onEditCollection={openEditShuffleCollection}
             onDeleteCollection={handleDeleteShuffleCollection}
+            onShowMetrics={setMetricsShuffleCollection}
             onManageCollections={onOpenShuffleManager}
             isManagerView={isShuffleManageMode}
           />
@@ -598,6 +601,14 @@ export default function HomeView({
             deck={metricsDeck}
             language={settings.language}
             onClose={() => setMetricsDeck(null)}
+          />
+        )}
+        {metricsShuffleCollection && (
+          <ShuffleMetricsModal
+            collection={metricsShuffleCollection}
+            decks={decks}
+            language={settings.language}
+            onClose={() => setMetricsShuffleCollection(null)}
           />
         )}
       </AnimatePresence>

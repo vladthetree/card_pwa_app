@@ -30,10 +30,18 @@ const mockedDb = vi.hoisted(() => {
   return { state, shuffleCollections }
 })
 
+const mockedSync = vi.hoisted(() => ({
+  enqueueSyncOperation: vi.fn(async () => undefined),
+}))
+
 vi.mock('../../db', () => ({
   db: {
     shuffleCollections: mockedDb.shuffleCollections,
   },
+}))
+
+vi.mock('../../services/syncQueue', () => ({
+  enqueueSyncOperation: mockedSync.enqueueSyncOperation,
 }))
 
 import {
@@ -51,6 +59,7 @@ describe('shuffleCollections queries', () => {
     mockedDb.shuffleCollections.get.mockClear()
     mockedDb.shuffleCollections.add.mockClear()
     mockedDb.shuffleCollections.update.mockClear()
+    mockedSync.enqueueSyncOperation.mockClear()
   })
 
   it('lists only non-deleted collections ordered by updatedAt desc', async () => {
@@ -110,6 +119,15 @@ describe('shuffleCollections queries', () => {
       name: 'Languages',
       deckIds: ['deck-a', 'deck-b'],
     })
+    expect(mockedSync.enqueueSyncOperation).toHaveBeenCalledWith(
+      'shuffleCollection.upsert',
+      expect.objectContaining({
+        id: result.collectionId,
+        name: 'Languages',
+        deckIds: ['deck-a', 'deck-b'],
+        isDeleted: false,
+      }),
+    )
   })
 
   it('rejects empty collection names', async () => {
@@ -148,6 +166,15 @@ describe('shuffleCollections queries', () => {
     expect(mockedDb.state.shuffleCollections[0].name).toBe('After')
     expect(mockedDb.state.shuffleCollections[0].deckIds).toEqual(['deck-b', 'deck-c'])
     expect(mockedDb.state.shuffleCollections[0].updatedAt).toEqual(expect.any(Number))
+    expect(mockedSync.enqueueSyncOperation).toHaveBeenCalledWith(
+      'shuffleCollection.upsert',
+      expect.objectContaining({
+        id: 'shuffle_1',
+        name: 'After',
+        deckIds: ['deck-b', 'deck-c'],
+        isDeleted: false,
+      }),
+    )
   })
 
   it('soft-deletes collections via tombstone fields', async () => {
@@ -167,5 +194,14 @@ describe('shuffleCollections queries', () => {
     expect(mockedDb.state.shuffleCollections[0].isDeleted).toBe(true)
     expect(mockedDb.state.shuffleCollections[0].deletedAt).toEqual(expect.any(Number))
     expect(mockedDb.state.shuffleCollections[0].updatedAt).toEqual(expect.any(Number))
+    expect(mockedSync.enqueueSyncOperation).toHaveBeenCalledWith(
+      'shuffleCollection.delete',
+      expect.objectContaining({
+        id: 'shuffle_1',
+        name: 'Mixed',
+        deckIds: ['deck-a'],
+        isDeleted: true,
+      }),
+    )
   })
 })

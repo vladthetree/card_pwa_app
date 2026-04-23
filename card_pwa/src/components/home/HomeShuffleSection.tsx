@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Pencil, Plus, Shuffle, Trash2, Layers3 } from 'lucide-react'
+import { Pencil, Plus, Shuffle, Trash2, Layers3, BarChart3 } from 'lucide-react'
 import type { ShuffleCollection } from '../../types'
 
 interface ShuffleCollectionSummary {
@@ -16,6 +16,7 @@ interface Props {
   onCreateCollection: () => void
   onEditCollection: (collection: ShuffleCollection) => void
   onDeleteCollection: (collection: ShuffleCollection) => void
+  onShowMetrics?: (collection: ShuffleCollection) => void
   onManageCollections?: () => void
   isManagerView?: boolean
 }
@@ -28,6 +29,7 @@ export function HomeShuffleSection({
   onCreateCollection,
   onEditCollection,
   onDeleteCollection,
+  onShowMetrics,
   onManageCollections,
   isManagerView = false,
 }: Props) {
@@ -42,6 +44,7 @@ export function HomeShuffleSection({
   const createLabel = language === 'de' ? 'Sammlung anlegen' : 'Create collection'
   const manageLabel = language === 'de' ? 'Verwalten' : 'Manage'
   const editLabel = language === 'de' ? 'Bearbeiten' : 'Edit'
+  const metricsLabel = language === 'de' ? 'Metriken' : 'Metrics'
   const deleteLabel = language === 'de' ? 'Löschen' : 'Delete'
   const emptyLabel = language === 'de'
     ? 'Noch keine Shuffle-Sammlungen angelegt.'
@@ -121,6 +124,15 @@ export function HomeShuffleSection({
                 </div>
               </button>
               <div className="flex shrink-0 items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => onShowMetrics?.(collection)}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/12 text-white/55 transition hover:border-white/25 hover:text-white"
+                  aria-label={metricsLabel}
+                  title={metricsLabel}
+                >
+                  <BarChart3 size={14} />
+                </button>
                 <button
                   type="button"
                   onClick={() => onEditCollection(collection)}

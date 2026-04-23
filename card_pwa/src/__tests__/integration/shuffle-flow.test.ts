@@ -126,6 +126,7 @@ vi.mock('../../services/profileService', () => ({
 
 import {
   getDeckMetricsSnapshot,
+  getShuffleCollectionMetricsSnapshot,
   readActiveSession,
   readShuffleSession,
   writeActiveSession,
@@ -237,6 +238,7 @@ describe('shuffle flow integration', () => {
 
     const metricsA = await getDeckMetricsSnapshot('deck-a', 'all')
     const metricsB = await getDeckMetricsSnapshot('deck-b', 'all')
+    const aggregate = await getShuffleCollectionMetricsSnapshot(['deck-a', 'deck-b'], 'all')
 
     expect(metricsA.totalReviews).toBe(1)
     expect(metricsA.successRate).toBe(100)
@@ -245,6 +247,10 @@ describe('shuffle flow integration', () => {
     expect(metricsB.totalReviews).toBe(1)
     expect(metricsB.successRate).toBe(0)
     expect(metricsB.ratingCounts[2]).toBe(1)
+    expect(aggregate.totalReviews).toBe(2)
+    expect(aggregate.cardCount).toBe(2)
+    expect(aggregate.ratingCounts[4]).toBe(1)
+    expect(aggregate.ratingCounts[2]).toBe(1)
   })
 
   it('keeps shuffle sessions namespaced and resumable alongside regular deck sessions', async () => {

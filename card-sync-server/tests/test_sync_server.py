@@ -201,13 +201,14 @@ def api(server):
             r = requests.get(f"http://localhost:{port}/sync/decks", headers=self._headers(auth_token))
             return r.json() if r.text else {}
 
-        def bootstrap_upload(self, client_id, batch_id, decks=None, cards=None, sent_at=None, auth_token=None):
+        def bootstrap_upload(self, client_id, batch_id, decks=None, cards=None, shuffle_collections=None, sent_at=None, auth_token=None):
             """POST /sync/bootstrap/upload"""
             body = {
                 "clientId": client_id,
                 "batchId": batch_id,
                 "decks": decks or [],
                 "cards": cards or [],
+                "shuffleCollections": shuffle_collections or [],
             }
             if sent_at is not None:
                 body["sentAt"] = sent_at
@@ -1691,6 +1692,40 @@ class TestStartupFlags:
 
 class TestBootstrapUpload:
 
+    def test_shuffle_collection_push_roundtrip_appears_in_snapshot(self, api, db_helper):
+        result = api.push(
+            op_id="shuffle-upsert-1",
+            op_type="shuffleCollection.upsert",
+            payload={
+                "id": "shuffle_a",
+                "name": "Mixed",
+                "deckIds": ["deck-1", "deck-2"],
+                "createdAt": 1000,
+                "updatedAt": 2000,
+            },
+            client_id="client-a",
+            client_timestamp=2000,
+        )
+
+        assert result["ok"] is True
+        rows = db_helper.query("SELECT name, deck_ids_json FROM server_shuffle_collections WHERE id='shuffle_a'")
+        assert len(rows) == 1
+        assert rows[0][0] == "Mixed"
+        assert json.loads(rows[0][1]) == ["deck-1", "deck-2"]
+
+        snap = api.snapshot("reader")
+        assert snap["ok"] is True
+        assert snap["shuffleCollections"] == [{
+            "id": "shuffle_a",
+            "name": "Mixed",
+            "deckIds": ["deck-1", "deck-2"],
+            "createdAt": 1000,
+            "updatedAt": 2000,
+            "isDeleted": False,
+            "deletedAt": None,
+            "lastSourceClient": "client-a",
+        }]
+
     def test_bootstrap_upload_inserts_state_and_returns_summary(self, api, db_helper):
         result = api.bootstrap_upload(
             client_id="boot-client",
@@ -1711,9 +1746,31 @@ class TestBootstrapUpload:
         assert result["batchId"] == "batch-1"
         assert result["summary"]["decksInserted"] == 1
         assert result["summary"]["cardsInserted"] == 1
+        assert result["summary"]["shuffleCollectionsInserted"] == 0
         assert result["serverCursor"] > 0
         assert db_helper.count("server_decks") == 1
         assert db_helper.count("server_cards") == 1
+
+    def test_bootstrap_upload_includes_shuffle_collections(self, api, db_helper):
+        result = api.bootstrap_upload(
+            client_id="boot-client",
+            batch_id="batch-shuffle",
+            sent_at=6000,
+            shuffle_collections=[{
+                "id": "shuffle_boot",
+                "name": "Boot Mix",
+                "deckIds": ["deck-boot"],
+                "createdAt": 5000,
+                "updatedAt": 6000
+            }],
+        )
+
+        assert result["ok"] is True
+        assert result["summary"]["shuffleCollectionsInserted"] == 1
+        assert db_helper.count("server_shuffle_collections") == 1
+
+        snap = api.snapshot("reader")
+        assert [entry["id"] for entry in snap["shuffleCollections"]] == ["shuffle_boot"]
 
     def test_bootstrap_upload_is_idempotent_for_duplicate_batch(self, api, db_helper):
         payload_decks = [{"id": "deck-dup", "name": "Dup", "createdAt": 1000, "updatedAt": 1000}]

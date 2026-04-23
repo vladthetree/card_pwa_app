@@ -1,4 +1,4 @@
-import { db, type CardRecord, type DeckRecord, type ReviewRecord } from '../db'
+import { db, type CardRecord, type DeckRecord, type ReviewRecord, type ShuffleCollectionRecord } from '../db'
 import type { SyncOperationType } from './syncQueue'
 import { flushSyncQueue, getSyncQueuePendingCount } from './syncQueue'
 import {
@@ -63,6 +63,7 @@ interface SnapshotResponse {
   decks?: unknown[]
   cards?: unknown[]
   reviews?: unknown[]
+  shuffleCollections?: unknown[]
 }
 
 interface BootstrapUploadResponse {
@@ -99,6 +100,7 @@ function filterSnapshotBySelectedDecks(
 
 async function shouldApplyOperationForSelectedDecks(op: PulledOperation, selectedDecks: Set<string> | null): Promise<boolean> {
   if (!selectedDecks) return true
+  if (op.type === 'shuffleCollection.upsert' || op.type === 'shuffleCollection.delete') return true
   if (!op.payload || typeof op.payload !== 'object') return true
 
   const payload = op.payload as Record<string, unknown>
@@ -385,6 +387,37 @@ function normalizeReview(raw: unknown): Omit<ReviewRecord, 'id'> | null {
   }
 }
 
+function normalizeShuffleCollection(raw: unknown): ShuffleCollectionRecord | null {
+  if (!raw || typeof raw !== 'object') return null
+  const value = raw as Record<string, unknown>
+  const id = value.id
+  const name = value.name
+  const deckIdsRaw = value.deckIds ?? value.deck_ids
+
+  if (typeof id !== 'string' || typeof name !== 'string' || !id || !name) {
+    return null
+  }
+
+  const deckIds = Array.isArray(deckIdsRaw)
+    ? Array.from(new Set(deckIdsRaw.map(entry => String(entry).trim()).filter(Boolean)))
+    : []
+
+  const createdAt = Number(value.createdAt ?? value.created_at)
+  const updatedAt = Number(value.updatedAt ?? value.updated_at ?? value.createdAt ?? value.created_at)
+  const deletedAt = Number(value.deletedAt ?? value.deleted_at)
+  const deletedFlag = Boolean(value.isDeleted ?? value.is_deleted)
+
+  return {
+    id,
+    name,
+    deckIds,
+    createdAt: Number.isFinite(createdAt) ? createdAt : Date.now(),
+    updatedAt: Number.isFinite(updatedAt) ? updatedAt : (Number.isFinite(createdAt) ? createdAt : Date.now()),
+    isDeleted: deletedFlag || Number.isFinite(deletedAt),
+    deletedAt: Number.isFinite(deletedAt) ? deletedAt : undefined,
+  }
+}
+
 function normalizeCardUpdates(raw: unknown): Partial<CardRecord> {
   if (!raw || typeof raw !== 'object') return {}
 
@@ -665,6 +698,28 @@ async function applyReviewUndo(payload: unknown) {
   }
 }
 
+async function applyShuffleCollectionUpsert(payload: unknown) {
+  const collection = normalizeShuffleCollection(payload)
+  if (!collection) return
+
+  await db.shuffleCollections.put({
+    ...collection,
+    isDeleted: false,
+    deletedAt: collection.deletedAt,
+  })
+}
+
+async function applyShuffleCollectionDelete(payload: unknown) {
+  const collection = normalizeShuffleCollection(payload)
+  if (!collection) return
+
+  await db.shuffleCollections.put({
+    ...collection,
+    isDeleted: true,
+    deletedAt: collection.deletedAt ?? collection.updatedAt,
+  })
+}
+
 async function applyOperation(op: PulledOperation) {
   const fallbackTs = Number(op.clientTimestamp ?? 0)
 
@@ -692,6 +747,12 @@ async function applyOperation(op: PulledOperation) {
       return
     case 'review.undo':
       await applyReviewUndo(op.payload)
+      return
+    case 'shuffleCollection.upsert':
+      await applyShuffleCollectionUpsert(op.payload)
+      return
+    case 'shuffleCollection.delete':
+      await applyShuffleCollectionDelete(op.payload)
       return
   }
 }
@@ -750,6 +811,7 @@ async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
     const rawDecks = Array.isArray(data.decks) ? data.decks : []
     const rawCards = Array.isArray(data.cards) ? data.cards : []
     const rawReviews = Array.isArray(data.reviews) ? data.reviews : []
+    const rawShuffleCollections = Array.isArray(data.shuffleCollections) ? data.shuffleCollections : []
 
     const decks = rawDecks
       .map(normalizeDeck)
@@ -763,6 +825,9 @@ async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
     const reviews = rawReviews
       .map(normalizeReview)
       .filter((entry): entry is Omit<ReviewRecord, 'id'> => entry !== null && cardIds.has(entry.cardId))
+    const shuffleCollections = rawShuffleCollections
+      .map(normalizeShuffleCollection)
+      .filter((entry): entry is ShuffleCollectionRecord => entry !== null)
 
     const selectedDecks = await readSelectedDeckFilter()
     const filtered = filterSnapshotBySelectedDecks(selectedDecks, decks, cards, reviews)
@@ -778,7 +843,7 @@ async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
       return false
     }
 
-    await db.transaction('rw', db.decks, db.cards, db.reviews, async () => {
+    await db.transaction('rw', db.decks, db.cards, db.reviews, db.shuffleCollections, async () => {
       if (selectedDecks) {
         const selectedDeckIds = Array.from(selectedDecks)
         const existingSelectedCards = await db.cards.where('deckId').anyOf(selectedDeckIds).toArray()
@@ -816,6 +881,11 @@ async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
       if (snapshotReviews.length > 0) {
         await db.reviews.bulkAdd(snapshotReviews)
       }
+
+      await db.shuffleCollections.clear()
+      if (shuffleCollections.length > 0) {
+        await db.shuffleCollections.bulkPut(shuffleCollections)
+      }
     })
 
     if (typeof data.cursor === 'number' && Number.isFinite(data.cursor)) {
@@ -836,9 +906,10 @@ async function runBootstrapUpload(clientId: string): Promise<BootstrapUploadResp
   if (!endpoint) return null
 
   try {
-    const [decks, cards] = await Promise.all([
+    const [decks, cards, shuffleCollections] = await Promise.all([
       db.decks.toArray(),
       db.cards.toArray(),
+      db.shuffleCollections.toArray(),
     ])
 
     const response = await fetchWithTimeout(endpoint, {
@@ -884,6 +955,15 @@ async function runBootstrapUpload(clientId: string): Promise<BootstrapUploadResp
           deletedAt: card.deletedAt,
           createdAt: card.createdAt,
           updatedAt: card.updatedAt ?? card.createdAt,
+        })),
+        shuffleCollections: shuffleCollections.map(collection => ({
+          id: collection.id,
+          name: collection.name,
+          deckIds: collection.deckIds,
+          createdAt: collection.createdAt,
+          updatedAt: collection.updatedAt,
+          isDeleted: Boolean(collection.isDeleted),
+          deletedAt: collection.deletedAt,
         })),
       }),
     })
