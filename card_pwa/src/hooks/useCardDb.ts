@@ -8,9 +8,10 @@ import {
   fetchGlobalStats,
   fetchTodayDueFromDecks,
   getShuffleCollection,
+  listShuffleCollections,
 } from '../db/queries'
 import { REVIEW_UPDATED_EVENT } from '../constants/appIdentity'
-import type { Deck, Card, GamificationProfile, GlobalStats } from '../types'
+import type { Deck, Card, GamificationProfile, GlobalStats, ShuffleCollection } from '../types'
 import { buildSelectedShuffleCards, type ShuffleStudyCard } from '../services/ShuffleSessionManager'
 
 function useOnDbChange(callback: () => void, deckId?: string | null) {
@@ -92,6 +93,32 @@ export function useDecks() {
   useOnDbChange(load)
 
   return { decks, loading, error, reload: load }
+}
+
+export function useShuffleCollections() {
+  const [collections, setCollections] = useState<ShuffleCollection[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const load = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      setCollections(await listShuffleCollections())
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+      setCollections([])
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    void load()
+  }, [load])
+  useOnDbChange(load)
+
+  return { collections, loading, error, reload: load }
 }
 
 export function useDeckCards(deckId: string | null) {

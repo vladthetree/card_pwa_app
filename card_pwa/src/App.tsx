@@ -5,7 +5,7 @@ import { SettingsProvider } from './contexts/SettingsContext'
 import AppInitializer from './components/AppInitializer'
 import AppErrorBoundary from './components/AppErrorBoundary'
 import ToastContainer from './components/ToastContainer'
-import type { Deck, View } from './types'
+import type { Deck, ShuffleCollection, View } from './types'
 import { SW_CHANNELS } from './constants/appIdentity'
 import { supportsServiceWorker } from './env'
 
@@ -26,6 +26,7 @@ function getInitialView(): View {
 
 const HomeView = lazy(() => import('./components/HomeView'))
 const StudyView = lazy(() => import('./components/StudyView'))
+const ShuffleStudyView = lazy(() => import('./components/ShuffleStudyView'))
 const UpdateBanner = lazy(() => import('./components/UpdateBanner'))
 
 function ViewFallback() {
@@ -41,6 +42,7 @@ export default function App() {
   const prefersReducedMotion = useReducedMotion()
   const [view, setView] = useState<View>(getInitialView)
   const [activeDeck, setActiveDeck] = useState<Deck | null>(null)
+  const [activeShuffleCollection, setActiveShuffleCollection] = useState<ShuffleCollection | null>(null)
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null)
   const [pendingReloadAfterStudy, setPendingReloadAfterStudy] = useState(false)
 
@@ -62,7 +64,7 @@ export default function App() {
     let reloadTimer: number | null = null
 
     const onControllerChange = () => {
-      if (view === 'study') {
+      if (view === 'study' || view === 'shuffle-study') {
         setPendingReloadAfterStudy(true)
         return
       }
@@ -83,7 +85,7 @@ export default function App() {
 
   useEffect(() => {
     if (!pendingReloadAfterStudy) return
-    if (view === 'study') return
+    if (view === 'study' || view === 'shuffle-study') return
 
     window.location.reload()
   }, [pendingReloadAfterStudy, view])
@@ -94,12 +96,20 @@ export default function App() {
 
   const startStudy = (deck: Deck) => {
     setActiveDeck(deck)
+    setActiveShuffleCollection(null)
     setView('study')
+  }
+
+  const startShuffleStudy = (collection: ShuffleCollection) => {
+    setActiveShuffleCollection(collection)
+    setActiveDeck(null)
+    setView('shuffle-study')
   }
 
   const goHome = () => {
     setView('home')
     setActiveDeck(null)
+    setActiveShuffleCollection(null)
   }
 
   return (
@@ -152,7 +162,7 @@ export default function App() {
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 home-view"
               >
-                <HomeView onStartStudy={startStudy} />
+                <HomeView onStartStudy={startStudy} onStartShuffleStudy={startShuffleStudy} />
               </motion.div>
             )}
 
@@ -166,6 +176,19 @@ export default function App() {
                 className="flex-1 study-view"
               >
                 <StudyView deck={activeDeck} onExit={goHome} />
+              </motion.div>
+            )}
+
+            {view === 'shuffle-study' && activeShuffleCollection && (
+              <motion.div
+                key="shuffle-study"
+                initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.995 }}
+                animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+                exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.995 }}
+                transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
+                className="flex-1 study-view"
+              >
+                <ShuffleStudyView collection={activeShuffleCollection} onExit={goHome} />
               </motion.div>
             )}
           </AnimatePresence>
