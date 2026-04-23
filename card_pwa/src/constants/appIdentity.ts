@@ -15,6 +15,8 @@ export const STORAGE_KEYS = {
   homeShowHeatmap: 'card-pwa-home-heatmap',
   homeDashboardMode: 'card-pwa-home-dashboard-mode',
   homeDeckSortMode: 'card-pwa-home-deck-sort-mode',
+  homeShuffleDecksTop: 'card-pwa-home-shuffle-decks-top',
+  homeShuffleOnlyMode: 'card-pwa-home-shuffle-only-mode',
 } as const
 
 export const DATABASE_NAMES = {

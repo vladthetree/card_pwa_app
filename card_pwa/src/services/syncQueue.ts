@@ -100,13 +100,12 @@ async function getSelectedDeckFilter(): Promise<Set<string> | null> {
 async function shouldSyncOperation(type: SyncOperationType, payload: unknown): Promise<boolean> {
   const selectedDecks = await getSelectedDeckFilter()
   if (!selectedDecks) return true
+  if (type === 'deck.create') return true
   if (type === 'shuffleCollection.upsert' || type === 'shuffleCollection.delete') return true
   if (!payload || typeof payload !== 'object') return true
 
   const value = payload as Record<string, unknown>
-  const directDeckId = type === 'deck.create'
-    ? value.id
-    : value.deckId
+  const directDeckId = value.deckId
 
   if (typeof directDeckId === 'string' && directDeckId) {
     return selectedDecks.has(directDeckId)

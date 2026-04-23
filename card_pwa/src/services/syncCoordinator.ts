@@ -21,6 +21,27 @@ const SERVER_REACHABILITY_TIMEOUT_MS = 4_000
 let lastReachabilityCheckAt = 0
 let lastReachabilityResult = false
 
+function toSyncHealthUrl(): string | null {
+  const baseEndpoint = getSyncBaseEndpoint()
+  if (!baseEndpoint) return null
+
+  try {
+    const base = typeof window === 'undefined' ? undefined : window.location.origin
+    const url = new URL(baseEndpoint, base)
+    url.pathname = '/health'
+    url.search = ''
+    url.hash = ''
+
+    if (base && url.origin === base) {
+      return url.pathname
+    }
+
+    return url.toString()
+  } catch {
+    return null
+  }
+}
+
 async function hasServerConnection(force = false): Promise<boolean> {
   if (!navigator.onLine || !isSyncActive()) {
     return false
@@ -33,8 +54,14 @@ async function hasServerConnection(force = false): Promise<boolean> {
 
   lastReachabilityCheckAt = now
   try {
+    const healthUrl = toSyncHealthUrl()
+    if (!healthUrl) {
+      lastReachabilityResult = false
+      return false
+    }
+
     const res = await fetchWithTimeout(
-      `${getSyncBaseEndpoint()}/health`,
+      healthUrl,
       { method: 'GET' },
       SERVER_REACHABILITY_TIMEOUT_MS,
     )

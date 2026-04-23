@@ -792,6 +792,13 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
     name = payload.get("name")
     deck_ids = payload.get("deckIds")
     if not collection_id or not name or not isinstance(deck_ids, list):
+      LOGGER.warning(
+        "SHUFFLE_COLLECTION_REJECTED op_id=%s reason=invalid_payload collection_id=%s has_name=%s deck_ids_type=%s",
+        op_id,
+        collection_id,
+        bool(name),
+        type(deck_ids).__name__,
+      )
       return
     candidate_ts = _shuffle_candidate_ts()
 
@@ -1595,6 +1602,7 @@ class Handler(BaseHTTPRequestHandler):
             "shuffleCollectionsInserted": 0,
             "shuffleCollectionsUpdated": 0,
             "shuffleCollectionsSkippedOlder": 0,
+            "shuffleCollectionsRejected": 0,
           }
         log(
           f"BOOTSTRAP  ip={client_ip}  client={_client_short(client_id)}  "
@@ -1618,6 +1626,7 @@ class Handler(BaseHTTPRequestHandler):
         "shuffleCollectionsInserted": 0,
         "shuffleCollectionsUpdated": 0,
         "shuffleCollectionsSkippedOlder": 0,
+        "shuffleCollectionsRejected": 0,
       }
 
       # Upsert decks with LWW + tombstone support.
@@ -1729,11 +1738,26 @@ class Handler(BaseHTTPRequestHandler):
 
       for collection in shuffle_collections:
         if not isinstance(collection, dict):
+          summary["shuffleCollectionsRejected"] += 1
+          LOGGER.warning(
+            "BOOTSTRAP_SHUFFLE_COLLECTION_REJECTED batch=%s reason=invalid_entry_type entry_type=%s",
+            batch_id,
+            type(collection).__name__,
+          )
           continue
         collection_id = str(collection.get("id") or "").strip()
         name = collection.get("name")
         deck_ids = collection.get("deckIds") or []
-        if not collection_id or not isinstance(name, str) or not isinstance(deck_ids, list):
+        normalized_name = name.strip() if isinstance(name, str) else ""
+        if not collection_id or not normalized_name or not isinstance(deck_ids, list):
+          summary["shuffleCollectionsRejected"] += 1
+          LOGGER.warning(
+            "BOOTSTRAP_SHUFFLE_COLLECTION_REJECTED batch=%s reason=invalid_payload collection_id=%s has_name=%s deck_ids_type=%s",
+            batch_id,
+            collection_id,
+            bool(normalized_name),
+            type(deck_ids).__name__,
+          )
           continue
 
         candidate_ts = parse_int(collection.get("updatedAt") or collection.get("createdAt") or sent_at, sent_at, min_value=0)
@@ -1758,7 +1782,7 @@ class Handler(BaseHTTPRequestHandler):
           """,
           (
             collection_id,
-            name,
+            normalized_name,
             json.dumps(deck_ids, ensure_ascii=False),
             created_at,
             candidate_ts,
@@ -1811,7 +1835,7 @@ class Handler(BaseHTTPRequestHandler):
         f"BOOTSTRAP  ip={client_ip}  client={_client_short(client_id)}  batch={batch_id}  "
         f"decks=+{summary['decksInserted']}/={summary['decksUpdated']}/skip={summary['decksSkippedOlder']}  "
         f"cards=+{summary['cardsInserted']}/={summary['cardsUpdated']}/skip={summary['cardsSkippedOlder']}  "
-        f"shuffle=+{summary['shuffleCollectionsInserted']}/={summary['shuffleCollectionsUpdated']}/skip={summary['shuffleCollectionsSkippedOlder']}"
+        f"shuffle=+{summary['shuffleCollectionsInserted']}/={summary['shuffleCollectionsUpdated']}/skip={summary['shuffleCollectionsSkippedOlder']}/rej={summary['shuffleCollectionsRejected']}"
       )
       self._send_json(200, {
         "ok": True,

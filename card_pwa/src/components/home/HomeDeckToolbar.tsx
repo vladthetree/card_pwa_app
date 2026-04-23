@@ -1,7 +1,7 @@
 import { useCallback, useState, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
-import { Activity, BarChart3, CalendarDays, ChevronDown, Download, FolderPlus, Plus, RefreshCw, Search, Sparkles, Upload, X, ArrowUpDown } from 'lucide-react'
+import { Activity, BarChart3, CalendarDays, ChevronDown, Download, FolderPlus, Plus, RefreshCw, Search, Shuffle, Sparkles, Upload, X, ArrowUpDown } from 'lucide-react'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 import { useFloatingMenu } from '../../hooks/useFloatingMenu'
 import type { HomeDashboardMode } from './HomeStatsSection'
@@ -9,14 +9,18 @@ import type { HomeDashboardMode } from './HomeStatsSection'
 interface Props {
   t: Record<string, string>
   language: 'de' | 'en'
+  shuffleModeEnabled: boolean
+  showShuffleOnly: boolean
   deckSearchQuery: string
   deckSortMode: DeckSortMode
   dashboardMode: HomeDashboardMode
   onDeckSearchQueryChange: (value: string) => void
   onDeckSortModeChange: (value: DeckSortMode) => void
+  onToggleShuffleOnly: () => void
   onDashboardModeChange: (mode: HomeDashboardMode) => void
   onReload: () => void
   onCreateDeck: () => void
+  onCreateVirtualDeck?: () => void
   onCreateCard: () => void
   onImport: () => void
   onExport: () => void
@@ -25,14 +29,18 @@ interface Props {
 export function HomeDeckToolbar({
   t,
   language,
+  shuffleModeEnabled,
+  showShuffleOnly,
   deckSearchQuery,
   deckSortMode,
   dashboardMode,
   onDeckSearchQueryChange,
   onDeckSortModeChange,
+  onToggleShuffleOnly,
   onDashboardModeChange,
   onReload,
   onCreateDeck,
+  onCreateVirtualDeck,
   onCreateCard,
   onImport,
   onExport,
@@ -132,6 +140,29 @@ export function HomeDeckToolbar({
             })}
           </div>
 
+          {shuffleModeEnabled && (
+            <button
+              type="button"
+              onClick={onToggleShuffleOnly}
+              aria-pressed={showShuffleOnly}
+              className={`inline-flex h-9 shrink-0 items-center gap-1.5 rounded-2xl border px-2.5 text-[10px] font-mono uppercase tracking-[0.08em] transition-all duration-200 ${
+                showShuffleOnly
+                  ? 'border-amber-300/40 bg-amber-300/15 text-amber-100'
+                  : 'border-white/15 bg-white/[0.03] text-white/60 hover:bg-white/[0.06] hover:text-white/85'
+              }`}
+              title={showShuffleOnly
+                ? (language === 'de' ? 'Zu normalen Decks wechseln' : 'Switch to normal decks')
+                : (language === 'de' ? 'Nur Shuffle-Decks anzeigen' : 'Show only shuffle decks')}
+            >
+              <Shuffle size={13} />
+              <span>
+                {showShuffleOnly
+                  ? (language === 'de' ? 'Decks' : 'Decks')
+                  : (language === 'de' ? 'Shuffle' : 'Shuffle')}
+              </span>
+            </button>
+          )}
+
           <div
             className="inline-flex h-9 shrink-0 items-center gap-1 rounded-2xl border border-white/15 bg-white/[0.03] p-1"
             role="group"
@@ -207,6 +238,20 @@ export function HomeDeckToolbar({
                   >
                     <FolderPlus size={13} /> {t.create_deck}
                   </button>
+                  {shuffleModeEnabled && onCreateVirtualDeck && (
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        closeActionsMenu()
+                        onCreateVirtualDeck()
+                      }}
+                      className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-white/[0.08] transition text-left"
+                      role="menuitem"
+                    >
+                      <Shuffle size={13} /> {language === 'de' ? 'Virtuelles Deck erstellen' : 'Create virtual deck'}
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={(event) => {
