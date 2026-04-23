@@ -14,6 +14,16 @@ import { REVIEW_UPDATED_EVENT } from '../constants/appIdentity'
 import type { Deck, Card, GamificationProfile, GlobalStats, ShuffleCollection } from '../types'
 import { buildSelectedShuffleCards, type ShuffleStudyCard } from '../services/ShuffleSessionManager'
 
+export async function getGlobalDbRevision(): Promise<number> {
+  const [deckCount, cardCount, reviewCount, shuffleCollectionCount] = await Promise.all([
+    db.decks.count(),
+    db.cards.count(),
+    db.reviews.count(),
+    db.shuffleCollections.count(),
+  ])
+  return deckCount + cardCount + reviewCount + shuffleCollectionCount
+}
+
 function useOnDbChange(callback: () => void, deckId?: string | null) {
   const callbackRef = useRef(callback)
 
@@ -32,17 +42,11 @@ function useOnDbChange(callback: () => void, deckId?: string | null) {
 
     // When a deckId is provided, scope the observable to that deck's cards only.
     // This prevents a card edit in deck A from triggering a reload in deck B's view.
-    // For global hooks (no deckId) we still watch all three tables.
+    // For global hooks (no deckId) we watch all tables that affect home UI
+    // visibility, including shuffle collections.
     const observable = deckId
       ? liveQuery(() => db.cards.where('deckId').equals(deckId).count())
-      : liveQuery(async () => {
-          const [deckCount, cardCount, reviewCount] = await Promise.all([
-            db.decks.count(),
-            db.cards.count(),
-            db.reviews.count(),
-          ])
-          return deckCount + cardCount + reviewCount
-        })
+      : liveQuery(getGlobalDbRevision)
 
     const subscription = observable.subscribe({
       next: () => {
