@@ -1,9 +1,17 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { liveQuery } from 'dexie'
 import { db } from '../db'
-import { fetchDecks, fetchDeckCards, fetchGamificationProfile, fetchGlobalStats, fetchTodayDueFromDecks } from '../db/queries'
+import {
+  fetchDecks,
+  fetchDeckCards,
+  fetchGamificationProfile,
+  fetchGlobalStats,
+  fetchTodayDueFromDecks,
+  getShuffleCollection,
+} from '../db/queries'
 import { REVIEW_UPDATED_EVENT } from '../constants/appIdentity'
 import type { Deck, Card, GamificationProfile, GlobalStats } from '../types'
+import { buildSelectedShuffleCards, type ShuffleStudyCard } from '../services/ShuffleSessionManager'
 
 function useOnDbChange(callback: () => void, deckId?: string | null) {
   const callbackRef = useRef(callback)
@@ -112,6 +120,62 @@ export function useDeckCards(deckId: string | null) {
     void load()
   }, [load])
   useOnDbChange(load, deckId)
+
+  return { cards, loading, error, reload: load }
+}
+
+export function useShuffleCards(
+  collectionId: string | null,
+  options: {
+    userId?: string
+    maxCards?: number
+    nextDayStartsAt?: number
+  } = {},
+) {
+  const [cards, setCards] = useState<ShuffleStudyCard[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const load = useCallback(async () => {
+    if (!collectionId) {
+      setCards([])
+      setLoading(false)
+      return
+    }
+
+    try {
+      setLoading(true)
+      setError(null)
+
+      const collection = await getShuffleCollection(collectionId)
+      if (!collection) {
+        setCards([])
+        setLoading(false)
+        return
+      }
+
+      const selectedCards = await buildSelectedShuffleCards(collection, {
+        userId: options.userId,
+        maxCards: options.maxCards,
+        nextDayStartsAt: options.nextDayStartsAt,
+      })
+      setCards(selectedCards)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+      setCards([])
+    } finally {
+      setLoading(false)
+    }
+  }, [collectionId, options.maxCards, options.nextDayStartsAt, options.userId])
+
+  useEffect(() => {
+    void load()
+  }, [load])
+
+  // Shuffle collections span multiple decks plus the collection row itself.
+  // A global watcher is the safest additive option until we introduce a more
+  // specific multi-deck subscription path.
+  useOnDbChange(load)
 
   return { cards, loading, error, reload: load }
 }
