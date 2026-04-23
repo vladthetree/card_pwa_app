@@ -204,4 +204,29 @@ describe('shuffleCollections queries', () => {
       }),
     )
   })
+
+  it('shows created virtual deck in list and hides it again after delete', async () => {
+    const created = await createShuffleCollection('  Mobile Mix  ', ['deck-a', 'deck-b'])
+
+    expect(created.ok).toBe(true)
+    expect(created.collectionId).toBeTruthy()
+
+    const afterCreate = await listShuffleCollections()
+    expect(afterCreate).toHaveLength(1)
+    expect(afterCreate[0]).toMatchObject({
+      id: created.collectionId,
+      name: 'Mobile Mix',
+      deckIds: ['deck-a', 'deck-b'],
+    })
+
+    const deleted = await deleteShuffleCollection(created.collectionId!)
+    expect(deleted.ok).toBe(true)
+
+    const afterDelete = await listShuffleCollections()
+    expect(afterDelete).toHaveLength(0)
+
+    // Ensure the record is tombstoned internally, not hard-deleted.
+    expect(mockedDb.state.shuffleCollections).toHaveLength(1)
+    expect(mockedDb.state.shuffleCollections[0].isDeleted).toBe(true)
+  })
 })

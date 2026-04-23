@@ -462,8 +462,18 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-black text-white">
-      <div className="sticky top-0 z-20 border-b border-white/10 bg-black/90 px-3 py-3 backdrop-blur sm:px-4">
+    <div className={`${isHandsetLayout ? 'fixed inset-0' : 'min-h-screen'} flex flex-col overflow-hidden bg-black text-white`}>
+      <div
+        className="sticky top-0 z-20 border-b border-white/10 bg-black/90 backdrop-blur"
+        style={isHandsetLayout
+          ? {
+              paddingTop: 'calc(var(--safe-top) + 0.5rem)',
+              paddingBottom: '0.5rem',
+              paddingLeft: '0.75rem',
+              paddingRight: '0.75rem',
+            }
+          : undefined}
+      >
         <div className="mx-auto flex max-w-5xl items-center gap-3">
           <button
             type="button"
@@ -484,12 +494,15 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
             {collection.deckIds.length} {settings.language === 'de' ? 'Decks' : 'decks'}
           </div>
         </div>
-        <div className="mx-auto mt-3 max-w-5xl">
+        <div className={`mx-auto max-w-5xl ${isHandsetLayout ? 'mt-2' : 'mt-3'}`}>
           <ProgressBar current={session.sessionCount} total={session.sessionCount + session.cards.length} />
         </div>
       </div>
 
-      <div className={`flex-1 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-0' : 'overflow-y-auto px-3 py-4 sm:px-4 sm:py-6'}`}>
+      <div
+        className={`flex-1 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-0' : 'overflow-y-auto px-3 py-4 sm:px-4 sm:py-6'}`}
+        style={isHandsetLayout ? { paddingBottom: 'calc(var(--safe-bottom) + 0.5rem)' } : undefined}
+      >
         <AnimatePresence>
           {session.error && <ErrorAlert message={session.error} onRetry={handleRetry} />}
         </AnimatePresence>
