@@ -21,6 +21,7 @@ export {
   getFutureDueForecast,
   getDeckSuccessRates,
   getDeckMetricsSnapshot,
+  getShuffleCollectionMetricsSnapshot,
   recordReview,
   undoReview,
   forceCardReviewTomorrow,

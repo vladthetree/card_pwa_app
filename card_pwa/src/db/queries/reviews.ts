@@ -16,6 +16,7 @@ import type {
   Rating,
   MetricsPeriod,
   DeckMetricsSnapshot,
+  ShuffleCollectionMetricsSnapshot,
   ReviewUndoToken,
   CardSchedulingState,
   GlobalStats,
@@ -247,6 +248,67 @@ export async function getDeckMetricsSnapshot(deckId: string, period: MetricsPeri
     ratingCounts,
     lastRatingAt,
     trendDelta: Math.round((currentRate - previousRate) * 10) / 10,
+  }
+}
+
+export async function getShuffleCollectionMetricsSnapshot(
+  deckIds: string[],
+  period: MetricsPeriod,
+): Promise<ShuffleCollectionMetricsSnapshot> {
+  const uniqueDeckIds = Array.from(new Set(deckIds.filter(Boolean)))
+  const ratingCounts: Record<Rating, number> = { 1: 0, 2: 0, 3: 0, 4: 0 }
+  const lastRatingAt: Record<Rating, number | null> = { 1: null, 2: null, 3: null, 4: null }
+
+  if (uniqueDeckIds.length === 0) {
+    return {
+      period,
+      deckCount: 0,
+      cardCount: 0,
+      reviewedCardCount: 0,
+      totalReviews: 0,
+      successRate: 0,
+      ratingCounts,
+      lastRatingAt,
+      trendDelta: 0,
+      decks: [],
+    }
+  }
+
+  const snapshots = await Promise.all(uniqueDeckIds.map(deckId => getDeckMetricsSnapshot(deckId, period)))
+  const totalReviews = snapshots.reduce((sum, snapshot) => sum + snapshot.totalReviews, 0)
+  const successWeighted = snapshots.reduce((sum, snapshot) => sum + snapshot.successRate * snapshot.totalReviews, 0)
+  const trendWeightedBase = snapshots.reduce((sum, snapshot) => sum + Math.max(1, snapshot.totalReviews), 0)
+  const trendWeighted = snapshots.reduce((sum, snapshot) => sum + snapshot.trendDelta * Math.max(1, snapshot.totalReviews), 0)
+
+  for (const snapshot of snapshots) {
+    ratingCounts[1] += snapshot.ratingCounts[1]
+    ratingCounts[2] += snapshot.ratingCounts[2]
+    ratingCounts[3] += snapshot.ratingCounts[3]
+    ratingCounts[4] += snapshot.ratingCounts[4]
+    lastRatingAt[1] = Math.max(lastRatingAt[1] ?? 0, snapshot.lastRatingAt[1] ?? 0) || null
+    lastRatingAt[2] = Math.max(lastRatingAt[2] ?? 0, snapshot.lastRatingAt[2] ?? 0) || null
+    lastRatingAt[3] = Math.max(lastRatingAt[3] ?? 0, snapshot.lastRatingAt[3] ?? 0) || null
+    lastRatingAt[4] = Math.max(lastRatingAt[4] ?? 0, snapshot.lastRatingAt[4] ?? 0) || null
+  }
+
+  return {
+    period,
+    deckCount: snapshots.length,
+    cardCount: snapshots.reduce((sum, snapshot) => sum + snapshot.cardCount, 0),
+    reviewedCardCount: snapshots.reduce((sum, snapshot) => sum + snapshot.reviewedCardCount, 0),
+    totalReviews,
+    successRate: totalReviews > 0 ? Math.round(successWeighted / totalReviews) : 0,
+    ratingCounts,
+    lastRatingAt,
+    trendDelta: Math.round((trendWeighted / Math.max(1, trendWeightedBase)) * 10) / 10,
+    decks: snapshots.map(snapshot => ({
+      deckId: snapshot.deckId,
+      cardCount: snapshot.cardCount,
+      reviewedCardCount: snapshot.reviewedCardCount,
+      totalReviews: snapshot.totalReviews,
+      successRate: snapshot.successRate,
+      trendDelta: snapshot.trendDelta,
+    })),
   }
 }
 

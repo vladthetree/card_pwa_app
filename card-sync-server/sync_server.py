@@ -117,6 +117,11 @@ def _push_detail(op_type, payload):
     return f"card={p.get('cardId','')}"
   if op_type in ("review", "review.undo"):
     return f"card={p.get('cardId','')}"
+  if op_type == "shuffleCollection.upsert":
+    deck_ids = p.get("deckIds") or []
+    return f"collection={p.get('id','')}  decks={len(deck_ids)}  name={p.get('name','')!r}"
+  if op_type == "shuffleCollection.delete":
+    return f"collection={p.get('id','')}"
   return ""
 
 def _prepare_payload_for_storage(op_type, payload, client_timestamp):
@@ -344,6 +349,28 @@ def init_db():
   conn.execute("CREATE INDEX IF NOT EXISTS idx_review_active_snapshot ON server_reviews(reviewed_at) WHERE undone_at IS NULL")
   conn.commit()
 
+  # ─────────────────────────────────────────────────────────────
+  # Server State: Shuffle Collections
+  # ─────────────────────────────────────────────────────────────
+  conn.execute("""
+    CREATE TABLE IF NOT EXISTS server_shuffle_collections (
+      id TEXT NOT NULL,
+      name TEXT,
+      deck_ids_json TEXT,
+      created_at INTEGER,
+      updated_at INTEGER NOT NULL,
+      deleted_at INTEGER NULL,
+      last_source_client TEXT,
+      user_id TEXT NOT NULL DEFAULT '',
+      PRIMARY KEY (user_id, id)
+    )
+  """)
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_shuffle_updated_at ON server_shuffle_collections(updated_at)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_shuffle_deleted_at ON server_shuffle_collections(deleted_at)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_shuffle_user_id ON server_shuffle_collections(user_id)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_shuffle_snapshot_active ON server_shuffle_collections(id) WHERE deleted_at IS NULL")
+  conn.commit()
+
   card_cols = [r[1] for r in conn.execute("PRAGMA table_info(server_cards)").fetchall()]
   if "metadata_json" not in card_cols:
     conn.execute("ALTER TABLE server_cards ADD COLUMN metadata_json TEXT")
@@ -383,6 +410,18 @@ def init_db():
   conn.execute("UPDATE server_reviews SET user_id='' WHERE user_id IS NULL")
   conn.commit()
   conn.execute("CREATE INDEX IF NOT EXISTS idx_review_user_id ON server_reviews(user_id)")
+  conn.commit()
+
+  shuffle_cols = [r[1] for r in conn.execute("PRAGMA table_info(server_shuffle_collections)").fetchall()]
+  if "user_id" not in shuffle_cols:
+    conn.execute("ALTER TABLE server_shuffle_collections ADD COLUMN user_id TEXT")
+    conn.commit()
+  conn.execute("UPDATE server_shuffle_collections SET user_id='' WHERE user_id IS NULL")
+  conn.commit()
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_shuffle_user_id ON server_shuffle_collections(user_id)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_shuffle_updated_at ON server_shuffle_collections(updated_at)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_shuffle_deleted_at ON server_shuffle_collections(deleted_at)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_shuffle_snapshot_active ON server_shuffle_collections(id) WHERE deleted_at IS NULL")
   conn.commit()
 
   ensure_profile_scoped_state_tables(conn)
@@ -479,6 +518,16 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
     return (
       sub.get("updatedAt")
       or payload.get("updatedAt")
+      or payload.get("timestamp")
+      or client_timestamp
+      or now
+    )
+
+  def _shuffle_candidate_ts():
+    return (
+      payload.get("updatedAt")
+      or payload.get("deletedAt")
+      or payload.get("createdAt")
       or payload.get("timestamp")
       or client_timestamp
       or now
@@ -738,6 +787,73 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       (candidate_ts, card_id, state_user_id, source_client, source_client)
     )
 
+  elif op_type == "shuffleCollection.upsert":
+    collection_id = payload.get("id")
+    name = payload.get("name")
+    deck_ids = payload.get("deckIds")
+    if not collection_id or not name or not isinstance(deck_ids, list):
+      return
+    candidate_ts = _shuffle_candidate_ts()
+
+    existing = conn.execute(
+      "SELECT updated_at, last_source_client FROM server_shuffle_collections WHERE id=? AND user_id=?",
+      (collection_id, state_user_id)
+    ).fetchone()
+    if existing and not lww_should_apply(existing[0], existing[1], candidate_ts, source_client):
+      return
+
+    deleted_at = payload.get("deletedAt")
+    if deleted_at is None and payload.get("isDeleted"):
+      deleted_at = candidate_ts
+
+    conn.execute("""
+      INSERT OR REPLACE INTO server_shuffle_collections
+      (id, name, deck_ids_json, created_at, updated_at, deleted_at, last_source_client, user_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+      collection_id,
+      name,
+      json.dumps(deck_ids, ensure_ascii=False),
+      payload.get("createdAt") or now,
+      candidate_ts,
+      deleted_at,
+      source_client,
+      state_user_id,
+    ))
+
+  elif op_type == "shuffleCollection.delete":
+    collection_id = payload.get("id")
+    if not collection_id:
+      return
+    candidate_ts = _shuffle_candidate_ts()
+
+    existing = conn.execute(
+      "SELECT updated_at, last_source_client, name, deck_ids_json, created_at FROM server_shuffle_collections WHERE id=? AND user_id=?",
+      (collection_id, state_user_id)
+    ).fetchone()
+    if existing and not lww_should_apply(existing[0], existing[1], candidate_ts, source_client):
+      return
+
+    deleted_at = payload.get("deletedAt") or candidate_ts
+    existing_name = existing[2] if existing else payload.get("name")
+    existing_deck_ids = existing[3] if existing else json.dumps(payload.get("deckIds") or [], ensure_ascii=False)
+    existing_created_at = existing[4] if existing else (payload.get("createdAt") or now)
+
+    conn.execute("""
+      INSERT OR REPLACE INTO server_shuffle_collections
+      (id, name, deck_ids_json, created_at, updated_at, deleted_at, last_source_client, user_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+      collection_id,
+      existing_name,
+      existing_deck_ids,
+      existing_created_at,
+      candidate_ts,
+      deleted_at,
+      source_client,
+      state_user_id,
+    ))
+
 def rebuild_server_state(conn):
   """
   Rebuild server_cards and server_decks by replaying all events from sync_operations.
@@ -747,6 +863,7 @@ def rebuild_server_state(conn):
   conn.execute("DELETE FROM server_cards")
   conn.execute("DELETE FROM server_decks")
   conn.execute("DELETE FROM server_reviews")
+  conn.execute("DELETE FROM server_shuffle_collections")
   conn.commit()
 
   # Fetch all operations in order
@@ -1447,12 +1564,13 @@ class Handler(BaseHTTPRequestHandler):
     sent_at = parse_int(data.get("sentAt") or now_ms(), now_ms(), min_value=0)
     decks = data.get("decks") or []
     cards = data.get("cards") or []
+    shuffle_collections = data.get("shuffleCollections") or []
     client_ip = self.client_address[0] if self.client_address else "?"
 
     if not client_id or not batch_id:
       self._send_json(400, {"ok": False, "error": "missing_bootstrap_fields"})
       return
-    if not isinstance(decks, list) or not isinstance(cards, list):
+    if not isinstance(decks, list) or not isinstance(cards, list) or not isinstance(shuffle_collections, list):
       self._send_json(400, {"ok": False, "error": "invalid_bootstrap_payload"})
       return
 
@@ -1474,6 +1592,9 @@ class Handler(BaseHTTPRequestHandler):
             "cardsInserted": 0,
             "cardsUpdated": 0,
             "cardsSkippedOlder": 0,
+            "shuffleCollectionsInserted": 0,
+            "shuffleCollectionsUpdated": 0,
+            "shuffleCollectionsSkippedOlder": 0,
           }
         log(
           f"BOOTSTRAP  ip={client_ip}  client={_client_short(client_id)}  "
@@ -1494,6 +1615,9 @@ class Handler(BaseHTTPRequestHandler):
         "cardsInserted": 0,
         "cardsUpdated": 0,
         "cardsSkippedOlder": 0,
+        "shuffleCollectionsInserted": 0,
+        "shuffleCollectionsUpdated": 0,
+        "shuffleCollectionsSkippedOlder": 0,
       }
 
       # Upsert decks with LWW + tombstone support.
@@ -1603,11 +1727,57 @@ class Handler(BaseHTTPRequestHandler):
         else:
           summary["cardsInserted"] += 1
 
+      for collection in shuffle_collections:
+        if not isinstance(collection, dict):
+          continue
+        collection_id = str(collection.get("id") or "").strip()
+        name = collection.get("name")
+        deck_ids = collection.get("deckIds") or []
+        if not collection_id or not isinstance(name, str) or not isinstance(deck_ids, list):
+          continue
+
+        candidate_ts = parse_int(collection.get("updatedAt") or collection.get("createdAt") or sent_at, sent_at, min_value=0)
+        existing = conn.execute(
+          "SELECT updated_at, last_source_client FROM server_shuffle_collections WHERE id=? AND user_id=?",
+          (collection_id, state_user_id)
+        ).fetchone()
+        if existing and not lww_should_apply(existing["updated_at"], existing["last_source_client"], candidate_ts, client_id):
+          summary["shuffleCollectionsSkippedOlder"] += 1
+          continue
+
+        created_at = parse_int(collection.get("createdAt") or candidate_ts, candidate_ts, min_value=0)
+        deleted_at = collection.get("deletedAt")
+        if deleted_at is None and collection.get("isDeleted"):
+          deleted_at = candidate_ts
+
+        conn.execute(
+          """
+          INSERT OR REPLACE INTO server_shuffle_collections
+          (id, name, deck_ids_json, created_at, updated_at, deleted_at, last_source_client, user_id)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          """,
+          (
+            collection_id,
+            name,
+            json.dumps(deck_ids, ensure_ascii=False),
+            created_at,
+            candidate_ts,
+            deleted_at,
+            client_id,
+            state_user_id,
+          )
+        )
+        if existing:
+          summary["shuffleCollectionsUpdated"] += 1
+        else:
+          summary["shuffleCollectionsInserted"] += 1
+
       # Log a single operation marker to advance server cursor for post-bootstrap pull.
       marker_payload = {
         "batchId": batch_id,
         "decks": len(decks),
         "cards": len(cards),
+        "shuffleCollections": len(shuffle_collections),
       }
       conn.execute(
         """INSERT INTO sync_operations
@@ -1640,7 +1810,8 @@ class Handler(BaseHTTPRequestHandler):
       log(
         f"BOOTSTRAP  ip={client_ip}  client={_client_short(client_id)}  batch={batch_id}  "
         f"decks=+{summary['decksInserted']}/={summary['decksUpdated']}/skip={summary['decksSkippedOlder']}  "
-        f"cards=+{summary['cardsInserted']}/={summary['cardsUpdated']}/skip={summary['cardsSkippedOlder']}"
+        f"cards=+{summary['cardsInserted']}/={summary['cardsUpdated']}/skip={summary['cardsSkippedOlder']}  "
+        f"shuffle=+{summary['shuffleCollectionsInserted']}/={summary['shuffleCollectionsUpdated']}/skip={summary['shuffleCollectionsSkippedOlder']}"
       )
       self._send_json(200, {
         "ok": True,
@@ -1919,6 +2090,33 @@ class Handler(BaseHTTPRequestHandler):
           "lastSourceClient": r["last_source_client"]
         })
 
+      if include_deleted:
+        where_shuffle = f"WHERE 1=1 {user_filter}"
+      else:
+        where_shuffle = f"WHERE deleted_at IS NULL {user_filter}"
+      shuffle_rows = conn.execute(
+        f"""SELECT id, name, deck_ids_json, created_at, updated_at, deleted_at, last_source_client
+            FROM server_shuffle_collections {where_shuffle} ORDER BY id ASC""",
+        user_params
+      ).fetchall()
+      shuffle_collections = []
+      for r in shuffle_rows:
+        try:
+          deck_ids = json.loads(r["deck_ids_json"]) if r["deck_ids_json"] else []
+        except Exception:
+          deck_ids = []
+
+        shuffle_collections.append({
+          "id": r["id"],
+          "name": r["name"],
+          "deckIds": deck_ids,
+          "createdAt": r["created_at"],
+          "updatedAt": r["updated_at"],
+          "isDeleted": r["deleted_at"] is not None,
+          "deletedAt": r["deleted_at"],
+          "lastSourceClient": r["last_source_client"],
+        })
+
       where_review = f"WHERE undone_at IS NULL {user_filter}"
       if not include_deleted:
         where_review += """
@@ -1953,11 +2151,12 @@ class Handler(BaseHTTPRequestHandler):
         "cursor": cursor,
         "decks": decks,
         "cards": cards,
+        "shuffleCollections": shuffle_collections,
         "reviews": reviews
       })
       log(
         f"SNAPSHOT  ip={client_ip}  client={_client_short(client_id)}  "
-        f"includeDeleted={include_deleted}  decks={len(decks)}  cards={len(cards)}  reviews={len(reviews)}  cursor={cursor}"
+        f"includeDeleted={include_deleted}  decks={len(decks)}  cards={len(cards)}  shuffle={len(shuffle_collections)}  reviews={len(reviews)}  cursor={cursor}"
       )
     finally:
       conn.close()

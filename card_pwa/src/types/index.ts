@@ -122,6 +122,28 @@ export interface DeckMetricsSnapshot {
   trendDelta: number
 }
 
+export interface ShuffleCollectionDeckMetricsMember {
+  deckId: string
+  cardCount: number
+  reviewedCardCount: number
+  totalReviews: number
+  successRate: number
+  trendDelta: number
+}
+
+export interface ShuffleCollectionMetricsSnapshot {
+  period: MetricsPeriod
+  deckCount: number
+  cardCount: number
+  reviewedCardCount: number
+  totalReviews: number
+  successRate: number
+  ratingCounts: Record<Rating, number>
+  lastRatingAt: Record<Rating, number | null>
+  trendDelta: number
+  decks: ShuffleCollectionDeckMetricsMember[]
+}
+
 export type CardSchedulingState = Pick<
   import('../db').CardRecord,
   'type' | 'queue' | 'due' | 'dueAt' | 'interval' | 'factor' | 'stability' | 'difficulty' | 'reps' | 'lapses' | 'algorithm'
