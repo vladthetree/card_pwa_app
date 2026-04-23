@@ -29,3 +29,11 @@ export {
 export { fetchGamificationProfile } from './gamification'
 
 export { readActiveSession, writeActiveSession, clearActiveSession } from './sessions'
+
+export {
+  listShuffleCollections,
+  getShuffleCollection,
+  createShuffleCollection,
+  updateShuffleCollection,
+  deleteShuffleCollection,
+} from './shuffleCollections'

@@ -123,6 +123,25 @@ export interface DeckProgressRecord {
   updatedAt: number
 }
 
+/**
+ * A user-defined logical grouping of multiple decks for cross-deck study
+ * sessions (Shuffle Mode). Cards are never copied here — deckIds are soft
+ * references; the source of truth for each card's origin remains Card.deckId.
+ * Tombstone convention mirrors DeckRecord (isDeleted / updatedAt).
+ */
+export interface ShuffleCollectionRecord {
+  /** e.g. "shuffle_<uuid>" — never collides with a deckId */
+  id: string
+  name: string
+  /** Ordered list of member deck IDs (soft references). */
+  deckIds: string[]
+  createdAt: number
+  updatedAt: number
+  /** Tombstone: set true on soft-delete so future sync can reconstruct. */
+  isDeleted?: boolean
+  deletedAt?: number
+}
+
 // ─── Dexie Database Class ────────────────────────────────────────────────────
 
 export class CardPwaDB extends Dexie {
@@ -134,6 +153,7 @@ export class CardPwaDB extends Dexie {
   profile!: Table<ProfileRecord, string>
   cardStats!: Table<CardStatsRecord, string>
   deckProgress!: Table<DeckProgressRecord, string>
+  shuffleCollections!: Table<ShuffleCollectionRecord, string>
 
   constructor() {
     super(DATABASE_NAMES.app)
@@ -235,6 +255,19 @@ export class CardPwaDB extends Dexie {
       profile: 'id',
       cardStats: 'cardId, deckId, updatedAt, [deckId+updatedAt]',
       deckProgress: 'deckId, updatedAt',
+    })
+
+    // Version 12: Add logical multi-deck shuffle collections.
+    this.version(12).stores({
+      decks: 'id, name, createdAt, isDeleted',
+      cards: 'id, noteId, deckId, type, due, dueAt, createdAt, algorithm, stability, difficulty, isDeleted, [deckId+due], [deckId+dueAt], [deckId+algorithm], [deckId+type], [deckId+stability], [deckId+difficulty]',
+      reviews: '++id, cardId, timestamp, rating, [cardId+timestamp], [timestamp+rating]',
+      activeSessions: 'id, updatedAt',
+      syncMeta: 'key',
+      profile: 'id',
+      cardStats: 'cardId, deckId, updatedAt, [deckId+updatedAt]',
+      deckProgress: 'deckId, updatedAt',
+      shuffleCollections: 'id, updatedAt, isDeleted',
     })
   }
 }
