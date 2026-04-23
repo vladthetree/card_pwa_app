@@ -36,6 +36,7 @@ interface Settings {
   algorithm: Algorithm
   algorithmParams: AlgorithmParams
   studyCardLimit: number
+  shuffleModeEnabled: boolean
   fontFamily: FontFamily
   gameOfLifeViewMode: GameOfLifeViewMode
   gameOfLifeAnimationSpeed: number
@@ -70,6 +71,7 @@ interface SettingsContextType {
   setDailyReminderTime: (time: string) => void
   setShowBuildVersion: (enabled: boolean) => void
   setStudyCardLimit: (limit: number) => void
+  setShuffleModeEnabled: (enabled: boolean) => void
   setNextDayStartsAt: (hour: number) => void
   setDailyGoal: (goal: number) => void
   setSm2Params: (params: Partial<SM2Params>) => void
@@ -164,6 +166,7 @@ const DEFAULT_SETTINGS: Settings = {
   algorithm: 'fsrs',
   algorithmParams: DEFAULT_ALGORITHM_PARAMS,
   studyCardLimit: 50,
+  shuffleModeEnabled: true,
   fontFamily: 'industrial',
   gameOfLifeViewMode: '3d',
   gameOfLifeAnimationSpeed: 100,
@@ -196,6 +199,7 @@ function normalizeSettings(input: Partial<Settings> | undefined): Settings {
     algorithm: input?.algorithm === 'sm2' ? 'sm2' : 'fsrs',
     algorithmParams: normalizeAlgorithmParams(input?.algorithmParams),
     studyCardLimit: normalizeStudyCardLimit(input?.studyCardLimit),
+    shuffleModeEnabled: input?.shuffleModeEnabled !== false,
     fontFamily: input?.fontFamily === 'modern' ? input.fontFamily : 'industrial',
     gameOfLifeViewMode: input?.gameOfLifeViewMode === '2d' ? '2d' : '3d',
     gameOfLifeAnimationSpeed: normalizeGameOfLifeAnimationSpeed(input?.gameOfLifeAnimationSpeed),
@@ -369,6 +373,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     saveSettings({ ...settings, studyCardLimit: normalizeStudyCardLimit(limit) })
   }
 
+  const setShuffleModeEnabled = (shuffleModeEnabled: boolean) => {
+    saveSettings({ ...settings, shuffleModeEnabled })
+  }
+
   const setNextDayStartsAt = (hour: number) => {
     const normalized = Number.isInteger(hour) && hour >= 0 && hour <= 23 ? hour : 4
     saveSettings({ ...settings, nextDayStartsAt: normalized })
@@ -439,6 +447,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setDailyReminderTime,
         setShowBuildVersion,
         setStudyCardLimit,
+        setShuffleModeEnabled,
         setNextDayStartsAt,
         setDailyGoal,
         setSm2Params,

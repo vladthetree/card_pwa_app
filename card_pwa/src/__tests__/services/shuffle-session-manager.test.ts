@@ -2,12 +2,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Card } from '../../types'
 
 const mockedRuntime = vi.hoisted(() => ({
-  fetchDeckCards: vi.fn(async (_deckId: string): Promise<Card[]> => []),
+  fetchDeckStudyCandidates: vi.fn(async (_deckId: string): Promise<Card[]> => []),
   getSyncedDeckIds: vi.fn(async (_userId?: string): Promise<string[]> => []),
 }))
 
 vi.mock('../../db/queries', () => ({
-  fetchDeckCards: mockedRuntime.fetchDeckCards,
+  fetchDeckStudyCandidates: mockedRuntime.fetchDeckStudyCandidates,
 }))
 
 vi.mock('../../services/syncedDeckScope', () => ({
@@ -47,15 +47,15 @@ function createCard(overrides: Partial<ShuffleStudyCard>): ShuffleStudyCard {
 
 describe('ShuffleSessionManager', () => {
   beforeEach(() => {
-    mockedRuntime.fetchDeckCards.mockReset()
-    mockedRuntime.fetchDeckCards.mockImplementation(async (): Promise<Card[]> => [])
+    mockedRuntime.fetchDeckStudyCandidates.mockReset()
+    mockedRuntime.fetchDeckStudyCandidates.mockImplementation(async (): Promise<Card[]> => [])
     mockedRuntime.getSyncedDeckIds.mockReset()
     mockedRuntime.getSyncedDeckIds.mockResolvedValue([])
   })
 
   it('builds a shuffle pool from the synced deck intersection and deduplicates by card id', async () => {
     mockedRuntime.getSyncedDeckIds.mockResolvedValue(['deck-a', 'deck-c'])
-    mockedRuntime.fetchDeckCards.mockImplementation(async (deckId: string): Promise<Card[]> => {
+    mockedRuntime.fetchDeckStudyCandidates.mockImplementation(async (deckId: string): Promise<Card[]> => {
       if (deckId === 'deck-a') {
         return [
           createCard({ id: 'card-1', deckId }),
@@ -77,7 +77,7 @@ describe('ShuffleSessionManager', () => {
     )
 
     expect(mockedRuntime.getSyncedDeckIds).toHaveBeenCalledWith('user-1')
-    expect(mockedRuntime.fetchDeckCards).toHaveBeenCalledTimes(2)
+    expect(mockedRuntime.fetchDeckStudyCandidates).toHaveBeenCalledTimes(2)
     expect(result.map(card => card.id)).toEqual(['card-1', 'shared-card', 'card-3'])
     expect(result.map(card => card.deckId)).toEqual(['deck-a', 'deck-a', 'deck-c'])
   })
@@ -89,7 +89,7 @@ describe('ShuffleSessionManager', () => {
       buildShufflePool({ deckIds: ['deck-a', 'deck-b'] }, { userId: 'user-1' }),
     ).resolves.toEqual([])
 
-    expect(mockedRuntime.fetchDeckCards).not.toHaveBeenCalled()
+    expect(mockedRuntime.fetchDeckStudyCandidates).not.toHaveBeenCalled()
   })
 
   it('increases shuffle weight for more overdue cards and caps the overdue boost after 14 days', () => {
@@ -149,7 +149,7 @@ describe('ShuffleSessionManager', () => {
 
   it('builds and selects cards through the combined helper', async () => {
     mockedRuntime.getSyncedDeckIds.mockResolvedValue(['deck-a'])
-    mockedRuntime.fetchDeckCards.mockResolvedValue([
+    mockedRuntime.fetchDeckStudyCandidates.mockResolvedValue([
       createCard({ id: 'review-a', deckId: 'deck-a', type: 'review', dueAt: Date.now() - 1 }),
       createCard({ id: 'new-a', deckId: 'deck-a', type: 'new' }),
     ])

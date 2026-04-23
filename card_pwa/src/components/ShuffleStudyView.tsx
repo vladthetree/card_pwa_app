@@ -34,6 +34,14 @@ interface Props {
   onExit: () => void
 }
 
+function buildDeckCounts(cards: Array<Card & { deckId?: string }>): Record<string, number> {
+  return cards.reduce<Record<string, number>>((acc, card) => {
+    if (!card.deckId) return acc
+    acc[card.deckId] = (acc[card.deckId] ?? 0) + 1
+    return acc
+  }, {})
+}
+
 function ErrorAlert({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
     <motion.div
@@ -70,6 +78,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
 
   const [session, dispatch] = useReducer(sessionReducer, initialSessionState)
   const [answerWasIncorrect, setAnswerWasIncorrect] = useState(false)
+  const [sessionDeckCounts, setSessionDeckCounts] = useState<Record<string, number>>({})
   const sessionDoneRef = useRef(session.isDone)
   const sessionCardsLengthRef = useRef(session.cards.length)
   const restoreRunIdRef = useRef(0)
@@ -94,6 +103,15 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     const deckId = latest?.deckId ?? (currentCard as Card & { deckId?: string }).deckId
     return deckId ? deckNameById.get(deckId) : undefined
   }, [currentCard, deckNameById, latestShuffleCardById])
+  const sessionDeckSummary = useMemo(() => (
+    Object.entries(sessionDeckCounts)
+      .map(([deckId, count]) => ({
+        deckId,
+        count,
+        name: deckNameById.get(deckId) ?? deckId,
+      }))
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+  ), [deckNameById, sessionDeckCounts])
   const maxSelectableRating: Rating = answerWasIncorrect ? 3 : 4
 
   const readPersistedSession = useCallback(async (): Promise<PersistedStudySession | null> => {
@@ -127,6 +145,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
 
       if (!snapshot) {
         if (!canApplyRestore()) return
+        setSessionDeckCounts(buildDeckCounts(cards))
         dispatch({ type: 'INIT', cards })
         return
       }
@@ -135,6 +154,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       if (persistedCardLimit !== studyCardLimit) {
         clearPersistedSession()
         if (!canApplyRestore()) return
+        setSessionDeckCounts(buildDeckCounts(cards))
         dispatch({ type: 'INIT', cards })
         return
       }
@@ -143,11 +163,13 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       if (restoredCards.length === 0) {
         clearPersistedSession()
         if (!canApplyRestore()) return
+        setSessionDeckCounts(buildDeckCounts(cards))
         dispatch({ type: 'INIT', cards })
         return
       }
 
       if (!canApplyRestore()) return
+      setSessionDeckCounts(buildDeckCounts(restoredCards))
       dispatch({ type: 'RESTORE', cards: restoredCards, snapshot })
     })()
 
@@ -344,6 +366,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   const handleRestart = useCallback(() => {
     clearPersistedSession()
     setAnswerWasIncorrect(false)
+    setSessionDeckCounts(buildDeckCounts(cards))
     dispatch({ type: 'INIT', cards })
   }, [cards, clearPersistedSession])
 
@@ -387,6 +410,31 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
           <p className="mt-3 text-sm text-white/55">
             {settings.language === 'de' ? 'Diese Shuffle-Session ist abgeschlossen.' : 'This shuffle session is complete.'}
           </p>
+          {sessionDeckSummary.length > 0 && (
+            <div className="mt-6 rounded-3xl border border-white/10 bg-black/25 p-4 text-left">
+              <div className="text-[11px] uppercase tracking-[0.18em] text-white/40">
+                {settings.language === 'de' ? 'Verteilung nach Ursprungsdeck' : 'Source deck distribution'}
+              </div>
+              <div className="mt-3 grid gap-2">
+                {sessionDeckSummary.map(entry => (
+                  <div
+                    key={entry.deckId}
+                    className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/[0.03] px-3 py-2 text-sm"
+                  >
+                    <span className="truncate pr-3 text-white/80">{entry.name}</span>
+                    <span className="shrink-0 rounded-full border border-amber-300/20 bg-amber-400/10 px-2 py-0.5 text-xs text-amber-100/85">
+                      {entry.count} {settings.language === 'de' ? 'Karten' : 'cards'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-3 text-xs leading-relaxed text-white/40">
+                {settings.language === 'de'
+                  ? 'Bewertungen wurden weiterhin im jeweiligen Originaldeck verbucht.'
+                  : 'Reviews were still recorded against each original deck.'}
+              </p>
+            </div>
+          )}
           <div className="mt-6 flex justify-center gap-3">
             <button
               type="button"

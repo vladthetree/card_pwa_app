@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ThemeProvider } from './contexts/ThemeContext'
-import { SettingsProvider } from './contexts/SettingsContext'
+import { SettingsProvider, useSettings } from './contexts/SettingsContext'
 import AppInitializer from './components/AppInitializer'
 import AppErrorBoundary from './components/AppErrorBoundary'
 import ToastContainer from './components/ToastContainer'
@@ -18,6 +18,7 @@ function getInitialView(): View {
   if (typeof window !== 'undefined') {
     const v = new URLSearchParams(window.location.search).get('view')
     if (v === 'import') return 'import'
+    if (v === 'shuffle' || v === 'shuffle-manage') return 'shuffle-manage'
     // 'study' requires an active deck which is set by the user from home.
     // HomeView will show the study prompt prominently when this param is present.
   }
@@ -37,7 +38,8 @@ function ViewFallback() {
   )
 }
 
-export default function App() {
+function AppShell() {
+  const { settings } = useSettings()
   const swSupported = supportsServiceWorker()
   const prefersReducedMotion = useReducedMotion()
   const [view, setView] = useState<View>(getInitialView)
@@ -90,6 +92,27 @@ export default function App() {
     window.location.reload()
   }, [pendingReloadAfterStudy, view])
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const url = new URL(window.location.href)
+    if (view === 'import') {
+      url.searchParams.set('view', 'import')
+    } else if (view === 'shuffle-manage') {
+      url.searchParams.set('view', 'shuffle')
+    } else {
+      url.searchParams.delete('view')
+    }
+
+    window.history.replaceState({}, '', url)
+  }, [view])
+
+  useEffect(() => {
+    if (settings.shuffleModeEnabled) return
+    if (view !== 'shuffle-manage') return
+    setView('home')
+  }, [settings.shuffleModeEnabled, view])
+
   const applyUpdate = () => {
     waitingWorker?.postMessage({ type: 'SKIP_WAITING' })
   }
@@ -106,6 +129,12 @@ export default function App() {
     setView('shuffle-study')
   }
 
+  const openShuffleManager = () => {
+    setActiveDeck(null)
+    setActiveShuffleCollection(null)
+    setView('shuffle-manage')
+  }
+
   const goHome = () => {
     setView('home')
     setActiveDeck(null)
@@ -113,19 +142,17 @@ export default function App() {
   }
 
   return (
-    <ThemeProvider>
-      <SettingsProvider>
-        <AppErrorBoundary>
-          <AppInitializer>
-            <div
-              className="min-h-screen flex flex-col"
-              style={{
-                background: 'var(--theme-background)',
-                minHeight: '100dvh',
-                paddingTop: 'var(--safe-top)',
-                paddingBottom: 'var(--safe-bottom)',
-              }}
-            >
+    <AppErrorBoundary>
+      <AppInitializer>
+        <div
+          className="min-h-screen flex flex-col"
+          style={{
+            background: 'var(--theme-background)',
+            minHeight: '100dvh',
+            paddingTop: 'var(--safe-top)',
+            paddingBottom: 'var(--safe-bottom)',
+          }}
+        >
         <div
           aria-hidden
           className="pointer-events-none fixed top-0 left-0 right-0 z-[50]"
@@ -162,7 +189,30 @@ export default function App() {
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 home-view"
               >
-                <HomeView onStartStudy={startStudy} onStartShuffleStudy={startShuffleStudy} />
+                <HomeView
+                  onStartStudy={startStudy}
+                  onStartShuffleStudy={startShuffleStudy}
+                  onOpenShuffleManager={openShuffleManager}
+                />
+              </motion.div>
+            )}
+
+            {view === 'shuffle-manage' && (
+              <motion.div
+                key="shuffle-manage"
+                initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
+                animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+                exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
+                transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
+                className="flex-1 home-view"
+              >
+                <HomeView
+                  mode="shuffle-manage"
+                  onBackHome={goHome}
+                  onStartStudy={startStudy}
+                  onStartShuffleStudy={startShuffleStudy}
+                  onOpenShuffleManager={openShuffleManager}
+                />
               </motion.div>
             )}
 
@@ -193,9 +243,17 @@ export default function App() {
             )}
           </AnimatePresence>
         </Suspense>
-            </div>
-          </AppInitializer>
-        </AppErrorBoundary>
+        </div>
+      </AppInitializer>
+    </AppErrorBoundary>
+  )
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <SettingsProvider>
+        <AppShell />
       </SettingsProvider>
     </ThemeProvider>
   )
