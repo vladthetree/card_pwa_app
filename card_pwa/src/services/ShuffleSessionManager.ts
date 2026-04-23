@@ -1,5 +1,5 @@
 import type { ShuffleCollectionRecord } from '../db'
-import { fetchDeckCards } from '../db/queries'
+import { fetchDeckStudyCandidates } from '../db/queries'
 import { getDayStartMs } from '../utils/time'
 import type { Card } from '../types'
 import { getCardWeight, sortStudyCards } from './StudySessionManager'
@@ -76,9 +76,48 @@ function interleaveDecks(cards: ShuffleStudyCard[]): ShuffleStudyCard[] {
   return result
 }
 
+function resolveDueAt(card: Card): number {
+  if (Number.isFinite(card.dueAt)) return Math.round(card.dueAt as number)
+  return Math.max(0, Math.floor(card.due)) * DAY_MS
+}
+
+function getTypePriority(cardType: Card['type']): number {
+  const priority: Record<Card['type'], number> = {
+    learning: 0,
+    relearning: 1,
+    review: 2,
+    new: 3,
+  }
+  return priority[cardType]
+}
+
+function compareShuffleCards(a: Card, b: Card, nowMs: number): number {
+  const aIsTimeBound = a.type !== 'new'
+  const bIsTimeBound = b.type !== 'new'
+  if (aIsTimeBound || bIsTimeBound) {
+    const aDueRank = aIsTimeBound && resolveDueAt(a) <= nowMs ? 0 : 1
+    const bDueRank = bIsTimeBound && resolveDueAt(b) <= nowMs ? 0 : 1
+    if (aDueRank !== bDueRank) return aDueRank - bDueRank
+  }
+
+  const typeDiff = getTypePriority(a.type) - getTypePriority(b.type)
+  if (typeDiff !== 0) return typeDiff
+
+  const dueDiff = resolveDueAt(a) - resolveDueAt(b)
+  if (dueDiff !== 0) return dueDiff
+
+  const weightDiff = getShuffleWeight(b, nowMs) - getShuffleWeight(a, nowMs)
+  if (weightDiff !== 0) return weightDiff
+
+  const baseWeightDiff = getCardWeight(b) - getCardWeight(a)
+  if (baseWeightDiff !== 0) return baseWeightDiff
+
+  return a.id.localeCompare(b.id)
+}
+
 export async function buildShufflePool(
   collection: Pick<ShuffleCollectionRecord, 'deckIds'>,
-  options: { userId?: string } = {},
+  options: { userId?: string; nextDayStartsAt?: number } = {},
 ): Promise<ShuffleStudyCard[]> {
   const syncedDeckIds = await getSyncedDeckIds(options.userId)
   const syncedDeckIdSet = new Set(syncedDeckIds)
@@ -88,7 +127,7 @@ export async function buildShufflePool(
 
   const deckCardSets = await Promise.all(
     effectiveDeckIds.map(async deckId => {
-      const cards = await fetchDeckCards(deckId)
+      const cards = await fetchDeckStudyCandidates(deckId, options.nextDayStartsAt)
       return cards.map(card => ({ ...card, deckId }))
     }),
   )
@@ -100,15 +139,20 @@ export function selectShuffleCards(
   pool: ShuffleStudyCard[],
   options: ShuffleSelectionOptions = {},
 ): ShuffleStudyCard[] {
+  const nowMs = options.nowMs ?? Date.now()
   const sorted = asShuffleStudyCards(sortStudyCards(pool, options))
-  return interleaveDecks(sorted)
+  const weighted = [...sorted].sort((a, b) => compareShuffleCards(a, b, nowMs))
+  return interleaveDecks(weighted)
 }
 
 export async function buildSelectedShuffleCards(
   collection: Pick<ShuffleCollectionRecord, 'deckIds'>,
   options: ShuffleSelectionOptions & { userId?: string } = {},
 ): Promise<ShuffleStudyCard[]> {
-  const pool = await buildShufflePool(collection, { userId: options.userId })
+  const pool = await buildShufflePool(collection, {
+    userId: options.userId,
+    nextDayStartsAt: options.nextDayStartsAt,
+  })
   return selectShuffleCards(pool, options)
 }
 

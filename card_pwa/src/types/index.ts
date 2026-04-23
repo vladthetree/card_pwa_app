@@ -133,4 +133,4 @@ export interface ReviewUndoToken {
   previous: CardSchedulingState
 }
 
-export type View = 'home' | 'study' | 'shuffle-study' | 'import'
+export type View = 'home' | 'study' | 'shuffle-study' | 'shuffle-manage' | 'import'

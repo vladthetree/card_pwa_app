@@ -1,3 +1,4 @@
+import Dexie from 'dexie'
 import { db, type CardRecord } from '../../db'
 import { SM2 } from '../../utils/sm2'
 import { factorToDifficulty } from '../../utils/algorithmParams'
@@ -38,6 +39,11 @@ function mapDeck(
   stats: { total: number; new: number; learning: number; due: number }
 ): Deck {
   return { id: r.id, name: r.name, ...stats }
+}
+
+function resolveDueAtMs(row: Pick<CardRecord, 'due' | 'dueAt'>): number {
+  if (Number.isFinite(row.dueAt)) return Math.round(row.dueAt as number)
+  return Math.max(0, Math.floor(row.due)) * 86_400_000
 }
 
 async function computeAllDeckStats(
@@ -93,6 +99,35 @@ export async function fetchDecks(): Promise<Deck[]> {
 export async function fetchDeckCards(deckId: string): Promise<Card[]> {
   const rows = (await db.cards.where('deckId').equals(deckId).toArray()).filter(r => !r.isDeleted)
   return rows.map(mapCard)
+}
+
+export async function fetchDeckStudyCandidates(deckId: string, nextDayStartsAt = 0): Promise<Card[]> {
+  const todayStartMs = getDayStartMs(Date.now(), nextDayStartsAt)
+  const tomorrowStartMs = todayStartMs + 86_400_000
+
+  const [newRows, learningRows, relearningRows, reviewDueRows] = await Promise.all([
+    db.cards.where('[deckId+type]').equals([deckId, SM2.CARD_TYPE_NEW]).toArray(),
+    db.cards.where('[deckId+type]').equals([deckId, SM2.CARD_TYPE_LEARNING]).toArray(),
+    db.cards.where('[deckId+type]').equals([deckId, SM2.CARD_TYPE_RELEARNING]).toArray(),
+    db.cards.where('[deckId+dueAt]').between([deckId, Dexie.minKey], [deckId, tomorrowStartMs - 1]).toArray(),
+  ])
+
+  const inStudyWindow = (row: CardRecord) => resolveDueAtMs(row) < tomorrowStartMs
+  const candidates = [
+    ...newRows.filter(row => !row.isDeleted),
+    ...learningRows.filter(row => !row.isDeleted && inStudyWindow(row)),
+    ...relearningRows.filter(row => !row.isDeleted && inStudyWindow(row)),
+    ...reviewDueRows.filter(row => !row.isDeleted && row.type === SM2.CARD_TYPE_REVIEW),
+  ]
+
+  const deduped = new Map<string, CardRecord>()
+  for (const row of candidates) {
+    if (!deduped.has(row.id)) {
+      deduped.set(row.id, row)
+    }
+  }
+
+  return Array.from(deduped.values()).map(mapCard)
 }
 
 export async function getDeckScheduleOverview(

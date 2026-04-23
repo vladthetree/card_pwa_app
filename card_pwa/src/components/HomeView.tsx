@@ -39,12 +39,22 @@ import { useHomeDeckFilters } from '../hooks/home/useHomeDeckFilters'
 import { useHomeStorageEstimate } from '../hooks/home/useHomeStorageEstimate'
 import { buildSelectedShuffleCards } from '../services/ShuffleSessionManager'
 import { getSyncedDeckIds } from '../services/syncedDeckScope'
+import { ArrowLeft } from 'lucide-react'
 
 interface Props {
+  mode?: 'default' | 'shuffle-manage'
+  onBackHome?: () => void
   onStartStudy: (deck: Deck) => void
   onStartShuffleStudy: (collection: ShuffleCollection) => void
+  onOpenShuffleManager?: () => void
 }
-export default function HomeView({ onStartStudy, onStartShuffleStudy }: Props) {
+export default function HomeView({
+  mode = 'default',
+  onBackHome,
+  onStartStudy,
+  onStartShuffleStudy,
+  onOpenShuffleManager,
+}: Props) {
   const { decks, loading, error, reload } = useDecks()
   const { collections: shuffleCollections } = useShuffleCollections()
   const { settings, profile } = useSettings()
@@ -115,6 +125,7 @@ export default function HomeView({ onStartStudy, onStartShuffleStudy }: Props) {
   } = useHomeStorageEstimate()
   const buildVersionLabel = useMemo(() => formatServiceWorkerVersionLabel(), [])
   const buildVersionTitle = useMemo(() => formatBuildVersionTitle(), [])
+  const isShuffleManageMode = mode === 'shuffle-manage'
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEYS.homeDashboardMode, dashboardMode)
@@ -444,52 +455,112 @@ export default function HomeView({ onStartStudy, onStartShuffleStudy }: Props) {
       </div>{/* /top-static-section */}
 
       <div className="relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden">
-        <HomeDeckToolbar
-          t={t}
-          language={settings.language}
-          deckSearchQuery={deckSearchQuery}
-          deckSortMode={deckSortMode}
-          dashboardMode={dashboardMode}
-          onDeckSearchQueryChange={setDeckSearchQuery}
-          onDeckSortModeChange={setDeckSortMode}
-          onDashboardModeChange={setDashboardMode}
-          onReload={reload}
-          onCreateDeck={() => {
-            setNewDeckName('')
-            setCreateDeckError(null)
-            setShowCreateDeckModal(true)
-          }}
-          onCreateCard={() => setShowCreateCard(true)}
-          onImport={() => setShowImport(true)}
-          onExport={() => setShowExportModal(true)}
-        />
+        {!isShuffleManageMode && (
+          <>
+            <HomeDeckToolbar
+              t={t}
+              language={settings.language}
+              deckSearchQuery={deckSearchQuery}
+              deckSortMode={deckSortMode}
+              dashboardMode={dashboardMode}
+              onDeckSearchQueryChange={setDeckSearchQuery}
+              onDeckSortModeChange={setDeckSortMode}
+              onDashboardModeChange={setDashboardMode}
+              onReload={reload}
+              onCreateDeck={() => {
+                setNewDeckName('')
+                setCreateDeckError(null)
+                setShowCreateDeckModal(true)
+              }}
+              onCreateCard={() => setShowCreateCard(true)}
+              onImport={() => setShowImport(true)}
+              onExport={() => setShowExportModal(true)}
+            />
+          </>
+        )}
 
-        <HomeShuffleSection
-          language={settings.language}
-          collections={shuffleCollections}
-          summaries={shuffleSummaries}
-          onStartShuffleStudy={onStartShuffleStudy}
-          onCreateCollection={openCreateShuffleCollection}
-          onEditCollection={openEditShuffleCollection}
-          onDeleteCollection={handleDeleteShuffleCollection}
-        />
+        {settings.shuffleModeEnabled && isShuffleManageMode && (
+          <div className="mb-3 rounded-[28px] border border-white/10 bg-white/[0.04] p-4 sm:p-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="text-[11px] uppercase tracking-[0.18em] text-amber-200/75">
+                  {settings.language === 'de' ? 'Shuffle-Verwaltung' : 'Shuffle manager'}
+                </div>
+                <h2 className="mt-2 text-xl font-semibold text-white">
+                  {settings.language === 'de' ? 'Sammlungen pflegen und direkt starten' : 'Maintain and launch collections'}
+                </h2>
+                <p className="mt-2 max-w-2xl text-sm text-white/55">
+                  {settings.language === 'de'
+                    ? 'Hier bearbeitest du deck-übergreifende Lernmischungen. Bewertungen bleiben weiterhin im jeweiligen Ursprungsdeck.'
+                    : 'Maintain your cross-deck study mixes here. Reviews still flow back to each source deck.'}
+                </p>
+              </div>
+              {onBackHome && (
+                <button
+                  type="button"
+                  onClick={onBackHome}
+                  className="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-white/80 transition hover:border-white/30 hover:bg-white/10 hover:text-white"
+                >
+                  <ArrowLeft size={14} />
+                  {settings.language === 'de' ? 'Zur Startseite' : 'Back home'}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
-        <HomeDeckListSection
-          t={t}
-          language={settings.language}
-          error={error}
-          loading={loading}
-          decks={decks}
-          filteredDecks={filteredDecks}
-          visibleDecks={visibleDecks}
-          deckScheduleOverview={deckScheduleOverview}
-          onReload={reload}
-          onShowImport={() => setShowImport(true)}
-          onStartStudy={onStartStudy}
-          onDelete={handleDelete}
-          onShowMetrics={setMetricsDeck}
-          onManageCards={setCardsDeck}
-        />
+        {settings.shuffleModeEnabled && (
+          <HomeShuffleSection
+            language={settings.language}
+            collections={shuffleCollections}
+            summaries={shuffleSummaries}
+            onStartShuffleStudy={onStartShuffleStudy}
+            onCreateCollection={openCreateShuffleCollection}
+            onEditCollection={openEditShuffleCollection}
+            onDeleteCollection={handleDeleteShuffleCollection}
+            onManageCollections={onOpenShuffleManager}
+            isManagerView={isShuffleManageMode}
+          />
+        )}
+
+        {!settings.shuffleModeEnabled && isShuffleManageMode && (
+          <div className="rounded-[28px] border border-dashed border-white/12 bg-black/20 px-4 py-8 text-center">
+            <p className="text-sm text-white/55">
+              {settings.language === 'de'
+                ? 'Der Shuffle-Modus ist aktuell in den Einstellungen deaktiviert.'
+                : 'Shuffle mode is currently disabled in settings.'}
+            </p>
+            {onBackHome && (
+              <button
+                type="button"
+                onClick={onBackHome}
+                className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-white/80 transition hover:border-white/30 hover:bg-white/10 hover:text-white"
+              >
+                <ArrowLeft size={14} />
+                {settings.language === 'de' ? 'Zur Startseite' : 'Back home'}
+              </button>
+            )}
+          </div>
+        )}
+
+        {!isShuffleManageMode && (
+          <HomeDeckListSection
+            t={t}
+            language={settings.language}
+            error={error}
+            loading={loading}
+            decks={decks}
+            filteredDecks={filteredDecks}
+            visibleDecks={visibleDecks}
+            deckScheduleOverview={deckScheduleOverview}
+            onReload={reload}
+            onShowImport={() => setShowImport(true)}
+            onStartStudy={onStartStudy}
+            onDelete={handleDelete}
+            onShowMetrics={setMetricsDeck}
+            onManageCards={setCardsDeck}
+          />
+        )}
       </div>{/* /decks-section */}
 
       {settings.showBuildVersion && (

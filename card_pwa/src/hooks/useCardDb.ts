@@ -69,6 +69,67 @@ function useOnDbChange(callback: () => void, deckId?: string | null) {
   }, [deckId])
 }
 
+function useOnShuffleDbChange(callback: () => void, collectionId: string | null) {
+  const callbackRef = useRef(callback)
+
+  useEffect(() => {
+    callbackRef.current = callback
+  }, [callback])
+
+  useEffect(() => {
+    if (!collectionId) return
+
+    let cancelled = false
+    let hasSeenInitial = false
+
+    const onReviewUpdated = () => {
+      if (document.visibilityState === 'hidden') return
+      callbackRef.current()
+    }
+
+    const observable = liveQuery(async () => {
+      const collection = await db.shuffleCollections.get(collectionId)
+      if (!collection || collection.isDeleted) return `missing:${collectionId}`
+
+      const deckIds = Array.from(new Set(collection.deckIds.filter(Boolean)))
+      if (deckIds.length === 0) {
+        return `empty:${collection.updatedAt ?? 0}`
+      }
+
+      const [cardCount, deckCount, reviewCount] = await Promise.all([
+        db.cards.where('deckId').anyOf(deckIds).count(),
+        db.decks.where('id').anyOf(deckIds).count(),
+        db.reviews.count(),
+      ])
+
+      return `${collection.updatedAt ?? 0}:${deckIds.join('|')}:${deckCount}:${cardCount}:${reviewCount}`
+    })
+
+    const subscription = observable.subscribe({
+      next: () => {
+        if (cancelled) return
+        if (!hasSeenInitial) {
+          hasSeenInitial = true
+          return
+        }
+        if (document.visibilityState === 'hidden') return
+        callbackRef.current()
+      },
+      error: () => {
+        // best effort only
+      },
+    })
+
+    window.addEventListener(REVIEW_UPDATED_EVENT, onReviewUpdated)
+
+    return () => {
+      cancelled = true
+      subscription.unsubscribe()
+      window.removeEventListener(REVIEW_UPDATED_EVENT, onReviewUpdated)
+    }
+  }, [collectionId])
+}
+
 export function useDecks() {
   const [decks, setDecks] = useState<Deck[]>([])
   const [loading, setLoading] = useState(true)
@@ -199,10 +260,7 @@ export function useShuffleCards(
     void load()
   }, [load])
 
-  // Shuffle collections span multiple decks plus the collection row itself.
-  // A global watcher is the safest additive option until we introduce a more
-  // specific multi-deck subscription path.
-  useOnDbChange(load)
+  useOnShuffleDbChange(load, collectionId)
 
   return { cards, loading, error, reload: load }
 }

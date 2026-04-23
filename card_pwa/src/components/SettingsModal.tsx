@@ -75,6 +75,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     setDailyReminderTime,
     setShowBuildVersion,
     setStudyCardLimit,
+    setShuffleModeEnabled,
     setDailyGoal,
     setSm2Params,
     setFsrsParams,
@@ -872,6 +873,42 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                       <p className="text-xs text-white/45">
                         {t.study_weight_hint.replace('{count}', '50')}
                       </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
+                      {settings.language === 'de' ? 'Shuffle-Modus' : 'Shuffle mode'}
+                    </label>
+                    <div className={`${UI_TOKENS.surface.panelSoft} p-4`}>
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-medium text-white">
+                            {settings.language === 'de' ? 'Deck-übergreifendes Lernen anzeigen' : 'Show cross-deck study mode'}
+                          </p>
+                          <p className="mt-1 text-xs leading-relaxed text-white/45">
+                            {settings.language === 'de'
+                              ? 'Blendet Shuffle-Sammlungen, den Verwalten-Shortcut und den Start aus der Home-Ansicht ein oder aus. Laufende Sessions bleiben davon unberührt.'
+                              : 'Show or hide shuffle collections, the manage shortcut, and the home entry point. Active sessions are left untouched.'}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setShuffleModeEnabled(!settings.shuffleModeEnabled)}
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full border transition ${
+                            settings.shuffleModeEnabled
+                              ? 'border-emerald-400/40 bg-emerald-500/25'
+                              : 'border-white/20 bg-white/10'
+                          }`}
+                          aria-pressed={settings.shuffleModeEnabled}
+                        >
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                              settings.shuffleModeEnabled ? 'translate-x-5' : 'translate-x-1'
+                            }`}
+                          />
+                        </button>
+                      </div>
                     </div>
                   </div>
 
