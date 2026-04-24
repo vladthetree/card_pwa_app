@@ -88,6 +88,31 @@ describe('profileService', () => {
     )
   })
 
+  it('forwards an optional profile name when creating a profile', async () => {
+    state.response = jsonResponse({
+      ok: true,
+      userId: 'profile-1',
+      profileName: 'Anna',
+      profileToken: 'dt_profile',
+    })
+
+    const { createServerProfile } = await import('../../services/profileService')
+    await createServerProfile('/sync', 'device-1', 'Phone', 'Anna')
+
+    expect(fetchWithTimeoutMock).toHaveBeenCalledWith(
+      '/auth/profile',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({
+          deviceId: 'device-1',
+          deviceLabel: 'Phone',
+          profileName: 'Anna',
+        }),
+      }),
+      15_000,
+    )
+  })
+
   it('sends Authorization header when switching protected server profile', async () => {
     state.response = jsonResponse({ ok: true, userId: 'profile-1', profileToken: 'dt_switch' })
 

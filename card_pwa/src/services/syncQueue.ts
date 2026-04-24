@@ -144,7 +144,25 @@ async function sendOperation(record: SyncQueueRecord): Promise<SendResult> {
     return 'failed'
   }
 
-  const payload = JSON.parse(record.payload)
+  let payload: unknown
+  try {
+    payload = JSON.parse(record.payload)
+  } catch (error) {
+    logError(
+      'sync-queue',
+      `Ungültige Sync-Queue-Payload für ${record.type}`,
+      error instanceof Error ? `${record.opId}\n${error.message}` : record.opId,
+    )
+    if (record.id !== undefined) {
+      await syncDb.queue.update(record.id, {
+        retries: Math.max(record.retries, SYNC_MAX_RETRIES),
+        updatedAt: now(),
+        nextRetryAt: Number.MAX_SAFE_INTEGER,
+      })
+    }
+    return 'deferred'
+  }
+
   if (!await shouldSyncOperation(record.type, payload)) {
     if (record.id !== undefined) {
       await syncDb.queue.update(record.id, {

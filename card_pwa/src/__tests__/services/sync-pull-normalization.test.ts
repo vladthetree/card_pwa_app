@@ -160,6 +160,7 @@ describe('syncPull normalization', () => {
     mockDb.reviews.bulkAdd.mockClear()
     mockDb.reviews.add.mockClear()
     mockDb.reviews.delete.mockClear()
+    mockDb.reviews.clear.mockClear()
     mockDb.cardStats.bulkDelete.mockClear()
     mockDb.deckProgress.bulkDelete.mockClear()
     mockDb.activeSessions.bulkDelete.mockClear()
@@ -274,6 +275,39 @@ describe('syncPull normalization', () => {
         timestamp: now,
       }),
     ])
+  })
+
+  it('clears existing reviews during full snapshot even when the snapshot contains none', async () => {
+    const now = Date.now()
+    state.responses = [
+      { ok: true, needsSnapshot: true },
+      {
+        ok: true,
+        cursor: 6,
+        decks: [],
+        cards: [
+          {
+            id: 'c-no-history',
+            noteId: 'n-no-history',
+            deckId: 'd-1',
+            front: 'Q',
+            back: 'A',
+            type: 2,
+            queue: 2,
+            due: Math.floor(now / 86_400_000),
+            createdAt: now,
+          },
+        ],
+        reviews: [],
+      },
+      { ok: true, operations: [], nextCursor: 6, hasMore: false },
+    ]
+
+    const { pullAndApplySyncDeltas } = await import('../../services/syncPull')
+    await pullAndApplySyncDeltas()
+
+    expect(mockDb.reviews.clear).toHaveBeenCalledTimes(1)
+    expect(mockDb.reviews.bulkAdd).not.toHaveBeenCalled()
   })
 
   it('syncs all snapshot decks by default', async () => {

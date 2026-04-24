@@ -158,6 +158,7 @@ export default function ProfileSyncSection({ language }: Props) {
   const { profile, setProfile } = useSettings()
 
   const [busy, setBusy] = useState(false)
+  const [profileNameInput, setProfileNameInput] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [profiles, setProfiles] = useState<ServerProfileSummary[]>([])
@@ -167,8 +168,23 @@ export default function ProfileSyncSection({ language }: Props) {
   const [switchingUserId, setSwitchingUserId] = useState<string | null>(null)
   const [selectedDeckIds, setSelectedDeckIds] = useState<string[]>([])
   const [removingDevice, setRemovingDevice] = useState(false)
+  const [isOnline, setIsOnline] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine))
 
   const effectiveEndpoint = profile?.endpoint?.trim() || getDefaultProfileSyncEndpoint()
+
+  useEffect(() => {
+    const updateOnlineState = () => {
+      setIsOnline(navigator.onLine)
+    }
+
+    window.addEventListener('online', updateOnlineState)
+    window.addEventListener('offline', updateOnlineState)
+
+    return () => {
+      window.removeEventListener('online', updateOnlineState)
+      window.removeEventListener('offline', updateOnlineState)
+    }
+  }, [])
 
   const loadProfiles = async () => {
     if (!effectiveEndpoint || profile?.mode !== 'linked' || !profile.profileToken) return
@@ -227,7 +243,7 @@ export default function ProfileSyncSection({ language }: Props) {
     setSelectedDeckIds(normalized)
     await wakeDeferredSyncQueue()
     await resetSyncPullState()
-    if (navigator.onLine) {
+    if (isOnline) {
       void runSyncCycleNow({ force: true })
     }
   }
@@ -245,14 +261,14 @@ export default function ProfileSyncSection({ language }: Props) {
   }
 
   useEffect(() => {
-    if (!effectiveEndpoint || !navigator.onLine || profile?.mode !== 'linked') return
+    if (!effectiveEndpoint || !isOnline || profile?.mode !== 'linked') return
     void loadProfiles()
-  }, [effectiveEndpoint, profile?.mode])
+  }, [effectiveEndpoint, isOnline, profile?.mode])
 
   useEffect(() => {
-    if (!effectiveEndpoint || !navigator.onLine || profile?.mode !== 'linked') return
+    if (!effectiveEndpoint || !isOnline || profile?.mode !== 'linked') return
     void loadDecks()
-  }, [effectiveEndpoint, profile?.mode, profile?.userId, profile?.profileToken])
+  }, [effectiveEndpoint, isOnline, profile?.mode, profile?.userId, profile?.profileToken])
 
   const handleCreateProfile = async () => {
     if (!effectiveEndpoint) {
@@ -264,7 +280,13 @@ export default function ProfileSyncSection({ language }: Props) {
     setError(null)
     setNotice(null)
     const deviceId = getOrCreateDeviceId()
-    const res = await createServerProfile(effectiveEndpoint, deviceId, navigator.userAgent.slice(0, 60))
+    const normalizedProfileName = profileNameInput.trim()
+    const res = await createServerProfile(
+      effectiveEndpoint,
+      deviceId,
+      navigator.userAgent.slice(0, 60),
+      normalizedProfileName || undefined,
+    )
     if (!res.ok || !res.userId || !res.profileToken) {
       setError(res.error ?? 'unknown_error')
       setNotice(null)
@@ -290,6 +312,7 @@ export default function ProfileSyncSection({ language }: Props) {
     writeProfileHintCookie(linked.userId ?? '')
     await loadProfiles()
     await loadDecks(linked)
+    setProfileNameInput('')
     setNotice(t.profile_created)
     setBusy(false)
   }
@@ -352,7 +375,7 @@ export default function ProfileSyncSection({ language }: Props) {
       setNotice(null)
       return
     }
-    if (!navigator.onLine) {
+    if (!isOnline) {
       setError('offline_blocked')
       setNotice(null)
       return
@@ -479,12 +502,12 @@ export default function ProfileSyncSection({ language }: Props) {
           <div className="space-y-2 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3">
             <div className="flex items-center justify-between">
               <p className="text-xs font-semibold text-zinc-300">{t.list_profiles}</p>
-              <button
-                type="button"
-                onClick={() => void loadProfiles()}
-                disabled={busy || loadingProfiles || !navigator.onLine}
-                className="text-xs text-zinc-400 hover:text-white disabled:opacity-40 transition-colors"
-              >
+                <button
+                  type="button"
+                  onClick={() => void loadProfiles()}
+                  disabled={busy || loadingProfiles || !isOnline}
+                  className="text-xs text-zinc-400 hover:text-white disabled:opacity-40 transition-colors"
+                >
                 {loadingProfiles ? t.linking : t.list_profiles_refresh}
               </button>
             </div>
@@ -503,7 +526,7 @@ export default function ProfileSyncSection({ language }: Props) {
                   <div className="mt-2">
                     <button
                       type="button"
-                      disabled={busy || isCurrent || isSwitchingThis || !navigator.onLine}
+                      disabled={busy || isCurrent || isSwitchingThis || !isOnline}
                       onClick={() => void handleSwitchToProfile(item)}
                       className="text-xs px-2.5 py-1.5 rounded border border-zinc-700 text-zinc-300 hover:text-white hover:border-zinc-500 disabled:opacity-40 transition-colors"
                     >
@@ -520,12 +543,12 @@ export default function ProfileSyncSection({ language }: Props) {
           <div className="space-y-2 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3">
             <div className="flex items-center justify-between">
               <p className="text-xs font-semibold text-zinc-300">{t.list_decks}</p>
-              <button
-                type="button"
-                onClick={() => void loadDecks()}
-                disabled={busy || loadingDecks || !navigator.onLine}
-                className="text-xs text-zinc-400 hover:text-white disabled:opacity-40 transition-colors"
-              >
+                <button
+                  type="button"
+                  onClick={() => void loadDecks()}
+                  disabled={busy || loadingDecks || !isOnline}
+                  className="text-xs text-zinc-400 hover:text-white disabled:opacity-40 transition-colors"
+                >
                 {loadingDecks ? t.linking : t.list_decks_refresh}
               </button>
             </div>
@@ -579,6 +602,21 @@ export default function ProfileSyncSection({ language }: Props) {
 
         {!isLinked && (
           <>
+            <div className="space-y-2 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3">
+              <label className="block text-xs font-semibold text-zinc-300" htmlFor="profile-name-input">
+                {t.profile_name_label}
+              </label>
+              <input
+                id="profile-name-input"
+                type="text"
+                value={profileNameInput}
+                onChange={event => setProfileNameInput(event.target.value)}
+                maxLength={80}
+                placeholder={t.profile_name_label}
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-zinc-500"
+              />
+              <p className="text-xs text-zinc-500">{t.create_profile_desc}</p>
+            </div>
             <button
               type="button"
               onClick={() => void handleCreateProfile()}
@@ -605,7 +643,7 @@ export default function ProfileSyncSection({ language }: Props) {
             <button
               type="button"
               onClick={() => void handleRemoveDevice()}
-              disabled={busy || removingDevice || !navigator.onLine}
+              disabled={busy || removingDevice || !isOnline}
               className="w-full flex items-center justify-center gap-2 text-xs text-zinc-600 hover:text-red-500 transition-colors py-1.5"
             >
               {removingDevice ? <RefreshCw size={12} className="animate-spin" /> : <Unlink size={12} />}

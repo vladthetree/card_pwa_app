@@ -1,41 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
-import { STORAGE_KEYS } from '../constants/appIdentity'
 import { STRINGS } from '../i18n'
+import { getSyncBaseEndpoint } from '../services/syncConfig'
 
-const ENV_SYNC_ENDPOINT = import.meta.env.VITE_SYNC_ENDPOINT as string | undefined
 const HEARTBEAT_INTERVAL_MS = 20_000
 const HEARTBEAT_TIMEOUT_MS = 4_000
 
 type HeartbeatState = 'connected' | 'disconnected'
 
-interface PersistedSettings {
-  sync?: {
-    enabled?: boolean
-    endpoint?: string
-    mode?: 'local' | 'vpn-placeholder'
-  }
-}
-
-function readSyncSettings(): PersistedSettings | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.settings)
-    return raw ? (JSON.parse(raw) as PersistedSettings) : null
-  } catch {
-    return null
-  }
-}
-
 function getSyncEndpoint(): string {
-  const persisted = readSyncSettings()
-  const enabled = persisted?.sync?.enabled ?? Boolean(ENV_SYNC_ENDPOINT)
-  const endpoint = persisted?.sync?.endpoint?.trim() || ENV_SYNC_ENDPOINT || ''
-  const mode = persisted?.sync?.mode ?? 'local'
-
-  if (!enabled || mode !== 'local' || !endpoint) {
-    return ''
-  }
-
-  return endpoint
+  return getSyncBaseEndpoint() ?? ''
 }
 
 function toHealthUrl(endpoint: string): string {

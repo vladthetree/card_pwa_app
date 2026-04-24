@@ -867,9 +867,7 @@ async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
         if (orphanReviewIds.length > 0) {
           await db.reviews.bulkDelete(orphanReviewIds)
         }
-        if (rawReviews.length > 0) {
-          await db.reviews.clear()
-        }
+        await db.reviews.clear()
 
         await db.cards.clear()
         await db.decks.clear()
