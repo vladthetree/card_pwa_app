@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { db } from '../db'
 import { getRuntimeTarget } from '../env'
+import { useSettings } from '../contexts/SettingsContext'
 import OfflineStatusBanner from './OfflineStatusBanner'
 import { useStoragePersistence } from '../hooks/useStoragePersistence'
 import { useAppBadge } from '../hooks/useAppBadge'
@@ -23,12 +24,14 @@ interface Props {
  * - Zeigt Offline-Status an
  */
 export default function AppInitializer({ children }: Props) {
+  const { isProfileHydrated } = useSettings()
+
   useStoragePersistence()
   useAppBadge()
   useAlgorithmMigration()
   useBacklogSmoother()
   useGlobalErrorLogging()
-  useSyncRuntime()
+  useSyncRuntime(isProfileHydrated)
   useServiceWorkerConfig()
   useWebPushSubscription()
 

@@ -7,7 +7,7 @@ import {
   type FSRSParams,
   type SM2Params,
 } from '../utils/algorithmParams'
-import { loadProfile, saveProfile, makeLocalProfile, getOrCreateDeviceId } from '../services/profileService'
+import { clearProfile, loadProfile, saveProfile, makeLocalProfile, getOrCreateDeviceId } from '../services/profileService'
 import { setCachedProfile } from '../services/syncConfig'
 import type { ProfileRecord } from '../db'
 
@@ -56,6 +56,7 @@ interface Settings {
 interface SettingsContextType {
   settings: Settings
   isSettingsHydrated: boolean
+  isProfileHydrated: boolean
   isAlgorithmMigrating: boolean
   setAlgorithmMigrating: (migrating: boolean) => void
   setLanguage: (lang: Language) => void
@@ -223,6 +224,7 @@ function normalizeSettings(input: Partial<Settings> | undefined): Settings {
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettingsState] = useState<Settings>(DEFAULT_SETTINGS)
   const [isSettingsHydrated, setIsSettingsHydrated] = useState(false)
+  const [isProfileHydrated, setIsProfileHydrated] = useState(false)
   const [isAlgorithmMigrating, setAlgorithmMigrating] = useState(false)
   const [profile, setProfileState] = useState<ProfileRecord | null>(null)
 
@@ -254,19 +256,23 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   // Load profile from IndexedDB on mount
   useEffect(() => {
     void (async () => {
-      let p = await loadProfile()
-      if (!p) {
-        // Ensure device ID is seeded even in local mode
-        getOrCreateDeviceId()
-        p = makeLocalProfile()
-        await saveProfile(p)
+      try {
+        let p = await loadProfile()
+        if (!p) {
+          // Ensure device ID is seeded even in local mode
+          getOrCreateDeviceId()
+          p = makeLocalProfile()
+          await saveProfile(p)
+        }
+        setProfileState(p)
+        // Feed into syncConfig cache
+        setCachedProfile(
+          p.mode === 'linked' ? (p.profileToken ?? null) : null,
+          p.mode === 'linked' ? (p.endpoint ?? null) : null,
+        )
+      } finally {
+        setIsProfileHydrated(true)
       }
-      setProfileState(p)
-      // Feed into syncConfig cache
-      setCachedProfile(
-        p.mode === 'linked' ? (p.profileToken ?? null) : null,
-        p.mode === 'linked' ? (p.endpoint ?? null) : null,
-      )
     })()
   }, [])
 
@@ -422,6 +428,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         next.mode === 'linked' ? (next.endpoint ?? null) : null,
       )
     } else {
+      void clearProfile()
       setProfileState(null)
       setCachedProfile(null, null)
     }
@@ -432,6 +439,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       value={{
         settings,
         isSettingsHydrated,
+        isProfileHydrated,
         isAlgorithmMigrating,
         setAlgorithmMigrating,
         setLanguage,

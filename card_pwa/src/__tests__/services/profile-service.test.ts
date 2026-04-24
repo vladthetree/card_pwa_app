@@ -49,26 +49,21 @@ describe('profileService', () => {
     expect(result).toEqual({ ok: false, error: 'invalid_server_response' })
   })
 
-  it('preserves existingProfile when the server reconnects a known device', async () => {
+  it('returns a stable error when the server rejects an already-linked device', async () => {
     state.response = jsonResponse({
-      ok: true,
-      existingProfile: true,
+      ok: false,
+      error: 'device_already_linked',
       userId: 'profile-1',
       profileName: 'Anna',
       deviceId: 'device-1',
-      profileToken: 'dt_reconnected',
-    })
+    }, false, 409)
 
     const { createServerProfile } = await import('../../services/profileService')
     const result = await createServerProfile('/sync', 'device-1', 'Phone')
 
     expect(result).toEqual({
-      ok: true,
-      existingProfile: true,
-      userId: 'profile-1',
-      profileName: 'Anna',
-      deviceId: 'device-1',
-      profileToken: 'dt_reconnected',
+      ok: false,
+      error: 'device_already_linked',
     })
     expect(fetchWithTimeoutMock).toHaveBeenCalledWith(
       '/auth/profile',

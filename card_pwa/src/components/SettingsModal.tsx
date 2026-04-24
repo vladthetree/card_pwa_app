@@ -28,6 +28,7 @@ import { DATABASE_NAMES, STORAGE_KEYS } from '../constants/appIdentity'
 import { clearSyncQueue, closeSyncQueueDatabase } from '../services/syncQueue'
 import { resetSyncPullState } from '../services/syncPull'
 import { readSyncAuthTokenFromSettings, writeSyncAuthTokenToSettings } from '../services/syncConfig'
+import { resetLocalStudyDataForProfileSwitch } from '../services/profileService'
 import { formatBuildVersionTitle, formatServiceWorkerVersionLabel } from '../utils/buildInfo'
 import { InfoHint } from './InfoHint'
 import { SettingsSection } from './SettingsSection'
@@ -196,12 +197,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
       variant: 'danger',
       onConfirm: async () => {
         try {
-          await db.transaction('rw', db.reviews, db.cards, db.decks, async () => {
-            await db.reviews.clear()
-            await db.cards.clear()
-            await db.decks.clear()
-          })
-
+          await resetLocalStudyDataForProfileSwitch()
           await clearSyncQueue()
           await resetSyncPullState()
           localStorage.removeItem(STORAGE_KEYS.studySession)

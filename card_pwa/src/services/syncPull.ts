@@ -28,6 +28,10 @@ function hasSyncMetaTable(): boolean {
   return Boolean((db as unknown as { syncMeta?: unknown }).syncMeta)
 }
 
+function hasShuffleCollectionsTable(): boolean {
+  return Boolean((db as unknown as { shuffleCollections?: unknown }).shuffleCollections)
+}
+
 function readLegacyCursor(): number {
   const legacyRaw = localStorage.getItem(LEGACY_CURSOR_KEY)
   const legacyParsed = Number(legacyRaw)
@@ -908,7 +912,9 @@ async function runBootstrapUpload(clientId: string): Promise<BootstrapUploadResp
     const [decks, cards, shuffleCollections] = await Promise.all([
       db.decks.toArray(),
       db.cards.toArray(),
-      db.shuffleCollections.toArray(),
+      hasShuffleCollectionsTable()
+        ? db.shuffleCollections.toArray()
+        : Promise.resolve([] as ShuffleCollectionRecord[]),
     ])
 
     const response = await fetchWithTimeout(endpoint, {
@@ -1021,7 +1027,8 @@ async function bootstrapSyncIfNeeded(clientId: string) {
   if (typeof handshake.serverCursor === 'number' && Number.isFinite(handshake.serverCursor)) {
     const localCursor = await readCursor()
     if (handshake.serverCursor < localCursor) {
-      await writeCursor(handshake.serverCursor)
+      await clearAppliedOpIds()
+      await fetchAndApplySnapshot(clientId)
     }
   }
 }

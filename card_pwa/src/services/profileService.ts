@@ -16,6 +16,7 @@ import {
   type CardStatsRecord,
   type DeckProgressRecord,
   type ActiveSessionRecord,
+  type ShuffleCollectionRecord,
 } from '../db'
 import { generateUuidV7 } from '../utils/id'
 import { fetchWithTimeout, SYNC_FETCH_TIMEOUT_MS } from './syncConfig'
@@ -142,6 +143,7 @@ export interface LocalStudyDataSnapshot {
   cardStats: CardStatsRecord[]
   deckProgress: DeckProgressRecord[]
   activeSessions: ActiveSessionRecord[]
+  shuffleCollections: ShuffleCollectionRecord[]
 }
 
 interface PairIssueResponse {
@@ -470,6 +472,7 @@ export async function resetLocalStudyDataForProfileSwitch(): Promise<void> {
   await db.cardStats.clear()
   await db.deckProgress.clear()
   await db.activeSessions.clear()
+  await db.shuffleCollections.clear()
 }
 
 /** Removes local data for the given deck IDs (deck rows, their cards, stats, reviews, sessions). */
@@ -495,13 +498,14 @@ export async function deleteLocalDataForDecks(deckIds: string[]): Promise<void> 
 }
 
 export async function snapshotLocalStudyDataForRollback(): Promise<LocalStudyDataSnapshot> {
-  const [decks, cards, reviews, cardStats, deckProgress, activeSessions] = await Promise.all([
+  const [decks, cards, reviews, cardStats, deckProgress, activeSessions, shuffleCollections] = await Promise.all([
     db.decks.toArray(),
     db.cards.toArray(),
     db.reviews.toArray(),
     db.cardStats.toArray(),
     db.deckProgress.toArray(),
     db.activeSessions.toArray(),
+    db.shuffleCollections.toArray(),
   ])
 
   return {
@@ -511,6 +515,7 @@ export async function snapshotLocalStudyDataForRollback(): Promise<LocalStudyDat
     cardStats,
     deckProgress,
     activeSessions,
+    shuffleCollections,
   }
 }
 
@@ -523,6 +528,7 @@ export async function restoreLocalStudyDataFromRollback(snapshot: LocalStudyData
   if (snapshot.cardStats.length > 0) await db.cardStats.bulkPut(snapshot.cardStats)
   if (snapshot.deckProgress.length > 0) await db.deckProgress.bulkPut(snapshot.deckProgress)
   if (snapshot.activeSessions.length > 0) await db.activeSessions.bulkPut(snapshot.activeSessions)
+  if (snapshot.shuffleCollections.length > 0) await db.shuffleCollections.bulkPut(snapshot.shuffleCollections)
 }
 
 /** Cookie hint for quick profile restoration; DB remains source-of-truth. */
