@@ -128,4 +128,52 @@ describe('profileService', () => {
       15_000,
     )
   })
+
+  it('sends Authorization header when issuing a pairing code', async () => {
+    state.response = jsonResponse({ ok: true, code: 'ABC123', expiresAt: 123456 })
+
+    const { issuePairingCode } = await import('../../services/profileService')
+    await issuePairingCode('/sync', 'dt_pair_token')
+
+    expect(fetchWithTimeoutMock).toHaveBeenCalledWith(
+      '/auth/pair/issue',
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({ Authorization: 'Bearer dt_pair_token' }),
+      }),
+      15_000,
+    )
+  })
+
+  it('posts device metadata when redeeming a pairing code', async () => {
+    state.response = jsonResponse({ ok: true, userId: 'profile-1', profileToken: 'dt_redeemed' })
+
+    const { redeemPairingCode } = await import('../../services/profileService')
+    await redeemPairingCode('/sync', 'ABC123', 'device-1', 'Phone')
+
+    expect(fetchWithTimeoutMock).toHaveBeenCalledWith(
+      '/auth/pair/redeem',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ code: 'ABC123', deviceId: 'device-1', deviceLabel: 'Phone' }),
+      }),
+      15_000,
+    )
+  })
+
+  it('posts device metadata when recovering with a recovery code', async () => {
+    state.response = jsonResponse({ ok: true, userId: 'profile-1', profileToken: 'dt_recovered' })
+
+    const { recoverWithCode } = await import('../../services/profileService')
+    await recoverWithCode('/sync', 'recover-123', 'device-1', 'Phone')
+
+    expect(fetchWithTimeoutMock).toHaveBeenCalledWith(
+      '/auth/recover',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ recoveryCode: 'recover-123', deviceId: 'device-1', deviceLabel: 'Phone' }),
+      }),
+      15_000,
+    )
+  })
 })

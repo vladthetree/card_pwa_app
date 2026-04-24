@@ -7,6 +7,7 @@ export { getAlgorithmDiagnostics, clearAlgorithmDiagnostics } from './diagnostic
 export {
   fetchDecks,
   fetchDeckCards,
+  getDeckTagIndex,
   fetchDeckStudyCandidates,
   getDeckScheduleOverview,
   fetchTodayDueFromDecks,
