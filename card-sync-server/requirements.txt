@@ -1,0 +1,2 @@
+# Runtime dependencies
+# The sync server itself currently uses Python's standard library only.

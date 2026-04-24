@@ -1,18 +1,13 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import {
-  createDeck,
-  deleteDeck,
-  deleteShuffleCollection,
-  fetchDeckCards,
-  getDeckScheduleOverview,
-  getFutureDueForecast,
-} from '../db/queries'
+import { ArrowLeft } from 'lucide-react'
 import { useDecks, useGamificationProfile, useShuffleCollections, useStats } from '../hooks/useCardDb'
 import { usePwaInstall } from '../hooks/usePwaInstall'
 import { useServerHeartbeat } from '../hooks/useServerHeartbeat'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
-import { exportDbBackupAsCsv, exportDbBackupAsTxt, listDecksForBackup } from '../utils/dbBackup'
+import type { Deck, ShuffleCollection } from '../types'
+import { UI_TOKENS } from '../constants/ui'
+import { formatBuildVersionTitle, formatServiceWorkerVersionLabel } from '../utils/buildInfo'
 import CreateCardModal from './CreateCardModal.tsx'
 import SettingsModal from './SettingsModal.tsx'
 import FaqModal from './FaqModal.tsx'
@@ -20,15 +15,10 @@ import FutureForecastModal from './FutureForecastModal.tsx'
 import ImportView from './ImportView.tsx'
 import ConfirmModal from './ConfirmModal.tsx'
 import InstallHintModal from './InstallHintModal.tsx'
-import type { Deck, DeckScheduleOverview, ShuffleCollection } from '../types'
-import { STORAGE_KEYS } from '../constants/appIdentity'
-import { UI_TOKENS } from '../constants/ui'
 import { DeckMetricsModal } from './DeckMetricsModal'
 import { ShuffleMetricsModal } from './ShuffleMetricsModal'
-import { subscribeToWebPushNotifications } from '../services/webPush'
-import { formatBuildVersionTitle, formatServiceWorkerVersionLabel } from '../utils/buildInfo'
 import { HomeHeaderBar } from './home/HomeHeaderBar'
-import { HomeStatsSection, type HomeDashboardMode } from './home/HomeStatsSection'
+import { HomeStatsSection } from './home/HomeStatsSection'
 import { HomeDeckToolbar } from './home/HomeDeckToolbar'
 import { HomeDeckListSection } from './home/HomeDeckListSection'
 import { HomeCreateDeckModal } from './home/HomeCreateDeckModal'
@@ -38,9 +28,8 @@ import { HomeShuffleCollectionModal } from './home/HomeShuffleCollectionModal'
 import { HomeShuffleSection } from './home/HomeShuffleSection'
 import { useHomeDeckFilters } from '../hooks/home/useHomeDeckFilters'
 import { useHomeStorageEstimate } from '../hooks/home/useHomeStorageEstimate'
-import { buildSelectedShuffleCards } from '../services/ShuffleSessionManager'
-import { getSyncedDeckIds } from '../services/syncedDeckScope'
-import { ArrowLeft } from 'lucide-react'
+import { useHomeDerivedData } from '../hooks/home/useHomeDerivedData'
+import { useHomeViewController } from '../hooks/home/useHomeViewController'
 
 interface Props {
   mode?: 'default' | 'shuffle-manage'
@@ -49,6 +38,7 @@ interface Props {
   onStartShuffleStudy: (collection: ShuffleCollection) => void
   onOpenShuffleManager?: () => void
 }
+
 export default function HomeView({
   mode = 'default',
   onBackHome,
@@ -65,52 +55,34 @@ export default function HomeView({
   const t = STRINGS[settings.language]
   const { canInstall, isInstalled, hasNativePrompt, isIos, isInstalling, install } = usePwaInstall()
   const { isConnected } = useServerHeartbeat(settings.language)
-  const [showCreateCard, setShowCreateCard] = useState(false)
-  const [showCreateDeckModal, setShowCreateDeckModal] = useState(false)
-  const [newDeckName, setNewDeckName] = useState('')
-  const [createDeckError, setCreateDeckError] = useState<string | null>(null)
-  const [isCreatingDeck, setIsCreatingDeck] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
-  const [showFaq, setShowFaq] = useState(false)
-  const [showInstallHintModal, setShowInstallHintModal] = useState(false)
-  const [showImport, setShowImport] = useState(false)
-  const [showExportModal, setShowExportModal] = useState(false)
-  const [isExporting, setIsExporting] = useState(false)
-  const [deckOptions, setDeckOptions] = useState<Array<{ id: string; name: string }>>([])
-  const [selectedDeckId, setSelectedDeckId] = useState<'all' | string>('all')
-  const [deckScheduleOverview, setDeckScheduleOverview] = useState<Record<string, DeckScheduleOverview>>({})
-  const [deckTagIndex, setDeckTagIndex] = useState<Record<string, string[]>>({})
-  const [showFutureForecast, setShowFutureForecast] = useState(false)
-  const [futureForecast, setFutureForecast] = useState<Array<{ dayStartMs: number; count: number }>>([])
-  const [futureForecastLoading, setFutureForecastLoading] = useState(false)
-  const [metricsDeck, setMetricsDeck] = useState<Deck | null>(null)
-  const [metricsShuffleCollection, setMetricsShuffleCollection] = useState<ShuffleCollection | null>(null)
-  const [cardsDeck, setCardsDeck] = useState<Deck | null>(null)
-  const [shuffleSummaries, setShuffleSummaries] = useState<Record<string, { selectedCount: number; inScopeDecks: number; outOfScopeDecks: number }>>({})
-  const [syncedDeckIds, setSyncedDeckIds] = useState<string[]>([])
-  const [editingShuffleCollection, setEditingShuffleCollection] = useState<ShuffleCollection | null>(null)
-  const [showShuffleCollectionModal, setShowShuffleCollectionModal] = useState(false)
-  const [confirmModal, setConfirmModal] = useState<{
-    title: string
-    message: string
-    confirmLabel?: string
-    variant?: 'danger' | 'default'
-    onConfirm: () => void
-  } | null>(null)
-  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | 'unsupported'>(() => {
-    if (typeof Notification === 'undefined') return 'unsupported'
-    return Notification.permission
+  const { storageUsedBytes, storageQuotaBytes, storageEstimateUnavailable } = useHomeStorageEstimate()
+  const buildVersionLabel = useMemo(() => formatServiceWorkerVersionLabel(), [])
+  const buildVersionTitle = useMemo(() => formatBuildVersionTitle(), [])
+  const isShuffleManageMode = mode === 'shuffle-manage'
+
+  const controller = useHomeViewController({
+    t,
+    settings: {
+      language: settings.language,
+      dailyReminderEnabled: settings.dailyReminderEnabled,
+      dailyReminderTime: settings.dailyReminderTime,
+    },
+    reload,
+    hasNativePrompt,
+    install,
   })
-  const [dashboardMode, setDashboardMode] = useState<HomeDashboardMode>(() => {
-    if (typeof window === 'undefined') return 'kpi'
-    const stored = window.localStorage.getItem(STORAGE_KEYS.homeDashboardMode)
-    if (stored === 'heatmap' || stored === 'life' || stored === 'pilot') return stored
-    return window.localStorage.getItem(STORAGE_KEYS.homeShowHeatmap) === '1' ? 'heatmap' : 'kpi'
+
+  const derivedData = useHomeDerivedData({
+    decks,
+    shuffleCollections,
+    profileMode: profile?.mode,
+    profileUserId: profile?.userId,
+    studyCardLimit: settings.studyCardLimit,
+    nextDayStartsAt: settings.nextDayStartsAt,
+    showFutureForecast: controller.showFutureForecast,
+    showExportModal: controller.showExportModal,
   })
-  const [showShuffleOnly, setShowShuffleOnly] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false
-    return window.localStorage.getItem(STORAGE_KEYS.homeShuffleOnlyMode) === '1'
-  })
+
   const {
     deckSearchQuery,
     setDeckSearchQuery,
@@ -120,290 +92,10 @@ export default function HomeView({
     visibleDecks,
   } = useHomeDeckFilters({
     decks,
-    deckTagIndex,
-    deckScheduleOverview,
+    deckTagIndex: derivedData.deckTagIndex,
+    deckScheduleOverview: derivedData.deckScheduleOverview,
     language: settings.language,
   })
-  const {
-    storageUsedBytes,
-    storageQuotaBytes,
-    storageEstimateUnavailable,
-  } = useHomeStorageEstimate()
-  const buildVersionLabel = useMemo(() => formatServiceWorkerVersionLabel(), [])
-  const buildVersionTitle = useMemo(() => formatBuildVersionTitle(), [])
-  const isShuffleManageMode = mode === 'shuffle-manage'
-
-  useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEYS.homeDashboardMode, dashboardMode)
-    window.localStorage.setItem(STORAGE_KEYS.homeShowHeatmap, dashboardMode === 'heatmap' ? '1' : '0')
-  }, [dashboardMode])
-
-  useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEYS.homeShuffleOnlyMode, showShuffleOnly ? '1' : '0')
-  }, [showShuffleOnly])
-
-  useEffect(() => {
-    if (!navigator.serviceWorker?.controller) return
-    navigator.serviceWorker.controller.postMessage({
-      type: 'PREFETCH_URLS',
-      urls: ['/', '/index.html', '/manifest.json', '/pwa-icons/icon-192.png'],
-    })
-  }, [])
-
-  useEffect(() => {
-    if (!showExportModal) return
-    void listDecksForBackup().then(setDeckOptions)
-  }, [showExportModal])
-
-  useEffect(() => {
-    if (!showFutureForecast) return
-    let cancelled = false
-
-    setFutureForecastLoading(true)
-
-    const loadForecast = async () => {
-      try {
-        const data = await getFutureDueForecast(15, settings.nextDayStartsAt)
-        if (!cancelled) setFutureForecast(data)
-      } finally {
-        if (!cancelled) setFutureForecastLoading(false)
-      }
-    }
-
-    void loadForecast()
-    return () => {
-      cancelled = true
-    }
-  }, [showFutureForecast, settings.nextDayStartsAt])
-
-  useEffect(() => {
-    let cancelled = false
-
-    const resolveUserId = profile?.mode === 'linked' ? profile.userId : undefined
-    const loadSyncedScope = async () => {
-      const ids = await getSyncedDeckIds(resolveUserId)
-      if (!cancelled) setSyncedDeckIds(ids)
-    }
-
-    void loadSyncedScope()
-
-    return () => {
-      cancelled = true
-    }
-  }, [decks, profile?.mode, profile?.userId])
-
-  useEffect(() => {
-    let cancelled = false
-
-    const resolveUserId = profile?.mode === 'linked' ? profile.userId : undefined
-
-    const loadShuffleSummaries = async () => {
-      if (shuffleCollections.length === 0) {
-        setShuffleSummaries({})
-        return
-      }
-
-      const syncedScope = new Set(await getSyncedDeckIds(resolveUserId))
-      const entries = await Promise.all(
-        shuffleCollections.map(async collection => {
-          const selectedCards = await buildSelectedShuffleCards(collection, {
-            userId: resolveUserId,
-            maxCards: settings.studyCardLimit,
-            nextDayStartsAt: settings.nextDayStartsAt,
-          })
-          const inScopeDecks = collection.deckIds.filter(deckId => syncedScope.has(deckId)).length
-          return [
-            collection.id,
-            {
-              selectedCount: selectedCards.length,
-              inScopeDecks,
-              outOfScopeDecks: Math.max(0, collection.deckIds.length - inScopeDecks),
-            },
-          ] as const
-        }),
-      )
-
-      if (!cancelled) {
-        setShuffleSummaries(Object.fromEntries(entries))
-      }
-    }
-
-    void loadShuffleSummaries()
-    return () => {
-      cancelled = true
-    }
-  }, [profile?.mode, profile?.userId, settings.nextDayStartsAt, settings.studyCardLimit, shuffleCollections])
-
-  useEffect(() => {
-    let cancelled = false
-
-    const loadSchedule = async () => {
-      if (decks.length === 0) {
-        setDeckScheduleOverview({})
-        return
-      }
-
-      const overview = await getDeckScheduleOverview(
-        decks.map(deck => deck.id),
-        settings.studyCardLimit,
-        settings.nextDayStartsAt
-      )
-
-      if (!cancelled) {
-        setDeckScheduleOverview(overview)
-      }
-    }
-
-    void loadSchedule()
-    return () => {
-      cancelled = true
-    }
-  }, [decks, settings.studyCardLimit, settings.nextDayStartsAt])
-
-  useEffect(() => {
-    let cancelled = false
-
-    const loadDeckTags = async () => {
-      if (decks.length === 0) {
-        setDeckTagIndex({})
-        return
-      }
-
-      const entries = await Promise.all(
-        decks.map(async deck => {
-          const cards = await fetchDeckCards(deck.id)
-          const tags = Array.from(
-            new Set(
-              cards
-                .flatMap(card => card.tags)
-                .map(tag => tag.trim().toLowerCase())
-                .filter(Boolean)
-            )
-          )
-          return [deck.id, tags] as const
-        })
-      )
-
-      if (!cancelled) {
-        setDeckTagIndex(Object.fromEntries(entries))
-      }
-    }
-
-    void loadDeckTags()
-
-    return () => {
-      cancelled = true
-    }
-  }, [decks])
-
-  const requestNotificationPermission = async () => {
-    if (typeof Notification === 'undefined') return
-
-    try {
-      const permission = await Notification.requestPermission()
-      setNotificationPermission(permission)
-
-      if (permission === 'granted') {
-        void subscribeToWebPushNotifications(settings.language, {
-          enabled: settings.dailyReminderEnabled,
-          time: settings.dailyReminderTime,
-        })
-      }
-    } catch {
-      // no-op: permission prompt is best effort
-    }
-  }
-
-  const handleDelete = (deckId: string, name: string) => {
-    setConfirmModal({
-      title: t.deck_delete_title,
-      message: t.delete_deck_confirm.replace('{name}', name),
-      confirmLabel: t.yes_delete,
-      variant: 'danger',
-      onConfirm: async () => {
-        await deleteDeck(deckId)
-        reload()
-      },
-    })
-  }
-
-  const handleInstall = async () => {
-    if (hasNativePrompt) {
-      await install()
-      return
-    }
-
-    setShowInstallHintModal(true)
-  }
-
-  const openCreateShuffleCollection = () => {
-    setEditingShuffleCollection(null)
-    setShowShuffleCollectionModal(true)
-  }
-
-  const openEditShuffleCollection = (collection: ShuffleCollection) => {
-    setEditingShuffleCollection(collection)
-    setShowShuffleCollectionModal(true)
-  }
-
-  const handleDeleteShuffleCollection = (collection: ShuffleCollection) => {
-    setConfirmModal({
-      title: settings.language === 'de' ? 'Shuffle-Sammlung löschen' : 'Delete shuffle collection',
-      message: settings.language === 'de'
-        ? `Soll "${collection.name}" wirklich gelöscht werden?`
-        : `Do you really want to delete "${collection.name}"?`,
-      confirmLabel: settings.language === 'de' ? 'Ja, löschen' : 'Yes, delete',
-      variant: 'danger',
-      onConfirm: async () => {
-        await deleteShuffleCollection(collection.id)
-      },
-    })
-  }
-
-  const selectedDeckIds = selectedDeckId === 'all' ? undefined : [selectedDeckId]
-
-  const handleExportTxt = async () => {
-    try {
-      setIsExporting(true)
-      await exportDbBackupAsTxt({ deckIds: selectedDeckIds })
-      setShowExportModal(false)
-    } finally {
-      setIsExporting(false)
-    }
-  }
-
-  const handleExportCsv = async () => {
-    try {
-      setIsExporting(true)
-      await exportDbBackupAsCsv({ deckIds: selectedDeckIds })
-      setShowExportModal(false)
-    } finally {
-      setIsExporting(false)
-    }
-  }
-
-  const handleCreateDeck = async () => {
-    const trimmed = newDeckName.trim()
-    if (!trimmed) {
-      setCreateDeckError(t.deck_name_empty)
-      return
-    }
-
-    setCreateDeckError(null)
-    setIsCreatingDeck(true)
-    const result = await createDeck(trimmed)
-    setIsCreatingDeck(false)
-
-    if (!result.ok) {
-      const isDuplicate = result.error?.toLowerCase().includes('already exists') ?? false
-      setCreateDeckError(isDuplicate ? t.deck_name_exists : (result.error ?? t.save_failed))
-      return
-    }
-
-    setShowCreateDeckModal(false)
-    setNewDeckName('')
-    await reload()
-  }
 
   const renderHeaderBar = () => (
     <HomeHeaderBar
@@ -413,14 +105,14 @@ export default function HomeView({
       isInstalled={isInstalled}
       isInstalling={isInstalling}
       isConnected={isConnected}
-      notificationPermission={notificationPermission}
+      notificationPermission={controller.notificationPermission}
       storageEstimateUnavailable={storageEstimateUnavailable}
       storageUsedBytes={storageUsedBytes}
       storageQuotaBytes={storageQuotaBytes}
-      onInstall={() => { void handleInstall() }}
-      onRequestNotificationPermission={() => { void requestNotificationPermission() }}
-      onShowSettings={() => setShowSettings(true)}
-      onShowFaq={() => setShowFaq(true)}
+      onInstall={() => { void controller.handleInstall() }}
+      onRequestNotificationPermission={() => { void controller.requestNotificationPermission() }}
+      onShowSettings={controller.openSettings}
+      onShowFaq={controller.openFaq}
     />
   )
 
@@ -450,47 +142,38 @@ export default function HomeView({
             <HomeStatsSection
               t={t}
               language={settings.language}
-              mode={dashboardMode}
+              mode={controller.dashboardMode}
               stats={stats}
               gameOfLifeViewMode={settings.gameOfLifeViewMode}
               gameOfLifeAnimationSpeed={settings.gameOfLifeAnimationSpeed}
               gamificationProfile={gamificationProfile}
-              onOpenFutureForecast={() => {
-                setFutureForecastLoading(true)
-                setShowFutureForecast(true)
-              }}
+              onOpenFutureForecast={controller.openFutureForecast}
             />
           </div>
         </div>
-      </div>{/* /top-static-section */}
+      </div>
 
       <div className="relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden">
         {!isShuffleManageMode && (
-          <>
-            <HomeDeckToolbar
-              t={t}
-              language={settings.language}
-              shuffleModeEnabled={settings.shuffleModeEnabled}
-              showShuffleOnly={showShuffleOnly}
-              deckSearchQuery={deckSearchQuery}
-              deckSortMode={deckSortMode}
-              dashboardMode={dashboardMode}
-              onDeckSearchQueryChange={setDeckSearchQuery}
-              onDeckSortModeChange={setDeckSortMode}
-              onToggleShuffleOnly={() => setShowShuffleOnly(current => !current)}
-              onDashboardModeChange={setDashboardMode}
-              onReload={reload}
-              onCreateDeck={() => {
-                setNewDeckName('')
-                setCreateDeckError(null)
-                setShowCreateDeckModal(true)
-              }}
-              onCreateVirtualDeck={openCreateShuffleCollection}
-              onCreateCard={() => setShowCreateCard(true)}
-              onImport={() => setShowImport(true)}
-              onExport={() => setShowExportModal(true)}
-            />
-          </>
+          <HomeDeckToolbar
+            t={t}
+            language={settings.language}
+            shuffleModeEnabled={settings.shuffleModeEnabled}
+            showShuffleOnly={controller.showShuffleOnly}
+            deckSearchQuery={deckSearchQuery}
+            deckSortMode={deckSortMode}
+            dashboardMode={controller.dashboardMode}
+            onDeckSearchQueryChange={setDeckSearchQuery}
+            onDeckSortModeChange={setDeckSortMode}
+            onToggleShuffleOnly={controller.toggleShuffleOnly}
+            onDashboardModeChange={controller.setDashboardMode}
+            onReload={reload}
+            onCreateDeck={controller.openCreateDeckModal}
+            onCreateVirtualDeck={controller.openCreateShuffleCollection}
+            onCreateCard={controller.openCreateCard}
+            onImport={controller.openImport}
+            onExport={controller.openExport}
+          />
         )}
 
         {settings.shuffleModeEnabled && isShuffleManageMode && (
@@ -527,12 +210,12 @@ export default function HomeView({
           <HomeShuffleSection
             language={settings.language}
             collections={shuffleCollections}
-            summaries={shuffleSummaries}
+            summaries={derivedData.shuffleSummaries}
             onStartShuffleStudy={onStartShuffleStudy}
-            onCreateCollection={openCreateShuffleCollection}
-            onEditCollection={openEditShuffleCollection}
-            onDeleteCollection={handleDeleteShuffleCollection}
-            onShowMetrics={setMetricsShuffleCollection}
+            onCreateCollection={controller.openCreateShuffleCollection}
+            onEditCollection={controller.openEditShuffleCollection}
+            onDeleteCollection={controller.handleDeleteShuffleCollection}
+            onShowMetrics={controller.openMetricsShuffleCollection}
             onManageCollections={onOpenShuffleManager}
             isManagerView={isShuffleManageMode}
           />
@@ -567,24 +250,24 @@ export default function HomeView({
             decks={decks}
             filteredDecks={filteredDecks}
             visibleDecks={visibleDecks}
-            deckScheduleOverview={deckScheduleOverview}
+            deckScheduleOverview={derivedData.deckScheduleOverview}
             shuffleModeEnabled={settings.shuffleModeEnabled}
-            showShuffleOnly={showShuffleOnly}
+            showShuffleOnly={controller.showShuffleOnly}
             shuffleCollections={shuffleCollections}
-            shuffleSummaries={shuffleSummaries}
+            shuffleSummaries={derivedData.shuffleSummaries}
             onReload={reload}
-            onShowImport={() => setShowImport(true)}
+            onShowImport={controller.openImport}
             onStartStudy={onStartStudy}
             onStartShuffleStudy={onStartShuffleStudy}
-            onEditShuffleCollection={openEditShuffleCollection}
-            onDeleteShuffleCollection={handleDeleteShuffleCollection}
-            onShowShuffleMetrics={setMetricsShuffleCollection}
-            onDelete={handleDelete}
-            onShowMetrics={setMetricsDeck}
-            onManageCards={setCardsDeck}
+            onEditShuffleCollection={controller.openEditShuffleCollection}
+            onDeleteShuffleCollection={controller.handleDeleteShuffleCollection}
+            onShowShuffleMetrics={controller.openMetricsShuffleCollection}
+            onDelete={controller.handleDelete}
+            onShowMetrics={controller.openMetricsDeck}
+            onManageCards={controller.openCardsDeck}
           />
         )}
-      </div>{/* /decks-section */}
+      </div>
 
       {settings.showBuildVersion && (
         <div className="pointer-events-none mt-2 mb-1 flex justify-end pr-1">
@@ -599,115 +282,109 @@ export default function HomeView({
 
       <AnimatePresence initial={false}>
         <FutureForecastModal
-          isOpen={showFutureForecast}
+          isOpen={controller.showFutureForecast}
           language={settings.language}
-          loading={futureForecastLoading}
-          forecast={futureForecast}
-          onClose={() => setShowFutureForecast(false)}
+          loading={derivedData.futureForecastLoading}
+          forecast={derivedData.futureForecast}
+          onClose={controller.closeFutureForecast}
         />
 
-        {cardsDeck && (
+        {controller.cardsDeck && (
           <HomeDeckCardsModal
-            deck={cardsDeck}
+            deck={controller.cardsDeck}
             language={settings.language}
-            onClose={() => setCardsDeck(null)}
+            onClose={controller.closeCardsDeck}
           />
         )}
       </AnimatePresence>
 
       <AnimatePresence>
-        {metricsDeck && (
+        {controller.metricsDeck && (
           <DeckMetricsModal
-            deck={metricsDeck}
+            deck={controller.metricsDeck}
             language={settings.language}
-            onClose={() => setMetricsDeck(null)}
+            onClose={controller.closeMetricsDeck}
           />
         )}
-        {metricsShuffleCollection && (
+        {controller.metricsShuffleCollection && (
           <ShuffleMetricsModal
-            collection={metricsShuffleCollection}
+            collection={controller.metricsShuffleCollection}
             decks={decks}
             language={settings.language}
-            onClose={() => setMetricsShuffleCollection(null)}
+            onClose={controller.closeMetricsShuffleCollection}
           />
         )}
       </AnimatePresence>
 
       <AnimatePresence initial={false}>
         <InstallHintModal
-          isOpen={showInstallHintModal}
+          isOpen={controller.showInstallHintModal}
           title={t.install}
           subtitle={t.install_question}
           hintText={isIos ? t.install_manual_hint_ios : t.install_manual_hint}
           closeLabel={t.close}
-          onClose={() => setShowInstallHintModal(false)}
+          onClose={controller.closeInstallHintModal}
         />
 
         <HomeCreateDeckModal
-          isOpen={showCreateDeckModal}
+          isOpen={controller.showCreateDeckModal}
           t={t}
           prefersReducedMotion={prefersReducedMotion}
-          newDeckName={newDeckName}
-          createDeckError={createDeckError}
-          isCreatingDeck={isCreatingDeck}
-          onClose={() => setShowCreateDeckModal(false)}
-          onNewDeckNameChange={setNewDeckName}
-          onSubmit={() => { void handleCreateDeck() }}
+          newDeckName={controller.newDeckName}
+          createDeckError={controller.createDeckError}
+          isCreatingDeck={controller.isCreatingDeck}
+          onClose={controller.closeCreateDeckModal}
+          onNewDeckNameChange={controller.setNewDeckName}
+          onSubmit={() => { void controller.handleCreateDeck() }}
         />
       </AnimatePresence>
 
       <AnimatePresence initial={false}>
         <HomeExportModal
-          isOpen={showExportModal}
+          isOpen={controller.showExportModal}
           t={t}
           prefersReducedMotion={prefersReducedMotion}
-          selectedDeckId={selectedDeckId}
-          deckOptions={deckOptions}
-          isExporting={isExporting}
-          onClose={() => setShowExportModal(false)}
-          onSelectedDeckIdChange={setSelectedDeckId}
-          onExportTxt={() => { void handleExportTxt() }}
-          onExportCsv={() => { void handleExportCsv() }}
+          selectedDeckId={controller.selectedDeckId}
+          deckOptions={derivedData.deckOptions}
+          isExporting={controller.isExporting}
+          onClose={controller.closeExport}
+          onSelectedDeckIdChange={controller.setSelectedDeckId}
+          onExportTxt={() => { void controller.handleExportTxt() }}
+          onExportCsv={() => { void controller.handleExportCsv() }}
         />
       </AnimatePresence>
 
       <AnimatePresence initial={false}>
         <HomeShuffleCollectionModal
-          isOpen={showShuffleCollectionModal}
+          isOpen={controller.showShuffleCollectionModal}
           language={settings.language}
           prefersReducedMotion={prefersReducedMotion}
           decks={decks}
-          syncedDeckIds={syncedDeckIds}
+          syncedDeckIds={derivedData.syncedDeckIds}
           studyCardLimit={settings.studyCardLimit}
           nextDayStartsAt={settings.nextDayStartsAt}
           linkedUserId={profile?.mode === 'linked' ? profile.userId : undefined}
-          collection={editingShuffleCollection}
-          onClose={() => {
-            setShowShuffleCollectionModal(false)
-            setEditingShuffleCollection(null)
-          }}
+          collection={controller.editingShuffleCollection}
+          onClose={controller.closeShuffleCollectionModal}
           onSaved={() => {
             void reload()
           }}
         />
       </AnimatePresence>
 
-      {showCreateCard && <CreateCardModal onClose={() => setShowCreateCard(false)} />}
-      <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
-      <FaqModal isOpen={showFaq} onClose={() => setShowFaq(false)} />
-      <ImportView isOpen={showImport} onClose={() => setShowImport(false)} />
+      {controller.showCreateCard && <CreateCardModal onClose={controller.closeCreateCard} />}
+      <SettingsModal isOpen={controller.showSettings} onClose={controller.closeSettings} />
+      <FaqModal isOpen={controller.showFaq} onClose={controller.closeFaq} />
+      <ImportView isOpen={controller.showImport} onClose={controller.closeImport} />
 
       <ConfirmModal
-        isOpen={confirmModal !== null}
-        title={confirmModal?.title ?? ''}
-        message={confirmModal?.message ?? ''}
-        confirmLabel={confirmModal?.confirmLabel}
-        variant={confirmModal?.variant}
-        onConfirm={() => {
-          confirmModal?.onConfirm()
-          setConfirmModal(null)
-        }}
-        onCancel={() => setConfirmModal(null)}
+        isOpen={controller.confirmModal !== null}
+        title={controller.confirmModal?.title ?? ''}
+        message={controller.confirmModal?.message ?? ''}
+        confirmLabel={controller.confirmModal?.confirmLabel}
+        variant={controller.confirmModal?.variant}
+        onConfirm={controller.confirmAction}
+        onCancel={controller.cancelConfirmModal}
       />
     </div>
   )

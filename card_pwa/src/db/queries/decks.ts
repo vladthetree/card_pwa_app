@@ -101,6 +101,32 @@ export async function fetchDeckCards(deckId: string): Promise<Card[]> {
   return rows.map(mapCard)
 }
 
+export async function getDeckTagIndex(deckIds: string[]): Promise<Record<string, string[]>> {
+  if (deckIds.length === 0) return {}
+
+  const rows = (await db.cards.where('deckId').anyOf(deckIds).toArray()).filter(row => !row.isDeleted)
+  const tagsByDeck = new Map<string, Set<string>>()
+
+  for (const deckId of deckIds) {
+    tagsByDeck.set(deckId, new Set<string>())
+  }
+
+  for (const row of rows) {
+    const bucket = tagsByDeck.get(row.deckId)
+    if (!bucket) continue
+    for (const tag of row.tags) {
+      const normalized = tag.trim().toLowerCase()
+      if (normalized) {
+        bucket.add(normalized)
+      }
+    }
+  }
+
+  return Object.fromEntries(
+    deckIds.map(deckId => [deckId, Array.from(tagsByDeck.get(deckId) ?? []).sort()]),
+  )
+}
+
 export async function fetchDeckStudyCandidates(deckId: string, nextDayStartsAt = 0): Promise<Card[]> {
   const todayStartMs = getDayStartMs(Date.now(), nextDayStartsAt)
   const tomorrowStartMs = todayStartMs + 86_400_000

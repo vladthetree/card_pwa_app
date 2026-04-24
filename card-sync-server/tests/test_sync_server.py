@@ -149,6 +149,31 @@ def api(server):
             r = requests.post(f"http://localhost:{port}/auth/profile/switch", json=body, headers=self._headers(auth_token))
             return r.json() if r.text else {}
 
+        def issue_pairing_code(self, auth_token):
+            """POST /auth/pair/issue"""
+            r = requests.post(
+                f"http://localhost:{port}/auth/pair/issue",
+                json={},
+                headers=self._headers(auth_token),
+            )
+            return r.json() if r.text else {}
+
+        def redeem_pairing_code(self, code, device_id, device_label="Device"):
+            """POST /auth/pair/redeem"""
+            r = requests.post(
+                f"http://localhost:{port}/auth/pair/redeem",
+                json={"code": code, "deviceId": device_id, "deviceLabel": device_label},
+            )
+            return r.json() if r.text else {}
+
+        def recover_profile(self, recovery_code, device_id, device_label="Device"):
+            """POST /auth/recover"""
+            r = requests.post(
+                f"http://localhost:{port}/auth/recover",
+                json={"recoveryCode": recovery_code, "deviceId": device_id, "deviceLabel": device_label},
+            )
+            return r.json() if r.text else {}
+
         def push(self, op_id, op_type, payload, client_id="test-client", client_timestamp=None, auth_token=None):
             """POST /sync"""
             if client_timestamp is None:
@@ -1274,6 +1299,30 @@ class TestProfileSwitch:
         assert result["userId"]
         assert result["profileToken"].startswith("dt_")
         assert result["profileName"] == "Anna"
+
+    def test_pairing_code_can_link_second_device(self, api):
+        created = api.create_profile(device_id="pair-dev-1", profile_name="Pair Source")
+        issued = api.issue_pairing_code(created["profileToken"])
+
+        assert issued["ok"] is True
+        assert issued["code"]
+
+        redeemed = api.redeem_pairing_code(issued["code"], "pair-dev-2", "Tablet")
+
+        assert redeemed["ok"] is True
+        assert redeemed["userId"] == created["userId"]
+        assert redeemed["deviceId"] == "pair-dev-2"
+        assert redeemed["profileToken"].startswith("dt_")
+
+    def test_recovery_code_can_link_new_device(self, api):
+        created = api.create_profile(device_id="recover-dev-1", profile_name="Recover Source")
+
+        recovered = api.recover_profile(created["recoveryCode"], "recover-dev-2", "Laptop")
+
+        assert recovered["ok"] is True
+        assert recovered["userId"] == created["userId"]
+        assert recovered["deviceId"] == "recover-dev-2"
+        assert recovered["profileToken"].startswith("dt_")
 
     def test_create_profile_rejects_existing_device_without_authenticating_it(self, api, db_helper, server):
         first = api.create_profile(device_id="same-device", profile_name="Visible Again")
