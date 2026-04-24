@@ -1,0 +1,122 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><title>Theme accents · Default · Ghost · Blue Steel</title>
+<style>
+ .theme {
+   border: 1px solid var(--zinc-900);
+   border-radius: 14px;
+   padding: 16px 18px;
+   background: #0a0a0a;
+   display: grid;
+   grid-template-columns: 120px 1fr 1fr;
+   gap: 18px;
+   align-items: center;
+ }
+ .theme + .theme { margin-top: 10px; }
+ .theme-name {
+   font-family: var(--font-mono); font-weight: 700;
+   font-size: 14px; letter-spacing:.08em; text-transform: uppercase;
+   color: var(--fg);
+   display:flex; flex-direction:column; gap: 4px;
+ }
+ .theme-name small { font-family: var(--font-mono); font-size: 9px; font-weight: 400; color: var(--zinc-600); letter-spacing: .14em; text-transform: uppercase;}
+ .swatch {
+   display:flex; flex-direction:column; gap: 6px;
+ }
+ .swatch .head {
+   font-family: var(--font-mono); font-size: 9px; color: var(--zinc-500);
+   text-transform: uppercase; letter-spacing: .12em;
+   display:flex; justify-content:space-between;
+ }
+ .swatch .hex { color: var(--zinc-400); font-weight: 400;}
+ .vol { height: 36px; border-radius: 8px; display:flex; align-items:center; justify-content:center; font-family: var(--font-mono); font-size: 11px; font-weight: 700;}
+ .strip { display:flex; border-radius: 6px; overflow: hidden; height: 14px;}
+ .strip div { flex:1;}
+</style></head>
+<body><div class="card">
+ <div class="label">Theme accent pairs · <code style="font-family:var(--font-mono);color:var(--zinc-400)">:root[data-theme]</code></div>
+
+ <!-- DEFAULT -->
+ <div class="theme">
+  <div class="theme-name">Default<small>Out-of-the-box</small></div>
+  <div class="swatch">
+    <div class="head"><span>Primary · Orange</span><span class="hex">#f97316</span></div>
+    <div class="vol" style="background:#f97316;color:#111">URGENCY · DUE · CTA</div>
+    <div class="strip">
+      <div style="background:rgba(249,115,22,.08)"></div>
+      <div style="background:rgba(249,115,22,.12)"></div>
+      <div style="background:rgba(249,115,22,.20)"></div>
+      <div style="background:rgba(249,115,22,.50)"></div>
+      <div style="background:rgba(249,115,22,.80)"></div>
+      <div style="background:#f97316"></div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="head"><span>Secondary · Blue</span><span class="hex">#3b82f6</span></div>
+    <div class="vol" style="background:#3b82f6;color:#fff">NEU · SECONDARY</div>
+    <div class="strip">
+      <div style="background:rgba(59,130,246,.12)"></div>
+      <div style="background:rgba(59,130,246,.15)"></div>
+      <div style="background:rgba(59,130,246,.25)"></div>
+      <div style="background:rgba(59,130,246,.50)"></div>
+      <div style="background:#3b82f6"></div>
+    </div>
+  </div>
+ </div>
+
+ <!-- GHOST -->
+ <div class="theme">
+  <div class="theme-name">Ghost<small>Monochrome · Focus</small></div>
+  <div class="swatch">
+    <div class="head"><span>Primary · Slate-50</span><span class="hex">#f8fafc</span></div>
+    <div class="vol" style="background:#f8fafc;color:#111">URGENCY · DUE · CTA</div>
+    <div class="strip">
+      <div style="background:rgba(248,250,252,.08)"></div>
+      <div style="background:rgba(248,250,252,.12)"></div>
+      <div style="background:rgba(248,250,252,.20)"></div>
+      <div style="background:rgba(248,250,252,.50)"></div>
+      <div style="background:rgba(248,250,252,.80)"></div>
+      <div style="background:#f8fafc"></div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="head"><span>Secondary · Slate-400</span><span class="hex">#94a3b8</span></div>
+    <div class="vol" style="background:#94a3b8;color:#111">NEU · SECONDARY</div>
+    <div class="strip">
+      <div style="background:rgba(148,163,184,.12)"></div>
+      <div style="background:rgba(148,163,184,.15)"></div>
+      <div style="background:rgba(148,163,184,.25)"></div>
+      <div style="background:rgba(148,163,184,.50)"></div>
+      <div style="background:#94a3b8"></div>
+    </div>
+  </div>
+ </div>
+
+ <!-- BLUE STEEL -->
+ <div class="theme">
+  <div class="theme-name">Blue Steel<small>Cool · Restrained</small></div>
+  <div class="swatch">
+    <div class="head"><span>Primary · Slate-500</span><span class="hex">#64748b</span></div>
+    <div class="vol" style="background:#64748b;color:#fff">URGENCY · DUE · CTA</div>
+    <div class="strip">
+      <div style="background:rgba(100,116,139,.08)"></div>
+      <div style="background:rgba(100,116,139,.12)"></div>
+      <div style="background:rgba(100,116,139,.20)"></div>
+      <div style="background:rgba(100,116,139,.50)"></div>
+      <div style="background:rgba(100,116,139,.80)"></div>
+      <div style="background:#64748b"></div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="head"><span>Secondary · Sky-400</span><span class="hex">#38bdf8</span></div>
+    <div class="vol" style="background:#38bdf8;color:#0c1b2a">NEU · SECONDARY</div>
+    <div class="strip">
+      <div style="background:rgba(56,189,248,.12)"></div>
+      <div style="background:rgba(56,189,248,.15)"></div>
+      <div style="background:rgba(56,189,248,.25)"></div>
+      <div style="background:rgba(56,189,248,.50)"></div>
+      <div style="background:#38bdf8"></div>
+    </div>
+  </div>
+ </div>
+
+ <div class="sub">Opacity ramps: 08 · 12 · 20 · 50 · 80 · 100 · Ghost = kein Farbstich · Blue Steel = kühl, neutral bei langen Lernsessions</div>
+</div></body></html>
