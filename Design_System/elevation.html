@@ -1,0 +1,175 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><title>Elevation</title>
+<style>
+ .stack { display:flex; flex-direction: column; gap: 22px;}
+
+ .row {
+   display: grid; grid-template-columns: 150px 1fr 160px;
+   gap: 24px; align-items: stretch;
+ }
+ .name {
+   display:flex; flex-direction:column; gap: 6px; justify-content:center;
+   padding: 0 0 0 2px;
+ }
+ .name h {
+   font-family: var(--font-sans); font-weight: 900;
+   font-size: 36px; letter-spacing: -.02em; color: var(--fg);
+   line-height: 1;
+ }
+ .name code {
+   font-family: var(--font-mono); font-size: 11px; color: var(--zinc-500);
+   letter-spacing: .04em;
+ }
+ .name .usage { font-family: var(--font-mono); font-size: 10px; color: var(--zinc-600); text-transform: uppercase; letter-spacing: .14em;}
+
+ /* The stage — a soft radial well so the lifted object reads as ABOVE it */
+ .stage {
+   position: relative; height: 170px; border-radius: 14px;
+   background:
+     radial-gradient(ellipse at center top, rgba(255,255,255,.03), transparent 60%),
+     radial-gradient(ellipse at 50% 110%, rgba(0,0,0,.6), transparent 60%),
+     repeating-linear-gradient(135deg, #0a0a0a 0 10px, #0d0d0d 10px 20px);
+   border: 1px solid var(--zinc-900);
+   overflow: hidden;
+   display: flex; align-items:center; justify-content:center;
+ }
+
+ /* Tangible tile — layered shadows (ambient + direct) + top-rim highlight + contact shadow via ::after */
+ .tile {
+   position: relative;
+   width: 62%;
+   padding: 22px 26px;
+   border-radius: 14px;
+   background: linear-gradient(180deg, #1a1a1d 0%, #131316 100%);
+   /* inner top-edge highlight + inner bottom subtle dark — gives it a bevel */
+   box-shadow:
+     inset 0 1px 0 rgba(255,255,255,.07),
+     inset 0 -1px 0 rgba(0,0,0,.6);
+   color: var(--zinc-300);
+   font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+   display:flex; align-items:center; justify-content:center;
+ }
+ .tile::before {
+   /* outer border — hairline to cut off from stage */
+   content:""; position:absolute; inset:0; border-radius: inherit;
+   box-shadow: 0 0 0 1px var(--zinc-800);
+   pointer-events: none;
+ }
+ .tile .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--zinc-600); box-shadow: 0 0 0 1px rgba(255,255,255,.04);}
+ .tile strong { color: var(--fg); font-weight: 700; letter-spacing: .08em;}
+
+ /* Individual lift levels */
+ .lvl-menu {
+   box-shadow:
+     inset 0 1px 0 rgba(255,255,255,.07),
+     inset 0 -1px 0 rgba(0,0,0,.6),
+     0 2px 0 rgba(0,0,0,.5),                    /* hard contact */
+     0 8px 16px -4px rgba(0,0,0,.55),           /* direct drop */
+     0 24px 40px -8px rgba(0,0,0,.45);          /* ambient */
+ }
+ .lvl-modal {
+   transform: translateY(-2px);
+   box-shadow:
+     inset 0 1px 0 rgba(255,255,255,.08),
+     inset 0 -1px 0 rgba(0,0,0,.7),
+     0 3px 0 rgba(0,0,0,.55),
+     0 18px 32px -6px rgba(0,0,0,.7),
+     0 42px 64px -16px rgba(0,0,0,.55);
+ }
+ .lvl-card {
+   box-shadow:
+     inset 0 1px 0 rgba(255,255,255,.06),
+     inset 0 -1px 0 rgba(0,0,0,.5),
+     0 1px 0 rgba(0,0,0,.5),
+     0 4px 10px -2px rgba(0,0,0,.55),
+     0 12px 22px -6px rgba(0,0,0,.35);
+ }
+
+ /* Spec column — grid of metric cells */
+ .spec {
+   display: grid; grid-template-rows: repeat(3, 1fr); gap: 6px;
+   font-family: var(--font-mono); font-size: 10px;
+ }
+ .spec > div {
+   display:flex; justify-content: space-between; align-items: center;
+   padding: 6px 10px;
+   background: #0a0a0a; border: 1px solid var(--zinc-900); border-radius: 6px;
+   color: var(--zinc-500); letter-spacing: .08em; text-transform: uppercase;
+ }
+ .spec b { color: var(--fg); font-weight: 700; font-size: 11px; letter-spacing: .04em;}
+
+ /* Legend strip */
+ .legend {
+   display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+   padding: 10px 12px;
+   background: #0a0a0a; border: 1px solid var(--zinc-900); border-radius: 10px;
+   font-family: var(--font-mono); font-size: 9px; color: var(--zinc-600);
+   text-transform: uppercase; letter-spacing: .14em;
+ }
+ .legend .lb { color: var(--zinc-400); font-weight: 700; display:block; margin-bottom: 2px;}
+</style></head>
+<body><div class="card">
+ <div class="label">Elevation · dark-on-dark · tastbar</div>
+
+ <div class="stack">
+
+  <!-- CARD (lowest) -->
+  <div class="row">
+    <div class="name">
+      <h>Card</h>
+      <code>shadow-card</code>
+      <span class="usage">Deck · Study</span>
+    </div>
+    <div class="stage" style="height: 150px;">
+      <div class="tile lvl-card"><strong>Deck</strong>&nbsp;· Card</div>
+    </div>
+    <div class="spec">
+      <div><span>Y-Offset</span><b>4 px</b></div>
+      <div><span>Blur</span><b>18 px</b></div>
+      <div><span>α</span><b>.50</b></div>
+    </div>
+  </div>
+
+  <!-- MENU -->
+  <div class="row">
+    <div class="name">
+      <h>Menu</h>
+      <code>shadow-menu</code>
+      <span class="usage">Dropdown · Popover</span>
+    </div>
+    <div class="stage">
+      <div class="tile lvl-menu"><strong>Dropdown</strong>&nbsp;· Menu</div>
+    </div>
+    <div class="spec">
+      <div><span>Y-Offset</span><b>8 px</b></div>
+      <div><span>Blur</span><b>32 px</b></div>
+      <div><span>α</span><b>.60</b></div>
+    </div>
+  </div>
+
+  <!-- MODAL (highest) -->
+  <div class="row">
+    <div class="name">
+      <h>Modal</h>
+      <code>shadow-modal</code>
+      <span class="usage">Dialog · Sheet</span>
+    </div>
+    <div class="stage" style="height: 200px;">
+      <div class="tile lvl-modal"><strong>Dialog</strong>&nbsp;· Modal</div>
+    </div>
+    <div class="spec">
+      <div><span>Y-Offset</span><b>18 px</b></div>
+      <div><span>Blur</span><b>56 px</b></div>
+      <div><span>α</span><b>.72</b></div>
+    </div>
+  </div>
+
+ </div>
+
+ <div class="legend">
+  <div><span class="lb">Kontakt-Schatten</span>Harter 1-2 px Rand unter dem Objekt</div>
+  <div><span class="lb">Direkter Schatten</span>Mittlerer Blur, klare Richtung</div>
+  <div><span class="lb">Ambient-Schatten</span>Weiter, weich, niedrige Opazität</div>
+ </div>
+
+ <div class="sub">Drei Schatten-Ebenen pro Objekt · Inset-Highlight oben für Bevel-Kante · Stage mit radialer Absenkung, damit das Objekt darüber schwebt</div>
+</div></body></html>

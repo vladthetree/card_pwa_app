@@ -1,0 +1,144 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css"><title>Karte · iPhone 15 · XP als Hover-Hint über Progress</title>
+<style>
+ .stage { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding: 12px 4px 4px; justify-items:center;}
+
+ /* iPhone 15 */
+ .phone {
+   position: relative; width: 100%; max-width: 280px;
+   aspect-ratio: 9 / 19.5;
+   background: #0a0a0a; border-radius: 46px; padding: 10px;
+   box-shadow: 0 0 0 2px #1a1a1a, 0 0 0 3px #2a2a2a, 0 24px 48px rgba(0,0,0,.7);
+   box-sizing: border-box;
+ }
+ .screen {
+   position: relative; width: 100%; height: 100%;
+   border-radius: 36px; overflow: hidden;
+   background: #050505;
+   display: flex; flex-direction: column;
+ }
+ .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 76px; height: 22px; background: #000; border-radius: 20px; z-index: 4;}
+ .statusbar { padding: 14px 22px 0; display:flex; justify-content:space-between; align-items:center; font-family: -apple-system, "SF Pro Text", system-ui, sans-serif; font-weight: 600; font-size: 11px; color: #e4e4e7; flex-shrink: 0;}
+
+ .page { flex:1; display:flex; flex-direction:column; padding: 38px 14px 14px; position: relative;}
+
+ /* Progress + XP-Hover */
+ .progWrap { position: relative; margin: 4px 6px 12px;}
+ .prog { height: 2px; background: #18181b; position: relative;}
+ .prog .fill { height: 100%; background: linear-gradient(90deg, rgba(249,115,22,.8), #f97316);}
+ .prog .tick { position: absolute; top: -3px; width: 1px; height: 8px; background: #f97316; opacity: .8;}
+ /* tiny text hint floating just above the progress track */
+ .xp-hint {
+   position: absolute; bottom: calc(100% + 2px); right: 0;
+   font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em;
+   color: var(--zinc-500); text-transform: uppercase;
+   white-space: nowrap;
+   transition: opacity .24s ease, transform .24s ease;
+ }
+ .xp-hint .num { color: #f97316; font-weight: 700;}
+ .xp-hint.ghost { opacity: 0; transform: translateY(2px);}
+ .xp-hint.show { opacity: 1; transform: translateY(0);}
+
+ .crumb { display:flex; gap: 6px; align-items:center; padding: 0 6px; font-family: var(--font-mono); font-size: 8px; color: var(--zinc-600); text-transform:uppercase; letter-spacing:.14em;}
+ .crumb .neu { color: #3b82f6; border: 1px solid rgba(59,130,246,.3); background: rgba(59,130,246,.1); padding: 1px 4px; border-radius: 3px; font-weight: 700;}
+
+ .kcard { flex: 1; margin: 10px 6px 10px; background: #0c0c0c; border: 1px solid #18181b; border-radius: 12px; display: flex; flex-direction:column; overflow: hidden;}
+ .kcard .top { padding: 8px 14px; border-bottom: 1px solid #18181b; display:flex; justify-content:space-between; align-items:center; font-family: var(--font-mono); font-size: 9px; color: var(--zinc-600); letter-spacing:.12em;}
+ .kcard .top .side { border: 1px solid var(--zinc-700); color: var(--zinc-400); padding: 1px 5px; border-radius: 3px; font-weight: 700;}
+ .kcard .body { flex:1; padding: 16px 14px;}
+ .qtext { font-family: var(--font-sans); font-weight: 500; font-size: 16px; line-height: 1.55; color: #f0ede8;}
+ .atext { font-family: var(--font-sans); font-size: 15px; line-height: 1.55; color: #f0ede8;}
+ .atext strong { color: #fdba74; font-weight: 700;}
+ .merk { margin-top: 10px; border-left: 2px solid rgba(249,115,22,.5); background: rgba(249,115,22,.08); padding: 6px 10px;}
+ .merk .ml { font-family: var(--font-mono); font-size: 8px; font-weight:700; text-transform:uppercase; letter-spacing:.18em; color: #f97316; display:block; margin-bottom: 2px;}
+ .merk .mt { font-family: var(--font-sans); font-size: 12px; font-style:italic; color: rgba(212,212,216,.7); line-height: 1.4;}
+
+ /* rating — 2 × 2, XP NICHT im Button */
+ .rating { display:grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 5px; padding: 0 6px; aspect-ratio: 1 / .55;}
+ .rate { border-radius: 12px; padding: 8px; border: 0; cursor: pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap: 1px; text-align:center; position: relative; transition: filter .15s;}
+ .rate:hover { filter: brightness(1.15);}
+ .rate .l { font-family: var(--font-sans); font-weight: 800; font-size: 14px; letter-spacing:-.01em;}
+ .rate .t { font-family: var(--font-mono); font-size: 8px; opacity: .75; letter-spacing:.05em;}
+ .rate .k { position:absolute; bottom: 4px; right: 6px; font-family: var(--font-mono); font-size: 8px; color: rgba(255,255,255,.35);}
+ .r1 { background: rgb(69 10 10 / .7); color: #fca5a5;}
+ .r2 { background: rgb(120 53 15 / .7); color: #fcd34d;}
+ .r3 { background: rgb(23 37 84 / .8); color: #93c5fd;}
+ .r4 { background: rgb(5 46 22 / .8); color: #86efac;}
+
+ .home { margin: 6px auto 4px; width: 100px; height: 4px; background: #f0ede8; border-radius: 2px;}
+
+ .caption { font-family: var(--font-mono); font-size: 10px; color: var(--zinc-500); text-transform:uppercase; letter-spacing:.14em; margin-top: 12px; text-align:center; font-weight:600;}
+ .swipe { display:flex; align-items:center; justify-content:center; gap: 6px; font-family: var(--font-mono); font-size: 8px; color: var(--zinc-600); text-transform:uppercase; letter-spacing:.2em; padding: 2px 0 6px;}
+
+ .anno { font-family: var(--font-mono); font-size: 9px; color: var(--zinc-600); text-align:center; margin-top: 4px; letter-spacing: .1em;}
+</style></head>
+<body><div class="card">
+ <div class="label">XP als dezenter Hover-Hint über dem Progress-Balken · Nur Text</div>
+ <div class="stage">
+
+   <!-- FRONT — default -->
+   <div>
+     <div class="phone">
+       <div class="island"></div>
+       <div class="screen">
+         <div class="statusbar"><span>9:41</span><span style="font-size:10px">••• ▤ 􀛨</span></div>
+         <div class="page">
+           <div class="progWrap">
+             <div class="xp-hint ghost"><span class="num">+0 XP</span> · LVL 12</div>
+             <div class="prog"><div class="fill" style="width: 18%"></div></div>
+           </div>
+           <div class="crumb"><span class="neu">NEU</span><span>SecOps · ¶ 110</span></div>
+           <div class="kcard">
+             <div class="top"><span>FRAGE · 1 VON 29</span><span class="side">A</span></div>
+             <div class="body">
+               <div class="qtext">Welches Feld in <code style="font-family:var(--font-mono);background:#18181b;padding:1px 5px;border-radius:3px;color:var(--zinc-300);font-size:13px">CardRecord</code> steuert die Fälligkeit in Tagen seit der Unix-Epoche?</div>
+             </div>
+           </div>
+           <div class="swipe"><span>Swipe up · umdrehen</span></div>
+           <div class="home"></div>
+         </div>
+       </div>
+     </div>
+     <div class="caption">Vorderseite · kein XP sichtbar</div>
+     <div class="anno">progress-balken ruhig · kein gamification-klimbim</div>
+   </div>
+
+   <!-- BACK — hover über Gut -->
+   <div>
+     <div class="phone">
+       <div class="island"></div>
+       <div class="screen">
+         <div class="statusbar"><span>9:41</span><span style="font-size:10px">••• ▤ 􀛨</span></div>
+         <div class="page">
+           <div class="progWrap">
+             <!-- hover hint visible above progress bar, aligned right end of fill -->
+             <div class="xp-hint show" style="right: 78%"><span class="num">+10 XP</span></div>
+             <div class="prog">
+               <div class="fill" style="width: 22%"></div>
+               <div class="tick" style="left: 22%"></div>
+             </div>
+           </div>
+           <div class="crumb"><span class="neu">NEU</span><span>SecOps · ¶ 110</span></div>
+
+           <div class="kcard">
+             <div class="top"><span>ANTWORT</span><span class="side" style="border-color:var(--brand-primary);color:var(--brand-primary)">B</span></div>
+             <div class="body">
+               <div class="atext"><strong>due</strong> — Tage seit Unix-Epoch. <code style="font-family:var(--font-mono);background:#18181b;padding:1px 5px;border-radius:3px;color:var(--zinc-300);font-size:12px">dueAt</code> ergänzt in ms.</div>
+               <div class="merk"><span class="ml">Merkhilfe</span><span class="mt">„due" = Tag · „dueAt" = Moment.</span></div>
+             </div>
+           </div>
+           <div class="rating">
+             <button class="rate r1"><span class="l">Nochmal</span><span class="t">&lt;1 min</span><span class="k">[1]</span></button>
+             <button class="rate r2"><span class="l">Schwer</span><span class="t">6 min</span><span class="k">[2]</span></button>
+             <button class="rate r3" style="outline:1px solid rgba(147,197,253,.5);outline-offset:-1px"><span class="l">Gut</span><span class="t">11 Tage</span><span class="k">[3]</span></button>
+             <button class="rate r4"><span class="l">Leicht</span><span class="t">28 Tage</span><span class="k">[4]</span></button>
+           </div>
+           <div class="home"></div>
+         </div>
+       </div>
+     </div>
+     <div class="caption">Hover „Gut" · Hint erscheint</div>
+     <div class="anno">+10 xp · 9 px mono · zinc-500 · fade-in 240 ms</div>
+   </div>
+ </div>
+ <div class="sub">Gamification <strong style="color:#f0ede8">nur als Hover-Hint</strong> über dem Progress-Balken · 9 px Mono, zinc-500 · orange nur für den Zahlwert · kein Banner, kein Badge in den Buttons · Tick auf der Progress-Bar markiert die kommende XP-Position</div>
+</div></body></html>
