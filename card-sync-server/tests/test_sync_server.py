@@ -1275,17 +1275,21 @@ class TestProfileSwitch:
         assert result["profileToken"].startswith("dt_")
         assert result["profileName"] == "Anna"
 
-    def test_create_profile_reconnects_existing_device_without_registration_error(self, api, db_helper):
+    def test_create_profile_rejects_existing_device_without_authenticating_it(self, api, db_helper, server):
         first = api.create_profile(device_id="same-device", profile_name="Visible Again")
-        second = api.create_profile(device_id="same-device", profile_name="Ignored New Name")
+        second_response = requests.post(
+            f"http://localhost:{server['port']}/auth/profile",
+            json={"deviceId": "same-device", "deviceLabel": "Device", "profileName": "Ignored New Name"},
+        )
+        second = second_response.json()
 
         assert first["ok"] is True
-        assert second["ok"] is True
-        assert second["existingProfile"] is True
+        assert second_response.status_code == 409
+        assert second["ok"] is False
+        assert second["error"] == "device_already_linked"
         assert second["userId"] == first["userId"]
         assert second["profileName"] == "Visible Again"
-        assert second["profileToken"].startswith("dt_")
-        assert second["profileToken"] != first["profileToken"]
+        assert "profileToken" not in second
 
         users = db_helper.query("SELECT COUNT(*) FROM users")
         devices = db_helper.query("SELECT COUNT(*) FROM devices WHERE device_id='same-device'")

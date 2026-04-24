@@ -60,7 +60,7 @@ const STRINGS = {
     selected_some_decks: 'Nur ausgewählte Decks werden synchronisiert.',
     decks_syncing: 'Deck-Auswahl wird synchronisiert…',
     profile_created: 'Neues Profil wurde erstellt und verknüpft.',
-    existing_profile_reconnected: 'Dieses Gerät war bereits mit einem Profil verbunden. Bestehendes Profil wurde wieder verknüpft.',
+    device_already_linked: 'Diese Geräte-ID ist bereits mit einem Profil verknüpft. Bitte nutze das bestehende Profil oder stelle es per Recovery/Pairing wieder her.',
     switch_to_profile: 'Auf dieses Profil wechseln',
     switching: 'Profil wird gewechselt…',
     profile_name_label: 'Profilname',
@@ -101,7 +101,7 @@ const STRINGS = {
     selected_some_decks: 'Only selected decks are synced.',
     decks_syncing: 'Syncing selected decks…',
     profile_created: 'New profile was created and linked.',
-    existing_profile_reconnected: 'This device was already linked to a profile. Existing profile was reconnected.',
+    device_already_linked: 'This device ID is already linked to a profile. Use the existing profile or restore access via recovery/pairing.',
     switch_to_profile: 'Switch to this profile',
     switching: 'Switching profile…',
     profile_name_label: 'Profile name',
@@ -146,6 +146,8 @@ function resolveErrorMessage(error: string, t: typeof STRINGS['de'] | typeof STR
       return t.remove_device_failed
     case 'invalid_server_response':
       return t.invalid_server_response
+    case 'device_already_linked':
+      return t.device_already_linked
     default:
       return error
   }
@@ -280,7 +282,7 @@ export default function ProfileSyncSection({ language }: Props) {
       profileToken: res.profileToken,
       endpoint: effectiveEndpoint,
       linkedAt: now,
-      recoveryCodeShown: res.existingProfile ? true : false,
+      recoveryCodeShown: false,
       createdAt: now,
       updatedAt: now,
     }
@@ -288,7 +290,7 @@ export default function ProfileSyncSection({ language }: Props) {
     writeProfileHintCookie(linked.userId ?? '')
     await loadProfiles()
     await loadDecks(linked)
-    setNotice(res.existingProfile ? t.existing_profile_reconnected : t.profile_created)
+    setNotice(t.profile_created)
     setBusy(false)
   }
 

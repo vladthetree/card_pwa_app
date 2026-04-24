@@ -26,7 +26,7 @@ function toSyncHealthUrl(): string | null {
   if (!baseEndpoint) return null
 
   try {
-    const base = typeof window === 'undefined' ? undefined : window.location.origin
+    const base = typeof window === 'undefined' ? undefined : window.location?.origin
     const url = new URL(baseEndpoint, base)
     url.pathname = '/health'
     url.search = ''

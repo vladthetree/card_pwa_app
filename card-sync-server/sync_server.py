@@ -1071,19 +1071,16 @@ class Handler(BaseHTTPRequestHandler):
         (device_id,)
       ).fetchone()
       if existing_device:
-        profile_token = issue_device_token(conn, existing_device["user_id"], device_id, device_label, now)
-        conn.commit()
         log(
-          f"AUTH_PROFILE_RECONNECT  ip={client_ip}  user={_client_short(existing_device['user_id'])}  "
-          f"device={_client_short(device_id)}"
+          f"AUTH_PROFILE_CREATE_REJECTED  ip={client_ip}  reason=device_already_linked  "
+          f"user={_client_short(existing_device['user_id'])}  device={_client_short(device_id)}"
         )
-        self._send_json(200, {
-          "ok": True,
-          "existingProfile": True,
+        self._send_json(409, {
+          "ok": False,
+          "error": "device_already_linked",
           "userId": existing_device["user_id"],
           "profileName": existing_device["profile_name"],
           "deviceId": device_id,
-          "profileToken": profile_token,
         })
         return
 
@@ -1903,6 +1900,11 @@ class Handler(BaseHTTPRequestHandler):
       if active_cards == 0 and active_decks == 0 and (local_cards > 0 or local_decks > 0):
         needs_client_bootstrap_upload = True
         reason = "server-empty-client-has-data"
+      elif server_cursor < last_cursor:
+        # If the server cursor regressed, the op-log no longer guarantees that
+        # delta replay is sufficient. Force a snapshot to re-anchor the client.
+        needs_snapshot = True
+        reason = "server-cursor-regressed"
       elif active_cards > local_cards or active_decks > local_decks:
         needs_snapshot = True
         reason = "client-missing-server-data"
@@ -2047,15 +2049,18 @@ class Handler(BaseHTTPRequestHandler):
       for r in cards_rows:
         try:
           tags = json.loads(r["tags_json"]) if r["tags_json"] else []
-        except:
+        except (TypeError, ValueError):
+          LOGGER.warning("SNAPSHOT_PARSE_FALLBACK field=tags_json card_id=%s", r["id"])
           tags = []
         try:
           extra = json.loads(r["extra_json"]) if r["extra_json"] else {}
-        except:
+        except (TypeError, ValueError):
+          LOGGER.warning("SNAPSHOT_PARSE_FALLBACK field=extra_json card_id=%s", r["id"])
           extra = {}
         try:
           metadata = json.loads(r["metadata_json"]) if r["metadata_json"] else None
-        except:
+        except (TypeError, ValueError):
+          LOGGER.warning("SNAPSHOT_PARSE_FALLBACK field=metadata_json card_id=%s", r["id"])
           metadata = None
 
         raw_due = r["due"]
