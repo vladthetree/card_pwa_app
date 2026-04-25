@@ -97,7 +97,7 @@ export function HomeDeckListSection({
                 <button
                   type="button"
                   onClick={() => onShowShuffleMetrics(collection)}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 text-white/70 transition hover:border-white/30 hover:text-white"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 text-white/70 transition hover:border-white/30 hover:text-white sm:h-9 sm:w-9"
                   aria-label={language === 'de' ? 'Metriken' : 'Metrics'}
                   title={language === 'de' ? 'Metriken' : 'Metrics'}
                 >
@@ -106,7 +106,7 @@ export function HomeDeckListSection({
                 <button
                   type="button"
                   onClick={() => onEditShuffleCollection(collection)}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 text-white/70 transition hover:border-white/30 hover:text-white"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 text-white/70 transition hover:border-white/30 hover:text-white sm:h-9 sm:w-9"
                   aria-label={language === 'de' ? 'Bearbeiten' : 'Edit'}
                   title={language === 'de' ? 'Bearbeiten' : 'Edit'}
                 >
@@ -115,7 +115,7 @@ export function HomeDeckListSection({
                 <button
                   type="button"
                   onClick={() => onDeleteShuffleCollection(collection)}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-rose-400/20 text-rose-200/75 transition hover:border-rose-300/35 hover:text-rose-100"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-rose-400/20 text-rose-200/75 transition hover:border-rose-300/35 hover:text-rose-100 sm:h-9 sm:w-9"
                   aria-label={language === 'de' ? 'Löschen' : 'Delete'}
                   title={language === 'de' ? 'Löschen' : 'Delete'}
                 >

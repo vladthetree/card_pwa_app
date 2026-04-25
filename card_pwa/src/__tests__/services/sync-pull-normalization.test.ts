@@ -29,7 +29,7 @@ const mockDb = vi.hoisted(() => ({
     bulkPut: vi.fn(async (decks: DeckRecord[]) => {
       state.savedDecks = decks
     }),
-    toArray: vi.fn(async () => []),
+    toArray: vi.fn<() => Promise<DeckRecord[]>>(async () => []),
     where: vi.fn((..._args: unknown[]) => ({ anyOf: vi.fn(() => ({ delete: vi.fn(async () => 0) })) })),
   },
   cards: {
@@ -38,7 +38,7 @@ const mockDb = vi.hoisted(() => ({
     bulkPut: vi.fn(async (cards: CardRecord[]) => {
       state.savedCards = cards
     }),
-    toArray: vi.fn(async () => []),
+    toArray: vi.fn<() => Promise<CardRecord[]>>(async () => []),
     get: vi.fn<() => Promise<CardRecord | undefined>>(async () => undefined),
     put: vi.fn(async () => {}),
     update: vi.fn(async () => 1),
@@ -54,6 +54,8 @@ const mockDb = vi.hoisted(() => ({
     })),
   },
   reviews: {
+    count: vi.fn(async () => 0),
+    toArray: vi.fn<() => Promise<ReviewRecord[]>>(async () => []),
     each: vi.fn(async () => {}),
     bulkDelete: vi.fn(async () => {}),
     bulkAdd: vi.fn(async (reviews: Omit<ReviewRecord, 'id'>[]) => {
@@ -159,6 +161,10 @@ describe('syncPull normalization', () => {
     mockDb.cards.update.mockClear()
     mockDb.reviews.bulkAdd.mockClear()
     mockDb.reviews.add.mockClear()
+    mockDb.reviews.count.mockClear()
+    mockDb.reviews.count.mockResolvedValue(0)
+    mockDb.reviews.toArray.mockClear()
+    mockDb.reviews.toArray.mockResolvedValue([])
     mockDb.reviews.delete.mockClear()
     mockDb.reviews.clear.mockClear()
     mockDb.cardStats.bulkDelete.mockClear()
@@ -646,7 +652,7 @@ describe('syncPull normalization', () => {
 
   it('does not request snapshot when handshake asks for client bootstrap upload', async () => {
     state.responses = [
-      { ok: true, needsClientBootstrapUpload: true, needsSnapshot: true },
+      { ok: true, needsClientBootstrapUpload: true, needsSnapshot: true, bootstrapUploadCapabilities: { reviews: true } },
       { ok: true, serverCursor: 42 },
       { ok: true, operations: [], nextCursor: 42, hasMore: false },
     ]
@@ -657,6 +663,86 @@ describe('syncPull normalization', () => {
     const calledUrls = fetchWithTimeoutMock.mock.calls.map(call => String((call as unknown[])[0]))
     expect(calledUrls.some(url => url.includes('/snapshot'))).toBe(false)
     expect(calledUrls.some(url => url.includes('/bootstrap/upload'))).toBe(true)
+  })
+
+  it('includes review history in bootstrap upload when the server advertises support', async () => {
+    mockDb.reviews.count.mockResolvedValue(1)
+    mockDb.reviews.toArray.mockImplementationOnce(async (): Promise<ReviewRecord[]> => ([
+      {
+        opId: 'review-bootstrap-1',
+        cardId: 'card-bootstrap',
+        rating: 4,
+        timeMs: 1200,
+        timestamp: 5000,
+        sourceClient: 'device-a',
+        createdAt: 5000,
+      },
+    ]))
+    mockDb.cards.toArray.mockImplementationOnce(async (): Promise<CardRecord[]> => ([
+      {
+        id: 'card-bootstrap',
+        noteId: 'note-bootstrap',
+        deckId: 'deck-bootstrap',
+        front: 'Q',
+        back: 'A',
+        tags: [],
+        extra: { acronym: '', examples: '', port: '', protocol: '' },
+        type: 2,
+        queue: 2,
+        due: 1,
+        dueAt: 10,
+        interval: 1,
+        factor: 2500,
+        reps: 1,
+        lapses: 0,
+        createdAt: 1000,
+        updatedAt: 5000,
+      },
+    ]))
+    mockDb.decks.toArray.mockImplementationOnce(async (): Promise<DeckRecord[]> => ([
+      {
+        id: 'deck-bootstrap',
+        name: 'Boot',
+        createdAt: 1000,
+        updatedAt: 5000,
+        source: 'manual',
+      },
+    ]))
+    state.responses = [
+      { ok: true, needsClientBootstrapUpload: true, bootstrapUploadCapabilities: { reviews: true } },
+      { ok: true, serverCursor: 42 },
+      { ok: true, operations: [], nextCursor: 42, hasMore: false },
+    ]
+
+    const { pullAndApplySyncDeltas } = await import('../../services/syncPull')
+    await pullAndApplySyncDeltas()
+
+    const bootstrapCall = fetchWithTimeoutMock.mock.calls.find(call => String((call as unknown[])[0]).includes('/bootstrap/upload'))
+    expect(bootstrapCall).toBeDefined()
+    const body = JSON.parse(String((bootstrapCall as unknown as [string, { body: string }])[1].body))
+    expect(body.reviews).toEqual([
+      expect.objectContaining({
+        opId: 'review-bootstrap-1',
+        cardId: 'card-bootstrap',
+        rating: 4,
+        sourceClient: 'device-a',
+      }),
+    ])
+  })
+
+  it('aborts bootstrap upload when local review history exists but the server lacks review support', async () => {
+    mockDb.reviews.count.mockResolvedValue(1)
+    state.responses = [
+      { ok: true, needsClientBootstrapUpload: true, bootstrapUploadCapabilities: { reviews: false } },
+    ]
+
+    const { pullAndApplySyncDeltas } = await import('../../services/syncPull')
+    await pullAndApplySyncDeltas()
+
+    expect(fetchWithTimeoutMock).toHaveBeenCalledTimes(1)
+    const calledUrls = fetchWithTimeoutMock.mock.calls.map(call => String((call as unknown[])[0]))
+    expect(calledUrls.some(url => url.includes('/bootstrap/upload'))).toBe(false)
+    expect(calledUrls.some(url => url.includes('/pull'))).toBe(false)
   })
 
   it('skips review write when referenced card is missing locally', async () => {

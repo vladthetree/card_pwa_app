@@ -81,7 +81,7 @@ export default function OfflineStatusBanner() {
         animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
         exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
         transition={{ duration: prefersReducedMotion ? 0.18 : 0.24, ease: 'easeOut' }}
-        className={`fixed inset-x-4 bottom-[calc(var(--safe-bottom)+5.75rem)] z-40 mx-auto flex w-auto max-w-md items-start gap-3 rounded-2xl border px-4 py-3 shadow-xl backdrop-blur-md transition-all duration-200 ease-out sm:inset-x-auto sm:right-4 sm:mx-0 ${
+        className={`fixed bottom-[calc(var(--safe-bottom)+5.75rem)] left-[calc(var(--safe-left)+1rem)] right-[calc(var(--safe-right)+1rem)] z-40 mx-auto flex w-auto max-w-md items-start gap-3 rounded-2xl border px-4 py-3 shadow-xl backdrop-blur-md transition-all duration-200 ease-out sm:left-auto sm:right-[calc(var(--safe-right)+1rem)] sm:mx-0 ${
           isOffline
             ? 'border-rose-500/25 bg-rose-950/78'
             : 'border-amber-500/25 bg-amber-950/78'
@@ -135,7 +135,7 @@ export default function OfflineStatusBanner() {
         <button
           type="button"
           onClick={() => setVisible(false)}
-          className="shrink-0 rounded-full p-1.5 text-white/55 transition hover:bg-white/8 hover:text-white"
+          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full p-1.5 text-white/55 transition hover:bg-white/8 hover:text-white sm:h-9 sm:w-9"
           aria-label={settings.language === 'de' ? 'Hinweis schließen' : 'Dismiss notice'}
         >
           <X size={14} />

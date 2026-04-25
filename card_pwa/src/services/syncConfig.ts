@@ -4,6 +4,7 @@ import { generateUuidV7 } from '../utils/id'
 const ENV_SYNC_ENDPOINT = import.meta.env.VITE_SYNC_ENDPOINT as string | undefined
 const ENV_PROFILE_SYNC_ENDPOINT = import.meta.env.VITE_PROFILE_SYNC_ENDPOINT as string | undefined
 const SYNC_CLIENT_ID_KEY = 'card-pwa-sync-client-id'
+export const SYNC_RUNTIME_CONFIG_CHANGED_EVENT = 'card-pwa:sync-runtime-config-changed'
 
 export interface PersistedSettings {
   sync?: {
@@ -51,9 +52,27 @@ export function getDefaultProfileSyncEndpoint(): string {
 let _cachedProfileToken: string | null = null
 let _cachedProfileEndpoint: string | null = null
 
+function emitSyncRuntimeConfigChanged(): void {
+  if (typeof window === 'undefined') return
+
+  try {
+    window.dispatchEvent(new Event(SYNC_RUNTIME_CONFIG_CHANGED_EVENT))
+  } catch {
+    // best effort
+  }
+}
+
 export function setCachedProfile(token: string | null, endpoint: string | null): void {
-  _cachedProfileToken = token
-  _cachedProfileEndpoint = endpoint
+  const nextToken = token?.trim() || null
+  const nextEndpoint = endpoint?.trim() || null
+  const changed = _cachedProfileToken !== nextToken || _cachedProfileEndpoint !== nextEndpoint
+
+  _cachedProfileToken = nextToken
+  _cachedProfileEndpoint = nextEndpoint
+
+  if (changed) {
+    emitSyncRuntimeConfigChanged()
+  }
 }
 
 /** Returns the auth token to use for sync requests.
@@ -67,6 +86,18 @@ function getActiveAuthToken(): string {
 function getActiveEndpoint(): string {
   if (_cachedProfileEndpoint) return _cachedProfileEndpoint
   return getSyncConfig().endpoint
+}
+
+export function getActiveSyncTransportConfig(): {
+  active: boolean
+  endpoint: string
+  authToken: string
+} {
+  return {
+    active: isSyncActive(),
+    endpoint: getSyncBaseEndpoint() ?? '',
+    authToken: getActiveAuthToken().trim(),
+  }
 }
 
 export function isSyncActive(): boolean {
@@ -169,6 +200,7 @@ export function writeSyncAuthTokenToSettings(token: string): void {
 
     parsed.sync = sync
     localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(parsed))
+    emitSyncRuntimeConfigChanged()
   } catch {
     // best effort
   }

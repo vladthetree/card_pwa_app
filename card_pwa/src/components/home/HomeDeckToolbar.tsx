@@ -166,7 +166,7 @@ export function HomeDeckToolbar({
           {t.decks_title}
         </h2>
 
-        <label className="relative flex h-10 min-w-0 flex-[1_0_100%] items-center rounded-2xl border border-white/15 bg-white/[0.04] pl-3 pr-2 text-xs text-white/85 sm:h-8 sm:flex-[0_1_16rem] sm:bg-white/[0.03] sm:pl-2">
+        <label className="relative flex h-11 min-w-0 flex-[1_0_100%] items-center rounded-2xl border border-white/15 bg-white/[0.04] pl-3 pr-2 text-xs text-white/85 sm:h-8 sm:flex-[0_1_16rem] sm:bg-white/[0.03] sm:pl-2">
           <Search size={13} className="pointer-events-none mr-1.5 text-white/45" />
           <input
             type="search"
@@ -179,7 +179,7 @@ export function HomeDeckToolbar({
             <button
               type="button"
               onClick={() => onDeckSearchQueryChange('')}
-              className="p-0.5 text-white/45 hover:text-white/80 transition"
+              className="flex h-9 w-9 items-center justify-center rounded-xl text-white/45 transition hover:bg-white/8 hover:text-white/80"
               aria-label={language === 'de' ? 'Suche leeren' : 'Clear search'}
               title={language === 'de' ? 'Suche leeren' : 'Clear search'}
             >
@@ -193,7 +193,7 @@ export function HomeDeckToolbar({
             <button
               type="button"
               onClick={handleToggleFilterMenu}
-              className="inline-flex h-9 items-center gap-1.5 rounded-2xl border border-white/15 bg-white/[0.03] px-2.5 text-[10px] font-mono uppercase tracking-[0.08em] text-white/85 transition-all duration-200 hover:border-white/30 hover:bg-white/[0.07]"
+              className="inline-flex h-11 items-center gap-1.5 rounded-2xl border border-white/15 bg-white/[0.03] px-3 text-[10px] font-mono uppercase tracking-[0.08em] text-white/85 transition-all duration-200 hover:border-white/30 hover:bg-white/[0.07] sm:h-9 sm:px-2.5"
               aria-haspopup="menu"
               aria-expanded={showFilterMenu}
               title={filterLabel}
@@ -282,7 +282,7 @@ export function HomeDeckToolbar({
             <button
               type="button"
               onClick={handleToggleFeatureMenu}
-              className="inline-flex h-9 items-center gap-1.5 rounded-2xl border border-white/15 bg-white/[0.03] px-2.5 text-[10px] font-mono uppercase tracking-[0.08em] text-white/85 transition-all duration-200 hover:border-white/30 hover:bg-white/[0.07]"
+              className="inline-flex h-11 items-center gap-1.5 rounded-2xl border border-white/15 bg-white/[0.03] px-3 text-[10px] font-mono uppercase tracking-[0.08em] text-white/85 transition-all duration-200 hover:border-white/30 hover:bg-white/[0.07] sm:h-9 sm:px-2.5"
               aria-haspopup="menu"
               aria-expanded={showFeatureMenu}
               title={featureLabel}
@@ -335,7 +335,7 @@ export function HomeDeckToolbar({
 
           <button
             onClick={onReload}
-            className="hidden h-9 shrink-0 items-center justify-center rounded-2xl px-2 text-theme-text-secondary transition-all duration-300 ease-out active:scale-95 hover:bg-white/10 hover:text-theme-text min-[380px]:inline-flex sm:h-auto sm:p-1"
+            className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-theme-text-secondary transition-all duration-300 ease-out active:scale-95 hover:bg-white/10 hover:text-theme-text min-[380px]:inline-flex sm:h-auto sm:w-auto sm:p-1"
             title={t.reload}
             aria-label={t.reload}
           >
@@ -346,7 +346,7 @@ export function HomeDeckToolbar({
             <button
               type="button"
               onClick={handleToggleActionsMenu}
-              className="group flex h-10 min-w-11 items-center justify-center gap-1 rounded-2xl border border-white/15 bg-white/[0.07] px-2.5 py-1 text-xs font-mono uppercase tracking-[0.12em] text-white/82 shadow-[0_10px_28px_rgba(0,0,0,0.28)] transition-all duration-300 ease-out active:scale-95 hover:border-white/25 hover:bg-white/[0.1] hover:text-white sm:min-h-8 sm:h-auto sm:min-w-0"
+              className="group flex h-11 min-w-11 items-center justify-center gap-1 rounded-2xl border border-white/15 bg-white/[0.07] px-3 py-1 text-xs font-mono uppercase tracking-[0.12em] text-white/82 shadow-[0_10px_28px_rgba(0,0,0,0.28)] transition-all duration-300 ease-out active:scale-95 hover:border-white/25 hover:bg-white/[0.1] hover:text-white sm:min-h-8 sm:h-auto sm:min-w-0 sm:px-2.5"
               aria-haspopup="menu"
               aria-expanded={showActionsMenu}
               aria-label={language === 'de' ? 'Aktionen oeffnen' : 'Open actions'}

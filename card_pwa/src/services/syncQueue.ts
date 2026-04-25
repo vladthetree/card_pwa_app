@@ -120,10 +120,14 @@ async function shouldSyncOperation(type: SyncOperationType, payload: unknown): P
   return true
 }
 
-export async function enqueueSyncOperation(type: SyncOperationType, payload: unknown): Promise<void> {
+export async function enqueueSyncOperation(
+  type: SyncOperationType,
+  payload: unknown,
+  opId = makeOpId(),
+): Promise<void> {
   const ts = now()
   await syncDb.queue.add({
-    opId: makeOpId(),
+    opId,
     type,
     payload: JSON.stringify(payload),
     createdAt: ts,

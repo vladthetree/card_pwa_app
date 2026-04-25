@@ -3,6 +3,7 @@ import { calculateCardStateAfterReview, SM2 } from '../../utils/sm2'
 import { calculateCardStateAfterReviewFSRS } from '../../utils/fsrs'
 import { type AlgorithmParams } from '../../utils/algorithmParams'
 import { enqueueSyncOperation } from '../../services/syncQueue'
+import { makeOpId } from '../../services/syncConfig'
 import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
 import { getDayStartMs } from '../../utils/time'
 import {
@@ -374,13 +375,23 @@ export async function recordReview(
       }
     }
 
+    const reviewTimestamp = Date.now()
+    const reviewOpId = makeOpId()
+    const persistedCardUpdate = { ...cardUpdate, updatedAt: reviewTimestamp }
     let reviewId = 0
     await db.transaction('rw', db.cards, db.reviews, async () => {
-      await db.cards.update(cardId, cardUpdate)
-      reviewId = await db.reviews.add({ cardId, rating, timeMs, timestamp: Date.now() })
+      await db.cards.update(cardId, persistedCardUpdate)
+      reviewId = await db.reviews.add({
+        opId: reviewOpId,
+        cardId,
+        rating,
+        timeMs,
+        timestamp: reviewTimestamp,
+        createdAt: reviewTimestamp,
+      })
     })
 
-    await verifySchedulingPersistence(cardId, effectiveAlgorithm, cardUpdate)
+    await verifySchedulingPersistence(cardId, effectiveAlgorithm, persistedCardUpdate)
 
     await enqueueSyncOperation('review', {
       cardId,
@@ -390,9 +401,9 @@ export async function recordReview(
       // algorithmVersion lets the server reject state downgrades (e.g. SM2
       // update overwriting a card already migrated to FSRS on another device).
       algorithmVersion: effectiveAlgorithm === 'fsrs' ? 2 : 1,
-      updated: cardUpdate,
-      timestamp: Date.now(),
-    })
+      updated: persistedCardUpdate,
+      timestamp: reviewTimestamp,
+    }, reviewOpId)
 
     emitReviewUpdatedEvent()
 

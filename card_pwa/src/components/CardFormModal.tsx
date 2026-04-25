@@ -8,6 +8,7 @@ import { QuestionParser, AnswerParser } from '../utils/cardTextParser'
 import { SM2 } from '../utils/sm2'
 import { UI_TOKENS } from '../constants/ui'
 import { generateUuidV7 } from '../utils/id'
+import { enqueueSyncOperation } from '../services/syncQueue'
 import type { Card } from '../types'
 
 type Props = {
@@ -203,9 +204,24 @@ export default function CardFormModal(props: Props) {
     if (props.mode === 'create') {
       let deckId = form.deckId
       if (createNewDeck) {
-        if (!form.newDeckName.trim()) { setError(t.deck_name_empty); return }
+        const deckName = form.newDeckName.trim()
+        if (!deckName) { setError(t.deck_name_empty); return }
         deckId = generateId()
-        await db.decks.add({ id: deckId, name: form.newDeckName.trim(), createdAt: Date.now(), source: 'manual' })
+        const createdAt = Date.now()
+        await db.decks.add({
+          id: deckId,
+          name: deckName,
+          createdAt,
+          updatedAt: createdAt,
+          source: 'manual',
+        })
+        await enqueueSyncOperation('deck.create', {
+          id: deckId,
+          name: deckName,
+          createdAt,
+          updatedAt: createdAt,
+          source: 'manual',
+        })
       }
       if (!deckId) { setError(t.choose_deck); return }
 
@@ -297,7 +313,7 @@ export default function CardFormModal(props: Props) {
           animate={{ opacity: 1, y: 0 }}
           exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
           transition={{ duration: prefersReducedMotion ? 0.12 : 0.2, ease: 'easeOut' }}
-          className={`${UI_TOKENS.modal.shell} max-w-lg`}
+          className={`${UI_TOKENS.modal.shell} max-w-none self-end rounded-b-none sm:max-w-lg sm:self-auto sm:rounded-b-[2.5rem]`}
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
@@ -411,7 +427,7 @@ export default function CardFormModal(props: Props) {
                             <button
                               type="button"
                               onClick={() => removeMcOption(i)}
-                              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl text-white/30 transition-all duration-300 ease-out active:scale-95 hover:bg-rose-500/10 hover:text-rose-400"
+                              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-white/30 transition-all duration-300 ease-out active:scale-95 hover:bg-rose-500/10 hover:text-rose-400 sm:h-9 sm:w-9"
                               title={t.remove_answer_option}
                             >
                               <Minus size={14} />

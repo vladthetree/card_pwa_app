@@ -1,7 +1,11 @@
-import { Bell, Download, HardDrive, HelpCircle, Settings as SettingsIcon } from 'lucide-react'
+import { useState } from 'react'
+import { createPortal } from 'react-dom'
+import { motion } from 'framer-motion'
+import { Bell, Download, HardDrive, HelpCircle, Menu, Settings as SettingsIcon } from 'lucide-react'
 import PWA_Logo from '../../assets/Logo.svg'
 import { APP_NAME } from '../../constants/appIdentity'
 import { UI_TOKENS } from '../../constants/ui'
+import { useFloatingMenu } from '../../hooks/useFloatingMenu'
 import StreakBadge from '../StreakBadge'
 import DailyGoalRing from '../DailyGoalRing'
 
@@ -38,6 +42,19 @@ export function HomeHeaderBar({
   onShowSettings,
   onShowFaq,
 }: Props) {
+  const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const {
+    anchorRef: mobileMenuAnchorRef,
+    menuRef: mobileMenuRef,
+    floatingStyle: mobileMenuFloatingStyle,
+    updatePosition: updateMobileMenuPosition,
+  } = useFloatingMenu<HTMLButtonElement, HTMLDivElement>({
+    isOpen: showMobileMenu,
+    onClose: () => setShowMobileMenu(false),
+    width: 232,
+    maxHeight: 260,
+  })
+
   return (
     <div className={UI_TOKENS.header.row}>
       <div className={UI_TOKENS.header.brand}>
@@ -58,14 +75,109 @@ export function HomeHeaderBar({
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+      <div className="flex shrink-0 items-center gap-1 sm:hidden">
+        <DailyGoalRing size={30} strokeWidth={3} />
+        <StreakBadge compact />
+        <button
+          onClick={onShowSettings}
+          className={UI_TOKENS.button.iconAction}
+          title={t.settings}
+          aria-label={t.settings}
+        >
+          <SettingsIcon size={16} />
+        </button>
+        <button
+          ref={mobileMenuAnchorRef}
+          type="button"
+          onClick={() => {
+            const willOpen = !showMobileMenu
+            setShowMobileMenu(willOpen)
+            if (willOpen) {
+              updateMobileMenuPosition()
+              window.requestAnimationFrame(updateMobileMenuPosition)
+            }
+          }}
+          className={UI_TOKENS.button.iconAction}
+          aria-haspopup="menu"
+          aria-expanded={showMobileMenu}
+          aria-label={language === 'de' ? 'Weitere Aktionen' : 'More actions'}
+          title={language === 'de' ? 'Weitere Aktionen' : 'More actions'}
+        >
+          <Menu size={16} />
+        </button>
+
+        {showMobileMenu && mobileMenuFloatingStyle && createPortal(
+          <motion.div
+            ref={mobileMenuRef}
+            initial={{ opacity: 0, y: -4, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.97 }}
+            transition={{ duration: 0.12 }}
+            className="fixed z-[1300] overflow-y-auto rounded-2xl border border-white/15 bg-zinc-950/98 py-1 shadow-[0_18px_56px_rgba(0,0,0,0.72)] backdrop-blur-xl"
+            style={mobileMenuFloatingStyle}
+            role="menu"
+          >
+            <div className="px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
+              {language === 'de' ? 'Schnellzugriff' : 'Quick actions'}
+            </div>
+            {canInstall && !isInstalled && (
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMobileMenu(false)
+                  onInstall()
+                }}
+                disabled={isInstalling}
+                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white/82 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-70"
+                role="menuitem"
+              >
+                {isInstalling ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                ) : (
+                  <Download size={14} />
+                )}
+                <span>{t.install}</span>
+              </button>
+            )}
+            {notificationPermission === 'default' && (
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMobileMenu(false)
+                  onRequestNotificationPermission()
+                }}
+                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white/82 transition hover:bg-white/[0.08] hover:text-white"
+                role="menuitem"
+              >
+                <Bell size={14} />
+                <span>{language === 'de' ? 'Benachrichtigungen erlauben' : 'Enable notifications'}</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                setShowMobileMenu(false)
+                onShowFaq()
+              }}
+              className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white/82 transition hover:bg-white/[0.08] hover:text-white"
+              role="menuitem"
+            >
+              <HelpCircle size={14} />
+              <span>{t.faq}</span>
+            </button>
+          </motion.div>,
+          document.body,
+        )}
+      </div>
+
+      <div className="hidden shrink-0 items-center gap-1 sm:flex sm:gap-2">
         <DailyGoalRing size={30} strokeWidth={3} />
         <StreakBadge />
         {canInstall && !isInstalled && (
           <button
             onClick={onInstall}
             disabled={isInstalling}
-            className={`${UI_TOKENS.button.iconGhost} relative min-h-9 min-w-9 justify-center px-2 disabled:opacity-70 sm:min-h-0 sm:min-w-0 sm:justify-start sm:px-3`}
+            className={`${UI_TOKENS.button.iconGhost} relative disabled:opacity-70`}
             title={t.install}
             aria-label={t.install}
           >
@@ -124,7 +236,7 @@ export function HomeHeaderBar({
         {notificationPermission === 'default' && (
           <button
             onClick={onRequestNotificationPermission}
-            className={`${UI_TOKENS.button.iconGhost} min-h-9 min-w-9 justify-center px-2 sm:min-h-0 sm:min-w-0 sm:justify-start sm:px-3`}
+            className={UI_TOKENS.button.iconGhost}
             title={language === 'de' ? 'Benachrichtigungen erlauben' : 'Enable notifications'}
             aria-label={language === 'de' ? 'Benachrichtigungen erlauben' : 'Enable notifications'}
           >
@@ -137,7 +249,7 @@ export function HomeHeaderBar({
 
         <button
           onClick={onShowSettings}
-          className={`${UI_TOKENS.button.iconGhost} min-h-9 min-w-9 justify-center px-2 sm:min-h-0 sm:min-w-0 sm:justify-start sm:px-3`}
+          className={UI_TOKENS.button.iconGhost}
           title={t.settings}
           aria-label={t.settings}
         >
@@ -147,7 +259,7 @@ export function HomeHeaderBar({
 
         <button
           onClick={onShowFaq}
-          className={`${UI_TOKENS.button.iconGhost} min-h-9 min-w-9 justify-center px-2 sm:min-h-0 sm:min-w-0 sm:justify-start sm:px-3`}
+          className={UI_TOKENS.button.iconGhost}
           title={t.faq}
           aria-label={t.faq}
         >

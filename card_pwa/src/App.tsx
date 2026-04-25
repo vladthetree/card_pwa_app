@@ -151,6 +151,8 @@ function AppShell() {
             minHeight: '100dvh',
             paddingTop: 'var(--safe-top)',
             paddingBottom: 'var(--safe-bottom)',
+            paddingLeft: 'var(--safe-left)',
+            paddingRight: 'var(--safe-right)',
           }}
         >
         <div

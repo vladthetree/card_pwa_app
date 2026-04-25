@@ -1,18 +1,22 @@
 import { useEffect } from 'react'
 import { useSettings } from '../contexts/SettingsContext'
 import { supportsServiceWorker } from '../env'
-import { getSyncConfig, getOrCreateSyncClientId } from '../services/syncConfig'
+import {
+  getActiveSyncTransportConfig,
+  getOrCreateSyncClientId,
+  SYNC_RUNTIME_CONFIG_CHANGED_EVENT,
+} from '../services/syncConfig'
 
 export function useServiceWorkerConfig() {
-  const { settings, isSettingsHydrated } = useSettings()
+  const { settings, isSettingsHydrated, profile } = useSettings()
 
   useEffect(() => {
-    if (!supportsServiceWorker()) return
+    if (!supportsServiceWorker() || !isSettingsHydrated) return
 
     const sendConfig = async () => {
       try {
         const reg = await navigator.serviceWorker.ready
-        const config = getSyncConfig()
+        const config = getActiveSyncTransportConfig()
         reg.active?.postMessage({
           type: 'SYNC_CONFIG',
           endpoint: config.endpoint,
@@ -25,7 +29,21 @@ export function useServiceWorkerConfig() {
     }
 
     void sendConfig()
-  }, [])
+    const onSyncRuntimeConfigChanged = () => {
+      void sendConfig()
+    }
+
+    window.addEventListener(SYNC_RUNTIME_CONFIG_CHANGED_EVENT, onSyncRuntimeConfigChanged)
+
+    return () => {
+      window.removeEventListener(SYNC_RUNTIME_CONFIG_CHANGED_EVENT, onSyncRuntimeConfigChanged)
+    }
+  }, [
+    isSettingsHydrated,
+    profile?.mode,
+    profile?.endpoint,
+    profile?.profileToken,
+  ])
 
   useEffect(() => {
     if (!supportsServiceWorker() || !isSettingsHydrated) return

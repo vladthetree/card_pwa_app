@@ -7,7 +7,11 @@
 
 import { flushSyncQueue } from './syncQueue'
 import { pullAndApplySyncDeltas } from './syncPull'
-import { fetchWithTimeout, getSyncBaseEndpoint, isSyncActive } from './syncConfig'
+import { isSyncActive, SYNC_RUNTIME_CONFIG_CHANGED_EVENT } from './syncConfig'
+import {
+  checkSyncServerReachable,
+  startSyncReachabilityRuntime,
+} from './syncReachability'
 
 let running = false
 let queued = false
@@ -15,85 +19,10 @@ let activeRunPromise: Promise<boolean> | null = null
 let lastSuccessfulSyncAt = 0
 
 const SYNC_FRESH_WINDOW_MS = 10_000
-const SERVER_REACHABILITY_CACHE_MS = 20_000
-const SERVER_REACHABILITY_TIMEOUT_MS = 4_000
-
-let lastReachabilityCheckAt = 0
-let lastReachabilityResult = false
-
-function toSyncHealthUrl(): string | null {
-  const baseEndpoint = getSyncBaseEndpoint()
-  if (!baseEndpoint) return null
-
-  try {
-    const base = typeof window === 'undefined' ? undefined : window.location?.origin
-    const url = new URL(baseEndpoint, base)
-    url.pathname = '/health'
-    url.search = ''
-    url.hash = ''
-
-    if (base && url.origin === base) {
-      return url.pathname
-    }
-
-    return url.toString()
-  } catch {
-    return null
-  }
-}
-
-async function hasServerConnection(force = false): Promise<boolean> {
-  if (!navigator.onLine || !isSyncActive()) {
-    return false
-  }
-
-  const now = Date.now()
-  if (!force && now - lastReachabilityCheckAt < SERVER_REACHABILITY_CACHE_MS) {
-    return lastReachabilityResult
-  }
-
-  lastReachabilityCheckAt = now
-  try {
-    const healthUrl = toSyncHealthUrl()
-    if (!healthUrl) {
-      lastReachabilityResult = false
-      return false
-    }
-
-    const res = await fetchWithTimeout(
-      healthUrl,
-      { method: 'GET' },
-      SERVER_REACHABILITY_TIMEOUT_MS,
-    )
-    lastReachabilityResult = res.ok
-    return res.ok
-  } catch {
-    lastReachabilityResult = false
-    return false
-  }
-}
-
-function notifyServiceWorkerAppVisible(): void {
-  const payload = { type: 'APP_VISIBLE' }
-
-  try {
-    navigator.serviceWorker?.controller?.postMessage(payload)
-  } catch {
-    // no-op best effort
-  }
-
-  void navigator.serviceWorker?.ready
-    ?.then(registration => {
-      registration.active?.postMessage(payload)
-    })
-    .catch(() => {
-      // no-op best effort
-    })
-}
 
 async function executeSyncCycle(): Promise<boolean> {
   if (!isSyncActive()) return false
-  if (!(await hasServerConnection())) return false
+  if (!(await checkSyncServerReachable())) return false
 
   // Phase 1: push all pending local operations
   let pendingAfterFlush = 0
@@ -145,7 +74,7 @@ function scheduleCycleIfNeeded(): void {
 export async function runSyncCycleNow(options?: { force?: boolean }): Promise<boolean> {
   if (!navigator.onLine) return false
   if (!isSyncActive()) return false
-  if (!(await hasServerConnection(options?.force === true))) return false
+  if (!(await checkSyncServerReachable(options?.force === true))) return false
 
   const force = options?.force === true
   const isFresh = Date.now() - lastSuccessfulSyncAt < SYNC_FRESH_WINDOW_MS
@@ -172,14 +101,20 @@ export function requestSyncCycle(): void {
  * Service-Worker messages, plus a periodic 30 s interval.
  */
 export function setupUnifiedSyncRuntime(): () => void {
+  const stopReachabilityRuntime = startSyncReachabilityRuntime()
+
   const handleOnline = () => {
-    notifyServiceWorkerAppVisible()
     requestSyncCycle()
   }
 
   const handleVisibility = () => {
     if (document.visibilityState === 'visible' && navigator.onLine) {
-      notifyServiceWorkerAppVisible()
+      requestSyncCycle()
+    }
+  }
+
+  const handleRuntimeConfigChanged = () => {
+    if (navigator.onLine) {
       requestSyncCycle()
     }
   }
@@ -191,12 +126,13 @@ export function setupUnifiedSyncRuntime(): () => void {
   }
 
   window.addEventListener('online', handleOnline)
+  window.addEventListener(SYNC_RUNTIME_CONFIG_CHANGED_EVENT, handleRuntimeConfigChanged)
   document.addEventListener('visibilitychange', handleVisibility)
   navigator.serviceWorker?.addEventListener('message', handleSwMessage)
 
   const interval = window.setInterval(() => {
     if (navigator.onLine) {
-      void hasServerConnection(true).then(reachable => {
+      void checkSyncServerReachable(true).then(reachable => {
         if (reachable) {
           requestSyncCycle()
         }
@@ -206,12 +142,13 @@ export function setupUnifiedSyncRuntime(): () => void {
 
   // Kick off an initial sync immediately
   if (navigator.onLine) {
-    notifyServiceWorkerAppVisible()
     requestSyncCycle()
   }
 
   return () => {
+    stopReachabilityRuntime()
     window.removeEventListener('online', handleOnline)
+    window.removeEventListener(SYNC_RUNTIME_CONFIG_CHANGED_EVENT, handleRuntimeConfigChanged)
     document.removeEventListener('visibilitychange', handleVisibility)
     navigator.serviceWorker?.removeEventListener('message', handleSwMessage)
     window.clearInterval(interval)

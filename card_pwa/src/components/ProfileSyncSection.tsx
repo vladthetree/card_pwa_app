@@ -32,6 +32,7 @@ import { resetSyncPullState } from '../services/syncPull'
 import { clearSyncQueue, wakeDeferredSyncQueue } from '../services/syncQueue'
 import { runSyncCycleNow } from '../services/syncCoordinator'
 import { getDefaultProfileSyncEndpoint } from '../services/syncConfig'
+import ConfirmModal from './ConfirmModal'
 
 const STRINGS = {
   de: {
@@ -205,6 +206,7 @@ export default function ProfileSyncSection({ language }: Props) {
   const [switchingUserId, setSwitchingUserId] = useState<string | null>(null)
   const [selectedDeckIds, setSelectedDeckIds] = useState<string[]>([])
   const [removingDevice, setRemovingDevice] = useState(false)
+  const [showRemoveDeviceConfirm, setShowRemoveDeviceConfirm] = useState(false)
   const [isOnline, setIsOnline] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine))
   const [createdRecoveryCode, setCreatedRecoveryCode] = useState<string | null>(null)
   const [issuedPairingCode, setIssuedPairingCode] = useState<string | null>(null)
@@ -560,8 +562,12 @@ export default function ProfileSyncSection({ language }: Props) {
     setBusy(false)
   }
 
-  const handleRemoveDevice = async () => {
-    if (!window.confirm(t.remove_device_confirm)) return
+  const handleRemoveDevice = () => {
+    setShowRemoveDeviceConfirm(true)
+  }
+
+  const handleConfirmRemoveDevice = async () => {
+    setShowRemoveDeviceConfirm(false)
     if (!profile?.profileToken || !profile.endpoint) return
     setRemovingDevice(true)
     setError(null)
@@ -673,98 +679,99 @@ export default function ProfileSyncSection({ language }: Props) {
   const isLinked = profile?.mode === 'linked'
 
   return (
-    <div className="space-y-5 pt-3">
-      {/* Status banner */}
-      <div className={`flex items-center gap-3 rounded-lg px-4 py-3 ${isLinked ? 'bg-emerald-950/60 border border-emerald-800/40' : 'bg-zinc-900 border border-zinc-800'}`}>
-        <User size={16} className={isLinked ? 'text-emerald-400' : 'text-zinc-500'} />
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-white">
-            {isLinked ? t.mode_linked : t.mode_local}
-          </p>
-          <p className="text-xs text-zinc-400 mt-0.5">
-            {isLinked ? (profile?.userId?.slice(0, 8) + '…') : t.mode_local_desc}
-          </p>
+    <>
+      <div className="space-y-5 pt-3">
+        {/* Status banner */}
+        <div className={`flex items-center gap-3 rounded-lg px-4 py-3 ${isLinked ? 'bg-emerald-950/60 border border-emerald-800/40' : 'bg-zinc-900 border border-zinc-800'}`}>
+          <User size={16} className={isLinked ? 'text-emerald-400' : 'text-zinc-500'} />
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-white">
+              {isLinked ? t.mode_linked : t.mode_local}
+            </p>
+            <p className="text-xs text-zinc-400 mt-0.5">
+              {isLinked ? (profile?.userId?.slice(0, 8) + '…') : t.mode_local_desc}
+            </p>
+          </div>
         </div>
-      </div>
 
-      {/* Error */}
-      {error && (
-        <p className="text-xs text-red-400 bg-red-950/40 border border-red-800/40 rounded px-3 py-2">{resolveErrorMessage(error, t)}</p>
-      )}
-      {notice && (
-        <p className="text-xs text-emerald-300 bg-emerald-950/40 border border-emerald-800/40 rounded px-3 py-2">{notice}</p>
-      )}
+        {/* Error */}
+        {error && (
+          <p className="text-xs text-red-400 bg-red-950/40 border border-red-800/40 rounded px-3 py-2">{resolveErrorMessage(error, t)}</p>
+        )}
+        {notice && (
+          <p className="text-xs text-emerald-300 bg-emerald-950/40 border border-emerald-800/40 rounded px-3 py-2">{notice}</p>
+        )}
 
-      {/* Linked profile info */}
-      {isLinked && profile && (
-        <div className="space-y-2">
-          <StatusRow label={t.user_id_label} value={profile.userId ?? '—'} />
-          <StatusRow label={t.device_id_label} value={profile.deviceId} />
-          {profile.linkedAt && (
-            <StatusRow
-              label={t.linked_at_label}
-              value={new Date(profile.linkedAt).toLocaleDateString()}
-            />
-          )}
-        </div>
-      )}
-
-      {/* Actions */}
-      <div className="space-y-2">
-        {isLinked && !!effectiveEndpoint && (
-          <div className="space-y-2 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold text-zinc-300">{t.list_profiles}</p>
-                <button
-                  type="button"
-                  onClick={() => void loadProfiles()}
-                  disabled={busy || loadingProfiles || !isOnline}
-                  className="text-xs text-zinc-400 hover:text-white disabled:opacity-40 transition-colors"
-                >
-                {loadingProfiles ? t.linking : t.list_profiles_refresh}
-              </button>
-            </div>
-
-            {profiles.length === 0 && !loadingProfiles && (
-              <p className="text-xs text-zinc-500">—</p>
+        {/* Linked profile info */}
+        {isLinked && profile && (
+          <div className="space-y-2">
+            <StatusRow label={t.user_id_label} value={profile.userId ?? '—'} />
+            <StatusRow label={t.device_id_label} value={profile.deviceId} />
+            {profile.linkedAt && (
+              <StatusRow
+                label={t.linked_at_label}
+                value={new Date(profile.linkedAt).toLocaleDateString()}
+              />
             )}
-
-            {profiles.map(item => {
-              const isCurrent = profile?.userId === item.userId && profile?.mode === 'linked'
-              const isSwitchingThis = switchingUserId === item.userId
-              return (
-                <div key={item.userId} className="rounded border border-zinc-800 px-3 py-2">
-                  <p className="text-sm text-white font-medium">{item.profileName}</p>
-                  <p className="text-[11px] text-zinc-500 mt-0.5">{item.userId.slice(0, 8)}… · {item.linkedDevicesCount ?? 0} devices</p>
-                  <div className="mt-2">
-                    <button
-                      type="button"
-                      disabled={busy || isCurrent || isSwitchingThis || !isOnline}
-                      onClick={() => void handleSwitchToProfile(item)}
-                      className="text-xs px-2.5 py-1.5 rounded border border-zinc-700 text-zinc-300 hover:text-white hover:border-zinc-500 disabled:opacity-40 transition-colors"
-                    >
-                      {isCurrent ? t.mode_linked : (isSwitchingThis ? t.switching : t.switch_to_profile)}
-                    </button>
-                  </div>
-                </div>
-              )
-            })}
           </div>
         )}
 
-        {isLinked && !!effectiveEndpoint && (
-          <div className="space-y-2 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold text-zinc-300">{t.list_decks}</p>
-                <button
-                  type="button"
-                  onClick={() => void loadDecks()}
-                  disabled={busy || loadingDecks || !isOnline}
-                  className="text-xs text-zinc-400 hover:text-white disabled:opacity-40 transition-colors"
-                >
-                {loadingDecks ? t.linking : t.list_decks_refresh}
-              </button>
+        {/* Actions */}
+        <div className="space-y-2">
+          {isLinked && !!effectiveEndpoint && (
+            <div className="space-y-2 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold text-zinc-300">{t.list_profiles}</p>
+                  <button
+                    type="button"
+                    onClick={() => void loadProfiles()}
+                    disabled={busy || loadingProfiles || !isOnline}
+                    className="text-xs text-zinc-400 hover:text-white disabled:opacity-40 transition-colors"
+                  >
+                  {loadingProfiles ? t.linking : t.list_profiles_refresh}
+                </button>
+              </div>
+
+              {profiles.length === 0 && !loadingProfiles && (
+                <p className="text-xs text-zinc-500">—</p>
+              )}
+
+              {profiles.map(item => {
+                const isCurrent = profile?.userId === item.userId && profile?.mode === 'linked'
+                const isSwitchingThis = switchingUserId === item.userId
+                return (
+                  <div key={item.userId} className="rounded border border-zinc-800 px-3 py-2">
+                    <p className="text-sm text-white font-medium">{item.profileName}</p>
+                    <p className="text-[11px] text-zinc-500 mt-0.5">{item.userId.slice(0, 8)}… · {item.linkedDevicesCount ?? 0} devices</p>
+                    <div className="mt-2">
+                      <button
+                        type="button"
+                        disabled={busy || isCurrent || isSwitchingThis || !isOnline}
+                        onClick={() => void handleSwitchToProfile(item)}
+                        className="text-xs px-2.5 py-1.5 rounded border border-zinc-700 text-zinc-300 hover:text-white hover:border-zinc-500 disabled:opacity-40 transition-colors"
+                      >
+                        {isCurrent ? t.mode_linked : (isSwitchingThis ? t.switching : t.switch_to_profile)}
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
+          )}
+
+          {isLinked && !!effectiveEndpoint && (
+            <div className="space-y-2 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold text-zinc-300">{t.list_decks}</p>
+                  <button
+                    type="button"
+                    onClick={() => void loadDecks()}
+                    disabled={busy || loadingDecks || !isOnline}
+                    className="text-xs text-zinc-400 hover:text-white disabled:opacity-40 transition-colors"
+                  >
+                  {loadingDecks ? t.linking : t.list_decks_refresh}
+                </button>
+              </div>
 
             {serverDecks.length === 0 && !loadingDecks && (
               <p className="text-xs text-zinc-500">—</p>
@@ -920,29 +927,39 @@ export default function ProfileSyncSection({ language }: Props) {
           </>
         )}
 
-        {isLinked && (
-          <>
-            <button
-              type="button"
-              onClick={() => void handleUnlink()}
-              disabled={busy || removingDevice}
-              className="w-full flex items-center justify-center gap-2 text-sm text-zinc-500 hover:text-red-400 transition-colors py-2"
-            >
-              <Unlink size={13} />
-              {t.unlink}
-            </button>
-            <button
-              type="button"
-              onClick={() => void handleRemoveDevice()}
-              disabled={busy || removingDevice || !isOnline}
-              className="w-full flex items-center justify-center gap-2 text-xs text-zinc-600 hover:text-red-500 transition-colors py-1.5"
-            >
-              {removingDevice ? <RefreshCw size={12} className="animate-spin" /> : <Unlink size={12} />}
-              {removingDevice ? t.removing_device : t.remove_device}
-            </button>
-          </>
-        )}
+          {isLinked && (
+            <>
+              <button
+                type="button"
+                onClick={() => void handleUnlink()}
+                disabled={busy || removingDevice}
+                className="w-full flex items-center justify-center gap-2 text-sm text-zinc-500 hover:text-red-400 transition-colors py-2"
+              >
+                <Unlink size={13} />
+                {t.unlink}
+              </button>
+              <button
+                type="button"
+                onClick={handleRemoveDevice}
+                disabled={busy || removingDevice || !isOnline}
+                className="w-full flex items-center justify-center gap-2 text-xs text-zinc-600 hover:text-red-500 transition-colors py-1.5"
+              >
+                {removingDevice ? <RefreshCw size={12} className="animate-spin" /> : <Unlink size={12} />}
+                {removingDevice ? t.removing_device : t.remove_device}
+              </button>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+      <ConfirmModal
+        isOpen={showRemoveDeviceConfirm}
+        title={t.remove_device}
+        message={t.remove_device_confirm}
+        confirmLabel={t.remove_device}
+        variant="danger"
+        onConfirm={() => void handleConfirmRemoveDevice()}
+        onCancel={() => setShowRemoveDeviceConfirm(false)}
+      />
+    </>
   )
 }

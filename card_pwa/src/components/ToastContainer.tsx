@@ -33,7 +33,7 @@ function ToastCard({ item }: { item: ToastItem }) {
       <p className={`flex-1 text-sm leading-snug ${cfg.text}`}>{item.message}</p>
       <button
         onClick={() => toast.dismiss(item.id)}
-        className={`shrink-0 ${UI_TOKENS.modal.closeButton} !min-w-0 !w-7 !h-7`}
+        className={`shrink-0 self-center ${UI_TOKENS.modal.closeButton}`}
         aria-label="Dismiss"
       >
         <X size={UI_TOKENS.icon.sm} />
@@ -52,7 +52,11 @@ export default function ToastContainer() {
     <div
       aria-live="polite"
       aria-atomic="false"
-      className="fixed bottom-[calc(var(--safe-bottom)+1rem)] left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-2 items-center w-full px-4 pointer-events-none"
+      className="fixed bottom-[calc(var(--safe-bottom)+1rem)] left-1/2 -translate-x-1/2 z-[200] flex w-full flex-col items-center gap-2 pointer-events-none"
+      style={{
+        paddingLeft: 'calc(var(--safe-left) + 1rem)',
+        paddingRight: 'calc(var(--safe-right) + 1rem)',
+      }}
     >
       <AnimatePresence mode="sync">
         {items.map(item => (

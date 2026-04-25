@@ -1,20 +1,25 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const state = vi.hoisted(() => ({
-  healthOk: true,
   syncActive: true,
+  reachable: true,
   flushPending: 0,
   flushProcessed: 0,
 }))
 
-const fetchWithTimeoutMock = vi.hoisted(() => vi.fn(async () => ({ ok: state.healthOk }) as Response))
 const flushSyncQueueMock = vi.hoisted(() => vi.fn(async () => ({ processed: state.flushProcessed, pending: state.flushPending })))
 const pullAndApplySyncDeltasMock = vi.hoisted(() => vi.fn(async () => {}))
+const checkSyncServerReachableMock = vi.hoisted(() => vi.fn(async () => state.reachable))
+const startSyncReachabilityRuntimeMock = vi.hoisted(() => vi.fn(() => vi.fn()))
 
 vi.mock('../../services/syncConfig', () => ({
-  fetchWithTimeout: fetchWithTimeoutMock,
-  getSyncBaseEndpoint: () => 'http://localhost:8787/sync',
   isSyncActive: () => state.syncActive,
+  SYNC_RUNTIME_CONFIG_CHANGED_EVENT: 'card-pwa:sync-runtime-config-changed',
+}))
+
+vi.mock('../../services/syncReachability', () => ({
+  checkSyncServerReachable: checkSyncServerReachableMock,
+  startSyncReachabilityRuntime: startSyncReachabilityRuntimeMock,
 }))
 
 vi.mock('../../services/syncQueue', () => ({
@@ -26,15 +31,19 @@ vi.mock('../../services/syncPull', () => ({
 }))
 
 describe('syncCoordinator', () => {
+  let windowListeners: Record<string, EventListener> = {}
+
   beforeEach(() => {
     vi.resetModules()
-    state.healthOk = true
     state.syncActive = true
+    state.reachable = true
     state.flushPending = 0
     state.flushProcessed = 0
-    fetchWithTimeoutMock.mockClear()
     flushSyncQueueMock.mockClear()
     pullAndApplySyncDeltasMock.mockClear()
+    checkSyncServerReachableMock.mockClear()
+    startSyncReachabilityRuntimeMock.mockClear()
+    windowListeners = {}
 
     Object.defineProperty(globalThis, 'navigator', {
       value: {
@@ -51,8 +60,12 @@ describe('syncCoordinator', () => {
 
     Object.defineProperty(globalThis, 'window', {
       value: {
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
+        addEventListener: vi.fn((type: string, listener: EventListener) => {
+          windowListeners[type] = listener
+        }),
+        removeEventListener: vi.fn((type: string) => {
+          delete windowListeners[type]
+        }),
         setInterval: vi.fn(() => 1),
         clearInterval: vi.fn(),
       },
@@ -70,7 +83,7 @@ describe('syncCoordinator', () => {
   })
 
   it('returns false and does not flush when the server is unreachable', async () => {
-    state.healthOk = false
+    state.reachable = false
 
     const { runSyncCycleNow } = await import('../../services/syncCoordinator')
     const result = await runSyncCycleNow({ force: true })
@@ -85,6 +98,7 @@ describe('syncCoordinator', () => {
     const result = await runSyncCycleNow({ force: true })
 
     expect(result).toBe(true)
+    expect(checkSyncServerReachableMock).toHaveBeenCalledWith(true)
     expect(flushSyncQueueMock).toHaveBeenCalledWith({ limit: 200 })
     expect(pullAndApplySyncDeltasMock).toHaveBeenCalledTimes(1)
   })
@@ -98,5 +112,21 @@ describe('syncCoordinator', () => {
     expect(result).toBe(true)
     expect(flushSyncQueueMock).toHaveBeenCalledTimes(1)
     expect(pullAndApplySyncDeltasMock).not.toHaveBeenCalled()
+  })
+
+  it('requests a sync cycle when runtime config changes while online', async () => {
+    const { setupUnifiedSyncRuntime } = await import('../../services/syncCoordinator')
+    const dispose = setupUnifiedSyncRuntime()
+
+    const listener = windowListeners['card-pwa:sync-runtime-config-changed']
+    expect(listener).toBeTypeOf('function')
+
+    listener(new Event('card-pwa:sync-runtime-config-changed'))
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(checkSyncServerReachableMock).toHaveBeenCalled()
+    expect(flushSyncQueueMock).toHaveBeenCalledWith({ limit: 200 })
+    dispose()
   })
 })
