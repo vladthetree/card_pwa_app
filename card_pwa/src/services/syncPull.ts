@@ -45,6 +45,8 @@ interface PulledOperation {
   payload: unknown
   /** Server-side clientTimestamp – used as fallback for LWW on deletes */
   clientTimestamp?: number
+  sourceClient?: string
+  createdAt?: number
 }
 
 interface PullResponse {
@@ -59,6 +61,14 @@ interface HandshakeResponse {
   needsSnapshot?: boolean
   needsClientBootstrapUpload?: boolean
   serverCursor?: number
+  bootstrapUploadCapabilities?: {
+    reviews?: boolean
+  }
+  serverCounts?: {
+    decks?: number
+    cards?: number
+    reviews?: number
+  }
 }
 
 interface SnapshotResponse {
@@ -378,15 +388,23 @@ function normalizeReview(raw: unknown): Omit<ReviewRecord, 'id'> | null {
   const rating = Number(value.rating)
   const timeMs = Number(value.timeMs ?? value.time_ms)
   const timestamp = Number(value.timestamp ?? value.reviewedAt ?? value.reviewed_at)
+  const createdAt = Number(value.createdAt ?? value.created_at)
+  const opIdRaw = value.opId ?? value.reviewOpId ?? value.review_op_id
+  const sourceClientRaw = value.sourceClient ?? value.source_client
 
   if (typeof cardId !== 'string' || !cardId) return null
   if (![1, 2, 3, 4].includes(rating)) return null
 
   return {
+    opId: typeof opIdRaw === 'string' && opIdRaw.trim() ? opIdRaw.trim() : undefined,
     cardId,
     rating: rating as ReviewRecord['rating'],
     timeMs: Number.isFinite(timeMs) ? timeMs : 0,
     timestamp: Number.isFinite(timestamp) ? timestamp : Date.now(),
+    sourceClient: typeof sourceClientRaw === 'string' && sourceClientRaw.trim()
+      ? sourceClientRaw.trim()
+      : undefined,
+    createdAt: Number.isFinite(createdAt) ? createdAt : undefined,
   }
 }
 
@@ -643,7 +661,8 @@ async function applyCardDelete(payload: unknown, fallbackTs = 0) {
   await db.cards.update(cardId, { isDeleted: true, deletedAt: now, updatedAt: now })
 }
 
-async function applyReview(payload: unknown) {
+async function applyReview(op: PulledOperation) {
+  const payload = op.payload
   if (!payload || typeof payload !== 'object') return
   const value = payload as {
     cardId?: string
@@ -672,10 +691,13 @@ async function applyReview(payload: unknown) {
   const normalizedRating = [1, 2, 3, 4].includes(rating) ? (rating as 1 | 2 | 3 | 4) : 3
 
   await db.reviews.add({
+    opId: op.opId,
     cardId,
     rating: normalizedRating,
     timeMs: Number.isFinite(value.timeMs) ? Number(value.timeMs) : 0,
     timestamp: Number.isFinite(value.timestamp) ? Number(value.timestamp) : Date.now(),
+    sourceClient: typeof op.sourceClient === 'string' ? op.sourceClient : undefined,
+    createdAt: Number.isFinite(op.createdAt) ? Number(op.createdAt) : undefined,
   })
 }
 
@@ -746,7 +768,7 @@ async function applyOperation(op: PulledOperation) {
       await applyCardDelete(op.payload, fallbackTs)
       return
     case 'review':
-      await applyReview(op.payload)
+      await applyReview(op)
       return
     case 'review.undo':
       await applyReviewUndo(op.payload)
@@ -763,11 +785,12 @@ async function applyOperation(op: PulledOperation) {
 // ─── Bootstrap / Handshake ─────────────────────────────────────────────
 
 async function getLocalCounts() {
-  const [cards, decks] = await Promise.all([
+  const [cards, decks, reviews] = await Promise.all([
     db.cards.filter(card => !card.isDeleted).count(),
     db.decks.filter(deck => !deck.isDeleted).count(),
+    db.reviews.count(),
   ])
-  return { cards, decks }
+  return { cards, decks, reviews }
 }
 
 async function runHandshake(clientId: string): Promise<HandshakeResponse | null> {
@@ -902,18 +925,23 @@ async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
   }
 }
 
-async function runBootstrapUpload(clientId: string): Promise<BootstrapUploadResponse | null> {
+async function runBootstrapUpload(
+  clientId: string,
+  options?: { includeReviews?: boolean },
+): Promise<BootstrapUploadResponse | null> {
   const endpoint = getBootstrapUploadEndpoint()
   if (!endpoint) return null
 
   try {
-    const [decks, cards, shuffleCollections] = await Promise.all([
+    const [decks, cards, reviews, shuffleCollections] = await Promise.all([
       db.decks.toArray(),
       db.cards.toArray(),
+      options?.includeReviews ? db.reviews.toArray() : Promise.resolve([] as ReviewRecord[]),
       hasShuffleCollectionsTable()
         ? db.shuffleCollections.toArray()
         : Promise.resolve([] as ShuffleCollectionRecord[]),
     ])
+    const activeCardIds = new Set(cards.filter(card => !card.isDeleted).map(card => card.id))
 
     const response = await fetchWithTimeout(endpoint, {
       method: 'POST',
@@ -959,6 +987,17 @@ async function runBootstrapUpload(clientId: string): Promise<BootstrapUploadResp
           createdAt: card.createdAt,
           updatedAt: card.updatedAt ?? card.createdAt,
         })),
+        reviews: reviews
+          .filter(review => activeCardIds.has(review.cardId))
+          .map(review => ({
+            opId: review.opId,
+            cardId: review.cardId,
+            rating: review.rating,
+            timeMs: review.timeMs,
+            timestamp: review.timestamp,
+            sourceClient: review.sourceClient,
+            createdAt: review.createdAt,
+          })),
         shuffleCollections: shuffleCollections.map(collection => ({
           id: collection.id,
           name: collection.name,
@@ -987,48 +1026,47 @@ async function writeSyncMetaTimestamp(key: string): Promise<void> {
   }
 }
 
-async function readSyncMetaValue(key: string): Promise<unknown> {
-  if (!hasSyncMetaTable()) return null
-  try {
-    const entry = await db.syncMeta.get(key)
-    return entry?.value ?? null
-  } catch {
-    return null
-  }
+function supportsBootstrapReviewUpload(handshake: HandshakeResponse): boolean {
+  return Boolean(handshake.bootstrapUploadCapabilities?.reviews)
 }
 
-async function bootstrapSyncIfNeeded(clientId: string) {
+async function bootstrapSyncIfNeeded(clientId: string): Promise<boolean> {
   const handshake = await runHandshake(clientId)
-  if (!handshake) return
+  if (!handshake) return true
 
   if (Boolean(handshake.needsClientBootstrapUpload)) {
-    // Skip if already successfully bootstrapped
-    const alreadyBootstrapped = await readSyncMetaValue(SYNC_META_BOOTSTRAP_KEY)
-    if (alreadyBootstrapped) return
+    const localCounts = await getLocalCounts()
+    const includeReviews = localCounts.reviews > 0
 
-    const upload = await runBootstrapUpload(clientId)
-    if (!upload?.ok) return
+    if (includeReviews && !supportsBootstrapReviewUpload(handshake)) {
+      console.warn('[syncPull] bootstrap upload aborted because the server does not advertise review-history support')
+      return false
+    }
+
+    const upload = await runBootstrapUpload(clientId, { includeReviews })
+    if (!upload?.ok) return false
 
     if (typeof upload.serverCursor === 'number' && Number.isFinite(upload.serverCursor)) {
       await writeCursor(upload.serverCursor)
     }
 
     await writeSyncMetaTimestamp(SYNC_META_BOOTSTRAP_KEY)
-    return
+    return true
   }
 
   if (Boolean(handshake.needsSnapshot)) {
-    await fetchAndApplySnapshot(clientId)
-    return
+    return fetchAndApplySnapshot(clientId)
   }
 
   if (typeof handshake.serverCursor === 'number' && Number.isFinite(handshake.serverCursor)) {
     const localCursor = await readCursor()
     if (handshake.serverCursor < localCursor) {
       await clearAppliedOpIds()
-      await fetchAndApplySnapshot(clientId)
+      return fetchAndApplySnapshot(clientId)
     }
   }
+
+  return true
 }
 
 // ─── Delta pull ────────────────────────────────────────────────────────
@@ -1051,7 +1089,8 @@ export async function pullAndApplySyncDeltas(limit = 200) {
   }
 
   const clientId = getOrCreateSyncClientId()
-  await bootstrapSyncIfNeeded(clientId)
+  const bootstrapReady = await bootstrapSyncIfNeeded(clientId)
+  if (!bootstrapReady) return
 
   let cursor = await readCursor()
   const appliedOpIds = await readAppliedOpIds()

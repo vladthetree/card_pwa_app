@@ -226,13 +226,14 @@ def api(server):
             r = requests.get(f"http://localhost:{port}/sync/decks", headers=self._headers(auth_token))
             return r.json() if r.text else {}
 
-        def bootstrap_upload(self, client_id, batch_id, decks=None, cards=None, shuffle_collections=None, sent_at=None, auth_token=None):
+        def bootstrap_upload(self, client_id, batch_id, decks=None, cards=None, reviews=None, shuffle_collections=None, sent_at=None, auth_token=None):
             """POST /sync/bootstrap/upload"""
             body = {
                 "clientId": client_id,
                 "batchId": batch_id,
                 "decks": decks or [],
                 "cards": cards or [],
+                "reviews": reviews or [],
                 "shuffleCollections": shuffle_collections or [],
             }
             if sent_at is not None:
@@ -367,6 +368,28 @@ class TestHandshake:
         assert result["ok"] is True
         assert result["needsSnapshot"] is False
         assert result["reason"] == "ok"
+
+    def test_handshake_advertises_review_bootstrap_support_and_detects_missing_history(self, api):
+        api.push(
+            op_id="handshake-review-card",
+            op_type="card.create",
+            payload={"id": "card-review-gap", "deckId": "d1", "noteId": "n1", "front": "Q", "back": "A"},
+            client_id="known-client",
+            client_timestamp=1000,
+        )
+
+        result = api.handshake(
+            client_id="known-client",
+            last_cursor=1,
+            local_counts={"cards": 1, "decks": 0, "reviews": 1},
+        )
+
+        assert result["ok"] is True
+        assert result["needsClientBootstrapUpload"] is True
+        assert result["needsSnapshot"] is False
+        assert result["reason"] == "server-missing-client-review-history"
+        assert result["bootstrapUploadCapabilities"]["reviews"] is True
+        assert result["serverCounts"]["reviews"] == 0
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -1825,6 +1848,42 @@ class TestBootstrapUpload:
         snap = api.snapshot("reader")
         assert [entry["id"] for entry in snap["shuffleCollections"]] == ["shuffle_boot"]
 
+    def test_bootstrap_upload_includes_review_history(self, api, db_helper):
+        result = api.bootstrap_upload(
+            client_id="boot-client",
+            batch_id="batch-reviews",
+            sent_at=7000,
+            decks=[{"id": "deck-boot", "name": "Boot", "createdAt": 4000, "updatedAt": 5000}],
+            cards=[{
+                "id": "card-boot", "deckId": "deck-boot", "noteId": "n1",
+                "front": "Q", "back": "A", "tags": [], "extra": {},
+                "type": 2, "queue": 2, "due": 1, "dueAt": 10,
+                "interval": 1, "factor": 2500, "stability": 1.0, "difficulty": 0.5,
+                "reps": 1, "lapses": 0, "algorithm": "sm2",
+                "createdAt": 4000, "updatedAt": 5000
+            }],
+            reviews=[{
+                "opId": "bootstrap-review-1",
+                "cardId": "card-boot",
+                "rating": 4,
+                "timeMs": 1200,
+                "timestamp": 6500,
+                "sourceClient": "origin-a",
+                "createdAt": 6500,
+            }],
+        )
+
+        assert result["ok"] is True
+        assert result["summary"]["reviewsInserted"] == 1
+        assert db_helper.count("server_reviews") == 1
+
+        snap = api.snapshot("reader")
+        review = next(entry for entry in snap["reviews"] if entry["opId"] == "bootstrap-review-1")
+        assert review["cardId"] == "card-boot"
+        assert review["rating"] == 4
+        assert review["timeMs"] == 1200
+        assert review["timestamp"] == 6500
+
     def test_bootstrap_upload_is_idempotent_for_duplicate_batch(self, api, db_helper):
         payload_decks = [{"id": "deck-dup", "name": "Dup", "createdAt": 1000, "updatedAt": 1000}]
         payload_cards = [{
@@ -1835,9 +1894,16 @@ class TestBootstrapUpload:
             "reps": 0, "lapses": 0, "algorithm": "sm2",
             "createdAt": 1000, "updatedAt": 1000
         }]
+        payload_reviews = [{
+            "opId": "dup-review-1",
+            "cardId": "card-dup",
+            "rating": 3,
+            "timeMs": 900,
+            "timestamp": 1100,
+        }]
 
-        r1 = api.bootstrap_upload("boot-client", "batch-dup", decks=payload_decks, cards=payload_cards, sent_at=1000)
-        r2 = api.bootstrap_upload("boot-client", "batch-dup", decks=payload_decks, cards=payload_cards, sent_at=1000)
+        r1 = api.bootstrap_upload("boot-client", "batch-dup", decks=payload_decks, cards=payload_cards, reviews=payload_reviews, sent_at=1000)
+        r2 = api.bootstrap_upload("boot-client", "batch-dup", decks=payload_decks, cards=payload_cards, reviews=payload_reviews, sent_at=1000)
 
         assert r1["ok"] is True
         assert r2["ok"] is True
@@ -1846,6 +1912,7 @@ class TestBootstrapUpload:
         assert db_helper.count("sync_bootstrap_batches") == 1
         assert db_helper.count("server_decks") == 1
         assert db_helper.count("server_cards") == 1
+        assert db_helper.count("server_reviews") == 1
 
     def test_bootstrap_upload_skips_older_card_when_server_has_newer(self, api, db_helper):
         api.push(

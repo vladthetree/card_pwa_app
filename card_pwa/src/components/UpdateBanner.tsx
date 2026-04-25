@@ -18,7 +18,7 @@ export default function UpdateBanner({ onUpdateNow, onDismiss }: Props) {
       animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
       exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
       transition={{ duration: prefersReducedMotion ? 0.18 : 0.24, ease: 'easeOut' }}
-      className="fixed inset-x-4 bottom-[calc(var(--safe-bottom)+0.75rem)] z-[60] mx-auto w-auto max-w-md rounded-2xl border border-white/15 bg-slate-900/92 px-4 py-3 shadow-xl backdrop-blur-md sm:inset-x-auto sm:right-4 sm:mx-0"
+      className="fixed bottom-[calc(var(--safe-bottom)+0.75rem)] left-[calc(var(--safe-left)+1rem)] right-[calc(var(--safe-right)+1rem)] z-[60] mx-auto w-auto max-w-md rounded-2xl border border-white/15 bg-slate-900/92 px-4 py-3 shadow-xl backdrop-blur-md sm:left-auto sm:right-[calc(var(--safe-right)+1rem)] sm:mx-0"
       role="status"
       aria-live="polite"
     >
@@ -38,7 +38,7 @@ export default function UpdateBanner({ onUpdateNow, onDismiss }: Props) {
               event.stopPropagation()
               onUpdateNow()
             }}
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-black text-white transition-all duration-200 ease-out active:scale-95"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-black text-white transition-all duration-200 ease-out active:scale-95 sm:min-h-0 sm:px-3 sm:py-1.5"
             style={{ background: 'linear-gradient(135deg, var(--brand-primary-80), var(--brand-primary))' }}
           >
             <RefreshCw size={12} />
@@ -50,7 +50,7 @@ export default function UpdateBanner({ onUpdateNow, onDismiss }: Props) {
               event.stopPropagation()
               onDismiss()
             }}
-            className="rounded-full p-1.5 text-white/60 transition-all duration-200 ease-out hover:bg-white/10 hover:text-white active:scale-95"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full p-1.5 text-white/60 transition-all duration-200 ease-out hover:bg-white/10 hover:text-white active:scale-95 sm:h-9 sm:w-9"
             aria-label={isGerman ? 'Hinweis schließen' : 'Dismiss notice'}
           >
             <X size={14} />

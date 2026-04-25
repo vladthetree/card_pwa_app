@@ -50,21 +50,18 @@ export async function createDbBackupPayload(options: ExportOptions = {}): Promis
   const selectedDeckIds = options.deckIds?.length ? new Set(options.deckIds) : null
 
   const decksAll = await db.decks.toArray()
+  const activeDecks = decksAll.filter(deck => !deck.isDeleted)
   const decks = selectedDeckIds
-    ? decksAll.filter(deck => selectedDeckIds.has(deck.id))
-    : decksAll
+    ? activeDecks.filter(deck => selectedDeckIds.has(deck.id))
+    : activeDecks
 
   const deckIdSet = new Set(decks.map(deck => deck.id))
   const cardsAll = await db.cards.toArray()
-  const cards = selectedDeckIds
-    ? cardsAll.filter(card => deckIdSet.has(card.deckId))
-    : cardsAll
+  const cards = cardsAll.filter(card => !card.isDeleted && deckIdSet.has(card.deckId))
 
   const cardIdSet = new Set(cards.map(card => card.id))
   const reviewsAll = await db.reviews.toArray()
-  const reviews = selectedDeckIds
-    ? reviewsAll.filter(review => cardIdSet.has(review.cardId))
-    : reviewsAll
+  const reviews = reviewsAll.filter(review => cardIdSet.has(review.cardId))
 
   const settingsRaw = localStorage.getItem(SETTINGS_STORAGE_KEY)
   const parsedSettings = settingsRaw ? JSON.parse(settingsRaw) as Record<string, unknown> : null
@@ -182,7 +179,9 @@ export async function exportDbBackupAsCsv(options: ExportOptions = {}) {
 
 export async function listDecksForBackup(): Promise<Array<Pick<DeckRecord, 'id' | 'name'>>> {
   const decks = await db.decks.toArray()
-  return decks.map(deck => ({ id: deck.id, name: deck.name }))
+  return decks
+    .filter(deck => !deck.isDeleted)
+    .map(deck => ({ id: deck.id, name: deck.name }))
 }
 
 function buildDeckNameById(decks: DeckRecord[]): Map<string, string> {

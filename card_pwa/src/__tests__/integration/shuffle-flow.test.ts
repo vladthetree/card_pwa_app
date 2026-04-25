@@ -118,6 +118,7 @@ vi.mock('../../db/queries/diagnostics', () => ({
 
 vi.mock('../../services/syncConfig', () => ({
   isSyncActive: () => mockedRuntime.state.syncActive,
+  makeOpId: () => 'review-op-id',
 }))
 
 vi.mock('../../services/profileService', () => ({

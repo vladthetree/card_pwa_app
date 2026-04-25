@@ -11,6 +11,8 @@
   :root {
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
     --theme-notch: #050505;
     --brand-primary: rgb(249, 115, 22);
     --brand-primary-08: rgba(249, 115, 22, 0.08);
@@ -478,4 +480,3 @@
   .glow-blue   { box-shadow: 0 0 20px rgba(76,201,240,0.35); }
   .glow-green  { box-shadow: 0 0 20px rgba(6,214,160,0.35);  }
 }
-

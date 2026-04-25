@@ -1568,13 +1568,14 @@ class Handler(BaseHTTPRequestHandler):
     sent_at = parse_int(data.get("sentAt") or now_ms(), now_ms(), min_value=0)
     decks = data.get("decks") or []
     cards = data.get("cards") or []
+    reviews = data.get("reviews") or []
     shuffle_collections = data.get("shuffleCollections") or []
     client_ip = self.client_address[0] if self.client_address else "?"
 
     if not client_id or not batch_id:
       self._send_json(400, {"ok": False, "error": "missing_bootstrap_fields"})
       return
-    if not isinstance(decks, list) or not isinstance(cards, list) or not isinstance(shuffle_collections, list):
+    if not isinstance(decks, list) or not isinstance(cards, list) or not isinstance(reviews, list) or not isinstance(shuffle_collections, list):
       self._send_json(400, {"ok": False, "error": "invalid_bootstrap_payload"})
       return
 
@@ -1596,6 +1597,8 @@ class Handler(BaseHTTPRequestHandler):
             "cardsInserted": 0,
             "cardsUpdated": 0,
             "cardsSkippedOlder": 0,
+            "reviewsInserted": 0,
+            "reviewsSkipped": 0,
             "shuffleCollectionsInserted": 0,
             "shuffleCollectionsUpdated": 0,
             "shuffleCollectionsSkippedOlder": 0,
@@ -1620,6 +1623,8 @@ class Handler(BaseHTTPRequestHandler):
         "cardsInserted": 0,
         "cardsUpdated": 0,
         "cardsSkippedOlder": 0,
+        "reviewsInserted": 0,
+        "reviewsSkipped": 0,
         "shuffleCollectionsInserted": 0,
         "shuffleCollectionsUpdated": 0,
         "shuffleCollectionsSkippedOlder": 0,
@@ -1733,6 +1738,68 @@ class Handler(BaseHTTPRequestHandler):
         else:
           summary["cardsInserted"] += 1
 
+      for review in reviews:
+        if not isinstance(review, dict):
+          summary["reviewsSkipped"] += 1
+          continue
+
+        card_id = str(review.get("cardId") or review.get("card_id") or "").strip()
+        rating = parse_int(review.get("rating"), None)
+        reviewed_at = parse_int(
+          review.get("timestamp") or review.get("reviewedAt") or review.get("reviewed_at") or sent_at,
+          sent_at,
+          min_value=0,
+        )
+        if not card_id or rating not in (1, 2, 3, 4):
+          summary["reviewsSkipped"] += 1
+          continue
+
+        card_exists = conn.execute(
+          """SELECT 1 FROM server_cards
+             WHERE id=? AND user_id=? AND deleted_at IS NULL AND IFNULL(is_deleted, 0) = 0""",
+          (card_id, state_user_id)
+        ).fetchone()
+        if not card_exists:
+          summary["reviewsSkipped"] += 1
+          continue
+
+        source_client = str(review.get("sourceClient") or review.get("source_client") or client_id).strip() or client_id
+        review_op_id = str(review.get("opId") or review.get("reviewOpId") or review.get("review_op_id") or "").strip()
+        if not review_op_id:
+          review_op_id = f"{source_client}:{card_id}:{reviewed_at}:{rating}"
+
+        existing_review = conn.execute(
+          "SELECT 1 FROM server_reviews WHERE review_op_id=?",
+          (review_op_id,)
+        ).fetchone()
+        if existing_review:
+          summary["reviewsSkipped"] += 1
+          continue
+
+        created_at = parse_int(
+          review.get("createdAt") or review.get("created_at") or int(time.time()),
+          int(time.time()),
+          min_value=0,
+        )
+        conn.execute(
+          """
+          INSERT INTO server_reviews
+          (review_op_id, card_id, rating, time_ms, reviewed_at, source_client, created_at, undone_at, user_id)
+          VALUES (?, ?, ?, ?, ?, ?, ?, NULL, ?)
+          """,
+          (
+            review_op_id,
+            card_id,
+            rating,
+            parse_int(review.get("timeMs") or review.get("time_ms"), None),
+            reviewed_at,
+            source_client,
+            created_at,
+            state_user_id,
+          )
+        )
+        summary["reviewsInserted"] += 1
+
       for collection in shuffle_collections:
         if not isinstance(collection, dict):
           summary["shuffleCollectionsRejected"] += 1
@@ -1798,6 +1865,7 @@ class Handler(BaseHTTPRequestHandler):
         "batchId": batch_id,
         "decks": len(decks),
         "cards": len(cards),
+        "reviews": len(reviews),
         "shuffleCollections": len(shuffle_collections),
       }
       conn.execute(
@@ -1832,6 +1900,7 @@ class Handler(BaseHTTPRequestHandler):
         f"BOOTSTRAP  ip={client_ip}  client={_client_short(client_id)}  batch={batch_id}  "
         f"decks=+{summary['decksInserted']}/={summary['decksUpdated']}/skip={summary['decksSkippedOlder']}  "
         f"cards=+{summary['cardsInserted']}/={summary['cardsUpdated']}/skip={summary['cardsSkippedOlder']}  "
+        f"reviews=+{summary['reviewsInserted']}/skip={summary['reviewsSkipped']}  "
         f"shuffle=+{summary['shuffleCollectionsInserted']}/={summary['shuffleCollectionsUpdated']}/skip={summary['shuffleCollectionsSkippedOlder']}/rej={summary['shuffleCollectionsRejected']}"
       )
       self._send_json(200, {
@@ -1872,6 +1941,7 @@ class Handler(BaseHTTPRequestHandler):
       local_counts = {}
     local_cards = parse_int(local_counts.get("cards", 0) or 0, 0, min_value=0)
     local_decks = parse_int(local_counts.get("decks", 0) or 0, 0, min_value=0)
+    local_reviews = parse_int(local_counts.get("reviews", 0) or 0, 0, min_value=0)
     client_ip = self.client_address[0] if self.client_address else "?"
 
     if not client_id:
@@ -1893,6 +1963,18 @@ class Handler(BaseHTTPRequestHandler):
         f"SELECT COUNT(*) FROM server_decks WHERE deleted_at IS NULL {user_filter}",
         user_params
       ).fetchone()[0] or 0
+      active_reviews = conn.execute(
+        f"""SELECT COUNT(*) FROM server_reviews
+            WHERE undone_at IS NULL {user_filter}
+              AND EXISTS (
+                SELECT 1 FROM server_cards c
+                WHERE c.id = server_reviews.card_id
+                  AND c.user_id = server_reviews.user_id
+                  AND c.deleted_at IS NULL
+                  AND IFNULL(c.is_deleted, 0) = 0
+              )""",
+        user_params
+      ).fetchone()[0] or 0
       needs_snapshot = False
       needs_client_bootstrap_upload = False
       reason = "ok"
@@ -1900,6 +1982,9 @@ class Handler(BaseHTTPRequestHandler):
       if active_cards == 0 and active_decks == 0 and (local_cards > 0 or local_decks > 0):
         needs_client_bootstrap_upload = True
         reason = "server-empty-client-has-data"
+      elif local_reviews > active_reviews:
+        needs_client_bootstrap_upload = True
+        reason = "server-missing-client-review-history"
       elif server_cursor < last_cursor:
         # If the server cursor regressed, the op-log no longer guarantees that
         # delta replay is sufficient. Force a snapshot to re-anchor the client.
@@ -1921,16 +2006,20 @@ class Handler(BaseHTTPRequestHandler):
         "serverCursor": server_cursor,
         "needsSnapshot": needs_snapshot,
         "needsClientBootstrapUpload": needs_client_bootstrap_upload,
+        "bootstrapUploadCapabilities": {
+          "reviews": True,
+        },
         "reason": reason,
         "serverCounts": {
           "decks": active_decks,
           "cards": active_cards,
+          "reviews": active_reviews,
         }
       })
       log(
         f"HANDSHAKE  ip={client_ip}  client={_client_short(client_id)}  "
-        f"lastCursor={last_cursor}  localCards={local_cards}  localDecks={local_decks}  "
-        f"serverCards={active_cards}  serverDecks={active_decks}  "
+        f"lastCursor={last_cursor}  localCards={local_cards}  localDecks={local_decks}  localReviews={local_reviews}  "
+        f"serverCards={active_cards}  serverDecks={active_decks}  serverReviews={active_reviews}  "
         f"needsSnapshot={needs_snapshot}  needsUpload={needs_client_bootstrap_upload}  reason={reason}"
       )
     finally:

@@ -16,6 +16,13 @@ interface FloatingMenuPosition {
   transformOrigin: string
 }
 
+function readSafeInset(variableName: '--safe-top' | '--safe-bottom' | '--safe-left' | '--safe-right'): number {
+  if (typeof window === 'undefined') return 0
+  const raw = window.getComputedStyle(document.documentElement).getPropertyValue(variableName).trim()
+  const parsed = Number.parseFloat(raw)
+  return Number.isFinite(parsed) ? parsed : 0
+}
+
 export function useFloatingMenu<TAnchor extends HTMLElement, TMenu extends HTMLElement>({
   isOpen,
   onClose,
@@ -34,22 +41,30 @@ export function useFloatingMenu<TAnchor extends HTMLElement, TMenu extends HTMLE
     const rect = anchor.getBoundingClientRect()
     const viewportWidth = window.innerWidth
     const viewportHeight = window.innerHeight
-    const safeWidth = Math.min(width, Math.max(180, viewportWidth - margin * 2))
-    const availableBelow = viewportHeight - rect.bottom - margin
-    const availableAbove = rect.top - margin
+    const safeTopInset = readSafeInset('--safe-top')
+    const safeBottomInset = readSafeInset('--safe-bottom')
+    const safeLeftInset = readSafeInset('--safe-left')
+    const safeRightInset = readSafeInset('--safe-right')
+    const minLeft = safeLeftInset + margin
+    const minTop = safeTopInset + margin
+    const maxRight = viewportWidth - safeRightInset - margin
+    const maxBottom = viewportHeight - safeBottomInset - margin
+    const safeWidth = Math.min(width, Math.max(180, viewportWidth - safeLeftInset - safeRightInset - margin * 2))
+    const availableBelow = maxBottom - rect.bottom
+    const availableAbove = rect.top - minTop
     const safeHeight = Math.min(
       maxHeight,
-      Math.max(96, viewportHeight - margin * 2),
+      Math.max(96, viewportHeight - safeTopInset - safeBottomInset - margin * 2),
       Math.max(96, availableBelow, availableAbove),
     )
     const opensBelow = availableBelow >= Math.min(safeHeight, 220) || availableBelow >= availableAbove
     const left = Math.min(
-      Math.max(margin, rect.right - safeWidth),
-      Math.max(margin, viewportWidth - safeWidth - margin),
+      Math.max(minLeft, rect.right - safeWidth),
+      Math.max(minLeft, maxRight - safeWidth),
     )
     const top = opensBelow
-      ? Math.min(rect.bottom + 8, viewportHeight - margin - safeHeight)
-      : Math.max(margin, rect.top - safeHeight - 8)
+      ? Math.min(rect.bottom + 8, maxBottom - safeHeight)
+      : Math.max(minTop, rect.top - safeHeight - 8)
 
     setPosition({
       left,

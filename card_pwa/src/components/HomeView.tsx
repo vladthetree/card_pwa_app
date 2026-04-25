@@ -117,7 +117,7 @@ export default function HomeView({
   )
 
   return (
-    <div className={`${UI_TOKENS.layout.homeMaxWidth} mx-auto flex h-[100dvh] flex-col overflow-hidden px-3 sm:px-4`}>
+    <div className={`${UI_TOKENS.layout.homeMaxWidth} mx-auto flex h-full min-h-0 w-full flex-col overflow-hidden px-3 sm:px-4`}>
       <div className="relative z-20 flex-shrink-0 pt-2.5 sm:pt-4">
         <motion.div
           initial={{ opacity: 0, y: -10 }}

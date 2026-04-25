@@ -97,7 +97,8 @@ describe('recordReview integration flow', () => {
     expect(mockedRuntime.enqueueSyncOperation).toHaveBeenNthCalledWith(
       1,
       'review',
-      expect.objectContaining({ algorithm: 'sm2', cardId: initialCard.id })
+      expect.objectContaining({ algorithm: 'sm2', cardId: initialCard.id }),
+      expect.any(String),
     )
 
     const fsrsResult = await recordReview(initialCard.id, 3, 3500, 'fsrs')
@@ -112,7 +113,8 @@ describe('recordReview integration flow', () => {
     expect(mockedRuntime.enqueueSyncOperation).toHaveBeenNthCalledWith(
       2,
       'review',
-      expect.objectContaining({ algorithm: 'fsrs', cardId: initialCard.id })
+      expect.objectContaining({ algorithm: 'fsrs', cardId: initialCard.id }),
+      expect.any(String),
     )
   })
 

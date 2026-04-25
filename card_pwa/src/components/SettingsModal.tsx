@@ -24,7 +24,7 @@ import { clearErrorLogs, downloadErrorLogsAsTxt, getErrorLogs, type ErrorLogEntr
 import { UI_TOKENS } from '../constants/ui'
 import { subscribeToWebPushNotificationsWithStatus, type WebPushSubscribeStatus } from '../services/webPush'
 import { db } from '../db'
-import { DATABASE_NAMES, STORAGE_KEYS } from '../constants/appIdentity'
+import { BACKUP_METADATA, DATABASE_NAMES, STORAGE_KEYS } from '../constants/appIdentity'
 import { clearSyncQueue, closeSyncQueueDatabase } from '../services/syncQueue'
 import { resetSyncPullState } from '../services/syncPull'
 import { readSyncAuthTokenFromSettings, writeSyncAuthTokenToSettings } from '../services/syncConfig'
@@ -47,6 +47,10 @@ type SettingsSectionKey = 'profile' | 'appearance' | 'learning' | 'notifications
 const MIN_STUDY_CARD_LIMIT = 10
 const MAX_STUDY_CARD_LIMIT = 200
 const STUDY_CARD_LIMIT_STEP = 10
+const APP_STORAGE_PREFIXES = ['card-pwa-', 'anki-pwa-'] as const
+const APP_COOKIE_PREFIXES = ['card_pwa_', 'anki_pwa_', 'card-pwa-', 'anki-pwa-'] as const
+const APP_STORAGE_EXACT_KEYS = [BACKUP_METADATA.marker, BACKUP_METADATA.legacyMarker] as const
+const APP_SERVICE_WORKER_PATH = '/service-worker.js'
 
 
 
@@ -189,6 +193,51 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     }
   }, [isOpen])
 
+  const isAppStorageKey = (key: string) =>
+    APP_STORAGE_EXACT_KEYS.includes(key as typeof APP_STORAGE_EXACT_KEYS[number]) ||
+    APP_STORAGE_PREFIXES.some(prefix => key.startsWith(prefix))
+
+  const clearStorageArea = (storage: Storage) => {
+    const keys: string[] = []
+    for (let index = 0; index < storage.length; index += 1) {
+      const key = storage.key(index)
+      if (key && isAppStorageKey(key)) {
+        keys.push(key)
+      }
+    }
+    keys.forEach(key => storage.removeItem(key))
+  }
+
+  const isAppServiceWorkerRegistration = (registration: ServiceWorkerRegistration) => {
+    const scriptUrls = [
+      registration.active?.scriptURL,
+      registration.waiting?.scriptURL,
+      registration.installing?.scriptURL,
+    ].filter((value): value is string => typeof value === 'string' && value.length > 0)
+
+    return scriptUrls.some(scriptUrl => {
+      try {
+        return new URL(scriptUrl, window.location.origin).pathname === APP_SERVICE_WORKER_PATH
+      } catch {
+        return false
+      }
+    })
+  }
+
+  const unregisterAppServiceWorkers = async () => {
+    if (!('serviceWorker' in navigator)) return
+    const registrations = await navigator.serviceWorker.getRegistrations()
+    const appRegistrations = registrations.filter(isAppServiceWorkerRegistration)
+    await Promise.all(appRegistrations.map(registration => registration.unregister()))
+  }
+
+  const deleteAppCaches = async () => {
+    if (typeof caches === 'undefined') return
+    const keys = await caches.keys()
+    const appKeys = keys.filter(key => APP_STORAGE_PREFIXES.some(prefix => key.startsWith(prefix)))
+    await Promise.all(appKeys.map(key => caches.delete(key)))
+  }
+
   const resetLocalIndexedDb = () => {
     setConfirmModal({
       title: t.indexeddb_reset_title,
@@ -222,15 +271,8 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
       variant: 'danger',
       onConfirm: async () => {
         try {
-          if ('serviceWorker' in navigator) {
-            const registrations = await navigator.serviceWorker.getRegistrations()
-            await Promise.all(registrations.map(registration => registration.unregister()))
-          }
-
-          if (typeof caches !== 'undefined') {
-            const keys = await caches.keys()
-            await Promise.all(keys.map(key => caches.delete(key)))
-          }
+          await unregisterAppServiceWorkers()
+          await deleteAppCaches()
 
           setLocalDataStatus(t.service_worker_reset_done)
           window.setTimeout(() => {
@@ -271,7 +313,10 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     document.cookie
       .split(';')
       .map(cookie => cookie.split('=')[0]?.trim())
-      .filter((name): name is string => Boolean(name))
+      .filter((name): name is string => (
+        Boolean(name) &&
+        APP_COOKIE_PREFIXES.some(prefix => name.startsWith(prefix))
+      ))
       .forEach(deleteCookieEverywhere)
   }
 
@@ -295,15 +340,8 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
       variant: 'danger',
       onConfirm: async () => {
         try {
-          if ('serviceWorker' in navigator) {
-            const registrations = await navigator.serviceWorker.getRegistrations()
-            await Promise.all(registrations.map(registration => registration.unregister()))
-          }
-
-          if (typeof caches !== 'undefined') {
-            const keys = await caches.keys()
-            await Promise.all(keys.map(key => caches.delete(key)))
-          }
+          await unregisterAppServiceWorkers()
+          await deleteAppCaches()
 
           try {
             db.close()
@@ -313,8 +351,8 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
           }
 
           deleteAccessibleCookies()
-          localStorage.clear()
-          sessionStorage.clear()
+          clearStorageArea(localStorage)
+          clearStorageArea(sessionStorage)
 
           await Promise.all([
             deleteIndexedDbDatabase(DATABASE_NAMES.app),

@@ -48,7 +48,11 @@ function readLogs(): ErrorLogEntry[] {
 }
 
 function writeLogs(entries: ErrorLogEntry[]): void {
-  localStorage.setItem(STORAGE_KEYS.errorLog, JSON.stringify(entries.slice(-MAX_LOG_ENTRIES)))
+  try {
+    localStorage.setItem(STORAGE_KEYS.errorLog, JSON.stringify(entries.slice(-MAX_LOG_ENTRIES)))
+  } catch {
+    // best effort
+  }
 }
 
 export function logError(
@@ -72,7 +76,11 @@ export function getErrorLogs(): ErrorLogEntry[] {
 }
 
 export function clearErrorLogs(): void {
-  localStorage.removeItem(STORAGE_KEYS.errorLog)
+  try {
+    localStorage.removeItem(STORAGE_KEYS.errorLog)
+  } catch {
+    // best effort
+  }
 }
 
 export function downloadErrorLogsAsTxt(): void {

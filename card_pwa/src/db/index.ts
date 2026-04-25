@@ -61,10 +61,13 @@ export interface CardRecord {
 
 export interface ReviewRecord {
   id?: number       // auto-increment primary key
+  opId?: string
   cardId: string
   rating: 1 | 2 | 3 | 4
   timeMs: number
   timestamp: number
+  sourceClient?: string
+  createdAt?: number
 }
 
 /** Active study session state persisted in IndexedDB so it survives across

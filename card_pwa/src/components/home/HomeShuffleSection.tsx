@@ -127,7 +127,7 @@ export function HomeShuffleSection({
                 <button
                   type="button"
                   onClick={() => onShowMetrics?.(collection)}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/12 text-white/55 transition hover:border-white/25 hover:text-white"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/12 text-white/55 transition hover:border-white/25 hover:text-white sm:h-9 sm:w-9"
                   aria-label={metricsLabel}
                   title={metricsLabel}
                 >
@@ -136,7 +136,7 @@ export function HomeShuffleSection({
                 <button
                   type="button"
                   onClick={() => onEditCollection(collection)}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/12 text-white/55 transition hover:border-white/25 hover:text-white"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/12 text-white/55 transition hover:border-white/25 hover:text-white sm:h-9 sm:w-9"
                   aria-label={editLabel}
                   title={editLabel}
                 >
@@ -145,7 +145,7 @@ export function HomeShuffleSection({
                 <button
                   type="button"
                   onClick={() => onDeleteCollection(collection)}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-rose-400/20 text-rose-200/70 transition hover:border-rose-300/35 hover:text-rose-100"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-rose-400/20 text-rose-200/70 transition hover:border-rose-300/35 hover:text-rose-100 sm:h-9 sm:w-9"
                   aria-label={deleteLabel}
                   title={deleteLabel}
                 >

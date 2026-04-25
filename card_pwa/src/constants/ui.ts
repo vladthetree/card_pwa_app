@@ -64,13 +64,13 @@ export const UI_TOKENS = {
   },
 
   modal: {
-    overlay:     'fixed inset-0 z-[1000] flex items-center justify-center px-3 sm:px-4',
+    overlay:     'fixed inset-0 z-[1000] flex items-center justify-center pl-[calc(var(--safe-left)+0.75rem)] pr-[calc(var(--safe-right)+0.75rem)] sm:px-4',
     backdrop:    'absolute inset-0 bg-black/[0.82] backdrop-blur-md',
     shell:       `relative w-full max-h-[calc(100dvh_-_var(--safe-top)_-_var(--safe-bottom)_-_2rem)] rounded-[2rem] sm:rounded-[2.5rem] border border-white/15 bg-slate-950/95 backdrop-blur-xl overflow-hidden shadow-2xl shadow-black/45 ${T}`,
     header:      'sticky top-0 z-10 flex items-center justify-between px-5 py-4 border-b border-white/10 bg-black/40 backdrop-blur-xl',
     title:       'text-white font-black text-lg uppercase tracking-[0.12em]',
     subtitle:    'text-xs text-white/50 mt-0.5',
-    closeButton: `p-2 rounded-xl text-white/45 hover:text-white hover:bg-white/10 ${T} active:scale-95 min-w-[36px] min-h-[36px] flex items-center justify-center`,
+    closeButton: `p-2 rounded-xl text-white/45 hover:text-white hover:bg-white/10 ${T} active:scale-95 min-w-[44px] min-h-[44px] sm:min-w-[36px] sm:min-h-[36px] flex items-center justify-center`,
     body:        'overflow-y-auto px-4 py-4 sm:px-5 sm:py-5',
     footer:      'sticky bottom-0 px-5 py-4 border-t border-white/10 flex gap-3 bg-black/40 backdrop-blur-xl',
   },
@@ -81,9 +81,9 @@ export const UI_TOKENS = {
   },
 
   button: {
-    // ≥ 36px touch target; for standalone icon buttons prefer iconAction
+    // Mobile-first: keep interactive targets close to iOS's 44x44pt guidance.
     ghost:         `px-3 py-1.5 rounded-2xl border border-white/15 text-white/80 hover:text-white hover:border-white/30 ${T} active:scale-95 text-xs`,
-    iconGhost:     `flex items-center gap-2 px-3 py-1.5 rounded-2xl glass-hover text-white/60 hover:text-white/80 ${T} active:scale-95`,
+    iconGhost:     `flex min-h-11 min-w-11 items-center gap-2 px-3 py-2 rounded-2xl glass-hover text-white/60 hover:text-white/80 ${T} active:scale-95 sm:min-h-0 sm:min-w-0 sm:py-1.5`,
     secondary:     `py-2 px-3 rounded-2xl text-xs border ${T} active:scale-95 border-white/15 text-white/70 hover:text-white hover:border-white/30`,
     secondaryActive: `py-2 px-3 rounded-2xl text-xs border ${T} active:scale-95 border-white/40 bg-white/15 text-white`,
     footerSecondary: `flex-1 py-3 rounded-2xl border border-white/20 text-white/80 hover:text-white hover:border-white/35 ${T} active:scale-95`,
