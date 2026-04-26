@@ -23,6 +23,7 @@ card-sync-server/certs/
 card-sync-server/.env.sync-server
 
 # ─── Allgemein ────────────────────────────────────────────
+Design_System/
 .DS_Store
 Thumbs.db
 *.log

@@ -207,6 +207,8 @@ export default function ProfileSyncSection({ language }: Props) {
   const [selectedDeckIds, setSelectedDeckIds] = useState<string[]>([])
   const [removingDevice, setRemovingDevice] = useState(false)
   const [showRemoveDeviceConfirm, setShowRemoveDeviceConfirm] = useState(false)
+  const [showProfileList, setShowProfileList] = useState(false)
+  const [showDeckList, setShowDeckList] = useState(false)
   const [isOnline, setIsOnline] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine))
   const [createdRecoveryCode, setCreatedRecoveryCode] = useState<string | null>(null)
   const [issuedPairingCode, setIssuedPairingCode] = useState<string | null>(null)
@@ -677,20 +679,49 @@ export default function ProfileSyncSection({ language }: Props) {
   }
 
   const isLinked = profile?.mode === 'linked'
+  const currentServerProfile = profiles.find(item => item.userId === profile?.userId)
+  const switchableProfiles = profiles.filter(item => item.userId !== profile?.userId)
+  const currentProfileName = profile?.displayName || currentServerProfile?.profileName || (isLinked ? t.mode_linked : t.mode_local)
+  const deviceCount = currentServerProfile?.linkedDevicesCount
+  const profileListLabel = language === 'de'
+    ? `${profiles.length} Profil${profiles.length === 1 ? '' : 'e'} auf dem Server`
+    : `${profiles.length} server profile${profiles.length === 1 ? '' : 's'}`
+  const deckListLabel = serverDecks.length === 0
+    ? '0'
+    : selectedDeckIds.length === 0
+      ? String(serverDecks.length)
+      : `${selectedCount}/${serverDecks.length}`
 
   return (
     <>
       <div className="space-y-5 pt-3">
         {/* Status banner */}
-        <div className={`flex items-center gap-3 rounded-lg px-4 py-3 ${isLinked ? 'bg-emerald-950/60 border border-emerald-800/40' : 'bg-zinc-900 border border-zinc-800'}`}>
-          <User size={16} className={isLinked ? 'text-emerald-400' : 'text-zinc-500'} />
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-white">
-              {isLinked ? t.mode_linked : t.mode_local}
-            </p>
-            <p className="text-xs text-zinc-400 mt-0.5">
-              {isLinked ? (profile?.userId?.slice(0, 8) + '…') : t.mode_local_desc}
-            </p>
+        <div className={`rounded-[14px] border px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] ${
+          isLinked ? 'border-zinc-800 bg-[#0a0a0a]' : 'border-zinc-900 bg-[#080808]'
+        }`}>
+          <div className="flex items-start gap-3">
+            <div className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${
+              isLinked ? 'border-[--brand-primary]/30 text-[--brand-primary]' : 'border-zinc-800 text-zinc-600'
+            }`}>
+              <User size={15} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="truncate text-sm font-black text-zinc-100">
+                  {currentProfileName}
+                </p>
+                <span className={`rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] ${
+                  isLinked ? 'border-[--brand-primary]/25 text-[--brand-primary]' : 'border-zinc-800 text-zinc-500'
+                }`}>
+                  {isLinked ? t.mode_linked : t.mode_local}
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-zinc-500">
+                {isLinked
+                  ? `${profile?.userId?.slice(0, 8) ?? '--------'}...${typeof deviceCount === 'number' ? ` - ${deviceCount} ${language === 'de' ? 'Geraete' : 'devices'}` : ''}`
+                  : t.mode_local_desc}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -704,53 +735,79 @@ export default function ProfileSyncSection({ language }: Props) {
 
         {/* Linked profile info */}
         {isLinked && profile && (
-          <div className="space-y-2">
-            <StatusRow label={t.user_id_label} value={profile.userId ?? '—'} />
-            <StatusRow label={t.device_id_label} value={profile.deviceId} />
-            {profile.linkedAt && (
-              <StatusRow
-                label={t.linked_at_label}
-                value={new Date(profile.linkedAt).toLocaleDateString()}
-              />
-            )}
-          </div>
+          <details className="rounded-lg border border-zinc-900 bg-black/25 px-3 py-2">
+            <summary className="cursor-pointer list-none text-xs font-medium uppercase tracking-[0.12em] text-zinc-500 transition hover:text-zinc-300">
+              {language === 'de' ? 'Technische Profil-IDs' : 'Technical profile IDs'}
+            </summary>
+            <div className="mt-3 space-y-2">
+              <StatusRow label={t.user_id_label} value={profile.userId ?? '-'} />
+              <StatusRow label={t.device_id_label} value={profile.deviceId} />
+              {profile.linkedAt && (
+                <StatusRow
+                  label={t.linked_at_label}
+                  value={new Date(profile.linkedAt).toLocaleDateString()}
+                />
+              )}
+            </div>
+          </details>
         )}
 
         {/* Actions */}
         <div className="space-y-2">
           {isLinked && !!effectiveEndpoint && (
-            <div className="space-y-2 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-semibold text-zinc-300">{t.list_profiles}</p>
-                  <button
-                    type="button"
-                    onClick={() => void loadProfiles()}
-                    disabled={busy || loadingProfiles || !isOnline}
-                    className="text-xs text-zinc-400 hover:text-white disabled:opacity-40 transition-colors"
-                  >
+            <div className="space-y-3 rounded-[14px] border border-zinc-900 bg-[#080808] p-3">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-400">{t.list_profiles}</p>
+                  <p className="mt-1 text-xs text-zinc-600">
+                    {profiles.length > 0 ? profileListLabel : (language === 'de' ? 'Noch nicht geladen' : 'Not loaded yet')}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => void loadProfiles()}
+                  disabled={busy || loadingProfiles || !isOnline}
+                  className="rounded-lg border border-zinc-800 px-2.5 py-1.5 text-xs text-zinc-400 transition-colors hover:border-zinc-600 hover:text-white disabled:opacity-40"
+                >
                   {loadingProfiles ? t.linking : t.list_profiles_refresh}
                 </button>
               </div>
 
-              {profiles.length === 0 && !loadingProfiles && (
-                <p className="text-xs text-zinc-500">—</p>
+              {profiles.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowProfileList(value => !value)}
+                  className="flex w-full items-center justify-between rounded-lg border border-zinc-900 bg-black/25 px-3 py-2 text-left text-xs text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-200"
+                >
+                  <span>
+                    {language === 'de'
+                      ? `${switchableProfiles.length} weitere Profile`
+                      : `${switchableProfiles.length} other profiles`}
+                  </span>
+                  <span className="font-mono">{showProfileList ? '-' : '+'}</span>
+                </button>
               )}
 
-              {profiles.map(item => {
-                const isCurrent = profile?.userId === item.userId && profile?.mode === 'linked'
+              {showProfileList && switchableProfiles.length === 0 && !loadingProfiles && (
+                <p className="rounded-lg border border-zinc-900 bg-black/20 px-3 py-2 text-xs text-zinc-600">
+                  {language === 'de' ? 'Kein weiteres Profil vorhanden.' : 'No other profile available.'}
+                </p>
+              )}
+
+              {showProfileList && switchableProfiles.map(item => {
                 const isSwitchingThis = switchingUserId === item.userId
                 return (
-                  <div key={item.userId} className="rounded border border-zinc-800 px-3 py-2">
+                  <div key={item.userId} className="rounded-lg border border-zinc-900 bg-black/20 px-3 py-2">
                     <p className="text-sm text-white font-medium">{item.profileName}</p>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">{item.userId.slice(0, 8)}… · {item.linkedDevicesCount ?? 0} devices</p>
+                    <p className="text-[11px] text-zinc-500 mt-0.5">{item.userId.slice(0, 8)}... - {item.linkedDevicesCount ?? 0} devices</p>
                     <div className="mt-2">
                       <button
                         type="button"
-                        disabled={busy || isCurrent || isSwitchingThis || !isOnline}
+                        disabled={busy || isSwitchingThis || !isOnline}
                         onClick={() => void handleSwitchToProfile(item)}
                         className="text-xs px-2.5 py-1.5 rounded border border-zinc-700 text-zinc-300 hover:text-white hover:border-zinc-500 disabled:opacity-40 transition-colors"
                       >
-                        {isCurrent ? t.mode_linked : (isSwitchingThis ? t.switching : t.switch_to_profile)}
+                        {isSwitchingThis ? t.switching : t.switch_to_profile}
                       </button>
                     </div>
                   </div>
@@ -760,26 +817,33 @@ export default function ProfileSyncSection({ language }: Props) {
           )}
 
           {isLinked && !!effectiveEndpoint && (
-            <div className="space-y-2 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-semibold text-zinc-300">{t.list_decks}</p>
-                  <button
-                    type="button"
-                    onClick={() => void loadDecks()}
-                    disabled={busy || loadingDecks || !isOnline}
-                    className="text-xs text-zinc-400 hover:text-white disabled:opacity-40 transition-colors"
-                  >
+            <div className="space-y-3 rounded-[14px] border border-zinc-900 bg-[#080808] p-3">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-400">{t.list_decks}</p>
+                  <p className="mt-1 text-xs text-zinc-600">
+                    {serverDecks.length > 0
+                      ? `${deckListLabel} ${language === 'de' ? 'Decks aktiv' : 'decks active'}`
+                      : (language === 'de' ? 'Noch nicht geladen' : 'Not loaded yet')}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => void loadDecks()}
+                  disabled={busy || loadingDecks || !isOnline}
+                  className="rounded-lg border border-zinc-800 px-2.5 py-1.5 text-xs text-zinc-400 transition-colors hover:border-zinc-600 hover:text-white disabled:opacity-40"
+                >
                   {loadingDecks ? t.linking : t.list_decks_refresh}
                 </button>
               </div>
 
             {serverDecks.length === 0 && !loadingDecks && (
-              <p className="text-xs text-zinc-500">—</p>
+              <p className="text-xs text-zinc-500">-</p>
             )}
 
             {serverDecks.length > 0 && (
               <div className="space-y-2">
-                <div className="flex items-center justify-between gap-3 text-xs text-zinc-500">
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-zinc-900 bg-black/25 px-3 py-2 text-xs text-zinc-500">
                   <span>
                     {selectedDeckIds.length === 0
                       ? t.selected_all_decks
@@ -794,27 +858,37 @@ export default function ProfileSyncSection({ language }: Props) {
                     {t.select_all_decks}
                   </button>
                 </div>
-                <div className="max-h-56 overflow-y-auto rounded border border-zinc-800">
-                <ul>
-                  {serverDecks.map(deck => (
-                    <li
-                      key={deck.id}
-                      className="px-3 py-2 text-sm text-zinc-200 border-b border-zinc-800 last:border-b-0"
-                    >
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={!selectedDeckSet || selectedDeckSet.has(deck.id)}
-                          onChange={() => void handleToggleDeckSync(deck.id)}
-                          disabled={busy || loadingDecks}
-                          className="h-4 w-4 accent-emerald-500"
-                        />
-                        <span>{deck.name || deck.id}</span>
-                      </label>
-                    </li>
-                  ))}
-                </ul>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowDeckList(value => !value)}
+                  className="flex w-full items-center justify-between rounded-lg border border-zinc-900 bg-black/25 px-3 py-2 text-left text-xs text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-200"
+                >
+                  <span>{language === 'de' ? 'Deck-Auswahl anzeigen' : 'Show deck selection'}</span>
+                  <span className="font-mono">{showDeckList ? '-' : '+'}</span>
+                </button>
+                {showDeckList && (
+                  <div className="max-h-56 overflow-y-auto rounded-lg border border-zinc-900">
+                    <ul>
+                      {serverDecks.map(deck => (
+                        <li
+                          key={deck.id}
+                          className="px-3 py-2 text-sm text-zinc-200 border-b border-zinc-900 last:border-b-0"
+                        >
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={!selectedDeckSet || selectedDeckSet.has(deck.id)}
+                              onChange={() => void handleToggleDeckSync(deck.id)}
+                              disabled={busy || loadingDecks}
+                              className="h-4 w-4 accent-emerald-500"
+                            />
+                            <span>{deck.name || deck.id}</span>
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -30,6 +30,7 @@ export function useSessionPersistence({
         relearnSuccessCounts: current.relearnSuccessCounts,
         forcedTomorrowCardIds: current.forcedTomorrowCardIds,
         againCounts: current.againCounts,
+        reviewEvents: current.reviewEvents,
         startTime: current.startTime,
       })
 

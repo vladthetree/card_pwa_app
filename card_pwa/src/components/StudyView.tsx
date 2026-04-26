@@ -17,6 +17,7 @@ import {
   sessionReducer,
   initialSessionState,
 } from '../services/studySessionReducer'
+import { buildLearningCoachSummary } from '../services/learningCoach'
 import type { Deck, Card, Rating } from '../types'
 import { formatDeckName } from '../utils/cardTextParser'
 import { getReviewXp } from '../utils/gamification'
@@ -26,9 +27,10 @@ import { useWakeLock } from '../hooks/useWakeLock'
 import CardFace from './CardFace.tsx'
 import EditCardModal from './EditCardModal.tsx'
 import RatingBar from './RatingBar.tsx'
-import ProgressBar from './ProgressBar.tsx'
 import StreakBadge from './StreakBadge.tsx'
 import DailyGoalRing from './DailyGoalRing.tsx'
+import SessionCoachPanel from './SessionCoachPanel'
+import StudyHeaderProgress, { type RewardHint } from './StudyHeaderProgress'
 
 interface Props {
   /** Deck to study */
@@ -81,13 +83,7 @@ export default function StudyView({ deck, onExit }: Props) {
   const [answerWasIncorrect, setAnswerWasIncorrect] = useState(false)
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState<boolean | null>(null)
   const [showHeaderLegend, setShowHeaderLegend] = useState(false)
-  const [rewardToast, setRewardToast] = useState<{
-    id: string
-    xp: number
-    combo: number
-    label: string
-    tone: 'success' | 'practice'
-  } | null>(null)
+  const [rewardToast, setRewardToast] = useState<RewardHint | null>(null)
   const { isHandsetLayout, isHandsetLandscape } = useHandsetLayout()
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
   const sessionMomentumRef = useRef(0)
@@ -272,6 +268,7 @@ export default function StudyView({ deck, onExit }: Props) {
       relearnSuccessCounts: session.relearnSuccessCounts,
       forcedTomorrowCardIds: session.forcedTomorrowCardIds,
       againCounts: session.againCounts,
+      reviewEvents: session.reviewEvents,
       startTime: session.startTime,
     })
 
@@ -286,6 +283,7 @@ export default function StudyView({ deck, onExit }: Props) {
     session.relearnSuccessCounts,
     session.forcedTomorrowCardIds,
     session.againCounts,
+    session.reviewEvents,
     session.startTime,
     deck.id,
     studyCardLimit,
@@ -679,86 +677,110 @@ export default function StudyView({ deck, onExit }: Props) {
     const difficultCards = Object.keys(session.againCounts).length
     const forcedCount = session.forcedTomorrowCardIds.length
     const isPerfectSession = session.sessionCount >= 3 && difficultCards === 0
+    const coachSummary = buildLearningCoachSummary({
+      reviewEvents: session.reviewEvents,
+      cards,
+      againCounts: session.againCounts,
+      lowRatingCounts: session.lowRatingCounts,
+      forcedTomorrowCardIds: session.forcedTomorrowCardIds,
+    })
 
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-4">
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-          className={`bg-black border p-8 sm:p-10 rounded-3xl text-center max-w-sm w-full ${
-            isPerfectSession ? 'border-emerald-500/40 shadow-[0_0_40px_rgba(16,185,129,0.25)]' : 'border-white/20'
-          }`}
-        >
-          {isPerfectSession ? (
-            <div className="perfect-session-pop mx-auto mb-4 inline-flex items-center justify-center">
-              <Sparkles size={56} className="text-emerald-300" />
-            </div>
-          ) : (
-            <CheckCircle size={52} className="text-green-400 mx-auto mb-4" />
-          )}
-          <h2 className="text-2xl font-bold text-white mb-2">{t.session_completed}</h2>
-          {isPerfectSession && (
-            <div
-              className="mx-auto mb-3 inline-flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-emerald-400/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-200 perfect-session-shine"
-              role="status"
-              aria-live="polite"
-              title={t.perfect_session_hint}
-            >
-              <Sparkles size={12} aria-hidden="true" />
-              {t.perfect_session}
-            </div>
-          )}
-          <p className="text-white/55 text-sm mb-5">{t.deck}: {formatDeckName(deck.name)}</p>
+      <>
+        <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+            className={`bg-black border p-8 sm:p-10 rounded-3xl text-center max-w-lg w-full ${
+              isPerfectSession ? 'border-emerald-500/40 shadow-[0_0_40px_rgba(16,185,129,0.25)]' : 'border-white/20'
+            }`}
+          >
+            {isPerfectSession ? (
+              <div className="perfect-session-pop mx-auto mb-4 inline-flex items-center justify-center">
+                <Sparkles size={56} className="text-emerald-300" />
+              </div>
+            ) : (
+              <CheckCircle size={52} className="text-green-400 mx-auto mb-4" />
+            )}
+            <h2 className="text-2xl font-bold text-white mb-2">{t.session_completed}</h2>
+            {isPerfectSession && (
+              <div
+                className="mx-auto mb-3 inline-flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-emerald-400/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-200 perfect-session-shine"
+                role="status"
+                aria-live="polite"
+                title={t.perfect_session_hint}
+              >
+                <Sparkles size={12} aria-hidden="true" />
+                {t.perfect_session}
+              </div>
+            )}
+            <p className="text-white/55 text-sm mb-5">{t.deck}: {formatDeckName(deck.name)}</p>
 
-          <div className="grid grid-cols-3 gap-2 mb-6">
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-              <p className="text-lg font-bold font-mono text-white">{session.sessionCount}</p>
-              <p className="text-[10px] uppercase tracking-wide text-white/45 mt-0.5">{t.cards_reviewed.replace('{count}', '').trim() || t.completion_cards_label}</p>
+            <div className="grid grid-cols-3 gap-2 mb-6">
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                <p className="text-lg font-bold font-mono text-white">{session.sessionCount}</p>
+                <p className="text-[10px] uppercase tracking-wide text-white/45 mt-0.5">{t.cards_reviewed.replace('{count}', '').trim() || t.completion_cards_label}</p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                <p className={`text-lg font-bold font-mono ${difficultCards > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>{difficultCards}</p>
+                <p className="text-[10px] uppercase tracking-wide text-white/45 mt-0.5">{t.completion_difficult_label}</p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                <p className="text-lg font-bold font-mono text-white/70">{elapsedMs > 0 ? elapsedLabel : '—'}</p>
+                <p className="text-[10px] uppercase tracking-wide text-white/45 mt-0.5">{t.completion_time_label}</p>
+              </div>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-              <p className={`text-lg font-bold font-mono ${difficultCards > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>{difficultCards}</p>
-              <p className="text-[10px] uppercase tracking-wide text-white/45 mt-0.5">{t.completion_difficult_label}</p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-              <p className="text-lg font-bold font-mono text-white/70">{elapsedMs > 0 ? elapsedLabel : '—'}</p>
-              <p className="text-[10px] uppercase tracking-wide text-white/45 mt-0.5">{t.completion_time_label}</p>
-            </div>
-          </div>
 
-          {forcedCount > 0 && (
-            <p className="text-xs text-white/40 mb-4">
-              {forcedCount} {t.completion_forced_tomorrow}
-            </p>
-          )}
+            <SessionCoachPanel
+              language={settings.language}
+              summary={coachSummary}
+              onEditCard={card => setEditingCard(card)}
+            />
 
-          {session.lastUndoToken && !session.isSubmitting && (
-            <button
-              type="button"
-              onClick={handleUndoLastRating}
-              className="w-full mb-3 py-2 rounded-xl border border-white/25 text-white/80 hover:text-white hover:border-white/40 transition text-sm"
-            >
-              {t.undo_last_rating}
-            </button>
+            {forcedCount > 0 && (
+              <p className="text-xs text-white/40 my-4">
+                {forcedCount} {t.completion_forced_tomorrow}
+              </p>
+            )}
+
+            {session.lastUndoToken && !session.isSubmitting && (
+              <button
+                type="button"
+                onClick={handleUndoLastRating}
+                className="w-full mt-4 mb-3 py-2 rounded-xl border border-white/25 text-white/80 hover:text-white hover:border-white/40 transition text-sm"
+              >
+                {t.undo_last_rating}
+              </button>
+            )}
+            <div className="mt-4 flex gap-3">
+              <button
+                onClick={handleExit}
+                className="flex-1 py-3 rounded-xl bg-white text-black hover:bg-white/90 font-semibold transition-all"
+              >
+                {t.home}
+              </button>
+              <button
+                onClick={handleRestart}
+                className="flex-1 py-3 rounded-xl font-medium transition-all text-white border border-white/20 hover:border-white/35"
+                style={{ background: '#000000' }}
+              >
+                <RotateCcw size={14} className="inline mr-1.5" />
+                {t.restart}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+        <AnimatePresence>
+          {editingCard && (
+            <EditCardModal
+              card={editingCard}
+              onClose={() => setEditingCard(null)}
+              onSaved={handleCardSaved}
+            />
           )}
-          <div className="flex gap-3">
-            <button
-              onClick={handleExit}
-              className="flex-1 py-3 rounded-xl bg-white text-black hover:bg-white/90 font-semibold transition-all"
-            >
-              {t.home}
-            </button>
-            <button
-              onClick={handleRestart}
-              className="flex-1 py-3 rounded-xl font-medium transition-all text-white border border-white/20 hover:border-white/35"
-              style={{ background: '#000000' }}
-            >
-              <RotateCcw size={14} className="inline mr-1.5" />
-              {t.restart}
-            </button>
-          </div>
-        </motion.div>
-      </div>
+        </AnimatePresence>
+      </>
     )
   }
 
@@ -915,13 +937,23 @@ export default function StudyView({ deck, onExit }: Props) {
                 </button>
               </div>
             </div>
-            <ProgressBar current={session.sessionCount} total={session.sessionCount + session.cards.length} />
+            <StudyHeaderProgress
+              current={session.sessionCount}
+              total={session.sessionCount + session.cards.length}
+              reward={rewardToast}
+              reducedMotion={prefersReducedMotion}
+            />
           </>
         )}
 
         {/* Progress bar for mobile */}
         {isHandsetLayout && (
-          <ProgressBar current={session.sessionCount} total={session.sessionCount + session.cards.length} />
+          <StudyHeaderProgress
+            current={session.sessionCount}
+            total={session.sessionCount + session.cards.length}
+            reward={rewardToast}
+            reducedMotion={prefersReducedMotion}
+          />
         )}
       </div>
 
@@ -937,34 +969,6 @@ export default function StudyView({ deck, onExit }: Props) {
                   : 'rgba(249,115,22,0.03)')
             : 'rgba(249,115,22,0.03)' }}
         />
-        <AnimatePresence initial={false}>
-          {rewardToast && (
-            <motion.div
-              key={rewardToast.id}
-              initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.96 }}
-              animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-              exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.96 }}
-              transition={{ duration: prefersReducedMotion ? 0.12 : 0.18, ease: 'easeOut' }}
-              className={`pointer-events-none absolute right-3 top-3 z-20 rounded-2xl border px-3 py-2 shadow-2xl sm:right-6 sm:top-5 ${
-                rewardToast.tone === 'success'
-                  ? 'border-emerald-300/25 bg-emerald-950/35 text-emerald-100'
-                  : 'border-amber-300/25 bg-amber-950/30 text-amber-100'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-lg font-black font-mono tabular-nums">+{rewardToast.xp} XP</span>
-                {rewardToast.combo >= 3 && (
-                  <span className="rounded-full border border-current/20 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em]">
-                    Flow
-                  </span>
-                )}
-              </div>
-              <div className="mt-0.5 text-[10px] uppercase tracking-[0.16em] opacity-65">
-                {rewardToast.label}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
         <div
           className={`flex-1 min-h-0 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-0' : 'overflow-y-auto px-3 sm:px-4 py-4 sm:py-6'}`}
           style={isHandsetLayout ? { paddingBottom: 'calc(var(--safe-bottom) + 0.5rem)' } : undefined}
