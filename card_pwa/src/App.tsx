@@ -144,7 +144,7 @@ function AppShell() {
   return (
     <AppErrorBoundary>
       <AppInitializer>
-        <div className="min-h-screen flex flex-col" style={{ background: 'var(--theme-background)', minHeight: '100dvh' }}>
+        <div className="flex h-[100dvh] min-h-0 flex-col overflow-hidden" style={{ background: 'var(--theme-background)', height: '100dvh' }}>
           <ToastContainer />
           <Suspense fallback={null}>
             {swSupported && waitingWorker && (
@@ -163,7 +163,7 @@ function AppShell() {
                 animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
                 exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
-                className="flex-1 min-h-0 home-view"
+                className="flex-1 min-h-0 h-full home-view"
               >
                 <HomeView
                   onStartStudy={startStudy}
@@ -180,7 +180,7 @@ function AppShell() {
                 animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
                 exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
-                className="flex-1 min-h-0 home-view"
+                className="flex-1 min-h-0 h-full home-view"
               >
                 <HomeView
                   mode="shuffle-manage"
@@ -199,7 +199,7 @@ function AppShell() {
                 animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
                 exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.995 }}
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
-                className="flex-1 min-h-0 study-view"
+                className="flex-1 min-h-0 h-full study-view"
               >
                 <StudyView deck={activeDeck} onExit={goHome} />
               </motion.div>
@@ -212,7 +212,7 @@ function AppShell() {
                 animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
                 exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.995 }}
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
-                className="flex-1 min-h-0 study-view"
+                className="flex-1 min-h-0 h-full study-view"
               >
                 <ShuffleStudyView collection={activeShuffleCollection} onExit={goHome} />
               </motion.div>

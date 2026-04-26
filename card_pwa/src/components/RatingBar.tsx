@@ -47,8 +47,8 @@ export default function RatingBar({ onRate, disabled = false, maxRating = 4, lay
   const lockedLabel = settings.language === 'de' ? 'Gesperrt' : 'Locked'
 
   const containerClass = layout === 'grid'
-    ? 'grid h-full grid-cols-2 gap-2'
-    : 'flex gap-1.5 sm:gap-2 overflow-x-auto pb-1'
+    ? 'grid h-full grid-cols-2 grid-rows-2 gap-[5px] px-[6px]'
+    : 'grid grid-cols-2 gap-[5px] sm:grid-cols-4 sm:gap-2'
 
   return (
     <div className={`${containerClass} ${className}`.trim()}>
@@ -64,14 +64,14 @@ export default function RatingBar({ onRate, disabled = false, maxRating = 4, lay
             aria-disabled={isDisabled}
             aria-label={locked ? `${labels[key]} (${lockedLabel})` : `${labels[key]} (${hotkey})`}
             title={disabled ? t.please_wait : locked ? lockedLabel : `${labels[key]} (${hotkey})`}
-            className={`btn-rating group ${
-              layout === 'grid' ? 'h-full min-h-[72px] px-3 py-4' : 'py-4 px-4 min-w-[120px] sm:min-w-0'
+            className={`btn-rating group relative flex flex-col items-center justify-center gap-[1px] text-center ${
+              layout === 'grid' ? 'h-full min-h-[62px] p-[8px]' : 'min-h-[64px] px-3 py-3'
             } ${UI_TOKENS.rating[colorKey]} ${
               isDisabled ? 'opacity-45 cursor-not-allowed saturate-50' : 'cursor-pointer'
-            } ${prefersReducedMotion || isDisabled ? '' : 'btn-rating-hover-scale active:scale-[0.98]'}`}
+            } ${prefersReducedMotion || isDisabled ? '' : 'active:scale-[0.98]'}`}
           >
-            <span className="block font-sans font-bold text-sm tracking-wide leading-tight">{labels[key]}</span>
-            <kbd className="block text-[10px] opacity-55 font-mono mt-1 leading-none not-italic group-hover:opacity-90 transition-opacity">
+            <span className="block font-sans text-[14px] font-extrabold leading-tight tracking-normal">{labels[key]}</span>
+            <kbd className="block font-mono text-[8px] leading-none opacity-75 transition-opacity group-hover:opacity-90">
               {locked ? lockedLabel : hotkey}
             </kbd>
           </button>

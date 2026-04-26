@@ -51,7 +51,7 @@ export function HomeCreateDeckModal({
             onClick={onClose}
             className={UI_TOKENS.modal.closeButton}
           >
-            <X size={16} />
+            <X size={16} strokeWidth={1.5} />
           </button>
         </div>
 
@@ -69,7 +69,7 @@ export function HomeCreateDeckModal({
             }
           }}
           placeholder={t.new_deck_placeholder}
-          className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-white/30"
+          className={`${UI_TOKENS.input.base} w-full`}
         />
 
         {createDeckError && <p className="text-xs text-rose-300 mt-2">{createDeckError}</p>}
@@ -78,7 +78,7 @@ export function HomeCreateDeckModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-3 py-2 rounded-lg text-xs border border-white/15 text-white/70 hover:text-white hover:border-white/30 transition"
+            className={UI_TOKENS.button.footerSecondary}
           >
             {t.cancel}
           </button>
@@ -86,7 +86,7 @@ export function HomeCreateDeckModal({
             type="button"
             onClick={onSubmit}
             disabled={isCreatingDeck}
-            className="px-3 py-2 rounded-lg text-xs border border-white/20 bg-white text-black hover:bg-white/90 transition disabled:opacity-60"
+            className={`${UI_TOKENS.button.footerPrimary} disabled:opacity-60`}
           >
             {isCreatingDeck ? t.saving : t.create_deck}
           </button>

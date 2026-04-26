@@ -46,8 +46,8 @@ export default function ConfirmModal({
   }, [isOpen, onCancel])
 
   const confirmClass = variant === 'danger'
-    ? 'flex-1 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-semibold transition-all duration-200 active:scale-[0.98]'
-    : 'flex-1 py-2.5 rounded-2xl bg-white text-black hover:bg-white/90 font-semibold transition-all duration-200 active:scale-[0.98]'
+    ? 'flex-1 py-2.5 rounded-[12px] bg-rose-600 hover:bg-rose-500 text-white font-semibold transition-all duration-200 active:scale-[0.98]'
+    : 'flex-1 py-2.5 rounded-[12px] bg-white text-black hover:bg-white/90 font-semibold transition-all duration-200 active:scale-[0.98]'
 
   return (
     <AnimatePresence>
@@ -75,13 +75,13 @@ export default function ConfirmModal({
               className={`absolute top-4 right-4 ${UI_TOKENS.modal.closeButton}`}
               aria-label={t.cancel}
             >
-              <X size={15} />
+              <X size={15} strokeWidth={1.5} />
             </button>
 
             <div className="flex items-start gap-3 mb-4">
               {variant === 'danger' && (
                 <div className="shrink-0 flex items-center justify-center w-9 h-9 rounded-xl bg-rose-500/15 text-rose-400">
-                  <AlertTriangle size={18} />
+                  <AlertTriangle size={18} strokeWidth={1.5} />
                 </div>
               )}
               <div className="min-w-0">

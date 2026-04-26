@@ -81,7 +81,7 @@ export default function OfflineStatusBanner() {
         animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
         exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
         transition={{ duration: prefersReducedMotion ? 0.18 : 0.24, ease: 'easeOut' }}
-        className={`fixed bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)] left-safe-4 right-safe-4 z-40 mx-auto flex w-auto max-w-md items-start gap-3 rounded-2xl border px-4 py-3 shadow-xl backdrop-blur-md transition-all duration-200 ease-out sm:left-auto sm:right-safe-4 sm:mx-0 ${
+        className={`fixed bottom-[5.75rem] left-safe-4 right-safe-4 z-40 mx-auto flex w-auto max-w-md items-start gap-3 rounded-[14px] border px-4 py-3 shadow-menu backdrop-blur-md transition-all duration-200 ease-out sm:left-auto sm:right-safe-4 sm:mx-0 ${
           isOffline
             ? 'border-rose-500/25 bg-rose-950/78'
             : 'border-amber-500/25 bg-amber-950/78'
@@ -92,7 +92,7 @@ export default function OfflineStatusBanner() {
         <div className="flex min-w-0 flex-1 items-start gap-3">
           {isOffline ? (
             <>
-              <WifiOff size={18} className="mt-0.5 shrink-0 text-rose-300" />
+              <WifiOff size={18} strokeWidth={1.5} className="mt-0.5 shrink-0 text-rose-300" />
               <div className="min-w-0 text-sm">
                 <p className="font-medium text-rose-100">{t.offline_title}</p>
                 <p className="mt-0.5 text-xs leading-relaxed text-rose-200/75">
@@ -102,7 +102,7 @@ export default function OfflineStatusBanner() {
             </>
           ) : (
             <>
-              <AlertCircle size={18} className="mt-0.5 shrink-0 text-amber-300" />
+              <AlertCircle size={18} strokeWidth={1.5} className="mt-0.5 shrink-0 text-amber-300" />
               <div className="min-w-0 text-sm">
                 <p className="font-medium text-amber-100">{t.slow_connection_title}</p>
                 <p className="mt-0.5 text-xs leading-relaxed text-amber-200/75">
@@ -128,17 +128,17 @@ export default function OfflineStatusBanner() {
             transition={{ duration: prefersReducedMotion ? 0 : 2.4, repeat: prefersReducedMotion ? 0 : Infinity, ease: 'linear' }}
             className="shrink-0 text-rose-300"
           >
-            <Wifi size={16} />
+            <Wifi size={16} strokeWidth={1.5} />
           </motion.div>
         )}
 
         <button
           type="button"
           onClick={() => setVisible(false)}
-          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full p-1.5 text-white/55 transition hover:bg-white/8 hover:text-white sm:h-9 sm:w-9"
+          className="ds-icon-button inline-flex h-11 w-11 shrink-0 sm:h-9 sm:w-9"
           aria-label={settings.language === 'de' ? 'Hinweis schließen' : 'Dismiss notice'}
         >
-          <X size={14} />
+          <X size={14} strokeWidth={1.5} />
         </button>
       </motion.div>
     </AnimatePresence>

@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
+import { cloneElement, isValidElement } from 'react'
 
 interface SettingsSectionProps {
   title: string
@@ -11,6 +12,10 @@ interface SettingsSectionProps {
 }
 
 export function SettingsSection({ title, description, icon, isOpen, onToggle, children }: SettingsSectionProps) {
+  const renderedIcon = isValidElement<{ strokeWidth?: number }>(icon)
+    ? cloneElement(icon, { strokeWidth: 1.5 })
+    : icon
+
   return (
     <div className={`overflow-hidden rounded-[14px] transition-all duration-300 ease-out ${
       isOpen
@@ -23,7 +28,7 @@ export function SettingsSection({ title, description, icon, isOpen, onToggle, ch
         className="w-full flex items-center justify-between gap-4 px-4 py-4 text-left hover:bg-white/[0.035] transition-all duration-300 ease-out active:scale-[0.995]"
       >
         <div className="flex items-start gap-3 min-w-0">
-          <div className={`mt-0.5 transition-colors duration-300 ease-out ${isOpen ? 'text-zinc-100' : 'text-zinc-700'}`}>{icon}</div>
+          <div className={`mt-0.5 transition-colors duration-300 ease-out ${isOpen ? 'text-zinc-100' : 'text-zinc-700'}`}>{renderedIcon}</div>
           <div className="min-w-0">
             <p className="text-sm font-black tracking-tight text-zinc-100">{title}</p>
             <p className="text-xs text-zinc-500 mt-1 leading-relaxed">{description}</p>
@@ -31,6 +36,7 @@ export function SettingsSection({ title, description, icon, isOpen, onToggle, ch
         </div>
         <ChevronDown
           size={18}
+          strokeWidth={1.5}
           className={`shrink-0 transition-all duration-300 ease-out ${isOpen ? 'rotate-180 text-zinc-100' : 'text-zinc-700'}`}
         />
       </button>

@@ -309,7 +309,7 @@ export default function CardFormModal(props: Props) {
           animate={{ opacity: 1, y: 0 }}
           exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
           transition={{ duration: prefersReducedMotion ? 0.12 : 0.2, ease: 'easeOut' }}
-          className={`${UI_TOKENS.modal.shell} max-w-none self-end rounded-b-none sm:max-w-lg sm:self-auto sm:rounded-b-[2.5rem]`}
+          className={`${UI_TOKENS.modal.shell} max-w-none self-end rounded-b-none sm:max-w-lg sm:self-auto sm:rounded-b-[2rem]`}
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
@@ -321,11 +321,11 @@ export default function CardFormModal(props: Props) {
               onClick={onClose}
               className={UI_TOKENS.modal.closeButton}
             >
-              <X size={18} />
+              <X size={18} strokeWidth={1.5} />
             </button>
           </div>
 
-          <div className="p-6 space-y-4 overflow-y-auto max-h-[calc(100dvh-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px)-12rem)]">
+          <div className="p-6 space-y-4 overflow-y-auto max-h-[calc(100dvh-env(safe-area-inset-top,0px)-12rem)]">
             {/* Deck selection — create mode only */}
             {props.mode === 'create' && (
               <div>
@@ -343,9 +343,9 @@ export default function CardFormModal(props: Props) {
                     </select>
                     <button
                       onClick={() => setCreateNewDeck(true)}
-                      className={`${UI_TOKENS.button.ghost} px-3 py-2 rounded-2xl text-white/50 hover:text-white`}
+                      className={`${UI_TOKENS.button.ghost} px-3 py-2 rounded-[12px] text-white/50 hover:text-white`}
                     >
-                      <Plus size={14} />
+                      <Plus size={14} strokeWidth={1.5} />
                     </button>
                   </div>
                 ) : (
@@ -359,7 +359,7 @@ export default function CardFormModal(props: Props) {
                     {decks.length > 0 && (
                       <button
                         onClick={() => setCreateNewDeck(false)}
-                        className={`${UI_TOKENS.button.ghost} px-3 py-2 rounded-2xl text-white/50 hover:text-white`}
+                        className={`${UI_TOKENS.button.ghost} px-3 py-2 rounded-[12px] text-white/50 hover:text-white`}
                       >
                         {t.existing_deck}
                       </button>
@@ -423,10 +423,10 @@ export default function CardFormModal(props: Props) {
                             <button
                               type="button"
                               onClick={() => removeMcOption(i)}
-                              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-white/30 transition-all duration-300 ease-out active:scale-95 hover:bg-rose-500/10 hover:text-rose-400 sm:h-9 sm:w-9"
+                              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] text-white/30 transition-all duration-200 ease-out active:scale-[0.98] hover:bg-rose-500/10 hover:text-rose-400 sm:h-9 sm:w-9"
                               title={t.remove_answer_option}
                             >
-                              <Minus size={14} />
+                              <Minus size={14} strokeWidth={1.5} />
                             </button>
                           )}
                         </div>
@@ -438,7 +438,7 @@ export default function CardFormModal(props: Props) {
                     onClick={addMcOption}
                     className="text-xs text-white/40 hover:text-white/70 transition flex items-center gap-1.5 pt-1"
                   >
-                    <Plus size={12} /> {t.add_answer_option}
+                    <Plus size={12} strokeWidth={1.5} /> {t.add_answer_option}
                   </button>
                 </div>
 
@@ -493,7 +493,7 @@ export default function CardFormModal(props: Props) {
                   onClick={() => setShowTagsInfo(v => !v)}
                   className="text-white/30 hover:text-white/60 transition"
                 >
-                  <Info size={13} />
+                  <Info size={13} strokeWidth={1.5} />
                 </button>
               }
             >
@@ -521,7 +521,7 @@ export default function CardFormModal(props: Props) {
             {/* Error */}
             {error && (
               <p className="text-rose-400 text-sm flex items-center gap-1.5">
-                <X size={13} /> {error}
+                <X size={13} strokeWidth={1.5} /> {error}
               </p>
             )}
           </div>
@@ -541,8 +541,8 @@ export default function CardFormModal(props: Props) {
                 disabled={isBusy || status === 'saved'}
                 className={`${UI_TOKENS.button.footerPrimary} text-sm disabled:opacity-40 flex items-center justify-center gap-2`}
               >
-                {status === 'saving' && <Loader2 size={14} className="animate-spin" />}
-                {status === 'saved' && <CheckCircle size={14} className="text-green-300" />}
+                {status === 'saving' && <Loader2 size={14} strokeWidth={1.5} className="animate-spin" />}
+                {status === 'saved' && <CheckCircle size={14} strokeWidth={1.5} className="text-green-300" />}
                 {status === 'idle' || status === 'error' ? t.save : status === 'saving' ? t.saving : `${t.saved}!`}
               </button>
             </div>
@@ -551,9 +551,9 @@ export default function CardFormModal(props: Props) {
               <button
                 onClick={() => setShowDeleteConfirm(true)}
                 disabled={isBusy}
-                className="px-3 py-2.5 rounded-2xl glass border border-red-500/30 text-sm text-red-400 hover:text-red-300 transition-all duration-300 ease-out active:scale-95 disabled:opacity-40 hover:bg-red-500/10"
+                className="px-3 py-2.5 rounded-[12px] border border-red-500/30 bg-[#0c0c0c] text-sm text-red-400 hover:text-red-300 transition-all duration-200 ease-out active:scale-[0.98] disabled:opacity-40 hover:bg-red-500/10"
               >
-                <Trash2 size={14} />
+                <Trash2 size={14} strokeWidth={1.5} />
               </button>
               <button
                 onClick={onClose}
@@ -568,9 +568,9 @@ export default function CardFormModal(props: Props) {
                 className={`${UI_TOKENS.button.footerPrimary} text-sm disabled:opacity-40 flex items-center justify-center gap-2`}
               >
                 {status === 'saving' ? (
-                  <><Loader2 size={14} className="animate-spin" /> {t.saving}</>
+                  <><Loader2 size={14} strokeWidth={1.5} className="animate-spin" /> {t.saving}</>
                 ) : status === 'saved' ? (
-                  <><CheckCircle size={14} /> {t.saved}</>
+                  <><CheckCircle size={14} strokeWidth={1.5} /> {t.saved}</>
                 ) : t.save}
               </button>
             </div>
@@ -583,28 +583,28 @@ export default function CardFormModal(props: Props) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/80 rounded-[2.5rem] flex items-center justify-center"
+                className="absolute inset-0 bg-black/80 rounded-[1.5rem] sm:rounded-[2rem] flex items-center justify-center"
                 onClick={e => e.stopPropagation()}
               >
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.9, opacity: 0 }}
-                  className="bg-rose-950/80 border border-rose-500/30 rounded-[2.5rem] p-6 max-w-sm backdrop-blur-sm"
+                  className="bg-rose-950/80 border border-rose-500/30 rounded-[14px] p-6 max-w-sm shadow-modal"
                 >
                   <h3 className="text-white font-black text-lg mb-2">{t.delete_card_title}</h3>
                   <p className="text-white/70 text-sm mb-6">{t.delete_card_description}</p>
                   <div className="flex gap-3">
                     <button
                       onClick={() => setShowDeleteConfirm(false)}
-                      className="flex-1 px-4 py-2 rounded-2xl glass border border-white/10 text-white text-sm hover:bg-white/5 transition-all duration-300 ease-out active:scale-95"
+                      className="flex-1 px-4 py-2 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] text-white text-sm hover:bg-[#111] hover:border-[#3f3f46] transition-all duration-200 ease-out active:scale-[0.98]"
                     >
                       {t.cancel}
                     </button>
                     <button
                       onClick={handleDelete}
                       disabled={status === 'deleting'}
-                      className="flex-1 px-4 py-2 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium transition-all duration-300 ease-out active:scale-95 disabled:opacity-40"
+                      className="flex-1 px-4 py-2 rounded-[12px] bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium transition-all duration-200 ease-out active:scale-[0.98] disabled:opacity-40"
                     >
                       {status === 'deleting' ? t.deleting : t.yes_delete}
                     </button>

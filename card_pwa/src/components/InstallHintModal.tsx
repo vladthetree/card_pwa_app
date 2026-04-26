@@ -44,11 +44,11 @@ export default function InstallHintModal({
             <p className={UI_TOKENS.modal.subtitle}>{subtitle}</p>
           </div>
           <button onClick={onClose} className={UI_TOKENS.modal.closeButton}>
-            <X size={16} />
+            <X size={16} strokeWidth={1.5} />
           </button>
         </div>
 
-        <p className="text-sm text-white/75 leading-relaxed rounded-xl border border-white/10 bg-black/30 p-3">
+        <p className="text-sm text-zinc-300 leading-relaxed rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3 shadow-card">
           {hintText}
         </p>
 
@@ -56,7 +56,7 @@ export default function InstallHintModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-3 py-2 rounded-lg text-xs border border-white/15 text-white/70 hover:text-white hover:border-white/30 transition"
+            className="px-3 py-2 rounded-[12px] text-xs border border-[#18181b] bg-[#0c0c0c] text-zinc-400 hover:text-zinc-50 hover:border-[#3f3f46] transition"
           >
             {closeLabel}
           </button>

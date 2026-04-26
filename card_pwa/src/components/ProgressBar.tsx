@@ -10,7 +10,7 @@ export default function ProgressBar({ current, total }: Props) {
   const percentage = total > 0 ? (current / total) * 100 : 0
 
   return (
-    <div className="h-[3px] w-full bg-white/[0.09] overflow-hidden">
+    <div className="h-[2px] w-full overflow-hidden bg-[#18181b]">
       <motion.div
         className={`h-full ${prefersReducedMotion ? 'bg-[--brand-primary]' : 'progress-bar-shimmer'}`}
         initial={false}

@@ -162,7 +162,7 @@ export function HomeShuffleCollectionModal({
             <p className={UI_TOKENS.modal.subtitle}>{subtitle}</p>
           </div>
           <button onClick={onClose} className={UI_TOKENS.modal.closeButton}>
-            <X size={16} />
+            <X size={16} strokeWidth={1.5} />
           </button>
         </div>
 
@@ -179,19 +179,19 @@ export function HomeShuffleCollectionModal({
           />
 
           <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-3">
+            <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-3 shadow-card">
               <div className="text-[10px] uppercase tracking-[0.16em] text-white/35">{language === 'de' ? 'Decks' : 'Decks'}</div>
               <div className="mt-1 text-lg font-semibold text-white">{selectedDeckIds.length}</div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-3">
+            <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-3 shadow-card">
               <div className="text-[10px] uppercase tracking-[0.16em] text-white/35">{totalCardsLabel}</div>
               <div className="mt-1 text-lg font-semibold text-white">{selectedCardCount}</div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-3">
+            <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-3 shadow-card">
               <div className="text-[10px] uppercase tracking-[0.16em] text-white/35">{todayCardsLabel}</div>
               <div className="mt-1 text-lg font-semibold text-amber-100">{selectedTodayCount}</div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-3">
+            <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-3 shadow-card">
               <div className="text-[10px] uppercase tracking-[0.16em] text-white/35">{language === 'de' ? 'In Scope' : 'In scope'}</div>
               <div className="mt-1 text-lg font-semibold text-emerald-100">
                 {selectedDeckIds.filter(id => syncedDeckIdSet.has(id)).length}
@@ -201,7 +201,7 @@ export function HomeShuffleCollectionModal({
 
           <div className="mt-5">
             <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-[0.16em] text-white/45">
-              <Layers3 size={14} />
+              <Layers3 size={14} strokeWidth={1.5} />
               <span>{language === 'de' ? 'Deck-Auswahl' : 'Deck selection'}</span>
             </div>
             <div
@@ -217,10 +217,10 @@ export function HomeShuffleCollectionModal({
                     key={deck.id}
                     type="button"
                     onClick={() => toggleDeck(deck.id)}
-                    className={`flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition ${
+                    className={`flex items-center justify-between gap-3 rounded-[12px] border px-4 py-3 text-left transition ${
                       selected
                         ? 'border-amber-300/30 bg-amber-400/10'
-                        : 'border-white/10 bg-black/20 hover:border-white/20 hover:bg-black/30'
+                        : 'border-[#18181b] bg-[#0a0a0a] hover:border-[#3f3f46] hover:bg-[#111]'
                     }`}
                   >
                     <div className="min-w-0">
@@ -239,9 +239,9 @@ export function HomeShuffleCollectionModal({
                     <span className={`flex h-8 w-8 items-center justify-center rounded-xl border ${
                       selected
                         ? 'border-amber-300/35 bg-amber-300/15 text-amber-50'
-                        : 'border-white/10 text-white/30'
+                        : 'border-[#18181b] text-zinc-500'
                     }`}>
-                      {selected ? <Check size={15} /> : null}
+                      {selected ? <Check size={15} strokeWidth={1.5} /> : null}
                     </span>
                   </button>
                 )
@@ -263,7 +263,7 @@ export function HomeShuffleCollectionModal({
             className={UI_TOKENS.button.footerPrimary}
           >
             <span className="inline-flex items-center gap-2">
-              <Save size={15} />
+              <Save size={15} strokeWidth={1.5} />
               {isSaving ? (language === 'de' ? 'Speichere…' : 'Saving…') : saveLabel}
             </span>
           </button>

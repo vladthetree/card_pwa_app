@@ -25,18 +25,18 @@ function ToastCard({ item }: { item: ToastItem }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.97 }}
       transition={{ duration: prefersReducedMotion ? 0.1 : 0.22, ease: [0.22, 1, 0.36, 1] }}
-      className={`flex items-start gap-3 w-full max-w-sm rounded-2xl border ${cfg.border} bg-slate-950/96 backdrop-blur-xl px-4 py-3 shadow-2xl shadow-black/50`}
+      className={`flex items-start gap-3 w-full max-w-sm rounded-[14px] border ${cfg.border} bg-[#0c0c0c] px-4 py-3 shadow-menu`}
       role="alert"
       aria-live="polite"
     >
-      <Icon size={UI_TOKENS.icon.lg} className={`shrink-0 mt-px ${cfg.text}`} />
+      <Icon size={UI_TOKENS.icon.lg} strokeWidth={1.5} className={`shrink-0 mt-px ${cfg.text}`} />
       <p className={`flex-1 text-sm leading-snug ${cfg.text}`}>{item.message}</p>
       <button
         onClick={() => toast.dismiss(item.id)}
         className={`shrink-0 self-center ${UI_TOKENS.modal.closeButton}`}
         aria-label="Dismiss"
       >
-        <X size={UI_TOKENS.icon.sm} />
+        <X size={UI_TOKENS.icon.sm} strokeWidth={1.5} />
       </button>
     </motion.div>
   )
@@ -52,7 +52,7 @@ export default function ToastContainer() {
     <div
       aria-live="polite"
       aria-atomic="false"
-      className="fixed bottom-safe-4 left-1/2 -translate-x-1/2 z-[200] flex w-full flex-col items-center gap-2 px-safe-4 pointer-events-none"
+      className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[200] flex w-full flex-col items-center gap-2 px-safe-4 pointer-events-none"
     >
       <AnimatePresence mode="sync">
         {items.map(item => (
