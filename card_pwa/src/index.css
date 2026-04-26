@@ -9,11 +9,6 @@
   *, *::before, *::after { box-sizing: border-box; }
 
   :root {
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
-    --safe-left: env(safe-area-inset-left, 0px);
-    --safe-right: env(safe-area-inset-right, 0px);
-    --theme-notch: #050505;
     --brand-primary: rgb(249, 115, 22);
     --brand-primary-08: rgba(249, 115, 22, 0.08);
     --brand-primary-12: rgba(249, 115, 22, 0.12);
@@ -41,7 +36,7 @@
   }
 
   html {
-    background: var(--theme-notch);
+    background: var(--theme-background);
     overscroll-behavior: none;
     overscroll-behavior-x: none;
     overscroll-behavior-y: none;
@@ -132,29 +127,6 @@
 }
 
 @layer utilities {
-  .safe-area-content {
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
-  .safe-area-top {
-    position: fixed;
-    top: 0;
-    z-index: 100;
-    width: 100%;
-    height: env(safe-area-inset-top);
-    background: #050505;
-  }
-
-  .safe-area-bottom {
-    position: fixed;
-    bottom: 0;
-    z-index: 100;
-    width: 100%;
-    height: env(safe-area-inset-bottom);
-    background: #050505;
-  }
-
   .view-container {
     position: relative;
   }

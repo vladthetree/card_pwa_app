@@ -144,44 +144,18 @@ function AppShell() {
   return (
     <AppErrorBoundary>
       <AppInitializer>
-        <div
-          className="min-h-screen flex flex-col"
-          style={{
-            background: 'var(--theme-background)',
-            minHeight: '100dvh',
-            paddingTop: 'var(--safe-top)',
-            paddingBottom: 'var(--safe-bottom)',
-            paddingLeft: 'var(--safe-left)',
-            paddingRight: 'var(--safe-right)',
-          }}
-        >
-        <div
-          aria-hidden
-          className="pointer-events-none fixed top-0 left-0 right-0 z-[50]"
-          style={{
-            height: 'var(--safe-top)',
-            background: 'var(--theme-notch)',
-          }}
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none fixed bottom-0 left-0 right-0 z-[50]"
-          style={{
-            height: 'var(--safe-bottom)',
-            background: 'var(--theme-notch)',
-          }}
-        />
-        <ToastContainer />
-        <Suspense fallback={null}>
-          {swSupported && waitingWorker && (
-            <UpdateBanner
-              onUpdateNow={applyUpdate}
-              onDismiss={() => setWaitingWorker(null)}
-            />
-          )}
-        </Suspense>
-        <Suspense fallback={<ViewFallback />}>
-          <AnimatePresence mode="wait" initial={false}>
+        <div className="min-h-screen flex flex-col" style={{ background: 'var(--theme-background)', minHeight: '100dvh' }}>
+          <ToastContainer />
+          <Suspense fallback={null}>
+            {swSupported && waitingWorker && (
+              <UpdateBanner
+                onUpdateNow={applyUpdate}
+                onDismiss={() => setWaitingWorker(null)}
+              />
+            )}
+          </Suspense>
+          <Suspense fallback={<ViewFallback />}>
+            <AnimatePresence mode="wait" initial={false}>
             {view === 'home' && (
               <motion.div
                 key="home"
@@ -243,8 +217,8 @@ function AppShell() {
                 <ShuffleStudyView collection={activeShuffleCollection} onExit={goHome} />
               </motion.div>
             )}
-          </AnimatePresence>
-        </Suspense>
+            </AnimatePresence>
+          </Suspense>
         </div>
       </AppInitializer>
     </AppErrorBoundary>

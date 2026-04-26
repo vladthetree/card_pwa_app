@@ -298,10 +298,6 @@ export default function CardFormModal(props: Props) {
     <AnimatePresence initial={false}>
       <motion.div
         className={UI_TOKENS.modal.overlay}
-        style={{
-          paddingTop: 'calc(var(--safe-top) + 1rem)',
-          paddingBottom: 'calc(var(--safe-bottom) + 1rem)',
-        }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -329,7 +325,7 @@ export default function CardFormModal(props: Props) {
             </button>
           </div>
 
-          <div className="p-6 space-y-4 overflow-y-auto" style={{ maxHeight: 'calc(100dvh - var(--safe-top) - var(--safe-bottom) - 12rem)' }}>
+          <div className="p-6 space-y-4 overflow-y-auto max-h-[calc(100dvh-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px)-12rem)]">
             {/* Deck selection — create mode only */}
             {props.mode === 'create' && (
               <div>
@@ -532,7 +528,7 @@ export default function CardFormModal(props: Props) {
 
           {/* Footer */}
           {props.mode === 'create' ? (
-            <div className={`${UI_TOKENS.modal.footer} px-6`} style={{ paddingBottom: 'calc(var(--safe-bottom) + 1rem)' }}>
+            <div className={`${UI_TOKENS.modal.footer} px-6`}>
               <button
                 onClick={() => handleSave(true)}
                 disabled={isBusy || status === 'saved'}
@@ -551,7 +547,7 @@ export default function CardFormModal(props: Props) {
               </button>
             </div>
           ) : (
-            <div className={`${UI_TOKENS.modal.footer} px-6`} style={{ paddingBottom: 'calc(var(--safe-bottom) + 1rem)' }}>
+            <div className={`${UI_TOKENS.modal.footer} px-6`}>
               <button
                 onClick={() => setShowDeleteConfirm(true)}
                 disabled={isBusy}

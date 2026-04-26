@@ -147,10 +147,6 @@ export function HomeShuffleCollectionModal({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className={UI_TOKENS.modal.overlay}
-      style={{
-        paddingTop: 'calc(var(--safe-top) + 1rem)',
-        paddingBottom: 'calc(var(--safe-bottom) + 1rem)',
-      }}
     >
       <div className={UI_TOKENS.modal.backdrop} onClick={onClose} />
       <motion.div

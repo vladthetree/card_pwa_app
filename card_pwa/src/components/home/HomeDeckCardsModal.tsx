@@ -35,10 +35,6 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className={UI_TOKENS.modal.overlay}
-      style={{
-        paddingTop: 'calc(var(--safe-top) + 1rem)',
-        paddingBottom: 'calc(var(--safe-bottom) + 1rem)',
-      }}
     >
       <button type="button" className={UI_TOKENS.modal.backdrop} onClick={onClose} />
       <motion.div
@@ -46,7 +42,7 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 10, scale: 0.98 }}
         className={`${UI_TOKENS.modal.shell} max-w-2xl p-5 sm:p-6 overflow-hidden`}
-        style={{ maxHeight: 'calc(100dvh - var(--safe-top) - var(--safe-bottom) - 2rem)' }}
+        style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 2rem)' }}
       >
         <div className="flex items-start justify-between gap-3 mb-4">
           <div>

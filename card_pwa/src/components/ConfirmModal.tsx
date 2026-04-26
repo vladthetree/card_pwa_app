@@ -58,10 +58,6 @@ export default function ConfirmModal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
           className={UI_TOKENS.modal.overlay}
-          style={{
-            paddingTop: 'calc(var(--safe-top) + 1rem)',
-            paddingBottom: 'calc(var(--safe-bottom) + 1rem)',
-          }}
           role="dialog"
           aria-modal="true"
           aria-labelledby="confirm-modal-title"

@@ -91,10 +91,6 @@ export default function FaqModal({ isOpen, onClose }: Props) {
       {isOpen && (
         <motion.div
           className={UI_TOKENS.modal.overlay}
-          style={{
-            paddingTop: 'calc(var(--safe-top) + 1rem)',
-            paddingBottom: 'calc(var(--safe-bottom) + 1rem)',
-          }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -112,9 +108,6 @@ export default function FaqModal({ isOpen, onClose }: Props) {
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
             transition={{ duration: prefersReducedMotion ? 0.12 : 0.2, ease: 'easeOut' }}
             className={`${UI_TOKENS.modal.shell} max-w-2xl`}
-            style={{
-              maxHeight: 'calc(100dvh - var(--safe-top) - var(--safe-bottom) - 2rem)',
-            }}
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
@@ -138,7 +131,7 @@ export default function FaqModal({ isOpen, onClose }: Props) {
 
             <div
               className="overflow-y-auto px-4 py-4 sm:px-5 sm:py-5 space-y-4"
-              style={{ maxHeight: 'calc(100dvh - var(--safe-top) - var(--safe-bottom) - 9.25rem)' }}
+              style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 9.25rem)' }}
             >
               <FaqSection
                 title={t.faq_import_export}
@@ -263,10 +256,7 @@ export default function FaqModal({ isOpen, onClose }: Props) {
             </div>
 
             {/* Footer */}
-            <div
-              className="sticky bottom-0 px-5 py-4 border-t border-white/15 flex gap-3 bg-black"
-              style={{ paddingBottom: 'calc(var(--safe-bottom) + 1rem)' }}
-            >
+            <div className="sticky bottom-0 px-5 py-4 pb-safe-4 border-t border-white/15 flex gap-3 bg-black">
               <button
                 onClick={onClose}
                 className={`${UI_TOKENS.button.footerSecondary} text-sm font-medium hover:bg-white/5`}

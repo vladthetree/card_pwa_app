@@ -547,15 +547,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   return (
     <div className={`${isHandsetLayout ? 'fixed inset-0' : 'min-h-screen'} flex flex-col overflow-hidden bg-black text-white`}>
       <div
-        className="sticky top-0 z-20 border-b border-white/10 bg-black/90 backdrop-blur"
-        style={isHandsetLayout
-          ? {
-              paddingTop: 'calc(var(--safe-top) + 0.5rem)',
-              paddingBottom: '0.5rem',
-              paddingLeft: '0.75rem',
-              paddingRight: '0.75rem',
-            }
-          : undefined}
+        className={`sticky top-0 z-20 border-b border-white/10 bg-black/90 backdrop-blur ${isHandsetLayout ? 'pt-safe-2 pb-2 px-3' : ''}`}
       >
         <div className="mx-auto flex max-w-5xl items-center gap-3">
           <button
@@ -588,8 +580,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       </div>
 
       <div
-        className={`flex-1 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-0' : 'overflow-y-auto px-3 py-4 sm:px-4 sm:py-6'}`}
-        style={isHandsetLayout ? { paddingBottom: 'calc(var(--safe-bottom) + 0.5rem)' } : undefined}
+        className={`flex-1 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-safe-2' : 'overflow-y-auto px-3 py-4 sm:px-4 sm:py-6'}`}
       >
         <AnimatePresence>
           {session.error && <ErrorAlert message={session.error} onRetry={handleRetry} />}
@@ -604,7 +595,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
               exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -12 }}
               transition={{ duration: prefersReducedMotion ? 0.12 : 0.16, ease: 'easeOut' }}
               className={`mx-auto w-full max-w-5xl ${isHandsetLayout ? 'flex h-full min-h-0 flex-col' : ''}`}
-              style={isHandsetLayout ? { maxHeight: 'calc(100% - var(--safe-bottom) - 1.35rem)' } : undefined}
+              style={isHandsetLayout ? { maxHeight: 'calc(100% - env(safe-area-inset-bottom, 0px) - 1.35rem)' } : undefined}
             >
               <div className={`flex flex-col gap-6 ${isHandsetLayout ? 'h-full min-h-0 flex-1' : ''}`}>
                 <div className={`flex-1 ${isHandsetLayout ? 'h-full min-h-0' : ''}`}>
@@ -663,7 +654,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
             className="w-full border-t border-white/15 bg-black/95 px-3 pt-3"
             style={{
               height: isHandsetLandscape ? 'clamp(8.25rem, 24dvh, 11rem)' : 'clamp(11.5rem, 25dvh, 15.5rem)',
-              paddingBottom: 'calc(var(--safe-bottom) + 0.5rem)',
+              paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.5rem)',
             }}
           >
             <div className="h-full">
