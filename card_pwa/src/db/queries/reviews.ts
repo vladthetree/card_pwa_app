@@ -12,6 +12,7 @@ import {
   BACKLOG_SPREAD_DAYS,
   BACKLOG_FUZZ_FACTOR,
 } from '../../utils/backlogSmoother'
+import { runStatsForecast } from '../../utils/workers/statsWorkerClient'
 import { verifySchedulingPersistence } from './diagnostics'
 import type {
   Rating,
@@ -133,7 +134,6 @@ export async function getFutureDueForecast(days = 15, nextDayStartsAt = 0): Prom
   const nowMs = Date.now()
   const todayStartMs = getDayStartMs(nowMs, nextDayStartsAt)
   const tomorrowStartMs = todayStartMs + dayMs
-  const horizonEndMs = tomorrowStartMs + normalizedDays * dayMs
 
   const result = Array.from({ length: normalizedDays }, (_, idx) => ({
     dayStartMs: tomorrowStartMs + idx * dayMs,
@@ -144,18 +144,19 @@ export async function getFutureDueForecast(days = 15, nextDayStartsAt = 0): Prom
     .filter(c => !c.isDeleted && (c.type === SM2.CARD_TYPE_LEARNING || c.type === SM2.CARD_TYPE_RELEARNING || c.type === SM2.CARD_TYPE_REVIEW))
     .toArray()
 
-  for (const row of rows) {
-    const dueAtMs = Number.isFinite(row.dueAt)
-      ? Math.round(row.dueAt as number)
-      : Math.max(0, Math.floor(row.due)) * dayMs
+  const counts = await runStatsForecast({
+    type: 'forecast',
+    profileId: 'default',
+    cards: rows,
+    days: normalizedDays,
+    nowMs,
+  })
 
-    if (dueAtMs < tomorrowStartMs || dueAtMs >= horizonEndMs) continue
-
-    const dayIndex = Math.floor((dueAtMs - tomorrowStartMs) / dayMs)
-    if (dayIndex >= 0 && dayIndex < result.length) {
-      result[dayIndex].count += 1
+  counts.forEach((count, idx) => {
+    if (idx >= 0 && idx < result.length) {
+      result[idx].count = count
     }
-  }
+  })
 
   return result
 }

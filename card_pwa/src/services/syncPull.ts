@@ -1,6 +1,21 @@
 import { db, type CardRecord, type DeckRecord, type ReviewRecord, type ShuffleCollectionRecord } from '../db'
 import type { SyncOperationType } from './syncQueue'
 import { flushSyncQueue, getSyncQueuePendingCount } from './syncQueue'
+import { createWorker } from '../utils/workers/workerPool'
+import { normalizeDeck } from '../utils/normalize/deck'
+import { normalizeCard, normalizeCardUpdates } from '../utils/normalize/card'
+import { normalizeShuffleCollection } from '../utils/normalize/shuffleCollection'
+import {
+  normalizeSnapshotPayload,
+  type SnapshotNormalizeRequest,
+  type SnapshotNormalizeResult,
+} from '../utils/normalize/snapshot'
+import {
+  resolveOperations,
+  supportsWorkerResolution,
+  type OperationDiff,
+  type ResolverOperation,
+} from '../utils/sync/operationResolver'
 import {
   getSyncBaseEndpoint,
   getSyncConfig,
@@ -84,6 +99,23 @@ interface BootstrapUploadResponse {
   ok?: boolean
   serverCursor?: number
 }
+
+const snapshotNormalizer = createWorker<SnapshotNormalizeRequest, SnapshotNormalizeResult>(
+  () => new Worker(new URL('../utils/workers/snapshot-normalizer.worker.ts', import.meta.url), { type: 'module' }),
+  (payload) => normalizeSnapshotPayload(payload),
+)
+
+const syncApplier = createWorker<
+  {
+    operations: ResolverOperation[]
+    existing: { cards: CardRecord[]; decks: DeckRecord[]; shuffleCollections: ShuffleCollectionRecord[] }
+    fallbackTs: number
+  },
+  OperationDiff
+>(
+  () => new Worker(new URL('../utils/workers/sync-applier.worker.ts', import.meta.url), { type: 'module' }),
+  (payload) => resolveOperations(payload),
+)
 
 async function readSelectedDeckFilter(): Promise<Set<string> | null> {
   try {
@@ -268,284 +300,6 @@ export async function resetSyncPullState(): Promise<void> {
     }
   }
   await clearAppliedOpIds()
-}
-
-// ─── Normalizers ───────────────────────────────────────────────────────
-
-function normalizeDeck(raw: unknown): DeckRecord | null {
-  if (!raw || typeof raw !== 'object') return null
-  const value = raw as Record<string, unknown>
-
-  const id = value.id
-  const name = value.name
-  if (typeof id !== 'string' || typeof name !== 'string' || !id || !name) {
-    return null
-  }
-
-  const createdAt = Number(value.createdAt ?? value.created_at)
-  const updatedAt = Number(value.updatedAt ?? value.updated_at ?? value.createdAt ?? value.created_at)
-  const sourceRaw = value.source
-  const source = sourceRaw === 'anki-import' ? 'anki-import' : 'manual'
-
-  return {
-    id,
-    name,
-    createdAt: Number.isFinite(createdAt) ? createdAt : Date.now(),
-    updatedAt: Number.isFinite(updatedAt) ? updatedAt : (Number.isFinite(createdAt) ? createdAt : Date.now()),
-    source,
-  }
-}
-
-function normalizeCard(raw: unknown): CardRecord | null {
-  if (!raw || typeof raw !== 'object') return null
-  const value = raw as Record<string, unknown>
-
-  const id = value.id
-  const noteId = value.noteId ?? value.note_id
-  const deckId = value.deckId ?? value.deck_id
-  const front = value.front
-  const back = value.back
-
-  if (
-    typeof id !== 'string'
-    || typeof noteId !== 'string'
-    || typeof deckId !== 'string'
-    || typeof front !== 'string'
-    || typeof back !== 'string'
-  ) {
-    return null
-  }
-
-  const tagsRaw = value.tags
-  const tags = Array.isArray(tagsRaw) ? tagsRaw.map(tag => String(tag)) : []
-
-  const extraRaw = value.extra
-  const extraObj = extraRaw && typeof extraRaw === 'object' ? extraRaw as Record<string, unknown> : {}
-
-  const parseMaybeNumber = (input: unknown) => {
-    if (input === null || input === undefined) return Number.NaN
-    return Number(input)
-  }
-
-  const due = parseMaybeNumber(value.due)
-  const dueAt = parseMaybeNumber(value.dueAt ?? value.due_at)
-  const deletedAt = parseMaybeNumber(value.deletedAt ?? value.deleted_at)
-  const createdAt = parseMaybeNumber(value.createdAt ?? value.created_at)
-  const updatedAt = parseMaybeNumber(value.updatedAt ?? value.updated_at ?? value.createdAt ?? value.created_at)
-  const rawType = Number(value.type)
-  const rawQueue = Number(value.queue)
-  const normalizedType = Number.isFinite(rawType) ? Math.max(0, Math.min(3, Math.round(rawType))) : 0
-  const normalizedQueue = Number.isFinite(rawQueue) ? Math.max(-1, Math.min(2, Math.round(rawQueue))) : normalizedType
-  const algorithmRaw = value.algorithm
-  const normalizedAlgorithm = algorithmRaw === 'fsrs' ? 'fsrs' : 'sm2'
-  const deletedFlag = Boolean(value.isDeleted ?? value.is_deleted)
-  const hasDeletedAt = Number.isFinite(deletedAt)
-
-  const card: CardRecord = {
-    id,
-    noteId,
-    deckId,
-    front,
-    back,
-    tags,
-    extra: {
-      acronym: typeof extraObj.acronym === 'string' ? extraObj.acronym : '',
-      examples: typeof extraObj.examples === 'string' ? extraObj.examples : '',
-      port: typeof extraObj.port === 'string' ? extraObj.port : '',
-      protocol: typeof extraObj.protocol === 'string' ? extraObj.protocol : '',
-    },
-    type: normalizedType,
-    queue: normalizedQueue,
-    due: Number.isFinite(due) ? due : Math.floor(Date.now() / 86_400_000),
-    dueAt: Number.isFinite(dueAt) ? dueAt : undefined,
-    interval: Number.isFinite(Number(value.interval)) ? Number(value.interval) : 0,
-    factor: Number.isFinite(Number(value.factor)) ? Number(value.factor) : 2500,
-    stability: Number.isFinite(Number(value.stability)) ? Number(value.stability) : undefined,
-    difficulty: Number.isFinite(Number(value.difficulty)) ? Number(value.difficulty) : undefined,
-    reps: Number.isFinite(Number(value.reps)) ? Number(value.reps) : 0,
-    lapses: Number.isFinite(Number(value.lapses)) ? Number(value.lapses) : 0,
-    createdAt: Number.isFinite(createdAt) ? createdAt : Date.now(),
-    updatedAt: Number.isFinite(updatedAt) ? updatedAt : (Number.isFinite(createdAt) ? createdAt : Date.now()),
-    algorithm: normalizedAlgorithm,
-    isDeleted: deletedFlag || hasDeletedAt,
-    deletedAt: Number.isFinite(deletedAt) ? deletedAt : undefined,
-    metadata: value.metadata && typeof value.metadata === 'object'
-      ? value.metadata as CardRecord['metadata']
-      : undefined,
-  }
-
-  if (!Number.isFinite(card.dueAt)) {
-    card.dueAt = Math.max(0, Math.floor(card.due)) * 86_400_000
-  }
-
-  return card
-}
-
-function normalizeReview(raw: unknown): Omit<ReviewRecord, 'id'> | null {
-  if (!raw || typeof raw !== 'object') return null
-  const value = raw as Record<string, unknown>
-  const cardId = value.cardId ?? value.card_id
-  const rating = Number(value.rating)
-  const timeMs = Number(value.timeMs ?? value.time_ms)
-  const timestamp = Number(value.timestamp ?? value.reviewedAt ?? value.reviewed_at)
-  const createdAt = Number(value.createdAt ?? value.created_at)
-  const opIdRaw = value.opId ?? value.reviewOpId ?? value.review_op_id
-  const sourceClientRaw = value.sourceClient ?? value.source_client
-
-  if (typeof cardId !== 'string' || !cardId) return null
-  if (![1, 2, 3, 4].includes(rating)) return null
-
-  return {
-    opId: typeof opIdRaw === 'string' && opIdRaw.trim() ? opIdRaw.trim() : undefined,
-    cardId,
-    rating: rating as ReviewRecord['rating'],
-    timeMs: Number.isFinite(timeMs) ? timeMs : 0,
-    timestamp: Number.isFinite(timestamp) ? timestamp : Date.now(),
-    sourceClient: typeof sourceClientRaw === 'string' && sourceClientRaw.trim()
-      ? sourceClientRaw.trim()
-      : undefined,
-    createdAt: Number.isFinite(createdAt) ? createdAt : undefined,
-  }
-}
-
-function normalizeShuffleCollection(raw: unknown): ShuffleCollectionRecord | null {
-  if (!raw || typeof raw !== 'object') return null
-  const value = raw as Record<string, unknown>
-  const id = value.id
-  const name = value.name
-  const deckIdsRaw = value.deckIds ?? value.deck_ids
-
-  if (typeof id !== 'string' || typeof name !== 'string' || !id || !name) {
-    return null
-  }
-
-  const deckIds = Array.isArray(deckIdsRaw)
-    ? Array.from(new Set(deckIdsRaw.map(entry => String(entry).trim()).filter(Boolean)))
-    : []
-
-  const createdAt = Number(value.createdAt ?? value.created_at)
-  const updatedAt = Number(value.updatedAt ?? value.updated_at ?? value.createdAt ?? value.created_at)
-  const deletedAt = Number(value.deletedAt ?? value.deleted_at)
-  const deletedFlag = Boolean(value.isDeleted ?? value.is_deleted)
-
-  return {
-    id,
-    name,
-    deckIds,
-    createdAt: Number.isFinite(createdAt) ? createdAt : Date.now(),
-    updatedAt: Number.isFinite(updatedAt) ? updatedAt : (Number.isFinite(createdAt) ? createdAt : Date.now()),
-    isDeleted: deletedFlag || Number.isFinite(deletedAt),
-    deletedAt: Number.isFinite(deletedAt) ? deletedAt : undefined,
-  }
-}
-
-function normalizeCardUpdates(raw: unknown): Partial<CardRecord> {
-  if (!raw || typeof raw !== 'object') return {}
-
-  const value = raw as Record<string, unknown>
-  const updates: Partial<CardRecord> = {}
-  const parseMaybeNumber = (input: unknown) => {
-    if (input === null || input === undefined) return Number.NaN
-    return Number(input)
-  }
-
-  const setString = (key: keyof CardRecord, altKey?: string) => {
-    const source = key as string
-    const hasPrimary = source in value
-    const hasAlt = Boolean(altKey && altKey in value)
-    if (!hasPrimary && !hasAlt) return
-    const rawValue = value[source] ?? (altKey ? value[altKey] : undefined)
-    if (typeof rawValue === 'string') {
-      ;(updates as Record<string, unknown>)[source] = rawValue
-    }
-  }
-
-  setString('noteId', 'note_id')
-  setString('deckId', 'deck_id')
-  setString('front')
-  setString('back')
-
-  if ('tags' in value) {
-    updates.tags = Array.isArray(value.tags) ? value.tags.map(tag => String(tag)) : []
-  }
-
-  if ('extra' in value) {
-    const extraRaw = value.extra
-    const extraObj = extraRaw && typeof extraRaw === 'object' ? extraRaw as Record<string, unknown> : {}
-    updates.extra = {
-      acronym: typeof extraObj.acronym === 'string' ? extraObj.acronym : '',
-      examples: typeof extraObj.examples === 'string' ? extraObj.examples : '',
-      port: typeof extraObj.port === 'string' ? extraObj.port : '',
-      protocol: typeof extraObj.protocol === 'string' ? extraObj.protocol : '',
-    }
-  }
-
-  if ('type' in value) {
-    const rawType = Number(value.type)
-    if (Number.isFinite(rawType)) {
-      updates.type = Math.max(0, Math.min(3, Math.round(rawType)))
-    }
-  }
-
-  if ('queue' in value) {
-    const rawQueue = Number(value.queue)
-    if (Number.isFinite(rawQueue)) {
-      updates.queue = Math.max(-1, Math.min(2, Math.round(rawQueue)))
-    }
-  }
-
-  if ('due' in value) {
-    const rawDue = Number(value.due)
-    if (Number.isFinite(rawDue)) {
-      updates.due = Math.max(0, Math.floor(rawDue))
-    }
-  }
-
-  const dueAtRaw = parseMaybeNumber(value.dueAt ?? value.due_at)
-  if ('dueAt' in value || 'due_at' in value) {
-    if (Number.isFinite(dueAtRaw)) {
-      updates.dueAt = dueAtRaw
-    }
-  }
-
-  if (!Number.isFinite(updates.dueAt)) {
-    const baseDue = Number.isFinite(updates.due)
-      ? (updates.due as number)
-      : Number.isFinite(parseMaybeNumber(value.due))
-        ? Math.max(0, Math.floor(parseMaybeNumber(value.due)))
-        : undefined
-    if (baseDue !== undefined) {
-      updates.dueAt = baseDue * 86_400_000
-    }
-  }
-
-  const numericFields: Array<keyof CardRecord> = ['interval', 'factor', 'stability', 'difficulty', 'reps', 'lapses', 'createdAt', 'updatedAt']
-  for (const field of numericFields) {
-    const rawValue = parseMaybeNumber(value[field as string])
-    if (!Number.isFinite(rawValue)) continue
-    ;(updates as Record<string, unknown>)[field as string] = rawValue
-  }
-
-  if ('algorithm' in value) {
-    updates.algorithm = value.algorithm === 'fsrs' ? 'fsrs' : 'sm2'
-  }
-
-  const deletedAt = parseMaybeNumber(value.deletedAt ?? value.deleted_at)
-  const hasDeletedAt = Number.isFinite(deletedAt)
-  const hasDeletedFlag = 'isDeleted' in value || 'is_deleted' in value
-  if (hasDeletedFlag) {
-    updates.isDeleted = Boolean(value.isDeleted ?? value.is_deleted)
-  }
-  if (hasDeletedAt) {
-    updates.deletedAt = deletedAt
-    updates.isDeleted = true
-  }
-
-  if ('metadata' in value && value.metadata && typeof value.metadata === 'object') {
-    updates.metadata = value.metadata as CardRecord['metadata']
-  }
-
-  return updates
 }
 
 // ─── Operation appliers (reps-first for card state, LWW for deletes) ───────
@@ -782,6 +536,134 @@ async function applyOperation(op: PulledOperation) {
   }
 }
 
+function isSyncWorkerEnabled(): boolean {
+  try {
+    return localStorage.getItem('useSyncWorker') === '1'
+  } catch {
+    return false
+  }
+}
+
+function collectTouchedIds(operations: PulledOperation[]): { cardIds: string[]; deckIds: string[] } {
+  const cardIds = new Set<string>()
+  const deckIds = new Set<string>()
+
+  for (const operation of operations) {
+    const payload = operation.payload
+    if (!payload || typeof payload !== 'object') continue
+    const value = payload as Record<string, unknown>
+
+    const cardId = value.cardId ?? value.id
+    if (typeof cardId === 'string' && cardId) {
+      cardIds.add(cardId)
+    }
+
+    const deckId = value.deckId
+    if (typeof deckId === 'string' && deckId) {
+      deckIds.add(deckId)
+    }
+
+    if (operation.type === 'deck.create' && typeof value.id === 'string' && value.id) {
+      deckIds.add(value.id)
+    }
+    if (operation.type === 'card.create' && typeof value.id === 'string' && value.id) {
+      cardIds.add(value.id)
+    }
+  }
+
+  return {
+    cardIds: Array.from(cardIds),
+    deckIds: Array.from(deckIds),
+  }
+}
+
+async function applyOperationDiff(diff: OperationDiff): Promise<void> {
+  if (diff.decks.upsert.length > 0) {
+    await db.decks.bulkPut(diff.decks.upsert)
+  }
+
+  if (diff.decks.delete.length > 0) {
+    for (const deckId of diff.decks.delete) {
+      await applyDeckDelete({ deckId })
+    }
+  }
+
+  if (diff.cards.upsert.length > 0) {
+    await db.cards.bulkPut(diff.cards.upsert)
+  }
+
+  for (const [id, updates] of diff.cards.update) {
+    await db.cards.update(id, updates)
+  }
+
+  if (diff.reviews.deleteByCardId.length > 0) {
+    const uniqueCardIds = Array.from(new Set(diff.reviews.deleteByCardId))
+    await db.reviews.where('cardId').anyOf(uniqueCardIds).delete()
+  }
+
+  if (diff.reviews.deleteById.length > 0) {
+    await db.reviews.bulkDelete(diff.reviews.deleteById)
+  }
+
+  if (diff.reviews.deleteLatestByCardId.length > 0) {
+    for (const cardId of diff.reviews.deleteLatestByCardId) {
+      const latestReview = await db.reviews.where('cardId').equals(cardId).reverse().first()
+      if (latestReview?.id !== undefined) {
+        await db.reviews.delete(latestReview.id)
+      }
+    }
+  }
+
+  if (diff.cards.delete.length > 0) {
+    const now = Date.now()
+    for (const cardId of diff.cards.delete) {
+      await db.cards.update(cardId, { isDeleted: true, deletedAt: now, updatedAt: now })
+    }
+  }
+
+  if (diff.reviews.add.length > 0) {
+    await db.reviews.bulkAdd(diff.reviews.add)
+  }
+
+  if (diff.shuffleCollections.upsert.length > 0) {
+    await db.shuffleCollections.bulkPut(diff.shuffleCollections.upsert)
+  }
+
+  if (diff.shuffleCollections.delete.length > 0) {
+    await db.shuffleCollections.bulkPut(diff.shuffleCollections.delete)
+  }
+}
+
+async function applyOperationsWithWorker(operations: PulledOperation[], fallbackTs: number): Promise<void> {
+  const touched = collectTouchedIds(operations)
+  const [existingCardsRaw, existingDecksRaw, existingShuffleCollections] = await Promise.all([
+    touched.cardIds.length > 0
+      ? db.cards.bulkGet(touched.cardIds)
+      : Promise.resolve([] as Array<CardRecord | undefined>),
+    touched.deckIds.length > 0
+      ? db.decks.bulkGet(touched.deckIds)
+      : Promise.resolve([] as Array<DeckRecord | undefined>),
+    hasShuffleCollectionsTable()
+      ? db.shuffleCollections.toArray()
+      : Promise.resolve([] as ShuffleCollectionRecord[]),
+  ])
+
+  const existingCards: CardRecord[] = existingCardsRaw.filter((entry): entry is CardRecord => entry !== undefined)
+  const existingDecks: DeckRecord[] = existingDecksRaw.filter((entry): entry is DeckRecord => entry !== undefined)
+
+  const diff = await syncApplier.run({
+    operations,
+    existing: {
+      cards: existingCards,
+      decks: existingDecks,
+      shuffleCollections: existingShuffleCollections,
+    },
+    fallbackTs,
+  })
+
+  await applyOperationDiff(diff)
+}
+
 // ─── Bootstrap / Handshake ─────────────────────────────────────────────
 
 async function getLocalCounts() {
@@ -839,21 +721,12 @@ async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
     const rawReviews = Array.isArray(data.reviews) ? data.reviews : []
     const rawShuffleCollections = Array.isArray(data.shuffleCollections) ? data.shuffleCollections : []
 
-    const decks = rawDecks
-      .map(normalizeDeck)
-      .filter((entry): entry is DeckRecord => entry !== null)
-
-    const cards = rawCards
-      .map(normalizeCard)
-      .filter((entry): entry is CardRecord => entry !== null)
-
-    const cardIds = new Set(cards.map(card => card.id))
-    const reviews = rawReviews
-      .map(normalizeReview)
-      .filter((entry): entry is Omit<ReviewRecord, 'id'> => entry !== null && cardIds.has(entry.cardId))
-    const shuffleCollections = rawShuffleCollections
-      .map(normalizeShuffleCollection)
-      .filter((entry): entry is ShuffleCollectionRecord => entry !== null)
+    const { decks, cards, reviews, shuffleCollections } = await snapshotNormalizer.run({
+      rawDecks,
+      rawCards,
+      rawReviews,
+      rawShuffleCollections,
+    })
 
     const selectedDecks = await readSelectedDeckFilter()
     const filtered = filterSnapshotBySelectedDecks(selectedDecks, decks, cards, reviews)
@@ -1116,6 +989,8 @@ export async function pullAndApplySyncDeltas(limit = 200) {
         break
       }
 
+      const operationsToApply: PulledOperation[] = []
+
       for (const operation of operations) {
         if (!operation?.opId) continue
         if (appliedOpIds.has(operation.opId)) continue
@@ -1126,8 +1001,24 @@ export async function pullAndApplySyncDeltas(limit = 200) {
           continue
         }
 
-        await applyOperation(operation)
-        appliedOpIds.add(operation.opId)
+        operationsToApply.push(operation)
+      }
+
+      const useSyncWorker = isSyncWorkerEnabled()
+      const canUseSyncWorker = useSyncWorker && operationsToApply.every(op => supportsWorkerResolution(op))
+
+      if (operationsToApply.length > 0) {
+        if (canUseSyncWorker) {
+          await applyOperationsWithWorker(operationsToApply, Number(data.nextCursor ?? cursor ?? 0))
+        } else {
+          for (const operation of operationsToApply) {
+            await applyOperation(operation)
+          }
+        }
+
+        for (const operation of operationsToApply) {
+          appliedOpIds.add(operation.opId)
+        }
       }
 
       if (typeof data.nextCursor === 'number' && Number.isFinite(data.nextCursor)) {

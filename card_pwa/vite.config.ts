@@ -35,7 +35,12 @@ export default defineConfig({
   plugins: [
     react(),
   ],
+  worker: {
+    format: 'es',
+    plugins: () => [],
+  },
   build: {
+    sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks(id) {

@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
-import { db } from '../db'
+import { useMemo, useState } from 'react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
-import { REVIEW_UPDATED_EVENT } from '../constants/appIdentity'
 import { useTheme } from '../contexts/ThemeContext'
+import { useHeatmap } from '../hooks/useHeatmap'
 
 // Hex colour → [r, g, b]
 function hexToRgb(hex: string): [number, number, number] {
@@ -26,12 +25,12 @@ interface MonthGrid {
   weeks: Array<Array<HeatmapDay | null>>
 }
 
-function startOfDayMs(date: Date): number {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
-}
-
 function dateKey(date: Date): string {
   return date.toISOString().slice(0, 10)
+}
+
+function startOfDayMs(date: Date): number {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
 }
 
 function formatTooltip(language: 'de' | 'en', day: HeatmapDay): string {
@@ -52,97 +51,14 @@ export default function ReviewHeatmap({ year }: Props) {
   const { settings } = useSettings()
   const { theme } = useTheme()
   const t = STRINGS[settings.language]
-  const [entries, setEntries] = useState<HeatmapDay[]>([])
-  const [loading, setLoading] = useState(true)
   const [showFullYear, setShowFullYear] = useState(false)
 
   const activeYear = year ?? new Date().getFullYear()
-
-  useEffect(() => {
-    let cancelled = false
-
-    const load = async () => {
-      try {
-        const start = new Date(activeYear, 0, 1)
-        const end = new Date(activeYear, 11, 31)
-        const fromMs = startOfDayMs(start)
-
-        const baseDays: HeatmapDay[] = []
-        const cursor = new Date(start)
-        while (cursor <= end) {
-          const d = new Date(cursor)
-          baseDays.push({ date: d, key: dateKey(d), count: 0 })
-          cursor.setDate(cursor.getDate() + 1)
-        }
-
-        const byDay = new Map(baseDays.map(d => [d.key, d]))
-        const rows = await db.reviews.where('timestamp').aboveOrEqual(fromMs).toArray()
-
-        for (const row of rows) {
-          const d = new Date(row.timestamp)
-          const key = dateKey(new Date(d.getFullYear(), d.getMonth(), d.getDate()))
-          const hit = byDay.get(key)
-          if (hit) hit.count += 1
-        }
-
-        if (!cancelled) {
-          setEntries(baseDays)
-          setLoading(false)
-        }
-      } catch {
-        if (!cancelled) {
-          setEntries([])
-          setLoading(false)
-        }
-      }
-    }
-
-    load()
-
-    // Refresh when the tab regains visibility (no polling needed).
-    const onVisible = () => {
-      if (document.visibilityState === 'visible') void load()
-    }
-    // Refresh immediately after any review is recorded / undone (Issue: memory leak).
-    const onReviewUpdated = () => void load()
-
-    document.addEventListener('visibilitychange', onVisible)
-    window.addEventListener(REVIEW_UPDATED_EVENT, onReviewUpdated)
-
-    return () => {
-      cancelled = true
-      document.removeEventListener('visibilitychange', onVisible)
-      window.removeEventListener(REVIEW_UPDATED_EVENT, onReviewUpdated)
-    }
-  }, [activeYear])
+  const { entries, streak, loading } = useHeatmap('default', activeYear)
 
   const maxCount = useMemo(() => {
     if (!entries.length) return 0
     return entries.reduce((m, d) => Math.max(m, d.count), 0)
-  }, [entries])
-
-  const streak = useMemo(() => {
-    if (!entries.length) return { days: 0, atRisk: false }
-
-    const countByStart = new Map<number, number>()
-    for (const entry of entries) {
-      countByStart.set(startOfDayMs(entry.date), entry.count)
-    }
-
-    const todayStart = startOfDayMs(new Date())
-    const hasToday = (countByStart.get(todayStart) ?? 0) > 0
-    let cursor = hasToday ? todayStart : todayStart - 86_400_000
-    let days = 0
-
-    while ((countByStart.get(cursor) ?? 0) > 0) {
-      days += 1
-      cursor -= 86_400_000
-    }
-
-    return {
-      days,
-      atRisk: !hasToday && days > 0,
-    }
   }, [entries])
 
   const todayStartMs = useMemo(() => startOfDayMs(new Date()), [])
