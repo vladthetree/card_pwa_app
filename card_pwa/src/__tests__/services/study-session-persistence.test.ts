@@ -50,6 +50,7 @@ describe('study session persistence helpers', () => {
     expect(parsed).not.toBeNull()
     expect(parsed?.cardIds).toEqual(['c1', 'c2'])
     expect(parsed?.kind).toBe('deck')
+    expect(parsed?.reviewEvents).toEqual([])
   })
 
   it('rejects persisted session when deck id differs', () => {
@@ -127,6 +128,7 @@ describe('study session persistence helpers', () => {
       relearnSuccessCounts: { c1: 1 },
       forcedTomorrowCardIds: ['c2'],
       againCounts: {},
+      reviewEvents: [{ cardId: 'c1', rating: 3, elapsedMs: 1234 }],
       startTime: now - 5_000,
     })
 
@@ -134,6 +136,7 @@ describe('study session persistence helpers', () => {
     expect(payload.deckId).toBe('deck-1')
     expect(payload.kind).toBe('deck')
     expect(payload.cardIds).toEqual(['c1', 'c2'])
+    expect(payload.reviewEvents).toEqual([{ cardId: 'c1', rating: 3, elapsedMs: 1234 }])
     expect(payload.expiresAt).toBe(now + STUDY_SESSION_TTL_MS)
 
     vi.useRealTimers()

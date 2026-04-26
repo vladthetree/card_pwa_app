@@ -108,6 +108,12 @@ export interface GamificationProfile {
 
 export type Rating = 1 | 2 | 3 | 4  // Again / Hard / Good / Easy
 
+export interface SessionReviewEvent {
+  cardId: string
+  rating: Rating
+  elapsedMs: number
+}
+
 export type MetricsPeriod = 'all' | '7d'
 
 export interface DeckMetricsSnapshot {

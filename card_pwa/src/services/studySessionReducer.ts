@@ -1,6 +1,6 @@
 import { applyRating } from './sessionRecovery'
 import type { PersistedStudySession } from './studySessionPersistence'
-import type { Card, Rating, ReviewUndoToken } from '../types'
+import type { Card, Rating, ReviewUndoToken, SessionReviewEvent } from '../types'
 
 export interface SessionState {
   cards: Card[]
@@ -15,12 +15,14 @@ export interface SessionState {
   relearnSuccessCounts: Record<string, number>
   forcedTomorrowCardIds: string[]
   againCounts: Record<string, number>
+  reviewEvents: SessionReviewEvent[]
   beforeLastRating: {
     cards: Card[]
     lowRatingCounts: Record<string, number>
     relearnSuccessCounts: Record<string, number>
     forcedTomorrowCardIds: string[]
     againCounts: Record<string, number>
+    reviewEvents: SessionReviewEvent[]
   } | null
   startTime: number
 }
@@ -51,6 +53,7 @@ export const initialSessionState: SessionState = {
   relearnSuccessCounts: {},
   forcedTomorrowCardIds: [],
   againCounts: {},
+  reviewEvents: [],
   beforeLastRating: null,
   startTime: Date.now(),
 }
@@ -83,6 +86,7 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
         relearnSuccessCounts: { ...action.snapshot.relearnSuccessCounts },
         forcedTomorrowCardIds: [...action.snapshot.forcedTomorrowCardIds],
         againCounts: { ...action.snapshot.againCounts },
+        reviewEvents: [...(action.snapshot.reviewEvents ?? [])],
         beforeLastRating: null,
         startTime: action.snapshot.startTime,
       }
@@ -106,6 +110,7 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
           relearnSuccessCounts: { ...state.relearnSuccessCounts },
           forcedTomorrowCardIds: [...state.forcedTomorrowCardIds],
           againCounts: { ...state.againCounts },
+          reviewEvents: [...state.reviewEvents],
         },
       }
     case 'RATE_SUCCESS': {
@@ -145,6 +150,14 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
       const forcedTomorrowCardIds = action.forcedTomorrow
         ? upsertUnique(state.forcedTomorrowCardIds, action.cardId)
         : state.forcedTomorrowCardIds
+      const reviewEvents: SessionReviewEvent[] = [
+        ...state.reviewEvents,
+        {
+          cardId: action.cardId,
+          rating: action.rating,
+          elapsedMs: state.lastRating?.elapsedMs ?? 0,
+        },
+      ]
 
       const sessionCount = state.sessionCount + 1
       return {
@@ -159,7 +172,8 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
         relearnSuccessCounts: nextRelearnSuccessCounts,
         forcedTomorrowCardIds,
         againCounts: nextAgainCounts,
-        beforeLastRating: null,
+        reviewEvents,
+        beforeLastRating: state.beforeLastRating,
         startTime: Date.now(),
       }
     }
@@ -201,6 +215,7 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
         relearnSuccessCounts: { ...state.beforeLastRating.relearnSuccessCounts },
         forcedTomorrowCardIds: [...state.beforeLastRating.forcedTomorrowCardIds],
         againCounts: { ...state.beforeLastRating.againCounts },
+        reviewEvents: [...state.beforeLastRating.reviewEvents],
         beforeLastRating: null,
         startTime: Date.now(),
       }

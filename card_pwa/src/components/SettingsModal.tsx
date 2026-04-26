@@ -604,33 +604,33 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
             transition={{ duration: prefersReducedMotion ? 0.12 : 0.2, ease: 'easeOut' }}
-            className={`${UI_TOKENS.modal.shell} max-w-2xl`}
+            className="relative w-full max-w-3xl overflow-hidden rounded-[2rem] border border-zinc-800 bg-[#050505] shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_18px_56px_-10px_rgba(0,0,0,0.72),0_42px_80px_-24px_rgba(0,0,0,0.55)] sm:rounded-[2.5rem]"
             style={{
               maxHeight: 'calc(100dvh - var(--safe-top) - var(--safe-bottom) - 2rem)',
             }}
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-4 border-b border-white/15 bg-black">
+            <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-4 border-b border-zinc-900 bg-[#050505]/95 backdrop-blur-xl">
               <div className="flex items-center gap-2">
-                <SettingsIcon size={20} className="text-white" />
+                <SettingsIcon size={18} className="text-zinc-400" />
                 <div>
-                  <h2 className="text-white font-black text-lg tracking-tight">{t.settings}</h2>
-                  <p className="text-xs text-white/55 mt-0.5">
+                  <h2 className="text-zinc-100 font-black text-lg tracking-tight">{t.settings}</h2>
+                  <p className="text-xs text-zinc-500 mt-0.5">
                     {t.settings_expand_sections}
                   </p>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-2xl text-white/55 hover:text-white hover:bg-white/[0.06] transition-all duration-300 ease-out active:scale-95"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-900 text-zinc-500 transition-all duration-300 ease-out hover:border-zinc-700 hover:text-zinc-100 active:scale-95"
               >
                 <X size={18} />
               </button>
             </div>
 
             <div
-              className="overflow-y-auto px-4 py-4 sm:px-5 sm:py-5 space-y-4"
+              className="overflow-y-auto px-4 py-4 sm:px-5 sm:py-5 space-y-3"
               style={{
                 maxHeight: 'calc(100dvh - var(--safe-top) - var(--safe-bottom) - 9.25rem)',
                 paddingBottom: 'calc(var(--safe-bottom) + 5.5rem)',
@@ -1035,31 +1035,6 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     </p>
                   </div>
 
-                  <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-2`}>
-                    <p className="text-xs text-white/50 font-medium uppercase tracking-wide">
-                      Algorithm Diagnostics
-                    </p>
-                    <p className="text-xs text-white/40 leading-relaxed">
-                      Persistenz-Checks aus Dev-Reviews: {diagnostics.length} Ereignis(se).
-                    </p>
-                    {diagnostics.length > 0 && (
-                      <p className="text-xs text-amber-300/90 leading-relaxed">
-                        Letzter Eintrag: Karte {diagnostics[diagnostics.length - 1]?.cardId},
-                        Mismatches {diagnostics[diagnostics.length - 1]?.mismatches.length}
-                      </p>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        clearAlgorithmDiagnostics()
-                        setDiagnostics([])
-                      }}
-                      className={`w-full ${UI_TOKENS.button.ghost} py-2`}
-                    >
-                      Clear Diagnostics
-                    </button>
-                  </div>
-
                 </div>
               </SettingsSection>
 
@@ -1143,37 +1118,46 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                           </div>
                         )}
 
-                        <div className="rounded-xl border border-white/10 bg-black/30 p-3 space-y-2">
-                          <label className="block text-xs text-white/70 uppercase tracking-wide">{t.notification_template_title_label}</label>
-                          <input
-                            type="text"
-                            maxLength={120}
-                            value={channelConfig.title}
-                            onChange={e => applyNotificationTemplate(channel.key, e.target.value, channelConfig.body)}
-                            placeholder={channel.defaultTitle}
-                            className="w-full rounded-lg bg-black/50 border border-white/15 px-2 py-1.5 text-white"
-                          />
-                        </div>
+                        <details className="group rounded-xl border border-white/10 bg-black/25 p-3">
+                          <summary className="cursor-pointer list-none text-xs font-medium uppercase tracking-wide text-white/55 transition hover:text-white/80">
+                            {settings.language === 'de' ? 'Vorlage bearbeiten' : 'Edit template'}
+                            <span className="ml-2 text-white/30 group-open:hidden">+</span>
+                            <span className="ml-2 hidden text-white/30 group-open:inline">-</span>
+                          </summary>
+                          <div className="mt-3 space-y-3">
+                            <div className="space-y-2">
+                              <label className="block text-xs text-white/65 uppercase tracking-wide">{t.notification_template_title_label}</label>
+                              <input
+                                type="text"
+                                maxLength={120}
+                                value={channelConfig.title}
+                                onChange={e => applyNotificationTemplate(channel.key, e.target.value, channelConfig.body)}
+                                placeholder={channel.defaultTitle}
+                                className="w-full rounded-lg bg-black/50 border border-white/15 px-2 py-1.5 text-white"
+                              />
+                            </div>
 
-                        <div className="rounded-xl border border-white/10 bg-black/30 p-3 space-y-2">
-                          <label className="block text-xs text-white/70 uppercase tracking-wide">{t.notification_template_body_label}</label>
-                          <textarea
-                            rows={2}
-                            maxLength={280}
-                            value={channelConfig.body}
-                            onChange={e => applyNotificationTemplate(channel.key, channelConfig.title, e.target.value)}
-                            placeholder={channel.defaultBody}
-                            className="w-full rounded-lg bg-black/50 border border-white/15 px-2 py-1.5 text-white resize-y"
-                          />
-                        </div>
+                            <div className="space-y-2">
+                              <label className="block text-xs text-white/65 uppercase tracking-wide">{t.notification_template_body_label}</label>
+                              <textarea
+                                rows={2}
+                                maxLength={280}
+                                value={channelConfig.body}
+                                onChange={e => applyNotificationTemplate(channel.key, channelConfig.title, e.target.value)}
+                                placeholder={channel.defaultBody}
+                                className="w-full rounded-lg bg-black/50 border border-white/15 px-2 py-1.5 text-white resize-y"
+                              />
+                            </div>
 
-                        <button
-                          type="button"
-                          onClick={() => resetNotificationTemplate(channel.key)}
-                          className={`${UI_TOKENS.button.ghost} py-2`}
-                        >
-                          {t.notification_template_reset}
-                        </button>
+                            <button
+                              type="button"
+                              onClick={() => resetNotificationTemplate(channel.key)}
+                              className={`${UI_TOKENS.button.ghost} py-2`}
+                            >
+                              {t.notification_template_reset}
+                            </button>
+                          </div>
+                        </details>
                       </div>
                     )
                   })}
@@ -1202,6 +1186,31 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                       placeholder="Leer = kein Token"
                       className="w-full rounded-lg bg-black/50 border border-white/15 px-2 py-1.5 text-white"
                     />
+                  </div>
+
+                  <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-2`}>
+                    <p className="text-xs text-white/50 font-medium uppercase tracking-wide">
+                      Algorithm Diagnostics
+                    </p>
+                    <p className="text-xs text-white/40 leading-relaxed">
+                      Persistenz-Checks aus Dev-Reviews: {diagnostics.length} Ereignis(se).
+                    </p>
+                    {diagnostics.length > 0 && (
+                      <p className="text-xs text-amber-300/90 leading-relaxed">
+                        Letzter Eintrag: Karte {diagnostics[diagnostics.length - 1]?.cardId},
+                        Mismatches {diagnostics[diagnostics.length - 1]?.mismatches.length}
+                      </p>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        clearAlgorithmDiagnostics()
+                        setDiagnostics([])
+                      }}
+                      className={`w-full ${UI_TOKENS.button.ghost} py-2`}
+                    >
+                      Clear Diagnostics
+                    </button>
                   </div>
 
                   <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
@@ -1372,7 +1381,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
 
             {/* Footer */}
             <div
-              className="sticky bottom-0 px-5 py-4 border-t border-white/15 flex gap-3 bg-black"
+              className="sticky bottom-0 px-5 py-4 border-t border-zinc-900 flex gap-3 bg-[#050505]/95 backdrop-blur-xl"
               style={{ paddingBottom: 'calc(var(--safe-bottom) + 1rem)' }}
             >
               <button

@@ -23,12 +23,15 @@ import {
   type PersistedStudySession,
 } from '../services/studySessionPersistence'
 import { initialSessionState, sessionReducer } from '../services/studySessionReducer'
+import { buildLearningCoachSummary } from '../services/learningCoach'
 import type { Card, Rating, ShuffleCollection } from '../types'
 import { formatDeckName } from '../utils/cardTextParser'
+import { getReviewXp } from '../utils/gamification'
 import CardFace from './CardFace'
 import EditCardModal from './EditCardModal'
-import ProgressBar from './ProgressBar'
 import RatingBar from './RatingBar'
+import SessionCoachPanel from './SessionCoachPanel'
+import StudyHeaderProgress, { type RewardHint } from './StudyHeaderProgress'
 
 interface Props {
   collection: ShuffleCollection
@@ -80,7 +83,10 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   const [session, dispatch] = useReducer(sessionReducer, initialSessionState)
   const [editingCard, setEditingCard] = useState<Card | null>(null)
   const [answerWasIncorrect, setAnswerWasIncorrect] = useState(false)
+  const [rewardToast, setRewardToast] = useState<RewardHint | null>(null)
   const [sessionDeckCounts, setSessionDeckCounts] = useState<Record<string, number>>({})
+  const sessionMomentumRef = useRef(0)
+  const rewardToastTimerRef = useRef<number | null>(null)
   const sessionDoneRef = useRef(session.isDone)
   const sessionCardsLengthRef = useRef(session.cards.length)
   const restoreRunIdRef = useRef(0)
@@ -91,6 +97,19 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     sessionDoneRef.current = session.isDone
     sessionCardsLengthRef.current = session.cards.length
   }, [session.isDone, session.cards.length])
+
+  useEffect(() => {
+    return () => {
+      if (rewardToastTimerRef.current !== null) {
+        window.clearTimeout(rewardToastTimerRef.current)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    sessionMomentumRef.current = 0
+    setRewardToast(null)
+  }, [collection.id])
 
   const sessionId = useMemo(() => buildShuffleSessionId(collection.id), [collection.id])
   const latestShuffleCardById = useMemo(() => new Map(cards.map(card => [card.id, card])), [cards])
@@ -199,6 +218,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       relearnSuccessCounts: session.relearnSuccessCounts,
       forcedTomorrowCardIds: session.forcedTomorrowCardIds,
       againCounts: session.againCounts,
+      reviewEvents: session.reviewEvents,
       startTime: session.startTime,
     })
 
@@ -216,6 +236,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     session.lastRating,
     session.lowRatingCounts,
     session.relearnSuccessCounts,
+    session.reviewEvents,
     session.sessionCount,
     session.startTime,
     sessionId,
@@ -258,6 +279,36 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     setAnswerWasIncorrect(!isCorrect)
   }, [])
 
+  const registerSessionReward = useCallback((rating: Rating, elapsedMs: number) => {
+    const isSuccess = rating >= 3
+    const nextCombo = isSuccess ? sessionMomentumRef.current + 1 : 0
+    sessionMomentumRef.current = nextCombo
+
+    const baseXp = getReviewXp(rating, elapsedMs)
+    const comboBonus = isSuccess ? Math.min(12, Math.floor(nextCombo / 3) * 2) : 0
+    const xp = baseXp + comboBonus
+    const comboLabel = nextCombo >= 2
+      ? `${nextCombo}x ${settings.language === 'de' ? 'Combo' : 'combo'}`
+      : (isSuccess ? (settings.language === 'de' ? 'Sicher erinnert' : 'Recall locked') : (settings.language === 'de' ? 'Trainingspunkt' : 'Practice point'))
+
+    if (rewardToastTimerRef.current !== null) {
+      window.clearTimeout(rewardToastTimerRef.current)
+    }
+
+    setRewardToast({
+      id: `${Date.now()}-${rating}-${nextCombo}`,
+      xp,
+      combo: nextCombo,
+      label: comboLabel,
+      tone: isSuccess ? 'success' : 'practice',
+    })
+
+    rewardToastTimerRef.current = window.setTimeout(() => {
+      setRewardToast(null)
+      rewardToastTimerRef.current = null
+    }, 1600)
+  }, [settings.language])
+
   const handleRate = useCallback(async (rating: Rating) => {
     if (!currentCard || session.isSubmitting || session.isDone || isAlgorithmMigrating) return
 
@@ -292,6 +343,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
         undoToken: result.undoToken,
         forcedTomorrow,
       })
+      registerSessionReward(effectiveRating, elapsedMs)
       setAnswerWasIncorrect(false)
     } catch (err) {
       dispatch({ type: 'RATE_ERROR', message: err instanceof Error ? err.message : t.unknown_error })
@@ -308,6 +360,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     settings.algorithmParams,
     t.save_rating_failed,
     t.unknown_error,
+    registerSessionReward,
   ])
 
   const handleRetry = useCallback(async () => {
@@ -331,6 +384,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       }
 
       dispatch({ type: 'RATE_SUCCESS', rating, cardId: currentCard.id, undoToken: result.undoToken, forcedTomorrow })
+      registerSessionReward(rating, elapsedMs)
       setAnswerWasIncorrect(false)
     } catch (err) {
       dispatch({ type: 'RATE_ERROR', message: err instanceof Error ? err.message : t.unknown_error })
@@ -345,6 +399,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     settings.algorithmParams,
     t.save_failed,
     t.unknown_error,
+    registerSessionReward,
   ])
 
   const handleUndoLastRating = useCallback(async () => {
@@ -356,12 +411,16 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       return
     }
     dispatch({ type: 'UNDO_SUCCESS' })
+    sessionMomentumRef.current = 0
+    setRewardToast(null)
     setAnswerWasIncorrect(false)
   }, [isAlgorithmMigrating, session.isSubmitting, session.lastUndoToken, t.save_failed])
 
   const handleRestart = useCallback(() => {
     clearPersistedSession()
     setAnswerWasIncorrect(false)
+    sessionMomentumRef.current = 0
+    setRewardToast(null)
     setSessionDeckCounts(buildDeckCounts(cards))
     dispatch({ type: 'INIT', cards })
   }, [cards, clearPersistedSession])
@@ -405,59 +464,83 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   }
 
   if (!loading && session.isDone) {
+    const coachSummary = buildLearningCoachSummary({
+      reviewEvents: session.reviewEvents,
+      cards,
+      againCounts: session.againCounts,
+      lowRatingCounts: session.lowRatingCounts,
+      forcedTomorrowCardIds: session.forcedTomorrowCardIds,
+    })
+
     return (
-      <div className="min-h-screen bg-black px-4 py-10 text-white">
-        <div className="mx-auto max-w-2xl rounded-[32px] border border-white/10 bg-white/[0.04] p-8 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-emerald-300/25 bg-emerald-400/10 text-emerald-200">
-            <Shuffle size={22} />
-          </div>
-          <h1 className="text-2xl font-semibold">{collection.name}</h1>
-          <p className="mt-3 text-sm text-white/55">
-            {settings.language === 'de' ? 'Diese Shuffle-Session ist abgeschlossen.' : 'This shuffle session is complete.'}
-          </p>
-          {sessionDeckSummary.length > 0 && (
-            <div className="mt-6 rounded-3xl border border-white/10 bg-black/25 p-4 text-left">
-              <div className="text-[11px] uppercase tracking-[0.18em] text-white/40">
-                {settings.language === 'de' ? 'Verteilung nach Ursprungsdeck' : 'Source deck distribution'}
-              </div>
-              <div className="mt-3 grid gap-2">
-                {sessionDeckSummary.map(entry => (
-                  <div
-                    key={entry.deckId}
-                    className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/[0.03] px-3 py-2 text-sm"
-                  >
-                    <span className="truncate pr-3 text-white/80">{entry.name}</span>
-                    <span className="shrink-0 rounded-full border border-amber-300/20 bg-amber-400/10 px-2 py-0.5 text-xs text-amber-100/85">
-                      {entry.count} {settings.language === 'de' ? 'Karten' : 'cards'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <p className="mt-3 text-xs leading-relaxed text-white/40">
-                {settings.language === 'de'
-                  ? 'Bewertungen wurden weiterhin im jeweiligen Originaldeck verbucht.'
-                  : 'Reviews were still recorded against each original deck.'}
-              </p>
+      <>
+        <div className="min-h-screen bg-black px-4 py-10 text-white">
+          <div className="mx-auto max-w-2xl rounded-[32px] border border-white/10 bg-white/[0.04] p-8 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-emerald-300/25 bg-emerald-400/10 text-emerald-200">
+              <Shuffle size={22} />
             </div>
-          )}
-          <div className="mt-6 flex justify-center gap-3">
-            <button
-              type="button"
-              onClick={handleRestart}
-              className="rounded-2xl border border-white/15 px-4 py-2 text-sm text-white/80 transition hover:border-white/30 hover:text-white"
-            >
-              {settings.language === 'de' ? 'Neu mischen' : 'Reshuffle'}
-            </button>
-            <button
-              type="button"
-              onClick={onExit}
-              className="rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-black transition hover:bg-white/90"
-            >
-              {settings.language === 'de' ? 'Zur Startseite' : 'Back home'}
-            </button>
+            <h1 className="text-2xl font-semibold">{collection.name}</h1>
+            <p className="mt-3 text-sm text-white/55">
+              {settings.language === 'de' ? 'Diese Shuffle-Session ist abgeschlossen.' : 'This shuffle session is complete.'}
+            </p>
+            <SessionCoachPanel
+              language={settings.language}
+              summary={coachSummary}
+              onEditCard={card => setEditingCard(card)}
+            />
+            {sessionDeckSummary.length > 0 && (
+              <div className="mt-6 rounded-3xl border border-white/10 bg-black/25 p-4 text-left">
+                <div className="text-[11px] uppercase tracking-[0.18em] text-white/40">
+                  {settings.language === 'de' ? 'Verteilung nach Ursprungsdeck' : 'Source deck distribution'}
+                </div>
+                <div className="mt-3 grid gap-2">
+                  {sessionDeckSummary.map(entry => (
+                    <div
+                      key={entry.deckId}
+                      className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/[0.03] px-3 py-2 text-sm"
+                    >
+                      <span className="truncate pr-3 text-white/80">{entry.name}</span>
+                      <span className="shrink-0 rounded-full border border-amber-300/20 bg-amber-400/10 px-2 py-0.5 text-xs text-amber-100/85">
+                        {entry.count} {settings.language === 'de' ? 'Karten' : 'cards'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-3 text-xs leading-relaxed text-white/40">
+                  {settings.language === 'de'
+                    ? 'Bewertungen wurden weiterhin im jeweiligen Originaldeck verbucht.'
+                    : 'Reviews were still recorded against each original deck.'}
+                </p>
+              </div>
+            )}
+            <div className="mt-6 flex justify-center gap-3">
+              <button
+                type="button"
+                onClick={handleRestart}
+                className="rounded-2xl border border-white/15 px-4 py-2 text-sm text-white/80 transition hover:border-white/30 hover:text-white"
+              >
+                {settings.language === 'de' ? 'Neu mischen' : 'Reshuffle'}
+              </button>
+              <button
+                type="button"
+                onClick={onExit}
+                className="rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-black transition hover:bg-white/90"
+              >
+                {settings.language === 'de' ? 'Zur Startseite' : 'Back home'}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+        <AnimatePresence>
+          {editingCard && (
+            <EditCardModal
+              card={editingCard}
+              onClose={() => setEditingCard(null)}
+              onSaved={handleCardSaved}
+            />
+          )}
+        </AnimatePresence>
+      </>
     )
   }
 
@@ -495,7 +578,12 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
           </div>
         </div>
         <div className={`mx-auto max-w-5xl ${isHandsetLayout ? 'mt-2' : 'mt-3'}`}>
-          <ProgressBar current={session.sessionCount} total={session.sessionCount + session.cards.length} />
+          <StudyHeaderProgress
+            current={session.sessionCount}
+            total={session.sessionCount + session.cards.length}
+            reward={rewardToast}
+            reducedMotion={prefersReducedMotion}
+          />
         </div>
       </div>
 

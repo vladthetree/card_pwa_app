@@ -1,4 +1,4 @@
-import type { Card, Rating } from '../types'
+import type { Card, Rating, SessionReviewEvent } from '../types'
 
 export type StudySessionKind = 'deck' | 'shuffle'
 
@@ -20,6 +20,7 @@ export interface PersistedStudySession {
   relearnSuccessCounts: Record<string, number>
   forcedTomorrowCardIds: string[]
   againCounts: Record<string, number>
+  reviewEvents?: SessionReviewEvent[]
   expiresAt: number
   startTime: number
 }
@@ -51,6 +52,7 @@ export function parsePersistedStudySession(raw: string | null, sessionId: string
     if (!Array.isArray(parsed.cardIds) || parsed.cardIds.length === 0) return null
     // Provide default for sessions persisted before againCounts was added.
     if (!parsed.againCounts || typeof parsed.againCounts !== 'object') parsed.againCounts = {}
+    if (!Array.isArray(parsed.reviewEvents)) parsed.reviewEvents = []
     if (parsed.kind !== 'shuffle') parsed.kind = 'deck'
     return parsed
   } catch {
@@ -80,6 +82,7 @@ export function buildPersistedStudySession(input: {
   relearnSuccessCounts: Record<string, number>
   forcedTomorrowCardIds: string[]
   againCounts: Record<string, number>
+  reviewEvents?: SessionReviewEvent[]
   startTime: number
   nowMs?: number
 }): PersistedStudySession {
@@ -102,6 +105,7 @@ export function buildPersistedStudySession(input: {
     relearnSuccessCounts: input.relearnSuccessCounts,
     forcedTomorrowCardIds: input.forcedTomorrowCardIds,
     againCounts: input.againCounts,
+    reviewEvents: input.reviewEvents ?? [],
     expiresAt: now + STUDY_SESSION_TTL_MS,
     startTime: input.startTime,
   }
