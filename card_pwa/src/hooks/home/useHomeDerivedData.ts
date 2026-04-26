@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
-  getDeckScheduleOverview,
-  getDeckTagIndex,
+  getDeckHomeMetadata,
   getFutureDueForecast,
 } from '../../db/queries'
 import type { Deck, DeckScheduleOverview, ShuffleCollection } from '../../types'
@@ -84,16 +83,45 @@ export async function loadHomeDeckScheduleOverview(
   nextDayStartsAt: number,
 ): Promise<Record<string, DeckScheduleOverview>> {
   if (decks.length === 0) return {}
-  return getDeckScheduleOverview(
+  const metadata = await getDeckHomeMetadata(
     decks.map(deck => deck.id),
     studyCardLimit,
     nextDayStartsAt,
   )
+  return metadata.deckScheduleOverview
 }
 
-export async function loadHomeDeckTagIndex(decks: Deck[]): Promise<Record<string, string[]>> {
+export async function loadHomeDeckTagIndex(
+  decks: Deck[],
+  studyCardLimit = 50,
+  nextDayStartsAt = 0,
+): Promise<Record<string, string[]>> {
   if (decks.length === 0) return {}
-  return getDeckTagIndex(decks.map(deck => deck.id))
+  const metadata = await getDeckHomeMetadata(
+    decks.map(deck => deck.id),
+    studyCardLimit,
+    nextDayStartsAt,
+  )
+  return metadata.deckTagIndex
+}
+
+export async function loadHomeDeckMetadata(
+  decks: Deck[],
+  studyCardLimit: number,
+  nextDayStartsAt: number,
+): Promise<Pick<HomeDerivedData, 'deckScheduleOverview' | 'deckTagIndex'>> {
+  if (decks.length === 0) {
+    return {
+      deckScheduleOverview: {},
+      deckTagIndex: {},
+    }
+  }
+
+  return getDeckHomeMetadata(
+    decks.map(deck => deck.id),
+    studyCardLimit,
+    nextDayStartsAt,
+  )
 }
 
 export function useHomeDerivedData(input: {
@@ -210,34 +238,19 @@ export function useHomeDerivedData(input: {
   useEffect(() => {
     let cancelled = false
 
-    const loadSchedule = async () => {
-      const next = await loadHomeDeckScheduleOverview(decks, studyCardLimit, nextDayStartsAt)
+    const loadDeckMetadata = async () => {
+      const next = await loadHomeDeckMetadata(decks, studyCardLimit, nextDayStartsAt)
       if (!cancelled) {
-        setDeckScheduleOverview(next)
+        setDeckScheduleOverview(next.deckScheduleOverview)
+        setDeckTagIndex(next.deckTagIndex)
       }
     }
 
-    void loadSchedule()
+    void loadDeckMetadata()
     return () => {
       cancelled = true
     }
   }, [decks, studyCardLimit, nextDayStartsAt])
-
-  useEffect(() => {
-    let cancelled = false
-
-    const loadTags = async () => {
-      const next = await loadHomeDeckTagIndex(decks)
-      if (!cancelled) {
-        setDeckTagIndex(next)
-      }
-    }
-
-    void loadTags()
-    return () => {
-      cancelled = true
-    }
-  }, [decks])
 
   return {
     deckOptions,

@@ -1,8 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const runtime = vi.hoisted(() => ({
-  getDeckScheduleOverview: vi.fn(),
-  getDeckTagIndex: vi.fn(),
+  getDeckHomeMetadata: vi.fn(),
   getFutureDueForecast: vi.fn(),
   listDecksForBackup: vi.fn(),
   buildSelectedShuffleCards: vi.fn(),
@@ -10,8 +9,7 @@ const runtime = vi.hoisted(() => ({
 }))
 
 vi.mock('../../../db/queries', () => ({
-  getDeckScheduleOverview: runtime.getDeckScheduleOverview,
-  getDeckTagIndex: runtime.getDeckTagIndex,
+  getDeckHomeMetadata: runtime.getDeckHomeMetadata,
   getFutureDueForecast: runtime.getFutureDueForecast,
 }))
 
@@ -29,8 +27,7 @@ vi.mock('../../../services/syncedDeckScope', () => ({
 
 describe('useHomeDerivedData helpers', () => {
   beforeEach(() => {
-    runtime.getDeckScheduleOverview.mockReset()
-    runtime.getDeckTagIndex.mockReset()
+    runtime.getDeckHomeMetadata.mockReset()
     runtime.getFutureDueForecast.mockReset()
     runtime.listDecksForBackup.mockReset()
     runtime.buildSelectedShuffleCards.mockReset()
@@ -45,6 +42,7 @@ describe('useHomeDerivedData helpers', () => {
       loadHomeShuffleSummaries,
       loadHomeDeckScheduleOverview,
       loadHomeDeckTagIndex,
+      loadHomeDeckMetadata,
     } = await import('../../../hooks/home/useHomeDerivedData')
 
     await expect(loadHomeDeckOptions(false)).resolves.toEqual([])
@@ -58,12 +56,15 @@ describe('useHomeDerivedData helpers', () => {
     })).resolves.toEqual({})
     await expect(loadHomeDeckScheduleOverview([], 50, 4)).resolves.toEqual({})
     await expect(loadHomeDeckTagIndex([])).resolves.toEqual({})
+    await expect(loadHomeDeckMetadata([], 50, 4)).resolves.toEqual({
+      deckScheduleOverview: {},
+      deckTagIndex: {},
+    })
 
     expect(runtime.listDecksForBackup).not.toHaveBeenCalled()
     expect(runtime.getFutureDueForecast).not.toHaveBeenCalled()
     expect(runtime.buildSelectedShuffleCards).not.toHaveBeenCalled()
-    expect(runtime.getDeckScheduleOverview).not.toHaveBeenCalled()
-    expect(runtime.getDeckTagIndex).not.toHaveBeenCalled()
+    expect(runtime.getDeckHomeMetadata).not.toHaveBeenCalled()
   })
 
   it('builds shuffle summaries with synced scope and selected cards', async () => {

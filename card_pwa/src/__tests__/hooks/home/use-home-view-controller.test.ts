@@ -30,12 +30,23 @@ describe('useHomeViewController helpers', () => {
     expect(readInitialDashboardMode()).toBe('kpi')
     expect(readInitialShuffleOnlyMode()).toBe(false)
 
-    persistDashboardMode('life')
+    persistDashboardMode('pilot')
     persistShuffleOnlyMode(true)
 
-    expect(window.localStorage.getItem('card-pwa-home-dashboard-mode')).toBe('life')
+    expect(window.localStorage.getItem('card-pwa-home-dashboard-mode')).toBe('pilot')
     expect(window.localStorage.getItem('card-pwa-home-heatmap')).toBe('0')
     expect(window.localStorage.getItem('card-pwa-home-shuffle-only-mode')).toBe('1')
+  })
+
+  it('migrates removed life dashboard mode back to kpi', async () => {
+    window.localStorage.setItem('card-pwa-home-dashboard-mode', 'life')
+    window.localStorage.setItem('card-pwa-home-heatmap', '1')
+
+    const { readInitialDashboardMode } = await import('../../../hooks/home/useHomeViewController')
+
+    expect(readInitialDashboardMode()).toBe('kpi')
+    expect(window.localStorage.getItem('card-pwa-home-dashboard-mode')).toBe('kpi')
+    expect(window.localStorage.getItem('card-pwa-home-heatmap')).toBe('0')
   })
 
   it('validates deck creation input and maps duplicate errors', async () => {

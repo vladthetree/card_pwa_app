@@ -51,8 +51,6 @@ vi.mock('../../contexts/SettingsContext', () => ({
       showBuildVersion: false,
       studyCardLimit: 50,
       nextDayStartsAt: 4,
-      gameOfLifeViewMode: '3d',
-      gameOfLifeAnimationSpeed: 100,
       dailyReminderEnabled: false,
       dailyReminderTime: '20:00',
     },
@@ -267,7 +265,7 @@ vi.mock('../../components/ShuffleMetricsModal.tsx', () => ({
 }))
 
 describe('HomeView shell wiring', () => {
-  it('passes derived and controller data into the shell components and modals', async () => {
+  it('passes derived and controller data into the shell and defers lazy modals', async () => {
     const { default: HomeView } = await import('../../components/HomeView')
     const html = renderToStaticMarkup(
       <HomeView
@@ -278,11 +276,11 @@ describe('HomeView shell wiring', () => {
 
     expect(html).toContain('toolbar')
     expect(html).toContain('deck-list')
-    expect(html).toContain('create-card-modal')
-    expect(html).toContain('settings-modal')
-    expect(html).toContain('faq-modal')
-    expect(html).toContain('future-forecast-modal')
-    expect(html).toContain('export-modal')
+    expect(html).not.toContain('create-card-modal')
+    expect(html).not.toContain('settings-modal')
+    expect(html).not.toContain('faq-modal')
+    expect(html).not.toContain('future-forecast-modal')
+    expect(html).not.toContain('export-modal')
     expect(captured.toolbarProps?.showShuffleOnly).toBe(false)
     expect(captured.deckListProps?.deckScheduleOverview).toEqual({
       'deck-1': {

@@ -1,7 +1,7 @@
 import { useCallback, useState, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
-import { Activity, BarChart3, CalendarDays, Check, ChevronDown, Download, FolderPlus, Plus, RefreshCw, Search, Shuffle, Sparkles, Upload, X } from 'lucide-react'
+import { BarChart3, CalendarDays, Check, ChevronDown, Download, FolderPlus, Plus, RefreshCw, Search, Shuffle, Sparkles, Upload, X } from 'lucide-react'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 import { useFloatingMenu } from '../../hooks/useFloatingMenu'
 import type { HomeDashboardMode } from './HomeStatsSection'
@@ -147,7 +147,6 @@ export function HomeDeckToolbar({
   }> = [
     { key: 'kpi', label: 'KPI', icon: BarChart3 },
     { key: 'heatmap', label: language === 'de' ? 'Heatmap' : 'Heatmap', icon: CalendarDays },
-    { key: 'life', label: language === 'de' ? 'Life' : 'Life', icon: Activity },
     { key: 'pilot', label: language === 'de' ? 'Pilot' : 'Pilot', icon: Sparkles },
   ]
 
