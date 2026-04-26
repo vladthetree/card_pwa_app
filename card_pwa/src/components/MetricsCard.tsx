@@ -19,7 +19,7 @@ export default function MetricsCard({ card }: Props) {
     : (card.sm2Ease != null ? `${card.sm2Ease.toFixed(2)}×` : '–')
 
   return (
-    <aside className="glass p-6 rounded-[2.5rem] border border-white/10 bg-white/5 text-sm text-white/80 lg:w-72 flex-shrink-0 transition-all duration-300 ease-out">
+    <aside className="ds-card p-6 text-sm text-white/80 lg:w-72 flex-shrink-0 transition-all duration-300 ease-out">
       <p className="text-xs font-black text-white/40 uppercase tracking-[0.2em] mb-4">{t.metrics_title}</p>
       <div className="space-y-3 text-sm text-white/80">
         <MetricRow label={t.interval} value={`${card.interval} ${t.days_suffix}`} />

@@ -32,11 +32,11 @@ interface FaqSectionProps {
 
 function FaqSection({ title, description, icon, isOpen, onToggle, children }: FaqSectionProps) {
   return (
-    <div className={`rounded-xl overflow-hidden transition-all duration-300 ease-out ${isOpen ? 'border border-zinc-700 bg-[#0c0c0c]' : 'border border-zinc-900 bg-[#0c0c0c]'}`}>
+    <div className={`overflow-hidden rounded-[12px] transition-all duration-300 ease-out ${isOpen ? 'border border-[#3f3f46] bg-[#0c0c0c] shadow-card' : 'border border-[#18181b] bg-[#0c0c0c]'}`}>
       <button
         type="button"
         onClick={onToggle}
-        className="w-full flex items-center justify-between gap-4 px-4 py-4 text-left hover:bg-white/[0.04] transition-all duration-300 ease-out"
+        className="w-full flex items-center justify-between gap-4 px-4 py-4 text-left hover:bg-[#111] transition-all duration-300 ease-out"
       >
         <div className="flex items-start gap-3 min-w-0">
           <div className={`mt-0.5 transition-colors duration-300 ease-out ${isOpen ? 'text-white' : 'text-zinc-700'}`}>{icon}</div>
@@ -47,6 +47,7 @@ function FaqSection({ title, description, icon, isOpen, onToggle, children }: Fa
         </div>
         <ChevronDown
           size={18}
+          strokeWidth={1.5}
           className={`shrink-0 transition-all duration-300 ease-out ${isOpen ? 'rotate-180 text-white' : 'text-zinc-700'}`}
         />
       </button>
@@ -60,7 +61,7 @@ function FaqSection({ title, description, icon, isOpen, onToggle, children }: Fa
             transition={{ duration: 0.3, ease: 'easeOut' }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 border-t border-zinc-700 space-y-4">{children}</div>
+            <div className="px-4 pb-4 border-t border-[#18181b] space-y-4">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -111,9 +112,9 @@ export default function FaqModal({ isOpen, onClose }: Props) {
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-4 border-b border-white/15 bg-black">
+            <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-4 border-b border-[#18181b] bg-[#050505]/95">
               <div className="flex items-center gap-2">
-                <HelpCircle size={20} className="text-white" />
+                <HelpCircle size={20} strokeWidth={1.5} className="text-white" />
                 <div>
                   <h2 className="text-white font-black text-lg tracking-tight">{t.faq}</h2>
                   <p className="text-xs text-white/55 mt-0.5">
@@ -123,15 +124,15 @@ export default function FaqModal({ isOpen, onClose }: Props) {
               </div>
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-2xl text-white/55 hover:text-white hover:bg-white/[0.06] transition-all duration-300 ease-out active:scale-95"
+                className="ds-icon-button h-9 w-9"
               >
-                <X size={18} />
+                <X size={18} strokeWidth={1.5} />
               </button>
             </div>
 
             <div
               className="overflow-y-auto px-4 py-4 sm:px-5 sm:py-5 space-y-4"
-              style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 9.25rem)' }}
+              style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - 9.25rem)' }}
             >
               <FaqSection
                 title={t.faq_import_export}
@@ -145,7 +146,7 @@ export default function FaqModal({ isOpen, onClose }: Props) {
                     <h4 className="text-sm font-medium text-white mb-2">{t.faq_import_title}</h4>
                     {renderContent(t.faq_import_content)}
                   </div>
-                  <div className="border-t border-white/10 pt-4">
+                  <div className="border-t border-[#18181b] pt-4">
                     <h4 className="text-sm font-medium text-white mb-2">{t.faq_export_title}</h4>
                     {renderContent(t.faq_export_content)}
                   </div>
@@ -175,13 +176,13 @@ export default function FaqModal({ isOpen, onClose }: Props) {
                 <div className="pt-3 space-y-3">
                   <div>
                     <p className="text-xs text-white/60 font-semibold uppercase mb-2">Struktur / Structure</p>
-                    <div className="bg-black/75 border border-white/10 rounded-2xl p-3 text-xs font-mono text-white/70">
+	                    <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3 text-xs font-mono text-white/70">
                       {t.faq_csv_structure}
                     </div>
                   </div>
                   <div>
                     <p className="text-xs text-white/60 font-semibold uppercase mb-2">Beispiel / Example</p>
-                    <div className="bg-black/75 border border-white/10 rounded-2xl p-3 text-xs font-mono text-white/70">
+	                    <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3 text-xs font-mono text-white/70">
                       {t.faq_csv_example}
                     </div>
                   </div>
@@ -210,7 +211,7 @@ export default function FaqModal({ isOpen, onClose }: Props) {
               >
                 <div className="pt-3 space-y-3">
                   <p className="text-xs text-white/60 font-semibold uppercase mb-2">Format</p>
-                  <div className="bg-black/75 border border-white/10 rounded-2xl p-3 text-xs font-mono text-white/70 whitespace-pre-wrap">
+	                  <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3 text-xs font-mono text-white/70 whitespace-pre-wrap">
                     {t.faq_txt_structure}
                   </div>
                 </div>
@@ -256,7 +257,7 @@ export default function FaqModal({ isOpen, onClose }: Props) {
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 px-5 py-4 pb-safe-4 border-t border-white/15 flex gap-3 bg-black">
+            <div className="sticky bottom-0 px-5 py-4 border-t border-[#18181b] flex gap-3 bg-[#050505]/95">
               <button
                 onClick={onClose}
                 className={`${UI_TOKENS.button.footerSecondary} text-sm font-medium hover:bg-white/5`}

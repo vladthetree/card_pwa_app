@@ -18,7 +18,7 @@ export default function UpdateBanner({ onUpdateNow, onDismiss }: Props) {
       animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
       exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
       transition={{ duration: prefersReducedMotion ? 0.18 : 0.24, ease: 'easeOut' }}
-      className="fixed bottom-safe-3 left-safe-4 right-safe-4 z-[60] mx-auto w-auto max-w-md rounded-2xl border border-white/15 bg-slate-900/92 px-4 py-3 shadow-xl backdrop-blur-md sm:left-auto sm:right-safe-4 sm:mx-0"
+      className="fixed bottom-3 left-safe-4 right-safe-4 z-[60] mx-auto w-auto max-w-md rounded-[14px] border border-[#18181b] bg-[#0c0c0c]/95 px-4 py-3 shadow-menu backdrop-blur-md sm:left-auto sm:right-safe-4 sm:mx-0"
       role="status"
       aria-live="polite"
     >
@@ -50,7 +50,7 @@ export default function UpdateBanner({ onUpdateNow, onDismiss }: Props) {
               event.stopPropagation()
               onDismiss()
             }}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full p-1.5 text-white/60 transition-all duration-200 ease-out hover:bg-white/10 hover:text-white active:scale-95 sm:h-9 sm:w-9"
+            className="ds-icon-button inline-flex h-11 w-11 sm:h-9 sm:w-9"
             aria-label={isGerman ? 'Hinweis schließen' : 'Dismiss notice'}
           >
             <X size={14} />

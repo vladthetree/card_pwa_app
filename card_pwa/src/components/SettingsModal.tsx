@@ -600,14 +600,14 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
             transition={{ duration: prefersReducedMotion ? 0.12 : 0.2, ease: 'easeOut' }}
-            className="relative w-full max-w-3xl overflow-hidden rounded-[2rem] border border-zinc-800 bg-[#050505] shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_18px_56px_-10px_rgba(0,0,0,0.72),0_42px_80px_-24px_rgba(0,0,0,0.55)] sm:rounded-[2.5rem]"
-            style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 2rem)' }}
+            className="relative w-full max-w-3xl ds-modal"
+            style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - 2rem)' }}
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-4 border-b border-zinc-900 bg-[#050505]/95 backdrop-blur-xl">
+            <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-4 border-b border-[#18181b] bg-[#050505]/95 backdrop-blur-xl">
               <div className="flex items-center gap-2">
-                <SettingsIcon size={18} className="text-zinc-400" />
+                <SettingsIcon size={18} strokeWidth={1.5} className="text-zinc-400" />
                 <div>
                   <h2 className="text-zinc-100 font-black text-lg tracking-tight">{t.settings}</h2>
                   <p className="text-xs text-zinc-500 mt-0.5">
@@ -617,18 +617,18 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
               </div>
               <button
                 onClick={onClose}
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-900 text-zinc-500 transition-all duration-300 ease-out hover:border-zinc-700 hover:text-zinc-100 active:scale-95"
+                className="ds-icon-button flex h-9 w-9"
               >
-                <X size={18} />
+                <X size={18} strokeWidth={1.5} />
               </button>
             </div>
 
             <div
               className="overflow-y-auto px-4 py-4 sm:px-5 sm:py-5 space-y-3"
               style={{
-                maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 9.25rem)',
-                paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 5.5rem)',
-                scrollPaddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 5.5rem)',
+                maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - 9.25rem)',
+                paddingBottom: '5.5rem',
+                scrollPaddingBottom: '5.5rem',
               }}
             >
               <SettingsSection
@@ -663,10 +663,10 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                             key={option.key}
                             type="button"
                             onClick={() => setFontFamily(option.key)}
-                            className={`rounded-2xl border p-3 text-left transition-all duration-300 ease-out active:scale-95 ${
+                            className={`rounded-[14px] border p-3 text-left transition-all duration-300 ease-out active:scale-95 ${
                               selected
-                                ? 'bg-white/15 border-white/35 shadow-lg shadow-black/10'
-                                : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                ? 'border-[#3f3f46] bg-[#111] shadow-card'
+                                : 'border-[#18181b] bg-[#0c0c0c] hover:border-[#3f3f46] hover:bg-[#111]'
                             }`}
                           >
                             <div className="flex items-start justify-between gap-3">
@@ -679,7 +679,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                               </span>
                             </div>
                             <div
-                              className="mt-3 rounded-xl border border-white/10 bg-black/40 px-3 py-3 text-sm text-white/85"
+                              className="mt-3 rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-3 py-3 text-sm text-white/85"
                               style={{
                                 fontFamily: FONT_FAMILY_OPTIONS[option.key],
                               }}
@@ -706,10 +706,10 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                             key={key}
                             type="button"
                             onClick={() => setTheme(key as ThemeKey)}
-                            className={`rounded-2xl border p-3 text-left transition-all duration-300 ease-out active:scale-95 ${
+                            className={`rounded-[14px] border p-3 text-left transition-all duration-300 ease-out active:scale-95 ${
                               selected
-                                ? 'bg-white/15 border-white/35 shadow-lg shadow-black/10'
-                                : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                ? 'border-[#3f3f46] bg-[#111] shadow-card'
+                                : 'border-[#18181b] bg-[#0c0c0c] hover:border-[#3f3f46] hover:bg-[#111]'
                             }`}
                           >
                             <div className="flex items-center justify-between gap-3">
@@ -730,7 +730,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                               </div>
                             </div>
                             <div
-                              className="mt-3 h-16 rounded-xl border overflow-hidden"
+                              className="mt-3 h-16 overflow-hidden rounded-[12px] border"
                               style={{
                                 background: theme.background,
                                 borderColor: theme.border,
@@ -752,7 +752,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
 
                   <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
                     <p className="text-xs text-white/50 font-medium uppercase tracking-wide">{t.build_version_visibility_title}</p>
-                    <div className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/30 p-3">
+                    <div className="flex items-center justify-between gap-3 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3">
                       <div>
                         <p className="text-xs text-white/70">{t.build_version_visibility_toggle}</p>
                         <p className="text-[11px] text-white/45 mt-1" title={buildVersionTitle}>{buildVersionLabel}</p>
@@ -799,7 +799,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                           className={`py-2.5 px-3 rounded-xl font-medium transition-all ${
                             settings.language === lang
                               ? 'bg-white/20 text-white border border-white/40'
-                              : 'bg-white/5 text-white/60 hover:text-white/80 border border-white/10'
+                              : 'bg-[#0c0c0c] text-zinc-400 hover:text-zinc-200 border border-[#18181b]'
                           }`}
                         >
                           {lang === 'de' ? t.german : t.english}
@@ -908,7 +908,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                           className={`w-full text-left py-3 px-4 rounded-xl border transition-all ${
                             settings.algorithm === algo
                               ? 'bg-white/20 border-white/40'
-                              : 'bg-white/5 border-white/10 hover:bg-white/10'
+                              : 'bg-[#0c0c0c] border-[#18181b] hover:bg-[#111]'
                           } ${isAlgorithmMigrating ? 'opacity-60 cursor-not-allowed' : ''}`}
                         >
                           <div className="font-medium text-white">
@@ -939,7 +939,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                             step="0.05"
                             value={settings.algorithmParams.sm2.hardMultiplier}
                             onChange={e => updateNumber(e.target.value, value => setSm2Params({ hardMultiplier: value }))}
-                            className="mt-1 w-full rounded-lg bg-black/50 border border-white/15 px-2 py-1.5 text-white"
+                            className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                           />
                         </label>
                         <label className="text-xs text-white/65">
@@ -949,7 +949,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                             step="0.05"
                             value={settings.algorithmParams.sm2.easyMultiplier}
                             onChange={e => updateNumber(e.target.value, value => setSm2Params({ easyMultiplier: value }))}
-                            className="mt-1 w-full rounded-lg bg-black/50 border border-white/15 px-2 py-1.5 text-white"
+                            className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                           />
                         </label>
                         <label className="text-xs text-white/65">
@@ -959,7 +959,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                             step="10"
                             value={settings.algorithmParams.sm2.easeAgain}
                             onChange={e => updateNumber(e.target.value, value => setSm2Params({ easeAgain: value }))}
-                            className="mt-1 w-full rounded-lg bg-black/50 border border-white/15 px-2 py-1.5 text-white"
+                            className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                           />
                         </label>
                         <label className="text-xs text-white/65">
@@ -969,7 +969,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                             step="10"
                             value={settings.algorithmParams.sm2.easeEasy}
                             onChange={e => updateNumber(e.target.value, value => setSm2Params({ easeEasy: value }))}
-                            className="mt-1 w-full rounded-lg bg-black/50 border border-white/15 px-2 py-1.5 text-white"
+                            className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                           />
                         </label>
                       </div>
@@ -982,7 +982,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                             step="0.01"
                             value={settings.algorithmParams.fsrs.requestRetention}
                             onChange={e => updateNumber(e.target.value, value => setFsrsParams({ requestRetention: value }))}
-                            className="mt-1 w-full rounded-lg bg-black/50 border border-white/15 px-2 py-1.5 text-white"
+                            className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                           />
                         </label>
                         <label className="text-xs text-white/65">
@@ -992,7 +992,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                             step="0.05"
                             value={settings.algorithmParams.fsrs.hardPen}
                             onChange={e => updateNumber(e.target.value, value => setFsrsParams({ hardPen: value }))}
-                            className="mt-1 w-full rounded-lg bg-black/50 border border-white/15 px-2 py-1.5 text-white"
+                            className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                           />
                         </label>
                         <label className="text-xs text-white/65">
@@ -1002,7 +1002,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                             step="0.05"
                             value={settings.algorithmParams.fsrs.easyBonus}
                             onChange={e => updateNumber(e.target.value, value => setFsrsParams({ easyBonus: value }))}
-                            className="mt-1 w-full rounded-lg bg-black/50 border border-white/15 px-2 py-1.5 text-white"
+                            className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                           />
                         </label>
                       </div>
@@ -1020,7 +1020,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                   <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-2`}>
                     <p className="text-xs text-white/50 font-medium uppercase tracking-wide">
                       <span className="inline-flex items-center gap-2">
-                        <RefreshCw size={12} />
+                        <RefreshCw size={12} strokeWidth={1.5} />
                         {t.migration_section_title}
                       </span>
                     </p>
@@ -1043,7 +1043,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                   <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
                     <p className="text-xs text-white/50 font-medium uppercase tracking-wide">{t.sw_notifications_title}</p>
                     <p className="text-xs text-white/40 leading-relaxed">{t.sw_notifications_description}</p>
-                    <div className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/30 p-3">
+                    <div className="flex items-center justify-between gap-3 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3">
                       <span className="text-xs text-white/70">{t.sw_notifications_toggle_label}</span>
                       <button
                         type="button"
@@ -1079,7 +1079,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                           </p>
                         )}
 
-                        <div className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/30 p-3">
+                        <div className="flex items-center justify-between gap-3 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3">
                           <span className="text-xs text-white/70">{t.notification_channel_toggle_label}</span>
                           <button
                             type="button"
@@ -1100,19 +1100,19 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                         </div>
 
                         {channel.key === 'dailyReminder' && (
-                          <div className="rounded-xl border border-white/10 bg-black/30 p-3 space-y-2">
+                          <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3 space-y-2">
                             <label className="block text-xs text-white/70 uppercase tracking-wide">{t.daily_reminder_time_label}</label>
                             <input
                               type="time"
                               value={settings.dailyReminderTime}
                               onChange={e => { void applyDailyReminderTime(e.target.value) }}
-                              className="w-full rounded-lg bg-black/50 border border-white/15 px-2 py-1.5 text-white"
+                              className="w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                               disabled={!channelEnabled}
                             />
                           </div>
                         )}
 
-                        <details className="group rounded-xl border border-white/10 bg-black/25 p-3">
+                        <details className="group rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
                           <summary className="cursor-pointer list-none text-xs font-medium uppercase tracking-wide text-white/55 transition hover:text-white/80">
                             {settings.language === 'de' ? 'Vorlage bearbeiten' : 'Edit template'}
                             <span className="ml-2 text-white/30 group-open:hidden">+</span>
@@ -1127,7 +1127,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                                 value={channelConfig.title}
                                 onChange={e => applyNotificationTemplate(channel.key, e.target.value, channelConfig.body)}
                                 placeholder={channel.defaultTitle}
-                                className="w-full rounded-lg bg-black/50 border border-white/15 px-2 py-1.5 text-white"
+                                className="w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                               />
                             </div>
 
@@ -1139,7 +1139,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                                 value={channelConfig.body}
                                 onChange={e => applyNotificationTemplate(channel.key, channelConfig.title, e.target.value)}
                                 placeholder={channel.defaultBody}
-                                className="w-full rounded-lg bg-black/50 border border-white/15 px-2 py-1.5 text-white resize-y"
+                                className="w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white resize-y"
                               />
                             </div>
 
@@ -1178,7 +1178,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                       value={syncAuthToken}
                       onChange={event => handleSyncAuthTokenChange(event.target.value)}
                       placeholder="Leer = kein Token"
-                      className="w-full rounded-lg bg-black/50 border border-white/15 px-2 py-1.5 text-white"
+                      className="w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                     />
                   </div>
 
@@ -1210,14 +1210,14 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                   <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
                     <p className="text-xs text-white/50 font-medium uppercase tracking-wide">
                       <span className="inline-flex items-center gap-2">
-                        <Bell size={12} />
+                        <Bell size={12} strokeWidth={1.5} />
                         {t.notification_test_title}
                       </span>
                     </p>
                     <p className="text-xs text-white/40 leading-relaxed">
                       {t.notification_test_description}
                     </p>
-                    <div className="rounded-xl border border-white/10 bg-black/30 p-3 space-y-3">
+                    <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3 space-y-3">
                       <div className="flex items-center justify-between gap-3">
                         <p className="text-xs text-white/60 uppercase tracking-wide">{t.notification_test_permission_label}</p>
                         <span className={`rounded-full px-2.5 py-1 text-[11px] font-medium border ${
@@ -1225,7 +1225,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                             ? 'border-emerald-500/35 text-emerald-200 bg-emerald-500/10'
                             : notificationPermission === 'denied'
                               ? 'border-rose-500/35 text-rose-200 bg-rose-500/10'
-                              : 'border-white/15 text-white/70 bg-white/5'
+                              : 'border-[#18181b] text-zinc-300 bg-[#0c0c0c]'
                         }`}>
                           {notificationPermissionLabel}
                         </span>
@@ -1297,7 +1297,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     </p>
 
                     {errorLogs.length > 0 && (
-                      <div className="max-h-36 overflow-y-auto rounded-lg border border-white/10 bg-black/30 p-2 space-y-2">
+                      <div className="max-h-36 overflow-y-auto rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-2 space-y-2">
                         {errorLogs.slice(0, 5).map(entry => (
                           <div key={entry.id} className="text-[11px] text-white/70 leading-relaxed">
                             <p className="text-white/90">{new Date(entry.timestamp).toLocaleString()} · {entry.source}</p>
@@ -1374,7 +1374,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 px-5 py-4 pb-safe-4 border-t border-zinc-900 flex gap-3 bg-[#050505]/95 backdrop-blur-xl">
+            <div className="sticky bottom-0 px-5 py-4 border-t border-[#18181b] flex gap-3 bg-[#050505]/95 backdrop-blur-xl">
               <button
                 onClick={onClose}
                 className={`${UI_TOKENS.button.footerSecondary} text-sm font-medium hover:bg-white/5`}

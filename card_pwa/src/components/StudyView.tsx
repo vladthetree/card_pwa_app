@@ -81,7 +81,6 @@ export default function StudyView({ deck, onExit }: Props) {
   const [session, dispatch] = useReducer(sessionReducer, initialSessionState)
   const [editingCard, setEditingCard] = useState<Card | null>(null)
   const [answerWasIncorrect, setAnswerWasIncorrect] = useState(false)
-  const [lastAnswerCorrect, setLastAnswerCorrect] = useState<boolean | null>(null)
   const [showHeaderLegend, setShowHeaderLegend] = useState(false)
   const [rewardToast, setRewardToast] = useState<RewardHint | null>(null)
   const { isHandsetLayout, isHandsetLandscape } = useHandsetLayout()
@@ -434,7 +433,6 @@ export default function StudyView({ deck, onExit }: Props) {
 
   const handleAnswerEvaluated = useCallback((isCorrect: boolean) => {
     setAnswerWasIncorrect(!isCorrect)
-    setLastAnswerCorrect(isCorrect)
   }, [])
 
   const handleRate = useCallback(
@@ -473,7 +471,6 @@ export default function StudyView({ deck, onExit }: Props) {
         dispatch({ type: 'RATE_SUCCESS', rating: effectiveRating, cardId: currentCard.id, undoToken: result.undoToken, forcedTomorrow })
         registerSessionReward(effectiveRating, elapsedMs)
         setAnswerWasIncorrect(false)
-        setLastAnswerCorrect(null)
       } catch (err) {
         const message = err instanceof Error ? err.message : t.unknown_error
         dispatch({ type: 'RATE_ERROR', message })
@@ -524,7 +521,6 @@ export default function StudyView({ deck, onExit }: Props) {
         dispatch({ type: 'RATE_SUCCESS', rating, cardId: currentCard.id, undoToken: result.undoToken, forcedTomorrow })
         registerSessionReward(rating, elapsedMs)
         setAnswerWasIncorrect(false)
-        setLastAnswerCorrect(null)
       } else {
         dispatch({ type: 'RATE_ERROR', message: result.error || t.save_failed })
       }
@@ -558,7 +554,6 @@ export default function StudyView({ deck, onExit }: Props) {
     sessionMomentumRef.current = 0
     setRewardToast(null)
     setAnswerWasIncorrect(false)
-    setLastAnswerCorrect(null)
   }, [session.lastUndoToken, session.isSubmitting, isAlgorithmMigrating, t.save_failed])
 
   useEffect(() => {
@@ -592,7 +587,6 @@ export default function StudyView({ deck, onExit }: Props) {
     const sortedCards = buildSessionCards(cards, studyCardLimit)
     clearPersistedSession()
     setAnswerWasIncorrect(false)
-    setLastAnswerCorrect(null)
     sessionMomentumRef.current = 0
     setRewardToast(null)
     dispatch({ type: 'INIT', cards: sortedCards })
@@ -612,7 +606,7 @@ export default function StudyView({ deck, onExit }: Props) {
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="w-full max-w-xl">
           <ErrorAlert message={error} onRetry={reload} />
-          <div className="bg-black border border-white/20 p-8 rounded-3xl text-center text-white/80">
+          <div className="ds-card p-8 text-center text-white/80">
             <p className="mb-4">{t.loading_cards_failed}</p>
             <button onClick={reload} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black hover:bg-white/90 transition font-semibold">
               <RefreshCw size={16} /> {t.retry}
@@ -626,7 +620,7 @@ export default function StudyView({ deck, onExit }: Props) {
   if (!loading && session.cards.length === 0 && !session.isDone) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="bg-black border border-white/20 p-8 rounded-3xl text-center text-white/80">
+        <div className="ds-card p-8 text-center text-white/80">
           <p className="text-lg font-medium text-white mb-2">{t.no_cards_in_deck}</p>
           <p className="text-sm">{t.no_cards_to_study}</p>
           <button
@@ -643,7 +637,7 @@ export default function StudyView({ deck, onExit }: Props) {
   if (loading || (!session.isDone && cards.length > 0 && session.cards.length === 0)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-black border border-white/15 w-96 h-64 animate-pulse rounded-3xl" />
+        <div className="ds-card h-64 w-96 animate-pulse" />
       </div>
     )
   }
@@ -651,7 +645,7 @@ export default function StudyView({ deck, onExit }: Props) {
   if (isAlgorithmMigrating) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="w-full max-w-xl bg-black border border-white/20 p-8 rounded-3xl text-center text-white/80">
+        <div className="w-full max-w-xl ds-card p-8 text-center text-white/80">
           <div className="mx-auto mb-4 w-6 h-6 border-2 border-white/25 border-t-white/80 rounded-full animate-spin" />
           <p className="text-lg font-medium text-white mb-2">{t.algorithm}</p>
           <p className="text-sm mb-4">{t.please_wait}</p>
@@ -692,8 +686,8 @@ export default function StudyView({ deck, onExit }: Props) {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-            className={`bg-black border p-8 sm:p-10 rounded-3xl text-center max-w-lg w-full ${
-              isPerfectSession ? 'border-emerald-500/40 shadow-[0_0_40px_rgba(16,185,129,0.25)]' : 'border-white/20'
+            className={`border bg-[#0c0c0c] p-8 text-center shadow-card sm:p-10 max-w-lg w-full rounded-[14px] ${
+              isPerfectSession ? 'border-emerald-500/40' : 'border-[#18181b]'
             }`}
           >
             {isPerfectSession ? (
@@ -718,15 +712,15 @@ export default function StudyView({ deck, onExit }: Props) {
             <p className="text-white/55 text-sm mb-5">{t.deck}: {formatDeckName(deck.name)}</p>
 
             <div className="grid grid-cols-3 gap-2 mb-6">
-              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+              <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
                 <p className="text-lg font-bold font-mono text-white">{session.sessionCount}</p>
                 <p className="text-[10px] uppercase tracking-wide text-white/45 mt-0.5">{t.cards_reviewed.replace('{count}', '').trim() || t.completion_cards_label}</p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+              <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
                 <p className={`text-lg font-bold font-mono ${difficultCards > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>{difficultCards}</p>
                 <p className="text-[10px] uppercase tracking-wide text-white/45 mt-0.5">{t.completion_difficult_label}</p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+              <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
                 <p className="text-lg font-bold font-mono text-white/70">{elapsedMs > 0 ? elapsedLabel : '—'}</p>
                 <p className="text-[10px] uppercase tracking-wide text-white/45 mt-0.5">{t.completion_time_label}</p>
               </div>
@@ -748,7 +742,7 @@ export default function StudyView({ deck, onExit }: Props) {
               <button
                 type="button"
                 onClick={handleUndoLastRating}
-                className="w-full mt-4 mb-3 py-2 rounded-xl border border-white/25 text-white/80 hover:text-white hover:border-white/40 transition text-sm"
+                className="w-full mt-4 mb-3 py-2 rounded-[12px] border border-[#18181b] bg-[#0a0a0a] text-white/80 hover:text-white hover:border-[#3f3f46] transition text-sm"
               >
                 {t.undo_last_rating}
               </button>
@@ -756,13 +750,13 @@ export default function StudyView({ deck, onExit }: Props) {
             <div className="mt-4 flex gap-3">
               <button
                 onClick={handleExit}
-                className="flex-1 py-3 rounded-xl bg-white text-black hover:bg-white/90 font-semibold transition-all"
+                className="flex-1 py-3 rounded-[12px] bg-white text-black hover:bg-white/90 font-semibold transition-all"
               >
                 {t.home}
               </button>
               <button
                 onClick={handleRestart}
-                className="flex-1 py-3 rounded-xl font-medium transition-all text-white border border-white/20 hover:border-white/35"
+                className="flex-1 py-3 rounded-[12px] font-medium transition-all text-white border border-[#18181b] hover:border-[#3f3f46]"
                 style={{ background: '#000000' }}
               >
                 <RotateCcw size={14} className="inline mr-1.5" />
@@ -789,7 +783,7 @@ export default function StudyView({ deck, onExit }: Props) {
     <div className={`${isHandsetLayout ? 'fixed inset-0' : 'h-[100dvh]'} flex flex-col overflow-hidden`}>
       {/* Top navigation */}
       <div
-        className={`shrink-0 w-full z-20 bg-black px-4 md:px-8 pb-0 relative ${isHandsetLayout ? 'pt-safe-2' : 'pt-5'}`}
+        className={`shrink-0 w-full z-20 bg-[#050505] px-4 md:px-8 pb-0 relative ${isHandsetLayout ? 'pt-safe-2' : 'pt-5'}`}
       >
         {/* Mobile Header - Single horizontal row */}
         {isHandsetLayout && (
@@ -797,7 +791,7 @@ export default function StudyView({ deck, onExit }: Props) {
             {/* Left: Back button */}
             <button
               onClick={handleExit}
-              className="group flex-shrink-0 flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 text-zinc-500 transition-colors hover:border-white/35 hover:text-zinc-300"
+              className="ds-icon-button group flex-shrink-0 flex h-11 w-11"
             >
               <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
             </button>
@@ -822,10 +816,10 @@ export default function StudyView({ deck, onExit }: Props) {
               <button
                 type="button"
                 onClick={() => setShowHeaderLegend(prev => !prev)}
-                className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border transition-colors ${
+                className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[12px] border transition-colors ${
                   showHeaderLegend
-                    ? 'border-white/40 text-white/80 bg-white/5'
-                    : 'border-white/20 text-zinc-500 hover:text-zinc-300 hover:border-white/35'
+                    ? 'border-[#3f3f46] text-zinc-100 bg-[#111]'
+                    : 'border-[#18181b] bg-[#0c0c0c] text-zinc-500 hover:text-zinc-50 hover:border-[#3f3f46]'
                 }`}
                 title={t.legend_label}
                 aria-label={t.legend_label}
@@ -835,7 +829,7 @@ export default function StudyView({ deck, onExit }: Props) {
               <button
                 type="button"
                 onClick={cycleQuestionTextSize}
-                className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-white/20 text-zinc-500 transition-colors hover:border-white/35 hover:text-zinc-300"
+                className="ds-icon-button inline-flex h-11 w-11 flex-shrink-0"
                 title={`${t.question_text_size}: ${questionTextSizeLabel}`}
                 aria-label={`${t.question_text_size}: ${questionTextSizeLabel}`}
               >
@@ -845,7 +839,7 @@ export default function StudyView({ deck, onExit }: Props) {
 
             {/* Legend popup */}
             {showHeaderLegend && (
-              <div className="absolute top-16 left-4 right-4 z-30 rounded-lg border border-white/15 bg-zinc-950 p-3 text-xs w-auto max-w-xs">
+              <div className="absolute top-16 left-4 right-4 z-30 w-auto max-w-xs ds-menu p-3 text-xs">
                 <div className="space-y-1.5">
                   {headerStats.map(stat => (
                     <div key={`legend-${stat.key}`} className="flex items-center gap-2">
@@ -867,7 +861,7 @@ export default function StudyView({ deck, onExit }: Props) {
               <div className="flex items-center gap-3 flex-shrink-0">
                 <button
                   onClick={handleExit}
-                  className="group flex items-center justify-center w-10 h-10 text-zinc-500 hover:text-zinc-300 transition-colors rounded-md border border-white/20 hover:border-white/35"
+                  className="ds-icon-button group flex h-10 w-10"
                 >
                   <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
                 </button>
@@ -885,7 +879,7 @@ export default function StudyView({ deck, onExit }: Props) {
                     key={stat.key}
                     title={`${stat.label}: ${stat.value}`}
                     aria-label={`${stat.label}: ${stat.value}`}
-                    className={`px-3 py-2 rounded-md border ${stat.cls} flex items-center justify-center text-sm font-mono font-bold`}
+                    className={`px-3 py-2 rounded-[6px] border ${stat.cls} flex items-center justify-center text-sm font-mono font-bold bg-[#0c0c0c]`}
                   >
                     {stat.value}
                   </div>
@@ -893,10 +887,10 @@ export default function StudyView({ deck, onExit }: Props) {
                 <button
                   type="button"
                   onClick={() => setShowHeaderLegend(prev => !prev)}
-                  className={`flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-md border transition-colors ${
+                  className={`flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-[12px] border transition-colors ${
                     showHeaderLegend
-                      ? 'border-white/40 text-white/80 bg-white/5'
-                      : 'border-white/20 text-zinc-500 hover:text-zinc-300 hover:border-white/35'
+                      ? 'border-[#3f3f46] text-zinc-100 bg-[#111]'
+                      : 'border-[#18181b] bg-[#0c0c0c] text-zinc-500 hover:text-zinc-50 hover:border-[#3f3f46]'
                   }`}
                   title={settings.language === 'de' ? 'Legende' : 'Legend'}
                   aria-label={settings.language === 'de' ? 'Legende' : 'Legend'}
@@ -904,7 +898,7 @@ export default function StudyView({ deck, onExit }: Props) {
                   <Info size={16} />
                 </button>
                 {showHeaderLegend && (
-                  <div className="absolute top-16 left-1/2 -translate-x-1/2 z-30 rounded-lg border border-white/15 bg-zinc-950 p-3 text-xs">
+                  <div className="absolute top-16 left-1/2 -translate-x-1/2 z-30 ds-menu p-3 text-xs">
                     <div className="space-y-1.5">
                       {headerStats.map(stat => (
                         <div key={`legend-${stat.key}`} className="flex items-center gap-2">
@@ -919,16 +913,16 @@ export default function StudyView({ deck, onExit }: Props) {
 
               {/* Right: Settings */}
               <div className="flex items-center gap-2 flex-shrink-0">
-                <span className="text-[11px] px-2.5 py-1 rounded-md border border-white/10 text-white/40 font-mono uppercase tracking-wide">
+                <span className="text-[11px] px-2.5 py-1 rounded-[6px] border border-[#18181b] text-white/40 font-mono uppercase tracking-wide">
                   {settings.algorithm === 'sm2' ? 'SM2' : 'FSRS'}
                 </span>
-                <span className="text-[11px] px-2.5 py-1 rounded-md border border-white/10 text-white/40 font-mono uppercase tracking-wide">
+                <span className="text-[11px] px-2.5 py-1 rounded-[6px] border border-[#18181b] text-white/40 font-mono uppercase tracking-wide">
                   {t.language_code}
                 </span>
                 <button
                   type="button"
                   onClick={cycleQuestionTextSize}
-                  className="inline-flex items-center justify-center w-10 h-10 rounded-md border border-white/20 text-zinc-500 hover:text-zinc-300 hover:border-white/35 transition-colors"
+                  className="ds-icon-button inline-flex h-10 w-10"
                   title={`${t.question_text_size}: ${questionTextSizeLabel}`}
                   aria-label={`${t.question_text_size}: ${questionTextSizeLabel}`}
                 >
@@ -957,19 +951,9 @@ export default function StudyView({ deck, onExit }: Props) {
       </div>
 
       {/* Main card area */}
-      <div className="flex-1 min-h-0 flex flex-col bg-black overflow-hidden relative">
+      <div className="flex-1 min-h-0 flex flex-col bg-[#050505] overflow-hidden relative">
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vh] rounded-full blur-[120px] pointer-events-none z-0 transition-colors duration-1000 opacity-50"
-          style={{ backgroundColor: session.isFlipped
-            ? (lastAnswerCorrect === false
-                ? 'rgba(225,29,72,0.08)'
-                : lastAnswerCorrect === true
-                  ? 'rgba(16,185,129,0.08)'
-                  : 'rgba(249,115,22,0.03)')
-            : 'rgba(249,115,22,0.03)' }}
-        />
-        <div
-          className={`flex-1 min-h-0 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-safe-2' : 'overflow-y-auto px-3 sm:px-4 py-4 sm:py-6'}`}
+          className={`flex-1 min-h-0 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-2' : 'overflow-y-auto px-3 sm:px-4 py-4 sm:py-6'}`}
         >
           {/* Error alert */}
           <AnimatePresence>
@@ -986,7 +970,7 @@ export default function StudyView({ deck, onExit }: Props) {
                 exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -12 }}
                 transition={{ duration: prefersReducedMotion ? 0.12 : 0.16, ease: 'easeOut' }}
                 className={`w-full ${isHandsetLayout ? 'flex h-full min-h-0 flex-col' : ''}`}
-                style={isHandsetLayout ? { maxHeight: 'calc(100% - env(safe-area-inset-bottom, 0px) - 1.35rem)' } : undefined}
+                style={isHandsetLayout ? { maxHeight: '100%' } : undefined}
               >
                 <div className={`flex flex-col lg:flex-row items-start gap-6 w-full ${isHandsetLayout ? 'h-full min-h-0 flex-1' : ''}`}>
                   <div className={`flex-1 ${isHandsetLayout ? 'h-full min-h-0' : ''}`}>
@@ -1032,7 +1016,7 @@ export default function StudyView({ deck, onExit }: Props) {
               <button
                 type="button"
                 onClick={handleUndoLastRating}
-                className="px-3 py-1.5 rounded-lg border border-white/15 text-white/70 hover:text-white hover:border-white/25 transition text-xs"
+                className="px-3 py-1.5 rounded-[12px] border border-[#18181b] bg-[#0a0a0a] text-white/70 hover:text-white hover:border-[#3f3f46] transition text-xs"
               >
                 {t.undo_last_rating}
               </button>
@@ -1061,12 +1045,12 @@ export default function StudyView({ deck, onExit }: Props) {
               animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
               exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
               transition={{ duration: prefersReducedMotion ? 0.12 : 0.15, ease: 'easeOut' }}
-              className="w-full border-t border-white/15 bg-black/95 px-3 pt-3"
+              className="w-full border-t border-[#18181b] bg-[#050505] px-3 pt-2"
               style={{
                 height: isHandsetLandscape
-                  ? 'clamp(8.25rem, 24dvh, 11rem)'
-                  : 'clamp(11.5rem, 25dvh, 15.5rem)',
-                paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.5rem)',
+                  ? 'clamp(7.25rem, 21dvh, 10rem)'
+                  : 'clamp(9.25rem, 21dvh, 12.5rem)',
+                paddingBottom: '0.5rem',
               }}
             >
               <div className="h-full">

@@ -46,9 +46,9 @@ export function DeckMetricsModal({ deck, language, onClose }: { deck: Deck; lang
 
   const trendIcon = metrics && metrics.trendDelta !== 0
     ? metrics.trendDelta > 0
-      ? <TrendingUp size={14} className="text-emerald-300" />
-      : <TrendingDown size={14} className="text-rose-300" />
-    : <Minus size={14} className="text-white/55" />
+      ? <TrendingUp size={14} strokeWidth={1.5} className="text-emerald-300" />
+      : <TrendingDown size={14} strokeWidth={1.5} className="text-rose-300" />
+    : <Minus size={14} strokeWidth={1.5} className="text-white/55" />
 
   return (
     <motion.div
@@ -74,33 +74,33 @@ export function DeckMetricsModal({ deck, language, onClose }: { deck: Deck; lang
             onClick={onClose}
             className={UI_TOKENS.modal.closeButton}
           >
-            <X size={16} />
+            <X size={16} strokeWidth={1.5} />
           </button>
         </div>
 
         <div className={UI_TOKENS.modal.body}>
-        <div className="mt-1 inline-flex w-full rounded-2xl border border-zinc-900 overflow-hidden transition-all duration-300 ease-out sm:w-auto">
+        <div className="mt-1 inline-flex w-full overflow-hidden rounded-[12px] border border-[#18181b] bg-[#0c0c0c] transition-all duration-300 ease-out sm:w-auto">
           <button
             type="button"
             onClick={() => setPeriod('all')}
-            className={`flex-1 px-3 py-2 text-xs sm:text-sm transition-all duration-300 ease-out active:scale-95 ${period === 'all' ? 'bg-white text-black' : 'text-white/75 hover:text-white hover:bg-white/10'}`}
+            className={`flex-1 px-3 py-2 text-xs sm:text-sm transition-all duration-300 ease-out active:scale-95 ${period === 'all' ? 'bg-white text-black' : 'text-white/75 hover:text-white hover:bg-[#111]'}`}
           >
             {t.metrics_period_all}
           </button>
           <button
             type="button"
             onClick={() => setPeriod('7d')}
-            className={`flex-1 px-3 py-2 text-xs sm:text-sm transition-all duration-300 ease-out active:scale-95 ${period === '7d' ? 'bg-white text-black' : 'text-white/75 hover:text-white hover:bg-white/10'}`}
+            className={`flex-1 px-3 py-2 text-xs sm:text-sm transition-all duration-300 ease-out active:scale-95 ${period === '7d' ? 'bg-white text-black' : 'text-white/75 hover:text-white hover:bg-[#111]'}`}
           >
             {t.metrics_period_7d}
           </button>
         </div>
 
         {loading || !metrics ? (
-          <div className="mt-5 h-36 rounded-xl border border-white/10 bg-white/5 animate-pulse" />
+          <div className="mt-5 h-36 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] animate-pulse" />
         ) : (
           <>
-            <div className="mt-5 rounded-[2.5rem] border border-zinc-900 bg-black p-5 sm:p-6 transition-all duration-300 ease-out">
+            <div className="mt-5 rounded-[14px] border border-[#18181b] bg-[#0c0c0c] p-5 shadow-card transition-all duration-300 ease-out sm:p-6">
               <p className="text-xs uppercase tracking-wide text-emerald-100/70">{t.metrics_success_rate}</p>
               <div className="mt-2 flex flex-wrap items-end gap-2">
                 <p className="text-6xl leading-none font-black text-emerald-400 sm:text-8xl">{metrics.successRate}%</p>
@@ -112,7 +112,7 @@ export function DeckMetricsModal({ deck, language, onClose }: { deck: Deck; lang
             </div>
 
             <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-              <div className="rounded-xl border border-zinc-900 bg-black p-3">
+              <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
                 <p className="text-xs font-light text-white/55">{t.metrics_trend}</p>
                 {hasReviews ? (
                   <p className="text-sm sm:text-base font-black text-emerald-500 drop-shadow-sm mt-1 inline-flex items-center gap-1.5">
@@ -123,25 +123,25 @@ export function DeckMetricsModal({ deck, language, onClose }: { deck: Deck; lang
                   <p className="text-sm sm:text-base font-light text-white/65 mt-1">{t.metrics_trend_no_data}</p>
                 )}
               </div>
-              <div className="rounded-xl border border-zinc-900 bg-black p-3">
+              <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
                 <p className="text-xs font-light text-white/55">{t.metrics_reviews_total}</p>
                 <p className="text-lg sm:text-xl font-black text-white">{metrics.totalReviews}</p>
               </div>
-              <div className="rounded-xl border border-zinc-900 bg-black p-3">
+              <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
                 <p className="text-xs font-light text-white/55">{t.metrics_cards_total}</p>
                 <p className="text-lg sm:text-xl font-black text-white">{metrics.cardCount}</p>
               </div>
-              <div className="rounded-xl border border-zinc-900 bg-black p-3">
+              <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
                 <p className="text-xs font-light text-white/55">{t.metrics_reviewed_cards}</p>
                 <p className="text-lg sm:text-xl font-black text-white">{metrics.reviewedCardCount}</p>
               </div>
             </div>
 
-            <div className="mt-4 rounded-xl border border-zinc-900 bg-black p-3">
+            <div className="mt-4 rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
               <p className="text-xs font-light text-white/55 mb-2">{t.metrics_rating_distribution}</p>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {[1, 2, 3, 4].map((rating) => (
-                  <div key={rating} className="rounded-lg border border-zinc-900 bg-black px-2 py-2 text-center">
+                  <div key={rating} className="rounded-[6px] border border-[#18181b] bg-[#0c0c0c] px-2 py-2 text-center">
                     <p className="text-xs font-light text-white/50">{rating}</p>
                     <p className="text-sm font-black text-white">{metrics.ratingCounts[rating as 1 | 2 | 3 | 4]}</p>
                     <p className="mt-1 text-[10px] leading-tight text-white/45">{t.metrics_last_pressed}</p>

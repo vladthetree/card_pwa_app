@@ -5,65 +5,50 @@ import { STORAGE_KEYS } from '../constants/appIdentity'
  * Theme definitions with CSS custom properties
  */
 export const THEMES = {
+  default: {
+    name: 'Default',
+    primary: '#f97316',
+    secondary: '#3b82f6',
+    accent: '#fdba74',
+    background: '#050505',
+    surface: '#0c0c0c',
+    surfaceHover: '#111111',
+    border: '#18181b',
+    borderHover: '#3f3f46',
+    text: '#f0ede8',
+    textSecondary: 'rgba(240,237,232,0.72)',
+    textMuted: '#71717a',
+    glow: 'rgba(249,115,22,0.22)',
+  },
   ghost: {
     name: 'Ghost',
     primary: '#f8fafc',
     secondary: '#94a3b8',
-    accent: '#94a3b8',
-    background: 'linear-gradient(135deg, #050505 0%, #050505 100%)',
-    surface: 'rgba(248,250,252,0.06)',
-    surfaceHover: 'rgba(248,250,252,0.10)',
-    border: 'rgba(248,250,252,0.22)',
-    borderHover: 'rgba(248,250,252,0.34)',
+    accent: '#d4d4d8',
+    background: '#050505',
+    surface: '#0c0c0c',
+    surfaceHover: '#111111',
+    border: '#18181b',
+    borderHover: '#3f3f46',
     text: '#f8fafc',
     textSecondary: 'rgba(248,250,252,0.72)',
-    textMuted: 'rgba(248,250,252,0.52)',
-    glow: 'rgba(148,163,184,0.35)',
+    textMuted: '#71717a',
+    glow: 'rgba(248,250,252,0.16)',
   },
-  aurora: {
-    name: 'Aurora',
-    primary: '#22d3ee',
-    secondary: '#818cf8',
-    accent: '#34d399',
-    background: 'linear-gradient(135deg, #071018 0%, #0b1220 52%, #111827 100%)',
-    surface: 'rgba(255,255,255,0.05)',
-    surfaceHover: 'rgba(255,255,255,0.09)',
-    border: 'rgba(129,140,248,0.24)',
-    borderHover: 'rgba(34,211,238,0.36)',
-    text: '#ecfeff',
-    textSecondary: 'rgba(236,254,255,0.74)',
-    textMuted: 'rgba(236,254,255,0.50)',
-    glow: 'rgba(34,211,238,0.32)',
-  },
-  ember: {
-    name: 'Ember',
-    primary: '#fb923c',
-    secondary: '#f43f5e',
-    accent: '#facc15',
-    background: 'linear-gradient(135deg, #140708 0%, #1f0a10 48%, #2a1106 100%)',
-    surface: 'rgba(255,255,255,0.04)',
-    surfaceHover: 'rgba(255,255,255,0.08)',
-    border: 'rgba(251,146,60,0.22)',
-    borderHover: 'rgba(244,63,94,0.34)',
-    text: '#fff7ed',
-    textSecondary: 'rgba(255,237,213,0.72)',
-    textMuted: 'rgba(255,237,213,0.50)',
-    glow: 'rgba(251,146,60,0.30)',
-  },
-  slate: {
-    name: 'Slate Light',
-    primary: '#0f172a',
-    secondary: '#334155',
-    accent: '#0284c7',
-    background: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)',
-    surface: 'rgba(15,23,42,0.04)',
-    surfaceHover: 'rgba(15,23,42,0.08)',
-    border: 'rgba(15,23,42,0.18)',
-    borderHover: 'rgba(15,23,42,0.30)',
-    text: '#0f172a',
-    textSecondary: 'rgba(15,23,42,0.72)',
-    textMuted: 'rgba(15,23,42,0.52)',
-    glow: 'rgba(2,132,199,0.22)',
+  blueSteel: {
+    name: 'Blue Steel',
+    primary: '#64748b',
+    secondary: '#38bdf8',
+    accent: '#93c5fd',
+    background: '#050505',
+    surface: '#0c0c0c',
+    surfaceHover: '#111111',
+    border: '#18181b',
+    borderHover: '#3f3f46',
+    text: '#e5edf6',
+    textSecondary: 'rgba(229,237,246,0.72)',
+    textMuted: '#71717a',
+    glow: 'rgba(56,189,248,0.18)',
   },
 } as const
 
@@ -98,13 +83,11 @@ function hexToRgbTuple(hex: string): [number, number, number] {
 
 function getThemeChromeColor(key: ThemeKey): string {
   switch (key) {
-    case 'slate':
-      return '#f8fafc'
-    case 'aurora':
-      return '#071018'
-    case 'ember':
-      return '#140708'
+    case 'blueSteel':
+      return '#050505'
     case 'ghost':
+      return '#050505'
+    case 'default':
       return '#050505'
     default:
       return '#050505'
@@ -112,14 +95,13 @@ function getThemeChromeColor(key: ThemeKey): string {
 }
 
 function normalizeSavedThemeKey(value: string | null): ThemeKey {
-  if (!value) return 'ghost'
+  if (!value) return 'default'
+  if (value === 'blue-steel' || value === 'blue_steel' || value === 'bluesteel') return 'blueSteel'
   if (value === 'dark') return 'ghost'
-  if (value === 'paper') return 'slate'
-  if (value === 'default' || value === 'ocean' || value === 'forest' || value === 'sunset' || value === 'cyber' || value === 'midnight') {
-    return 'aurora'
-  }
+  if (value === 'paper' || value === 'slate' || value === 'aurora' || value === 'ocean' || value === 'forest' || value === 'cyber' || value === 'midnight') return 'blueSteel'
+  if (value === 'ember' || value === 'sunset') return 'default'
   if (value in THEMES) return value as ThemeKey
-  return 'ghost'
+  return 'default'
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
@@ -142,6 +124,8 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     const [primaryR, primaryG, primaryB] = hexToRgbTuple(theme.primary)
     const [secondaryR, secondaryG, secondaryB] = hexToRgbTuple(theme.secondary)
 
+    root.setAttribute('data-theme', themeKey === 'blueSteel' ? 'blue-steel' : themeKey)
+
     root.style.setProperty('--brand-primary', `rgb(${primaryR}, ${primaryG}, ${primaryB})`)
     root.style.setProperty('--brand-primary-08', `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.08)`)
     root.style.setProperty('--brand-primary-12', `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.12)`)
@@ -150,6 +134,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     root.style.setProperty('--brand-primary-25', `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.25)`)
     root.style.setProperty('--brand-primary-50', `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.50)`)
     root.style.setProperty('--brand-primary-80', `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.80)`)
+    root.style.setProperty('--brand-primary-100', `rgba(${primaryR}, ${primaryG}, ${primaryB}, 1)`)
 
     root.style.setProperty('--brand-secondary', `rgb(${secondaryR}, ${secondaryG}, ${secondaryB})`)
     root.style.setProperty('--brand-secondary-08', `rgba(${secondaryR}, ${secondaryG}, ${secondaryB}, 0.08)`)
@@ -157,6 +142,12 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     root.style.setProperty('--brand-secondary-15', `rgba(${secondaryR}, ${secondaryG}, ${secondaryB}, 0.15)`)
     root.style.setProperty('--brand-secondary-20', `rgba(${secondaryR}, ${secondaryG}, ${secondaryB}, 0.20)`)
     root.style.setProperty('--brand-secondary-25', `rgba(${secondaryR}, ${secondaryG}, ${secondaryB}, 0.25)`)
+    root.style.setProperty('--brand-secondary-50', `rgba(${secondaryR}, ${secondaryG}, ${secondaryB}, 0.50)`)
+    root.style.setProperty('--brand-secondary-80', `rgba(${secondaryR}, ${secondaryG}, ${secondaryB}, 0.80)`)
+    root.style.setProperty('--brand-secondary-100', `rgba(${secondaryR}, ${secondaryG}, ${secondaryB}, 1)`)
+
+    root.style.setProperty('--ds-accent-primary', theme.primary)
+    root.style.setProperty('--ds-accent-secondary', theme.secondary)
 
     // Keep legacy variables in sync while migrating components to the manifest brand contract.
     root.style.setProperty('--theme-primary', theme.primary)

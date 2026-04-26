@@ -53,7 +53,7 @@ export function HomeExportModal({
             onClick={onClose}
             className={UI_TOKENS.modal.closeButton}
           >
-            <X size={16} />
+            <X size={16} strokeWidth={1.5} />
           </button>
         </div>
 
@@ -64,7 +64,7 @@ export function HomeExportModal({
           <select
             value={selectedDeckId}
             onChange={(e) => onSelectedDeckIdChange(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-white/30"
+            className={`${UI_TOKENS.input.base} w-full`}
           >
             <option value="all">{t.backup_export_all_decks}</option>
             {deckOptions.map(deck => (
@@ -75,7 +75,7 @@ export function HomeExportModal({
 
         <p className="text-xs text-white/45 mt-3">{t.backup_export_note_txt}</p>
 
-        <div className="mt-3 rounded-xl border border-sky-400/25 bg-sky-500/10 p-3">
+        <div className="mt-3 rounded-[12px] border border-sky-400/25 bg-sky-500/10 p-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-sky-200/90">
             {t.migration_official_path_title}
           </p>
@@ -90,17 +90,17 @@ export function HomeExportModal({
             type="button"
             onClick={onExportTxt}
             disabled={isExporting}
-            className="px-3 py-2 rounded-lg text-xs border border-white/20 bg-white text-black hover:bg-white/90 transition disabled:opacity-60 inline-flex items-center justify-center gap-1.5"
+            className={`${UI_TOKENS.button.footerPrimary} disabled:opacity-60 inline-flex items-center justify-center gap-1.5`}
           >
-            <Download size={12} /> .txt
+            <Download size={12} strokeWidth={1.5} /> .txt
           </button>
           <button
             type="button"
             onClick={onExportCsv}
             disabled={isExporting}
-            className="px-3 py-2 rounded-lg text-xs border border-white/20 bg-white text-black hover:bg-white/90 transition disabled:opacity-60 inline-flex items-center justify-center gap-1.5"
+            className={`${UI_TOKENS.button.footerPrimary} disabled:opacity-60 inline-flex items-center justify-center gap-1.5`}
           >
-            <Download size={12} /> .csv
+            <Download size={12} strokeWidth={1.5} /> .csv
           </button>
         </div>
       </motion.div>

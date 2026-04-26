@@ -84,8 +84,8 @@ export default function DuplicateReviewModal({ plan, onResolved, onCancel }: Pro
       >
         <div className={UI_TOKENS.modal.header}>
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-2xl bg-amber-500/15 flex items-center justify-center border border-amber-500/30">
-              <AlertTriangle size={16} className="text-amber-300" />
+            <div className="w-8 h-8 rounded-[12px] bg-amber-500/15 flex items-center justify-center border border-amber-500/30">
+              <AlertTriangle size={16} strokeWidth={1.5} className="text-amber-300" />
             </div>
             <div>
               <h2 className={UI_TOKENS.modal.title}>{t.changed_cards_found}</h2>
@@ -104,7 +104,7 @@ export default function DuplicateReviewModal({ plan, onResolved, onCancel }: Pro
           </button>
           <button
             onClick={() => applyAll('update')}
-            className="flex-1 py-2.5 rounded-2xl border border-amber-500/40 bg-amber-500/10 text-sm font-medium text-amber-300 hover:bg-amber-500/15 transition-all duration-300 ease-out active:scale-95"
+            className="flex-1 py-2.5 rounded-[12px] border border-amber-500/40 bg-amber-500/10 text-sm font-medium text-amber-300 hover:bg-amber-500/15 transition-all duration-200 ease-out active:scale-[0.98]"
           >
             {t.update_all}
           </button>
@@ -112,34 +112,34 @@ export default function DuplicateReviewModal({ plan, onResolved, onCancel }: Pro
 
         {/* Conflict Card */}
           {conflict && (
-            <div className="rounded-[2.5rem] border border-white/10 bg-white/[0.03] overflow-hidden transition-all duration-300 ease-out">
+            <div className="rounded-[14px] border border-[#18181b] bg-[#0c0c0c] overflow-hidden shadow-card transition-colors duration-200 ease-out">
             {/* Navigations-Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/30">
-              <span className="text-xs text-white/40 font-mono">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[#18181b] bg-[#0a0a0a]">
+              <span className="text-xs text-zinc-500 font-mono">
                 {index + 1} / {total}
               </span>
-              <span className="text-xs text-white/50 truncate max-w-[60%]">
+              <span className="text-xs text-zinc-400 truncate max-w-[60%]">
                 {t.deck}: {conflict.deckName}
               </span>
               <div className="flex gap-1">
                 <button
                   onClick={() => setIndex(i => Math.max(0, i - 1))}
                   disabled={index === 0}
-                  className="p-1 rounded-2xl text-white/30 hover:text-white/60 disabled:opacity-20 transition-all duration-300 ease-out active:scale-95"
+                  className="p-1 rounded-[10px] text-zinc-500 hover:text-zinc-50 disabled:opacity-20 transition-all duration-200 ease-out active:scale-[0.98]"
                 >
-                  <ChevronLeft size={16} />
+                  <ChevronLeft size={16} strokeWidth={1.5} />
                 </button>
                 <button
                   onClick={() => setIndex(i => Math.min(total - 1, i + 1))}
                   disabled={index === total - 1}
-                  className="p-1 rounded-2xl text-white/30 hover:text-white/60 disabled:opacity-20 transition-all duration-300 ease-out active:scale-95"
+                  className="p-1 rounded-[10px] text-zinc-500 hover:text-zinc-50 disabled:opacity-20 transition-all duration-200 ease-out active:scale-[0.98]"
                 >
-                  <ChevronRight size={16} />
+                  <ChevronRight size={16} strokeWidth={1.5} />
                 </button>
               </div>
             </div>
 
-            <div className="px-4 py-2 bg-black/25 border-b border-white/10">
+            <div className="px-4 py-2 bg-[#0a0a0a] border-b border-[#18181b]">
               <ProgressBar
                 current={Object.keys(decisions).length}
                 total={Math.max(total, 1)}
@@ -147,32 +147,32 @@ export default function DuplicateReviewModal({ plan, onResolved, onCancel }: Pro
             </div>
 
             {/* Diff */}
-            <div className="grid grid-cols-2 divide-x divide-white/10">
+            <div className="grid grid-cols-2 divide-x divide-[#18181b]">
               <ConflictSide label={t.existing_version} side={conflict.existing} color="blue" />
               <ConflictSide label={t.new_version} side={conflict.incoming} color="amber" />
             </div>
 
             {/* Entscheidungs-Buttons */}
-            <div className="flex gap-2 p-4 bg-black/25 border-t border-white/10">
+            <div className="flex gap-2 p-4 bg-[#0a0a0a] border-t border-[#18181b]">
               <button
                 onClick={() => { decide('skip'); if (index < total - 1) setIndex(i => i + 1) }}
-                className={`flex-1 py-2.5 rounded-2xl text-sm font-medium flex items-center justify-center gap-1.5 transition-all duration-300 ease-out active:scale-95
+                className={`flex-1 py-2.5 rounded-[12px] text-sm font-medium flex items-center justify-center gap-1.5 transition-all duration-200 ease-out active:scale-[0.98]
                   ${current === 'skip'
-                    ? 'bg-white/10 text-white border border-white/20'
-                    : 'border border-white/10 text-white/50 hover:text-white hover:border-white/20'
+                    ? 'bg-[#18181b] text-zinc-50 border border-[#3f3f46]'
+                    : 'border border-[#18181b] text-zinc-500 hover:text-zinc-50 hover:border-[#3f3f46]'
                   }`}
               >
-                <SkipForward size={14} /> {t.skip}
+                <SkipForward size={14} strokeWidth={1.5} /> {t.skip}
               </button>
               <button
                 onClick={() => { decide('update'); if (index < total - 1) setIndex(i => i + 1) }}
-                className={`flex-1 py-2.5 rounded-2xl text-sm font-medium flex items-center justify-center gap-1.5 transition-all duration-300 ease-out active:scale-95
+                className={`flex-1 py-2.5 rounded-[12px] text-sm font-medium flex items-center justify-center gap-1.5 transition-all duration-200 ease-out active:scale-[0.98]
                   ${current === 'update'
                     ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                    : 'border border-white/10 text-white/50 hover:text-amber-300 hover:border-amber-500/30'
+                    : 'border border-[#18181b] text-zinc-500 hover:text-amber-300 hover:border-amber-500/30'
                   }`}
               >
-                <RefreshCw size={14} /> {t.update}
+                <RefreshCw size={14} strokeWidth={1.5} /> {t.update}
               </button>
             </div>
             </div>
@@ -203,10 +203,10 @@ export default function DuplicateReviewModal({ plan, onResolved, onCancel }: Pro
           <button
             onClick={handleConfirm}
             disabled={!allDecided}
-            className={`flex-1 py-2.5 rounded-2xl text-sm font-black text-white transition-all duration-300 ease-out active:scale-95
+            className={`flex-1 py-2.5 rounded-[12px] text-sm font-black text-white transition-all duration-200 ease-out active:scale-[0.98]
               ${allDecided
                 ? 'cursor-pointer border border-white/20 bg-white text-black hover:bg-white/90'
-                : 'opacity-40 cursor-not-allowed border border-white/10 bg-white/5 text-white/65'
+                : 'opacity-40 cursor-not-allowed border border-[#18181b] bg-[#0c0c0c] text-zinc-400'
               }`}
           >
             {t.confirm_import}

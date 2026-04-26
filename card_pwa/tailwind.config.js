@@ -4,6 +4,19 @@ export default {
   theme: {
     extend: {
       colors: {
+        ds: {
+          bg: 'var(--ds-bg)',
+          floor: 'var(--ds-floor)',
+          card: 'var(--ds-card)',
+          panel: 'var(--ds-panel)',
+          'panel-hover': 'var(--ds-panel-hover)',
+          border: 'var(--ds-border)',
+          'border-strong': 'var(--ds-border-strong)',
+          'border-hover': 'var(--ds-border-hover)',
+          fg: 'var(--ds-fg)',
+          muted: 'var(--ds-muted)',
+          subtle: 'var(--ds-subtle)',
+        },
         glass: {
           DEFAULT: 'var(--theme-surface)',
           border: 'var(--theme-border)',
@@ -27,6 +40,16 @@ export default {
       },
       backdropBlur: {
         xs: '2px',
+      },
+      boxShadow: {
+        card: 'var(--shadow-card)',
+        menu: 'var(--shadow-menu)',
+        modal: 'var(--shadow-modal)',
+      },
+      borderRadius: {
+        'ds-sm': '6px',
+        'ds': '12px',
+        'ds-lg': '14px',
       },
       animation: {
         'pulse-soft': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',

@@ -3,7 +3,7 @@ interface Props {
   rounded?: 'sm' | 'md' | 'lg' | 'full'
 }
 
-const radiusMap = { sm: 'rounded-lg', md: 'rounded-xl', lg: 'rounded-2xl', full: 'rounded-full' }
+const radiusMap = { sm: 'rounded-lg', md: 'rounded-[12px]', lg: 'rounded-[14px]', full: 'rounded-full' }
 
 export function Skeleton({ className = '', rounded = 'md' }: Props) {
   return (
@@ -17,7 +17,7 @@ export function Skeleton({ className = '', rounded = 'md' }: Props) {
 
 export function DeckCardSkeleton() {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+    <div className="rounded-[14px] border border-[#18181b] bg-[#0c0c0c] p-4 shadow-card">
       <div className="flex items-start justify-between mb-3">
         <Skeleton className="h-4 w-2/5" />
         <Skeleton className="h-6 w-12" rounded="lg" />
@@ -33,7 +33,7 @@ export function DeckCardSkeleton() {
 
 export function CardFaceSkeleton() {
   return (
-    <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.02] p-8 flex flex-col items-center justify-center min-h-[200px] gap-3">
+    <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-8 flex flex-col items-center justify-center min-h-[200px] gap-3 shadow-card">
       <Skeleton className="h-5 w-3/5" />
       <Skeleton className="h-4 w-2/5" />
     </div>

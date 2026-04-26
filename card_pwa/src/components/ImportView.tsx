@@ -194,7 +194,7 @@ export default function ImportView({ isOpen, onClose }: Props) {
               </p>
               {!isProcessing && (
                 <button onClick={onClose} className={UI_TOKENS.modal.closeButton}>
-                  <X size={18} />
+                  <X size={18} strokeWidth={1.5} />
                 </button>
               )}
             </div>
@@ -207,12 +207,12 @@ export default function ImportView({ isOpen, onClose }: Props) {
                 onDrop={handleDrop}
                 onClick={() => { if (!isProcessing) inputRef.current?.click() }}
                 className={`
-                  relative rounded-[2.5rem] border-2 border-dashed transition-all duration-300 ease-out min-h-[200px]
+                  relative rounded-[14px] border-2 border-dashed transition-all duration-200 ease-out min-h-[200px]
                   flex flex-col items-center justify-center gap-3 text-center px-6 py-10
                   ${isProcessing ? 'cursor-default' : 'cursor-pointer'}
                   ${isDragOver
                     ? 'scale-[1.01]'
-                    : 'border-white/15 hover:border-white/30 bg-white/3'
+                    : 'border-[#18181b] hover:border-[#3f3f46] bg-[#0c0c0c]'
                   }
                 `}
                 style={isDragOver ? { borderColor: 'var(--brand-primary)', background: 'var(--brand-primary-08)' } : undefined}
@@ -229,14 +229,14 @@ export default function ImportView({ isOpen, onClose }: Props) {
                       transition={{ duration: prefersReducedMotion ? 0.1 : 0.16, ease: 'easeOut' }}
                       className="flex flex-col items-center gap-3"
                     >
-                      <Upload size={34} className={`transition-colors duration-300 ease-out ${isDragOver ? 'text-white' : 'text-white/25'}`} style={isDragOver ? { color: 'var(--brand-primary)' } : undefined} />
+                      <Upload size={34} strokeWidth={1.5} className={`transition-colors duration-200 ease-out ${isDragOver ? 'text-white' : 'text-zinc-500'}`} style={isDragOver ? { color: 'var(--brand-primary)' } : undefined} />
                       <div>
                         <p className="text-white/80 font-medium text-sm">{t.file_drop}</p>
                         <p className="text-white/35 text-xs mt-1">{t.click_to_select}</p>
                       </div>
                       <div className="flex items-center justify-center gap-2 flex-wrap mt-1">
                         {['.apkg', '.colpkg', '.txt', '.csv'].map(fmt => (
-                          <span key={fmt} className="text-[10px] px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-white/40 font-mono">{fmt}</span>
+                          <span key={fmt} className="text-[10px] px-2 py-0.5 rounded-full border border-[#18181b] bg-[#0c0c0c] text-zinc-500 font-mono">{fmt}</span>
                         ))}
                       </div>
                     </motion.div>
@@ -251,7 +251,7 @@ export default function ImportView({ isOpen, onClose }: Props) {
                       transition={{ duration: prefersReducedMotion ? 0.1 : 0.16, ease: 'easeOut' }}
                       className="flex flex-col items-center gap-3"
                     >
-                      <Loader2 size={32} className="animate-spin" style={{ color: 'var(--brand-primary)' }} />
+                      <Loader2 size={32} strokeWidth={1.5} className="animate-spin" style={{ color: 'var(--brand-primary)' }} />
                       <p className="text-white/70 text-sm font-medium">
                         {status.phase === 'parsing' && status.step === 'validating' && t.import_validating}
                         {status.phase === 'parsing' && status.step === 'parsing' && t.reading_file}
@@ -285,7 +285,7 @@ export default function ImportView({ isOpen, onClose }: Props) {
                       transition={{ duration: prefersReducedMotion ? 0.1 : 0.16, ease: 'easeOut' }}
                       className="flex flex-col items-center gap-3"
                     >
-                      <CheckCircle size={36} className="text-emerald-400" />
+                      <CheckCircle size={36} strokeWidth={1.5} className="text-emerald-400" />
                       <p className="text-white font-semibold">{t.import_success}</p>
                       <div className="flex gap-4 text-xs">
                         <span className="text-emerald-400">+{status.added} {t.stats_new.toLowerCase()}</span>
@@ -294,7 +294,7 @@ export default function ImportView({ isOpen, onClose }: Props) {
                       </div>
                       <button
                         onClick={e => { e.stopPropagation(); onClose() }}
-                        className="mt-2 px-5 py-2 rounded-2xl border border-white/20 bg-white text-black text-sm font-black transition-all duration-300 ease-out active:scale-95 hover:bg-white/90"
+                        className="mt-2 px-5 py-2 rounded-[12px] border border-white/20 bg-white text-black text-sm font-black transition-all duration-200 ease-out active:scale-[0.98] hover:bg-white/90"
                       >
                         {t.import_done}
                       </button>
@@ -310,12 +310,12 @@ export default function ImportView({ isOpen, onClose }: Props) {
                       transition={{ duration: prefersReducedMotion ? 0.1 : 0.16, ease: 'easeOut' }}
                       className="flex flex-col items-center gap-3"
                     >
-                      <AlertCircle size={32} className="text-rose-400" />
+                      <AlertCircle size={32} strokeWidth={1.5} className="text-rose-400" />
                       <p className="text-rose-300 font-medium text-sm">{t.import_failed}</p>
                       <p className="text-white/45 text-xs max-w-[260px]">{status.message}</p>
                       <button
                         onClick={e => { e.stopPropagation(); setStatus({ phase: 'idle' }) }}
-                        className="mt-2 px-4 py-1.5 rounded-2xl border border-white/15 text-sm text-white/70 hover:text-white hover:border-white/30 transition-all duration-300 ease-out active:scale-95"
+                        className="mt-2 px-4 py-1.5 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] text-sm text-zinc-400 hover:text-zinc-50 hover:border-[#3f3f46] transition-all duration-200 ease-out active:scale-[0.98]"
                       >
                         {t.retry}
                       </button>

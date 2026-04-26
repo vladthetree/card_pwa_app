@@ -21,11 +21,11 @@ export default function StreakBadge({ compact = false }: Props) {
 
   return (
     <div
-      className={`inline-flex items-center gap-1.5 rounded-2xl border px-2 py-1 font-mono text-xs tracking-wide ${colorClass}`}
+      className={`inline-flex items-center gap-1.5 rounded-[12px] border px-2 py-1 font-mono text-xs tracking-wide ${colorClass}`}
       title={title}
       aria-label={title}
     >
-      <Flame size={compact ? 12 : 13} className={atRisk ? '' : 'streak-flame-glow'} aria-hidden="true" />
+      <Flame size={compact ? 12 : 13} strokeWidth={1.5} className={atRisk ? '' : 'streak-flame-glow'} aria-hidden="true" />
       <span className="font-bold tabular-nums">{days}</span>
       {!compact && <span className="opacity-70 text-[10px] uppercase">{t.streak_days}</span>}
     </div>

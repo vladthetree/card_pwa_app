@@ -53,7 +53,7 @@ export function HomeShuffleSection({
   const skippedLabel = language === 'de' ? 'werden aktuell übersprungen' : 'currently skipped'
 
   return (
-    <div className="mb-4 rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.02))] p-3 sm:p-4">
+    <div className="mb-4 ds-card p-3 sm:p-4">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-amber-200/80">
@@ -72,7 +72,7 @@ export function HomeShuffleSection({
           <button
             type="button"
             onClick={onManageCollections}
-            className="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-white/80 transition hover:border-white/30 hover:bg-white/10 hover:text-white"
+            className="inline-flex items-center gap-2 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-xs font-semibold text-white/80 transition hover:border-[#3f3f46] hover:bg-[#111] hover:text-white"
           >
             <Layers3 size={14} />
             {manageLabel}
@@ -81,7 +81,7 @@ export function HomeShuffleSection({
         <button
           type="button"
           onClick={onCreateCollection}
-          className="inline-flex items-center gap-2 rounded-2xl border border-amber-300/25 bg-amber-300/10 px-3 py-2 text-xs font-semibold text-amber-100 transition hover:border-amber-200/40 hover:bg-amber-300/15"
+          className="inline-flex items-center gap-2 rounded-[12px] border border-[--brand-primary-25] bg-[--brand-primary-12] px-3 py-2 text-xs font-semibold text-[--brand-primary] transition hover:border-[--brand-primary-50] hover:bg-[--brand-primary-20]"
         >
           <Plus size={14} />
           {createLabel}
@@ -89,7 +89,7 @@ export function HomeShuffleSection({
       </div>
 
       {collections.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-white/15 bg-black/15 px-4 py-6 text-center">
+        <div className="rounded-[12px] border border-dashed border-[#18181b] bg-[#0a0a0a] px-4 py-6 text-center">
           <p className="text-sm text-white/45">{emptyLabel}</p>
         </div>
       )}
@@ -99,7 +99,7 @@ export function HomeShuffleSection({
           <motion.div
             key={collection.id}
             whileTap={{ scale: 0.99 }}
-            className="group rounded-2xl border border-white/10 bg-black/20 px-4 py-4 transition hover:border-amber-300/25 hover:bg-black/30"
+            className="group rounded-[14px] border border-[#18181b] bg-[#0a0a0a] px-4 py-4 shadow-card transition hover:border-[--brand-primary-25] hover:bg-[#111]"
           >
             <div className="flex items-start justify-between gap-3">
               <button
@@ -127,29 +127,29 @@ export function HomeShuffleSection({
                 <button
                   type="button"
                   onClick={() => onShowMetrics?.(collection)}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/12 text-white/55 transition hover:border-white/25 hover:text-white sm:h-9 sm:w-9"
+                  className="ds-icon-button inline-flex h-11 w-11 sm:h-9 sm:w-9"
                   aria-label={metricsLabel}
                   title={metricsLabel}
                 >
-                  <BarChart3 size={14} />
+                  <BarChart3 size={14} strokeWidth={1.5} />
                 </button>
                 <button
                   type="button"
                   onClick={() => onEditCollection(collection)}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/12 text-white/55 transition hover:border-white/25 hover:text-white sm:h-9 sm:w-9"
+                  className="ds-icon-button inline-flex h-11 w-11 sm:h-9 sm:w-9"
                   aria-label={editLabel}
                   title={editLabel}
                 >
-                  <Pencil size={14} />
+                  <Pencil size={14} strokeWidth={1.5} />
                 </button>
                 <button
                   type="button"
                   onClick={() => onDeleteCollection(collection)}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-rose-400/20 text-rose-200/70 transition hover:border-rose-300/35 hover:text-rose-100 sm:h-9 sm:w-9"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-rose-400/20 bg-[#0c0c0c] text-rose-200/70 transition hover:border-rose-300/35 hover:bg-[#111] hover:text-rose-100 sm:h-9 sm:w-9"
                   aria-label={deleteLabel}
                   title={deleteLabel}
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={14} strokeWidth={1.5} />
                 </button>
               </div>
             </div>
@@ -157,7 +157,7 @@ export function HomeShuffleSection({
               <button
                 type="button"
                 onClick={() => onStartShuffleStudy(collection)}
-                className="shrink-0 rounded-xl border border-amber-300/25 bg-amber-300/10 px-3 py-2 text-xs font-semibold text-amber-100 transition group-hover:border-amber-200/40 group-hover:bg-amber-300/15"
+                className="shrink-0 rounded-[12px] border border-[--brand-primary-25] bg-[--brand-primary-12] px-3 py-2 text-xs font-semibold text-[--brand-primary] transition group-hover:border-[--brand-primary-50] group-hover:bg-[--brand-primary-20]"
               >
                 {startLabel}
               </button>

@@ -9,6 +9,38 @@
   *, *::before, *::after { box-sizing: border-box; }
 
   :root {
+    --ds-bg: #050505;
+    --ds-floor: #0a0a0a;
+    --ds-card: #0c0c0c;
+    --ds-panel: #101012;
+    --ds-panel-hover: #111111;
+    --ds-border: #18181b;
+    --ds-border-strong: #27272a;
+    --ds-border-hover: #3f3f46;
+    --ds-fg: #f0ede8;
+    --ds-muted: #71717a;
+    --ds-subtle: #52525b;
+    --ds-code-bg: #18181b;
+    --ds-accent-primary: #f97316;
+    --ds-accent-secondary: #3b82f6;
+    --shadow-card:
+      inset 0 1px 0 rgba(255,255,255,.06),
+      inset 0 -1px 0 rgba(0,0,0,.5),
+      0 1px 0 rgba(0,0,0,.5),
+      0 4px 10px -2px rgba(0,0,0,.55),
+      0 12px 22px -6px rgba(0,0,0,.35);
+    --shadow-menu:
+      inset 0 1px 0 rgba(255,255,255,.07),
+      inset 0 -1px 0 rgba(0,0,0,.6),
+      0 2px 0 rgba(0,0,0,.5),
+      0 8px 16px -4px rgba(0,0,0,.55),
+      0 24px 40px -8px rgba(0,0,0,.45);
+    --shadow-modal:
+      inset 0 1px 0 rgba(255,255,255,.08),
+      inset 0 -1px 0 rgba(0,0,0,.7),
+      0 3px 0 rgba(0,0,0,.55),
+      0 18px 32px -6px rgba(0,0,0,.7),
+      0 42px 64px -16px rgba(0,0,0,.55);
     --brand-primary: rgb(249, 115, 22);
     --brand-primary-08: rgba(249, 115, 22, 0.08);
     --brand-primary-12: rgba(249, 115, 22, 0.12);
@@ -17,12 +49,16 @@
     --brand-primary-25: rgba(249, 115, 22, 0.25);
     --brand-primary-50: rgba(249, 115, 22, 0.50);
     --brand-primary-80: rgba(249, 115, 22, 0.80);
+    --brand-primary-100: rgba(249, 115, 22, 1);
     --brand-secondary: rgb(59, 130, 246);
     --brand-secondary-08: rgba(59, 130, 246, 0.08);
     --brand-secondary-12: rgba(59, 130, 246, 0.12);
     --brand-secondary-15: rgba(59, 130, 246, 0.15);
     --brand-secondary-20: rgba(59, 130, 246, 0.20);
     --brand-secondary-25: rgba(59, 130, 246, 0.25);
+    --brand-secondary-50: rgba(59, 130, 246, 0.50);
+    --brand-secondary-80: rgba(59, 130, 246, 0.80);
+    --brand-secondary-100: rgba(59, 130, 246, 1);
     --app-font-family: 'Share Tech Mono', 'IBM Plex Mono', monospace;
     --app-font-family-sans: 'Space Grotesk', 'Inter', system-ui, sans-serif;
     --app-font-family-mono: 'Share Tech Mono', 'IBM Plex Mono', monospace;
@@ -427,18 +463,52 @@
 
 @layer components {
   .glass {
-    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl;
+    @apply border border-ds-border bg-ds-card shadow-card;
   }
 
   .glass-hover {
-    @apply hover:bg-white/[0.08] hover:border-white/20 transition-all duration-300 ease-out;
+    @apply hover:bg-ds-panel-hover hover:border-ds-border-hover transition-all duration-300 ease-out;
+  }
+
+  .ds-card {
+    @apply rounded-ds-lg border border-ds-border bg-ds-card shadow-card;
+  }
+
+  .ds-panel {
+    @apply rounded-ds-lg border border-ds-border bg-ds-floor shadow-card;
+  }
+
+  .ds-menu {
+    overflow: hidden;
+    border-radius: 14px;
+    border: 1px solid var(--ds-border-strong);
+    background: rgba(9, 9, 11, 0.98);
+    box-shadow: var(--shadow-menu);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+  }
+
+  .ds-modal {
+    @apply overflow-hidden rounded-[1.5rem] border border-ds-border bg-ds-bg shadow-modal sm:rounded-[2rem];
+  }
+
+  .ds-icon-button {
+    @apply inline-flex items-center justify-center rounded-ds border border-ds-border bg-ds-card text-zinc-500 transition-all duration-200 ease-out hover:border-ds-border-hover hover:bg-[#111] hover:text-zinc-50 active:scale-95;
+  }
+
+  .ds-chip {
+    @apply rounded-[3px] border border-ds-border-strong bg-ds-card px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-zinc-400;
+  }
+
+  .ds-code {
+    @apply rounded-[3px] bg-ds-border px-1.5 py-px font-mono text-zinc-300;
   }
 
   .btn-rating {
-    @apply flex-1 rounded-[16px] font-bold text-[14px] duration-300 ease-out
-           border
+    @apply flex-1 rounded-ds font-bold text-[14px] duration-200 ease-out
            active:scale-95 focus:outline-none;
-    transition-property: color, background-color, border-color, opacity, transform, box-shadow;
+    border: 0;
+    transition-property: color, background-color, border-color, opacity, transform, filter, outline-color;
   }
   /* Restrict hover lift to pointer-capable devices — on touch screens :hover
      sticks after tap and produces a permanently elevated button (iOS bug). */

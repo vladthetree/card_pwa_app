@@ -67,7 +67,7 @@ export function HomeDeckListSection({
         return (
           <motion.div
             key={collection.id}
-            className="group rounded-2xl border border-amber-300/20 bg-amber-300/[0.06] px-4 py-4 transition hover:border-amber-200/40 hover:bg-amber-300/[0.1]"
+            className="group rounded-[14px] border border-[#18181b] bg-[#0c0c0c] px-4 py-4 shadow-card transition hover:border-[--brand-primary-50] hover:bg-[#111]"
           >
             <div className="flex items-start justify-between gap-3">
               <button
@@ -97,29 +97,29 @@ export function HomeDeckListSection({
                 <button
                   type="button"
                   onClick={() => onShowShuffleMetrics(collection)}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 text-white/70 transition hover:border-white/30 hover:text-white sm:h-9 sm:w-9"
+                  className="ds-icon-button inline-flex h-11 w-11 sm:h-9 sm:w-9"
                   aria-label={language === 'de' ? 'Metriken' : 'Metrics'}
                   title={language === 'de' ? 'Metriken' : 'Metrics'}
                 >
-                  <BarChart3 size={14} />
+                  <BarChart3 size={14} strokeWidth={1.5} />
                 </button>
                 <button
                   type="button"
                   onClick={() => onEditShuffleCollection(collection)}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 text-white/70 transition hover:border-white/30 hover:text-white sm:h-9 sm:w-9"
+                  className="ds-icon-button inline-flex h-11 w-11 sm:h-9 sm:w-9"
                   aria-label={language === 'de' ? 'Bearbeiten' : 'Edit'}
                   title={language === 'de' ? 'Bearbeiten' : 'Edit'}
                 >
-                  <Pencil size={14} />
+                  <Pencil size={14} strokeWidth={1.5} />
                 </button>
                 <button
                   type="button"
                   onClick={() => onDeleteShuffleCollection(collection)}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-rose-400/20 text-rose-200/75 transition hover:border-rose-300/35 hover:text-rose-100 sm:h-9 sm:w-9"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-rose-400/20 bg-[#0c0c0c] text-rose-200/75 transition hover:border-rose-300/35 hover:bg-[#111] hover:text-rose-100 sm:h-9 sm:w-9"
                   aria-label={language === 'de' ? 'Löschen' : 'Delete'}
                   title={language === 'de' ? 'Löschen' : 'Delete'}
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={14} strokeWidth={1.5} />
                 </button>
               </div>
             </div>
@@ -130,21 +130,25 @@ export function HomeDeckListSection({
   )
 
   return (
-    <div className="relative z-0 min-h-0 flex-1 overflow-y-auto no-scrollbar pb-4 pr-1">
+    <div
+      className="relative z-0 min-h-0 flex-1 overflow-y-auto no-scrollbar pb-4 pr-1"
+      style={{ WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'contain', touchAction: 'pan-y' }}
+      data-testid="home-deck-list-scroll"
+    >
       {error && (
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="glass border-rose-500/30 bg-rose-500/10 p-4 rounded-xl text-rose-300 text-sm mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-2"><AlertCircle size={16} /><span>{error}</span></div>
-          <button onClick={onReload} className="ml-3 px-3 py-1 bg-rose-500/30 hover:bg-rose-500/50 rounded-lg text-xs font-medium transition"><RefreshCw size={12} className="inline mr-1" /> {t.retry}</button>
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-4 flex items-center justify-between rounded-[12px] border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300 shadow-card">
+          <div className="flex items-center gap-2"><AlertCircle size={16} strokeWidth={1.5} /><span>{error}</span></div>
+          <button onClick={onReload} className="ml-3 px-3 py-1 bg-rose-500/30 hover:bg-rose-500/50 rounded-lg text-xs font-medium transition"><RefreshCw size={12} strokeWidth={1.5} className="inline mr-1" /> {t.retry}</button>
         </motion.div>
       )}
 
       {loading ? (
-        <div className="flex flex-col gap-2.5 sm:gap-3">{[...Array(4)].map((_, i) => <div key={i} className="h-20 glass rounded-2xl animate-pulse" />)}</div>
+        <div className="flex flex-col gap-2.5 sm:gap-3">{[...Array(4)].map((_, i) => <div key={i} className="h-20 ds-card animate-pulse" />)}</div>
       ) : !showShuffleOnly && decks.length === 0 ? (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
           <p className="text-white/30 text-sm mb-4">{t.no_decks}</p>
-          <button onClick={onShowImport} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-black text-white transition-all duration-300 ease-out active:scale-95" style={{ background: 'linear-gradient(135deg, var(--brand-primary-80), var(--brand-primary))' }}>
-            <Upload size={16} /> {t.import_now}
+          <button onClick={onShowImport} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[12px] text-sm font-black text-white transition-all duration-200 ease-out active:scale-[0.98]" style={{ background: 'linear-gradient(135deg, var(--brand-primary-80), var(--brand-primary))' }}>
+            <Upload size={16} strokeWidth={1.5} /> {t.import_now}
           </button>
         </motion.div>
       ) : !showShuffleOnly && filteredDecks.length === 0 ? (

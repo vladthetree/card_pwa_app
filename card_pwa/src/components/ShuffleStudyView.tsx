@@ -474,9 +474,9 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
 
     return (
       <>
-        <div className="min-h-screen bg-black px-4 py-10 text-white">
-          <div className="mx-auto max-w-2xl rounded-[32px] border border-white/10 bg-white/[0.04] p-8 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-emerald-300/25 bg-emerald-400/10 text-emerald-200">
+        <div className="min-h-screen bg-[#050505] px-4 py-10 text-white">
+          <div className="mx-auto max-w-2xl ds-card p-8 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[12px] border border-emerald-300/25 bg-emerald-400/10 text-emerald-200">
               <Shuffle size={22} />
             </div>
             <h1 className="text-2xl font-semibold">{collection.name}</h1>
@@ -489,7 +489,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
               onEditCard={card => setEditingCard(card)}
             />
             {sessionDeckSummary.length > 0 && (
-              <div className="mt-6 rounded-3xl border border-white/10 bg-black/25 p-4 text-left">
+              <div className="mt-6 rounded-[14px] border border-[#18181b] bg-[#0a0a0a] p-4 text-left shadow-card">
                 <div className="text-[11px] uppercase tracking-[0.18em] text-white/40">
                   {settings.language === 'de' ? 'Verteilung nach Ursprungsdeck' : 'Source deck distribution'}
                 </div>
@@ -497,7 +497,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
                   {sessionDeckSummary.map(entry => (
                     <div
                       key={entry.deckId}
-                      className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/[0.03] px-3 py-2 text-sm"
+                      className="flex items-center justify-between rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-sm"
                     >
                       <span className="truncate pr-3 text-white/80">{entry.name}</span>
                       <span className="shrink-0 rounded-full border border-amber-300/20 bg-amber-400/10 px-2 py-0.5 text-xs text-amber-100/85">
@@ -517,14 +517,14 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
               <button
                 type="button"
                 onClick={handleRestart}
-                className="rounded-2xl border border-white/15 px-4 py-2 text-sm text-white/80 transition hover:border-white/30 hover:text-white"
+                className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-4 py-2 text-sm text-white/80 transition hover:border-[#3f3f46] hover:text-white"
               >
                 {settings.language === 'de' ? 'Neu mischen' : 'Reshuffle'}
               </button>
               <button
                 type="button"
                 onClick={onExit}
-                className="rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-black transition hover:bg-white/90"
+                className="rounded-[12px] bg-white px-4 py-2 text-sm font-semibold text-black transition hover:bg-white/90"
               >
                 {settings.language === 'de' ? 'Zur Startseite' : 'Back home'}
               </button>
@@ -545,15 +545,15 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   }
 
   return (
-    <div className={`${isHandsetLayout ? 'fixed inset-0' : 'min-h-screen'} flex flex-col overflow-hidden bg-black text-white`}>
+    <div className={`${isHandsetLayout ? 'fixed inset-0' : 'min-h-screen'} flex flex-col overflow-hidden bg-[#050505] text-white`}>
       <div
-        className={`sticky top-0 z-20 border-b border-white/10 bg-black/90 backdrop-blur ${isHandsetLayout ? 'pt-safe-2 pb-2 px-3' : ''}`}
+        className={`sticky top-0 z-20 border-b border-[#18181b] bg-[#050505]/95 backdrop-blur ${isHandsetLayout ? 'pt-safe-2 pb-2 px-3' : ''}`}
       >
         <div className="mx-auto flex max-w-5xl items-center gap-3">
           <button
             type="button"
             onClick={onExit}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/15 text-white/75 transition hover:border-white/30 hover:text-white"
+            className="ds-icon-button inline-flex h-11 w-11"
             aria-label={settings.language === 'de' ? 'Zurück' : 'Back'}
           >
             <ArrowLeft size={18} />
@@ -565,7 +565,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
             </div>
             <div className="truncate text-lg font-semibold">{collection.name}</div>
           </div>
-          <div className="rounded-xl border border-white/10 px-3 py-2 text-xs font-mono text-white/60">
+          <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-xs font-mono text-white/60">
             {collection.deckIds.length} {settings.language === 'de' ? 'Decks' : 'decks'}
           </div>
         </div>
@@ -580,7 +580,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       </div>
 
       <div
-        className={`flex-1 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-safe-2' : 'overflow-y-auto px-3 py-4 sm:px-4 sm:py-6'}`}
+        className={`flex-1 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-2' : 'overflow-y-auto px-3 py-4 sm:px-4 sm:py-6'}`}
       >
         <AnimatePresence>
           {session.error && <ErrorAlert message={session.error} onRetry={handleRetry} />}
@@ -595,7 +595,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
               exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -12 }}
               transition={{ duration: prefersReducedMotion ? 0.12 : 0.16, ease: 'easeOut' }}
               className={`mx-auto w-full max-w-5xl ${isHandsetLayout ? 'flex h-full min-h-0 flex-col' : ''}`}
-              style={isHandsetLayout ? { maxHeight: 'calc(100% - env(safe-area-inset-bottom, 0px) - 1.35rem)' } : undefined}
+              style={isHandsetLayout ? { maxHeight: '100%' } : undefined}
             >
               <div className={`flex flex-col gap-6 ${isHandsetLayout ? 'h-full min-h-0 flex-1' : ''}`}>
                 <div className={`flex-1 ${isHandsetLayout ? 'h-full min-h-0' : ''}`}>
@@ -629,7 +629,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
             <button
               type="button"
               onClick={handleUndoLastRating}
-              className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white/70 transition hover:border-white/25 hover:text-white"
+            className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-3 py-1.5 text-xs text-white/70 transition hover:border-[#3f3f46] hover:text-white"
             >
               {t.undo_last_rating}
             </button>
@@ -651,10 +651,10 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
             animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
             transition={{ duration: prefersReducedMotion ? 0.12 : 0.15, ease: 'easeOut' }}
-            className="w-full border-t border-white/15 bg-black/95 px-3 pt-3"
+            className="w-full border-t border-[#18181b] bg-[#050505] px-3 pt-2"
             style={{
-              height: isHandsetLandscape ? 'clamp(8.25rem, 24dvh, 11rem)' : 'clamp(11.5rem, 25dvh, 15.5rem)',
-              paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.5rem)',
+              height: isHandsetLandscape ? 'clamp(7.25rem, 21dvh, 10rem)' : 'clamp(9.25rem, 21dvh, 12.5rem)',
+              paddingBottom: '0.5rem',
             }}
           >
             <div className="h-full">

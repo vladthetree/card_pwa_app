@@ -159,14 +159,14 @@ export function HomeDeckToolbar({
 
   return (
     <div className="sticky top-0 z-[90] mb-2 mt-2 flex-shrink-0 sm:mb-3 sm:mt-4">
-      <div className="rounded-2xl border border-white/10 bg-black/[0.72] p-2 backdrop-blur-md sm:border-0 sm:bg-black/70 sm:p-0 sm:backdrop-blur-sm">
+      <div className="rounded-[14px] border border-[#18181b] bg-[#050505]/92 p-2 shadow-card backdrop-blur-md sm:border-0 sm:bg-[#050505]/80 sm:p-0 sm:shadow-none sm:backdrop-blur-sm">
       <div className="flex min-w-0 flex-wrap items-center gap-2 overflow-x-hidden overflow-y-visible sm:flex-nowrap sm:gap-1 sm:pb-1">
         <h2 className="hidden sm:block text-lg font-black font-mono uppercase tracking-[0.2em] text-theme-text shrink-0 mr-1">
           {t.decks_title}
         </h2>
 
-        <label className="relative flex h-11 min-w-0 flex-[1_0_100%] items-center rounded-2xl border border-white/15 bg-white/[0.04] pl-3 pr-2 text-xs text-white/85 sm:h-8 sm:flex-[0_1_16rem] sm:bg-white/[0.03] sm:pl-2">
-          <Search size={13} className="pointer-events-none mr-1.5 text-white/45" />
+        <label className="relative flex h-11 min-w-0 flex-[1_0_100%] items-center rounded-[12px] border border-[#18181b] bg-[#0c0c0c] pl-3 pr-2 text-xs text-white/85 sm:h-8 sm:flex-[0_1_16rem] sm:pl-2">
+          <Search size={13} strokeWidth={1.5} className="pointer-events-none mr-1.5 text-white/45" />
           <input
             type="search"
             value={deckSearchQuery}
@@ -178,11 +178,11 @@ export function HomeDeckToolbar({
             <button
               type="button"
               onClick={() => onDeckSearchQueryChange('')}
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-white/45 transition hover:bg-white/8 hover:text-white/80"
+              className="ds-icon-button flex h-9 w-9"
               aria-label={language === 'de' ? 'Suche leeren' : 'Clear search'}
               title={language === 'de' ? 'Suche leeren' : 'Clear search'}
             >
-              <X size={12} />
+              <X size={12} strokeWidth={1.5} />
             </button>
           )}
         </label>
@@ -192,14 +192,14 @@ export function HomeDeckToolbar({
             <button
               type="button"
               onClick={handleToggleFilterMenu}
-              className="inline-flex h-11 items-center gap-1.5 rounded-2xl border border-white/15 bg-white/[0.03] px-3 text-[10px] font-mono uppercase tracking-[0.08em] text-white/85 transition-all duration-200 hover:border-white/30 hover:bg-white/[0.07] sm:h-9 sm:px-2.5"
+              className="inline-flex h-11 items-center gap-1.5 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 text-[10px] font-mono uppercase tracking-[0.08em] text-white/85 transition-all duration-200 hover:border-[#3f3f46] hover:bg-[#111] sm:h-9 sm:px-2.5"
               aria-haspopup="menu"
               aria-expanded={showFilterMenu}
               title={filterLabel}
             >
               <span className="text-white/55">{filterLabel}</span>
               <span className="text-white">{activeFilterValue}</span>
-              <ChevronDown size={12} className={`transition-transform duration-150 ${showFilterMenu ? 'rotate-180' : ''}`} />
+              <ChevronDown size={12} strokeWidth={1.5} className={`transition-transform duration-150 ${showFilterMenu ? 'rotate-180' : ''}`} />
             </button>
 
             {showFilterMenu && filterFloatingStyle && createPortal(
@@ -209,7 +209,7 @@ export function HomeDeckToolbar({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -4, scale: 0.97 }}
                 transition={{ duration: 0.12 }}
-                className="fixed z-[1300] overflow-y-auto rounded-2xl border border-white/15 bg-zinc-950/98 py-1 shadow-[0_18px_56px_rgba(0,0,0,0.72)] backdrop-blur-xl"
+                className="fixed z-[1300] ds-menu overflow-y-auto py-1"
                 style={filterFloatingStyle}
                 role="menu"
               >
@@ -222,11 +222,11 @@ export function HomeDeckToolbar({
                     if (showShuffleOnly) onToggleShuffleOnly()
                     closeFilterMenu()
                   }}
-                  className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-white/[0.08] transition text-left"
+                  className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
                   role="menuitem"
                 >
                   <span>{decksLabel}</span>
-                  {!showShuffleOnly && <Check size={14} />}
+                  {!showShuffleOnly && <Check size={14} strokeWidth={1.5} />}
                 </button>
                 {shuffleModeEnabled && (
                   <button
@@ -235,28 +235,28 @@ export function HomeDeckToolbar({
                       onToggleShuffleOnly()
                       closeFilterMenu()
                     }}
-                    className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-white/[0.08] transition text-left"
+                    className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
                     role="menuitem"
                   >
                     <span>{shuffleDecksLabel}</span>
-                    {showShuffleOnly && <Check size={14} />}
+                    {showShuffleOnly && <Check size={14} strokeWidth={1.5} />}
                   </button>
                 )}
 
                 {!showShuffleOnly && (
                   <>
-                    <div className="border-t border-white/10 my-1" />
+                    <div className="border-t border-[#18181b] my-1" />
                     <button
                       type="button"
                       onClick={() => {
                         onDeckSortModeChange('name')
                         closeFilterMenu()
                       }}
-                      className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-white/[0.08] transition text-left"
+                      className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
                       role="menuitem"
                     >
                       <span>{t.sort_name}</span>
-                      {deckSortMode === 'name' && <Check size={14} />}
+                      {deckSortMode === 'name' && <Check size={14} strokeWidth={1.5} />}
                     </button>
                     <button
                       type="button"
@@ -264,11 +264,11 @@ export function HomeDeckToolbar({
                         onDeckSortModeChange('due_today')
                         closeFilterMenu()
                       }}
-                      className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-white/[0.08] transition text-left"
+                      className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
                       role="menuitem"
                     >
                       <span>{t.sort_due_today}</span>
-                      {deckSortMode === 'due_today' && <Check size={14} />}
+                      {deckSortMode === 'due_today' && <Check size={14} strokeWidth={1.5} />}
                     </button>
                   </>
                 )}
@@ -281,14 +281,14 @@ export function HomeDeckToolbar({
             <button
               type="button"
               onClick={handleToggleFeatureMenu}
-              className="inline-flex h-11 items-center gap-1.5 rounded-2xl border border-white/15 bg-white/[0.03] px-3 text-[10px] font-mono uppercase tracking-[0.08em] text-white/85 transition-all duration-200 hover:border-white/30 hover:bg-white/[0.07] sm:h-9 sm:px-2.5"
+              className="inline-flex h-11 items-center gap-1.5 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 text-[10px] font-mono uppercase tracking-[0.08em] text-white/85 transition-all duration-200 hover:border-[#3f3f46] hover:bg-[#111] sm:h-9 sm:px-2.5"
               aria-haspopup="menu"
               aria-expanded={showFeatureMenu}
               title={featureLabel}
             >
               <span className="text-white/55">{featureLabel}</span>
               <span className="text-white">{activeFeatureLabel}</span>
-              <ChevronDown size={12} className={`transition-transform duration-150 ${showFeatureMenu ? 'rotate-180' : ''}`} />
+              <ChevronDown size={12} strokeWidth={1.5} className={`transition-transform duration-150 ${showFeatureMenu ? 'rotate-180' : ''}`} />
             </button>
 
             {showFeatureMenu && featureFloatingStyle && createPortal(
@@ -298,7 +298,7 @@ export function HomeDeckToolbar({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -4, scale: 0.97 }}
                 transition={{ duration: 0.12 }}
-                className="fixed z-[1300] overflow-y-auto rounded-2xl border border-white/15 bg-zinc-950/98 py-1 shadow-[0_18px_56px_rgba(0,0,0,0.72)] backdrop-blur-xl"
+                className="fixed z-[1300] ds-menu overflow-y-auto py-1"
                 style={featureFloatingStyle}
                 role="menu"
               >
@@ -316,14 +316,14 @@ export function HomeDeckToolbar({
                         onDashboardModeChange(option.key)
                         closeFeatureMenu()
                       }}
-                      className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-white/[0.08] transition text-left"
+                      className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
                       role="menuitem"
                     >
                       <span className="inline-flex items-center gap-2">
-                        <Icon size={13} />
+                        <Icon size={13} strokeWidth={1.5} />
                         {option.label}
                       </span>
-                      {isActive && <Check size={14} />}
+                      {isActive && <Check size={14} strokeWidth={1.5} />}
                     </button>
                   )
                 })}
@@ -334,24 +334,24 @@ export function HomeDeckToolbar({
 
           <button
             onClick={onReload}
-            className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-theme-text-secondary transition-all duration-300 ease-out active:scale-95 hover:bg-white/10 hover:text-theme-text min-[380px]:inline-flex sm:h-auto sm:w-auto sm:p-1"
+            className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-[12px] text-theme-text-secondary transition-all duration-300 ease-out active:scale-95 hover:bg-[#111] hover:text-theme-text min-[380px]:inline-flex sm:h-auto sm:w-auto sm:p-1"
             title={t.reload}
             aria-label={t.reload}
           >
-            <RefreshCw size={15} />
+            <RefreshCw size={15} strokeWidth={1.5} />
           </button>
 
           <div className="relative shrink-0" ref={anchorRef}>
             <button
               type="button"
               onClick={handleToggleActionsMenu}
-              className="group flex h-11 min-w-11 items-center justify-center gap-1 rounded-2xl border border-white/15 bg-white/[0.07] px-3 py-1 text-xs font-mono uppercase tracking-[0.12em] text-white/82 shadow-[0_10px_28px_rgba(0,0,0,0.28)] transition-all duration-300 ease-out active:scale-95 hover:border-white/25 hover:bg-white/[0.1] hover:text-white sm:min-h-8 sm:h-auto sm:min-w-0 sm:px-2.5"
+              className="group flex h-11 min-w-11 items-center justify-center gap-1 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-1 text-xs font-mono uppercase tracking-[0.12em] text-white/82 shadow-card transition-all duration-300 ease-out active:scale-95 hover:border-[#3f3f46] hover:bg-[#111] hover:text-white sm:min-h-8 sm:h-auto sm:min-w-0 sm:px-2.5"
               aria-haspopup="menu"
               aria-expanded={showActionsMenu}
               aria-label={language === 'de' ? 'Aktionen oeffnen' : 'Open actions'}
             >
-              <Plus size={14} />
-              <ChevronDown size={12} className={`transition-transform duration-150 ${showActionsMenu ? 'rotate-180' : ''}`} />
+              <Plus size={14} strokeWidth={1.5} />
+              <ChevronDown size={12} strokeWidth={1.5} className={`transition-transform duration-150 ${showActionsMenu ? 'rotate-180' : ''}`} />
             </button>
             {showActionsMenu && floatingStyle && createPortal(
                 <motion.div
@@ -360,7 +360,7 @@ export function HomeDeckToolbar({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -4, scale: 0.97 }}
                   transition={{ duration: 0.12 }}
-                  className="fixed z-[1300] overflow-y-auto rounded-2xl border border-white/15 bg-zinc-950/98 py-1 shadow-[0_18px_56px_rgba(0,0,0,0.72)] backdrop-blur-xl"
+                  className="fixed z-[1300] ds-menu overflow-y-auto py-1"
                   style={floatingStyle}
                   role="menu"
                 >
@@ -374,10 +374,10 @@ export function HomeDeckToolbar({
                       closeActionsMenu()
                       onCreateDeck()
                     }}
-                    className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-white/[0.08] transition text-left"
+                    className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
                     role="menuitem"
                   >
-                    <FolderPlus size={13} /> {t.create_deck}
+                    <FolderPlus size={13} strokeWidth={1.5} /> {t.create_deck}
                   </button>
                   {shuffleModeEnabled && onCreateVirtualDeck && (
                     <button
@@ -387,10 +387,10 @@ export function HomeDeckToolbar({
                         closeActionsMenu()
                         onCreateVirtualDeck()
                       }}
-                      className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-white/[0.08] transition text-left"
+                      className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
                       role="menuitem"
                     >
-                      <Shuffle size={13} /> {language === 'de' ? 'Virtuelles Deck erstellen' : 'Create virtual deck'}
+                      <Shuffle size={13} strokeWidth={1.5} /> {language === 'de' ? 'Virtuelles Deck erstellen' : 'Create virtual deck'}
                     </button>
                   )}
                   <button
@@ -400,12 +400,12 @@ export function HomeDeckToolbar({
                       closeActionsMenu()
                       onCreateCard()
                     }}
-                    className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-white/[0.08] transition text-left"
+                    className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
                     role="menuitem"
                   >
-                    <Plus size={13} /> {t.create_card}
+                    <Plus size={13} strokeWidth={1.5} /> {t.create_card}
                   </button>
-                  <div className="border-t border-white/10 px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
+                  <div className="border-t border-[#18181b] px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
                     {language === 'de' ? 'Daten' : 'Data'}
                   </div>
                   <button
@@ -415,10 +415,10 @@ export function HomeDeckToolbar({
                       closeActionsMenu()
                       onImport()
                     }}
-                    className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/90 hover:text-white hover:bg-white/[0.08] transition text-left"
+                    className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/90 hover:text-white hover:bg-[#111] transition text-left"
                     role="menuitem"
                   >
-                    <Upload size={13} className="text-[color:var(--brand-primary)]" /> {t.import_action} {language === 'de' ? 'Karten/Decks' : 'cards/decks'}
+                    <Upload size={13} strokeWidth={1.5} className="text-[color:var(--brand-primary)]" /> {t.import_action} {language === 'de' ? 'Karten/Decks' : 'cards/decks'}
                   </button>
                   <button
                     type="button"
@@ -427,10 +427,10 @@ export function HomeDeckToolbar({
                       closeActionsMenu()
                       onExport()
                     }}
-                    className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-white/[0.08] transition text-left"
+                    className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
                     role="menuitem"
                   >
-                    <Download size={13} /> {t.backup_export_title}
+                    <Download size={13} strokeWidth={1.5} /> {t.backup_export_title}
                   </button>
                 </motion.div>,
                 document.body,

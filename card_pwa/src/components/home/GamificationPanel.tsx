@@ -37,7 +37,7 @@ const COPY = {
 } as const
 
 const RARITY_CLASS: Record<GamificationAchievement['rarity'], string> = {
-  common: 'border-white/15 text-white/70 bg-white/[0.03]',
+  common: 'border-[#18181b] text-zinc-300 bg-[#0c0c0c]',
   rare: 'border-sky-400/30 text-sky-100 bg-sky-500/10',
   epic: 'border-amber-300/35 text-amber-100 bg-amber-400/10',
 }
@@ -91,8 +91,8 @@ export function GamificationPanel({ language, profile }: Props) {
 
   if (!profile) {
     return (
-      <div className="rounded-xl border border-zinc-900 bg-black p-4">
-        <div className="h-28 rounded-lg bg-white/[0.04] animate-pulse" />
+      <div className="rounded-[14px] border border-[#18181b] bg-[#0c0c0c] p-4 shadow-card">
+        <div className="h-28 rounded-[12px] bg-[#111] animate-pulse" />
       </div>
     )
   }
@@ -109,7 +109,7 @@ export function GamificationPanel({ language, profile }: Props) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22, ease: 'easeOut' }}
-      className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#090909] p-3 sm:rounded-xl sm:p-4"
+      className="relative overflow-hidden rounded-[14px] border border-[#18181b] bg-[#0c0c0c] p-3 shadow-card sm:p-4"
     >
       <div
         aria-hidden
@@ -124,12 +124,12 @@ export function GamificationPanel({ language, profile }: Props) {
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2 text-[9px] uppercase tracking-[0.18em] text-white/45 sm:text-[10px] sm:tracking-[0.2em]">
-              <Sparkles size={13} className="text-[color:var(--brand-primary)]" />
+              <Sparkles size={13} strokeWidth={1.5} className="text-[color:var(--brand-primary)]" />
               {copy.level} {profile.level}
             </div>
             <div className="mt-0.5 truncate text-base font-black text-white sm:mt-1 sm:text-xl">{rankTitle}</div>
           </div>
-          <div className="rounded-xl border border-white/10 bg-black/50 px-3 py-2 text-right sm:rounded-lg">
+          <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-3 py-2 text-right">
             <div className="text-sm font-black text-[color:var(--brand-primary)] sm:text-base">{formatCompact(profile.todayXp, language)}</div>
             <div className="text-[9px] uppercase tracking-[0.16em] text-white/35">{copy.xpToday}</div>
           </div>
@@ -144,31 +144,31 @@ export function GamificationPanel({ language, profile }: Props) {
         </div>
 
         {!hasProgress && (
-          <div className="rounded-lg border border-white/10 bg-black/40 p-3 text-xs leading-relaxed text-white/52">
+          <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3 text-xs leading-relaxed text-white/52">
             {copy.noData}
           </div>
         )}
 
         <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-          <div className="rounded-xl border border-white/10 bg-black/45 p-2 sm:rounded-lg">
+          <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-2">
             <div className={`flex items-center gap-1.5 text-sm font-black ${profile.streakAtRisk ? 'text-amber-200' : 'text-orange-200'}`}>
-              <Flame size={14} />
+              <Flame size={14} strokeWidth={1.5} />
               {profile.currentStreak}
             </div>
             <div className="mt-1 text-[9px] uppercase tracking-[0.14em] text-white/35">
               {copy.streak}{profile.streakAtRisk ? ` ${copy.streakRisk}` : ''}
             </div>
           </div>
-          <div className="rounded-xl border border-white/10 bg-black/45 p-2 sm:rounded-lg">
+          <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-2">
             <div className="flex items-center gap-1.5 text-sm font-black text-sky-100">
-              <Trophy size={14} />
+              <Trophy size={14} strokeWidth={1.5} />
               {profile.longestStreak}
             </div>
             <div className="mt-1 text-[9px] uppercase tracking-[0.14em] text-white/35">{copy.best} {copy.days}</div>
           </div>
-          <div className="rounded-xl border border-white/10 bg-black/45 p-2 sm:rounded-lg">
+          <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-2">
             <div className="flex items-center gap-1.5 text-sm font-black text-emerald-100">
-              <ShieldCheck size={14} />
+              <ShieldCheck size={14} strokeWidth={1.5} />
               {profile.successRate}%
             </div>
             <div className="mt-1 text-[9px] uppercase tracking-[0.14em] text-white/35">{copy.success}</div>
@@ -176,10 +176,10 @@ export function GamificationPanel({ language, profile }: Props) {
         </div>
 
         {primaryQuest && (
-          <div className="rounded-xl border border-white/10 bg-black/35 p-2.5 sm:hidden">
+          <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-2.5 sm:hidden">
             <div className="mb-1.5 flex items-center justify-between gap-2 text-[10px] uppercase tracking-[0.14em]">
               <span className="flex min-w-0 items-center gap-1.5 text-white/50">
-                <Target size={12} className="text-[color:var(--brand-secondary)]" />
+                <Target size={12} strokeWidth={1.5} className="text-[color:var(--brand-secondary)]" />
                 <span className="truncate">{primaryQuest.title}</span>
               </span>
               <span className={primaryQuest.isComplete ? 'text-emerald-300' : 'text-white/35'}>
@@ -195,9 +195,9 @@ export function GamificationPanel({ language, profile }: Props) {
         )}
 
         <div className="hidden gap-2 sm:grid sm:grid-cols-2">
-          <div className="rounded-lg border border-white/10 bg-black/35 p-3">
+          <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
             <div className="mb-2 flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-white/45">
-              <Target size={13} className="text-[color:var(--brand-secondary)]" />
+              <Target size={13} strokeWidth={1.5} className="text-[color:var(--brand-secondary)]" />
               {copy.dailyQuests}
             </div>
             <div className="space-y-2">
@@ -219,21 +219,21 @@ export function GamificationPanel({ language, profile }: Props) {
             </div>
           </div>
 
-          <div className="rounded-lg border border-white/10 bg-black/35 p-3">
+          <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
             <div className="mb-2 flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-white/45">
-              <Award size={13} className="text-amber-200" />
+              <Award size={13} strokeWidth={1.5} className="text-amber-200" />
               {copy.achievements}
             </div>
             <div className="grid gap-1.5">
               {featuredAchievements.map(achievement => (
                 <div
                   key={achievement.id}
-                  className={`flex items-center justify-between gap-2 rounded-md border px-2 py-1.5 ${achievement.unlocked ? RARITY_CLASS[achievement.rarity] : 'border-white/10 bg-white/[0.02] text-white/35'}`}
+                  className={`flex items-center justify-between gap-2 rounded-[6px] border px-2 py-1.5 ${achievement.unlocked ? RARITY_CLASS[achievement.rarity] : 'border-[#18181b] bg-[#0c0c0c] text-zinc-500'}`}
                   title={achievement.description}
                 >
                   <span className="truncate text-[11px]">{achievement.title}</span>
                   {achievement.unlocked ? (
-                    <Zap size={12} />
+                    <Zap size={12} strokeWidth={1.5} />
                   ) : (
                     <span className="text-[9px] uppercase tracking-[0.12em]">{copy.locked}</span>
                   )}

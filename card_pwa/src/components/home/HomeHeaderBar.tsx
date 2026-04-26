@@ -58,7 +58,7 @@ export function HomeHeaderBar({
   return (
     <div className={UI_TOKENS.header.row}>
       <div className={UI_TOKENS.header.brand}>
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-black/70 p-1.5 sm:h-10 sm:w-10 sm:rounded-md">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-1.5 shadow-card sm:h-10 sm:w-10">
           <img src={PWA_Logo} alt={APP_NAME} className="h-full w-full object-contain" />
         </div>
         <div className="min-w-0">
@@ -84,7 +84,7 @@ export function HomeHeaderBar({
           title={t.settings}
           aria-label={t.settings}
         >
-          <SettingsIcon size={16} />
+          <SettingsIcon size={16} strokeWidth={1.5} />
         </button>
         <button
           ref={mobileMenuAnchorRef}
@@ -103,7 +103,7 @@ export function HomeHeaderBar({
           aria-label={language === 'de' ? 'Weitere Aktionen' : 'More actions'}
           title={language === 'de' ? 'Weitere Aktionen' : 'More actions'}
         >
-          <Menu size={16} />
+          <Menu size={16} strokeWidth={1.5} />
         </button>
 
         {showMobileMenu && mobileMenuFloatingStyle && createPortal(
@@ -113,7 +113,7 @@ export function HomeHeaderBar({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.97 }}
             transition={{ duration: 0.12 }}
-            className="fixed z-[1300] overflow-y-auto rounded-2xl border border-white/15 bg-zinc-950/98 py-1 shadow-[0_18px_56px_rgba(0,0,0,0.72)] backdrop-blur-xl"
+            className="fixed z-[1300] ds-menu overflow-y-auto py-1"
             style={mobileMenuFloatingStyle}
             role="menu"
           >
@@ -128,13 +128,13 @@ export function HomeHeaderBar({
                   onInstall()
                 }}
                 disabled={isInstalling}
-                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white/82 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-70"
+                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white/82 transition hover:bg-[#111] hover:text-white disabled:opacity-70"
                 role="menuitem"
               >
                 {isInstalling ? (
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                 ) : (
-                  <Download size={14} />
+                  <Download size={14} strokeWidth={1.5} />
                 )}
                 <span>{t.install}</span>
               </button>
@@ -146,10 +146,10 @@ export function HomeHeaderBar({
                   setShowMobileMenu(false)
                   onRequestNotificationPermission()
                 }}
-                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white/82 transition hover:bg-white/[0.08] hover:text-white"
+                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white/82 transition hover:bg-[#111] hover:text-white"
                 role="menuitem"
               >
-                <Bell size={14} />
+                <Bell size={14} strokeWidth={1.5} />
                 <span>{language === 'de' ? 'Benachrichtigungen erlauben' : 'Enable notifications'}</span>
               </button>
             )}
@@ -159,10 +159,10 @@ export function HomeHeaderBar({
                 setShowMobileMenu(false)
                 onShowFaq()
               }}
-              className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white/82 transition hover:bg-white/[0.08] hover:text-white"
+              className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white/82 transition hover:bg-[#111] hover:text-white"
               role="menuitem"
             >
-              <HelpCircle size={14} />
+              <HelpCircle size={14} strokeWidth={1.5} />
               <span>{t.faq}</span>
             </button>
           </motion.div>,
@@ -184,7 +184,7 @@ export function HomeHeaderBar({
             {isInstalling ? (
               <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
-              <Download size={14} />
+              <Download size={14} strokeWidth={1.5} />
             )}
             <span className="text-sm hidden sm:inline">{t.install}</span>
             <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-amber-400 sm:static sm:h-2 sm:w-2" aria-hidden="true" />
@@ -219,7 +219,7 @@ export function HomeHeaderBar({
               ? `${t.stats_storage_used}: ${(storageUsedBytes / 1024 / 1024).toFixed(1)} MB / ${(storageQuotaBytes / 1024 / 1024).toFixed(1)} MB`
               : t.stats_storage_unavailable}
           >
-            <HardDrive size={13} className="text-white/50" />
+            <HardDrive size={13} strokeWidth={1.5} className="text-white/50" />
             <span className="hidden md:inline text-[10px] font-mono uppercase tracking-wider text-white/50">
               {storageUsedBytes !== null && storageQuotaBytes > 0
                 ? `${Math.round((storageUsedBytes / storageQuotaBytes) * 100)}%`
@@ -240,7 +240,7 @@ export function HomeHeaderBar({
             title={language === 'de' ? 'Benachrichtigungen erlauben' : 'Enable notifications'}
             aria-label={language === 'de' ? 'Benachrichtigungen erlauben' : 'Enable notifications'}
           >
-            <Bell size={14} />
+            <Bell size={14} strokeWidth={1.5} />
             <span className="text-sm hidden sm:inline">
               {language === 'de' ? 'Hinweise' : 'Alerts'}
             </span>
@@ -253,7 +253,7 @@ export function HomeHeaderBar({
           title={t.settings}
           aria-label={t.settings}
         >
-          <SettingsIcon size={14} />
+          <SettingsIcon size={14} strokeWidth={1.5} />
           <span className="text-sm hidden sm:inline">{t.settings}</span>
         </button>
 
@@ -263,7 +263,7 @@ export function HomeHeaderBar({
           title={t.faq}
           aria-label={t.faq}
         >
-          <HelpCircle size={14} />
+          <HelpCircle size={14} strokeWidth={1.5} />
           <span className="text-sm hidden sm:inline">{t.faq}</span>
         </button>
       </div>
