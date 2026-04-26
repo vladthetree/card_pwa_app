@@ -165,7 +165,7 @@ export function HomeDeckToolbar({
           {t.decks_title}
         </h2>
 
-        <label className="relative flex h-11 min-w-0 flex-[1_0_100%] items-center rounded-[12px] border border-[#18181b] bg-[#0c0c0c] pl-3 pr-2 text-xs text-white/85 sm:h-8 sm:flex-[0_1_16rem] sm:pl-2">
+        <label className="relative flex h-11 min-w-0 flex-[1_0_100%] items-center rounded-[12px] border border-[#18181b] bg-[#0c0c0c] pl-3 pr-2 text-xs text-white/85 transition-colors focus-within:border-[rgba(249,115,22,0.5)] sm:h-8 sm:flex-[0_1_16rem] sm:pl-2">
           <Search size={13} strokeWidth={1.5} className="pointer-events-none mr-1.5 text-white/45" />
           <input
             type="search"

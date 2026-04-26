@@ -965,10 +965,10 @@ export default function StudyView({ deck, onExit }: Props) {
             {currentCard && (
               <motion.div
                 key={currentCard.id}
-                initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: 14 }}
-                animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, x: 0 }}
-                exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -12 }}
-                transition={{ duration: prefersReducedMotion ? 0.12 : 0.16, ease: 'easeOut' }}
+                initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 22, scale: 0.96 }}
+                animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+                exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -14, scale: 0.97 }}
+                transition={{ duration: prefersReducedMotion ? 0.12 : 0.22, ease: [0.22, 1, 0.36, 1] }}
                 className={`w-full ${isHandsetLayout ? 'flex h-full min-h-0 flex-col' : ''}`}
                 style={isHandsetLayout ? { maxHeight: '100%' } : undefined}
               >

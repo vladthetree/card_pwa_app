@@ -112,6 +112,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   const [flipInActive, setFlipInActive] = useState(false)
   const [shakeActive, setShakeActive] = useState(false)
   const [wrongFlashActive, setWrongFlashActive] = useState(false)
+  const [correctGlowActive, setCorrectGlowActive] = useState(false)
   const flipT1 = useRef<ReturnType<typeof setTimeout> | null>(null)
   const flipT2 = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingAutoFlipRef = useRef(false)
@@ -165,6 +166,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
     setFlipInActive(false)
     setShakeActive(false)
     setWrongFlashActive(false)
+    setCorrectGlowActive(false)
     prevFlippedRef.current = false
   }, [card.id, card.front])
 
@@ -197,6 +199,9 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
         const t2 = setTimeout(() => setShakeActive(false), 400)
         const t3 = setTimeout(() => setWrongFlashActive(false), 520)
         return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
+      }
+      if (selectedAnswer !== null && correctKeys.includes(selectedAnswer)) {
+        setCorrectGlowActive(true)
       }
       return () => clearTimeout(t1)
     }
@@ -239,7 +244,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
     : 'border-[#18181b]'
   const cardShellClass = `border ${flipped ? answerTone : 'border-[#18181b]'} flex flex-col overflow-hidden rounded-[12px] bg-[#0c0c0c] shadow-card transition-all duration-300 ease-out ${
     compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[420px] md:min-h-[500px]'
-  }`
+  }${flipped && correctGlowActive ? ' study-glow-success' : ''}`
   const bodyClass = compact
     ? 'min-h-0 flex-1 overflow-y-auto px-[14px] py-[16px] no-scrollbar'
     : 'flex-1 overflow-y-auto no-scrollbar px-6 py-6 md:px-8 md:py-8'
@@ -256,9 +261,9 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
         <motion.div
           className={`relative w-full ${compact ? 'h-full' : ''}`}
           style={{ transform: 'translateZ(0)', willChange: 'transform' }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
+          initial={{ opacity: 0, scale: 0.97 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', stiffness: 360, damping: 28, mass: 0.85 }}
         >
           {/* ── FRONT ───────────────────────────────────────────────────── */}
           {!flipped && (
@@ -403,7 +408,6 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                 <div
                   data-study-scroll="allow"
                   className={`${bodyClass} flex flex-col overscroll-y-contain`}
-                  style={{ WebkitOverflowScrolling: 'touch' }}
                 >
                   {correctKeys.length > 0 && hasAnswered && (
                     <div className={`mb-3 flex items-center gap-2 rounded-[12px] border px-3 py-2 ${
