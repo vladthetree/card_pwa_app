@@ -127,6 +127,120 @@ export async function getDeckTagIndex(deckIds: string[]): Promise<Record<string,
   )
 }
 
+export interface DeckHomeMetadata {
+  deckScheduleOverview: Record<string, DeckScheduleOverview>
+  deckTagIndex: Record<string, string[]>
+}
+
+export async function getDeckHomeMetadata(
+  deckIds: string[],
+  dailyCardLimit: number,
+  nextDayStartsAt = 0,
+): Promise<DeckHomeMetadata> {
+  if (deckIds.length === 0) {
+    return {
+      deckScheduleOverview: {},
+      deckTagIndex: {},
+    }
+  }
+
+  const dayMs = 86_400_000
+  const todayStartMs = getDayStartMs(Date.now(), nextDayStartsAt)
+  const tomorrowStartMs = todayStartMs + dayMs
+  const dayAfterTomorrowStartMs = tomorrowStartMs + dayMs
+  const normalizedDailyLimit = Number.isFinite(dailyCardLimit)
+    ? Math.max(1, Math.floor(dailyCardLimit))
+    : 50
+
+  const deckScheduleOverview: Record<string, DeckScheduleOverview> = Object.fromEntries(
+    deckIds.map(deckId => [
+      deckId,
+      {
+        today: { total: 0, new: 0, review: 0 },
+        tomorrow: { total: 0, new: 0, review: 0 },
+      } satisfies DeckScheduleOverview,
+    ])
+  )
+  const tagsByDeck = new Map<string, Set<string>>()
+  const newByDeck: Record<string, number> = Object.fromEntries(deckIds.map(deckId => [deckId, 0]))
+
+  for (const deckId of deckIds) {
+    tagsByDeck.set(deckId, new Set<string>())
+  }
+
+  const rows = (await db.cards.where('deckId').anyOf(deckIds).toArray()).filter(r => !r.isDeleted)
+
+  for (const row of rows) {
+    const tagBucket = tagsByDeck.get(row.deckId)
+    if (tagBucket) {
+      for (const tag of row.tags) {
+        const normalized = tag.trim().toLowerCase()
+        if (normalized) tagBucket.add(normalized)
+      }
+    }
+
+    const deckSchedule = deckScheduleOverview[row.deckId]
+    if (!deckSchedule) continue
+
+    if (row.type === SM2.CARD_TYPE_NEW) {
+      newByDeck[row.deckId] += 1
+      continue
+    }
+
+    const dueAtMs = Number.isFinite(row.dueAt)
+      ? Math.round(row.dueAt as number)
+      : Math.max(0, Math.floor(row.due)) * dayMs
+    const isLearningQueue = row.type === SM2.CARD_TYPE_LEARNING || row.type === SM2.CARD_TYPE_RELEARNING
+
+    if (isLearningQueue) {
+      if (dueAtMs < tomorrowStartMs) {
+        deckSchedule.today.review += 1
+      } else if (dueAtMs >= tomorrowStartMs && dueAtMs < dayAfterTomorrowStartMs) {
+        deckSchedule.tomorrow.review += 1
+      }
+      continue
+    }
+
+    if (row.type === SM2.CARD_TYPE_REVIEW) {
+      if (dueAtMs < tomorrowStartMs) {
+        deckSchedule.today.review += 1
+      } else if (dueAtMs >= tomorrowStartMs && dueAtMs < dayAfterTomorrowStartMs) {
+        deckSchedule.tomorrow.review += 1
+      }
+    }
+  }
+
+  for (const deckId of deckIds) {
+    const schedule = deckScheduleOverview[deckId]
+    const newCards = newByDeck[deckId] ?? 0
+    const cappedTodayReview = Math.min(schedule.today.review, normalizedDailyLimit)
+    const cappedTomorrowReview = Math.min(schedule.tomorrow.review, normalizedDailyLimit)
+
+    const todayNewCapacity = Math.max(0, normalizedDailyLimit - cappedTodayReview)
+    const todayNew = Math.min(newCards, todayNewCapacity)
+
+    const remainingNewAfterToday = Math.max(0, newCards - todayNew)
+    const tomorrowNewCapacity = Math.max(0, normalizedDailyLimit - cappedTomorrowReview)
+    const tomorrowNew = Math.min(remainingNewAfterToday, tomorrowNewCapacity)
+
+    schedule.today.review = cappedTodayReview
+    schedule.tomorrow.review = cappedTomorrowReview
+    schedule.today.new = todayNew
+    schedule.tomorrow.new = tomorrowNew
+    schedule.today.total = schedule.today.review + schedule.today.new
+    schedule.tomorrow.total = schedule.tomorrow.review + schedule.tomorrow.new
+  }
+
+  const deckTagIndex = Object.fromEntries(
+    deckIds.map(deckId => [deckId, Array.from(tagsByDeck.get(deckId) ?? []).sort()]),
+  )
+
+  return {
+    deckScheduleOverview,
+    deckTagIndex,
+  }
+}
+
 export async function fetchDeckStudyCandidates(deckId: string, nextDayStartsAt = 0): Promise<Card[]> {
   const todayStartMs = getDayStartMs(Date.now(), nextDayStartsAt)
   const tomorrowStartMs = todayStartMs + 86_400_000

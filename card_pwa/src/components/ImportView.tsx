@@ -2,9 +2,6 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Upload, AlertCircle, CheckCircle, Loader2, X } from 'lucide-react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
-import { parseApkg } from '../utils/import/apkgImporter'
-import { parseCsv } from '../utils/import/csvImporter'
-import { buildImportPlan, executeImportWithProgress } from '../utils/import/importPipeline'
 import DuplicateReviewModal from './DuplicateReviewModal'
 import type { ImportPlan, ParsedImport } from '../utils/import/types'
 import { UI_TOKENS } from '../constants/ui'
@@ -16,6 +13,10 @@ const MAX_IMPORT_SIZE_BYTES = 100 * 1024 * 1024
 
 function getFileExt(name: string): string {
   return name.split('.').pop()?.toLowerCase() ?? ''
+}
+
+function loadImportPipeline() {
+  return import('../utils/import/importPipeline')
 }
 
 type ImportStatus =
@@ -73,6 +74,7 @@ export default function ImportView({ isOpen, onClose }: Props) {
     async (resolvedPlan: ImportPlan) => {
       setStatus({ phase: 'importing', stage: 'decks', done: 0, total: resolvedPlan.newDecks.length })
       try {
+        const { executeImportWithProgress } = await loadImportPipeline()
         const result = await executeImportWithProgress(resolvedPlan, progress => {
           setStatus({ phase: 'importing', stage: progress.stage, done: progress.done, total: progress.total })
         })
@@ -98,12 +100,15 @@ export default function ImportView({ isOpen, onClose }: Props) {
       setStatus({ phase: 'parsing', fileName: file.name, step: 'parsing' })
       let parsed: ParsedImport
       if (ext === 'apkg' || ext === 'colpkg') {
+        const { parseApkg } = await import('../utils/import/apkgImporter')
         parsed = await parseApkg(file, settings.language, settings.algorithm)
       } else {
+        const { parseCsv } = await import('../utils/import/csvImporter')
         parsed = await parseCsv(file, settings.language, settings.algorithm)
       }
 
       setStatus({ phase: 'parsing', fileName: file.name, step: 'planning', done: 0, total: parsed.cards.length })
+      const { buildImportPlan, executeImportWithProgress } = await loadImportPipeline()
       const plan = await buildImportPlan(parsed, progress => {
         setStatus({ phase: 'parsing', fileName: file.name, step: 'planning', done: progress.done, total: progress.total })
       })

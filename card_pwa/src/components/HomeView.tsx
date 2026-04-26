@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { lazy, Suspense, useMemo } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import { useDecks, useGamificationProfile, useShuffleCollections, useStats } from '../hooks/useCardDb'
@@ -8,28 +8,29 @@ import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import type { Deck, ShuffleCollection } from '../types'
 import { UI_TOKENS } from '../constants/ui'
 import { formatBuildVersionTitle, formatServiceWorkerVersionLabel } from '../utils/buildInfo'
-import CreateCardModal from './CreateCardModal.tsx'
-import SettingsModal from './SettingsModal.tsx'
-import FaqModal from './FaqModal.tsx'
-import FutureForecastModal from './FutureForecastModal.tsx'
-import ImportView from './ImportView.tsx'
-import ConfirmModal from './ConfirmModal.tsx'
-import InstallHintModal from './InstallHintModal.tsx'
-import { DeckMetricsModal } from './DeckMetricsModal'
-import { ShuffleMetricsModal } from './ShuffleMetricsModal'
 import { HomeHeaderBar } from './home/HomeHeaderBar'
 import { HomeStatsSection } from './home/HomeStatsSection'
 import { HomeDeckToolbar } from './home/HomeDeckToolbar'
 import { HomeDeckListSection } from './home/HomeDeckListSection'
-import { HomeCreateDeckModal } from './home/HomeCreateDeckModal'
-import { HomeExportModal } from './home/HomeExportModal'
-import { HomeDeckCardsModal } from './home/HomeDeckCardsModal'
-import { HomeShuffleCollectionModal } from './home/HomeShuffleCollectionModal'
 import { HomeShuffleSection } from './home/HomeShuffleSection'
 import { useHomeDeckFilters } from '../hooks/home/useHomeDeckFilters'
 import { useHomeStorageEstimate } from '../hooks/home/useHomeStorageEstimate'
 import { useHomeDerivedData } from '../hooks/home/useHomeDerivedData'
 import { useHomeViewController } from '../hooks/home/useHomeViewController'
+
+const CreateCardModal = lazy(() => import('./CreateCardModal.tsx'))
+const SettingsModal = lazy(() => import('./SettingsModal.tsx'))
+const FaqModal = lazy(() => import('./FaqModal.tsx'))
+const FutureForecastModal = lazy(() => import('./FutureForecastModal.tsx'))
+const ImportView = lazy(() => import('./ImportView.tsx'))
+const ConfirmModal = lazy(() => import('./ConfirmModal.tsx'))
+const InstallHintModal = lazy(() => import('./InstallHintModal.tsx'))
+const DeckMetricsModal = lazy(() => import('./DeckMetricsModal').then(module => ({ default: module.DeckMetricsModal })))
+const ShuffleMetricsModal = lazy(() => import('./ShuffleMetricsModal').then(module => ({ default: module.ShuffleMetricsModal })))
+const HomeCreateDeckModal = lazy(() => import('./home/HomeCreateDeckModal').then(module => ({ default: module.HomeCreateDeckModal })))
+const HomeExportModal = lazy(() => import('./home/HomeExportModal').then(module => ({ default: module.HomeExportModal })))
+const HomeDeckCardsModal = lazy(() => import('./home/HomeDeckCardsModal').then(module => ({ default: module.HomeDeckCardsModal })))
+const HomeShuffleCollectionModal = lazy(() => import('./home/HomeShuffleCollectionModal').then(module => ({ default: module.HomeShuffleCollectionModal })))
 
 interface Props {
   mode?: 'default' | 'shuffle-manage'
@@ -144,8 +145,6 @@ export default function HomeView({
               language={settings.language}
               mode={controller.dashboardMode}
               stats={stats}
-              gameOfLifeViewMode={settings.gameOfLifeViewMode}
-              gameOfLifeAnimationSpeed={settings.gameOfLifeAnimationSpeed}
               gamificationProfile={gamificationProfile}
               onOpenFutureForecast={controller.openFutureForecast}
             />
@@ -280,112 +279,126 @@ export default function HomeView({
         </div>
       )}
 
-      <AnimatePresence initial={false}>
-        <FutureForecastModal
-          isOpen={controller.showFutureForecast}
-          language={settings.language}
-          loading={derivedData.futureForecastLoading}
-          forecast={derivedData.futureForecast}
-          onClose={controller.closeFutureForecast}
-        />
+      <Suspense fallback={null}>
+        <AnimatePresence initial={false}>
+          {controller.showFutureForecast && (
+            <FutureForecastModal
+              isOpen
+              language={settings.language}
+              loading={derivedData.futureForecastLoading}
+              forecast={derivedData.futureForecast}
+              onClose={controller.closeFutureForecast}
+            />
+          )}
 
-        {controller.cardsDeck && (
-          <HomeDeckCardsModal
-            deck={controller.cardsDeck}
-            language={settings.language}
-            onClose={controller.closeCardsDeck}
+          {controller.cardsDeck && (
+            <HomeDeckCardsModal
+              deck={controller.cardsDeck}
+              language={settings.language}
+              onClose={controller.closeCardsDeck}
+            />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {controller.metricsDeck && (
+            <DeckMetricsModal
+              deck={controller.metricsDeck}
+              language={settings.language}
+              onClose={controller.closeMetricsDeck}
+            />
+          )}
+          {controller.metricsShuffleCollection && (
+            <ShuffleMetricsModal
+              collection={controller.metricsShuffleCollection}
+              decks={decks}
+              language={settings.language}
+              onClose={controller.closeMetricsShuffleCollection}
+            />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence initial={false}>
+          {controller.showInstallHintModal && (
+            <InstallHintModal
+              isOpen
+              title={t.install}
+              subtitle={t.install_question}
+              hintText={isIos ? t.install_manual_hint_ios : t.install_manual_hint}
+              closeLabel={t.close}
+              onClose={controller.closeInstallHintModal}
+            />
+          )}
+
+          {controller.showCreateDeckModal && (
+            <HomeCreateDeckModal
+              isOpen
+              t={t}
+              prefersReducedMotion={prefersReducedMotion}
+              newDeckName={controller.newDeckName}
+              createDeckError={controller.createDeckError}
+              isCreatingDeck={controller.isCreatingDeck}
+              onClose={controller.closeCreateDeckModal}
+              onNewDeckNameChange={controller.setNewDeckName}
+              onSubmit={() => { void controller.handleCreateDeck() }}
+            />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence initial={false}>
+          {controller.showExportModal && (
+            <HomeExportModal
+              isOpen
+              t={t}
+              prefersReducedMotion={prefersReducedMotion}
+              selectedDeckId={controller.selectedDeckId}
+              deckOptions={derivedData.deckOptions}
+              isExporting={controller.isExporting}
+              onClose={controller.closeExport}
+              onSelectedDeckIdChange={controller.setSelectedDeckId}
+              onExportTxt={() => { void controller.handleExportTxt() }}
+              onExportCsv={() => { void controller.handleExportCsv() }}
+            />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence initial={false}>
+          {controller.showShuffleCollectionModal && (
+            <HomeShuffleCollectionModal
+              isOpen
+              language={settings.language}
+              prefersReducedMotion={prefersReducedMotion}
+              decks={decks}
+              syncedDeckIds={derivedData.syncedDeckIds}
+              studyCardLimit={settings.studyCardLimit}
+              nextDayStartsAt={settings.nextDayStartsAt}
+              linkedUserId={profile?.mode === 'linked' ? profile.userId : undefined}
+              collection={controller.editingShuffleCollection}
+              onClose={controller.closeShuffleCollectionModal}
+              onSaved={() => {
+                void reload()
+              }}
+            />
+          )}
+        </AnimatePresence>
+
+        {controller.showCreateCard && <CreateCardModal onClose={controller.closeCreateCard} />}
+        {controller.showSettings && <SettingsModal isOpen onClose={controller.closeSettings} />}
+        {controller.showFaq && <FaqModal isOpen onClose={controller.closeFaq} />}
+        {controller.showImport && <ImportView isOpen onClose={controller.closeImport} />}
+
+        {controller.confirmModal !== null && (
+          <ConfirmModal
+            isOpen
+            title={controller.confirmModal.title}
+            message={controller.confirmModal.message}
+            confirmLabel={controller.confirmModal.confirmLabel}
+            variant={controller.confirmModal.variant}
+            onConfirm={controller.confirmAction}
+            onCancel={controller.cancelConfirmModal}
           />
         )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {controller.metricsDeck && (
-          <DeckMetricsModal
-            deck={controller.metricsDeck}
-            language={settings.language}
-            onClose={controller.closeMetricsDeck}
-          />
-        )}
-        {controller.metricsShuffleCollection && (
-          <ShuffleMetricsModal
-            collection={controller.metricsShuffleCollection}
-            decks={decks}
-            language={settings.language}
-            onClose={controller.closeMetricsShuffleCollection}
-          />
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence initial={false}>
-        <InstallHintModal
-          isOpen={controller.showInstallHintModal}
-          title={t.install}
-          subtitle={t.install_question}
-          hintText={isIos ? t.install_manual_hint_ios : t.install_manual_hint}
-          closeLabel={t.close}
-          onClose={controller.closeInstallHintModal}
-        />
-
-        <HomeCreateDeckModal
-          isOpen={controller.showCreateDeckModal}
-          t={t}
-          prefersReducedMotion={prefersReducedMotion}
-          newDeckName={controller.newDeckName}
-          createDeckError={controller.createDeckError}
-          isCreatingDeck={controller.isCreatingDeck}
-          onClose={controller.closeCreateDeckModal}
-          onNewDeckNameChange={controller.setNewDeckName}
-          onSubmit={() => { void controller.handleCreateDeck() }}
-        />
-      </AnimatePresence>
-
-      <AnimatePresence initial={false}>
-        <HomeExportModal
-          isOpen={controller.showExportModal}
-          t={t}
-          prefersReducedMotion={prefersReducedMotion}
-          selectedDeckId={controller.selectedDeckId}
-          deckOptions={derivedData.deckOptions}
-          isExporting={controller.isExporting}
-          onClose={controller.closeExport}
-          onSelectedDeckIdChange={controller.setSelectedDeckId}
-          onExportTxt={() => { void controller.handleExportTxt() }}
-          onExportCsv={() => { void controller.handleExportCsv() }}
-        />
-      </AnimatePresence>
-
-      <AnimatePresence initial={false}>
-        <HomeShuffleCollectionModal
-          isOpen={controller.showShuffleCollectionModal}
-          language={settings.language}
-          prefersReducedMotion={prefersReducedMotion}
-          decks={decks}
-          syncedDeckIds={derivedData.syncedDeckIds}
-          studyCardLimit={settings.studyCardLimit}
-          nextDayStartsAt={settings.nextDayStartsAt}
-          linkedUserId={profile?.mode === 'linked' ? profile.userId : undefined}
-          collection={controller.editingShuffleCollection}
-          onClose={controller.closeShuffleCollectionModal}
-          onSaved={() => {
-            void reload()
-          }}
-        />
-      </AnimatePresence>
-
-      {controller.showCreateCard && <CreateCardModal onClose={controller.closeCreateCard} />}
-      <SettingsModal isOpen={controller.showSettings} onClose={controller.closeSettings} />
-      <FaqModal isOpen={controller.showFaq} onClose={controller.closeFaq} />
-      <ImportView isOpen={controller.showImport} onClose={controller.closeImport} />
-
-      <ConfirmModal
-        isOpen={controller.confirmModal !== null}
-        title={controller.confirmModal?.title ?? ''}
-        message={controller.confirmModal?.message ?? ''}
-        confirmLabel={controller.confirmModal?.confirmLabel}
-        variant={controller.confirmModal?.variant}
-        onConfirm={controller.confirmAction}
-        onCancel={controller.cancelConfirmModal}
-      />
+      </Suspense>
     </div>
   )
 }

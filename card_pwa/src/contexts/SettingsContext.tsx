@@ -14,7 +14,6 @@ import type { ProfileRecord } from '../db'
 export type Language = 'de' | 'en'
 export type Algorithm = 'sm2' | 'fsrs'
 export type FontFamily = 'industrial' | 'modern'
-export type GameOfLifeViewMode = '2d' | '3d'
 export type QuestionTextSize = 'default' | 'large' | 'xlarge' | 'xxlarge' | 'xxxlarge'
 export type NotificationChannelKey = 'dailyReminder' | 'kpiAlert' | 'serverStatus' | 'pushGeneral' | 'pushTest'
 
@@ -38,8 +37,6 @@ interface Settings {
   studyCardLimit: number
   shuffleModeEnabled: boolean
   fontFamily: FontFamily
-  gameOfLifeViewMode: GameOfLifeViewMode
-  gameOfLifeAnimationSpeed: number
   questionTextSize: QuestionTextSize
   notificationsEnabled: boolean
   notificationChannels: NotificationChannels
@@ -62,8 +59,6 @@ interface SettingsContextType {
   setLanguage: (lang: Language) => void
   setAlgorithm: (algo: Algorithm) => void
   setFontFamily: (fontFamily: FontFamily) => void
-  setGameOfLifeViewMode: (mode: GameOfLifeViewMode) => void
-  setGameOfLifeAnimationSpeed: (speed: number) => void
   setQuestionTextSize: (size: QuestionTextSize) => void
   setNotificationsEnabled: (enabled: boolean) => void
   setNotificationChannelEnabled: (channel: NotificationChannelKey, enabled: boolean) => void
@@ -89,8 +84,6 @@ const STORAGE_KEY = STORAGE_KEYS.settings
 const MIN_STUDY_CARD_LIMIT = 10
 const MAX_STUDY_CARD_LIMIT = 200
 const STUDY_CARD_LIMIT_STEP = 10
-const MIN_GOL_ANIMATION_SPEED = 50
-const MAX_GOL_ANIMATION_SPEED = 150
 
 const DEFAULT_NOTIFICATION_CHANNELS: NotificationChannels = {
   dailyReminder: {
@@ -155,13 +148,6 @@ function normalizeStudyCardLimit(value: unknown): number {
   return Math.max(MIN_STUDY_CARD_LIMIT, Math.min(MAX_STUDY_CARD_LIMIT, rounded))
 }
 
-function normalizeGameOfLifeAnimationSpeed(value: unknown): number {
-  const parsed = Number(value)
-  if (!Number.isFinite(parsed)) return 100
-  const rounded = Math.round(parsed)
-  return Math.max(MIN_GOL_ANIMATION_SPEED, Math.min(MAX_GOL_ANIMATION_SPEED, rounded))
-}
-
 const DEFAULT_SETTINGS: Settings = {
   language: 'de',
   algorithm: 'fsrs',
@@ -169,8 +155,6 @@ const DEFAULT_SETTINGS: Settings = {
   studyCardLimit: 50,
   shuffleModeEnabled: true,
   fontFamily: 'industrial',
-  gameOfLifeViewMode: '3d',
-  gameOfLifeAnimationSpeed: 100,
   questionTextSize: 'default',
   notificationsEnabled: true,
   notificationChannels: DEFAULT_NOTIFICATION_CHANNELS,
@@ -202,8 +186,6 @@ function normalizeSettings(input: Partial<Settings> | undefined): Settings {
     studyCardLimit: normalizeStudyCardLimit(input?.studyCardLimit),
     shuffleModeEnabled: input?.shuffleModeEnabled !== false,
     fontFamily: input?.fontFamily === 'modern' ? input.fontFamily : 'industrial',
-    gameOfLifeViewMode: input?.gameOfLifeViewMode === '2d' ? '2d' : '3d',
-    gameOfLifeAnimationSpeed: normalizeGameOfLifeAnimationSpeed(input?.gameOfLifeAnimationSpeed),
     questionTextSize:
       input?.questionTextSize === 'large'
       || input?.questionTextSize === 'xlarge'
@@ -233,6 +215,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
       const existing = raw ? JSON.parse(raw) as Record<string, unknown> : {}
+      delete existing.gameOfLifeViewMode
+      delete existing.gameOfLifeAnimationSpeed
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...existing, ...next }))
     } catch {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
@@ -303,14 +287,6 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   const setFontFamily = (fontFamily: FontFamily) => {
     saveSettings({ ...settings, fontFamily })
-  }
-
-  const setGameOfLifeViewMode = (gameOfLifeViewMode: GameOfLifeViewMode) => {
-    saveSettings({ ...settings, gameOfLifeViewMode })
-  }
-
-  const setGameOfLifeAnimationSpeed = (gameOfLifeAnimationSpeed: number) => {
-    saveSettings({ ...settings, gameOfLifeAnimationSpeed: normalizeGameOfLifeAnimationSpeed(gameOfLifeAnimationSpeed) })
   }
 
   const setQuestionTextSize = (questionTextSize: QuestionTextSize) => {
@@ -445,8 +421,6 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setLanguage,
         setAlgorithm,
         setFontFamily,
-        setGameOfLifeViewMode,
-        setGameOfLifeAnimationSpeed,
         setQuestionTextSize,
         setNotificationsEnabled,
         setNotificationChannelEnabled,

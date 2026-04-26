@@ -1,11 +1,10 @@
 import { motion } from 'framer-motion'
 import ReviewHeatmap from '../ReviewHeatmap.tsx'
 import { StatPill } from '../StatPill'
-import { GameOfLife } from './GameOfLife'
 import { GamificationPanel } from './GamificationPanel'
 import type { GamificationProfile } from '../../types'
 
-export type HomeDashboardMode = 'kpi' | 'heatmap' | 'life' | 'pilot'
+export type HomeDashboardMode = 'kpi' | 'heatmap' | 'pilot'
 
 interface Props {
   t: Record<string, string>
@@ -15,11 +14,7 @@ interface Props {
     total: number
     nowDue: number
     overdueGt2Days: number
-    reviewedToday: number
-    successfulToday: number
   } | null
-  gameOfLifeViewMode: '2d' | '3d'
-  gameOfLifeAnimationSpeed: number
   gamificationProfile: GamificationProfile | null
   onOpenFutureForecast: () => void
 }
@@ -29,8 +24,6 @@ export function HomeStatsSection({
   language,
   mode,
   stats,
-  gameOfLifeViewMode,
-  gameOfLifeAnimationSpeed,
   gamificationProfile,
   onOpenFutureForecast,
 }: Props) {
@@ -54,22 +47,6 @@ export function HomeStatsSection({
         <div className="relative z-20 w-full pb-1">
           <GamificationPanel language={language} profile={gamificationProfile} />
         </div>
-      )}
-
-      {mode === 'life' && stats && (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-          className="relative z-20 h-[clamp(11rem,68vw,21rem)] w-full overflow-hidden rounded-2xl bg-black sm:h-[clamp(12rem,46vw,23rem)] md:h-[clamp(13rem,34vw,24rem)]"
-        >
-          <GameOfLife
-            reviewedToday={stats.reviewedToday}
-            correctToday={stats.successfulToday}
-            viewMode={gameOfLifeViewMode}
-            animationSpeed={gameOfLifeAnimationSpeed}
-          />
-        </motion.div>
       )}
 
       {mode === 'heatmap' && (

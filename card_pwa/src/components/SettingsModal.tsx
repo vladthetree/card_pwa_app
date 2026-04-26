@@ -14,7 +14,6 @@ import {
   useSettings,
   STRINGS,
   type FontFamily,
-  type GameOfLifeViewMode,
   type NotificationChannelKey,
   FONT_FAMILY_OPTIONS,
 } from '../contexts/SettingsContext'
@@ -71,8 +70,6 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     setLanguage,
     setAlgorithm,
     setFontFamily,
-    setGameOfLifeViewMode,
-    setGameOfLifeAnimationSpeed,
     setNotificationsEnabled,
     setNotificationChannelEnabled,
     setNotificationChannelTemplate,
@@ -122,19 +119,6 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
       label: t.font_family_modern,
       description: t.font_family_modern_help,
       preview: 'Signal Flow 204',
-    },
-  ]
-
-  const gameOfLifeViewOptions: Array<{ key: GameOfLifeViewMode; label: string; description: string }> = [
-    {
-      key: '3d',
-      label: settings.language === 'de' ? '3D' : '3D',
-      description: settings.language === 'de' ? 'Isometrische 3D-Wuerfelansicht.' : 'Isometric 3D cube view.',
-    },
-    {
-      key: '2d',
-      label: settings.language === 'de' ? '2D' : '2D',
-      description: settings.language === 'de' ? 'Klassische 2D-Rasteransicht.' : 'Classic 2D grid view.',
     },
   ]
 
@@ -769,60 +753,6 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                           </button>
                         )
                       })}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs text-white/50 font-medium mb-2 uppercase tracking-wide">
-                      {settings.language === 'de' ? 'Game of Life Ansicht' : 'Game of Life View'}
-                    </label>
-                    <p className="text-xs text-white/40 leading-relaxed mb-3">
-                      {settings.language === 'de'
-                        ? 'Waehle, ob die Startansicht im 3D- oder 2D-Stil dargestellt wird.'
-                        : 'Choose whether the start visualization is rendered in 3D or 2D.'}
-                    </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {gameOfLifeViewOptions.map(option => {
-                        const selected = option.key === settings.gameOfLifeViewMode
-
-                        return (
-                          <button
-                            key={option.key}
-                            type="button"
-                            onClick={() => setGameOfLifeViewMode(option.key)}
-                            className={`rounded-2xl border p-3 text-left transition-all duration-300 ease-out active:scale-95 ${
-                              selected
-                                ? 'bg-white/15 border-white/35 shadow-lg shadow-black/10'
-                                : 'bg-white/5 border-white/10 hover:bg-white/10'
-                            }`}
-                          >
-                            <p className="text-sm font-black text-white">{option.label}</p>
-                            <p className="mt-1 text-xs text-white/45">{option.description}</p>
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
-
-                  <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
-                    <div className="flex items-center justify-between gap-3">
-                      <label className="text-xs text-white/70 uppercase tracking-wide">
-                        {settings.language === 'de' ? 'Animationsgeschwindigkeit' : 'Animation Speed'}
-                      </label>
-                      <span className="text-xs text-white/60 tabular-nums">{settings.gameOfLifeAnimationSpeed}%</span>
-                    </div>
-                    <input
-                      type="range"
-                      min={50}
-                      max={150}
-                      step={1}
-                      value={settings.gameOfLifeAnimationSpeed}
-                      onChange={e => setGameOfLifeAnimationSpeed(Number(e.target.value))}
-                      className="w-full accent-white"
-                    />
-                    <div className="flex items-center justify-between text-[11px] text-white/45">
-                      <span>{settings.language === 'de' ? 'Ruhig' : 'Calm'}</span>
-                      <span>{settings.language === 'de' ? 'Schnell' : 'Fast'}</span>
                     </div>
                   </div>
 
