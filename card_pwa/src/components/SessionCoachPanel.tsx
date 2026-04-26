@@ -70,7 +70,7 @@ export default function SessionCoachPanel({ language, summary, onEditCard }: Pro
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-2">
+      <div className="mt-4 grid grid-cols-4 gap-2">
         <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3 text-center">
           <div className="font-mono text-base font-bold text-white">{summary.successRate}%</div>
           <div className="mt-0.5 text-[10px] uppercase tracking-wide text-white/40">
@@ -81,6 +81,14 @@ export default function SessionCoachPanel({ language, summary, onEditCard }: Pro
           <div className="font-mono text-base font-bold text-white">{formatElapsed(summary.averageElapsedMs)}</div>
           <div className="mt-0.5 text-[10px] uppercase tracking-wide text-white/40">
             {isDE ? 'Tempo' : 'Pace'}
+          </div>
+        </div>
+        <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3 text-center">
+          <div className={`font-mono text-base font-bold ${summary.slowReviewCount > 0 ? 'text-amber-200' : 'text-white/50'}`}>
+            {summary.slowReviewCount}
+          </div>
+          <div className="mt-0.5 text-[10px] uppercase tracking-wide text-white/40">
+            {isDE ? 'Langsam' : 'Slow'}
           </div>
         </div>
         <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3 text-center">
@@ -95,7 +103,7 @@ export default function SessionCoachPanel({ language, summary, onEditCard }: Pro
 
       {summary.problemCards.length > 0 && (
         <div className="mt-4 space-y-2">
-          {summary.problemCards.slice(0, 3).map(problem => (
+          {summary.problemCards.map(problem => (
             <div key={problem.card.id} className="flex items-center gap-2 rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-3 py-2">
               <div className="min-w-0 flex-1">
                 <div className="truncate text-xs font-semibold text-white/85">
@@ -116,7 +124,7 @@ export default function SessionCoachPanel({ language, summary, onEditCard }: Pro
                   aria-label={isDE ? 'Karte bearbeiten' : 'Edit card'}
                   title={isDE ? 'Karte bearbeiten' : 'Edit card'}
                 >
-                  {isDE ? 'Edit' : 'Edit'}
+                  {isDE ? 'Bearb.' : 'Edit'}
                 </button>
               )}
             </div>
