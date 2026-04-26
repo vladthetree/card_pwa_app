@@ -18,3 +18,8 @@ logs/
 *.log
 
 public/sql-wasm.wasm
+
+!CLAUDE.md
+!scripts/
+scripts/*
+!scripts/check-safe-area-legacy.mjs

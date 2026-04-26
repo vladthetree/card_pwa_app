@@ -64,15 +64,15 @@ export const UI_TOKENS = {
   },
 
   modal: {
-    overlay:     'fixed inset-0 z-[1000] flex items-center justify-center pl-[calc(var(--safe-left)+0.75rem)] pr-[calc(var(--safe-right)+0.75rem)] sm:px-4',
+    overlay:     'fixed inset-0 z-[1000] flex items-center justify-center px-safe pt-safe-4 pb-safe-4 sm:px-4',
     backdrop:    'absolute inset-0 bg-black/[0.82] backdrop-blur-md',
-    shell:       `relative w-full max-h-[calc(100dvh_-_var(--safe-top)_-_var(--safe-bottom)_-_2rem)] rounded-[2rem] sm:rounded-[2.5rem] border border-white/15 bg-slate-950/95 backdrop-blur-xl overflow-hidden shadow-2xl shadow-black/45 ${T}`,
+    shell:       `relative w-full max-h-screen-safe rounded-[2rem] sm:rounded-[2.5rem] border border-white/15 bg-slate-950/95 backdrop-blur-xl overflow-hidden shadow-2xl shadow-black/45 ${T}`,
     header:      'sticky top-0 z-10 flex items-center justify-between px-5 py-4 border-b border-white/10 bg-black/40 backdrop-blur-xl',
     title:       'text-white font-black text-lg uppercase tracking-[0.12em]',
     subtitle:    'text-xs text-white/50 mt-0.5',
     closeButton: `p-2 rounded-xl text-white/45 hover:text-white hover:bg-white/10 ${T} active:scale-95 min-w-[44px] min-h-[44px] sm:min-w-[36px] sm:min-h-[36px] flex items-center justify-center`,
     body:        'overflow-y-auto px-4 py-4 sm:px-5 sm:py-5',
-    footer:      'sticky bottom-0 px-5 py-4 border-t border-white/10 flex gap-3 bg-black/40 backdrop-blur-xl',
+    footer:      'sticky bottom-0 px-5 py-4 pb-safe-4 border-t border-white/10 flex gap-3 bg-black/40 backdrop-blur-xl',
   },
 
   input: {

@@ -81,7 +81,7 @@ export default function OfflineStatusBanner() {
         animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
         exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
         transition={{ duration: prefersReducedMotion ? 0.18 : 0.24, ease: 'easeOut' }}
-        className={`fixed bottom-[calc(var(--safe-bottom)+5.75rem)] left-[calc(var(--safe-left)+1rem)] right-[calc(var(--safe-right)+1rem)] z-40 mx-auto flex w-auto max-w-md items-start gap-3 rounded-2xl border px-4 py-3 shadow-xl backdrop-blur-md transition-all duration-200 ease-out sm:left-auto sm:right-[calc(var(--safe-right)+1rem)] sm:mx-0 ${
+        className={`fixed bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)] left-safe-4 right-safe-4 z-40 mx-auto flex w-auto max-w-md items-start gap-3 rounded-2xl border px-4 py-3 shadow-xl backdrop-blur-md transition-all duration-200 ease-out sm:left-auto sm:right-safe-4 sm:mx-0 ${
           isOffline
             ? 'border-rose-500/25 bg-rose-950/78'
             : 'border-amber-500/25 bg-amber-950/78'

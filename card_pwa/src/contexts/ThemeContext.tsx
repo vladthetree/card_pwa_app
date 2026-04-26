@@ -171,7 +171,6 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     root.style.setProperty('--theme-text-secondary', theme.textSecondary)
     root.style.setProperty('--theme-text-muted', theme.textMuted)
     root.style.setProperty('--theme-glow', theme.glow)
-    root.style.setProperty('--theme-notch', themeColor)
 
     const themeMeta = document.querySelector('meta[name="theme-color"]')
     if (themeMeta) {

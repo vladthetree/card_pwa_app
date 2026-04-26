@@ -147,10 +147,6 @@ export default function ImportView({ isOpen, onClose }: Props) {
         {isOpen && (
           <motion.div
               className={UI_TOKENS.modal.overlay}
-              style={{
-                paddingTop: 'calc(var(--safe-top) + 1rem)',
-                paddingBottom: 'calc(var(--safe-bottom) + 1rem)',
-              }}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           >
             <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setStatus({ phase: 'idle' })} />
@@ -172,10 +168,6 @@ export default function ImportView({ isOpen, onClose }: Props) {
       {isOpen && (
         <motion.div
           className={UI_TOKENS.modal.overlay}
-          style={{
-            paddingTop: 'calc(var(--safe-top) + 1rem)',
-            paddingBottom: 'calc(var(--safe-bottom) + 1rem)',
-          }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

@@ -130,7 +130,7 @@ export function HomeDeckListSection({
   )
 
   return (
-    <div className="relative z-0 flex-1 overflow-y-auto no-scrollbar pb-[calc(var(--safe-bottom)+1rem)] pr-1">
+    <div className="relative z-0 flex-1 overflow-y-auto no-scrollbar pb-[calc(env(safe-area-inset-bottom,0px)+1rem)] pr-1">
       {error && (
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="glass border-rose-500/30 bg-rose-500/10 p-4 rounded-xl text-rose-300 text-sm mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2"><AlertCircle size={16} /><span>{error}</span></div>

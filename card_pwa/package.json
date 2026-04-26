@@ -14,7 +14,8 @@
     "prod:ufw:home": "./scripts/setup-ufw-home-only.sh",
     "preview": "vite preview",
     "test": "vitest",
-    "verify:phase5": "npm run build && npm test -- --run",
+    "check:safe-area": "node ./scripts/check-safe-area-legacy.mjs",
+    "verify:phase5": "npm run check:safe-area && npm run build && npm test -- --run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage"
   },

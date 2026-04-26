@@ -52,11 +52,7 @@ export default function ToastContainer() {
     <div
       aria-live="polite"
       aria-atomic="false"
-      className="fixed bottom-[calc(var(--safe-bottom)+1rem)] left-1/2 -translate-x-1/2 z-[200] flex w-full flex-col items-center gap-2 pointer-events-none"
-      style={{
-        paddingLeft: 'calc(var(--safe-left) + 1rem)',
-        paddingRight: 'calc(var(--safe-right) + 1rem)',
-      }}
+      className="fixed bottom-safe-4 left-1/2 -translate-x-1/2 z-[200] flex w-full flex-col items-center gap-2 px-safe-4 pointer-events-none"
     >
       <AnimatePresence mode="sync">
         {items.map(item => (

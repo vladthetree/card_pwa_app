@@ -789,8 +789,7 @@ export default function StudyView({ deck, onExit }: Props) {
     <div className={`${isHandsetLayout ? 'fixed inset-0' : 'h-[100dvh]'} flex flex-col overflow-hidden`}>
       {/* Top navigation */}
       <div
-        className="shrink-0 w-full z-20 bg-black px-4 md:px-8 pb-0 relative"
-        style={isHandsetLayout ? { paddingTop: 'calc(var(--safe-top) + 0.5rem)' } : { paddingTop: '1.25rem' }}
+        className={`shrink-0 w-full z-20 bg-black px-4 md:px-8 pb-0 relative ${isHandsetLayout ? 'pt-safe-2' : 'pt-5'}`}
       >
         {/* Mobile Header - Single horizontal row */}
         {isHandsetLayout && (
@@ -970,8 +969,7 @@ export default function StudyView({ deck, onExit }: Props) {
             : 'rgba(249,115,22,0.03)' }}
         />
         <div
-          className={`flex-1 min-h-0 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-0' : 'overflow-y-auto px-3 sm:px-4 py-4 sm:py-6'}`}
-          style={isHandsetLayout ? { paddingBottom: 'calc(var(--safe-bottom) + 0.5rem)' } : undefined}
+          className={`flex-1 min-h-0 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-safe-2' : 'overflow-y-auto px-3 sm:px-4 py-4 sm:py-6'}`}
         >
           {/* Error alert */}
           <AnimatePresence>
@@ -988,7 +986,7 @@ export default function StudyView({ deck, onExit }: Props) {
                 exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -12 }}
                 transition={{ duration: prefersReducedMotion ? 0.12 : 0.16, ease: 'easeOut' }}
                 className={`w-full ${isHandsetLayout ? 'flex h-full min-h-0 flex-col' : ''}`}
-                style={isHandsetLayout ? { maxHeight: 'calc(100% - var(--safe-bottom) - 1.35rem)' } : undefined}
+                style={isHandsetLayout ? { maxHeight: 'calc(100% - env(safe-area-inset-bottom, 0px) - 1.35rem)' } : undefined}
               >
                 <div className={`flex flex-col lg:flex-row items-start gap-6 w-full ${isHandsetLayout ? 'h-full min-h-0 flex-1' : ''}`}>
                   <div className={`flex-1 ${isHandsetLayout ? 'h-full min-h-0' : ''}`}>
@@ -1068,7 +1066,7 @@ export default function StudyView({ deck, onExit }: Props) {
                 height: isHandsetLandscape
                   ? 'clamp(8.25rem, 24dvh, 11rem)'
                   : 'clamp(11.5rem, 25dvh, 15.5rem)',
-                paddingBottom: 'calc(var(--safe-bottom) + 0.5rem)',
+                paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.5rem)',
               }}
             >
               <div className="h-full">

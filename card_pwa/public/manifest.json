@@ -14,8 +14,8 @@
   "orientation": "portrait-primary",
   "dir": "ltr",
   "lang": "de-DE",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#050505",
+  "theme_color": "#050505",
   "categories": ["productivity", "education"],
   "screenshots": [
     {

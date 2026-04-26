@@ -584,10 +584,6 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
       {isOpen && (
         <motion.div
           className={UI_TOKENS.modal.overlay}
-          style={{
-            paddingTop: 'calc(var(--safe-top) + 1rem)',
-            paddingBottom: 'calc(var(--safe-bottom) + 1rem)',
-          }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -605,9 +601,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
             transition={{ duration: prefersReducedMotion ? 0.12 : 0.2, ease: 'easeOut' }}
             className="relative w-full max-w-3xl overflow-hidden rounded-[2rem] border border-zinc-800 bg-[#050505] shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_18px_56px_-10px_rgba(0,0,0,0.72),0_42px_80px_-24px_rgba(0,0,0,0.55)] sm:rounded-[2.5rem]"
-            style={{
-              maxHeight: 'calc(100dvh - var(--safe-top) - var(--safe-bottom) - 2rem)',
-            }}
+            style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 2rem)' }}
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
@@ -632,9 +626,9 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
             <div
               className="overflow-y-auto px-4 py-4 sm:px-5 sm:py-5 space-y-3"
               style={{
-                maxHeight: 'calc(100dvh - var(--safe-top) - var(--safe-bottom) - 9.25rem)',
-                paddingBottom: 'calc(var(--safe-bottom) + 5.5rem)',
-                scrollPaddingBottom: 'calc(var(--safe-bottom) + 5.5rem)',
+                maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 9.25rem)',
+                paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 5.5rem)',
+                scrollPaddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 5.5rem)',
               }}
             >
               <SettingsSection
@@ -1380,10 +1374,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
             </div>
 
             {/* Footer */}
-            <div
-              className="sticky bottom-0 px-5 py-4 border-t border-zinc-900 flex gap-3 bg-[#050505]/95 backdrop-blur-xl"
-              style={{ paddingBottom: 'calc(var(--safe-bottom) + 1rem)' }}
-            >
+            <div className="sticky bottom-0 px-5 py-4 pb-safe-4 border-t border-zinc-900 flex gap-3 bg-[#050505]/95 backdrop-blur-xl">
               <button
                 onClick={onClose}
                 className={`${UI_TOKENS.button.footerSecondary} text-sm font-medium hover:bg-white/5`}
