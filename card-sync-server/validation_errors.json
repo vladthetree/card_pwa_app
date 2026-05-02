@@ -1,0 +1,26 @@
+[
+  {
+    "card_id": "1729267537110",
+    "deck_name": "Professor Messer CompTIA Security+ SY0-701 v1.1 Free Video Course::Section 3: Security Architecture::3.2: Applying Security Principles::3.2.4: Port Security",
+    "front_preview": "The protocol that allows Port Security to operate is called {{c1::EAP: Extensibl",
+    "issue": "Basic: Back leer"
+  },
+  {
+    "card_id": "1729267891872",
+    "deck_name": "Professor Messer CompTIA Security+ SY0-701 v1.1 Free Video Course::Section 3: Security Architecture::3.2: Applying Security Principles::3.2.4: Port Security",
+    "front_preview": "The 802.1X Authentication Server is the device which is running the authenticati",
+    "issue": "Basic: Back leer"
+  },
+  {
+    "card_id": "1729285385609",
+    "deck_name": "Professor Messer CompTIA Security+ SY0-701 v1.1 Free Video Course::Section 3: Security Architecture::3.4: Resiliency and Recovery::3.4.5: Power Resiliency",
+    "front_preview": "A Generator will provide power for as long as it has fuel",
+    "issue": "Basic: Back leer"
+  },
+  {
+    "card_id": "1729621968472",
+    "deck_name": "Professor Messer CompTIA Security+ SY0-701 v1.1 Free Video Course::Section 5: Security Program Management and Oversight::5.1: Security Governance::5.1.1: Security Policies",
+    "front_preview": "An Acceptable Use Policy applies to everyone in an organization",
+    "issue": "Basic: Back leer"
+  }
+]
