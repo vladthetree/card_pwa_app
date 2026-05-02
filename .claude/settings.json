@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sqlite3 /home/_vb/card_pwa_app/card-sync-server/sync.db \"SELECT front, back FROM server_cards WHERE is_deleted=0 AND front NOT LIKE '%A:%' LIMIT 5;\")",
+      "Bash(sqlite3 /home/_vb/card_pwa_app/card-sync-server/sync.db \"SELECT COUNT\\(*\\) FROM server_cards WHERE is_deleted=0 AND front LIKE '%A:%' AND front LIKE '%B:%';\")",
+      "Bash(sqlite3 /home/_vb/card_pwa_app/card-sync-server/sync.db \"SELECT back FROM server_cards WHERE is_deleted=0 AND front NOT LIKE '%A:%' LIMIT 3;\")",
+      "Bash(python3 scripts/export_for_ai_review.py --format jsonl)",
+      "Bash(python3 scripts/export_for_ai_review.py --format txt --out ai_review.txt)",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 scripts/import_apkg.py sample/SY0-701_Security_The_SOC_Analyst_Deck.apkg sample/Professor_Messer_SY0-701_Security_Free_Video_Course.apkg --dry-run)",
+      "Bash(sqlite3 /home/_vb/card_pwa_app/card-sync-server/sync.db \"SELECT user_id, COUNT\\(*\\) FROM server_cards GROUP BY user_id;\")",
+      "Bash(python3 scripts/import_apkg.py sample/SY0-701_Security_The_SOC_Analyst_Deck.apkg sample/Professor_Messer_SY0-701_Security_Free_Video_Course.apkg --user-id ba458562-58a0-45a2-aea8-b7d14f3a12a3 --algorithm fsrs)",
+      "Bash(sqlite3 /home/_vb/card_pwa_app/card-sync-server/sync.db ' *)",
+      "Bash(python3 scripts/generate_review_input.py --user-id ba458562-58a0-45a2-aea8-b7d14f3a12a3 --batch-size 70 --out review_input.txt)",
+      "Bash(sqlite3 /home/_vb/card_pwa_app/card-sync-server/sync.db \"SELECT user_id, COUNT\\(*\\) FROM server_decks GROUP BY user_id;\")",
+      "Bash(sqlite3 /home/_vb/card_pwa_app/card-sync-server/sync.db \"SELECT user_id, COUNT\\(*\\) FROM server_cards WHERE is_deleted=0 GROUP BY user_id;\")",
+      "Bash(python -c ' *)",
+      "Bash(python scripts/import_apkg.py --skip-validation --dry-run)"
+    ]
+  }
+}

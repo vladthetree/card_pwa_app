@@ -8,6 +8,7 @@ import ToastContainer from './components/ToastContainer'
 import type { Deck, ShuffleCollection, View } from './types'
 import { SW_CHANNELS } from './constants/appIdentity'
 import { supportsServiceWorker } from './env'
+import { useAutoJoinDefaultProfile } from './hooks/useAutoJoinDefaultProfile'
 
 /**
  * Resolves the initial view from URL params so PWA shortcuts (e.g. `/?view=study`
@@ -40,6 +41,7 @@ function ViewFallback() {
 
 function AppShell() {
   const { settings } = useSettings()
+  useAutoJoinDefaultProfile()
   const swSupported = supportsServiceWorker()
   const prefersReducedMotion = useReducedMotion()
   const [view, setView] = useState<View>(getInitialView)

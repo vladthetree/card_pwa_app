@@ -112,6 +112,28 @@ interface ListProfilesResponse {
   error?: string
 }
 
+export interface PublicProfileSummary {
+  userId: string
+  profileName: string
+  deckCount: number
+  isDefault: boolean
+}
+
+interface PublicProfilesResponse {
+  ok: boolean
+  profiles?: PublicProfileSummary[]
+  error?: string
+}
+
+interface JoinProfileResponse {
+  ok: boolean
+  userId?: string
+  profileName?: string
+  deviceId?: string
+  profileToken?: string
+  error?: string
+}
+
 export interface ServerDeckSummary {
   id: string
   name: string
@@ -529,6 +551,71 @@ export async function restoreLocalStudyDataFromRollback(snapshot: LocalStudyData
   if (snapshot.deckProgress.length > 0) await db.deckProgress.bulkPut(snapshot.deckProgress)
   if (snapshot.activeSessions.length > 0) await db.activeSessions.bulkPut(snapshot.activeSessions)
   if (snapshot.shuffleCollections.length > 0) await db.shuffleCollections.bulkPut(snapshot.shuffleCollections)
+}
+
+/** GET /auth/public-profiles — list all public profiles with deck counts. No auth required. */
+export async function listPublicProfiles(endpoint: string): Promise<PublicProfilesResponse> {
+  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  try {
+    const res = await fetchWithTimeout(
+      `${base}/auth/public-profiles`,
+      { method: 'GET', headers: { 'Content-Type': 'application/json' } },
+      SYNC_FETCH_TIMEOUT_MS,
+    )
+    const json = await readJsonResponse<PublicProfilesResponse>(res)
+    if (!json) return { ok: false, error: 'invalid_server_response' }
+    if (!res.ok) return { ok: false, error: httpError(res, json) }
+    return { ok: true, profiles: Array.isArray(json.profiles) ? json.profiles : [] }
+  } catch (e: unknown) {
+    return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
+  }
+}
+
+/** POST /auth/profile/join — join any public profile without auth. */
+export async function joinPublicProfile(
+  endpoint: string,
+  userId: string,
+  deviceId: string,
+  deviceLabel?: string,
+): Promise<JoinProfileResponse> {
+  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  try {
+    const res = await fetchWithTimeout(
+      `${base}/auth/profile/join`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, deviceId, deviceLabel: deviceLabel ?? 'Browser' }),
+      },
+      SYNC_FETCH_TIMEOUT_MS,
+    )
+    const json = await readJsonResponse<JoinProfileResponse>(res)
+    if (!json) return { ok: false, error: 'invalid_server_response' }
+    if (!res.ok) return { ok: false, error: httpError(res, json) }
+    return json
+  } catch (e: unknown) {
+    return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
+  }
+}
+
+/** GET /auth/default-profile — fetch Default profile info. No auth required. */
+export async function fetchDefaultProfileInfo(
+  endpoint: string,
+): Promise<{ userId: string; profileName: string } | null> {
+  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  try {
+    const res = await fetchWithTimeout(
+      `${base}/auth/default-profile`,
+      { method: 'GET', headers: { 'Content-Type': 'application/json' } },
+      SYNC_FETCH_TIMEOUT_MS,
+    )
+    if (!res.ok) return null
+    const json = await readJsonResponse<{ ok: boolean; userId?: string; profileName?: string; error?: string }>(res)
+    if (!json?.ok || !json.userId) return null
+    return { userId: json.userId, profileName: json.profileName ?? 'Default' }
+  } catch {
+    return null
+  }
 }
 
 /** Cookie hint for quick profile restoration; DB remains source-of-truth. */

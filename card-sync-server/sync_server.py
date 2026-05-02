@@ -54,6 +54,35 @@ CORS_ALLOWED_ORIGINS = os.environ.get("SYNC_CORS_ALLOWED_ORIGINS", "*")
 
 LOGGER = logging.getLogger("card-sync-server")
 HEALTH_LOG_EVERY_MS = os.environ.get("SYNC_HEALTH_LOG_EVERY_MS", "60000")
+
+DEFAULT_PROFILE_NAME = "Default"
+
+
+def get_default_profile_id(conn) -> str | None:
+  """Return user_id of the Default profile, or None if it doesn't exist."""
+  row = conn.execute(
+    "SELECT user_id FROM users WHERE TRIM(profile_name)=? LIMIT 1",
+    (DEFAULT_PROFILE_NAME,),
+  ).fetchone()
+  return row[0] if row else None
+
+
+def ensure_default_profile(conn) -> str:
+  """Ensure a Default profile exists. Returns its user_id. Creates one if missing."""
+  import uuid as _uuid
+  existing = get_default_profile_id(conn)
+  if existing:
+    return existing
+  user_id = str(_uuid.uuid4())
+  now = int(time.time() * 1000)
+  recovery_hash = hash_token(generate_recovery_code())
+  conn.execute(
+    "INSERT INTO users (user_id, profile_name, recovery_code_hash, created_at) VALUES (?, ?, ?, ?)",
+    (user_id, DEFAULT_PROFILE_NAME, recovery_hash, now),
+  )
+  conn.commit()
+  LOGGER.info("DEFAULT_PROFILE_CREATED  user_id=%s", user_id[:8])
+  return user_id
 _LAST_HEALTH_LOG_BY_IP = {}
 
 def setup_logging():
@@ -450,6 +479,35 @@ def init_db():
   """)
   conn.execute("CREATE INDEX IF NOT EXISTS idx_bootstrap_client ON sync_bootstrap_batches(client_id)")
   conn.commit()
+
+  # ─────────────────────────────────────────────────────────────
+  # Default Profile
+  # ─────────────────────────────────────────────────────────────
+  # One-time: designate the unnamed profile with the most deck content as Default.
+  if not get_default_profile_id(conn):
+    row = conn.execute("""
+      SELECT u.user_id
+      FROM users u
+      WHERE (u.profile_name IS NULL OR TRIM(u.profile_name) = '')
+        AND EXISTS (SELECT 1 FROM server_decks WHERE user_id = u.user_id)
+      ORDER BY (SELECT COUNT(*) FROM server_decks WHERE user_id = u.user_id) DESC
+      LIMIT 1
+    """).fetchone()
+    if row:
+      conn.execute("UPDATE users SET profile_name=? WHERE user_id=?", (DEFAULT_PROFILE_NAME, row[0]))
+      conn.commit()
+      LOGGER.info("DEFAULT_PROFILE_ASSIGNED  user_id=%s", row[0][:8])
+
+  default_id = ensure_default_profile(conn)
+
+  # Move any legacy user_id='' content to the Default profile.
+  empty_decks = conn.execute("SELECT COUNT(*) FROM server_decks WHERE user_id=''").fetchone()[0]
+  empty_cards = conn.execute("SELECT COUNT(*) FROM server_cards WHERE user_id=''").fetchone()[0]
+  if empty_decks or empty_cards:
+    conn.execute("UPDATE server_decks SET user_id=? WHERE user_id=''", (default_id,))
+    conn.execute("UPDATE server_cards SET user_id=? WHERE user_id=''", (default_id,))
+    conn.commit()
+    LOGGER.info("UNMAPPED_MIGRATED  decks=%d  cards=%d  to=%s", empty_decks, empty_cards, default_id[:8])
 
   conn.close()
 
@@ -985,6 +1043,10 @@ class Handler(BaseHTTPRequestHandler):
       path = urlparse(self.path).path
       if path == "/health":                        # GET  /health
         self._route_health()
+      elif path == "/auth/default-profile":       # GET  /auth/default-profile
+        self._route_auth_default_profile()
+      elif path == "/auth/public-profiles":       # GET  /auth/public-profiles
+        self._route_auth_public_profiles()
       elif path == "/auth/profiles":              # GET  /auth/profiles
         self._route_auth_profiles()
       elif path == "/sync/pull":                   # GET  /sync/pull
@@ -1016,6 +1078,8 @@ class Handler(BaseHTTPRequestHandler):
         self._route_auth_device_remove()
       elif path == "/auth/profile/switch":      # POST /auth/profile/switch
         self._route_auth_profile_switch()
+      elif path == "/auth/profile/join":        # POST /auth/profile/join
+        self._route_auth_profile_join()
       elif path == "/sync":                          # POST /sync
         self._route_sync_push()
       elif path == "/sync/bootstrap/upload":       # POST /sync/bootstrap/upload
@@ -1027,6 +1091,113 @@ class Handler(BaseHTTPRequestHandler):
     except Exception:
       LOGGER.exception("REQUEST_FAILED method=POST path=%s", self.path)
       self._send_json(500, {"ok": False, "error": "internal_error"})
+
+  # ---------------------------------------------------------------------------
+  # GET /auth/default-profile  — return Default profile info (no auth required)
+  # ---------------------------------------------------------------------------
+
+  def _route_auth_default_profile(self):
+    conn = open_db(sqlite3.Row)
+    try:
+      default_id = get_default_profile_id(conn)
+      if not default_id:
+        self._send_json(404, {"ok": False, "error": "no_default_profile"})
+        return
+      row = conn.execute(
+        "SELECT user_id, profile_name FROM users WHERE user_id=?", (default_id,)
+      ).fetchone()
+      self._send_json(200, {
+        "ok": True,
+        "userId": row["user_id"],
+        "profileName": row["profile_name"] or DEFAULT_PROFILE_NAME,
+      })
+    finally:
+      conn.close()
+
+  # ---------------------------------------------------------------------------
+  # GET /auth/public-profiles  — list all profiles with deck counts (no auth)
+  # ---------------------------------------------------------------------------
+
+  def _route_auth_public_profiles(self):
+    conn = open_db(sqlite3.Row)
+    try:
+      rows = conn.execute("""
+        SELECT
+          u.user_id,
+          COALESCE(NULLIF(TRIM(u.profile_name), ''), NULLIF(TRIM(u.display_name), ''), 'Profil ' || SUBSTR(u.user_id, 1, 8)) AS profile_name,
+          (SELECT COUNT(*) FROM server_decks WHERE user_id = u.user_id AND deleted_at IS NULL) AS deck_count
+        FROM users u
+        ORDER BY
+          CASE WHEN TRIM(COALESCE(u.profile_name, '')) = ? THEN 0 ELSE 1 END,
+          COALESCE(u.last_seen_at, u.created_at) DESC
+      """, (DEFAULT_PROFILE_NAME,)).fetchall()
+      profiles = [{
+        "userId": row["user_id"],
+        "profileName": row["profile_name"],
+        "deckCount": int(row["deck_count"] or 0),
+        "isDefault": row["profile_name"] == DEFAULT_PROFILE_NAME,
+      } for row in rows]
+      self._send_json(200, {"ok": True, "profiles": profiles})
+    finally:
+      conn.close()
+
+  # ---------------------------------------------------------------------------
+  # POST /auth/profile/join  — join any public profile (no auth required)
+  # ---------------------------------------------------------------------------
+
+  def _route_auth_profile_join(self):
+    data, error_status, error_code = self._read_json_body()
+    if error_code:
+      self._send_json(error_status, {"ok": False, "error": error_code})
+      return
+    if not isinstance(data, dict):
+      self._send_json(400, {"ok": False, "error": "invalid_json_object"})
+      return
+
+    user_id = str(data.get("userId") or "").strip()
+    device_id = str(data.get("deviceId") or "").strip()
+    device_label = str(data.get("deviceLabel") or "Browser").strip()[:80]
+    client_ip = self.client_address[0] if self.client_address else "?"
+
+    if not user_id or not device_id:
+      self._send_json(400, {"ok": False, "error": "missing_fields"})
+      return
+
+    now = int(time.time() * 1000)
+    conn = open_db(sqlite3.Row)
+    try:
+      user = conn.execute(
+        "SELECT user_id, profile_name, display_name FROM users WHERE user_id=?",
+        (user_id,)
+      ).fetchone()
+      if not user:
+        self._send_json(404, {"ok": False, "error": "profile_not_found"})
+        return
+
+      # Revoke existing tokens for this device and remove it from any current profile.
+      conn.execute(
+        "UPDATE device_tokens SET revoked_at=? WHERE device_id=? AND revoked_at IS NULL",
+        (now, device_id)
+      )
+      conn.execute("DELETE FROM devices WHERE device_id=?", (device_id,))
+
+      profile_token = issue_device_token(conn, user_id, device_id, device_label, now)
+      conn.commit()
+
+      profile_name = user["profile_name"] or user["display_name"] or f"Profil {user_id[:8]}"
+      log(f"AUTH_PROFILE_JOIN  ip={client_ip}  user={_client_short(user_id)}  device={_client_short(device_id)}")
+      self._send_json(200, {
+        "ok": True,
+        "userId": user_id,
+        "profileName": profile_name,
+        "deviceId": device_id,
+        "profileToken": profile_token,
+      })
+    except sqlite3.IntegrityError:
+      conn.rollback()
+      self._send_json(409, {"ok": False, "error": "join_conflict"})
+    finally:
+      conn.close()
 
   # ---------------------------------------------------------------------------
   # POST /auth/profile  — create new profile (no auth required)
@@ -1048,6 +1219,10 @@ class Handler(BaseHTTPRequestHandler):
 
     if not device_id:
       self._send_json(400, {"ok": False, "error": "missing_device_id"})
+      return
+
+    if requested_profile_name.strip() == DEFAULT_PROFILE_NAME:
+      self._send_json(409, {"ok": False, "error": "profile_name_reserved"})
       return
 
     import uuid as _uuid
