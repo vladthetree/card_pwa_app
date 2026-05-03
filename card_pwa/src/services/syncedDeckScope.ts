@@ -30,10 +30,34 @@ export async function getSyncedDeckIds(userId?: string): Promise<string[]> {
     const serverSelected = readSelectedDeckIds(userId)
     // Empty serverSelected means "all synced decks" (user never narrowed down).
     if (serverSelected.length === 0) return localIds
-    const serverSet = new Set(serverSelected)
+    const serverSet = expandDeckIdsWithDescendants(localDecks, new Set(serverSelected))
     return localIds.filter(id => serverSet.has(id))
   }
 
   // Local-only: all non-deleted decks are in scope.
   return localIds
+}
+
+function expandDeckIdsWithDescendants(
+  decks: Array<{ id: string; parentDeckId?: string | null }>,
+  selectedDeckIds: Set<string>,
+): Set<string> {
+  const childrenByParent = new Map<string, Array<{ id: string }>>()
+  const activeIds = new Set(decks.map(deck => deck.id))
+  for (const deck of decks) {
+    if (!deck.parentDeckId || !activeIds.has(deck.parentDeckId)) continue
+    const bucket = childrenByParent.get(deck.parentDeckId) ?? []
+    bucket.push(deck)
+    childrenByParent.set(deck.parentDeckId, bucket)
+  }
+
+  const expanded = new Set<string>()
+  const stack = Array.from(selectedDeckIds)
+  while (stack.length > 0) {
+    const deckId = stack.pop()
+    if (!deckId || expanded.has(deckId)) continue
+    expanded.add(deckId)
+    for (const child of childrenByParent.get(deckId) ?? []) stack.push(child.id)
+  }
+  return expanded
 }

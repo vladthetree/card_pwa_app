@@ -1,0 +1,2143 @@
+[
+  {
+    "card_id": "1728575319724",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728575502892",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728575607281",
+    "question": "M1-001: Which security control category does anti-virus software belong to?",
+    "A": "Managerial",
+    "B": "Operational",
+    "C": "Technical",
+    "D": "Physical",
+    "correct": "C",
+    "explanation_de": "Technische Controls sind softwarebasierte oder hardwarebasierte Maßnahmen — AV-Software ist ein klassisches Beispiel.\n\n \n\n Merkhilfe: Technical = Technologie.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728575671733",
+    "question": "M1-002: OS policies that allow or disallow specific user permissions are an example of which control category?",
+    "A": "Physical",
+    "B": "Managerial",
+    "C": "Operational",
+    "D": "Technical",
+    "correct": "D",
+    "explanation_de": "OS-Richtlinien (z.B. GPO, SELinux) sind technische Kontrollmechanismen. Technical Controls wirken direkt auf Systeme und Software.\n\n \n\n Merkhilfe: Technical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728575802996",
+    "question": "M1-003: Official written security policy documentation is an example of which control category?",
+    "A": "Technical",
+    "B": "Physical",
+    "C": "Operational",
+    "D": "Managerial",
+    "correct": "D",
+    "explanation_de": "Managerial Controls umfassen administrative Maßnahmen wie Richtlinien, Prozesse und Dokumentation.\n\n \n\n Merkhilfe: Management = Papierwelt.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728575898815",
+    "question": "M1-004: Security awareness programs such as 'lunch and learns' are an example of which control category?",
+    "A": "Technical",
+    "B": "Managerial",
+    "C": "Physical",
+    "D": "Operational",
+    "correct": "D",
+    "explanation_de": "Operational Controls sind personenbezogen und prozessorientiert — Schulungen, Awareness-Programme und tägliche Sicherheitspraktiken gehören dazu.\n\n \n\n Merkhilfe: Operational ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728576891031"
+    ]
+  },
+  {
+    "card_id": "1728575980498",
+    "question": "M1-005: A guard shack limiting physical access to a facility is an example of a Preventive control in which category?",
+    "A": "Technical",
+    "B": "Managerial",
+    "C": "Operational",
+    "D": "Physical",
+    "correct": "D",
+    "explanation_de": "Physical Controls betreffen die physische Welt — Wachposten, Schlösser und Barrieren. Preventiv = blockiert den Zugang proaktiv.\n\n \n\n Merkhilfe: Physical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728576003078",
+    "question": "M1-006: Fences and locked doors preventing unauthorized entry are Preventive controls in which category?",
+    "A": "Managerial",
+    "B": "Operational",
+    "C": "Technical",
+    "D": "Physical",
+    "correct": "D",
+    "explanation_de": "Physische Barrieren wie Zäune und Schlösser sind Physical Controls. Sie verhindern physischen Zugang — daher Preventive Control Type.\n\n \n\n Merkhilfe: Physical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728576962692"
+    ]
+  },
+  {
+    "card_id": "1728576047633",
+    "question": "M1-007: Limiting room access with a badge reader is an example of which control category?",
+    "A": "Operational",
+    "B": "Technical",
+    "C": "Managerial",
+    "D": "Physical",
+    "correct": "D",
+    "explanation_de": "Badge-Reader kontrollieren physischen Zutritt — Physical Control. Da sie Zugang aktiv einschränken: Preventive Control Type.\n\n \n\n Merkhilfe: Physical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728576145577",
+    "question": "M1-008: Which of the following is NOT one of the six security control types defined in CompTIA Security+ SY0-701?",
+    "A": "Preventive",
+    "B": "Compensating",
+    "C": "Authoritative",
+    "D": "Directive",
+    "correct": "C",
+    "explanation_de": "Die sechs Control Types sind: Preventive, Deterrent, Detective, Corrective, Compensating, Directive. 'Authoritative' ist kein definierter Control Type.\n\n \n\n Merkhilfe: Authoritative ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728576145578",
+      "1728576145579",
+      "1728576145580",
+      "1728576145581",
+      "1728576145582"
+    ]
+  },
+  {
+    "card_id": "1728576486606",
+    "question": "M1-009: A firewall rule blocking unauthorized traffic is an example of which control type?",
+    "A": "Detective",
+    "B": "Corrective",
+    "C": "Deterrent",
+    "D": "Preventive",
+    "correct": "D",
+    "explanation_de": "Preventive Controls blockieren Ereignisse, bevor sie eintreten. Eine Firewall-Regel verhindert unerlaubten Zugriff aktiv — klassisches Preventive-Beispiel.\n\n \n\n Merkhilfe: Preventive ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728576531749",
+    "question": "M1-010: Checking identification before allowing people through an entry point is an Operational Preventive control. Which control type best describes this?",
+    "A": "Compensating",
+    "B": "Detective",
+    "C": "Preventive",
+    "D": "Corrective",
+    "correct": "C",
+    "explanation_de": "Die Identitätsprüfung verhindert unbefugten Zugang — Preventive. Der Kontext ist Operational, da Menschen (kein technisches System) die Kontrolle ausüben.\n\n \n\n Merkhilfe: Preventive ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728576827809"
+    ]
+  },
+  {
+    "card_id": "1728576557566",
+    "question": "M1-011: A login screen warning banner stating 'Unauthorized access is prohibited' is a Technical control of which type?",
+    "A": "Preventive",
+    "B": "Directive",
+    "C": "Corrective",
+    "D": "Deterrent",
+    "correct": "D",
+    "explanation_de": "Deterrent Controls schrecken durch Warnung ab, ohne direkt zu blockieren. Ein Splash-Screen-Warning ist Technical und Deterrent — er warnt, sperrt aber nicht.\n\n \n\n Merkhilfe: Deterrent ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728577166288"
+    ]
+  },
+  {
+    "card_id": "1728576798858",
+    "question": "M1-012: An onboarding policy that defines user security access levels is an example of a Preventive control in which category?",
+    "A": "Technical",
+    "B": "Physical",
+    "C": "Managerial",
+    "D": "Operational",
+    "correct": "C",
+    "explanation_de": "Onboarding-Policies sind administrative (Managerial) Maßnahmen. Sie definieren Zugriffsrechte schriftlich — Preventive, weil sie vorab Schaden verhindern.\n\n \n\n Merkhilfe: Managerial ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728576798859"
+    ]
+  },
+  {
+    "card_id": "1728577258425",
+    "question": "M1-013: HR policies that list demotion or termination as consequences for security violations are which type of Managerial control?",
+    "A": "Corrective",
+    "B": "Compensating",
+    "C": "Deterrent",
+    "D": "Detective",
+    "correct": "C",
+    "explanation_de": "Deterrent Controls schrecken durch potenzielle Konsequenzen ab. Kündigungsandrohung ist ein klassisches Deterrent im Managerial-Bereich.\n\n \n\n Merkhilfe: Deterrent ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728577258424"
+    ]
+  },
+  {
+    "card_id": "1728577295128",
+    "question": "M1-014: Using a reception desk to check in and direct visitors is an Operational control of which type?",
+    "A": "Directive",
+    "B": "Detective",
+    "C": "Preventive",
+    "D": "Deterrent",
+    "correct": "D",
+    "explanation_de": "Ein Empfangsschalter schreckt unbefugte Besucher ab (Deterrent) ohne sie physisch aufzuhalten — Operational, da Menschen involviert sind.\n\n \n\n Merkhilfe: Deterrent ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728577295127"
+    ]
+  },
+  {
+    "card_id": "1728577400034",
+    "question": "M1-015: Warning signs threatening prosecution for trespassing are a Deterrent control in which category?",
+    "A": "Operational",
+    "B": "Technical",
+    "C": "Managerial",
+    "D": "Physical",
+    "correct": "D",
+    "explanation_de": "Warnschilder auf dem Gelände sind Physical Controls — sie befinden sich in der physischen Welt und schrecken potenzielle Eindringlinge ab.\n\n \n\n Merkhilfe: Physical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728577400035"
+    ]
+  },
+  {
+    "card_id": "1728577609188",
+    "question": "M1-016: A system that automatically collects and reviews system logs to identify breaches is a Technical control of which type?",
+    "A": "Preventive",
+    "B": "Directive",
+    "C": "Compensating",
+    "D": "Detective",
+    "correct": "D",
+    "explanation_de": "Detective Controls identifizieren Sicherheitsereignisse, nachdem sie eingetreten sind. Log-Sammlung ist ein klassisches Technical Detective Control.\n\n \n\n Merkhilfe: Detective ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728577609189"
+    ]
+  },
+  {
+    "card_id": "1728577652641",
+    "question": "M1-017: Scheduling regular reviews of login reports is a Managerial control of which type?",
+    "A": "Corrective",
+    "B": "Detective",
+    "C": "Preventive",
+    "D": "Compensating",
+    "correct": "B",
+    "explanation_de": "Regelmäßige Login-Berichte analysieren, was passiert ist — Detective. Managerial, weil es ein administrativer Prozess ist.\n\n \n\n Merkhilfe: Detective ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728577652642"
+    ]
+  },
+  {
+    "card_id": "1728577684600",
+    "question": "M1-018: Scheduling regular physical property patrols is an Operational control of which type?",
+    "A": "Deterrent",
+    "B": "Preventive",
+    "C": "Detective",
+    "D": "Corrective",
+    "correct": "C",
+    "explanation_de": "Patrouillen erkennen Sicherheitsvorfälle durch Beobachtung — Detective. Operational, da Menschen die Maßnahme durchführen.\n\n \n\n Merkhilfe: Detective ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728577684599"
+    ]
+  },
+  {
+    "card_id": "1728577715502",
+    "question": "M1-019: Motion detectors installed in secure areas are a Detective control in which category?",
+    "A": "Technical",
+    "B": "Operational",
+    "C": "Managerial",
+    "D": "Physical",
+    "correct": "D",
+    "explanation_de": "Bewegungsmelder sind physische Geräte in der realen Welt — Physical Control. Sie erkennen Eindringlinge (Detective), verhindern sie aber nicht aktiv.\n\n \n\n Merkhilfe: Physical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728577715501"
+    ]
+  },
+  {
+    "card_id": "1728577866477",
+    "question": "M1-020: Restoring encrypted backups to recover from a ransomware attack is a Corrective control in which category?",
+    "A": "Physical",
+    "B": "Operational",
+    "C": "Managerial",
+    "D": "Technical",
+    "correct": "D",
+    "explanation_de": "Backup-Wiederherstellung ist ein technischer Vorgang — Technical. Corrective, weil es den Schaden eines aufgetretenen Vorfalls behebt.\n\n \n\n Merkhilfe: Technical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728577866478"
+    ]
+  },
+  {
+    "card_id": "1728577900189",
+    "question": "M1-021: Creating policies for reporting security incidents is a Managerial control of which type?",
+    "A": "Directive",
+    "B": "Detective",
+    "C": "Corrective",
+    "D": "Preventive",
+    "correct": "C",
+    "explanation_de": "Meldeprozesse korrigieren die Reaktion auf Vorfälle — Corrective. Managerial, da es sich um administrative Richtlinien handelt.\n\n \n\n Merkhilfe: Corrective ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728577900190"
+    ]
+  },
+  {
+    "card_id": "1728577946940",
+    "question": "M1-022: Contacting law enforcement after a security incident is an Operational control of which type?",
+    "A": "Preventive",
+    "B": "Deterrent",
+    "C": "Detective",
+    "D": "Corrective",
+    "correct": "D",
+    "explanation_de": "Strafverfolgungsbehörden einzuschalten reagiert auf einen eingetretenen Vorfall — Corrective. Operational, da Menschen die Handlung ausführen.\n\n \n\n Merkhilfe: Corrective ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728577946939"
+    ]
+  },
+  {
+    "card_id": "1728577973552",
+    "question": "M1-023: Using a fire extinguisher to extinguish a fire is a Corrective control in which category?",
+    "A": "Technical",
+    "B": "Managerial",
+    "C": "Operational",
+    "D": "Physical",
+    "correct": "D",
+    "explanation_de": "Ein Feuerlöscher ist ein physisches Gerät — Physical Control. Er korrigiert (Corrective) einen aktiven Schadensfall.\n\n \n\n Merkhilfe: Physical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728577973553"
+    ]
+  },
+  {
+    "card_id": "1728578090977",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728578186187",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728578225454",
+    "question": "M1-024: Blocking all traffic from a vulnerable application via a firewall rule until a patch is available is a Compensating control in which category?",
+    "A": "Physical",
+    "B": "Managerial",
+    "C": "Operational",
+    "D": "Technical",
+    "correct": "D",
+    "explanation_de": "Die Firewall-Regel ist eine technische Maßnahme — Technical. Compensating, weil sie eine fehlende Kontrolle (noch nicht gepatchtes System) vorübergehend ersetzt.\n\n \n\n Merkhilfe: Technical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728578225453"
+    ]
+  },
+  {
+    "card_id": "1728578357454",
+    "question": "M1-025: Separating duties between individuals to prevent excessive access is a Compensating control in which category?",
+    "A": "Technical",
+    "B": "Operational",
+    "C": "Physical",
+    "D": "Managerial",
+    "correct": "D",
+    "explanation_de": "Aufgabentrennung (Separation of Duties) ist eine administrative Maßnahme — Managerial. Compensating, weil sie das Risiko durch alternative Kontrolle reduziert.\n\n \n\n Merkhilfe: Managerial ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728578357453"
+    ]
+  },
+  {
+    "card_id": "1728578398808",
+    "question": "M1-026: Requiring multiple security staff members so no single person handles all duties is a Compensating control in which category?",
+    "A": "Managerial",
+    "B": "Physical",
+    "C": "Operational",
+    "D": "Technical",
+    "correct": "C",
+    "explanation_de": "Mehrere Sicherheitsmitarbeiter einzusetzen ist ein menschlicher Prozess — Operational. Compensating, weil fehlende Einzelkontrolle durch Team-Überwachung ausgeglichen wird.\n\n \n\n Merkhilfe: Operational ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728578398809"
+    ]
+  },
+  {
+    "card_id": "1728578427113",
+    "question": "M1-027: Installing a backup power generator is a Compensating control in which category?",
+    "A": "Managerial",
+    "B": "Operational",
+    "C": "Technical",
+    "D": "Physical",
+    "correct": "D",
+    "explanation_de": "Ein Generator ist ein physisches Gerät — Physical Control. Er kompensiert (Compensating) den Ausfall der primären Stromversorgung.\n\n \n\n Merkhilfe: Physical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728578427114"
+    ]
+  },
+  {
+    "card_id": "1728578474088",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728578626914",
+    "question": "M1-028: Instructing staff to save sensitive files in password-protected folders is a Technical control of which type?",
+    "A": "Compensating",
+    "B": "Corrective",
+    "C": "Preventive",
+    "D": "Directive",
+    "correct": "D",
+    "explanation_de": "Directive Controls lenken Benutzer zu sichererem Verhalten. Die Anweisung ist Technical (Passwortschutz), Directive (es gibt eine Verhaltensrichtlinie).\n\n \n\n Merkhilfe: Directive ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728578626915"
+    ]
+  },
+  {
+    "card_id": "1728578658721",
+    "question": "M1-029: Creating compliance policies and procedures is a Managerial control of which type?",
+    "A": "Detective",
+    "B": "Corrective",
+    "C": "Compensating",
+    "D": "Directive",
+    "correct": "D",
+    "explanation_de": "Compliance-Richtlinien weisen Mitarbeiter auf gewünschtes Verhalten hin — Directive. Managerial, da sie administrative Dokumente sind.\n\n \n\n Merkhilfe: Directive ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728578658722"
+    ]
+  },
+  {
+    "card_id": "1728578702367",
+    "question": "M1-030: Training employees to follow security policies is an Operational control of which type?",
+    "A": "Preventive",
+    "B": "Detective",
+    "C": "Directive",
+    "D": "Corrective",
+    "correct": "C",
+    "explanation_de": "Schulungen leiten Mitarbeiter zu sicherem Verhalten an — Directive. Operational, da es sich um eine menschliche, prozessorientierte Maßnahme handelt.\n\n \n\n Merkhilfe: Directive ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728578702368"
+    ]
+  },
+  {
+    "card_id": "1728578743324",
+    "question": "M1-031: Posting a sign on a restricted area door is a Directive control in which category?",
+    "A": "Managerial",
+    "B": "Technical",
+    "C": "Operational",
+    "D": "Physical",
+    "correct": "D",
+    "explanation_de": "Ein physisches Schild in der realen Umgebung ist Physical Control. Es weist an (Directive), ohne aktiv zu sperren.\n\n \n\n Merkhilfe: Physical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728578743323"
+    ]
+  },
+  {
+    "card_id": "1728580119778",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728580188327",
+    "question": "M1-032: Which technique primarily ensures Confidentiality by making data unreadable to unauthorized parties?",
+    "A": "Hashing",
+    "B": "Redundancy",
+    "C": "Encryption",
+    "D": "Tokenization",
+    "correct": "C",
+    "explanation_de": "Verschlüsselung macht Daten für Unbefugte unlesbar — primäre Methode für Confidentiality. Hashing dient der Integrität, nicht der Vertraulichkeit.\n\n \n\n Merkhilfe: Encryption ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728580217216"
+    ]
+  },
+  {
+    "card_id": "1728580273334",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728580341002",
+    "question": "M1-033: Implementing Access Controls to allow only authorized users to view a resource primarily supports which element of the CIA Triad?",
+    "A": "Integrity",
+    "B": "Availability",
+    "C": "Confidentiality",
+    "D": "Non-repudiation",
+    "correct": "C",
+    "explanation_de": "Access Controls schränken ein, wer Daten sehen darf — das ist Confidentiality. Integrität betrifft Unverändertheit, Availability betrifft Erreichbarkeit.\n\n \n\n Merkhilfe: Confidentiality ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728580341003"
+    ]
+  },
+  {
+    "card_id": "1728580548745",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728580628086",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728580682932",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728580721902",
+    "question": "M1-034: Which technology combines with a Digital Signature to verify the identity of a device or individual?",
+    "A": "Firewall rules",
+    "B": "Rainbow Tables",
+    "C": "Certificates",
+    "D": "Salting",
+    "correct": "C",
+    "explanation_de": "Zertifikate binden eine Public Key an eine Identität und ergänzen die digitale Signatur zur Identitätsverifikation. Ausgestellt von einer Certificate Authority.\n\n \n\n Merkhilfe: Certificates ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728580721901",
+      "1728580721903"
+    ]
+  },
+  {
+    "card_id": "1728580833593",
+    "question": "M1-035: Which concept involves building systems with duplicate components to ensure they remain operational at all times?",
+    "A": "Patching",
+    "B": "Redundancy",
+    "C": "Encryption",
+    "D": "Tokenization",
+    "correct": "B",
+    "explanation_de": "Redundanz = Doppelauslegung kritischer Komponenten, um Ausfälle zu verhindern. Unterstützt Availability im CIA-Triad.\n\n \n\n Merkhilfe: Redundanz = immer ein Backup.",
+    "delete_duplicates": [
+      "1728580833594"
+    ]
+  },
+  {
+    "card_id": "1728580937868",
+    "question": "M1-036: Which ongoing process maintains system Availability by closing security vulnerabilities and fixing bugs?",
+    "A": "Hashing",
+    "B": "Key Rotation",
+    "C": "Patching",
+    "D": "Tokenization",
+    "correct": "C",
+    "explanation_de": "Patching hält Systeme stabil und sicher, indem bekannte Schwachstellen geschlossen werden — direkte Unterstützung von Availability und Integrity.\n\n \n\n Merkhilfe: Patching ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728580937866",
+      "1728580937867",
+      "1728580937869"
+    ]
+  },
+  {
+    "card_id": "1728581032043",
+    "question": "M1-037: Which security property ensures that a sender cannot later deny having sent a message?",
+    "A": "Availability",
+    "B": "Confidentiality",
+    "C": "Integrity",
+    "D": "Non-repudiation",
+    "correct": "D",
+    "explanation_de": "Non-repudiation = Unleugbarkeit. Der Sender kann nicht abstreiten, eine Nachricht gesendet zu haben, da seine digitale Signatur beweisbar ist.\n\n \n\n Merkhilfe: Non-repudiation ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728581032044",
+      "1728581817114"
+    ]
+  },
+  {
+    "card_id": "1728581130351",
+    "question": "M1-038: Which concept is analogous to a handwritten signature on a legal contract, providing proof that a specific party agreed to something?",
+    "A": "Encryption",
+    "B": "Hashing",
+    "C": "Non-repudiation",
+    "D": "Access Control",
+    "correct": "C",
+    "explanation_de": "Non-repudiation entspricht einer Unterschrift: beweisbar, nicht abstreitbar. Digitale Signaturen sind die technische Umsetzung in der IT.\n\n \n\n Merkhilfe: Non-repudiation ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728581130348",
+      "1728581130349",
+      "1728581130350"
+    ]
+  },
+  {
+    "card_id": "1728581175475",
+    "question": "M1-039: In cryptography, Non-repudiation provides Proof of Integrity and Proof of Origin with high assurance of which property?",
+    "A": "Availability",
+    "B": "Confidentiality",
+    "C": "Redundancy",
+    "D": "Authenticity",
+    "correct": "D",
+    "explanation_de": "Authentizität stellt sicher, dass Daten wirklich vom angegebenen Sender stammen. Non-repudiation kombiniert Integrität + Herkunftsbeweis + Authentizität.\n\n \n\n Merkhilfe: Authenticity ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728581175476",
+      "1728581175477",
+      "1728581175478"
+    ]
+  },
+  {
+    "card_id": "1728581211819",
+    "question": "M1-040: Which Non-repudiation component confirms that data has not been altered since it was created?",
+    "A": "Proof of Availability",
+    "B": "Proof of Origin",
+    "C": "Proof of Integrity",
+    "D": "Proof of Access",
+    "correct": "C",
+    "explanation_de": "Proof of Integrity = Nachweis, dass Daten unverändert sind. Realisiert durch Hashing. Proof of Origin = wer es gesendet hat (anderer Aspekt).\n\n \n\n Merkhilfe: Proof of Integrity ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728581211818"
+    ]
+  },
+  {
+    "card_id": "1728581264271",
+    "question": "M1-041: Which Non-repudiation component allows a receiver to verify where data originated from?",
+    "A": "Proof of Integrity",
+    "B": "Proof of Availability",
+    "C": "Proof of Encryption",
+    "D": "Proof of Origin",
+    "correct": "D",
+    "explanation_de": "Proof of Origin = Herkunftsnachweis. Digitale Signaturen mit asymmetrischer Kryptografie ermöglichen den Nachweis, wer Daten gesendet hat.\n\n \n\n Merkhilfe: Proof of Origin ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728581264272"
+    ]
+  },
+  {
+    "card_id": "1728581355781",
+    "question": "M1-042: Which cryptographic mechanism is primarily used to verify data integrity?",
+    "A": "Symmetric encryption",
+    "B": "Key escrow",
+    "C": "Digital certificate",
+    "D": "Hash",
+    "correct": "D",
+    "explanation_de": "Hashes erzeugen einen Fingerabdruck der Daten. Jede Änderung führt zu einem anderen Hash — damit wird Integrität nachgewiesen.\n\n \n\n Merkhilfe: Hash ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728581355780"
+    ]
+  },
+  {
+    "card_id": "1728581458148",
+    "question": "M1-043: What is a short fixed-length value derived from arbitrary-length input data, sometimes called a 'message digest' or 'fingerprint'?",
+    "A": "Salt",
+    "B": "Session key",
+    "C": "Digital signature",
+    "D": "Hash",
+    "correct": "D",
+    "explanation_de": "Ein Hash ist eine kryptografische Prüfsumme fester Länge. Unabhängig von der Eingabegröße ist die Ausgabe immer gleich lang (z.B. SHA-256 = 256 Bit).\n\n \n\n Merkhilfe: Hash ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728581458149",
+      "1728581458150",
+      "1728581458151"
+    ]
+  },
+  {
+    "card_id": "1728581540966",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728581580595",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728581729536",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728581762965",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728581782664",
+    "question": "M1-044: Proof of Origin in the context of Non-repudiation is sometimes also referred to as what?",
+    "A": "Authorization",
+    "B": "Accounting",
+    "C": "Authentication",
+    "D": "Availability",
+    "correct": "C",
+    "explanation_de": "Authentication = Nachweis der Identität des Senders. Im Non-repudiation-Kontext ist Proof of Origin gleichbedeutend mit Authentication — wer hat es wirklich gesendet?\n\n \n\n Merkhilfe: Authentication ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728581782663"
+    ]
+  },
+  {
+    "card_id": "1728582010811",
+    "question": "M1-045: To verify a digital signature, the recipient uses which key to decrypt the message hash?",
+    "A": "Recipient's private key",
+    "B": "Shared symmetric key",
+    "C": "Session key",
+    "D": "Sender's public key",
+    "correct": "D",
+    "explanation_de": "Der Sender signiert mit seinem Private Key. Der Empfänger verifiziert mit dem Public Key des Senders. Public Key kann von jedem genutzt werden — daher öffentlich.\n\n \n\n Merkhilfe: Sender's public key ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728582010810",
+      "1728582010812"
+    ]
+  },
+  {
+    "card_id": "1728582261940",
+    "question": "M1-046: In security, the acronym AAA stands for Authentication, Authorization, and what?",
+    "A": "Assessment",
+    "B": "Availability",
+    "C": "Accounting",
+    "D": "Assurance",
+    "correct": "C",
+    "explanation_de": "AAA = Authentication (Wer bist du?), Authorization (Was darfst du?), Accounting (Was hast du getan?). Accounting = Protokollierung aller Aktivitäten.\n\n \n\n Merkhilfe: Accounting ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728582261941",
+      "1728582261942"
+    ]
+  },
+  {
+    "card_id": "1728582344236",
+    "question": "M1-047: In the AAA framework, which component determines what resources an already-authenticated user is permitted to access?",
+    "A": "Accounting",
+    "B": "Authentication",
+    "C": "Auditing",
+    "D": "Authorization",
+    "correct": "D",
+    "explanation_de": "Authorization = Berechtigungsprüfung nach der Identifikation. Erst Authentication (Wer bist du?), dann Authorization (Was darfst du?). Accounting protokolliert das Ergebnis.\n\n \n\n Merkhilfe: Authorization ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728582344237"
+    ]
+  },
+  {
+    "card_id": "1728582379407",
+    "question": "M1-048: In the AAA framework, which component records the activities performed by an authenticated and authorized user?",
+    "A": "Authorization",
+    "B": "Authentication",
+    "C": "Accounting",
+    "D": "Access Control",
+    "correct": "C",
+    "explanation_de": "Accounting (auch Auditing) protokolliert, was ein Benutzer getan hat. Dient der Nachvollziehbarkeit und Forensik.\n\n \n\n Merkhilfe: Accounting = Protokollbuch.",
+    "delete_duplicates": [
+      "1728582379406"
+    ]
+  },
+  {
+    "card_id": "1728582662217",
+    "question": "M1-049: To authenticate a device (rather than a user) to a network resource, which mechanism is commonly used?",
+    "A": "Username and password",
+    "B": "PIN",
+    "C": "Biometric scan",
+    "D": "Digitally signed certificate",
+    "correct": "D",
+    "explanation_de": "Geräte-Authentifizierung erfolgt über digitale Zertifikate, die von einer CA ausgestellt werden. Username/Passwort und Biometrie sind Methoden für Benutzer.\n\n \n\n Merkhilfe: Digitally signed certificate ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728582727897",
+    "question": "M1-050: Which trusted third-party entity must be present to enable the use of digitally signed certificates for authentication?",
+    "A": "RADIUS server",
+    "B": "Certificate Authority",
+    "C": "LDAP directory",
+    "D": "Key escrow service",
+    "correct": "B",
+    "explanation_de": "Eine Certificate Authority (CA) signiert und verwaltet Zertifikate. Ohne vertrauenswürdige CA keine vertrauenswürdigen Zertifikate.\n\n \n\n Merkhilfe: Certificate Authority ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728582843103",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728582999434",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728583112077",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728594140582",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728594394715",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728594503878",
+    "question": "M1-051: A Gap Analysis should evaluate which two primary areas of an organization?",
+    "A": "Hardware and Software",
+    "B": "People and Processes",
+    "C": "Policies and Procedures",
+    "D": "Networks and Applications",
+    "correct": "B",
+    "explanation_de": "Gap Analysis betrachtet sowohl People (Qualifikationen, Training) als auch Processes (bestehende IT-Systeme, Sicherheitsrichtlinien) um den aktuellen Stand zu ermitteln.\n\n \n\n Merkhilfe: People and Processes ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728594503877"
+    ]
+  },
+  {
+    "card_id": "1728594623362",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728594673378",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728595068497",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728595118707",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728595373661",
+    "question": "M1-052: Which security model requires every user, device, and process to authenticate each time they request access to a resource, regardless of network location?",
+    "A": "Defense in Depth",
+    "B": "Zero Trust",
+    "C": "Need to Know",
+    "D": "Least Privilege",
+    "correct": "B",
+    "explanation_de": "Zero Trust = 'Vertraue niemandem, verifiziere alles'. Kein implizites Vertrauen aufgrund von Netzwerkzugehörigkeit. Jeder Zugriff wird neu geprüft.\n\n \n\n Merkhilfe: Zero Trust ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728595373659",
+      "1728595373660"
+    ]
+  },
+  {
+    "card_id": "1728595471351",
+    "question": "M1-053: In a Zero Trust architecture, security functions are divided into smaller sections. What are these sections called?",
+    "A": "Security zones",
+    "B": "Trust segments",
+    "C": "Control domains",
+    "D": "Functional planes",
+    "correct": "D",
+    "explanation_de": "Zero Trust teilt Sicherheitsfunktionen in 'functional planes' auf — primär Data Plane (Datenverarbeitung) und Control Plane (Richtlinienverwaltung).\n\n \n\n Merkhilfe: Functional planes ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728595624204",
+    "question": "M1-054: In Zero Trust architecture, which plane handles the actual processing and forwarding of data across the network (e.g., routers, switches)?",
+    "A": "Management Plane",
+    "B": "Control Plane",
+    "C": "Policy Plane",
+    "D": "Data Plane",
+    "correct": "D",
+    "explanation_de": "Data Plane = Geräte, die Daten tatsächlich verarbeiten und weiterleiten (Switches, Router). Control Plane = Verwaltung der Weiterleitungsregeln.\n\n \n\n Merkhilfe: Data Plane ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728595624205"
+    ]
+  },
+  {
+    "card_id": "1728595677366",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728595832898",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728596210594",
+    "question": "M1-055: In Zero Trust, which concept refers to minimizing the number of potential entry points an attacker could exploit?",
+    "A": "Adaptive Identity",
+    "B": "Microsegmentation",
+    "C": "Threat Scope Reduction",
+    "D": "Policy-Driven Access Control",
+    "correct": "C",
+    "explanation_de": "Threat Scope Reduction = Angriffsfläche verkleinern. Weniger Einstiegspunkte = weniger Angriffsmöglichkeiten. Direkt verknüpft mit dem Zero Trust Prinzip.\n\n \n\n Merkhilfe: Threat Scope Reduction ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728596210595"
+    ]
+  },
+  {
+    "card_id": "1728596360560",
+    "question": "M1-056: In Zero Trust, which mechanism evaluates multiple context factors (location, device type, relationship to org) when deciding whether to grant access?",
+    "A": "Policy Enforcement Point",
+    "B": "Policy-Driven Access Control",
+    "C": "Threat Scope Reduction",
+    "D": "Adaptive Identity",
+    "correct": "D",
+    "explanation_de": "Adaptive Identity berücksichtigt viele Kontextfaktoren bei der Identitätsprüfung — IP-Adresse, Standort, Verbindungstyp, Beziehung zur Ressource etc.\n\n \n\n Merkhilfe: Adaptive Identity ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728596420109",
+    "question": "M1-057: Which Zero Trust component combines Adaptive Identity with predefined rules to determine the required authentication method?",
+    "A": "Policy Engine",
+    "B": "Policy-Driven Access Control",
+    "C": "Policy Administrator",
+    "D": "Policy Enforcement Point",
+    "correct": "B",
+    "explanation_de": "Policy-Driven Access Control kombiniert Adaptive Identity mit Regelwerk — es entscheidet, welche Authentifizierungsmethode für einen bestimmten Kontext notwendig ist.\n\n \n\n Merkhilfe: Policy-Driven Access Control ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728596991068",
+    "question": "M1-058: In Zero Trust, the Policy Enforcement Point (PEP) evaluates traffic and forwards the decision request to which component?",
+    "A": "Policy Administrator",
+    "B": "Policy Engine",
+    "C": "Policy Decision Point (PDP)",
+    "D": "Authentication Server",
+    "correct": "C",
+    "explanation_de": "PEP = Türsteher, der den Zugang kontrolliert. PDP = Entscheidungsinstanz. PEP leitet Anfragen an PDP weiter, der Policy Engine + Policy Administrator umfasst.\n\n \n\n Merkhilfe: Policy Decision Point (PDP) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728596991067"
+    ]
+  },
+  {
+    "card_id": "1728597125561",
+    "question": "M1-059: In Zero Trust architecture, which component holds the rules and policies that determine whether traffic should be allowed?",
+    "A": "Policy Administrator",
+    "B": "Policy Enforcement Point",
+    "C": "Policy Engine",
+    "D": "Authentication Proxy",
+    "correct": "C",
+    "explanation_de": "Policy Engine = Regelbasis des Zero Trust Systems. Enthält alle Richtlinien. Sendet Entscheidungen an den Policy Administrator weiter.\n\n \n\n Merkhilfe: Policy Engine ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728597165153",
+    "question": "M1-060: In Zero Trust, which component manages authentication/authorization information and communicates decisions to the Policy Enforcement Point?",
+    "A": "Policy Engine",
+    "B": "Policy Administrator",
+    "C": "Policy Decision Point",
+    "D": "Trust Broker",
+    "correct": "B",
+    "explanation_de": "Policy Administrator kommuniziert die Entscheidungen des Policy Engine an den PEP. Er ist die 'Ausführungsinstanz' zwischen Regelwerk und Durchsetzungspunkt.\n\n \n\n Merkhilfe: Policy Administrator ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728597416805",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728597457324",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728597497926",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728597573326",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728597672323",
+    "question": "M1-061: Which physical security control uses an enclosed entry area with interlocking doors to manage and control access to a facility?",
+    "A": "Bollard",
+    "B": "Mantrap",
+    "C": "Access Control Vestibule",
+    "D": "Faraday cage",
+    "correct": "C",
+    "explanation_de": "Access Control Vestibule (auch Mantrap) = Schleuse mit zwei Türen. Nur wenn die erste Tür geschlossen ist, öffnet die zweite. Verhindert Tailgating.\n\n \n\n Merkhilfe: Access Control Vestibule ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728597730510",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728597766132",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728597915316",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728597958793",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728598021007",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728598075567",
+    "question": "M1-062: Which capability do some video surveillance systems provide to detect intruders automatically?",
+    "A": "Facial synthesis",
+    "B": "Thermal mapping",
+    "C": "Motion detection",
+    "D": "RF triangulation",
+    "correct": "C",
+    "explanation_de": "Bewegungserkennung (Motion Detection) ist eine verbreitete CCTV-Funktion. Löst Alarme aus, wenn Bewegung im gesicherten Bereich erkannt wird.\n\n \n\n Merkhilfe: Motion detection ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728598075566"
+    ]
+  },
+  {
+    "card_id": "1728598101103",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728598152355",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728598202804",
+    "question": "M1-063: Which physical security practice requires two authorized individuals to be present when accessing a critical asset, preventing any single person from having full control?",
+    "A": "Separation of Duties",
+    "B": "Dual Control",
+    "C": "Two-person Integrity",
+    "D": "Need to Know",
+    "correct": "C",
+    "explanation_de": "Two-person Integrity (auch Two-person Control oder Dual Control) = Vier-Augen-Prinzip für physische Assets. Verhindert unbefugte Einzelperson-Handlungen.\n\n \n\n Merkhilfe: Two-person Integrity ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728598202802",
+      "1728598202803"
+    ]
+  },
+  {
+    "card_id": "1728598372478",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728598425243",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728598470376",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728598492134",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728598521388",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728598803945",
+    "question": "M1-064: Which deception technology consists of files that appear to contain sensitive data but actually contain fake or trap information to detect unauthorized access?",
+    "A": "Honeynets",
+    "B": "Honeypots",
+    "C": "Honeyfiles",
+    "D": "Honeytokens",
+    "correct": "C",
+    "explanation_de": "Honeyfiles = Lockdateien mit gefälschtem Inhalt. Werden sie geöffnet oder kopiert, lösen sie Alarm aus. Honeypots = gefälschte Systeme, Honeynets = gefälschte Netzwerke.\n\n \n\n Merkhilfe: Honeyfiles ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728598803946",
+      "1728598803947"
+    ]
+  },
+  {
+    "card_id": "1728598841961",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728664798813",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728664841112",
+    "question": "M1-065: In Change Management, which group consists of individuals or departments directly affected by a proposed change?",
+    "A": "Change Advisory Board",
+    "B": "Change Owners",
+    "C": "Stakeholders",
+    "D": "Risk Committee",
+    "correct": "C",
+    "explanation_de": "Stakeholders = betroffene Parteien, die Einfluss auf oder Interesse an der Änderung haben. Change Owner = verwaltet den Prozess. CAB = genehmigt Änderungen.\n\n \n\n Merkhilfe: Stakeholders ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728664841113"
+    ]
+  },
+  {
+    "card_id": "1728665267982",
+    "question": "M1-066: What Change Management document enables a team to revert a system to its prior state if a change causes unexpected problems?",
+    "A": "Impact Analysis",
+    "B": "Change Request",
+    "C": "Rollback Procedure",
+    "D": "Backout Plan",
+    "correct": "D",
+    "explanation_de": "Backout Plan = Rücknahmeplan für Änderungen, die schiefgehen. Vor jeder Änderung erstellt, um schnelles Rollback zu ermöglichen. Auch 'Rollback Plan' genannt.\n\n \n\n Merkhilfe: Backout Plan ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728665267981"
+    ]
+  },
+  {
+    "card_id": "1728665306142",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728665541773",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728665620599",
+    "question": "M1-067: Which application control approach permits only pre-approved applications to execute, blocking everything else by default?",
+    "A": "Deny List",
+    "B": "Blacklist",
+    "C": "Allowlist",
+    "D": "Greylist",
+    "correct": "C",
+    "explanation_de": "Allowlist (früher Whitelist) = ausschließlich genehmigte Programme dürfen ausgeführt werden. Blockiert standardmäßig alles Unbekannte — sicherster Ansatz.\n\n \n\n Merkhilfe: Allowlist ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728665620598"
+    ]
+  },
+  {
+    "card_id": "1728665665642",
+    "question": "M1-068: Which application control approach allows all applications to run except those explicitly blocked?",
+    "A": "Allowlist",
+    "B": "Zero Trust List",
+    "C": "Greylist",
+    "D": "Deny List",
+    "correct": "D",
+    "explanation_de": "Deny List (früher Blacklist) = alles erlaubt, außer explizit blockierten Elementen. Weniger sicher als Allowlist, da unbekannte Bedrohungen durchgelassen werden.\n\n \n\n Merkhilfe: Deny List ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728665665641"
+    ]
+  },
+  {
+    "card_id": "1728665729507",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728665775803",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728665874003",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728666141438",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728666224132",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728666406964",
+    "question": "M1-069: What does the acronym PKI stand for?",
+    "A": "Private Key Integration",
+    "B": "Public Key Infrastructure",
+    "C": "Protected Key Interface",
+    "D": "Privileged Key Inventory",
+    "correct": "B",
+    "explanation_de": "PKI = Public Key Infrastructure. Ein System zur Verwaltung digitaler Zertifikate und öffentlicher Schlüssel. Grundlage für SSL/TLS, digitale Signaturen usw.\n\n \n\n Merkhilfe: Public Key Infrastructure ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728666406965"
+    ]
+  },
+  {
+    "card_id": "1728666452657",
+    "question": "M1-070: What does a Public Key Infrastructure (PKI) primarily manage?",
+    "A": "Firewall rules",
+    "B": "User passwords",
+    "C": "Digital Certificates",
+    "D": "VPN tunnels",
+    "correct": "C",
+    "explanation_de": "PKI = System zur Erstellung, Verteilung, Speicherung und Widerrufung digitaler Zertifikate. Zertifikate binden Public Keys an Identitäten.\n\n \n\n Merkhilfe: Digital Certificates ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728666452658"
+    ]
+  },
+  {
+    "card_id": "1728666527085",
+    "question": "M1-071: For a Certificate Authority to issue trusted digital certificates, what must it first establish?",
+    "A": "An LDAP directory",
+    "B": "A RADIUS server",
+    "C": "A trusted status within the PKI",
+    "D": "A dedicated HSM",
+    "correct": "C",
+    "explanation_de": "Eine CA muss als vertrauenswürdig eingestuft sein, bevor ihre Zertifikate anerkannt werden. Vertrauen wird in Browsern und Betriebssystemen vorinstalliert.\n\n \n\n Merkhilfe: A trusted status within the PKI ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728666527083",
+      "1728666527084"
+    ]
+  },
+  {
+    "card_id": "1728666563667",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728666620096",
+    "question": "M1-072: Symmetric encryption is also known by which alternative name?",
+    "A": "Public Key Algorithm",
+    "B": "Asymmetric Algorithm",
+    "C": "Hash Algorithm",
+    "D": "Secret Key Algorithm",
+    "correct": "D",
+    "explanation_de": "Symmetrische Verschlüsselung = Secret Key Algorithm oder Shared Secret Algorithm, weil beide Seiten denselben geheimen Schlüssel verwenden.\n\n \n\n Merkhilfe: Secret Key Algorithm ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728666620097"
+    ]
+  },
+  {
+    "card_id": "1728666652923",
+    "question": "M1-073: Which statement correctly compares the speed of symmetric vs. asymmetric encryption?",
+    "A": "Asymmetric encryption is faster than symmetric",
+    "B": "Both are equally fast",
+    "C": "Symmetric encryption is faster than asymmetric",
+    "D": "Speed depends only on key length",
+    "correct": "C",
+    "explanation_de": "Symmetrische Verschlüsselung ist deutlich schneller als asymmetrische. Deshalb wird in der Praxis oft asymmetrisch der Session-Key ausgetauscht, dann symmetrisch verschlüsselt.\n\n \n\n Merkhilfe: Symmetric encryption is faster than asymmetric ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728668006980",
+    "question": "M1-074: Which statement about combining symmetric and asymmetric encryption is correct?",
+    "A": "Only one type can be active at any given time",
+    "B": "They use incompatible key formats",
+    "C": "Both can be used together for security and speed",
+    "D": "Asymmetric encryption makes symmetric redundant",
+    "correct": "C",
+    "explanation_de": "Hybrid-Verschlüsselung = asymmetrisch für Schlüsselaustausch, dann symmetrisch für die eigentlichen Daten. TLS verwendet genau dieses Prinzip.\n\n \n\n Merkhilfe: Both can be used together for security and speed ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728668074719",
+    "question": "M1-075: In asymmetric cryptography, which key is mathematically paired with the private key and can be freely distributed?",
+    "A": "Session key",
+    "B": "Symmetric key",
+    "C": "Master key",
+    "D": "Public key",
+    "correct": "D",
+    "explanation_de": "Public Key und Private Key sind mathematisch verknüpft. Der Public Key kann frei verteilt werden; nur der Private Key muss geheim bleiben.\n\n \n\n Merkhilfe: Public key ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728668074718",
+      "1728668074720"
+    ]
+  },
+  {
+    "card_id": "1728668229954",
+    "question": "M1-076: In asymmetric cryptography, which key is used to create a digital signature, thereby providing identity verification?",
+    "A": "Recipient's public key",
+    "B": "Shared symmetric key",
+    "C": "Certificate Authority key",
+    "D": "Sender's private key",
+    "correct": "D",
+    "explanation_de": "Digitale Signaturen werden mit dem Private Key des Senders erstellt. Nur der Sender kennt seinen Private Key — daher beweist die Signatur seine Identität.\n\n \n\n Merkhilfe: Sender's private key ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728668229955"
+    ]
+  },
+  {
+    "card_id": "1728668272627",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728668539274",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728668742654",
+    "question": "M1-077: Which system involves a trusted third party storing and managing private keys on behalf of an organization or user?",
+    "A": "Certificate Revocation",
+    "B": "Key Escrow",
+    "C": "Key Rotation",
+    "D": "OCSP Stapling",
+    "correct": "B",
+    "explanation_de": "Key Escrow = Drittpartei verwahrt Private Keys (z.B. für behördliche Zugriffe oder Recovery). Ermöglicht Zugriff auf verschlüsselte Daten bei Schlüsselverlust.\n\n \n\n Merkhilfe: Key Escrow ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728668742655"
+    ]
+  },
+  {
+    "card_id": "1728668936562",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728668987386",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728669036922",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728669078281",
+    "question": "M1-078: Which database encryption method uses separate symmetric keys for individual columns, allowing selective encryption of sensitive fields?",
+    "A": "Transparent encryption",
+    "B": "Field-level encryption",
+    "C": "Full-disk encryption",
+    "D": "Record-level encryption",
+    "correct": "D",
+    "explanation_de": "Record-level (Column-level) Encryption verschlüsselt einzelne Spalten mit eigenen Schlüsseln. Selective: nur sensible Felder (SSN, Kreditkartennummer) werden verschlüsselt.\n\n \n\n Merkhilfe: Record-level encryption ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728669078282",
+      "1728669078283"
+    ]
+  },
+  {
+    "card_id": "1728669233798",
+    "question": "M1-079: Which type of encryption protects data as it moves across a network between two endpoints?",
+    "A": "Database encryption",
+    "B": "Full-disk encryption",
+    "C": "Transport encryption",
+    "D": "File-level encryption",
+    "correct": "C",
+    "explanation_de": "Transport Encryption (z.B. TLS/SSL, IPsec) schützt Daten während der Übertragung (Data in Transit). Full-disk und File-level schützen Data at Rest.\n\n \n\n Merkhilfe: Transport encryption ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728669233799"
+    ]
+  },
+  {
+    "card_id": "1728669281455",
+    "question": "M1-080: When a VPN (Virtual Private Network) is used, what happens to the transmitted data?",
+    "A": "Only authentication data is encrypted",
+    "B": "Data is compressed but not encrypted",
+    "C": "All traffic is encrypted end-to-end",
+    "D": "Encryption is optional per session",
+    "correct": "C",
+    "explanation_de": "VPNs verschlüsseln den gesamten Datenverkehr in einem sicheren Tunnel. Alle Pakete zwischen Client und VPN-Gateway sind verschlüsselt.\n\n \n\n Merkhilfe: All traffic is encrypted end-to-end ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728669344784",
+    "question": "M1-081: Which protocol, now considered deprecated and replaced by TLS, was originally used alongside TLS and IPsec for encrypting network traffic?",
+    "A": "PPTP",
+    "B": "SSH",
+    "C": "SSL",
+    "D": "DTLS",
+    "correct": "C",
+    "explanation_de": "SSL (Secure Sockets Layer) ist der Vorläufer von TLS. SSL ist veraltet und unsicher — TLS 1.2/1.3 hat es ersetzt. SSH ist für Remote-Zugriff, nicht primär für Web.\n\n \n\n Merkhilfe: SSL ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728669344785",
+      "1728669344786"
+    ]
+  },
+  {
+    "card_id": "1728669378687",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728669447438",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728669694596",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728669781020",
+    "question": "M1-082: Which key length provides greater resistance to brute-force attacks?",
+    "A": "Shorter keys are more secure",
+    "B": "Key length has no effect on security",
+    "C": "Longer keys are more secure",
+    "D": "Security depends on algorithm only",
+    "correct": "C",
+    "explanation_de": "Längere Schlüssel erhöhen den Aufwand für Brute-Force-Angriffe exponentiell. AES-256 ist sicherer als AES-128, weil 2^256 mögliche Schlüssel existieren.\n\n \n\n Merkhilfe: Longer keys are more secure ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728669901392",
+    "question": "M1-083: Which process involves repeatedly re-hashing or re-encrypting data with additional keys to make brute-force attacks more computationally expensive?",
+    "A": "Key rotation",
+    "B": "Key escrow",
+    "C": "Salting",
+    "D": "Key stretching",
+    "correct": "D",
+    "explanation_de": "Key Stretching (z.B. PBKDF2, bcrypt) erhöht den Aufwand pro Angriff durch viele Iterationen. Auch als Key Strengthening bekannt.\n\n \n\n Merkhilfe: Key stretching ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728669901393",
+      "1728669901394"
+    ]
+  },
+  {
+    "card_id": "1728669937321",
+    "question": "M1-084: Which technique is used to ensure that password hashing remains resistant to increasingly powerful attack hardware over time?",
+    "A": "Certificate stapling",
+    "B": "Key escrow",
+    "C": "Key stretching",
+    "D": "Salting alone",
+    "correct": "C",
+    "explanation_de": "Key Stretching passt den Rechenaufwand dynamisch an. Durch mehr Iterationen bleibt das Knacken teuer, auch wenn Hardware schneller wird.\n\n \n\n Merkhilfe: Key stretching ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728669937322"
+    ]
+  },
+  {
+    "card_id": "1728675213140",
+    "question": "M1-085: In key exchange, which term describes using a separate communication channel (not the same network being secured) to transmit a cryptographic key?",
+    "A": "In-band distribution",
+    "B": "Key escrow",
+    "C": "Out-of-band key exchange",
+    "D": "Session key rotation",
+    "correct": "C",
+    "explanation_de": "Out-of-Band = anderer Kanal als der gesicherte. Z.B. USB-Stick, Telefon oder persönlich übergeben, statt über das gleiche Netzwerk, das verschlüsselt werden soll.\n\n \n\n Merkhilfe: Out-of-band key exchange ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728675213139"
+    ]
+  },
+  {
+    "card_id": "1728675352302",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728675511788",
+    "question": "M1-086: To securely exchange a symmetric session key with a server, a client encrypts the session key using which of the server's keys?",
+    "A": "Server's private key",
+    "B": "CA's public key",
+    "C": "Shared pre-master key",
+    "D": "Server's public key",
+    "correct": "D",
+    "explanation_de": "Der Client verschlüsselt den Session-Key mit dem Public Key des Servers. Nur der Server kann ihn mit seinem Private Key entschlüsseln — sicherer Schlüsselaustausch.\n\n \n\n Merkhilfe: Server's public key ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728675511787"
+    ]
+  },
+  {
+    "card_id": "1728675650498",
+    "question": "M1-087: A key exchange algorithm uses the mathematical relationship between two parties' public and private keys to derive which type of key?",
+    "A": "Asymmetric key",
+    "B": "Master key",
+    "C": "Symmetric key",
+    "D": "Session certificate",
+    "correct": "C",
+    "explanation_de": "Algorithmen wie Diffie-Hellman erzeugen aus zwei asymmetrischen Schlüsselpaaren einen gemeinsamen symmetrischen Schlüssel, ohne ihn jemals über das Netzwerk zu senden.\n\n \n\n Merkhilfe: Symmetric key ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728675650497"
+    ]
+  },
+  {
+    "card_id": "1728675746261",
+    "question": "M1-088: Which hardware component is embedded on a computer's motherboard to provide cryptographic functions including key generation and secure storage?",
+    "A": "Hardware Security Module (HSM)",
+    "B": "Secure Enclave",
+    "C": "Trusted Platform Module (TPM)",
+    "D": "Key Management System",
+    "correct": "C",
+    "explanation_de": "TPM = Chip auf dem Motherboard für kryptografische Operationen und sichere Schlüsselspeicherung. Unterschied zu HSM: TPM ist gerätegebunden, HSM ist ein eigenständiges Gerät.\n\n \n\n Merkhilfe: Trusted Platform Module (TPM) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728675746260"
+    ]
+  },
+  {
+    "card_id": "1728675819604",
+    "question": "M1-089: Which statement about a Trusted Platform Module (TPM) and brute-force attacks is correct?",
+    "A": "TPMs are highly vulnerable to brute-force",
+    "B": "TPMs lock after repeated failed attempts, preventing brute-force",
+    "C": "TPMs store keys in plaintext, enabling easy extraction",
+    "D": "Brute-force attacks are the primary threat to TPMs",
+    "correct": "B",
+    "explanation_de": "TPMs implementieren Anti-Hammering-Schutz — nach mehreren Fehlversuchen wird der Chip gesperrt. Das macht Brute-Force praktisch unmöglich.\n\n \n\n Merkhilfe: TPMs lock after repeated failed attempts, preventing brute-force ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728676495697",
+    "question": "M1-090: Which dedicated hardware appliance is specifically designed to manage and safeguard large numbers of cryptographic keys in enterprise environments, typically deployed in clusters?",
+    "A": "Trusted Platform Module (TPM)",
+    "B": "Secure Enclave",
+    "C": "Key Management System",
+    "D": "Hardware Security Module (HSM)",
+    "correct": "D",
+    "explanation_de": "HSM = eigenständiges, gehärtetes Gerät für kryptografische Schlüsselverwaltung in großem Maßstab. Verwendet in Banken, CAs und Rechenzentren.\n\n \n\n Merkhilfe: Hardware Security Module (HSM) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728676495698"
+    ]
+  },
+  {
+    "card_id": "1728676616843",
+    "question": "M1-091: Which solution provides a centralized platform to manage cryptographic keys from multiple sources across an organization?",
+    "A": "Certificate Authority",
+    "B": "Key Management System",
+    "C": "Hardware Security Module",
+    "D": "OCSP Responder",
+    "correct": "B",
+    "explanation_de": "Key Management System (KMS) = zentrale Verwaltung aller kryptografischen Schlüssel. Unterstützt Rotation, Ablauf und Auditing. Unterschied zu HSM: KMS ist Software/Service.\n\n \n\n Merkhilfe: Key Management System ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728676658755",
+    "question": "M1-092: Which Key Management System feature automatically replaces old cryptographic keys with new ones on a regular schedule?",
+    "A": "Key escrow",
+    "B": "Key stretching",
+    "C": "Key rotation",
+    "D": "Key derivation",
+    "correct": "C",
+    "explanation_de": "Key Rotation = regelmäßiger automatischer Schlüsselwechsel. Begrenzt das Risiko: selbst wenn ein Schlüssel kompromittiert wurde, ist er bald ungültig.\n\n \n\n Merkhilfe: Key rotation ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728676658756"
+    ]
+  },
+  {
+    "card_id": "1728676824909",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728676973105",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728677282633",
+    "question": "M1-093: Which security technique involves deliberately making software or data difficult to understand in order to hinder analysis or reverse engineering?",
+    "A": "Encryption",
+    "B": "Steganography",
+    "C": "Obfuscation",
+    "D": "Tokenization",
+    "correct": "C",
+    "explanation_de": "Obfuskation = absichtliche Verschleierung von Code oder Daten. Unterschied zu Verschlüsselung: Obfuskation macht schwer verständlich, nicht unlesbar.\n\n \n\n Merkhilfe: Obfuscation ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728677282631",
+      "1728677282632"
+    ]
+  },
+  {
+    "card_id": "1728677405231",
+    "question": "M1-094: Which statement about obfuscation and reverse engineering is correct?",
+    "A": "Obfuscation is immune to reverse engineering",
+    "B": "Obfuscation permanently prevents code analysis",
+    "C": "Obfuscation is vulnerable to reverse engineering",
+    "D": "Reverse engineering requires physical access",
+    "correct": "C",
+    "explanation_de": "Obfuskation erhöht die Schwierigkeit, verhindert Reverse Engineering aber nicht vollständig. Mit ausreichend Zeit und Ressourcen kann obfuskierter Code analysiert werden.\n\n \n\n Merkhilfe: Obfuscation is vulnerable to reverse engineering ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728677504907",
+    "question": "M1-095: Which obfuscation technique hides secret data inside an innocent-looking carrier file such as an image, audio file, or video?",
+    "A": "Tokenization",
+    "B": "Data masking",
+    "C": "Watermarking",
+    "D": "Steganography",
+    "correct": "D",
+    "explanation_de": "Steganographie = Verstecken von Daten in anderen Dateiformaten. Z.B. geheime Nachricht in den LSBs (Least Significant Bits) eines Bildes. Kein Schlüssel sichtbar.\n\n \n\n Merkhilfe: Steganography ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728677504908"
+    ]
+  },
+  {
+    "card_id": "1728677570850",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728677849716",
+    "question": "M1-096: Which obfuscation technique replaces sensitive data with a non-sensitive placeholder during transmission, with the original value stored separately for retrieval in a secure environment?",
+    "A": "Steganography",
+    "B": "Encryption",
+    "C": "Tokenization",
+    "D": "Data masking",
+    "correct": "C",
+    "explanation_de": "Tokenization = Austausch sensibler Daten durch Token. Kreditkartennummern werden durch Tokens ersetzt, die nur im Zahlungssystem zurückkonvertiert werden können.\n\n \n\n Merkhilfe: Tokenization ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728677849715"
+    ]
+  },
+  {
+    "card_id": "1728677915175",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728677953056",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728678025496",
+    "question": "M1-097: Which obfuscation technique partially conceals sensitive data by replacing characters with neutral substitutes (e.g., showing only the last 4 digits of a credit card number)?",
+    "A": "Tokenization",
+    "B": "Steganography",
+    "C": "Encryption",
+    "D": "Data masking",
+    "correct": "D",
+    "explanation_de": "Data Masking = sichtbarer Teil wird durch Platzhalter ersetzt (z.B. ****-****-****-1234). Daten bleiben nutzbar, aber sensible Teile werden verborgen.\n\n \n\n Merkhilfe: Data masking ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728678025497"
+    ]
+  },
+  {
+    "card_id": "1728678521196",
+    "question": "M1-098: What term describes the situation where two different inputs produce the same output hash value?",
+    "A": "Hash inversion",
+    "B": "Preimage attack",
+    "C": "Hash collision",
+    "D": "Salt reuse",
+    "correct": "C",
+    "explanation_de": "Hash Collision = zwei unterschiedliche Eingaben ergeben denselben Hash-Wert. Gefährlich in digitalen Signaturen — MD5 und SHA-1 sind kollisionsanfällig.\n\n \n\n Merkhilfe: Hash collision ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728678521197"
+    ]
+  },
+  {
+    "card_id": "1728678584663",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728678774745",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728678905175",
+    "question": "M1-099: How are user passwords typically stored in a secure system?",
+    "A": "Encrypted with the server's public key",
+    "B": "In plaintext with access restrictions",
+    "C": "As a hashed value with added salt",
+    "D": "Tokenized and stored in a separate vault",
+    "correct": "C",
+    "explanation_de": "Passwörter werden als Hash + Salt gespeichert. Niemand außer dem Benutzer kennt das Klartext-Passwort. Deshalb kann man Passwörter nur zurücksetzen, nicht abrufen.\n\n \n\n Merkhilfe: As a hashed value with added salt ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728678954965",
+    "question": "M1-100: In password hashing, what is 'salt'?",
+    "A": "A second password used for verification",
+    "B": "A pepper value added after hashing",
+    "C": "Random data appended to a password before hashing",
+    "D": "The output length of a hashing algorithm",
+    "correct": "C",
+    "explanation_de": "Salt = zufällige Zeichenfolge, die vor dem Hashing zum Passwort hinzugefügt wird. Jedes Konto hat eigenes Salt, verhindert Rainbow-Table-Angriffe.\n\n \n\n Merkhilfe: Random data appended to a password before hashing ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728678954964"
+    ]
+  },
+  {
+    "card_id": "1728679006387",
+    "question": "M1-101: Which type of precomputed lookup table maps common passwords and inputs to their hash values, enabling rapid password cracking?",
+    "A": "Hash collision table",
+    "B": "Salt database",
+    "C": "Rainbow table",
+    "D": "Brute-force dictionary",
+    "correct": "C",
+    "explanation_de": "Rainbow Table = vorberechnete Tabelle aller möglichen Passwort-Hashes. Salting macht Rainbow Tables unwirksam, weil jedes Passwort ein einzigartiges Salt hat.\n\n \n\n Merkhilfe: Rainbow table ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728679006388"
+    ]
+  },
+  {
+    "card_id": "1728679028920",
+    "question": "M1-102: Which statement about the effectiveness of Rainbow Table attacks against salted password hashes is correct?",
+    "A": "Rainbow tables are highly effective against salted hashes",
+    "B": "Salt increases speed but not security against rainbow tables",
+    "C": "Salting makes rainbow table attacks impractical",
+    "D": "Rainbow tables bypass salt by targeting the algorithm",
+    "correct": "C",
+    "explanation_de": "Salt macht Rainbow Tables unwirksam: da jedes Passwort ein eigenes Salt hat, müsste für jedes Salt eine neue Tabelle erstellt werden — nicht praktikabel.\n\n \n\n Merkhilfe: Salting makes rainbow table attacks impractical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728679899388",
+    "question": "M1-103: Which technology maintains an immutable, distributed ledger of transactions shared across many participants, with no single central authority?",
+    "A": "RAID array",
+    "B": "Certificate Revocation List",
+    "C": "Blockchain",
+    "D": "Distributed Hash Table",
+    "correct": "C",
+    "explanation_de": "Blockchain = verteiltes, unveränderliches Transaktionsbuch. Jeder Knoten hält eine Kopie. Manipulation erfordert Änderung aller Kopien gleichzeitig — praktisch unmöglich.\n\n \n\n Merkhilfe: Blockchain ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728679899389"
+    ]
+  },
+  {
+    "card_id": "1728679945030",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728680089823",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728680214761",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728832173306",
+    "question": "M1-104: A digital certificate is a file that contains a digital signature and which other critical component?",
+    "A": "Symmetric key",
+    "B": "Password hash",
+    "C": "Private key",
+    "D": "Public key",
+    "correct": "D",
+    "explanation_de": "Ein digitales Zertifikat enthält den Public Key des Inhabers plus eine digitale Signatur der CA. Private Keys werden nie in Zertifikaten gespeichert.\n\n \n\n Merkhilfe: Public key ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728832173307",
+      "1728832173308"
+    ]
+  },
+  {
+    "card_id": "1728832246367",
+    "question": "M1-105: If a Certificate Authority (CA) trusts and issues a certificate to a user or device, what can relying parties conclude?",
+    "A": "The certificate is self-signed and unverified",
+    "B": "The entity has passed the CA's validation and can be trusted",
+    "C": "The private key is stored at the CA",
+    "D": "The certificate is valid for 10 years",
+    "correct": "B",
+    "explanation_de": "CA-Vertrauen ist transitiv: wenn der Browser der CA vertraut und die CA dem Zertifikat, vertraut der Browser dem Zertifikat. Grundlage der PKI-Vertrauenskette.\n\n \n\n Merkhilfe: The entity has passed the CA's validation and can be trusted ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728832318150",
+    "question": "M1-106: Which trust model relies on a network of users who have mutually signed each other's certificates, rather than a single central authority?",
+    "A": "Hierarchical CA",
+    "B": "Cross-certification",
+    "C": "Web of Trust",
+    "D": "Root CA model",
+    "correct": "C",
+    "explanation_de": "Web of Trust = dezentrales Vertrauensmodell (z.B. PGP). Benutzer signieren gegenseitig Zertifikate. Kein Hierarchiemodell wie bei PKI.\n\n \n\n Merkhilfe: Web of Trust ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728832318151"
+    ]
+  },
+  {
+    "card_id": "1728832382513",
+    "question": "M1-107: What is the standard format used for digital certificates in PKI?",
+    "A": "PEM v3",
+    "B": "PKCS#12",
+    "C": "X.509",
+    "D": "ASN.1",
+    "correct": "C",
+    "explanation_de": "X.509 ist der ISO/ITU-Standard für digitale Zertifikate. Enthält Serial Number, Issuer, Subject, Public Key, Gültigkeitszeitraum und Signatur der CA.\n\n \n\n Merkhilfe: X.509 ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728832486334",
+    "question": "M1-108: Which field in an X.509 digital certificate identifies the Certificate Authority that signed and issued the certificate?",
+    "A": "Subject",
+    "B": "Serial Number",
+    "C": "Public Key",
+    "D": "Issuer",
+    "correct": "D",
+    "explanation_de": "Das Issuer-Feld des X.509-Zertifikats nennt die ausstellende CA. Subject = Zertifikatsinhaber. Serial Number = eindeutige Identifikation des Zertifikats bei der CA.\n\n \n\n Merkhilfe: Issuer ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728832486333",
+      "1728832486335",
+      "1728832486336",
+      "1728832486337",
+      "1728832486338"
+    ]
+  },
+  {
+    "card_id": "1728832628955",
+    "question": "M1-109: Which concept refers to an inherently trusted third-party component (such as an HSM, Secure Enclave, or CA) that serves as the foundation of trust for cryptographic operations?",
+    "A": "Trust anchor",
+    "B": "Key escrow",
+    "C": "Root of Trust",
+    "D": "Certificate chain",
+    "correct": "C",
+    "explanation_de": "Root of Trust = der ultimative Vertrauensanker. Alles andere vertraut darauf. Beispiele: Root CA in PKI, TPM-Chip für Secure Boot, HSM für Schlüsselerzeugung.\n\n \n\n Merkhilfe: Root of Trust ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728832628956"
+    ]
+  },
+  {
+    "card_id": "1728832735049",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728832804033",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728833045831",
+    "question": "M1-110: What document does an entity submit to a Certificate Authority to request a digitally signed certificate?",
+    "A": "Public Key Exchange (PKE)",
+    "B": "Certificate Policy (CP)",
+    "C": "Certificate Signing Request (CSR)",
+    "D": "Online Certificate Status Protocol (OCSP) request",
+    "correct": "C",
+    "explanation_de": "CSR = Certificate Signing Request. Enthält den Public Key und Identitätsinformationen des Antragstellers. Die CA prüft den CSR und stellt das Zertifikat aus.\n\n \n\n Merkhilfe: Certificate Signing Request (CSR) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728833152415",
+    "question": "M1-111: An organization that manages its own Certificate Authority for internal use must ensure that all internal devices trust what?",
+    "A": "A third-party commercial CA",
+    "B": "The organization's own internal CA",
+    "C": "The government root CA",
+    "D": "Microsoft's enterprise CA",
+    "correct": "B",
+    "explanation_de": "Interne CAs müssen auf allen unternehmenseigenen Geräten als vertrauenswürdig konfiguriert sein. Externe CAs sind für interne Zertifikate nicht erforderlich.\n\n \n\n Merkhilfe: The organization's own internal CA ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728833274722",
+    "question": "M1-112: Which statement about internal (self-issued) certificates is correct?",
+    "A": "They must be countersigned by a public CA to be valid",
+    "B": "They require annual renewal from a commercial CA",
+    "C": "They do not need to be signed by a public CA for internal use",
+    "D": "They are invalid without a third-party audit",
+    "correct": "C",
+    "explanation_de": "Interne Zertifikate müssen nur von der internen CA signiert sein. Es besteht kein Bedarf, für interne Verwendung Vertrauen von kommerziellen CAs zu kaufen.\n\n \n\n Merkhilfe: They do not need to be signed by a public CA for internal use ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728833723021",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728833822183",
+    "question": "M1-113: Which X.509 certificate extension allows a single certificate to cover multiple domain names owned by the same organization?",
+    "A": "Wildcard Certificate",
+    "B": "Extended Validation field",
+    "C": "Certificate Pinning",
+    "D": "Subject Alternative Name (SAN)",
+    "correct": "D",
+    "explanation_de": "SAN (Subject Alternative Name) = Zertifikatserweiterung, die mehrere FQDNs in einem Zertifikat abdeckt. Wildcard (*.) deckt alle Subdomains einer Ebene ab — beide sind verschieden.\n\n \n\n Merkhilfe: Subject Alternative Name (SAN) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728833822184",
+      "1728833822185"
+    ]
+  },
+  {
+    "card_id": "1728833850610",
+    "question": "M1-114: What is the term for the process of invalidating a certificate or key before its natural expiration date?",
+    "A": "Certificate stapling",
+    "B": "Certificate pinning",
+    "C": "Certificate suspension",
+    "D": "Key revocation",
+    "correct": "D",
+    "explanation_de": "Key/Certificate Revocation = vorzeitige Ungültigkeitserklärung. Notwendig z.B. bei Schlüsselkompromittierung oder Serverdekommissionierung. Erfasst in der CRL.\n\n \n\n Merkhilfe: Key revocation ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728833850611"
+    ]
+  },
+  {
+    "card_id": "1728833900981",
+    "question": "M1-115: Which CA-maintained list contains certificates that have been revoked before their expiration date?",
+    "A": "OCSP Staple",
+    "B": "Certificate Revocation List (CRL)",
+    "C": "Trust Store",
+    "D": "Certificate Transparency Log",
+    "correct": "B",
+    "explanation_de": "CRL (Certificate Revocation List) = von der CA veröffentlichte Liste widerrufener Zertifikate. Clients prüfen die CRL, um zu verifizieren ob ein Zertifikat noch gültig ist.\n\n \n\n Merkhilfe: Certificate Revocation List (CRL) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728833900980"
+    ]
+  },
+  {
+    "card_id": "1728833938334",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728834227764",
+    "question": "M1-116: Which protocol allows a certificate holder to attach real-time revocation status information (obtained from the CA) directly to the certificate during the TLS handshake?",
+    "A": "Certificate Pinning",
+    "B": "Certificate Transparency",
+    "C": "Online Certificate Status Protocol (OCSP)",
+    "D": "OCSP Stapling",
+    "correct": "D",
+    "explanation_de": "OCSP Stapling = der Server (nicht der Client) fragt die CA nach dem OCSP-Status und fügt die signierte Antwort dem Zertifikat bei. Effizienter als Client-seitige OCSP-Anfragen.\n\n \n\n Merkhilfe: OCSP Stapling ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728834227763"
+    ]
+  },
+  {
+    "card_id": "1728834287549",
+    "question": "M1-117: What distinguishes OCSP Stapling from standard OCSP?",
+    "A": "OCSP Stapling uses CRL instead of OCSP",
+    "B": "OCSP Stapling embeds the CA's revocation response in the TLS handshake rather than requiring the client to query the CA",
+    "C": "OCSP Stapling requires client-side software",
+    "D": "OCSP Stapling only works with EV certificates",
+    "correct": "B",
+    "explanation_de": "Standard OCSP: Client fragt CA direkt. OCSP Stapling: Server fragt CA, heftet die signierte Antwort ans Zertifikat — spart Latenz und schützt Privatsphäre des Clients.\n\n \n\n Merkhilfe: OCSP Stapling embeds the CA's revocation response in the TLS handshake rather than requiring the client to query the CA ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728834287548"
+    ]
+  },
+  {
+    "card_id": "1728834325821",
+    "question": "M1-118: What does the acronym OCSP stand for?",
+    "A": "Online Certificate Signing Protocol",
+    "B": "Organizational Certificate Status Provider",
+    "C": "Online Certificate Status Protocol",
+    "D": "Offline Certificate Security Protocol",
+    "correct": "C",
+    "explanation_de": "OCSP = Online Certificate Status Protocol. Ermöglicht Echtzeit-Prüfung ob ein Zertifikat widerrufen wurde — Alternative zur CRL.\n\n \n\n Merkhilfe: Online Certificate Status Protocol ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728834325822"
+    ]
+  },
+  {
+    "card_id": "1728834357184",
+    "question": "M1-119: What does the acronym CRL stand for in the context of PKI?",
+    "A": "Certificate Rotation Log",
+    "B": "Cryptographic Revocation Lookup",
+    "C": "Certificate Revocation List",
+    "D": "Central Registration Ledger",
+    "correct": "C",
+    "explanation_de": "CRL = Certificate Revocation List. Von der CA veröffentlicht und enthält alle vor Ablauf widerrufenen Zertifikate. Clients können diese Liste regelmäßig herunterladen.\n\n \n\n Merkhilfe: Certificate Revocation List ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728834357185"
+    ]
+  },
+  {
+    "card_id": "1728834517490",
+    "question": "M1-120: Which statement about browser support for OCSP is most accurate?",
+    "A": "All modern browsers fully support OCSP",
+    "B": "OCSP is only supported by enterprise browsers",
+    "C": "OCSP support is inconsistent — some browsers claim support but do not perform checks properly",
+    "D": "OCSP has replaced CRL in all browsers",
+    "correct": "C",
+    "explanation_de": "OCSP-Unterstützung ist inkonsistent: veraltete Browser unterstützen es gar nicht, manche modernen Browser melden Unterstützung, führen aber keine echten Prüfungen durch.\n\n \n\n Merkhilfe: OCSP support is inconsistent — some browsers claim support but do not perform checks properly ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728576158285",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728576160001",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728576162553",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728576164680",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728576187428",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728576189497",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728576306256",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728577500651",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728577500652",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728577821443",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728577821444",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728578090978",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728580188326",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728580217217",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728580548744",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728580548746",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728580628087",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728580682933",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728581540967",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728581580596",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728581729535",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728581762964",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728582843102",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728582843104",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728582999435",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728582999436",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728582999437",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728594140583",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728594140584",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728594394716",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728594623360",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728594623361",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728594673377",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728595068496",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728595118705",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728595118706",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728595832897",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728595832899",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728597050714",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728597050715",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728597457325",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728597497927",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728597730509",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728597766133",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728597958792",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728598021008",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728598101102",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728598152356",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728598372477",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728598425244",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728664798814",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728665306141",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728665541774",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728665729506",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728665874002",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728666141436",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728666141437",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728666224131",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728666563666",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728668155925",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728668936561",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728668987385",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728669036921",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728669105852",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728669198035",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728669447436",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728669447437",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728669694595",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728669823849",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728669823850",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728675352303",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728675352304",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728676824908",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728678584662",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728679945031",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728680089824",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728833723020",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728833938335",
+    "needs_review": true
+  }
+]

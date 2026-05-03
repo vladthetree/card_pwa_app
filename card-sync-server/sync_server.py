@@ -57,6 +57,79 @@ HEALTH_LOG_EVERY_MS = os.environ.get("SYNC_HEALTH_LOG_EVERY_MS", "60000")
 
 DEFAULT_PROFILE_NAME = "Default"
 
+SY0_701_ROOT_DECKS = {
+  "1": ("01_General_Security_Concepts", "General Security Concepts"),
+  "2": ("02_Threats_Vulnerabilities_Mitigations", "Threats, Vulnerabilities, and Mitigations"),
+  "3": ("03_Security_Architecture", "Security Architecture"),
+  "4": ("04_Security_Operations", "Security Operations"),
+  "5": ("05_Security_Program_Management_Oversight", "Security Program Management and Oversight"),
+}
+
+SY0_701_OBJECTIVES = [
+  ("1.1", "Security Controls", SY0_701_ROOT_DECKS["1"][0]),
+  ("1.2", "Security Concepts", SY0_701_ROOT_DECKS["1"][0]),
+  ("1.3", "Change Management", SY0_701_ROOT_DECKS["1"][0]),
+  ("1.4", "Cryptographic Solutions", SY0_701_ROOT_DECKS["1"][0]),
+  ("2.1", "Threat Actors", SY0_701_ROOT_DECKS["2"][0]),
+  ("2.2", "Threat Vectors and Attack Surfaces", SY0_701_ROOT_DECKS["2"][0]),
+  ("2.3", "Types of Vulnerabilities", SY0_701_ROOT_DECKS["2"][0]),
+  ("2.4", "Indicators of Malicious Activity", SY0_701_ROOT_DECKS["2"][0]),
+  ("2.5", "Mitigation Techniques", SY0_701_ROOT_DECKS["2"][0]),
+  ("3.1", "Architecture Models", SY0_701_ROOT_DECKS["3"][0]),
+  ("3.2", "Applying Security Principles", SY0_701_ROOT_DECKS["3"][0]),
+  ("3.3", "Protecting Data", SY0_701_ROOT_DECKS["3"][0]),
+  ("3.4", "Resiliency and Recovery", SY0_701_ROOT_DECKS["3"][0]),
+  ("4.1", "Security Techniques", SY0_701_ROOT_DECKS["4"][0]),
+  ("4.2", "Asset Management", SY0_701_ROOT_DECKS["4"][0]),
+  ("4.3", "Vulnerability Management", SY0_701_ROOT_DECKS["4"][0]),
+  ("4.4", "Security Monitoring", SY0_701_ROOT_DECKS["4"][0]),
+  ("4.5", "Enterprise Security", SY0_701_ROOT_DECKS["4"][0]),
+  ("4.6", "Identity and Access Management", SY0_701_ROOT_DECKS["4"][0]),
+  ("4.7", "Automation and Orchestration", SY0_701_ROOT_DECKS["4"][0]),
+  ("4.8", "Incident Response", SY0_701_ROOT_DECKS["4"][0]),
+  ("4.9", "Security Data Sources", SY0_701_ROOT_DECKS["4"][0]),
+  ("5.1", "Security Governance", SY0_701_ROOT_DECKS["5"][0]),
+  ("5.2", "Risk Management", SY0_701_ROOT_DECKS["5"][0]),
+  ("5.3", "Third-party Risk", SY0_701_ROOT_DECKS["5"][0]),
+  ("5.4", "Security Compliance", SY0_701_ROOT_DECKS["5"][0]),
+  ("5.5", "Audits and Assessments", SY0_701_ROOT_DECKS["5"][0]),
+  ("5.6", "Security Awareness", SY0_701_ROOT_DECKS["5"][0]),
+]
+
+
+def security_objective_deck_id(code: str) -> str:
+  return f"sy0-701-objective-{code.replace('.', '-')}"
+
+
+def security_objective_deck_name(code: str, title: str) -> str:
+  return f"{code} {title}"
+
+
+def infer_security_root_deck_name(deck_name: str | None) -> str | None:
+  if not deck_name:
+    return None
+  for root_name, _domain in SY0_701_ROOT_DECKS.values():
+    if deck_name == root_name:
+      return root_name
+  import re as _re
+  m = _re.search(r"::Section\s+([1-5])\s*:", deck_name, _re.IGNORECASE)
+  if not m:
+    return None
+  root = SY0_701_ROOT_DECKS.get(m.group(1))
+  return root[0] if root else None
+
+
+def infer_security_objective_code(deck_name: str | None) -> str | None:
+  if not deck_name:
+    return None
+  import re as _re
+  m = _re.search(r"::\s*([1-5])\.(\d{1,2})(?:\.\d{1,2})?\s*:", deck_name)
+  if not m:
+    return None
+  code = f"{m.group(1)}.{int(m.group(2))}"
+  valid = {entry[0] for entry in SY0_701_OBJECTIVES}
+  return code if code in valid else None
+
 
 def get_default_profile_id(conn) -> str | None:
   """Return user_id of the Default profile, or None if it doesn't exist."""
@@ -83,6 +156,89 @@ def ensure_default_profile(conn) -> str:
   conn.commit()
   LOGGER.info("DEFAULT_PROFILE_CREATED  user_id=%s", user_id[:8])
   return user_id
+
+
+def ensure_security_deck_hierarchy(conn, user_id=None) -> None:
+  """Keep the SY0-701 root decks as roots and seed objective subdecks."""
+  user_ids = [scope_user_id(user_id)] if user_id is not None else [
+    row[0] for row in conn.execute("SELECT DISTINCT user_id FROM server_decks").fetchall()
+  ]
+  now = now_ms()
+
+  for state_user_id in user_ids:
+    rows = conn.execute(
+      "SELECT id, name, parent_deck_id, deleted_at FROM server_decks WHERE user_id=?",
+      (state_user_id,),
+    ).fetchall()
+    active_by_name = {row[1]: row for row in rows if row[3] is None and row[1]}
+    active_ids = {row[0] for row in rows if row[3] is None}
+
+    for root_name, _domain in SY0_701_ROOT_DECKS.values():
+      root = active_by_name.get(root_name)
+      if not root:
+        continue
+      if root[2] is not None:
+        conn.execute(
+          "UPDATE server_decks SET parent_deck_id=NULL, updated_at=? WHERE user_id=? AND id=?",
+          (now, state_user_id, root[0]),
+        )
+
+    for code, title, root_name in SY0_701_OBJECTIVES:
+      root = active_by_name.get(root_name)
+      if not root:
+        continue
+      root_id = root[0]
+      objective_id = security_objective_deck_id(code)
+      objective_name = security_objective_deck_name(code, title)
+      existing = conn.execute(
+        "SELECT id, name, parent_deck_id, deleted_at FROM server_decks WHERE user_id=? AND id=?",
+        (state_user_id, objective_id),
+      ).fetchone()
+      if existing:
+        if existing[1] != objective_name or existing[2] != root_id or existing[3] is not None:
+          conn.execute(
+            """
+            UPDATE server_decks
+            SET name=?, parent_deck_id=?, source='system', deleted_at=NULL, updated_at=?
+            WHERE user_id=? AND id=?
+            """,
+            (objective_name, root_id, now, state_user_id, objective_id),
+          )
+      else:
+        conn.execute(
+          """
+          INSERT INTO server_decks
+          (id, name, parent_deck_id, created_at, source, updated_at, deleted_at, last_source_client, user_id)
+          VALUES (?, ?, ?, ?, 'system', ?, NULL, 'server-hierarchy', ?)
+          """,
+          (objective_id, objective_name, root_id, now, now, state_user_id),
+        )
+        active_ids.add(objective_id)
+
+    rows = conn.execute(
+      "SELECT id, name, parent_deck_id, deleted_at FROM server_decks WHERE user_id=?",
+      (state_user_id,),
+    ).fetchall()
+    active_by_name = {row[1]: row for row in rows if row[3] is None and row[1]}
+    active_ids = {row[0] for row in rows if row[3] is None}
+    root_ids = {active_by_name[root_name][0] for root_name, _ in SY0_701_ROOT_DECKS.values() if root_name in active_by_name}
+    objective_ids = {security_objective_deck_id(code) for code, _title, _root_name in SY0_701_OBJECTIVES}
+
+    for deck_id, deck_name, parent_deck_id, deleted_at in rows:
+      if deleted_at is not None or deck_id in root_ids or deck_id in objective_ids:
+        continue
+      if parent_deck_id and parent_deck_id in active_ids:
+        continue
+      root_name = infer_security_root_deck_name(deck_name)
+      root = active_by_name.get(root_name) if root_name else None
+      expected_parent_id = root[0] if root else None
+      if expected_parent_id and parent_deck_id != expected_parent_id:
+        conn.execute(
+          "UPDATE server_decks SET parent_deck_id=?, updated_at=? WHERE user_id=? AND id=?",
+          (expected_parent_id, now, state_user_id, deck_id),
+        )
+
+
 _LAST_HEALTH_LOG_BY_IP = {}
 
 def setup_logging():
@@ -303,6 +459,7 @@ def init_db():
     CREATE TABLE IF NOT EXISTS server_decks (
       id TEXT NOT NULL,
       name TEXT,
+      parent_deck_id TEXT,
       created_at INTEGER,
       source TEXT,
       updated_at INTEGER NOT NULL,
@@ -418,9 +575,13 @@ def init_db():
   if "user_id" not in deck_cols:
     conn.execute("ALTER TABLE server_decks ADD COLUMN user_id TEXT")
     conn.commit()
+  if "parent_deck_id" not in deck_cols:
+    conn.execute("ALTER TABLE server_decks ADD COLUMN parent_deck_id TEXT")
+    conn.commit()
   conn.execute("UPDATE server_decks SET user_id='' WHERE user_id IS NULL")
   conn.commit()
   conn.execute("CREATE INDEX IF NOT EXISTS idx_deck_user_id ON server_decks(user_id)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_deck_parent_id ON server_decks(user_id, parent_deck_id)")
   conn.commit()
 
   card_cols2 = [r[1] for r in conn.execute("PRAGMA table_info(server_cards)").fetchall()]
@@ -458,6 +619,7 @@ def init_db():
   conn.execute("CREATE INDEX IF NOT EXISTS idx_deck_deleted_at ON server_decks(deleted_at)")
   conn.execute("CREATE INDEX IF NOT EXISTS idx_deck_snapshot_active ON server_decks(id) WHERE deleted_at IS NULL")
   conn.execute("CREATE INDEX IF NOT EXISTS idx_deck_user_id ON server_decks(user_id)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_deck_parent_id ON server_decks(user_id, parent_deck_id)")
   conn.execute("CREATE INDEX IF NOT EXISTS idx_card_updated_at ON server_cards(updated_at)")
   conn.execute("CREATE INDEX IF NOT EXISTS idx_card_deleted_at ON server_cards(deleted_at)")
   conn.execute("CREATE INDEX IF NOT EXISTS idx_card_deck_id ON server_cards(deck_id)")
@@ -508,6 +670,9 @@ def init_db():
     conn.execute("UPDATE server_cards SET user_id=? WHERE user_id=''", (default_id,))
     conn.commit()
     LOGGER.info("UNMAPPED_MIGRATED  decks=%d  cards=%d  to=%s", empty_decks, empty_cards, default_id[:8])
+
+  ensure_security_deck_hierarchy(conn)
+  conn.commit()
 
   conn.close()
 
@@ -591,6 +756,34 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       or now
     )
 
+  def _normalize_parent_deck_id(value):
+    if isinstance(value, str):
+      stripped = value.strip()
+      return stripped or None
+    return None
+
+  def _collect_deck_delete_scope(initial_ids):
+    rows = conn.execute(
+      "SELECT id, parent_deck_id FROM server_decks WHERE user_id=? AND deleted_at IS NULL",
+      (state_user_id,),
+    ).fetchall()
+    children_by_parent = {}
+    for row_id, parent_id in rows:
+      if not parent_id:
+        continue
+      children_by_parent.setdefault(parent_id, []).append(row_id)
+    result = []
+    seen = set()
+    stack = [deck_id for deck_id in initial_ids if deck_id]
+    while stack:
+      current = stack.pop()
+      if current in seen:
+        continue
+      seen.add(current)
+      result.append(current)
+      stack.extend(children_by_parent.get(current, []))
+    return result
+
   if op_type == "deck.create":
     deck_id = payload.get("id")
     name = payload.get("name")
@@ -609,30 +802,39 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
     if deleted_at is None and payload.get("isDeleted"):
       deleted_at = candidate_ts
 
+    parent_deck_id = _normalize_parent_deck_id(payload.get("parentDeckId", payload.get("parent_deck_id")))
+
     conn.execute("""
-      INSERT OR REPLACE INTO server_decks (id, name, created_at, source, updated_at, deleted_at, last_source_client, user_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """, (deck_id, name, payload.get("createdAt") or now, payload.get("source"), candidate_ts, deleted_at, source_client, state_user_id))
+      INSERT OR REPLACE INTO server_decks (id, name, parent_deck_id, created_at, source, updated_at, deleted_at, last_source_client, user_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (deck_id, name, parent_deck_id, payload.get("createdAt") or now, payload.get("source"), candidate_ts, deleted_at, source_client, state_user_id))
+    ensure_security_deck_hierarchy(conn, state_user_id)
 
   elif op_type == "deck.delete":
-    deck_id = payload.get("deckId")
-    if not deck_id:
+    raw_deck_ids = payload.get("deckIds")
+    if isinstance(raw_deck_ids, list):
+      initial_deck_ids = [str(deck_id).strip() for deck_id in raw_deck_ids if str(deck_id or "").strip()]
+    else:
+      deck_id = str(payload.get("deckId") or "").strip()
+      initial_deck_ids = [deck_id] if deck_id else []
+    if not initial_deck_ids:
       return
     candidate_ts = _deck_candidate_ts()
-
-    existing = conn.execute(
-      "SELECT updated_at, last_source_client FROM server_decks WHERE id=? AND user_id=?",
-      (deck_id, state_user_id)
-    ).fetchone()
-    if existing and not lww_should_apply(existing[0], existing[1], candidate_ts, source_client):
-      return
-
     deleted_at = payload.get("deletedAt") or candidate_ts
+    deck_ids = _collect_deck_delete_scope(initial_deck_ids)
 
-    conn.execute("UPDATE server_decks SET deleted_at=?, updated_at=?, last_source_client=? WHERE id=? AND user_id=?",
-                 (deleted_at, candidate_ts, source_client, deck_id, state_user_id))
-    conn.execute("UPDATE server_cards SET deleted_at=?, is_deleted=1, updated_at=?, last_source_client=? WHERE deck_id=? AND user_id=?",
-                 (deleted_at, candidate_ts, source_client, deck_id, state_user_id))
+    for deck_id in deck_ids:
+      existing = conn.execute(
+        "SELECT updated_at, last_source_client FROM server_decks WHERE id=? AND user_id=?",
+        (deck_id, state_user_id)
+      ).fetchone()
+      if existing and not lww_should_apply(existing[0], existing[1], candidate_ts, source_client):
+        continue
+
+      conn.execute("UPDATE server_decks SET deleted_at=?, updated_at=?, last_source_client=? WHERE id=? AND user_id=?",
+                   (deleted_at, candidate_ts, source_client, deck_id, state_user_id))
+      conn.execute("UPDATE server_cards SET deleted_at=?, is_deleted=1, updated_at=?, last_source_client=? WHERE deck_id=? AND user_id=?",
+                   (deleted_at, candidate_ts, source_client, deck_id, state_user_id))
 
   elif op_type == "card.create":
     card_id = payload.get("id")
@@ -1827,15 +2029,20 @@ class Handler(BaseHTTPRequestHandler):
         deck_deleted_at = deck.get("deletedAt")
         if deck_deleted_at is None and deck.get("isDeleted"):
           deck_deleted_at = candidate_ts
+        raw_parent_deck_id = deck.get("parentDeckId", deck.get("parent_deck_id"))
+        parent_deck_id = raw_parent_deck_id.strip() if isinstance(raw_parent_deck_id, str) else None
+        if parent_deck_id == "":
+          parent_deck_id = None
         conn.execute(
           """
           INSERT OR REPLACE INTO server_decks
-          (id, name, created_at, source, updated_at, deleted_at, last_source_client, user_id)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          (id, name, parent_deck_id, created_at, source, updated_at, deleted_at, last_source_client, user_id)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
           """,
           (
             deck_id,
             deck.get("name"),
+            parent_deck_id,
             created_at,
             deck.get("source"),
             candidate_ts,
@@ -1848,6 +2055,8 @@ class Handler(BaseHTTPRequestHandler):
           summary["decksUpdated"] += 1
         else:
           summary["decksInserted"] += 1
+
+      ensure_security_deck_hierarchy(conn, state_user_id)
 
       # Upsert cards with LWW + tombstone support.
       for card in cards:
@@ -2223,7 +2432,7 @@ class Handler(BaseHTTPRequestHandler):
 
       rows = conn.execute(
         f"""
-        SELECT d.id, d.name, d.source, d.created_at, d.updated_at, d.deleted_at,
+        SELECT d.id, d.name, d.parent_deck_id, d.source, d.created_at, d.updated_at, d.deleted_at,
                COALESCE(NULLIF(TRIM(u.profile_name), ''), NULLIF(TRIM(u.display_name), ''), 'Profil ' || SUBSTR(d.user_id, 1, 8)) AS owner_profile_name
         FROM server_decks d
         LEFT JOIN users u ON u.user_id = d.user_id
@@ -2236,6 +2445,7 @@ class Handler(BaseHTTPRequestHandler):
       decks = [{
         "id": row["id"],
         "name": row["name"],
+        "parentDeckId": row["parent_deck_id"],
         "source": row["source"],
         "createdAt": row["created_at"],
         "updatedAt": row["updated_at"],
@@ -2280,7 +2490,7 @@ class Handler(BaseHTTPRequestHandler):
       else:
         where_deck = f"WHERE deleted_at IS NULL {user_filter}"
       decks_rows = conn.execute(
-        f"""SELECT id, name, created_at, source, updated_at, deleted_at, last_source_client
+        f"""SELECT id, name, parent_deck_id, created_at, source, updated_at, deleted_at, last_source_client
             FROM server_decks {where_deck} ORDER BY id ASC""",
         user_params
       ).fetchall()
@@ -2290,6 +2500,7 @@ class Handler(BaseHTTPRequestHandler):
         decks.append({
           "id": r["id"],
           "name": r["name"],
+          "parentDeckId": r["parent_deck_id"],
           "createdAt": r["created_at"],
           "source": r["source"],
           "updatedAt": r["updated_at"],
@@ -2592,6 +2803,8 @@ if __name__ == "__main__":
     # Rebuild server state from event log when enabled.
     conn = open_db()
     rebuild_server_state(conn)
+    ensure_security_deck_hierarchy(conn)
+    conn.commit()
     conn.close()
   else:
     log("STARTUP  rebuild skipped (SYNC_REBUILD_ON_START disabled)")

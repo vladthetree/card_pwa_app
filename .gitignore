@@ -17,10 +17,13 @@ card-sync-server/**/*.pyo
 card-sync-server/.pytest_cache/
 card-sync-server/logs/
 card-sync-server/sync.db
+card-sync-server/sync.db.pre_*
 card-sync-server/sync.db-shm
 card-sync-server/sync.db-wal
 card-sync-server/certs/
 card-sync-server/.env.sync-server
+card-sync-server/*_audit_report.jsonl
+card-sync-server/non_origin_default_schema_gap_report.jsonl
 
 # ─── Allgemein ────────────────────────────────────────────
 Design_System/

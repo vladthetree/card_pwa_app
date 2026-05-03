@@ -1,0 +1,2477 @@
+[
+  {
+    "card_id": "1729192837629",
+    "question": "M3-001: Which term refers to breaking an application down into individual functions which are called upon as needed, rather than having the entire application running all the time?",
+    "A": "Virtual Local Area Network",
+    "B": "Serverless Architecture",
+    "C": "Air Gap",
+    "D": "Orchestration",
+    "correct": "B",
+    "explanation_de": "Serverless Architecture ist der passende Security+-Begriff für diese Beschreibung: Serverless Architecture refers to breaking an application down into individual functions which are called upon as needed, rather than having the entire application running all the time. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Serverless Architecture = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729192837630",
+      "1729192837628"
+    ]
+  },
+  {
+    "card_id": "1729192719290",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729192719291"
+    ]
+  },
+  {
+    "card_id": "1729193003465",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729193003464"
+    ]
+  },
+  {
+    "card_id": "1729192979170",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729193599563",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729193599562"
+    ]
+  },
+  {
+    "card_id": "1729193517563",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729193106690",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729193106689",
+      "1729193106691"
+    ]
+  },
+  {
+    "card_id": "1729193028986",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729192411354",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729192651269",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729192651270"
+    ]
+  },
+  {
+    "card_id": "1729192238105",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729192238107",
+      "1729192238106"
+    ]
+  },
+  {
+    "card_id": "1729192441480",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729192441481"
+    ]
+  },
+  {
+    "card_id": "1729192169452",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729192169454",
+      "1729192169453"
+    ]
+  },
+  {
+    "card_id": "1729193175714",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729193283073",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729193283074"
+    ]
+  },
+  {
+    "card_id": "1729192380168",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729192380167"
+    ]
+  },
+  {
+    "card_id": "1729193477874",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729193477875"
+    ]
+  },
+  {
+    "card_id": "1729192501674",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729192501673"
+    ]
+  },
+  {
+    "card_id": "1729192290034",
+    "question": "M3-002: Which term describes this concept: Using mutliple cloud services across different public or private providers?",
+    "A": "Microservice",
+    "B": "Hybrid Cloud",
+    "C": "Orchestration",
+    "D": "Data Plane",
+    "correct": "B",
+    "explanation_de": "Hybrid Cloud ist der passende Security+-Begriff für diese Beschreibung: Using mutliple cloud services across different public or private providers is called Hybrid Cloud. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Hybrid Cloud = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729192290035"
+    ]
+  },
+  {
+    "card_id": "1729192578832",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729192578831"
+    ]
+  },
+  {
+    "card_id": "1729193688369",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729193688368"
+    ]
+  },
+  {
+    "card_id": "1729192907745",
+    "question": "M3-003: Which term is one where the entire application is run at once via a single executable?",
+    "A": "Hybrid Cloud",
+    "B": "Monolithic Architecture",
+    "C": "Compute Engine",
+    "D": "Data Plane",
+    "correct": "B",
+    "explanation_de": "Monolithic Architecture ist der passende Security+-Begriff für diese Beschreibung: A Monolithic Architecture is one where the entire application is run at once via a single executable. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Monolithic Architecture = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729192907744",
+      "1729192907743"
+    ]
+  },
+  {
+    "card_id": "1729193631267",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729193631268"
+    ]
+  },
+  {
+    "card_id": "1729192345783",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729193133878",
+    "question": "M3-004: Which term is a piece of an application that is called on an as-needed basis?",
+    "A": "Compute Component",
+    "B": "Orchestration",
+    "C": "Hybrid Cloud",
+    "D": "Microservice",
+    "correct": "D",
+    "explanation_de": "Microservice ist der passende Security+-Begriff für diese Beschreibung: A Microservice is a piece of an application that is called on an as-needed basis. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Microservice = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729193133877"
+    ]
+  },
+  {
+    "card_id": "1729194200065",
+    "question": "M3-005: Which term refers to the actual movement of data through the network?",
+    "A": "Monolithic Architecture",
+    "B": "Hypervisor",
+    "C": "Data Plane",
+    "D": "Management Plane",
+    "correct": "C",
+    "explanation_de": "Data Plane ist der passende Security+-Begriff für diese Beschreibung: The Data Plane refers to the actual movement of data through the network. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Data Plane = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729194200066"
+    ]
+  },
+  {
+    "card_id": "1729193932999",
+    "question": "M3-006: Which description matches a VLAN?",
+    "A": "Virtual Local Area Network",
+    "B": "Supervisory Control and Data Acquisition System",
+    "C": "Virtualization",
+    "D": "Hypervisor",
+    "correct": "A",
+    "explanation_de": "Virtual Local Area Network ist der passende Security+-Begriff für diese Beschreibung: A VLAN is a Virtual Local Area Network. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Virtual Local Area Network = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729193933000"
+    ]
+  },
+  {
+    "card_id": "1729194031234",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729194031235",
+      "1729194031236"
+    ]
+  },
+  {
+    "card_id": "1729194266296",
+    "question": "M3-007: Which term refers to the ways in which the network is administered, including dictating logic for the Control Plane?",
+    "A": "Control Plane",
+    "B": "Containerization",
+    "C": "Management Plane",
+    "D": "Monolithic Architecture",
+    "correct": "C",
+    "explanation_de": "Management Plane ist der passende Security+-Begriff für diese Beschreibung: The Management Plane refers to the ways in which the network is administered, including dictating logic for the Control Plane. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Management Plane = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729194266295"
+    ]
+  },
+  {
+    "card_id": "1729194177386",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729194177388",
+      "1729194177387"
+    ]
+  },
+  {
+    "card_id": "1729194330829",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729194330828"
+    ]
+  },
+  {
+    "card_id": "1729194474927",
+    "question": "M3-008: Which term is where Routing Tables, network address tables, Dynamic Routing Protocols and anything else that tells the data plane how to get from point A to point B come in?",
+    "A": "Management Plane",
+    "B": "Control Plane",
+    "C": "Air Gap",
+    "D": "Serverless Architecture",
+    "correct": "B",
+    "explanation_de": "Control Plane ist der passende Security+-Begriff für diese Beschreibung: The Control Plane is where Routing Tables, network address tables, Dynamic Routing Protocols and anything else that tells the data plane how to get from point A to point B come in. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Control Plane = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729194474926",
+      "1729194474928",
+      "1729194506539"
+    ]
+  },
+  {
+    "card_id": "1729194357503",
+    "question": "M3-009: Which term is also known as the Infrastructure Layer?",
+    "A": "Compute Engine",
+    "B": "Data Plane",
+    "C": "Supervisory Control and Data Acquisition System",
+    "D": "Hybrid Cloud",
+    "correct": "B",
+    "explanation_de": "Data Plane ist der passende Security+-Begriff für diese Beschreibung: The Data Plane is also known as the Infrastructure Layer. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Data Plane = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729194357504"
+    ]
+  },
+  {
+    "card_id": "1729194664889",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729194820358",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729194820357"
+    ]
+  },
+  {
+    "card_id": "1729193964151",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729193807209",
+    "question": "M3-010: Which term is when a device or system is physically separated from another system?",
+    "A": "Compute Engine",
+    "B": "Hypervisor",
+    "C": "Control Plane",
+    "D": "Air Gap",
+    "correct": "D",
+    "explanation_de": "Air Gap ist der passende Security+-Begriff für diese Beschreibung: An Air Gap is when a device or system is physically separated from another system. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Air Gap = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729193807210"
+    ]
+  },
+  {
+    "card_id": "1729193865767",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729193865766"
+    ]
+  },
+  {
+    "card_id": "1729194562008",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729194562007"
+    ]
+  },
+  {
+    "card_id": "1729194080331",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729194080332"
+    ]
+  },
+  {
+    "card_id": "1729194413279",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729194413280",
+      "1729194413277",
+      "1729194413278"
+    ]
+  },
+  {
+    "card_id": "1729194117419",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729194117418"
+    ]
+  },
+  {
+    "card_id": "1729194220599",
+    "question": "M3-011: Which term refers to the logic controlling *how* data is moved through the network?",
+    "A": "Hybrid Cloud",
+    "B": "Orchestration",
+    "C": "Docker",
+    "D": "Control Plane",
+    "correct": "D",
+    "explanation_de": "Control Plane ist der passende Security+-Begriff für diese Beschreibung: The Control Plane refers to the logic controlling *how* data is moved through the network. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Control Plane = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729194220598"
+    ]
+  },
+  {
+    "card_id": "1729196722174",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729196722175"
+    ]
+  },
+  {
+    "card_id": "1729196053555",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729196548024",
+    "question": "M3-012: Which description matches SCADA?",
+    "A": "Hybrid Cloud",
+    "B": "Serverless Architecture",
+    "C": "Supervisory Control and Data Acquisition System",
+    "D": "Orchestration",
+    "correct": "C",
+    "explanation_de": "Supervisory Control and Data Acquisition System ist der passende Security+-Begriff für diese Beschreibung: SCADA is the Supervisory Control and Data Acquisition System. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Supervisory Control and Data Acquisition System = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729196548025"
+    ]
+  },
+  {
+    "card_id": "1729196325940",
+    "question": "M3-013: Which term describes this concept: One of the most popular Containerization software options?",
+    "A": "Docker",
+    "B": "Monolithic Architecture",
+    "C": "Data Plane",
+    "D": "Hybrid Cloud",
+    "correct": "A",
+    "explanation_de": "Docker ist der passende Security+-Begriff für diese Beschreibung: One of the most popular Containerization software options is called Docker. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Docker = dieser genaue Prüfbegriff.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1729195294757",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729195304946",
+      "1729195312228"
+    ]
+  },
+  {
+    "card_id": "1729196035330",
+    "question": "M3-014: Which term is software which manages resources between multiple virtual machines?",
+    "A": "Hypervisor",
+    "B": "Hybrid Cloud",
+    "C": "Docker",
+    "D": "Compute Engine",
+    "correct": "A",
+    "explanation_de": "Hypervisor ist der passende Security+-Begriff für diese Beschreibung: A Hypervisor is software which manages resources between multiple virtual machines. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Hypervisor = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729196035331",
+      "1729196035329"
+    ]
+  },
+  {
+    "card_id": "1729197228030",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729195976758",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729195976759"
+    ]
+  },
+  {
+    "card_id": "1729195444488",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729195444487",
+      "1729195444489"
+    ]
+  },
+  {
+    "card_id": "1729196630434",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729196197281",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729196197282",
+      "1729196197280"
+    ]
+  },
+  {
+    "card_id": "1729196512922",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729196512923"
+    ]
+  },
+  {
+    "card_id": "1729197335815",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729196279677",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729196279678"
+    ]
+  },
+  {
+    "card_id": "1729197185716",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729197185717"
+    ]
+  },
+  {
+    "card_id": "1729197045115",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729197207806",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729197207805"
+    ]
+  },
+  {
+    "card_id": "1729195941442",
+    "question": "M3-015: Which term is the process of running multiple instances of potentially varied operating systems on a single physical device?",
+    "A": "Containerization",
+    "B": "Virtualization",
+    "C": "Hypervisor",
+    "D": "Supervisory Control and Data Acquisition System",
+    "correct": "B",
+    "explanation_de": "Virtualization ist der passende Security+-Begriff für diese Beschreibung: Virtualization is the process of running multiple instances of potentially varied operating systems on a single physical device. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Virtualization = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729195941440",
+      "1729195941441"
+    ]
+  },
+  {
+    "card_id": "1729196480400",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729196480399"
+    ]
+  },
+  {
+    "card_id": "1729197294356",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729197294357"
+    ]
+  },
+  {
+    "card_id": "1729197008733",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729197008734"
+    ]
+  },
+  {
+    "card_id": "1729197072253",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729197072254"
+    ]
+  },
+  {
+    "card_id": "1729196433599",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729196433598"
+    ]
+  },
+  {
+    "card_id": "1729195886206",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729195886207"
+    ]
+  },
+  {
+    "card_id": "1729195803748",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729196230908",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729195196133",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729195196132"
+    ]
+  },
+  {
+    "card_id": "1729196787169",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729196787170",
+      "1729196787171"
+    ]
+  },
+  {
+    "card_id": "1729195403917",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729195237566",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729195237568",
+      "1729195237567"
+    ]
+  },
+  {
+    "card_id": "1729196140243",
+    "question": "M3-016: Which term is similar to Virtualization, except that each container contains only what is needed to run the particular application, rather than an entire operating system with an application running inside of it?",
+    "A": "Virtualization",
+    "B": "Containerization",
+    "C": "Elasticity",
+    "D": "Virtual Local Area Network",
+    "correct": "B",
+    "explanation_de": "Containerization ist der passende Security+-Begriff für diese Beschreibung: Containerization is similar to Virtualization, except that each container contains only what is needed to run the particular application, rather than an entire operating system with an application running inside of it. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Containerization = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729196140244",
+      "1729196140245"
+    ]
+  },
+  {
+    "card_id": "1729196363423",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729196667187",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729196667188"
+    ]
+  },
+  {
+    "card_id": "1729196894797",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729196894796"
+    ]
+  },
+  {
+    "card_id": "1729197105664",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729197105665"
+    ]
+  },
+  {
+    "card_id": "1729196565969",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729196565968",
+      "1729196565967"
+    ]
+  },
+  {
+    "card_id": "1729196920384",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729196913834"
+    ]
+  },
+  {
+    "card_id": "1729198352119",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729198352120"
+    ]
+  },
+  {
+    "card_id": "1729199490311",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729199490312",
+      "1729199490313"
+    ]
+  },
+  {
+    "card_id": "1729198281013",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729198716498",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729198716499"
+    ]
+  },
+  {
+    "card_id": "1729199538165",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729199538166"
+    ]
+  },
+  {
+    "card_id": "1729198483939",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729198483938"
+    ]
+  },
+  {
+    "card_id": "1729199032592",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729199032593"
+    ]
+  },
+  {
+    "card_id": "1729199167320",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729199167321"
+    ]
+  },
+  {
+    "card_id": "1729198447951",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729198447952"
+    ]
+  },
+  {
+    "card_id": "1729199405771",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729198649918",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729198649919"
+    ]
+  },
+  {
+    "card_id": "1729198944747",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729198944746"
+    ]
+  },
+  {
+    "card_id": "1729198512492",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729198512493"
+    ]
+  },
+  {
+    "card_id": "1729199670037",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729199670036",
+      "1729199670035"
+    ]
+  },
+  {
+    "card_id": "1729199291550",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729199291552",
+      "1729199291551"
+    ]
+  },
+  {
+    "card_id": "1729198591386",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729198591384",
+      "1729198591383",
+      "1729198591385"
+    ]
+  },
+  {
+    "card_id": "1729199209759",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729199439819",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729199710866",
+    "question": "M3-017: Which term is a term for any number of physical processors handling a task in a cloud environment?",
+    "A": "Orchestration",
+    "B": "Compute Component",
+    "C": "Compute Engine",
+    "D": "Hybrid Cloud",
+    "correct": "C",
+    "explanation_de": "Compute Engine ist der passende Security+-Begriff für diese Beschreibung: A Compute Engine is a term for any number of physical processors handling a task in a cloud environment. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Compute Engine = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729199710864",
+      "1729199710865"
+    ]
+  },
+  {
+    "card_id": "1729199602908",
+    "question": "M3-018: Which term is the part of a system that does the actual processing of data?",
+    "A": "Compute Component",
+    "B": "Orchestration",
+    "C": "Supervisory Control and Data Acquisition System",
+    "D": "Hybrid Cloud",
+    "correct": "A",
+    "explanation_de": "Compute Component ist der passende Security+-Begriff für diese Beschreibung: The Compute Component is the part of a system that does the actual processing of data. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Compute Component = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729199602909"
+    ]
+  },
+  {
+    "card_id": "1729198962970",
+    "question": "M3-019: Which term means building out a cloud based infrastructure automatically on demand?",
+    "A": "Virtualization",
+    "B": "Orchestration",
+    "C": "Hybrid Cloud",
+    "D": "Microservice",
+    "correct": "B",
+    "explanation_de": "Orchestration ist der passende Security+-Begriff für diese Beschreibung: Orchestration means building out a cloud based infrastructure automatically on demand. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Orchestration = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729198962969"
+    ]
+  },
+  {
+    "card_id": "1729198761986",
+    "question": "M3-020: Which term describes this concept: Allocating additional resources to a system to improve response times during high-use times, and then scaling that back when usage goes down?",
+    "A": "Containerization",
+    "B": "Hypervisor",
+    "C": "Supervisory Control and Data Acquisition System",
+    "D": "Elasticity",
+    "correct": "D",
+    "explanation_de": "Elasticity ist der passende Security+-Begriff für diese Beschreibung: Allocating additional resources to a system to improve response times during high-use times, and then scaling that back when usage goes down, is called Elasticity. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Elasticity = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729198761984",
+      "1729198761985"
+    ]
+  },
+  {
+    "card_id": "1729198869398",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729199102525",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729199102526",
+      "1729199102524"
+    ]
+  },
+  {
+    "card_id": "1729261747468",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729261747466",
+      "1729261747470",
+      "1729261747469",
+      "1729261747467"
+    ]
+  },
+  {
+    "card_id": "1729262265977",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729262265978"
+    ]
+  },
+  {
+    "card_id": "1729261867204",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729261867205"
+    ]
+  },
+  {
+    "card_id": "1729261827724",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729261827727",
+      "1729261827725",
+      "1729261827726"
+    ]
+  },
+  {
+    "card_id": "1729261779899",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729261779898"
+    ]
+  },
+  {
+    "card_id": "1729262023890",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729262023891"
+    ]
+  },
+  {
+    "card_id": "1729262552433",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729262552434"
+    ]
+  },
+  {
+    "card_id": "1729261541926",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729261541925"
+    ]
+  },
+  {
+    "card_id": "1729261907641",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729262234744",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729262234743"
+    ]
+  },
+  {
+    "card_id": "1729262336216",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729262336218",
+      "1729262336217"
+    ]
+  },
+  {
+    "card_id": "1729262500407",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729262500405",
+      "1729262500406"
+    ]
+  },
+  {
+    "card_id": "1729261976299",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729263331128",
+    "question": "M3-021: Which term is the process of using a security device to evaluate and block traffic as it travels in real-time?",
+    "A": "Active monitoring",
+    "B": "Open Proxy",
+    "C": "Active/Passive",
+    "D": "Extensible Authentication Protocol",
+    "correct": "A",
+    "explanation_de": "Active monitoring ist der passende Security+-Begriff für diese Beschreibung: Active monitoring is the process of using a security device to evaluate and block traffic as it travels in real-time. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Active monitoring = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729263331127"
+    ]
+  },
+  {
+    "card_id": "1729263374388",
+    "question": "M3-022: Which term refers to sending a copy of network traffic to a security device for evaluation and reporting, but not blocking?",
+    "A": "Passive Monitoring",
+    "B": "NAC, or Port-based Network Access Control",
+    "C": "Collector",
+    "D": "Web Security Gatewa",
+    "correct": "A",
+    "explanation_de": "Passive Monitoring ist der passende Security+-Begriff für diese Beschreibung: Passive Monitoring refers to sending a copy of network traffic to a security device for evaluation and reporting, but not blocking. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Passive Monitoring = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729263374389"
+    ]
+  },
+  {
+    "card_id": "1729263561009",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729262991298",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729263096114",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729263096115"
+    ]
+  },
+  {
+    "card_id": "1729263065382",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729263065381"
+    ]
+  },
+  {
+    "card_id": "1729262899010",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729262899011"
+    ]
+  },
+  {
+    "card_id": "1729262927365",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729262927364",
+      "1729262927363"
+    ]
+  },
+  {
+    "card_id": "1729263504599",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729263504598",
+      "1729263504601",
+      "1729263504600"
+    ]
+  },
+  {
+    "card_id": "1729262809363",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729262809364",
+      "1729262809362"
+    ]
+  },
+  {
+    "card_id": "1729262665983",
+    "question": "M3-023: Which term is designed to watch traffic traverse the network in real time, and then block any traffic that it interprets as dangerous?",
+    "A": "Jump Server",
+    "B": "Active monitoring",
+    "C": "Web Security Gatewa",
+    "D": "Intrusion Prevention System",
+    "correct": "D",
+    "explanation_de": "Intrusion Prevention System ist der passende Security+-Begriff für diese Beschreibung: An Intrusion Prevention System is designed to watch traffic traverse the network in real time, and then block any traffic that it interprets as dangerous. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Intrusion Prevention System = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729262665984",
+      "1729262665982"
+    ]
+  },
+  {
+    "card_id": "1729262749928",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729262749929"
+    ]
+  },
+  {
+    "card_id": "1729263254995",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729263254996"
+    ]
+  },
+  {
+    "card_id": "1729263197467",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729263197466",
+      "1729263197468"
+    ]
+  },
+  {
+    "card_id": "1729263025109",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729263025108"
+    ]
+  },
+  {
+    "card_id": "1729262733530",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729262733528",
+      "1729262733529"
+    ]
+  },
+  {
+    "card_id": "1729263546818",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729265222939",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729265222940",
+      "1729265222941"
+    ]
+  },
+  {
+    "card_id": "1729264426339",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729264426340",
+      "1729264426341"
+    ]
+  },
+  {
+    "card_id": "1729264570726",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729264570725"
+    ]
+  },
+  {
+    "card_id": "1729266068252",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729266068253"
+    ]
+  },
+  {
+    "card_id": "1729264472724",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729266200430",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729266200432",
+      "1729266200431"
+    ]
+  },
+  {
+    "card_id": "1729265622332",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729265622331",
+      "1729265622333"
+    ]
+  },
+  {
+    "card_id": "1729264699451",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729264699449",
+      "1729264699450"
+    ]
+  },
+  {
+    "card_id": "1729265305243",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729265305245",
+      "1729265305242",
+      "1729265305244"
+    ]
+  },
+  {
+    "card_id": "1729266155183",
+    "question": "M3-024: Which term is a device which, as the name implies, collects logging data from Sensors and network traffic into one place?",
+    "A": "Passive Monitoring",
+    "B": "Extensible Authentication Protocol",
+    "C": "Active monitoring",
+    "D": "Collector",
+    "correct": "D",
+    "explanation_de": "Collector ist der passende Security+-Begriff für diese Beschreibung: A Collector is a device which, as the name implies, collects logging data from Sensors and network traffic into one place. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Collector = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729266155184"
+    ]
+  },
+  {
+    "card_id": "1729265068837",
+    "question": "M3-025: Which term is sometimes referred to as an Internal Proxy?",
+    "A": "Intrusion Prevention System",
+    "B": "Port Security",
+    "C": "Forward Proxy",
+    "D": "Load Balancers",
+    "correct": "C",
+    "explanation_de": "Forward Proxy ist der passende Security+-Begriff für diese Beschreibung: A Forward Proxy is sometimes referred to as an Internal Proxy. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Forward Proxy = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729265068836"
+    ]
+  },
+  {
+    "card_id": "1729265508608",
+    "question": "M3-026: Which term are used in large-scale implementations to distribute traffic over multiple services?",
+    "A": "Active/Passive",
+    "B": "Active monitoring",
+    "C": "Load Balancers",
+    "D": "Forward Proxy",
+    "correct": "C",
+    "explanation_de": "Load Balancers ist der passende Security+-Begriff für diese Beschreibung: Load Balancers are used in large-scale implementations to distribute traffic over multiple services. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Load Balancers = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729265508609"
+    ]
+  },
+  {
+    "card_id": "1729264650133",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729264650134"
+    ]
+  },
+  {
+    "card_id": "1729265420660",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729265420661",
+      "1729265420662"
+    ]
+  },
+  {
+    "card_id": "1729266266191",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729266266190"
+    ]
+  },
+  {
+    "card_id": "1729264760996",
+    "question": "M3-027: Which term is just that, not visible to end users, because it sits inline with communication and does not need to be configured on the end devices?",
+    "A": "Forward Proxy",
+    "B": "Open Proxy",
+    "C": "Transparent Proxy",
+    "D": "Active/Passive",
+    "correct": "C",
+    "explanation_de": "Transparent Proxy ist der passende Security+-Begriff für diese Beschreibung: A Transparent Proxy is just that, not visible to end users, because it sits inline with communication and does not need to be configured on the end devices. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Transparent Proxy = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729264760995",
+      "1729264760997"
+    ]
+  },
+  {
+    "card_id": "1729264926288",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729265841463",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729265841462"
+    ]
+  },
+  {
+    "card_id": "1729265887615",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729265887614"
+    ]
+  },
+  {
+    "card_id": "1729264266828",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729264266829"
+    ]
+  },
+  {
+    "card_id": "1729264182198",
+    "question": "M3-028: Which term is a device on the inside of your network that is accessible from the outside.?",
+    "A": "Jump Server",
+    "B": "Transparent Proxy",
+    "C": "Port Security",
+    "D": "NAC, or Port-based Network Access Control",
+    "correct": "A",
+    "explanation_de": "Jump Server ist der passende Security+-Begriff für diese Beschreibung: A Jump Server is a device on the inside of your network that is accessible from the outside.. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Jump Server = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729264182196",
+      "1729264182197"
+    ]
+  },
+  {
+    "card_id": "1729264524343",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729264524342"
+    ]
+  },
+  {
+    "card_id": "1729265747233",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729265747232",
+      "1729265747231",
+      "1729265747234"
+    ]
+  },
+  {
+    "card_id": "1729264991716",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729264991715"
+    ]
+  },
+  {
+    "card_id": "1729264309932",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729265956352",
+    "question": "M3-029: Which term best matches this Security+ statement: If servers are standing by waiting to be used by a Load Balancer if an active server fails, this is known as an Active/Passive configuration?",
+    "A": "Intrusion Prevention System",
+    "B": "Passive Monitoring",
+    "C": "Load Balancers",
+    "D": "Active/Passive",
+    "correct": "D",
+    "explanation_de": "Active/Passive ist der passende Security+-Begriff für diese Beschreibung: If servers are standing by waiting to be used by a Load Balancer if an active server fails, this is known as an Active/Passive configuration. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Active/Passive = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729265956353",
+      "1729265956351"
+    ]
+  },
+  {
+    "card_id": "1729265556448",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729265556449"
+    ]
+  },
+  {
+    "card_id": "1729265371258",
+    "question": "M3-030: Which term is a publicly available proxy server that may or may not be safe to use?",
+    "A": "Open Proxy",
+    "B": "Web Application Firewall",
+    "C": "Active monitoring",
+    "D": "Intrusion Prevention System",
+    "correct": "A",
+    "explanation_de": "Open Proxy ist der passende Security+-Begriff für diese Beschreibung: An Open Proxy is a publicly available proxy server that may or may not be safe to use. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Open Proxy = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729265371259",
+      "1729265371260"
+    ]
+  },
+  {
+    "card_id": "1729265681334",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729265681332",
+      "1729265681333"
+    ]
+  },
+  {
+    "card_id": "1729265806945",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729265158509",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729265158510",
+      "1729265158512",
+      "1729265158511"
+    ]
+  },
+  {
+    "card_id": "1729267988161",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729267988162"
+    ]
+  },
+  {
+    "card_id": "1729268091467",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729268091468"
+    ]
+  },
+  {
+    "card_id": "1729267764907",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729267764906",
+      "1729267764908"
+    ]
+  },
+  {
+    "card_id": "1729268065674",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729268065673"
+    ]
+  },
+  {
+    "card_id": "1729267646397",
+    "question": "M3-031: Which term describes this concept: 802.1X is sometimes?",
+    "A": "Web Application Firewall",
+    "B": "Web Security Gatewa",
+    "C": "NAC, or Port-based Network Access Control",
+    "D": "Passive Monitoring",
+    "correct": "C",
+    "explanation_de": "NAC, or Port-based Network Access Control ist der passende Security+-Begriff für diese Beschreibung: 802.1X is sometimes referred to as NAC, or Port-based Network Access Control. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: NAC, or Port-based Network Access Control = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729267646398"
+    ]
+  },
+  {
+    "card_id": "1729267833654",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729267833655"
+    ]
+  },
+  {
+    "card_id": "1729267793884",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729267793885"
+    ]
+  },
+  {
+    "card_id": "1729267727074",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729267727075"
+    ]
+  },
+  {
+    "card_id": "1729267472724",
+    "question": "M3-032: Which term refers to the security on the individual interfaces that are on a switch or connections to a wireless access point?",
+    "A": "Collector",
+    "B": "Forward Proxy",
+    "C": "Active monitoring",
+    "D": "Port Security",
+    "correct": "D",
+    "explanation_de": "Port Security ist der passende Security+-Begriff für diese Beschreibung: Port Security refers to the security on the individual interfaces that are on a switch or connections to a wireless access point. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Port Security = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729267472725",
+      "1729267472726"
+    ]
+  },
+  {
+    "card_id": "1729267619152",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729267891872",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729267891873",
+      "1729267891874"
+    ]
+  },
+  {
+    "card_id": "1729267537110",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729267569310",
+    "question": "M3-033: Which term is a framework for authentication that can be applied to many different types of networks and connections?",
+    "A": "Port Security",
+    "B": "Intrusion Prevention System",
+    "C": "Transparent Proxy",
+    "D": "Extensible Authentication Protocol",
+    "correct": "D",
+    "explanation_de": "Extensible Authentication Protocol ist der passende Security+-Begriff für diese Beschreibung: Extensible Authentication Protocol is a framework for authentication that can be applied to many different types of networks and connections. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Extensible Authentication Protocol = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729267569311",
+      "1729267569309"
+    ]
+  },
+  {
+    "card_id": "1729268742208",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729268742207",
+      "1729268742209"
+    ]
+  },
+  {
+    "card_id": "1729269617094",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729269617093"
+    ]
+  },
+  {
+    "card_id": "1729270023838",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729270023839"
+    ]
+  },
+  {
+    "card_id": "1729269602613",
+    "question": "M3-034: Which term describes this concept: A type of firewall which analyzes input from web-based applications to identify injections, for example?",
+    "A": "Web Security Gatewa",
+    "B": "Active monitoring",
+    "C": "Passive Monitoring",
+    "D": "Web Application Firewall",
+    "correct": "D",
+    "explanation_de": "Web Application Firewall ist der passende Security+-Begriff für diese Beschreibung: A type of firewall which analyzes input from web-based applications to identify injections, for example, is called a Web Application Firewall. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Web Application Firewall = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729269602614"
+    ]
+  },
+  {
+    "card_id": "1729268952687",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729268952686"
+    ]
+  },
+  {
+    "card_id": "1729269132595",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729269132596"
+    ]
+  },
+  {
+    "card_id": "1729269658664",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729269457937",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729269457939",
+      "1729269457938"
+    ]
+  },
+  {
+    "card_id": "1729268827407",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729269074243",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729269074247",
+      "1729269074245",
+      "1729269074241",
+      "1729269074242",
+      "1729269074244",
+      "1729269074246"
+    ]
+  },
+  {
+    "card_id": "1729269297940",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729268890281",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729268890282",
+      "1729268890280"
+    ]
+  },
+  {
+    "card_id": "1729269352112",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729269352110",
+      "1729269352111"
+    ]
+  },
+  {
+    "card_id": "1729268983360",
+    "question": "M3-035: Which term best matches this Security+ statement: UTMs may also be referred to as a Web Security Gateway, or an All-in-One Security Appliance?",
+    "A": "Transparent Proxy",
+    "B": "Load Balancers",
+    "C": "Port Security",
+    "D": "Web Security Gatewa",
+    "correct": "D",
+    "explanation_de": "Web Security Gatewa ist der passende Security+-Begriff für diese Beschreibung: UTMs may also be referred to as a Web Security Gateway, or an All-in-One Security Appliance. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Web Security Gatewa = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729268983361",
+      "1729268983362"
+    ]
+  },
+  {
+    "card_id": "1729269908438",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729268607298",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729268607299"
+    ]
+  },
+  {
+    "card_id": "1729268689231",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729268689230"
+    ]
+  },
+  {
+    "card_id": "1729268638215",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729268638214"
+    ]
+  },
+  {
+    "card_id": "1729268665726",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729268665727"
+    ]
+  },
+  {
+    "card_id": "1729269494420",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729270758158",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729270758159"
+    ]
+  },
+  {
+    "card_id": "1729270867394",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729270867395"
+    ]
+  },
+  {
+    "card_id": "1729270679925",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729270679926"
+    ]
+  },
+  {
+    "card_id": "1729270361153",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729270834408",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729270834409"
+    ]
+  },
+  {
+    "card_id": "1729270806724",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729270806725"
+    ]
+  },
+  {
+    "card_id": "1729270553148",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729270553147",
+      "1729270553149"
+    ]
+  },
+  {
+    "card_id": "1729271122960",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729271122958",
+      "1729271122959"
+    ]
+  },
+  {
+    "card_id": "1729271494058",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729271494059"
+    ]
+  },
+  {
+    "card_id": "1729270304948",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729270304949"
+    ]
+  },
+  {
+    "card_id": "1729270256731",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729270256730"
+    ]
+  },
+  {
+    "card_id": "1729270964864",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729270964865"
+    ]
+  },
+  {
+    "card_id": "1729270923174",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729270923173"
+    ]
+  },
+  {
+    "card_id": "1729270461979",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729270461978"
+    ]
+  },
+  {
+    "card_id": "1729270428557",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729271182408",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729271423751",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729271423752"
+    ]
+  },
+  {
+    "card_id": "1729270648813",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729270648815",
+      "1729270648814"
+    ]
+  },
+  {
+    "card_id": "1729275673579",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729275673578"
+    ]
+  },
+  {
+    "card_id": "1729275863523",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729275863524"
+    ]
+  },
+  {
+    "card_id": "1729275635902",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729275635901"
+    ]
+  },
+  {
+    "card_id": "1729275953475",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729275953476",
+      "1729275953477"
+    ]
+  },
+  {
+    "card_id": "1729276327488",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729275783626",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729275783627"
+    ]
+  },
+  {
+    "card_id": "1729275704857",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729276393740",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729276393741"
+    ]
+  },
+  {
+    "card_id": "1729276132407",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729275731777",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729275474136",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729275474135"
+    ]
+  },
+  {
+    "card_id": "1729276301721",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729276301722"
+    ]
+  },
+  {
+    "card_id": "1729276265735",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729276265734"
+    ]
+  },
+  {
+    "card_id": "1729275983798",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729275983797"
+    ]
+  },
+  {
+    "card_id": "1729276284771",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729276118004",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729276118003",
+      "1729276118005"
+    ]
+  },
+  {
+    "card_id": "1729275829943",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729275829944"
+    ]
+  },
+  {
+    "card_id": "1729275525602",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729275525601"
+    ]
+  },
+  {
+    "card_id": "1729276066266",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729276066264",
+      "1729276066265"
+    ]
+  },
+  {
+    "card_id": "1729276924969",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729276924970",
+      "1729276924968"
+    ]
+  },
+  {
+    "card_id": "1729276803024",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729276803025"
+    ]
+  },
+  {
+    "card_id": "1729276484294",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729276484293"
+    ]
+  },
+  {
+    "card_id": "1729276778013",
+    "question": "M3-036: Which term requires that any data collected on EU citizens must be stored within the EU?",
+    "A": "The General Data Protection Regulation",
+    "B": "Protecting data",
+    "C": "Confusion",
+    "D": "Data Sovereignty",
+    "correct": "A",
+    "explanation_de": "The General Data Protection Regulation ist der passende Security+-Begriff für diese Beschreibung: The General Data Protection Regulation requires that any data collected on EU citizens must be stored within the EU. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: The General Data Protection Regulation = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729276778014"
+    ]
+  },
+  {
+    "card_id": "1729276559590",
+    "question": "M3-037: Which term describes this concept: Data that is moving from one point to another?",
+    "A": "The General Data Protection Regulation",
+    "B": "Data in Motion, or Data in Transit",
+    "C": "Data Sovereignty",
+    "D": "Geographic Restrictions",
+    "correct": "B",
+    "explanation_de": "Data in Motion, or Data in Transit ist der passende Security+-Begriff für diese Beschreibung: Data that is moving from one point to another is called Data in Motion, or Data in Transit. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Data in Motion, or Data in Transit = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729276559589"
+    ]
+  },
+  {
+    "card_id": "1729276984347",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729276871942",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729276871941"
+    ]
+  },
+  {
+    "card_id": "1729276746898",
+    "question": "M3-038: Which term refers to the rules and laws which apply to data, depending on where in the world it is being stored?",
+    "A": "Data Sovereignty",
+    "B": "The General Data Protection Regulation",
+    "C": "Geofencing",
+    "D": "Confusion",
+    "correct": "A",
+    "explanation_de": "Data Sovereignty ist der passende Security+-Begriff für diese Beschreibung: Data Sovereignty refers to the rules and laws which apply to data, depending on where in the world it is being stored. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Data Sovereignty = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729276746899"
+    ]
+  },
+  {
+    "card_id": "1729276673885",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729276525360",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729276525359"
+    ]
+  },
+  {
+    "card_id": "1729276619819",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729276619820",
+      "1729276619818"
+    ]
+  },
+  {
+    "card_id": "1729276650387",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729276650388"
+    ]
+  },
+  {
+    "card_id": "1729277965017",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729277965018"
+    ]
+  },
+  {
+    "card_id": "1729277750797",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729277750798"
+    ]
+  },
+  {
+    "card_id": "1729277620814",
+    "question": "M3-039: Which term describes this concept: Policies determining access to data based on the geographical locations of the data and the user are?",
+    "A": "Geofencing",
+    "B": "Data Sovereignty",
+    "C": "Geographic Restrictions",
+    "D": "The General Data Protection Regulation",
+    "correct": "C",
+    "explanation_de": "Geographic Restrictions ist der passende Security+-Begriff für diese Beschreibung: Policies determining access to data based on the geographical locations of the data and the user are known as Geographic Restrictions. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Geographic Restrictions = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729277620813"
+    ]
+  },
+  {
+    "card_id": "1729278055433",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729278055432"
+    ]
+  },
+  {
+    "card_id": "1729277943281",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729277943283",
+      "1729277943282"
+    ]
+  },
+  {
+    "card_id": "1729277804655",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729277707224",
+    "question": "M3-040: Which term is one of the primary goals of any IT professional?",
+    "A": "Geofencing",
+    "B": "Geographic Restrictions",
+    "C": "Protecting data",
+    "D": "Confusion",
+    "correct": "C",
+    "explanation_de": "Protecting data ist der passende Security+-Begriff für diese Beschreibung: Protecting data is one of the primary goals of any IT professional. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Protecting data = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729277707223"
+    ]
+  },
+  {
+    "card_id": "1729277680140",
+    "question": "M3-041: Which term is the process of limiting access to data based on the device's physical location?",
+    "A": "Confusion",
+    "B": "Geofencing",
+    "C": "The General Data Protection Regulation",
+    "D": "Data Sovereignty",
+    "correct": "B",
+    "explanation_de": "Geofencing ist der passende Security+-Begriff für diese Beschreibung: Geofencing is the process of limiting access to data based on the device's physical location. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Geofencing = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729277680141"
+    ]
+  },
+  {
+    "card_id": "1729278256356",
+    "question": "M3-042: Which term refers to the drastic difference between the encrypted form of data, and the original form?",
+    "A": "Data in Motion, or Data in Transit",
+    "B": "Data Sovereignty",
+    "C": "Protecting data",
+    "D": "Confusion",
+    "correct": "D",
+    "explanation_de": "Confusion ist der passende Security+-Begriff für diese Beschreibung: Confusion refers to the drastic difference between the encrypted form of data, and the original form. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Confusion = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729278256357"
+    ]
+  },
+  {
+    "card_id": "1729280773340",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729280773339"
+    ]
+  },
+  {
+    "card_id": "1729280302954",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729280302953"
+    ]
+  },
+  {
+    "card_id": "1729280160981",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729280160980"
+    ]
+  },
+  {
+    "card_id": "1729280425752",
+    "question": "M3-043: Which term is essentially an empty building ready to bring in backup systems, but not necessarily standing by ready to take over?",
+    "A": "Off-site backup",
+    "B": "Platform Diversity",
+    "C": "Incremental Backup",
+    "D": "Cold Site",
+    "correct": "D",
+    "explanation_de": "Cold Site ist der passende Security+-Begriff für diese Beschreibung: A Cold Site is essentially an empty building ready to bring in backup systems, but not necessarily standing by ready to take over. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Cold Site = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729280425751",
+      "1729280425753"
+    ]
+  },
+  {
+    "card_id": "1729280182023",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729280055428",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729280482443",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729280482444",
+      "1729280482442"
+    ]
+  },
+  {
+    "card_id": "1729281067353",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729281067354"
+    ]
+  },
+  {
+    "card_id": "1729280554653",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729280554652",
+      "1729280554654"
+    ]
+  },
+  {
+    "card_id": "1729280698248",
+    "question": "M3-044: Which term describes this concept: Using varied operating systems to provide services in the case of a vulnerability with a particular one?",
+    "A": "Generator",
+    "B": "Off-site backup",
+    "C": "Incremental Backup",
+    "D": "Platform Diversity",
+    "correct": "D",
+    "explanation_de": "Platform Diversity ist der passende Security+-Begriff für diese Beschreibung: Using varied operating systems to provide services in the case of a vulnerability with a particular one is known as Platform Diversity. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Platform Diversity = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729280698246",
+      "1729280698247"
+    ]
+  },
+  {
+    "card_id": "1729280373313",
+    "question": "M3-045: Which term is one that exactly mirrors the provisioning, configuration, and data of the main site, and can take over at a moment's notice?",
+    "A": "Structured Walkthrough",
+    "B": "Off-site backup",
+    "C": "Hot Site",
+    "D": "Incremental Backup",
+    "correct": "C",
+    "explanation_de": "Hot Site ist der passende Security+-Begriff für diese Beschreibung: A Hot Site is one that exactly mirrors the provisioning, configuration, and data of the main site, and can take over at a moment's notice. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Hot Site = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729280373312",
+      "1729280373314"
+    ]
+  },
+  {
+    "card_id": "1729280595944",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729280236531",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729280236532"
+    ]
+  },
+  {
+    "card_id": "1729280649456",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729280886069",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729280886068"
+    ]
+  },
+  {
+    "card_id": "1729280939215",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729280939214"
+    ]
+  },
+  {
+    "card_id": "1729280102146",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729280102147"
+    ]
+  },
+  {
+    "card_id": "1729282049677",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729282049676"
+    ]
+  },
+  {
+    "card_id": "1729281946961",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729281899477",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729281874601",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729281874602"
+    ]
+  },
+  {
+    "card_id": "1729281984142",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729281984143"
+    ]
+  },
+  {
+    "card_id": "1729282604227",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729282604228"
+    ]
+  },
+  {
+    "card_id": "1729282241990",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729282241991"
+    ]
+  },
+  {
+    "card_id": "1729282338949",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729282338947",
+      "1729282338948"
+    ]
+  },
+  {
+    "card_id": "1729282376499",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729282666125",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729282162583",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729282162584"
+    ]
+  },
+  {
+    "card_id": "1729435542513",
+    "question": "M3-046: Which term describes this concept: A Tabletop Exercise may also be?",
+    "A": "Hot Site",
+    "B": "Incremental Backup",
+    "C": "Platform Diversity",
+    "D": "Structured Walkthrough",
+    "correct": "D",
+    "explanation_de": "Structured Walkthrough ist der passende Security+-Begriff für diese Beschreibung: A Tabletop Exercise may also be called a Structured Walkthrough. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Structured Walkthrough = dieser genaue Prüfbegriff.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1729282268550",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729282268549"
+    ]
+  },
+  {
+    "card_id": "1729282852904",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729282747703",
+    "question": "M3-047: Which term describes this concept: Distributing computing tasks across multiple processors, whether within the same device or across multiple devices?",
+    "A": "Parallel Processing",
+    "B": "Hot Site",
+    "C": "Generator",
+    "D": "Cold Site",
+    "correct": "A",
+    "explanation_de": "Parallel Processing ist der passende Security+-Begriff für diese Beschreibung: Distributing computing tasks across multiple processors, whether within the same device or across multiple devices, is called Parallel Processing. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Parallel Processing = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729282747702",
+      "1729282747701"
+    ]
+  },
+  {
+    "card_id": "1729283655274",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729283655275"
+    ]
+  },
+  {
+    "card_id": "1729283362484",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729283362487",
+      "1729283362485",
+      "1729283362486"
+    ]
+  },
+  {
+    "card_id": "1729284065793",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729284065792"
+    ]
+  },
+  {
+    "card_id": "1729283136388",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729283045314",
+      "1729283045315",
+      "1729283127690",
+      "1729283130720",
+      "1729283133760"
+    ]
+  },
+  {
+    "card_id": "1729284343192",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729284343193"
+    ]
+  },
+  {
+    "card_id": "1729283788595",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729283788594"
+    ]
+  },
+  {
+    "card_id": "1729284162703",
+    "question": "M3-048: Which term describes this concept: Copying data in real-time to one or more additional locations as it is written to the local location?",
+    "A": "Platform Diversity",
+    "B": "Generator",
+    "C": "Replication",
+    "D": "Structured Walkthrough",
+    "correct": "C",
+    "explanation_de": "Replication ist der passende Security+-Begriff für diese Beschreibung: Copying data in real-time to one or more additional locations as it is written to the local location is known as Replication. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Replication = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729284162705",
+      "1729284162704",
+      "1729284162706"
+    ]
+  },
+  {
+    "card_id": "1729283683113",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729284298635",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729284298634"
+    ]
+  },
+  {
+    "card_id": "1729283461410",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729283258739",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729283258740",
+      "1729283258741"
+    ]
+  },
+  {
+    "card_id": "1729284376878",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729284376879"
+    ]
+  },
+  {
+    "card_id": "1729283302990",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729283302989"
+    ]
+  },
+  {
+    "card_id": "1729283583654",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729283583655"
+    ]
+  },
+  {
+    "card_id": "1729283880472",
+    "question": "M3-049: Which term is one that only saves the changes made since the previous backup?",
+    "A": "Incremental Backup",
+    "B": "Generator",
+    "C": "Cold Site",
+    "D": "Hot Site",
+    "correct": "A",
+    "explanation_de": "Incremental Backup ist der passende Security+-Begriff für diese Beschreibung: An Incremental Backup is one that only saves the changes made since the previous backup. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Incremental Backup = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729283880473"
+    ]
+  },
+  {
+    "card_id": "1729283512104",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729283512105"
+    ]
+  },
+  {
+    "card_id": "1729284185739",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729283435461",
+    "question": "M3-050: Which term describes this concept: Storing backups in another location, whether via network transfer or by physically transferring backup media?",
+    "A": "Hot Site",
+    "B": "Structured Walkthrough",
+    "C": "Cold Site",
+    "D": "Off-site backup",
+    "correct": "D",
+    "explanation_de": "Off-site backup ist der passende Security+-Begriff für diese Beschreibung: Storing backups in another location, whether via network transfer or by physically transferring backup media, is known as an Off-site backup. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Off-site backup = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729283435462",
+      "1729283435463",
+      "1729283435460"
+    ]
+  },
+  {
+    "card_id": "1729284261678",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729284261679"
+    ]
+  },
+  {
+    "card_id": "1729283841289",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729283911711",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729283745281",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729284022429",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729284022430"
+    ]
+  },
+  {
+    "card_id": "1729283223414",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729283223415",
+      "1729283223413",
+      "1729283223412"
+    ]
+  },
+  {
+    "card_id": "1729284982986",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729284982987"
+    ]
+  },
+  {
+    "card_id": "1729285259193",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729285259194"
+    ]
+  },
+  {
+    "card_id": "1729285098229",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729285098230"
+    ]
+  },
+  {
+    "card_id": "1729285555162",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729285555163"
+    ]
+  },
+  {
+    "card_id": "1729285146993",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729285502172",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729285502171"
+    ]
+  },
+  {
+    "card_id": "1729285385609",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729285385610"
+    ]
+  },
+  {
+    "card_id": "1729285364022",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729285364023"
+    ]
+  },
+  {
+    "card_id": "1729285411849",
+    "question": "M3-051: Which term is typically seen as a long-term backup power solution?",
+    "A": "Parallel Processing",
+    "B": "Cold Site",
+    "C": "Off-site backup",
+    "D": "Generator",
+    "correct": "D",
+    "explanation_de": "Generator ist der passende Security+-Begriff für diese Beschreibung: A Generator is typically seen as a long-term backup power solution. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Generator = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729285411850"
+    ]
+  },
+  {
+    "card_id": "1729285320871",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729285295106",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729285052217",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729285192912",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729285192911"
+    ]
+  }
+]

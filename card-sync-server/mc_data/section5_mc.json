@@ -1,0 +1,1277 @@
+[
+  {
+    "card_id": "1729622283207",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729622283208"
+    ]
+  },
+  {
+    "card_id": "1729622011697",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729622011698"
+    ]
+  },
+  {
+    "card_id": "1729621781435",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729621781436"
+    ]
+  },
+  {
+    "card_id": "1729621696762",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729621696763"
+    ]
+  },
+  {
+    "card_id": "1729621722613",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729621722614"
+    ]
+  },
+  {
+    "card_id": "1729621968472",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729621968473"
+    ]
+  },
+  {
+    "card_id": "1729622434123",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729622434124"
+    ]
+  },
+  {
+    "card_id": "1729622104010",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729622104011",
+      "1729622707414"
+    ]
+  },
+  {
+    "card_id": "1729622405616",
+    "question": "M5-001: Which term is a set of processes associated with creating software, designed to move from the idea phase to an end product?",
+    "A": "Software Development Life Cycle",
+    "B": "Incident Response Roles",
+    "C": "Standard",
+    "D": "Sarbanes-Oxley Act",
+    "correct": "A",
+    "explanation_de": "Software Development Life Cycle ist der passende Security+-Begriff für diese Beschreibung: The Software Development Life Cycle is a set of processes associated with creating software, designed to move from the idea phase to an end product. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Software Development Life Cycle = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729622405617",
+      "1729622405615"
+    ]
+  },
+  {
+    "card_id": "1729622311005",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729622311006"
+    ]
+  },
+  {
+    "card_id": "1729621860379",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729621860378"
+    ]
+  },
+  {
+    "card_id": "1729621892359",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729621827840",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729622364806",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729622364807"
+    ]
+  },
+  {
+    "card_id": "1729622500674",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729622500673"
+    ]
+  },
+  {
+    "card_id": "1729622249153",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729622249152"
+    ]
+  },
+  {
+    "card_id": "1729622224382",
+    "question": "M5-002: Which term describes this concept: Specialized personnel who know exactly how to handle security incidents?",
+    "A": "Software Development Life Cycle",
+    "B": "Incident Response Roles",
+    "C": "Standard",
+    "D": "Sarbanes-Oxley Act",
+    "correct": "B",
+    "explanation_de": "Incident Response Roles ist der passende Security+-Begriff für diese Beschreibung: Specialized personnel who know exactly how to handle security incidents have what are called Incident Response Roles. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Incident Response Roles = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729622224383"
+    ]
+  },
+  {
+    "card_id": "1729699487011",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729699487008",
+      "1729699487009",
+      "1729699487010"
+    ]
+  },
+  {
+    "card_id": "1729699356554",
+    "question": "M5-003: Which term is a way to communicate the formal process for handling a particular situation?",
+    "A": "Sarbanes-Oxley Act",
+    "B": "Incident Response Roles",
+    "C": "Standard",
+    "D": "Software Development Life Cycle",
+    "correct": "C",
+    "explanation_de": "Standard ist der passende Security+-Begriff für diese Beschreibung: A Standard is a way to communicate the formal process for handling a particular situation. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Standard = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729699356555"
+    ]
+  },
+  {
+    "card_id": "1729699185064",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729699185063"
+    ]
+  },
+  {
+    "card_id": "1729699552186",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729699552187"
+    ]
+  },
+  {
+    "card_id": "1729699387729",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729699335283",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729699335284"
+    ]
+  },
+  {
+    "card_id": "1729701105751",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729701105752",
+      "1729701105753"
+    ]
+  },
+  {
+    "card_id": "1729699735484",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729699735485",
+      "1729699735486",
+      "1729699735483"
+    ]
+  },
+  {
+    "card_id": "1729700823972",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729700823971"
+    ]
+  },
+  {
+    "card_id": "1729700521625",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729700521626",
+      "1729700521624"
+    ]
+  },
+  {
+    "card_id": "1729701054737",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729701054736"
+    ]
+  },
+  {
+    "card_id": "1729699853517",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729699853514",
+      "1729699853515",
+      "1729699853516",
+      "1729699853513",
+      "1729699853518"
+    ]
+  },
+  {
+    "card_id": "1729700482075",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729700482074"
+    ]
+  },
+  {
+    "card_id": "1729701022047",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729701022049",
+      "1729701022048"
+    ]
+  },
+  {
+    "card_id": "1729701252008",
+    "question": "M5-004: Which term is officially known as the Public Company Accounting Reform and Investor Protection Act of 2002?",
+    "A": "Incident Response Roles",
+    "B": "Standard",
+    "C": "Sarbanes-Oxley Act",
+    "D": "Software Development Life Cycle",
+    "correct": "C",
+    "explanation_de": "Sarbanes-Oxley Act ist der passende Security+-Begriff für diese Beschreibung: The Sarbanes-Oxley Act is officially known as the Public Company Accounting Reform and Investor Protection Act of 2002. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Sarbanes-Oxley Act = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729701252007"
+    ]
+  },
+  {
+    "card_id": "1729704175297",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729704175298"
+    ]
+  },
+  {
+    "card_id": "1729701221801",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729701221800"
+    ]
+  },
+  {
+    "card_id": "1729701305004",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729704219809",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729704219808"
+    ]
+  },
+  {
+    "card_id": "1729704268580",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729704916860",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729704916859",
+      "1729704916861"
+    ]
+  },
+  {
+    "card_id": "1729704946491",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729704946493",
+      "1729704946492"
+    ]
+  },
+  {
+    "card_id": "1729705066121",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729705066122",
+      "1729705066120",
+      "1729705066123",
+      "1729705066119",
+      "1729705066124"
+    ]
+  },
+  {
+    "card_id": "1729705180302",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729704878330",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729704878332",
+      "1729704878331"
+    ]
+  },
+  {
+    "card_id": "1729705913446",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729705913447"
+    ]
+  },
+  {
+    "card_id": "1729705368991",
+    "question": "M5-005: Which term is the process of identifying risks and addressing them before they become a problem?",
+    "A": "Risk Probability",
+    "B": "Risk Management",
+    "C": "Accepting Risk",
+    "D": "Single-Loss Expectancy",
+    "correct": "B",
+    "explanation_de": "Risk Management ist der passende Security+-Begriff für diese Beschreibung: Risk Management is the process of identifying risks and addressing them before they become a problem. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Risk Management = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729705368990",
+      "1729705368989"
+    ]
+  },
+  {
+    "card_id": "1729705951802",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729705973266",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729705842892",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729705842893"
+    ]
+  },
+  {
+    "card_id": "1729707425435",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729707455361",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729707455360"
+    ]
+  },
+  {
+    "card_id": "1729707107108",
+    "question": "M5-006: Which term best matches this Security+ statement: Each line in a Risk Register is called a Risk Indicator, which details the particular risk?",
+    "A": "Risk Indicator",
+    "B": "Accepting Risk",
+    "C": "Recovery Point Objective",
+    "D": "Risk Appetite",
+    "correct": "A",
+    "explanation_de": "Risk Indicator ist der passende Security+-Begriff für diese Beschreibung: Each line in a Risk Register is called a Risk Indicator, which details the particular risk. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Risk Indicator = dieser genaue Prüfbegriff.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1729706500561",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729706500560"
+    ]
+  },
+  {
+    "card_id": "1729707049533",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729707049531",
+      "1729707049532"
+    ]
+  },
+  {
+    "card_id": "1729706349050",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729706349051"
+    ]
+  },
+  {
+    "card_id": "1729706309315",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729706309314"
+    ]
+  },
+  {
+    "card_id": "1729706913519",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729706913518"
+    ]
+  },
+  {
+    "card_id": "1729706633123",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729706633124"
+    ]
+  },
+  {
+    "card_id": "1729706599745",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729706599746",
+      "1729706599747"
+    ]
+  },
+  {
+    "card_id": "1729706338111",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729706338112"
+    ]
+  },
+  {
+    "card_id": "1729706672664",
+    "question": "M5-007: Which term is calculated by multiplying the Annualized Rate of Occurrence by the Single-Loss Expectancy?",
+    "A": "Recovery Point Objective",
+    "B": "Mean Time Between Failures",
+    "C": "Annualized Loss Expectency",
+    "D": "Single-Loss Expectancy",
+    "correct": "C",
+    "explanation_de": "Annualized Loss Expectency ist der passende Security+-Begriff für diese Beschreibung: Annualized Loss Expectency is calculated by multiplying the Annualized Rate of Occurrence by the Single-Loss Expectancy. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Annualized Loss Expectency = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729706672665"
+    ]
+  },
+  {
+    "card_id": "1729706388334",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729706388335"
+    ]
+  },
+  {
+    "card_id": "1729706866215",
+    "question": "M5-008: Which term describes this concept: Risk that an organization is willing to take on without acting?",
+    "A": "Recovery Point Objective",
+    "B": "Risk Appetite",
+    "C": "Risk Tolerance",
+    "D": "Annualized Loss Expectency",
+    "correct": "B",
+    "explanation_de": "Risk Appetite ist der passende Security+-Begriff für diese Beschreibung: Risk that an organization is willing to take on without acting is referred to as Risk Appetite. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Risk Appetite = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729706866216"
+    ]
+  },
+  {
+    "card_id": "1729707131082",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729706420938",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729706420939"
+    ]
+  },
+  {
+    "card_id": "1729707438641",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729706570753",
+    "question": "M5-009: Which term is the monetary loss associated with a single occurrence of a risk?",
+    "A": "Risk Probability",
+    "B": "Avoiding Risk",
+    "C": "Single-Loss Expectancy",
+    "D": "Risk Management",
+    "correct": "C",
+    "explanation_de": "Single-Loss Expectancy ist der passende Security+-Begriff für diese Beschreibung: Single-Loss Expectancy is the monetary loss associated with a single occurrence of a risk. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Single-Loss Expectancy = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729706570754"
+    ]
+  },
+  {
+    "card_id": "1729706737042",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729706737043",
+      "1729706737044",
+      "1729706737045"
+    ]
+  },
+  {
+    "card_id": "1729706838699",
+    "question": "M5-010: Which term is a quantitative number associated with a statistic or measurement of a specific risk?",
+    "A": "Risk Probability",
+    "B": "Accepting Risk",
+    "C": "Risk Appetite Posture",
+    "D": "Risk Appetite",
+    "correct": "A",
+    "explanation_de": "Risk Probability ist der passende Security+-Begriff für diese Beschreibung: Risk Probability is a quantitative number associated with a statistic or measurement of a specific risk. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Risk Probability = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729706838700"
+    ]
+  },
+  {
+    "card_id": "1729707523667",
+    "question": "M5-011: Which term is a Qualitative description for readiness to take on a risk?",
+    "A": "Annualized Loss Expectency",
+    "B": "Risk Appetite Posture",
+    "C": "Risk Appetite",
+    "D": "Avoiding Risk",
+    "correct": "B",
+    "explanation_de": "Risk Appetite Posture ist der passende Security+-Begriff für diese Beschreibung: A Risk Appetite Posture is a Qualitative description for readiness to take on a risk. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Risk Appetite Posture = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729707523668"
+    ]
+  },
+  {
+    "card_id": "1729706988234",
+    "question": "M5-012: Which term is typically a larger variance than Risk Appetite?",
+    "A": "Single-Loss Expectancy",
+    "B": "Avoiding Risk",
+    "C": "Risk Tolerance",
+    "D": "Risk Probability",
+    "correct": "C",
+    "explanation_de": "Risk Tolerance ist der passende Security+-Begriff für diese Beschreibung: Risk Tolerance is typically a larger variance than Risk Appetite. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Risk Tolerance = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729706988232",
+      "1729706988233"
+    ]
+  },
+  {
+    "card_id": "1729706519021",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729706519020"
+    ]
+  },
+  {
+    "card_id": "1729708076537",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729708166829",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729708166830"
+    ]
+  },
+  {
+    "card_id": "1729708196573",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729708238296",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729708238295"
+    ]
+  },
+  {
+    "card_id": "1729708046154",
+    "question": "M5-013: Which term means taking the risk on?",
+    "A": "Annualized Loss Expectency",
+    "B": "Accepting Risk",
+    "C": "Risk Tolerance",
+    "D": "Risk Appetite Posture",
+    "correct": "B",
+    "explanation_de": "Accepting Risk ist der passende Security+-Begriff für diese Beschreibung: Accepting Risk means taking the risk on. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Accepting Risk = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729708046155"
+    ]
+  },
+  {
+    "card_id": "1729708020225",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729708020224"
+    ]
+  },
+  {
+    "card_id": "1729708144736",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729708144737"
+    ]
+  },
+  {
+    "card_id": "1729708213497",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729708213498"
+    ]
+  },
+  {
+    "card_id": "1729708108607",
+    "question": "M5-014: Which term means to not take the risk on at all?",
+    "A": "Avoiding Risk",
+    "B": "Annualized Loss Expectency",
+    "C": "Risk Probability",
+    "D": "Mean Time Between Failures",
+    "correct": "A",
+    "explanation_de": "Avoiding Risk ist der passende Security+-Begriff für diese Beschreibung: Avoiding Risk means to not take the risk on at all. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Avoiding Risk = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729708108608"
+    ]
+  },
+  {
+    "card_id": "1729708617493",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729708617494"
+    ]
+  },
+  {
+    "card_id": "1729708838929",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729708838930"
+    ]
+  },
+  {
+    "card_id": "1729708480724",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729708480723"
+    ]
+  },
+  {
+    "card_id": "1729708929697",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729708929698"
+    ]
+  },
+  {
+    "card_id": "1729708541619",
+    "question": "M5-015: Which term is the point that defines what \"operational\" means during recovery?",
+    "A": "Risk Appetite",
+    "B": "Single-Loss Expectancy",
+    "C": "Mean Time Between Failures",
+    "D": "Recovery Point Objective",
+    "correct": "D",
+    "explanation_de": "Recovery Point Objective ist der passende Security+-Begriff für diese Beschreibung: The Recovery Point Objective is the point that defines what \"operational\" means during recovery. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Recovery Point Objective = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729708541618"
+    ]
+  },
+  {
+    "card_id": "1729708787931",
+    "question": "M5-016: Which term is the estimated time that the system will run before there is an outage?",
+    "A": "Annualized Loss Expectency",
+    "B": "Risk Indicator",
+    "C": "Risk Probability",
+    "D": "Mean Time Between Failures",
+    "correct": "D",
+    "explanation_de": "Mean Time Between Failures ist der passende Security+-Begriff für diese Beschreibung: Mean Time Between Failures is the estimated time that the system will run before there is an outage. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Mean Time Between Failures = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729708787932"
+    ]
+  },
+  {
+    "card_id": "1729708745671",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729708817063",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729708817064"
+    ]
+  },
+  {
+    "card_id": "1729708872495",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729708689617",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729708689618",
+      "1729708689619",
+      "1729708689620"
+    ]
+  },
+  {
+    "card_id": "1729708592898",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729708592897"
+    ]
+  },
+  {
+    "card_id": "1729708492992",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729708492993"
+    ]
+  },
+  {
+    "card_id": "1729708711514",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729708711513"
+    ]
+  },
+  {
+    "card_id": "1729709909400",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729709909401"
+    ]
+  },
+  {
+    "card_id": "1729709521505",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729709168455",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729709168456"
+    ]
+  },
+  {
+    "card_id": "1729709419932",
+    "question": "M5-017: Which term describes the process of investigating and getting more information about a company before deciding to do business with them?",
+    "A": "Master Service Agreement",
+    "B": "Single-Loss Expectancy",
+    "C": "Due Diligence",
+    "D": "Blue Team",
+    "correct": "C",
+    "explanation_de": "Due Diligence ist der passende Security+-Begriff für diese Beschreibung: Due Diligence describes the process of investigating and getting more information about a company before deciding to do business with them. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Due Diligence = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729709419933"
+    ]
+  },
+  {
+    "card_id": "1729709220803",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729709220802"
+    ]
+  },
+  {
+    "card_id": "1729709322214",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729709322215"
+    ]
+  },
+  {
+    "card_id": "1729709388276",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729709489933",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729709245091",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729710366258",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729710366259"
+    ]
+  },
+  {
+    "card_id": "1729710454281",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729710454280",
+      "1729710454279"
+    ]
+  },
+  {
+    "card_id": "1729710154148",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729710154149"
+    ]
+  },
+  {
+    "card_id": "1729710310793",
+    "question": "M5-018: Which term is a legal contract that sets the terms between both organizations, including a framework that can be used for additional work that might occur in the future?",
+    "A": "Due Diligence",
+    "B": "Risk Appetite Posture",
+    "C": "Red Team",
+    "D": "Master Service Agreement",
+    "correct": "D",
+    "explanation_de": "Master Service Agreement ist der passende Security+-Begriff für diese Beschreibung: A Master Service Agreement is a legal contract that sets the terms between both organizations, including a framework that can be used for additional work that might occur in the future. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Master Service Agreement = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729710310794",
+      "1729710310792"
+    ]
+  },
+  {
+    "card_id": "1729710253963",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729710253964"
+    ]
+  },
+  {
+    "card_id": "1729710085803",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729710085804"
+    ]
+  },
+  {
+    "card_id": "1729710550315",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729710550316"
+    ]
+  },
+  {
+    "card_id": "1729710239551",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729710169079",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729710169078"
+    ]
+  },
+  {
+    "card_id": "1729710590623",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729710590624"
+    ]
+  },
+  {
+    "card_id": "1729710652959",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729710652960"
+    ]
+  },
+  {
+    "card_id": "1729710106363",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729710106362"
+    ]
+  },
+  {
+    "card_id": "1729710217498",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729710217497"
+    ]
+  },
+  {
+    "card_id": "1729710515261",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729710515262"
+    ]
+  },
+  {
+    "card_id": "1729710607376",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729710607377"
+    ]
+  },
+  {
+    "card_id": "1729783939287",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729783939288"
+    ]
+  },
+  {
+    "card_id": "1729784021604",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729784021603"
+    ]
+  },
+  {
+    "card_id": "1729783659515",
+    "question": "M5-019: Which term means meeting the requirements of one or more standards?",
+    "A": "Data Subject",
+    "B": "Data Inventory",
+    "C": "Central Compliance Officer",
+    "D": "Compliance",
+    "correct": "D",
+    "explanation_de": "Compliance ist der passende Security+-Begriff für diese Beschreibung: Compliance means meeting the requirements of one or more standards. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Compliance = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729783659514"
+    ]
+  },
+  {
+    "card_id": "1729783723324",
+    "question": "M5-020: Which description matches the CCO?",
+    "A": "Data Inventory",
+    "B": "Central Compliance Officer",
+    "C": "Data Subject",
+    "D": "Compliance",
+    "correct": "B",
+    "explanation_de": "Central Compliance Officer ist der passende Security+-Begriff für diese Beschreibung: The CCO is the Central Compliance Officer. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Central Compliance Officer = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729783723325"
+    ]
+  },
+  {
+    "card_id": "1729784060040",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729784060041"
+    ]
+  },
+  {
+    "card_id": "1729784288867",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729783769844",
+    "question": "M5-021: Which term is responsible for making sure that the entire organization is complying with any applicable requirements, as well as informing others of the compliance status?",
+    "A": "Data Subject",
+    "B": "Compliance",
+    "C": "Central Compliance Officer",
+    "D": "Data Inventory",
+    "correct": "C",
+    "explanation_de": "Central Compliance Officer ist der passende Security+-Begriff für diese Beschreibung: The Central Compliance Officer is responsible for making sure that the entire organization is complying with any applicable requirements, as well as informing others of the compliance status. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Central Compliance Officer = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729783769843",
+      "1729783769842"
+    ]
+  },
+  {
+    "card_id": "1729783700691",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729783700690"
+    ]
+  },
+  {
+    "card_id": "1729784673832",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729784673830",
+      "1729784673831"
+    ]
+  },
+  {
+    "card_id": "1729784512542",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729784512541"
+    ]
+  },
+  {
+    "card_id": "1729784557847",
+    "question": "M5-022: Which term is defined by the GDPR as information relating to an identified or identifiable natural person?",
+    "A": "Central Compliance Officer",
+    "B": "Data Subject",
+    "C": "Compliance",
+    "D": "Data Inventory",
+    "correct": "B",
+    "explanation_de": "Data Subject ist der passende Security+-Begriff für diese Beschreibung: A Data Subject is defined by the GDPR as information relating to an identified or identifiable natural person. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Data Subject = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729784557846"
+    ]
+  },
+  {
+    "card_id": "1729784627980",
+    "question": "M5-023: Which term is a listing of all of the data that this company collects and stores?",
+    "A": "Data Subject",
+    "B": "Central Compliance Officer",
+    "C": "Data Inventory",
+    "D": "Compliance",
+    "correct": "C",
+    "explanation_de": "Data Inventory ist der passende Security+-Begriff für diese Beschreibung: The Data Inventory is a listing of all of the data that this company collects and stores. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Data Inventory = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729784627981"
+    ]
+  },
+  {
+    "card_id": "1729785557920",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729785435416",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729785486403",
+    "question": "M5-024: Which term is a group that is responsible for all of the risk management associated with an organization, as well as starting and stopping any internal audits.?",
+    "A": "Blue Team",
+    "B": "Partially Known Environment",
+    "C": "Red Team",
+    "D": "Audit Committee",
+    "correct": "D",
+    "explanation_de": "Audit Committee ist der passende Security+-Begriff für diese Beschreibung: An Audit Committee is a group that is responsible for all of the risk management associated with an organization, as well as starting and stopping any internal audits.. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Audit Committee = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729785486405",
+      "1729785486404"
+    ]
+  },
+  {
+    "card_id": "1729785415964",
+    "question": "M5-025: Which term is an opinion of truth that is associated with the results of an audit?",
+    "A": "Active Reconnaissance",
+    "B": "Attestation",
+    "C": "Audit Committee",
+    "D": "Red Team",
+    "correct": "B",
+    "explanation_de": "Attestation ist der passende Security+-Begriff für diese Beschreibung: Attestation is an opinion of truth that is associated with the results of an audit. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Attestation = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729785415965"
+    ]
+  },
+  {
+    "card_id": "1729785392194",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729785540602",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729785955294",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729785955295"
+    ]
+  },
+  {
+    "card_id": "1729785734869",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729785734868"
+    ]
+  },
+  {
+    "card_id": "1729785920415",
+    "question": "M5-026: Which term is when a penetration tester is only given some of the information about the systems involved with the test?",
+    "A": "Passive Reconnaissance",
+    "B": "Anomalous Behavior",
+    "C": "Blue Team",
+    "D": "Partially Known Environment",
+    "correct": "D",
+    "explanation_de": "Partially Known Environment ist der passende Security+-Begriff für diese Beschreibung: Partially Known Environment is when a penetration tester is only given some of the information about the systems involved with the test. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Partially Known Environment = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729785920416"
+    ]
+  },
+  {
+    "card_id": "1729786075246",
+    "question": "M5-027: Which term is when an attacker goes into the network to gain information, risking exposure?",
+    "A": "Active Reconnaissance",
+    "B": "Attestation",
+    "C": "Passive Reconnaissance",
+    "D": "Partially Known Environment",
+    "correct": "A",
+    "explanation_de": "Active Reconnaissance ist der passende Security+-Begriff für diese Beschreibung: Active Reconnaissance is when an attacker goes into the network to gain information, risking exposure. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Active Reconnaissance = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729786075247"
+    ]
+  },
+  {
+    "card_id": "1729786307623",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729786660824",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729786660823"
+    ]
+  },
+  {
+    "card_id": "1729785782984",
+    "question": "M5-028: Which term are the actors in a penetration test which are trying to breach the defenses?",
+    "A": "Active Reconnaissance",
+    "B": "Attestation",
+    "C": "Red Team",
+    "D": "Blue Team",
+    "correct": "C",
+    "explanation_de": "Red Team ist der passende Security+-Begriff für diese Beschreibung: The Red Team are the actors in a penetration test which are trying to breach the defenses. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Red Team = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729785782983"
+    ]
+  },
+  {
+    "card_id": "1729785886535",
+    "question": "M5-029: Which term is the full details of all the systems which are part of a Penetration Test?",
+    "A": "Attestation",
+    "B": "Blue Team",
+    "C": "Anomalous Behavior",
+    "D": "Known Environment",
+    "correct": "D",
+    "explanation_de": "Known Environment ist der passende Security+-Begriff für diese Beschreibung: A Known Environment is the full details of all the systems which are part of a Penetration Test. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Known Environment = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729785886536"
+    ]
+  },
+  {
+    "card_id": "1729785809766",
+    "question": "M5-030: Which term are the actors in a penetration test which are trying to defend against attack?",
+    "A": "Attestation",
+    "B": "Active Reconnaissance",
+    "C": "Known Environment",
+    "D": "Blue Team",
+    "correct": "D",
+    "explanation_de": "Blue Team ist der passende Security+-Begriff für diese Beschreibung: The Blue Team are the actors in a penetration test which are trying to defend against attack. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Blue Team = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729785809767"
+    ]
+  },
+  {
+    "card_id": "1729786616547",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729785856290",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729786134064",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729786134063"
+    ]
+  },
+  {
+    "card_id": "1729786008395",
+    "question": "M5-031: Which term refers to gathering information from sources not directly connected to the target network?",
+    "A": "Audit Committee",
+    "B": "Partially Known Environment",
+    "C": "Passive Reconnaissance",
+    "D": "Attestation",
+    "correct": "C",
+    "explanation_de": "Passive Reconnaissance ist der passende Security+-Begriff für diese Beschreibung: Passive Reconnaissance refers to gathering information from sources not directly connected to the target network. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Passive Reconnaissance = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729786008396"
+    ]
+  },
+  {
+    "card_id": "1729786475642",
+    "question": "M5-032: Which term is behavior that is out of the norm for a particular user, device, system, etc?",
+    "A": "Passive Reconnaissance",
+    "B": "Red Team",
+    "C": "Anomalous Behavior",
+    "D": "Attestation",
+    "correct": "C",
+    "explanation_de": "Anomalous Behavior ist der passende Security+-Begriff für diese Beschreibung: Anomalous Behavior is behavior that is out of the norm for a particular user, device, system, etc. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Anomalous Behavior = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729786475643"
+    ]
+  },
+  {
+    "card_id": "1729786576258",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729786576259"
+    ]
+  },
+  {
+    "card_id": "1729786831722",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729786710181",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729786710180"
+    ]
+  },
+  {
+    "card_id": "1729786522928",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729786522929"
+    ]
+  },
+  {
+    "card_id": "1729786750123",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729786793022",
+    "question": "M5-033: Which term is responsible for creating and presenting IT security materials?",
+    "A": "Known Environment",
+    "B": "Security Awareness Team",
+    "C": "Risk Tolerance",
+    "D": "Sarbanes-Oxley Act",
+    "correct": "B",
+    "explanation_de": "Security Awareness Team ist der passende Security+-Begriff für diese Beschreibung: The Security Awareness Team is responsible for creating and presenting IT security materials. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Security Awareness Team = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729786793023"
+    ]
+  },
+  {
+    "card_id": "1729787677887",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729787466549",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729787466548"
+    ]
+  },
+  {
+    "card_id": "1729787753312",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729787402851",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729787402850"
+    ]
+  },
+  {
+    "card_id": "1729787627105",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729787565964",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729787609182",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729787609181"
+    ]
+  },
+  {
+    "card_id": "1729787295996",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729787251072"
+    ]
+  },
+  {
+    "card_id": "1729787329618",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729787329619"
+    ]
+  },
+  {
+    "card_id": "1729787359617",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729787359618"
+    ]
+  }
+]

@@ -218,6 +218,7 @@ export default function CardFormModal(props: Props) {
         await enqueueSyncOperation('deck.create', {
           id: deckId,
           name: deckName,
+          parentDeckId: null,
           createdAt,
           updatedAt: createdAt,
           source: 'manual',

@@ -1,5 +1,6 @@
 import Dexie, { type Table } from 'dexie'
 import { DATABASE_NAMES } from '../constants/appIdentity'
+import { buildSecurityDeckHierarchyPlan } from '../utils/securityDeckHierarchy'
 
 // ─── Record Types (IndexedDB Storage Format) ────────────────────────────────
 
@@ -17,9 +18,10 @@ export interface CardMigrationMetadata {
 export interface DeckRecord {
   id: string
   name: string
+  parentDeckId?: string | null
   createdAt: number
   updatedAt?: number
-  source: 'anki-import' | 'manual'
+  source: 'anki-import' | 'manual' | 'system'
   /** Tombstone: set to true on soft-delete; filters the deck from all active queries. */
   isDeleted?: boolean
   deletedAt?: number
@@ -272,6 +274,34 @@ export class CardPwaDB extends Dexie {
       deckProgress: 'deckId, updatedAt',
       shuffleCollections: 'id, updatedAt, isDeleted',
     })
+
+    // Version 13: Add deck hierarchy support (parentDeckId) and seed the
+    // Security+ SY0-701 objective subdecks under the five default domains.
+    this.version(13)
+      .stores({
+        decks: 'id, name, parentDeckId, createdAt, isDeleted',
+        cards: 'id, noteId, deckId, type, due, dueAt, createdAt, algorithm, stability, difficulty, isDeleted, [deckId+due], [deckId+dueAt], [deckId+algorithm], [deckId+type], [deckId+stability], [deckId+difficulty]',
+        reviews: '++id, cardId, timestamp, rating, [cardId+timestamp], [timestamp+rating]',
+        activeSessions: 'id, updatedAt',
+        syncMeta: 'key',
+        profile: 'id',
+        cardStats: 'cardId, deckId, updatedAt, [deckId+updatedAt]',
+        deckProgress: 'deckId, updatedAt',
+        shuffleCollections: 'id, updatedAt, isDeleted',
+      })
+      .upgrade(async tx => {
+        const deckTable = tx.table<DeckRecord, string>('decks')
+        const decks = await deckTable.toArray()
+        const plan = buildSecurityDeckHierarchyPlan(decks)
+
+        if (plan.upserts.length > 0) {
+          await deckTable.bulkPut(plan.upserts)
+        }
+
+        for (const update of plan.updates) {
+          await deckTable.update(update.id, update.changes)
+        }
+      })
   }
 }
 

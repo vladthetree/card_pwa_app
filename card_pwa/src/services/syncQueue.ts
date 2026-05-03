@@ -91,10 +91,36 @@ async function getSelectedDeckFilter(): Promise<Set<string> | null> {
     const profile = await db.profile.get('current')
     if (!profile || profile.mode !== 'linked' || !profile.userId) return null
     const selected = readSelectedDeckIds(profile.userId)
-    return selected.length > 0 ? new Set(selected) : null
+    if (selected.length === 0) return null
+    const decks = (await db.decks.toArray()).filter(deck => !deck.isDeleted)
+    return expandDeckIdsWithDescendants(decks, new Set(selected))
   } catch {
     return null
   }
+}
+
+function expandDeckIdsWithDescendants(
+  decks: Array<{ id: string; parentDeckId?: string | null }>,
+  selectedDeckIds: Set<string>,
+): Set<string> {
+  const childrenByParent = new Map<string, Array<{ id: string }>>()
+  const activeIds = new Set(decks.map(deck => deck.id))
+  for (const deck of decks) {
+    if (!deck.parentDeckId || !activeIds.has(deck.parentDeckId)) continue
+    const bucket = childrenByParent.get(deck.parentDeckId) ?? []
+    bucket.push(deck)
+    childrenByParent.set(deck.parentDeckId, bucket)
+  }
+
+  const expanded = new Set<string>()
+  const stack = Array.from(selectedDeckIds)
+  while (stack.length > 0) {
+    const deckId = stack.pop()
+    if (!deckId || expanded.has(deckId)) continue
+    expanded.add(deckId)
+    for (const child of childrenByParent.get(deckId) ?? []) stack.push(child.id)
+  }
+  return expanded
 }
 
 async function shouldSyncOperation(type: SyncOperationType, payload: unknown): Promise<boolean> {

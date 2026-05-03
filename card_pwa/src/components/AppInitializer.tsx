@@ -11,6 +11,7 @@ import { useGlobalErrorLogging } from '../hooks/useGlobalErrorLogging'
 import { useSyncRuntime } from '../hooks/useSyncRuntime'
 import { useServiceWorkerConfig } from '../hooks/useServiceWorkerConfig'
 import { useWebPushSubscription } from '../hooks/useWebPushSubscription'
+import { ensureCompTIA701DeckHierarchy } from '../services/deckHierarchy'
 
 const IS_DEV = import.meta.env.DEV
 
@@ -49,6 +50,10 @@ export default function AppInitializer({ children }: Props) {
       .catch(err => {
         console.error('[DB] open failed', err)
       })
+  }, [])
+
+  useEffect(() => {
+    void ensureCompTIA701DeckHierarchy()
   }, [])
 
   return (

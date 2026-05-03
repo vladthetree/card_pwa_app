@@ -173,6 +173,7 @@ export function HomeDeckListSection({
               onStartStudy={onStartStudy}
               onDelete={onDelete}
               schedule={deckScheduleOverview[deck.id]}
+              deckScheduleOverview={deckScheduleOverview}
               onShowMetrics={onShowMetrics}
               onManageCards={onManageCards}
             />

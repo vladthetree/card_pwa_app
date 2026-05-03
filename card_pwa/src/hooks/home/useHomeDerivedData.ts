@@ -7,6 +7,7 @@ import type { Deck, DeckScheduleOverview, ShuffleCollection } from '../../types'
 import { buildSelectedShuffleCards } from '../../services/ShuffleSessionManager'
 import { getSyncedDeckIds } from '../../services/syncedDeckScope'
 import { listDecksForBackup } from '../../utils/dbBackup'
+import { flattenDeckTree } from '../../utils/securityDeckHierarchy'
 
 export interface HomeShuffleSummary {
   selectedCount: number
@@ -83,8 +84,9 @@ export async function loadHomeDeckScheduleOverview(
   nextDayStartsAt: number,
 ): Promise<Record<string, DeckScheduleOverview>> {
   if (decks.length === 0) return {}
+  const allDecks = flattenDeckTree(decks)
   const metadata = await getDeckHomeMetadata(
-    decks.map(deck => deck.id),
+    allDecks.map(deck => deck.id),
     studyCardLimit,
     nextDayStartsAt,
   )
@@ -97,8 +99,9 @@ export async function loadHomeDeckTagIndex(
   nextDayStartsAt = 0,
 ): Promise<Record<string, string[]>> {
   if (decks.length === 0) return {}
+  const allDecks = flattenDeckTree(decks)
   const metadata = await getDeckHomeMetadata(
-    decks.map(deck => deck.id),
+    allDecks.map(deck => deck.id),
     studyCardLimit,
     nextDayStartsAt,
   )
@@ -117,8 +120,9 @@ export async function loadHomeDeckMetadata(
     }
   }
 
+  const allDecks = flattenDeckTree(decks)
   return getDeckHomeMetadata(
-    decks.map(deck => deck.id),
+    allDecks.map(deck => deck.id),
     studyCardLimit,
     nextDayStartsAt,
   )

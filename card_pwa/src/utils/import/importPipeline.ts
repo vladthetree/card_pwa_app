@@ -182,6 +182,7 @@ export async function executeImport(plan: ImportPlan): Promise<ImportResult> {
         enqueueSyncOperation('deck.create', {
           id: deck.id,
           name: deck.name,
+          parentDeckId: deck.parentDeckId ?? null,
           createdAt: deck.createdAt,
           updatedAt: deck.updatedAt ?? importedAt,
           source: deck.source ?? 'import',
@@ -298,6 +299,7 @@ export async function executeImportWithProgress(
         enqueueSyncOperation('deck.create', {
           id: deck.id,
           name: deck.name,
+          parentDeckId: deck.parentDeckId ?? null,
           createdAt: deck.createdAt,
           updatedAt: deck.updatedAt ?? importedAt,
           source: deck.source ?? 'import',

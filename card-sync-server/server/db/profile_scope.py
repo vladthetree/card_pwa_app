@@ -22,10 +22,13 @@ def ensure_profile_scoped_state_tables(conn):
   conn.execute("SAVEPOINT profile_scope_migration")
   try:
     if not has_profile_scoped_primary_key(conn, "server_decks"):
+      deck_cols = [row[1] for row in conn.execute("PRAGMA table_info(server_decks)").fetchall()]
+      parent_deck_expr = "parent_deck_id" if "parent_deck_id" in deck_cols else "NULL"
       conn.execute("""
         CREATE TABLE server_decks_profile_scoped (
           id TEXT NOT NULL,
           name TEXT,
+          parent_deck_id TEXT,
           created_at INTEGER,
           source TEXT,
           updated_at INTEGER NOT NULL,
@@ -35,10 +38,10 @@ def ensure_profile_scoped_state_tables(conn):
           PRIMARY KEY (user_id, id)
         )
       """)
-      conn.execute("""
+      conn.execute(f"""
         INSERT OR REPLACE INTO server_decks_profile_scoped
-        (id, name, created_at, source, updated_at, deleted_at, last_source_client, user_id)
-        SELECT id, name, created_at, source, updated_at, deleted_at, last_source_client, COALESCE(user_id, '')
+        (id, name, parent_deck_id, created_at, source, updated_at, deleted_at, last_source_client, user_id)
+        SELECT id, name, {parent_deck_expr}, created_at, source, updated_at, deleted_at, last_source_client, COALESCE(user_id, '')
         FROM server_decks
       """)
       conn.execute("DROP TABLE server_decks")

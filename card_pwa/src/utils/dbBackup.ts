@@ -51,8 +51,11 @@ export async function createDbBackupPayload(options: ExportOptions = {}): Promis
 
   const decksAll = await db.decks.toArray()
   const activeDecks = decksAll.filter(deck => !deck.isDeleted)
+  const selectedDecksWithDescendants = selectedDeckIds
+    ? expandDeckIdsWithDescendants(activeDecks, selectedDeckIds)
+    : null
   const decks = selectedDeckIds
-    ? activeDecks.filter(deck => selectedDeckIds.has(deck.id))
+    ? activeDecks.filter(deck => selectedDecksWithDescendants?.has(deck.id))
     : activeDecks
 
   const deckIdSet = new Set(decks.map(deck => deck.id))
@@ -182,6 +185,29 @@ export async function listDecksForBackup(): Promise<Array<Pick<DeckRecord, 'id' 
   return decks
     .filter(deck => !deck.isDeleted)
     .map(deck => ({ id: deck.id, name: deck.name }))
+}
+
+function expandDeckIdsWithDescendants(decks: DeckRecord[], selectedDeckIds: Set<string>): Set<string> {
+  const childrenByParent = new Map<string, DeckRecord[]>()
+  const activeIds = new Set(decks.map(deck => deck.id))
+  for (const deck of decks) {
+    if (!deck.parentDeckId || !activeIds.has(deck.parentDeckId)) continue
+    const bucket = childrenByParent.get(deck.parentDeckId) ?? []
+    bucket.push(deck)
+    childrenByParent.set(deck.parentDeckId, bucket)
+  }
+
+  const expanded = new Set<string>()
+  const stack = Array.from(selectedDeckIds)
+  while (stack.length > 0) {
+    const deckId = stack.pop()
+    if (!deckId || expanded.has(deckId)) continue
+    expanded.add(deckId)
+    for (const child of childrenByParent.get(deckId) ?? []) {
+      stack.push(child.id)
+    }
+  }
+  return expanded
 }
 
 function buildDeckNameById(decks: DeckRecord[]): Map<string, string> {

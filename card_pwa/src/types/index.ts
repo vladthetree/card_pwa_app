@@ -36,6 +36,8 @@ export interface DeckStats {
 export interface Deck extends DeckStats {
   id: string
   name: string
+  parentDeckId?: string | null
+  subDecks?: Deck[]
 }
 
 export type ShuffleCollection = import('../db').ShuffleCollectionRecord
