@@ -35,12 +35,18 @@ export function useHomeDeckFilters({
   const filteredDecks = useMemo(() => {
     if (!normalizedDeckSearch) return decks
 
-    return decks.filter(deck => {
+    const deckMatchesSearch = (deck: Deck): boolean => {
       const title = formatDeckName(deck.name).toLowerCase()
       if (title.includes(normalizedDeckSearch)) return true
 
       const tags = deckTagIndex[deck.id] ?? []
-      return tags.some(tag => tag.includes(normalizedDeckSearch))
+      if (tags.some(tag => tag.includes(normalizedDeckSearch))) return true
+
+      return (deck.subDecks ?? []).some(deckMatchesSearch)
+    }
+
+    return decks.filter(deck => {
+      return deckMatchesSearch(deck)
     })
   }, [decks, deckTagIndex, normalizedDeckSearch])
 

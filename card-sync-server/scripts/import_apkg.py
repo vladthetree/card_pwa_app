@@ -384,7 +384,9 @@ def _mc_choices_in_front(front: str) -> set[str]:
 
 def validate_all_cards(user_id: str | None) -> dict:
     """
-    Prüft ALLE nicht-gelöschten Karten in der DB.
+    Prüft alle nicht-gelöschten Karten in der DB, außer Karten mit
+    needs_review-Tag. Review-Karten sind bewusst als Arbeitsstapel
+    getrennt und können unvollständig sein.
 
     MC-Karten (bestehen aus A:/B:/C:/D: im Front):
       - Mindestens 2 Antwortoptionen
@@ -400,7 +402,7 @@ def validate_all_cards(user_id: str | None) -> dict:
       - Back nicht leer
 
     Gibt zurück:
-      { total, mc, basic, cloze,
+      { total, skipped_needs_review, mc, basic, cloze,
         errors: [ {card_id, deck_name, front_preview, issue} ] }
     """
     uid  = user_id or ''
@@ -415,7 +417,7 @@ def validate_all_cards(user_id: str | None) -> dict:
     ).fetchall()
     conn.close()
 
-    result = {'total': len(rows), 'mc': 0, 'basic': 0, 'cloze': 0, 'errors': []}
+    result = {'total': 0, 'skipped_needs_review': 0, 'mc': 0, 'basic': 0, 'cloze': 0, 'errors': []}
 
     def err(card_id, deck_name, front, issue):
         result['errors'].append({
@@ -430,6 +432,16 @@ def validate_all_cards(user_id: str | None) -> dict:
         front = row['front'] or ''
         back  = row['back']  or ''
         deck  = row['deck_name'] or '?'
+        try:
+            tags = json.loads(row['tags_json'] or '[]')
+        except Exception:
+            tags = []
+
+        if isinstance(tags, list) and 'needs_review' in tags:
+            result['skipped_needs_review'] += 1
+            continue
+
+        result['total'] += 1
 
         choices = _mc_choices_in_front(front)
         is_mc   = len(choices) >= 2
@@ -460,7 +472,9 @@ def validate_all_cards(user_id: str | None) -> dict:
 
 def print_validation(v: dict) -> None:
     print(f'\n{"═"*60}')
-    print(f'  VALIDIERUNGSBERICHT  –  {v["total"]} Karten total')
+    skipped = v.get('skipped_needs_review', 0)
+    suffix = f'  (+ {skipped} needs_review übersprungen)' if skipped else ''
+    print(f'  VALIDIERUNGSBERICHT  –  {v["total"]} Karten geprüft{suffix}')
     print(f'  MC: {v["mc"]}  |  Basic: {v["basic"]}  |  Cloze: {v["cloze"]}')
     print(f'  Fehler: {len(v["errors"])}')
     print(f'{"═"*60}')

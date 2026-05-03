@@ -1,0 +1,3425 @@
+[
+  {
+    "card_id": "1728925347209",
+    "question": "M2-001: Which term describes an entity that causes an event affecting another party's security?",
+    "A": "Attack Surface",
+    "B": "Threat Actor",
+    "C": "Vulnerability",
+    "D": "Security Control",
+    "correct": "B",
+    "explanation_de": "Ein Threat Actor ist die handelnde Entität hinter einem Sicherheitsereignis. Nicht die Schwachstelle oder der Schutzmechanismus ist der Akteur, sondern die Person, Gruppe oder Organisation.\n\n \n\n Merkhilfe: Threat Actor ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728925347208"
+    ]
+  },
+  {
+    "card_id": "1728925381857",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728925478067",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728925645774",
+    "question": "M2-002: Which threat actor type represents a government or an arm of a government?",
+    "A": "Script kiddie",
+    "B": "Nation-state",
+    "C": "Hacktivist",
+    "D": "Organized crime",
+    "correct": "B",
+    "explanation_de": "Nation-state Actors handeln im Auftrag oder Interesse eines Staates.\n\n \n\n Merkhilfe: Staatliche Mittel, staatliche Ziele.",
+    "delete_duplicates": [
+      "1728925645773"
+    ]
+  },
+  {
+    "card_id": "1728925784004",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1728925784003",
+      "1728925784005"
+    ]
+  },
+  {
+    "card_id": "1728925881637",
+    "question": "M2-003: Which attacker type often uses existing tools or scripts without fully understanding how they work?",
+    "A": "Organized crime actor",
+    "B": "Unskilled attacker",
+    "C": "Nation-state actor",
+    "D": "Insider threat",
+    "correct": "B",
+    "explanation_de": "Unskilled Attackers nutzen meist fertige Tools und verstehen Details nicht zwingend. Das unterscheidet sie von gut ausgestatteten oder spezialisierten Akteuren.\n\n \n\n Merkhilfe: Unskilled attacker ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728925881636"
+    ]
+  },
+  {
+    "card_id": "1728925920785",
+    "question": "M2-004: Which threat actor is motivated by political or ideological goals?",
+    "A": "Insider threat",
+    "B": "Shadow IT user",
+    "C": "Organized crime actor",
+    "D": "Hacktivist",
+    "correct": "D",
+    "explanation_de": "Hacktivists verbinden Hacking mit Aktivismus. Ihre Motivation ist typischerweise politisch oder ideologisch, nicht primaer finanziell.\n\n \n\n Merkhilfe: Hacktivist ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728925920786"
+    ]
+  },
+  {
+    "card_id": "1728926128717",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1728926128716"
+    ]
+  },
+  {
+    "card_id": "1728926283893",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728926313614",
+    "question": "M2-005: What is the typical primary motivation of organized crime threat actors?",
+    "A": "Ideology",
+    "B": "Curiosity",
+    "C": "Nation-state espionage",
+    "D": "Financial gain",
+    "correct": "D",
+    "explanation_de": "Organized Crime ist in Security+ vor allem finanziell motiviert: Betrug, Erpressung, Datendiebstahl oder Verkauf von Zugangsdaten.\n\n \n\n Merkhilfe: Financial gain ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728926313615"
+    ]
+  },
+  {
+    "card_id": "1728926473442",
+    "question": "M2-006: Which term describes users who bypass organizational IT policies by using unauthorized services or devices?",
+    "A": "Managed service provider",
+    "B": "Shadow IT",
+    "C": "Zero Trust",
+    "D": "Insider threat",
+    "correct": "B",
+    "explanation_de": "Shadow IT entsteht, wenn legitime Nutzer eigene Tools oder Dienste einsetzen und damit Sicherheitsrichtlinien umgehen. Das schafft unkontrollierte Risiken.\n\n \n\n Merkhilfe: Shadow IT ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728926473441"
+    ]
+  },
+  {
+    "card_id": "1728926597262",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1728926597261"
+    ]
+  },
+  {
+    "card_id": "1728926922825",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728927003541",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728934123174",
+    "question": "M2-007: What is the method an attacker uses to gain access to a target system called?",
+    "A": "Threat vector",
+    "B": "Threat actor",
+    "C": "Threat intelligence",
+    "D": "Security baseline",
+    "correct": "A",
+    "explanation_de": "Der Threat Vector ist der Weg oder die Methode des Angriffs. Der Threat Actor ist dagegen die handelnde Partei.\n\n \n\n Merkhilfe: Threat vector ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728934123173"
+    ]
+  },
+  {
+    "card_id": "1728934213499",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728934553820",
+    "question": "M2-008: Which social engineering attack uses a phone call to obtain valuable information?",
+    "A": "Smishing",
+    "B": "Phishing",
+    "C": "Typosquatting",
+    "D": "Vishing",
+    "correct": "D",
+    "explanation_de": "Vishing steht für Voice Phishing. Der Kanal ist der entscheidende Hinweis: Telefonanruf statt E-Mail oder SMS.\n\n \n\n Merkhilfe: Vishing ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728934553819"
+    ]
+  },
+  {
+    "card_id": "1728934644990",
+    "question": "M2-009: Which technique calls many phone numbers to discover active systems or modems?",
+    "A": "Wardriving",
+    "B": "Bluesnarfing",
+    "C": "War dialing",
+    "D": "Vishing",
+    "correct": "C",
+    "explanation_de": "War Dialing prüft Telefonnummern auf erreichbare Systeme. Wardriving betrifft WLAN-Suche, Vishing ist Social Engineering per Telefon.\n\n \n\n Merkhilfe: War dialing ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728934644991"
+    ]
+  },
+  {
+    "card_id": "1728934726218",
+    "question": "M2-010: Which type of network is intentionally isolated from the internet?",
+    "A": "Air-gapped network",
+    "B": "Ad hoc network",
+    "C": "Guest network",
+    "D": "Zero Trust network",
+    "correct": "A",
+    "explanation_de": "Ein Air Gap trennt Systeme physisch oder logisch vom Internet. Die Isolation reduziert Remote-Angriffswege, beseitigt aber nicht alle Risiken.\n\n \n\n Merkhilfe: Air-gapped network ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728934726219"
+    ]
+  },
+  {
+    "card_id": "1728934758504",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728934802697",
+    "question": "M2-011: Which systems no longer receive security patches or vendor support?",
+    "A": "Managed systems",
+    "B": "Segmented systems",
+    "C": "Unsupported systems",
+    "D": "Hardened systems",
+    "correct": "C",
+    "explanation_de": "Unsupported Systems erhalten keine Hersteller-Patches mehr. Das macht bekannte Schwachstellen dauerhaft riskant.\n\n \n\n Merkhilfe: Unsupported systems ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728934802696"
+    ]
+  },
+  {
+    "card_id": "1728935029155",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728935077569",
+    "question": "M2-012: What does MSP stand for in an IT services context?",
+    "A": "Managed Security Protocol",
+    "B": "Mobile Service Platform",
+    "C": "Monitoring Service Policy",
+    "D": "Managed Service Provider",
+    "correct": "D",
+    "explanation_de": "MSP bedeutet Managed Service Provider. Gemeint ist ein externer Dienstleister für IT-Betrieb oder IT-Services.\n\n \n\n Merkhilfe: Managed Service Provider ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728935492645",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1728935492644"
+    ]
+  },
+  {
+    "card_id": "1728935541845",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1728935541844"
+    ]
+  },
+  {
+    "card_id": "1728935633818",
+    "question": "M2-013: Which threat vector involves physical media such as USB devices being introduced into an environment?",
+    "A": "Removable device vector",
+    "B": "Wireless vector",
+    "C": "Supply chain vector",
+    "D": "Cloud vector",
+    "correct": "A",
+    "explanation_de": "Removable Devices sind physische Datentraeger oder USB-Geräte. Sie bringen Risiken direkt in die Umgebung statt über das Internet.\n\n \n\n Merkhilfe: Removable device vector ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728935633819"
+    ]
+  },
+  {
+    "card_id": "1728935699787",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1728935699786"
+    ]
+  },
+  {
+    "card_id": "1728935848358",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728935916040",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728936006592",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1728936006591"
+    ]
+  },
+  {
+    "card_id": "1728936074534",
+    "question": "M2-014: What should be changed early when installing a new device or service?",
+    "A": "Hash algorithms",
+    "B": "Default credentials",
+    "C": "DNS records",
+    "D": "File extensions",
+    "correct": "B",
+    "explanation_de": "Default Credentials sind bekannte Standardzugangsdaten. Sie müssen beim Einrichten ersetzt werden, sonst bleibt der Zugriff trivial.\n\n \n\n Merkhilfe: Default credentials ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728936160805",
+    "question": "M2-015: Which vector involves tampering with manufacturing, distribution, or underlying infrastructure before a product reaches the organization?",
+    "A": "Supply chain vector",
+    "B": "Phishing vector",
+    "C": "Wireless vector",
+    "D": "Insider vector",
+    "correct": "A",
+    "explanation_de": "Supply-Chain-Angriffe nutzen Vertrauen in Lieferanten, Hersteller oder Verteilungsketten aus. Das Risiko entsteht vor oder während der Lieferung.\n\n \n\n Merkhilfe: Supply chain vector ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728936160806"
+    ]
+  },
+  {
+    "card_id": "1728936330357",
+    "question": "M2-016: Which social engineering tactic presents malicious content as something legitimate and safe?",
+    "A": "Pretexting",
+    "B": "Tailgating",
+    "C": "Watering hole",
+    "D": "Phishing",
+    "correct": "D",
+    "explanation_de": "Phishing tarnt bösartige Nachrichten oder Links als vertrauenswuerdig. Der Kern ist die Täuschung über Nachricht oder Inhalt.\n\n \n\n Merkhilfe: Phishing ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728936330356"
+    ]
+  },
+  {
+    "card_id": "1728936367403",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728936488818",
+    "needs_review": true
+  },
+  {
+    "card_id": "1728936604868",
+    "question": "M2-017: Which attack registers lookalike or misspelled domains to capture misdirected users?",
+    "A": "Typosquatting",
+    "B": "DNS poisoning",
+    "C": "Watering hole",
+    "D": "ARP spoofing",
+    "correct": "A",
+    "explanation_de": "Typosquatting nutzt Tippfehler oder aehnliche Domainnamen. Ziel ist, Nutzer auf eine fremde oder bösartige Domain zu lenken.\n\n \n\n Merkhilfe: Typosquatting ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728936604867"
+    ]
+  },
+  {
+    "card_id": "1728936658283",
+    "question": "M2-018: Which phishing variant uses SMS text messages?",
+    "A": "Smishing",
+    "B": "Vishing",
+    "C": "Whaling",
+    "D": "Pharming",
+    "correct": "A",
+    "explanation_de": "Smishing ist SMS Phishing.\n\n \n\n Merkhilfe: SMS + Phishing = Smishing.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1728937017632",
+    "question": "M2-019: Which social engineering technique uses a fabricated story to manipulate a target into taking an action?",
+    "A": "Pretexting",
+    "B": "Typosquatting",
+    "C": "RF jamming",
+    "D": "Pass the hash",
+    "correct": "A",
+    "explanation_de": "Pretexting baut eine glaubhafte Legende oder Rolle auf. Die Geschichte soll das Opfer zur Preisgabe von Informationen bewegen.\n\n \n\n Merkhilfe: Pretexting ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1728937017631"
+    ]
+  },
+  {
+    "card_id": "1729003025465",
+    "question": "M2-020: Which attack occurs when an attacker pretends to be someone else?",
+    "A": "Impersonation",
+    "B": "Directory traversal",
+    "C": "Downgrade attack",
+    "D": "Buffer overflow",
+    "correct": "A",
+    "explanation_de": "Impersonation bedeutet, eine fremde Identitaet oder Rolle vorzutaueschen, etwa Bank, Support oder Behoerde.\n\n \n\n Merkhilfe: Impersonation ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729003025466"
+    ]
+  },
+  {
+    "card_id": "1729003218206",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729003218207"
+    ]
+  },
+  {
+    "card_id": "1729003305288",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729003481939",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729003546615",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729003546614"
+    ]
+  },
+  {
+    "card_id": "1729003632035",
+    "question": "M2-021: Which attack compromises a trusted third-party site used by the intended victims?",
+    "A": "Phishing",
+    "B": "Smishing",
+    "C": "Password spraying",
+    "D": "Watering hole attack",
+    "correct": "D",
+    "explanation_de": "Bei Watering-Hole-Angriffen wird ein Ort kompromittiert, den die Zielgruppe ohnehin besucht. Der direkte Angriff auf das Ziel wird umgangen.\n\n \n\n Merkhilfe: Watering hole attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729003632036"
+    ]
+  },
+  {
+    "card_id": "1729003799867",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729003938350",
+    "question": "M2-022: Which security strategy uses multiple overlapping controls so one failure does not expose the whole environment?",
+    "A": "Open authorization",
+    "B": "Password spraying",
+    "C": "Defense in depth",
+    "D": "Single sign-on",
+    "correct": "C",
+    "explanation_de": "Defense in Depth setzt mehrere Schutzschichten ein. Faellt eine Kontrolle aus, sollen andere Schichten weiter schützen.\n\n \n\n Merkhilfe: Defense in depth ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729003938349",
+      "1729003938351"
+    ]
+  },
+  {
+    "card_id": "1729004012341",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729004076359",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729004343714",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729004343712",
+      "1729004343713"
+    ]
+  },
+  {
+    "card_id": "1729004483260",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729004574263",
+    "question": "M2-023: Which campaign uses misinformation or social media manipulation to change public perception?",
+    "A": "Directory traversal",
+    "B": "Birthday attack",
+    "C": "Influence campaign",
+    "D": "Supply chain attack",
+    "correct": "C",
+    "explanation_de": "Influence Campaigns manipulieren Wahrnehmung oder Verhalten durch gezielte Informationssteuerung. Es geht um Überzeugung und Ablenkung.\n\n \n\n Merkhilfe: Influence campaign ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729004574262",
+      "1729004574264"
+    ]
+  },
+  {
+    "card_id": "1729004685226",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729004685227"
+    ]
+  },
+  {
+    "card_id": "1729004839824",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729004885418",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729004885419"
+    ]
+  },
+  {
+    "card_id": "1729004984489",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729004984490"
+    ]
+  },
+  {
+    "card_id": "1729005007773",
+    "question": "M2-024: What does DLL stand for?",
+    "A": "Dynamic Link Library",
+    "B": "Direct Link Loader",
+    "C": "Data Logic Layer",
+    "D": "Distributed Load Library",
+    "correct": "A",
+    "explanation_de": "DLL steht für Dynamic Link Library. DLLs enthalten gemeinsam nutzbaren Code, den Programme laden können.\n\n \n\n Merkhilfe: Dynamic Link Library ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729005007774"
+    ]
+  },
+  {
+    "card_id": "1729005171342",
+    "question": "M2-025: Which attack inserts malicious code into a DLL and causes a running process to load it?",
+    "A": "LDAP injection",
+    "B": "Directory traversal",
+    "C": "DLL injection",
+    "D": "SQL injection",
+    "correct": "C",
+    "explanation_de": "DLL Injection missbraucht das Laden von Dynamic Link Libraries durch laufende Prozesse. Dadurch läuft bösartiger Code im Kontext eines legitimen Prozesses.\n\n \n\n Merkhilfe: DLL injection ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729005171343",
+      "1729005171344"
+    ]
+  },
+  {
+    "card_id": "1729005242071",
+    "question": "M2-026: Which forensic technique examines volatile memory to find evidence such as malware processes?",
+    "A": "Memory forensics",
+    "B": "Disk wiping",
+    "C": "Packet filtering",
+    "D": "Password spraying",
+    "correct": "A",
+    "explanation_de": "Memory Forensics untersucht RAM-Inhalte. Obwohl Speicher fluechtig ist, kann er Hinweise auf laufende Prozesse und Malware liefern.\n\n \n\n Merkhilfe: Memory forensics ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729005242070"
+    ]
+  },
+  {
+    "card_id": "1729005296691",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729005296690"
+    ]
+  },
+  {
+    "card_id": "1729005754639",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729005878634",
+    "question": "M2-027: Which attack writes more data than expected into memory to overwrite adjacent memory areas?",
+    "A": "Buffer overflow attack",
+    "B": "Race condition",
+    "C": "SQL injection",
+    "D": "Replay attack",
+    "correct": "A",
+    "explanation_de": "Ein Buffer Overflow überschreibt Speicherbereiche, wenn Bounds Checking fehlt oder fehlerhaft ist. Das kann Abstuerze oder Codeausfuehrung ermöglichen.\n\n \n\n Merkhilfe: Buffer overflow attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729005878635"
+    ]
+  },
+  {
+    "card_id": "1729005952714",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729006621297",
+    "question": "M2-028: Which vulnerability occurs when application behavior depends on the timing of simultaneous operations?",
+    "A": "Race condition",
+    "B": "Buffer overflow",
+    "C": "Hash collision",
+    "D": "DNS poisoning",
+    "correct": "A",
+    "explanation_de": "Race Conditions entstehen durch konkurrierende Ablaufe. Entscheidend ist Timing: Wer greift wann auf welchen Zustand zu?\n\n \n\n Merkhilfe: Race condition ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729006621298"
+    ]
+  },
+  {
+    "card_id": "1729006695226",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729007012771",
+    "question": "M2-029: Which attack exploits the gap between checking a value and using that value?",
+    "A": "TOCTOU attack",
+    "B": "Birthday attack",
+    "C": "Pass-the-hash attack",
+    "D": "Deauthentication attack",
+    "correct": "A",
+    "explanation_de": "TOCTOU steht für Time-of-Check to Time-of-Use. Der Angriff nutzt das Zeitfenster zwischen Prüfung und Verwendung aus.\n\n \n\n Merkhilfe: TOCTOU attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1729007434200",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729007615134",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729007673911",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729007673912",
+      "1729007673913"
+    ]
+  },
+  {
+    "card_id": "1729007731874",
+    "question": "M2-030: Which attack presents a malicious file as if it were a legitimate software update?",
+    "A": "Malicious update",
+    "B": "Downgrade attack",
+    "C": "Replay attack",
+    "D": "Logic bomb",
+    "correct": "A",
+    "explanation_de": "Malicious Updates tarnen Schadcode als legitime Aktualisierung. Schutz: Quelle, Signatur und Update-Prozess pruefen.\n\n \n\n Merkhilfe: Malicious update ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729007731875"
+    ]
+  },
+  {
+    "card_id": "1729007771753",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729007855429",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729007937920",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729007937919"
+    ]
+  },
+  {
+    "card_id": "1729008004883",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729008053494",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729008053495"
+    ]
+  },
+  {
+    "card_id": "1729008262955",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729008355953",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729008528378",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729008592989",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729008702034",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729008803970",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729008958156",
+    "question": "M2-031: What does SQL stand for?",
+    "A": "Secure Query Layer",
+    "B": "System Queue Logic",
+    "C": "Session Query Ledger",
+    "D": "Structured Query Language",
+    "correct": "D",
+    "explanation_de": "SQL steht für Structured Query Language. Sie wird für Abfragen und Verwaltung relationaler Datenbanken genutzt.\n\n \n\n Merkhilfe: Structured Query Language ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729008958157"
+    ]
+  },
+  {
+    "card_id": "1729009000835",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729009069891",
+    "question": "M2-032: Which attack inserts database commands into normal application queries?",
+    "A": "Cross-site scripting",
+    "B": "ARP poisoning",
+    "C": "RF jamming",
+    "D": "SQL injection",
+    "correct": "D",
+    "explanation_de": "SQL Injection fuegt eigene Datenbankabfragen in Anwendungseingaben ein. Unsichere Eingabepruefung macht das moeglich.\n\n \n\n Merkhilfe: SQL injection ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729009069890"
+    ]
+  },
+  {
+    "card_id": "1729009153650",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729009233024",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729009233025"
+    ]
+  },
+  {
+    "card_id": "1729009308245",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729009370356",
+    "question": "M2-033: Which broad attack type involves adding attacker-controlled code to an application flow?",
+    "A": "Code injection",
+    "B": "DNS poisoning",
+    "C": "Password spraying",
+    "D": "RF jamming",
+    "correct": "A",
+    "explanation_de": "Code Injection beschreibt das Einschleusen fremden Codes in eine Anwendung. SQLi, LDAP Injection und andere Varianten gehoeren dazu.\n\n \n\n Merkhilfe: Code injection ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729009370355"
+    ]
+  },
+  {
+    "card_id": "1729009475440",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729009475441"
+    ]
+  },
+  {
+    "card_id": "1729009525180",
+    "question": "M2-034: Which process removes unwanted or malicious content from user input?",
+    "A": "Input amplification",
+    "B": "Hash collision",
+    "C": "Packet capture",
+    "D": "Input sanitization",
+    "correct": "D",
+    "explanation_de": "Input Sanitization entfernt gefährliche oder unerwuenschte Bestandteile aus Eingaben. Das reduziert Injection- und XSS-Risiken.\n\n \n\n Merkhilfe: Input sanitization ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729009525181"
+    ]
+  },
+  {
+    "card_id": "1729009567783",
+    "question": "M2-035: Which process checks that user input matches the expected structure or format?",
+    "A": "Input verification",
+    "B": "Input replay",
+    "C": "Input exfiltration",
+    "D": "Input flooding",
+    "correct": "A",
+    "explanation_de": "Input Verification prüft Form und Erwartung: Datentyp, Laenge, Format oder erlaubte Werte. Sanitization entfernt dagegen Inhalte.\n\n \n\n Merkhilfe: Input verification ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729009567782"
+    ]
+  },
+  {
+    "card_id": "1729009623624",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729009790665",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729009790662",
+      "1729009790663",
+      "1729009790664",
+      "1729009829745"
+    ]
+  },
+  {
+    "card_id": "1729010168858",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729010168859"
+    ]
+  },
+  {
+    "card_id": "1729010233588",
+    "question": "M2-036: Which language is most commonly abused in cross-site scripting attacks?",
+    "A": "SQL",
+    "B": "PowerShell",
+    "C": "Bash",
+    "D": "JavaScript",
+    "correct": "D",
+    "explanation_de": "XSS nutzt typischerweise JavaScript, weil Browser es für Webinteraktivitaet ausfuehren. Der Angriff läuft im Kontext der Website.\n\n \n\n Merkhilfe: JavaScript ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729010233587",
+      "1729010233589"
+    ]
+  },
+  {
+    "card_id": "1729010739212",
+    "question": "M2-037: Which XSS type is also called a reflected or non-persistent attack?",
+    "A": "Reflected XSS",
+    "B": "Stored XSS",
+    "C": "Blind SQL injection",
+    "D": "DNS poisoning",
+    "correct": "A",
+    "explanation_de": "Reflected XSS wird nicht dauerhaft gespeichert. Der bösartige Inhalt wird über Anfrage oder Link zurueck an den Browser reflektiert.\n\n \n\n Merkhilfe: Reflected XSS ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729010739213"
+    ]
+  },
+  {
+    "card_id": "1729010808752",
+    "question": "M2-038: Which XSS type stores malicious script so it can affect users later?",
+    "A": "Pass the hash",
+    "B": "War dialing",
+    "C": "Persistent XSS",
+    "D": "Reflected XSS",
+    "correct": "C",
+    "explanation_de": "Persistent oder Stored XSS wird auf dem Server gespeichert. Dadurch kann der Code später bei weiteren Nutzern ausgeführt werden.\n\n \n\n Merkhilfe: Persistent XSS ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729010808753"
+    ]
+  },
+  {
+    "card_id": "1729010835685",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729010864188",
+    "question": "M2-039: What is another name for persistent XSS?",
+    "A": "Birthday attack",
+    "B": "Stored XSS attack",
+    "C": "Reflected attack",
+    "D": "Deauthentication attack",
+    "correct": "B",
+    "explanation_de": "Persistent XSS heisst auch Stored XSS, weil das Skript dauerhaft in Anwendung oder Datenbank abgelegt wird.\n\n \n\n Merkhilfe: Stored XSS attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1729010919402",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729011093159",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729011093158",
+      "1729011093160"
+    ]
+  },
+  {
+    "card_id": "1729011152083",
+    "question": "M2-040: Which developer control helps prevent XSS by removing attacker-supplied script from input?",
+    "A": "Input sanitization",
+    "B": "Packet sniffing",
+    "C": "RF attenuation",
+    "D": "DNS recursion",
+    "correct": "A",
+    "explanation_de": "Gegen XSS helfen Sanitization und Validation/Verification. Sanitization entfernt oder neutralisiert Script-Inhalte.\n\n \n\n Merkhilfe: Input sanitization ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729011152084",
+      "1729011152085"
+    ]
+  },
+  {
+    "card_id": "1729011366448",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729011366447"
+    ]
+  },
+  {
+    "card_id": "1729016224998",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729016224999"
+    ]
+  },
+  {
+    "card_id": "1729016237394",
+    "question": "M2-041: What does IoT stand for?",
+    "A": "Input Output Trust",
+    "B": "Internet of Threats",
+    "C": "Internet of Things",
+    "D": "Integrity of Tokens",
+    "correct": "C",
+    "explanation_de": "IoT bedeutet Internet of Things: vernetzte Geräte, Sensoren und eingebettete Systeme mit eigener Software.\n\n \n\n Merkhilfe: Internet of Things ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729016237395"
+    ]
+  },
+  {
+    "card_id": "1729016302791",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729016325852",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729016393818",
+    "question": "M2-042: Which date marks when a manufacturer stops making a product or software?",
+    "A": "Mean time to repair (MTTR)",
+    "B": "Recovery point objective (RPO)",
+    "C": "End of Life (EOL)",
+    "D": "End of Service Life (EOSL)",
+    "correct": "C",
+    "explanation_de": "EOL bezieht sich auf das Ende der Produktion oder Produktlebensphase. EOSL ist spezifischer das Ende von Support und Updates.\n\n \n\n Merkhilfe: End of Life (EOL) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729016393819"
+    ]
+  },
+  {
+    "card_id": "1729016421026",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729016466796",
+    "question": "M2-043: Which date marks when a vendor stops providing support or updates?",
+    "A": "End of Service Life (EOSL)",
+    "B": "End of Life (EOL)",
+    "C": "Change freeze",
+    "D": "Patch Tuesday",
+    "correct": "A",
+    "explanation_de": "EOSL ist kritisch für Sicherheit, weil danach keine regulaeren Updates oder Supportleistungen mehr kommen.\n\n \n\n Merkhilfe: End of Service Life (EOSL) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729016466795"
+    ]
+  },
+  {
+    "card_id": "1729016587897",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729016587898"
+    ]
+  },
+  {
+    "card_id": "1729016727068",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729016997815",
+    "question": "M2-044: What is software programmed directly into hardware called?",
+    "A": "Middleware",
+    "B": "Freeware",
+    "C": "Hypervisor",
+    "D": "Firmware",
+    "correct": "D",
+    "explanation_de": "Firmware ist Software auf oder nahe an Hardware, etwa in Routern, IoT-Geräten oder Controllern. Sie muss ebenfalls gepatcht werden.\n\n \n\n Merkhilfe: Firmware ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729016997816"
+    ]
+  },
+  {
+    "card_id": "1729017033144",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729017087078",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729017133028",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729017133027"
+    ]
+  },
+  {
+    "card_id": "1729017340804",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729017340803"
+    ]
+  },
+  {
+    "card_id": "1729017582849",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729017685068",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729017742984",
+    "question": "M2-045: Which virtualization attack lets an attacker move from one virtual machine to another or toward the host layer?",
+    "A": "Directory traversal",
+    "B": "RF jamming",
+    "C": "Typosquatting",
+    "D": "VM escape",
+    "correct": "D",
+    "explanation_de": "VM Escape durchbricht die Isolation virtueller Maschinen. Das Ziel ist Zugriff ausserhalb der kompromittierten VM.\n\n \n\n Merkhilfe: VM escape ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729017742983"
+    ]
+  },
+  {
+    "card_id": "1729017832455",
+    "question": "M2-046: Which virtualization issue can expose memory or resources from one VM to another?",
+    "A": "Password spraying",
+    "B": "DNS poisoning",
+    "C": "Resource reuse",
+    "D": "Shadow IT",
+    "correct": "C",
+    "explanation_de": "Resource Reuse beschreibt Wiederverwendung von Speicher oder Ressourcen ohne saubere Trennung. In Virtualisierung kann das Daten zwischen VMs preisgeben.\n\n \n\n Merkhilfe: Resource reuse ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729017832456"
+    ]
+  },
+  {
+    "card_id": "1729017916477",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729017916478"
+    ]
+  },
+  {
+    "card_id": "1729017946321",
+    "question": "M2-047: Which component manages multiple virtual machines on the same hardware?",
+    "A": "Hypervisor",
+    "B": "Container registry",
+    "C": "Domain registrar",
+    "D": "Jump server",
+    "correct": "A",
+    "explanation_de": "Der Hypervisor stellt die Virtualisierungsschicht bereit und verwaltet VMs auf gemeinsamer Hardware.\n\n \n\n Merkhilfe: Hypervisor ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729017946322"
+    ]
+  },
+  {
+    "card_id": "1729018546549",
+    "question": "M2-048: Which system uses a 0-10 score to rate vulnerability severity?",
+    "A": "Common Vulnerabilities and Exposures (CVE)",
+    "B": "Security Content Automation Protocol (SCAP)",
+    "C": "Domain Name System (DNS)",
+    "D": "Common Vulnerability Scoring System (CVSS)",
+    "correct": "D",
+    "explanation_de": "CVSS bewertet Schweregrade von Schwachstellen numerisch. CVE identifiziert Schwachstellen, CVSS bewertet ihre Kritikalitaet.\n\n \n\n Merkhilfe: Common Vulnerability Scoring System (CVSS) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729018546550"
+    ]
+  },
+  {
+    "card_id": "1729018595898",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729018595899"
+    ]
+  },
+  {
+    "card_id": "1729018635621",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729018727159",
+    "question": "M2-049: Which attack type is especially relevant to public cloud services because they are internet-accessible?",
+    "A": "War dialing",
+    "B": "DoS/DDoS",
+    "C": "RF jamming",
+    "D": "RFID cloning",
+    "correct": "B",
+    "explanation_de": "Cloud-Dienste sind öffentlich erreichbar und daher häufig Ziele von DoS oder DDoS, die Verfuegbarkeit angreifen.\n\n \n\n Merkhilfe: DoS/DDoS ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1729018813146",
+    "question": "M2-050: Which attack navigates outside intended folders or paths to access files?",
+    "A": "Pass the hash",
+    "B": "Directory traversal",
+    "C": "SQL injection",
+    "D": "Cross-site request forgery",
+    "correct": "B",
+    "explanation_de": "Directory Traversal nutzt Pfadangaben, um ausserhalb des vorgesehenen Verzeichnisses zu lesen oder zu schreiben.\n\n \n\n Merkhilfe: Directory traversal ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729018813147"
+    ]
+  },
+  {
+    "card_id": "1729018874875",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729018874874"
+    ]
+  },
+  {
+    "card_id": "1729018928282",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729018928283"
+    ]
+  },
+  {
+    "card_id": "1729018990398",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729018990399"
+    ]
+  },
+  {
+    "card_id": "1729019182230",
+    "question": "M2-051: Which memory vulnerability writes outside the intended memory boundary?",
+    "A": "Hash collision",
+    "B": "DNS poisoning",
+    "C": "Session hijacking",
+    "D": "Out-of-bounds write",
+    "correct": "D",
+    "explanation_de": "Out-of-Bounds Write schreibt ausserhalb erlaubter Speicherbereiche. Das kann Absturz, Datenkorruption oder Codeausfuehrung ermöglichen.\n\n \n\n Merkhilfe: Out-of-bounds write ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729019182229"
+    ]
+  },
+  {
+    "card_id": "1729019188726",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729019262938",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729019262939"
+    ]
+  },
+  {
+    "card_id": "1729019659956",
+    "question": "M2-052: Which vulnerability exists when compromised products or services enter an organization through trusted suppliers?",
+    "A": "Directory traversal",
+    "B": "Password spraying",
+    "C": "Birthday attack",
+    "D": "Supply chain vulnerability",
+    "correct": "D",
+    "explanation_de": "Supply-Chain-Schwachstellen liegen in Lieferanten, Komponenten oder Diensten, denen eine Organisation vertraut.\n\n \n\n Merkhilfe: Supply chain vulnerability ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729019659957"
+    ]
+  },
+  {
+    "card_id": "1729019712475",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729019769922",
+    "question": "M2-053: Which ongoing review should be part of agreements with third-party service providers?",
+    "A": "Security audits",
+    "B": "Birthday attacks",
+    "C": "Deauthentication frames",
+    "D": "Hash collisions",
+    "correct": "A",
+    "explanation_de": "Security Audits bei Dritten pruefen, ob vereinbarte Kontrollen und Sicherheitsanforderungen eingehalten werden.\n\n \n\n Merkhilfe: Security audits ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729019769921"
+    ]
+  },
+  {
+    "card_id": "1729019912803",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729019912804"
+    ]
+  },
+  {
+    "card_id": "1729019963492",
+    "question": "M2-054: Which security model treats new supply-chain hardware as untrusted until verified?",
+    "A": "Open access",
+    "B": "Single sign-on",
+    "C": "Zero Trust",
+    "D": "Implicit trust",
+    "correct": "C",
+    "explanation_de": "Zero Trust bedeutet: nicht automatisch vertrauen, sondern pruefen. Das passt besonders bei unbekannter Lieferkettenintegritaet.\n\n \n\n Merkhilfe: Zero Trust ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729019963491"
+    ]
+  },
+  {
+    "card_id": "1729020064785",
+    "question": "M2-055: Which software property helps validate that code came from a trusted publisher and was not altered?",
+    "A": "Management frame",
+    "B": "Digital signature",
+    "C": "Open port",
+    "D": "Host file",
+    "correct": "B",
+    "explanation_de": "Digitale Signaturen bestaetigen Herausgeber und Integritaet. Veraenderte Software wuerde die Signaturpruefung nicht bestehen.\n\n \n\n Merkhilfe: Digital signature ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1729020157178",
+    "question": "M2-056: Which term describes the process from raw materials through delivery of a product or service?",
+    "A": "Threat vector",
+    "B": "Control plane",
+    "C": "Supply chain",
+    "D": "Attack surface",
+    "correct": "C",
+    "explanation_de": "Die Supply Chain umfasst Herstellung, Komponenten, Dienstleister, Transport und Bereitstellung bis zum Endnutzer.\n\n \n\n Merkhilfe: Supply chain ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729020157177",
+      "1729020157179"
+    ]
+  },
+  {
+    "card_id": "1729020182159",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729020516942",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729020516943"
+    ]
+  },
+  {
+    "card_id": "1729093945243",
+    "question": "M2-057: What is the Linux administrator account called?",
+    "A": "Guest",
+    "B": "Service",
+    "C": "root",
+    "D": "Administrator",
+    "correct": "C",
+    "explanation_de": "root ist der klassische Superuser unter Linux/Unix. Windows verwendet dagegen typischerweise Administrator.\n\n \n\n Merkhilfe: root ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729093945242"
+    ]
+  },
+  {
+    "card_id": "1729093970108",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729093970109"
+    ]
+  },
+  {
+    "card_id": "1729094001244",
+    "question": "M2-058: What generic term describes highly privileged administrator-level accounts across systems?",
+    "A": "Service consumer",
+    "B": "Superuser",
+    "C": "Guest user",
+    "D": "Standard user",
+    "correct": "B",
+    "explanation_de": "Superuser bezeichnet Konten mit sehr hohen Rechten, etwa root oder Administrator. Solche Konten müssen besonders begrenzt werden.\n\n \n\n Merkhilfe: Superuser ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729094001243"
+    ]
+  },
+  {
+    "card_id": "1729094076308",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729094076307"
+    ]
+  },
+  {
+    "card_id": "1729094152873",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729094152874"
+    ]
+  },
+  {
+    "card_id": "1729094196790",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729094196789"
+    ]
+  },
+  {
+    "card_id": "1729094254194",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729094254193",
+      "1729094254195",
+      "1729094254196"
+    ]
+  },
+  {
+    "card_id": "1729094357667",
+    "question": "M2-059: Which protocol provides encrypted remote administration and is a secure alternative to Telnet?",
+    "A": "Telnet",
+    "B": "SMTP",
+    "C": "SSH",
+    "D": "FTP",
+    "correct": "C",
+    "explanation_de": "SSH verschlüsselt Remote-Shell-Kommunikation. Telnet übertraegt dagegen unverschlüsselt und gilt als unsicher.\n\n \n\n Merkhilfe: SSH ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729094357664",
+      "1729094357665",
+      "1729094357666"
+    ]
+  },
+  {
+    "card_id": "1729094464415",
+    "question": "M2-060: Which technique collects network traffic for analysis and can reveal insecure transmissions?",
+    "A": "Packet capture",
+    "B": "RFID cloning",
+    "C": "Rooting",
+    "D": "Birthday attack",
+    "correct": "A",
+    "explanation_de": "Packet Capture oder Sniffing zeichnet Netzwerkpakete auf. Damit lassen sich Klartextprotokolle und verdachtige Kommunikation erkennen.\n\n \n\n Merkhilfe: Packet capture ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729094464414",
+      "1729094464416"
+    ]
+  },
+  {
+    "card_id": "1729094505841",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729094594472",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729094644478",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729094644479"
+    ]
+  },
+  {
+    "card_id": "1729094685877",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729094685876",
+      "1729094685878"
+    ]
+  },
+  {
+    "card_id": "1729094720670",
+    "question": "M2-061: Which security control commonly filters traffic to protect open ports?",
+    "A": "Logic bomb",
+    "B": "Hypervisor",
+    "C": "Firewall",
+    "D": "Keylogger",
+    "correct": "C",
+    "explanation_de": "Firewalls erlauben oder blockieren Verkehr anhand von Regeln. Sie sind zentrale Kontrollen zum Schutz von Ports und Services.\n\n \n\n Merkhilfe: Firewall ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729094720671"
+    ]
+  },
+  {
+    "card_id": "1729094786934",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729094786932",
+      "1729094786933",
+      "1729094786935"
+    ]
+  },
+  {
+    "card_id": "1729094836775",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729094836774"
+    ]
+  },
+  {
+    "card_id": "1729095492149",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729095601225",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729095601222",
+      "1729095601223",
+      "1729095601224"
+    ]
+  },
+  {
+    "card_id": "1729095666668",
+    "question": "M2-062: What is modifying Android to bypass default OS restrictions commonly called?",
+    "A": "Typosquatting",
+    "B": "Rooting",
+    "C": "Sideloading",
+    "D": "Smishing",
+    "correct": "B",
+    "explanation_de": "Rooting hebt Android-Beschraenkungen auf. Bei iOS heisst ein vergleichbarer Eingriff Jailbreaking.\n\n \n\n Merkhilfe: Rooting ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729095666666",
+      "1729095666667",
+      "1729095666669"
+    ]
+  },
+  {
+    "card_id": "1729095773945",
+    "question": "M2-063: What does MDM stand for in mobile security?",
+    "A": "Mobile Device Management",
+    "B": "Managed Domain Mapping",
+    "C": "Memory Dump Monitor",
+    "D": "Mobile Data Masking",
+    "correct": "A",
+    "explanation_de": "MDM steht für Mobile Device Management. Es erzwingt Richtlinien, Konfigurationen und Sicherheitsvorgaben auf Mobilgeraeten.\n\n \n\n Merkhilfe: Mobile Device Management ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729095773944",
+      "1729095773946",
+      "1729095773947"
+    ]
+  },
+  {
+    "card_id": "1729095841495",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729095841493",
+      "1729095841494",
+      "1729095841496"
+    ]
+  },
+  {
+    "card_id": "1729096040832",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729096040833"
+    ]
+  },
+  {
+    "card_id": "1729096077718",
+    "question": "M2-064: What is installing mobile apps from outside approved app stores called?",
+    "A": "Sideloading",
+    "B": "Rooting",
+    "C": "Smishing",
+    "D": "Vishing",
+    "correct": "A",
+    "explanation_de": "Sideloading installiert Apps ausserhalb genehmigter Quellen. Das kann Sicherheitskontrollen von App-Stores umgehen.\n\n \n\n Merkhilfe: Sideloading ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729096077717"
+    ]
+  },
+  {
+    "card_id": "1729096145166",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729096145167"
+    ]
+  },
+  {
+    "card_id": "1729096178790",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729096178789"
+    ]
+  },
+  {
+    "card_id": "1729096334798",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729096334799"
+    ]
+  },
+  {
+    "card_id": "1729096412113",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729096412114"
+    ]
+  },
+  {
+    "card_id": "1729096456640",
+    "question": "M2-065: Which attack exploits a new vulnerability before a patch is available?",
+    "A": "Password spraying",
+    "B": "Zero-day attack",
+    "C": "Replay attack",
+    "D": "Watering hole attack",
+    "correct": "B",
+    "explanation_de": "Zero-day bedeutet, dass es noch keinen Patch oder keine bekannte Abwehr gibt. Angreifer nutzen das Zeitfenster vor der Behebung.\n\n \n\n Merkhilfe: Zero-day attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729096456641"
+    ]
+  },
+  {
+    "card_id": "1729096508589",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729096508590"
+    ]
+  },
+  {
+    "card_id": "1729096560514",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729096560515"
+    ]
+  },
+  {
+    "card_id": "1729096807696",
+    "question": "M2-066: Which broad term describes software that performs malicious actions?",
+    "A": "Bloatware",
+    "B": "Middleware",
+    "C": "Malware",
+    "D": "Firmware",
+    "correct": "C",
+    "explanation_de": "Malware ist der Oberbegriff für bösartige Software wie Viren, Wuermer, Ransomware, Spyware oder Trojaner.\n\n \n\n Merkhilfe: Malware ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729096807695"
+    ]
+  },
+  {
+    "card_id": "1729096916358",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729096916357"
+    ]
+  },
+  {
+    "card_id": "1729096965961",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729096965962"
+    ]
+  },
+  {
+    "card_id": "1729097052408",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729097089990",
+    "question": "M2-067: Which malware type is best mitigated by frequent offline backups?",
+    "A": "Firmware",
+    "B": "Typosquatting",
+    "C": "Ransomware",
+    "D": "Bloatware",
+    "correct": "C",
+    "explanation_de": "Ransomware verschlüsselt oder sperrt Daten. Offline-Backups bleiben für Malware schwerer erreichbar und ermöglichen Wiederherstellung.\n\n \n\n Merkhilfe: Ransomware ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729097089989"
+    ]
+  },
+  {
+    "card_id": "1729097144073",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729097205255",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729097186600"
+    ]
+  },
+  {
+    "card_id": "1729097255421",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729097255420"
+    ]
+  },
+  {
+    "card_id": "1729097293203",
+    "question": "M2-068: Which malware records keystrokes and sends them to an attacker?",
+    "A": "Logic bomb",
+    "B": "Worm",
+    "C": "Keylogger",
+    "D": "Rootkit",
+    "correct": "C",
+    "explanation_de": "Keylogger erfassen Tastatureingaben, etwa Passwoerter oder Kreditkartendaten. Der Hinweis ist das Mitschneiden von Keystrokes.\n\n \n\n Merkhilfe: Keylogger ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729097293204",
+      "1729097293205"
+    ]
+  },
+  {
+    "card_id": "1729097309141",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729097309140"
+    ]
+  },
+  {
+    "card_id": "1729097352286",
+    "question": "M2-069: Which malware appears useful or legitimate while installing malicious code?",
+    "A": "Worm",
+    "B": "Logic bomb",
+    "C": "Bloatware",
+    "D": "Trojan horse",
+    "correct": "D",
+    "explanation_de": "Ein Trojaner tarnt sich als legitime Software. Im Gegensatz zum Worm repliziert er sich nicht zwingend selbststaendig.\n\n \n\n Merkhilfe: Trojan horse ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729097352287"
+    ]
+  },
+  {
+    "card_id": "1729097377925",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729097377926"
+    ]
+  },
+  {
+    "card_id": "1729097429318",
+    "question": "M2-070: Which attack installs malware simply by visiting a malicious or compromised link or page?",
+    "A": "Birthday attack",
+    "B": "Password spraying",
+    "C": "Drive-by download",
+    "D": "War dialing",
+    "correct": "C",
+    "explanation_de": "Drive-by Downloads versuchen Schadsoftware beim Besuch einer Seite auszuliefern, oft ohne bewusste Installation durch den Nutzer.\n\n \n\n Merkhilfe: Drive-by download ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729097429319"
+    ]
+  },
+  {
+    "card_id": "1729097550519",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729097550518"
+    ]
+  },
+  {
+    "card_id": "1729097574083",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729097663855",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729097663856"
+    ]
+  },
+  {
+    "card_id": "1729097688526",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729097788292",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729097832866",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729097867547",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729097867548"
+    ]
+  },
+  {
+    "card_id": "1729097907113",
+    "question": "M2-071: Which virus type runs primarily in memory to avoid file-based detection?",
+    "A": "Fileless virus",
+    "B": "Boot sector virus",
+    "C": "Program virus",
+    "D": "Macro virus",
+    "correct": "A",
+    "explanation_de": "Fileless Malware arbeitet stark im Speicher und hinterlaesst weniger klassische Dateien. Das erschwert signaturbasierte Erkennung.\n\n \n\n Merkhilfe: Fileless virus ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729097907114"
+    ]
+  },
+  {
+    "card_id": "1729097934211",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729098014967",
+    "question": "M2-072: Which malware self-replicates between systems without user intervention?",
+    "A": "Logic bomb",
+    "B": "Worm",
+    "C": "Trojan horse",
+    "D": "Keylogger",
+    "correct": "B",
+    "explanation_de": "Wuermer verbreiten sich selbststaendig über Netzwerke. Viren benoetigen häufig Nutzeraktion oder infizierte Dateien.\n\n \n\n Merkhilfe: Worm ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729098014968"
+    ]
+  },
+  {
+    "card_id": "1729098046861",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729098046862"
+    ]
+  },
+  {
+    "card_id": "1729098101024",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729098101023",
+      "1729098101025"
+    ]
+  },
+  {
+    "card_id": "1729098185626",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729098252720",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729098252721"
+    ]
+  },
+  {
+    "card_id": "1729098302259",
+    "question": "M2-073: Which virus type runs as an application or as part of an application?",
+    "A": "Boot sector virus",
+    "B": "Fileless virus",
+    "C": "Rootkit",
+    "D": "Program virus",
+    "correct": "D",
+    "explanation_de": "Program Viruses infizieren ausfuehrbare Programme oder laufen als Anwendungsteil. Boot-Sector-Viren setzen frueher im Startprozess an.\n\n \n\n Merkhilfe: Program virus ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729098302258"
+    ]
+  },
+  {
+    "card_id": "1729098436180",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729098545424",
+    "question": "M2-074: Which malware monitors activity on a system?",
+    "A": "Spyware",
+    "B": "Ransomware",
+    "C": "Firmware",
+    "D": "Bloatware",
+    "correct": "A",
+    "explanation_de": "Spyware beobachtet Nutzer- oder Systemaktivitaeten und kann Daten abgreifen. Der Hinweis ist Überwachung.\n\n \n\n Merkhilfe: Spyware ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729098545423"
+    ]
+  },
+  {
+    "card_id": "1729098595690",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729098595691",
+      "1729098595692"
+    ]
+  },
+  {
+    "card_id": "1729098615755",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729098658389",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729098658388"
+    ]
+  },
+  {
+    "card_id": "1729098693671",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729098771491",
+    "question": "M2-075: Which preinstalled manufacturer or partner software may be unwanted but is not necessarily malware?",
+    "A": "Rootkit",
+    "B": "Ransomware",
+    "C": "Worm",
+    "D": "Bloatware",
+    "correct": "D",
+    "explanation_de": "Bloatware ist unerwuenschte oder überfluessige Vorinstallation. Sie ist nicht automatisch Malware, kann aber Ressourcen und Risiken erhoehen.\n\n \n\n Merkhilfe: Bloatware ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729098771490",
+      "1729098771492",
+      "1729098771493",
+      "1729098771494"
+    ]
+  },
+  {
+    "card_id": "1729098856283",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729098856284"
+    ]
+  },
+  {
+    "card_id": "1729098919105",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729099226803",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729099226802"
+    ]
+  },
+  {
+    "card_id": "1729099276337",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729099276338",
+      "1729099276339"
+    ]
+  },
+  {
+    "card_id": "1729099310439",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729099376881",
+    "question": "M2-076: Which malware provides remote access and may capture keystrokes, screenshots, or other data?",
+    "A": "Worm",
+    "B": "Boot sector virus",
+    "C": "Remote Access Trojan (RAT)",
+    "D": "Logic bomb",
+    "correct": "C",
+    "explanation_de": "Ein RAT gibt Angreifern Fernzugriff und Datensammelfunktionen. Er tarnt sich typischerweise als Trojaner.\n\n \n\n Merkhilfe: Remote Access Trojan (RAT) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729099376880"
+    ]
+  },
+  {
+    "card_id": "1729099397217",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729099397216"
+    ]
+  },
+  {
+    "card_id": "1729099431734",
+    "question": "M2-077: Which malware waits for a specific condition before executing?",
+    "A": "Bloatware",
+    "B": "Logic bomb",
+    "C": "Keylogger",
+    "D": "Worm",
+    "correct": "B",
+    "explanation_de": "Logic Bombs werden durch Bedingung, Aktion oder Zeitpunkt ausgelöst. Bis dahin können sie unauffaellig bleiben.\n\n \n\n Merkhilfe: Logic bomb ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729099431733"
+    ]
+  },
+  {
+    "card_id": "1729099496297",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729099496295",
+      "1729099496296"
+    ]
+  },
+  {
+    "card_id": "1729099564217",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729099564215",
+      "1729099564216"
+    ]
+  },
+  {
+    "card_id": "1729099645899",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729099645900"
+    ]
+  },
+  {
+    "card_id": "1729099682528",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729099708660",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729099708659"
+    ]
+  },
+  {
+    "card_id": "1729099804993",
+    "question": "M2-078: Which feature verifies operating system component signatures before loading to help detect rootkits?",
+    "A": "DNSSEC zone transfer",
+    "B": "Password spraying",
+    "C": "UEFI Secure Boot",
+    "D": "Packet capture",
+    "correct": "C",
+    "explanation_de": "UEFI Secure Boot prüft Signaturen im Bootprozess. Dadurch können manipulierte Boot- oder OS-Komponenten auffallen.\n\n \n\n Merkhilfe: UEFI Secure Boot ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729099804992"
+    ]
+  },
+  {
+    "card_id": "1729099948819",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729100125017",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729100185270",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729103177315",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729103177316"
+    ]
+  },
+  {
+    "card_id": "1729103254337",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729103254336"
+    ]
+  },
+  {
+    "card_id": "1729103336431",
+    "question": "M2-079: Which physical attack copies the radio signature of an access card?",
+    "A": "War dialing",
+    "B": "RFID cloning",
+    "C": "RF jamming",
+    "D": "Vishing",
+    "correct": "B",
+    "explanation_de": "RFID Cloning kopiert die Kennung eines RFID-Ausweises oder Tokens. MFA und Kartenkontrollen reduzieren dieses Risiko.\n\n \n\n Merkhilfe: RFID cloning ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729103336430",
+      "1729103336432"
+    ]
+  },
+  {
+    "card_id": "1729103381024",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729103381023"
+    ]
+  },
+  {
+    "card_id": "1729103461406",
+    "question": "M2-080: Which control requires more than one authentication factor?",
+    "A": "Multi-factor authentication",
+    "B": "Single sign-on",
+    "C": "Password spraying",
+    "D": "Default credentials",
+    "correct": "A",
+    "explanation_de": "MFA kombiniert mindestens zwei Faktoren, etwa Wissen, Besitz oder Biometrie. Dadurch reicht ein einzelnes gestohlenes Passwort nicht aus.\n\n \n\n Merkhilfe: Multi-factor authentication ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729103461405"
+    ]
+  },
+  {
+    "card_id": "1729103579288",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729103579287",
+      "1729103579289"
+    ]
+  },
+  {
+    "card_id": "1729103621853",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729103621854"
+    ]
+  },
+  {
+    "card_id": "1729103670834",
+    "question": "M2-081: Which attack disrupts supporting conditions such as power, HVAC, or fire suppression?",
+    "A": "DLL injection",
+    "B": "Environmental attack",
+    "C": "Birthday attack",
+    "D": "Pass-the-hash attack",
+    "correct": "B",
+    "explanation_de": "Environmental Attacks zielen auf Umgebung und Infrastruktur. Beispiele sind Strom, Kuehlung oder Brandschutz.\n\n \n\n Merkhilfe: Environmental attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729103670835"
+    ]
+  },
+  {
+    "card_id": "1729103720494",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729103720495"
+    ]
+  },
+  {
+    "card_id": "1729103765075",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729103808506",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729103808507"
+    ]
+  },
+  {
+    "card_id": "1729103868358",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729104062053",
+    "question": "M2-082: Which attack forces a service to fail or become unavailable?",
+    "A": "Denial of Service (DoS)",
+    "B": "Cross-site scripting",
+    "C": "Pretexting",
+    "D": "RFID cloning",
+    "correct": "A",
+    "explanation_de": "DoS greift Verfuegbarkeit an. Ziel ist, legitime Nutzung eines Dienstes zu verhindern.\n\n \n\n Merkhilfe: Denial of Service (DoS) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729104062054"
+    ]
+  },
+  {
+    "card_id": "1729104142210",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729104103994",
+      "1729104103995"
+    ]
+  },
+  {
+    "card_id": "1729104210345",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729104210344"
+    ]
+  },
+  {
+    "card_id": "1729104262170",
+    "question": "M2-083: Which attack uses many distributed devices to overwhelm a target service?",
+    "A": "Pass the hash",
+    "B": "DLL injection",
+    "C": "Distributed Denial of Service (DDoS)",
+    "D": "Directory traversal",
+    "correct": "C",
+    "explanation_de": "DDoS verteilt den Angriff auf viele Systeme, oft Botnets. Dadurch wird die Abwehr schwieriger als bei einem einzelnen Ursprung.\n\n \n\n Merkhilfe: Distributed Denial of Service (DDoS) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729104262171"
+    ]
+  },
+  {
+    "card_id": "1729104383070",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729104383068",
+      "1729104383069"
+    ]
+  },
+  {
+    "card_id": "1729104422352",
+    "question": "M2-084: Which technique turns a small request into a much larger response during DoS attacks?",
+    "A": "Segmentation",
+    "B": "Tokenization",
+    "C": "Amplification",
+    "D": "Sanitization",
+    "correct": "C",
+    "explanation_de": "Amplification nutzt Dienste, die auf kleine Anfragen große Antworten senden. So vervielfacht der Angreifer die Last.\n\n \n\n Merkhilfe: Amplification ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729104422353"
+    ]
+  },
+  {
+    "card_id": "1729104502641",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729104502640"
+    ]
+  },
+  {
+    "card_id": "1729104570010",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729104570009"
+    ]
+  },
+  {
+    "card_id": "1729104661813",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729104741764",
+    "question": "M2-085: What is a collection of infected devices controlled by an attacker called?",
+    "A": "VLAN",
+    "B": "ACL",
+    "C": "SIEM",
+    "D": "Botnet",
+    "correct": "D",
+    "explanation_de": "Ein Botnet besteht aus kompromittierten Systemen unter zentraler oder koordinierter Kontrolle. Es wird häufig für DDoS oder Spam genutzt.\n\n \n\n Merkhilfe: Botnet ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729104741765",
+      "1729104741766"
+    ]
+  },
+  {
+    "card_id": "1729104839747",
+    "question": "M2-086: Which infrastructure is used to manage compromised systems in a botnet?",
+    "A": "Data Execution Prevention",
+    "B": "Protected Management Frames",
+    "C": "Command and Control",
+    "D": "Common Vulnerability Scoring System",
+    "correct": "C",
+    "explanation_de": "Command and Control, kurz C2, steuert kompromittierte Systeme. Darüber erhalten Bots Befehle.\n\n \n\n Merkhilfe: Command and Control ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1729104932525",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729104932524"
+    ]
+  },
+  {
+    "card_id": "1729105107716",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729105107717"
+    ]
+  },
+  {
+    "card_id": "1729105178993",
+    "question": "M2-087: Which local file can cache mappings between hostnames and IP addresses?",
+    "A": "Cookie jar",
+    "B": "ARP table",
+    "C": "Host file",
+    "D": "Shadow file",
+    "correct": "C",
+    "explanation_de": "Host Files können Namensaufloesung lokal beeinflussen. Manipulation kann Traffic auf falsche IP-Adressen lenken.\n\n \n\n Merkhilfe: Host file ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729105178992",
+      "1729105178994"
+    ]
+  },
+  {
+    "card_id": "1729105217849",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729105277077",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729105277076"
+    ]
+  },
+  {
+    "card_id": "1729105380223",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729105380222"
+    ]
+  },
+  {
+    "card_id": "1729105471944",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729105565028",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729105626746",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729105626745"
+    ]
+  },
+  {
+    "card_id": "1729106271934",
+    "question": "M2-088: Which wireless DoS attack forcibly disconnects legitimate wireless clients?",
+    "A": "Deauthentication attack",
+    "B": "RFID cloning",
+    "C": "Smishing",
+    "D": "SQL injection",
+    "correct": "A",
+    "explanation_de": "Deauthentication Attacks senden Management Frames, um Clients vom WLAN zu trennen. Sie zielen auf Verfuegbarkeit.\n\n \n\n Merkhilfe: Deauthentication attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729106271935"
+    ]
+  },
+  {
+    "card_id": "1729106340713",
+    "question": "M2-089: What do wireless clients and access points exchange to coordinate Wi-Fi connections?",
+    "A": "Management frames",
+    "B": "Hash collisions",
+    "C": "Access control lists",
+    "D": "Session cookies",
+    "correct": "A",
+    "explanation_de": "Management Frames steuern WLAN-Verbindungen, etwa Association und Deauthentication. Schutz dieser Frames verhindert bestimmte WLAN-Angriffe.\n\n \n\n Merkhilfe: Management frames ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729106340712"
+    ]
+  },
+  {
+    "card_id": "1729106373364",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729106373363"
+    ]
+  },
+  {
+    "card_id": "1729106511267",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729106591299",
+    "question": "M2-090: Which wireless DoS attack blocks communication by interfering with radio frequencies?",
+    "A": "ARP poisoning",
+    "B": "SQL injection",
+    "C": "Typosquatting",
+    "D": "RF jamming",
+    "correct": "D",
+    "explanation_de": "RF Jamming stoert Funkkommunikation durch Interferenz oder Überlastung des Mediums. Der Angriff setzt physische Funknaehe voraus.\n\n \n\n Merkhilfe: RF jamming ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729106591300"
+    ]
+  },
+  {
+    "card_id": "1729106644718",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729106719077",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729106782316",
+    "question": "M2-091: Which jamming approach transmits interference only when legitimate wireless traffic appears?",
+    "A": "Passive scanning",
+    "B": "War dialing",
+    "C": "DNS poisoning",
+    "D": "Reactive jamming",
+    "correct": "D",
+    "explanation_de": "Reactive Jamming bleibt ruhiger und stoert gezielt bei erkannter legitimer Kommunikation. Das kann Erkennung erschweren.\n\n \n\n Merkhilfe: Reactive jamming ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729106782317",
+      "1729106782318"
+    ]
+  },
+  {
+    "card_id": "1729106823322",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729107265857",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729106882783",
+      "1729106882784"
+    ]
+  },
+  {
+    "card_id": "1729107353631",
+    "question": "M2-092: Which attack places the attacker between communicating parties to observe or alter traffic?",
+    "A": "On-path attack",
+    "B": "Birthday attack",
+    "C": "Buffer overflow",
+    "D": "Logic bomb",
+    "correct": "A",
+    "explanation_de": "On-Path, frueher oft Man-in-the-Middle genannt, positioniert den Angreifer im Kommunikationsweg.\n\n \n\n Merkhilfe: On-path attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729107353630"
+    ]
+  },
+  {
+    "card_id": "1729107376240",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729107376241"
+    ]
+  },
+  {
+    "card_id": "1729107432302",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729107432303"
+    ]
+  },
+  {
+    "card_id": "1729107473452",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729107583328",
+    "question": "M2-093: Which on-path technique poisons IP-to-MAC mappings to intercept local network traffic?",
+    "A": "ARP poisoning",
+    "B": "DNSSEC validation",
+    "C": "RF attenuation",
+    "D": "Input verification",
+    "correct": "A",
+    "explanation_de": "ARP Poisoning manipuliert Zuordnungen zwischen IP- und MAC-Adresse. Dadurch kann lokaler Verkehr über den Angreifer laufen.\n\n \n\n Merkhilfe: ARP poisoning ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729107583326",
+      "1729107583327"
+    ]
+  },
+  {
+    "card_id": "1729107717300",
+    "question": "M2-094: What does ARP stand for?",
+    "A": "Application Routing Policy",
+    "B": "Authenticated Relay Protocol",
+    "C": "Access Rule Processor",
+    "D": "Address Resolution Protocol",
+    "correct": "D",
+    "explanation_de": "ARP steht für Address Resolution Protocol. Es ordnet IPv4-Adressen MAC-Adressen im lokalen Netz zu.\n\n \n\n Merkhilfe: Address Resolution Protocol ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729107717299"
+    ]
+  },
+  {
+    "card_id": "1729107801868",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729107801867"
+    ]
+  },
+  {
+    "card_id": "1729107870630",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729107870631"
+    ]
+  },
+  {
+    "card_id": "1729107951552",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729107951553",
+      "1729107951554"
+    ]
+  },
+  {
+    "card_id": "1729174309232",
+    "question": "M2-095: Which attack reuses captured authentication or session information?",
+    "A": "Rootkit",
+    "B": "War dialing",
+    "C": "Replay attack",
+    "D": "Race condition",
+    "correct": "C",
+    "explanation_de": "Replay Attacks zeichnen gültige Daten auf und verwenden sie erneut. Typisch sind Sitzungs- oder Authentifizierungsdaten.\n\n \n\n Merkhilfe: Replay attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729174309231"
+    ]
+  },
+  {
+    "card_id": "1729174334575",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729174334576"
+    ]
+  },
+  {
+    "card_id": "1729174402917",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729174402918",
+      "1729174402919"
+    ]
+  },
+  {
+    "card_id": "1729174445461",
+    "question": "M2-096: Which attack uses captured password hashes to authenticate without knowing the plaintext password?",
+    "A": "DNS poisoning",
+    "B": "Pass the hash",
+    "C": "Password spraying",
+    "D": "Birthday attack",
+    "correct": "B",
+    "explanation_de": "Pass the Hash nutzt den Hash selbst als Anmeldeartefakt. Das Klartextpasswort muss dafür nicht rekonstruiert werden.\n\n \n\n Merkhilfe: Pass the hash ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729174445462"
+    ]
+  },
+  {
+    "card_id": "1729174480837",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729174535410",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729174535407",
+      "1729174535408",
+      "1729174535409"
+    ]
+  },
+  {
+    "card_id": "1729174658387",
+    "question": "M2-097: Which protocol is HTTP protected with TLS encryption?",
+    "A": "HTTPS",
+    "B": "FTP",
+    "C": "Telnet",
+    "D": "SNMPv1",
+    "correct": "A",
+    "explanation_de": "HTTPS ist HTTP über TLS. Es schuetzt Webverkehr vor Mitlesen und Manipulation auf dem Transportweg.\n\n \n\n Merkhilfe: HTTPS ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729174658385",
+      "1729174658386"
+    ]
+  },
+  {
+    "card_id": "1729174704247",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729174805551",
+    "question": "M2-098: Which attack position commonly enables collecting data for replay attacks?",
+    "A": "Typosquatting",
+    "B": "On-path attack",
+    "C": "RF jamming",
+    "D": "Sideloading",
+    "correct": "B",
+    "explanation_de": "Replay-Daten werden häufig durch Mitlesen im Kommunikationsweg gesammelt. Genau das ermöglicht ein On-Path-Angriff.\n\n \n\n Merkhilfe: On-path attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729174805552"
+    ]
+  },
+  {
+    "card_id": "1729174865133",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729174865132"
+    ]
+  },
+  {
+    "card_id": "1729174950092",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729175007116",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729175087261",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729175231855",
+    "question": "M2-099: Which broad category describes code that exploits a reasonably protected system?",
+    "A": "Malicious code",
+    "B": "Bloatware",
+    "C": "Firmware",
+    "D": "Shadow IT",
+    "correct": "A",
+    "explanation_de": "Malicious Code ist bösartiger Code, der Schwachstellen oder Exploits nutzt. Er ist breiter als einzelne Malware-Familien.\n\n \n\n Merkhilfe: Malicious code ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729175231853",
+      "1729175231854"
+    ]
+  },
+  {
+    "card_id": "1729175383710",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729175383711",
+      "1729175383712"
+    ]
+  },
+  {
+    "card_id": "1729175471943",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729175471944",
+      "1729175471945"
+    ]
+  },
+  {
+    "card_id": "1729175578382",
+    "question": "M2-100: Which application attacks exploit missing input filtering or sanitization?",
+    "A": "RFID cloning",
+    "B": "DDoS amplification",
+    "C": "Password spraying",
+    "D": "Injection attacks",
+    "correct": "D",
+    "explanation_de": "Injection Attacks schleusen unerwartete Befehle oder Daten in Anwendungen ein. Fehlende Filterung und Validierung sind Kernursachen.\n\n \n\n Merkhilfe: Injection attacks ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729175578383",
+      "1729175578384"
+    ]
+  },
+  {
+    "card_id": "1729175667747",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729175667748"
+    ]
+  },
+  {
+    "card_id": "1729175761307",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729175761306",
+      "1729175761308"
+    ]
+  },
+  {
+    "card_id": "1729175858894",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729175858895"
+    ]
+  },
+  {
+    "card_id": "1729175912541",
+    "question": "M2-101: Which OS protection restricts where executable code can run in memory?",
+    "A": "Dynamic Link Library",
+    "B": "Distributed Denial of Service",
+    "C": "Data Execution Prevention",
+    "D": "Domain Name System",
+    "correct": "C",
+    "explanation_de": "DEP markiert Speicherbereiche als nicht ausfuehrbar. Das erschwert bestimmte Speicher-Exploits.\n\n \n\n Merkhilfe: Data Execution Prevention ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729175912542"
+    ]
+  },
+  {
+    "card_id": "1729175952465",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729176026551",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729176026552",
+      "1729176026553"
+    ]
+  },
+  {
+    "card_id": "1729176115448",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729176115447"
+    ]
+  },
+  {
+    "card_id": "1729176209472",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729176209473"
+    ]
+  },
+  {
+    "card_id": "1729176294088",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729176294089",
+      "1729176294090"
+    ]
+  },
+  {
+    "card_id": "1729176350133",
+    "question": "M2-102: Which code runs on the user's device, usually in the browser?",
+    "A": "Client-side code",
+    "B": "Server-side code",
+    "C": "Firmware",
+    "D": "Kernel module",
+    "correct": "A",
+    "explanation_de": "Client-side Code läuft im Browser oder auf dem Endgeraet. JavaScript ist ein typisches Beispiel.\n\n \n\n Merkhilfe: Client-side code ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729176350132"
+    ]
+  },
+  {
+    "card_id": "1729176391515",
+    "question": "M2-103: Which code runs on the server to provide a web service?",
+    "A": "Client-side code",
+    "B": "Management frame",
+    "C": "Host file",
+    "D": "Server-side code",
+    "correct": "D",
+    "explanation_de": "Server-side Code läuft auf dem Webserver oder Backend. Er verarbeitet Logik, Datenzugriff und serverseitige Antworten.\n\n \n\n Merkhilfe: Server-side code ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729176391514"
+    ]
+  },
+  {
+    "card_id": "1729176509599",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729176509597",
+      "1729176509598",
+      "1729176509600",
+      "1729176509601",
+      "1729176509602"
+    ]
+  },
+  {
+    "card_id": "1729176558493",
+    "question": "M2-104: Which attack abuses the trust between an authenticated browser and a server to submit unwanted requests?",
+    "A": "Pass the hash",
+    "B": "Cross-site request forgery (CSRF)",
+    "C": "Cross-site scripting (XSS)",
+    "D": "Directory traversal",
+    "correct": "B",
+    "explanation_de": "CSRF laesst den Browser eines angemeldeten Nutzers unerwuenschte Requests senden. Tokens helfen, solche Requests zu pruefen.\n\n \n\n Merkhilfe: Cross-site request forgery (CSRF) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729176558494",
+      "1729176558495"
+    ]
+  },
+  {
+    "card_id": "1729176611988",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729176611989"
+    ]
+  },
+  {
+    "card_id": "1729176673054",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729176785703",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729176785704"
+    ]
+  },
+  {
+    "card_id": "1729176825522",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729176825521"
+    ]
+  },
+  {
+    "card_id": "1729176867979",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729176867978"
+    ]
+  },
+  {
+    "card_id": "1729177700656",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729177700655"
+    ]
+  },
+  {
+    "card_id": "1729177757944",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729177757943"
+    ]
+  },
+  {
+    "card_id": "1729177939888",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729177939887"
+    ]
+  },
+  {
+    "card_id": "1729177970027",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729177970026"
+    ]
+  },
+  {
+    "card_id": "1729178001585",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729178049714",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729178049715"
+    ]
+  },
+  {
+    "card_id": "1729178147830",
+    "question": "M2-105: Which cryptographic attack searches for two inputs with the same hash output?",
+    "A": "Deauthentication attack",
+    "B": "War dialing",
+    "C": "Birthday attack",
+    "D": "Downgrade attack",
+    "correct": "C",
+    "explanation_de": "Birthday Attacks zielen auf Kollisionen in Hashfunktionen. Je groesser die Stichprobe, desto hoeher die Kollisionswahrscheinlichkeit.\n\n \n\n Merkhilfe: Birthday attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729178147831",
+      "1729178147832"
+    ]
+  },
+  {
+    "card_id": "1729178206000",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729178205999"
+    ]
+  },
+  {
+    "card_id": "1729178247979",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729178380874",
+    "question": "M2-106: Which attack forces systems to use weaker encryption or no encryption?",
+    "A": "Birthday attack",
+    "B": "RF jamming",
+    "C": "Sideloading",
+    "D": "Downgrade attack",
+    "correct": "D",
+    "explanation_de": "Downgrade Attacks verschlechtern die ausgehandelte Sicherheit. Ziel ist eine schwache oder unverschlüsselte Verbindung.\n\n \n\n Merkhilfe: Downgrade attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729178380872",
+      "1729178380873"
+    ]
+  },
+  {
+    "card_id": "1729178403877",
+    "question": "M2-107: Which attack is a downgrade attack that changes HTTPS use toward HTTP?",
+    "A": "SSL stripping",
+    "B": "Hash collision",
+    "C": "RFID cloning",
+    "D": "DLL injection",
+    "correct": "A",
+    "explanation_de": "SSL Stripping entfernt oder verhindert die HTTPS-Nutzung aus Sicht des Clients. Der Angreifer muss dafür typischerweise on-path sein.\n\n \n\n Merkhilfe: SSL stripping ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729178403878"
+    ]
+  },
+  {
+    "card_id": "1729178427632",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729178427631"
+    ]
+  },
+  {
+    "card_id": "1729178497093",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729178497094"
+    ]
+  },
+  {
+    "card_id": "1729178642636",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729178642635"
+    ]
+  },
+  {
+    "card_id": "1729178842874",
+    "question": "M2-108: What occurs when two different inputs produce the same cryptographic hash output?",
+    "A": "Hash collision",
+    "B": "RF jamming",
+    "C": "Session fixation",
+    "D": "Input verification",
+    "correct": "A",
+    "explanation_de": "Eine Hash Collision liegt vor, wenn verschiedene Eingaben denselben Hash ergeben. Gute Hashfunktionen sollen das praktisch erschweren.\n\n \n\n Merkhilfe: Hash collision ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729178842872",
+      "1729178842873"
+    ]
+  },
+  {
+    "card_id": "1729179162672",
+    "question": "M2-109: What is unencrypted information called when stored or transmitted without protection?",
+    "A": "In the clear",
+    "B": "Tokenized",
+    "C": "Salted",
+    "D": "Sandboxed",
+    "correct": "A",
+    "explanation_de": "In the clear bedeutet Klartext ohne Verschlüsselung. Solche Daten können bei Zugriff oder Mitschnitt direkt gelesen werden.\n\n \n\n Merkhilfe: In the clear ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729179162671"
+    ]
+  },
+  {
+    "card_id": "1729179202186",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729179202185"
+    ]
+  },
+  {
+    "card_id": "1729179270901",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729179349533",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729179958629",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729179958628"
+    ]
+  },
+  {
+    "card_id": "1729180047821",
+    "question": "M2-110: Which password attack tries a few common passwords across many accounts?",
+    "A": "Pass the hash",
+    "B": "Birthday attack",
+    "C": "Password spraying",
+    "D": "Brute forcing one account",
+    "correct": "C",
+    "explanation_de": "Password Spraying verteilt wenige häufige Passwoerter über viele Konten. So werden Lockouts einzelner Konten vermieden.\n\n \n\n Merkhilfe: Password spraying ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729180047820"
+    ]
+  },
+  {
+    "card_id": "1729180165343",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729180165342"
+    ]
+  },
+  {
+    "card_id": "1729180373539",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729180373540"
+    ]
+  },
+  {
+    "card_id": "1729180535847",
+    "question": "M2-111: What is evidence that a system may have been breached called?",
+    "A": "Indicator of Compromise (IOC)",
+    "B": "Access control list (ACL)",
+    "C": "Recovery point objective (RPO)",
+    "D": "Common vulnerability score (CVSS)",
+    "correct": "A",
+    "explanation_de": "IOCs sind Hinweise auf Kompromittierung, etwa ungewoehnliche Logins, Hash-Aenderungen oder verdachtige Netzwerkaktivitaet.\n\n \n\n Merkhilfe: Indicator of Compromise (IOC) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729180535846"
+    ]
+  },
+  {
+    "card_id": "1729180633503",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729180633502"
+    ]
+  },
+  {
+    "card_id": "1729180681743",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729180726418",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729180726419"
+    ]
+  },
+  {
+    "card_id": "1729180795787",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729180875511",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729180976399",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729181026488",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729181172885"
+    ]
+  },
+  {
+    "card_id": "1729181053698",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729181226129",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729181226130"
+    ]
+  },
+  {
+    "card_id": "1729181298910",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729181308872"
+    ]
+  },
+  {
+    "card_id": "1729181391302",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729181356855",
+      "1729181356856"
+    ]
+  },
+  {
+    "card_id": "1729181465592",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729181465593"
+    ]
+  },
+  {
+    "card_id": "1729181589081",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729181589076",
+      "1729181589077",
+      "1729181589078",
+      "1729181589079",
+      "1729181589080"
+    ]
+  },
+  {
+    "card_id": "1729182645620",
+    "question": "M2-112: Which technique separates a network into smaller physical or logical pieces?",
+    "A": "Amplification",
+    "B": "Typosquatting",
+    "C": "Birthday attack",
+    "D": "Segmentation",
+    "correct": "D",
+    "explanation_de": "Segmentation teilt Netze oder Systeme in Bereiche. Das begrenzt Bewegungsfreiheit und Auswirkungen eines Sicherheitsereignisses.\n\n \n\n Merkhilfe: Segmentation ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729182645617",
+      "1729182645618",
+      "1729182645619"
+    ]
+  },
+  {
+    "card_id": "1729182689997",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729182689998"
+    ]
+  },
+  {
+    "card_id": "1729182723254",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729182723255"
+    ]
+  },
+  {
+    "card_id": "1729182764329",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729182764328"
+    ]
+  },
+  {
+    "card_id": "1729182806619",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729182844022",
+    "question": "M2-113: Which compliance area requires separation of credit card data environments?",
+    "A": "Common Vulnerabilities and Exposures (CVE)",
+    "B": "Domain Name System (DNS)",
+    "C": "Payment Card Industry (PCI)",
+    "D": "Open Web Application Security Project (OWASP)",
+    "correct": "C",
+    "explanation_de": "PCI-Anforderungen betreffen Kreditkartendaten. Segmentierung hilft, Karteninhaberdaten von anderen Netzbereichen zu trennen.\n\n \n\n Merkhilfe: Payment Card Industry (PCI) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729182844023"
+    ]
+  },
+  {
+    "card_id": "1729182899508",
+    "question": "M2-114: Which control allows or denies traffic based on attributes such as source, destination, port, or protocol?",
+    "A": "Logic bomb",
+    "B": "Hash collision",
+    "C": "Watering hole",
+    "D": "Access control list (ACL)",
+    "correct": "D",
+    "explanation_de": "ACLs definieren Erlaubnis- oder Sperrregeln. Sie können für Netzwerkverkehr, Betriebssystemrechte oder Anwendungen genutzt werden.\n\n \n\n Merkhilfe: Access control list (ACL) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729182899509"
+    ]
+  },
+  {
+    "card_id": "1729182917923",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729182917922"
+    ]
+  },
+  {
+    "card_id": "1729183009159",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729183009157",
+      "1729183009158",
+      "1729183009160",
+      "1729183068361"
+    ]
+  },
+  {
+    "card_id": "1729183099775",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729183099776"
+    ]
+  },
+  {
+    "card_id": "1729183136950",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729183136949"
+    ]
+  },
+  {
+    "card_id": "1729183191391",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729183191390"
+    ]
+  },
+  {
+    "card_id": "1729183258174",
+    "question": "M2-115: Which list permits only explicitly approved applications to run?",
+    "A": "Block cipher",
+    "B": "Host file",
+    "C": "Allow list",
+    "D": "Deny list",
+    "correct": "C",
+    "explanation_de": "Eine Allow List ist restriktiv: Nur Eintraege auf der Liste duerfen laufen. Alles andere wird blockiert.\n\n \n\n Merkhilfe: Allow list ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729183258175",
+      "1729183335635"
+    ]
+  },
+  {
+    "card_id": "1729183351572",
+    "question": "M2-116: Which list blocks only explicitly listed applications while allowing others by default?",
+    "A": "Access control list",
+    "B": "Certificate chain",
+    "C": "Deny list",
+    "D": "Allow list",
+    "correct": "C",
+    "explanation_de": "Eine Deny List sperrt bekannte unerwuenschte Eintraege. Nicht gelistete Anwendungen bleiben erlaubt.\n\n \n\n Merkhilfe: Deny list ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729183351570",
+      "1729183351571"
+    ]
+  },
+  {
+    "card_id": "1729183387709",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729183387706",
+      "1729183387707",
+      "1729183387708"
+    ]
+  },
+  {
+    "card_id": "1729183443913",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729183443912"
+    ]
+  },
+  {
+    "card_id": "1729183498611",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729183498612",
+      "1729183498613"
+    ]
+  },
+  {
+    "card_id": "1729183570705",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729183570704"
+    ]
+  },
+  {
+    "card_id": "1729183634687",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729183676440",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729183676439",
+      "1729183676441"
+    ]
+  },
+  {
+    "card_id": "1729183728085",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729183728086"
+    ]
+  },
+  {
+    "card_id": "1729183897263",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729183952928",
+    "question": "M2-117: What is reducing the impact of a security event or potential event called?",
+    "A": "Impersonation",
+    "B": "Enumeration",
+    "C": "Mitigation",
+    "D": "Amplification",
+    "correct": "C",
+    "explanation_de": "Mitigation reduziert Eintrittswahrscheinlichkeit oder Auswirkung. Es geht nicht zwingend um vollständige Beseitigung, sondern Risikosenkung.\n\n \n\n Merkhilfe: Mitigation ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729183952927"
+    ]
+  },
+  {
+    "card_id": "1729184048157",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729184048156"
+    ]
+  },
+  {
+    "card_id": "1729184512411",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729184512410",
+      "1729184512412"
+    ]
+  },
+  {
+    "card_id": "1729184623908",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729184623907"
+    ]
+  },
+  {
+    "card_id": "1729184675948",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729184675949"
+    ]
+  },
+  {
+    "card_id": "1729184719692",
+    "question": "M2-118: What is Windows file- or folder-level encryption called?",
+    "A": "BitLocker only",
+    "B": "FileVault",
+    "C": "Encrypting File System (EFS)",
+    "D": "Full Disk Encryption (FDE)",
+    "correct": "C",
+    "explanation_de": "EFS verschlüsselt einzelne Dateien oder Ordner unter Windows. FDE verschlüsselt dagegen ein ganzes Laufwerk.\n\n \n\n Merkhilfe: Encrypting File System (EFS) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729184719691",
+      "1729184719693"
+    ]
+  },
+  {
+    "card_id": "1729184751308",
+    "question": "M2-119: What is encrypting an entire disk called?",
+    "A": "Full Disk Encryption (FDE)",
+    "B": "Encrypting File System (EFS)",
+    "C": "Input sanitization",
+    "D": "Data masking",
+    "correct": "A",
+    "explanation_de": "Full Disk Encryption schuetzt ein komplettes Laufwerk. Das ist besonders wichtig bei mobilen oder verlorengehenden Geräten.\n\n \n\n Merkhilfe: Full Disk Encryption (FDE) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729184751307",
+      "1729184751309"
+    ]
+  },
+  {
+    "card_id": "1729184804128",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729184804127"
+    ]
+  },
+  {
+    "card_id": "1729184847760",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729184847757",
+      "1729184847758",
+      "1729184847759"
+    ]
+  },
+  {
+    "card_id": "1729184882379",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729184882378"
+    ]
+  },
+  {
+    "card_id": "1729184935627",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729184935628"
+    ]
+  },
+  {
+    "card_id": "1729184967597",
+    "question": "M2-120: Which platform centralizes security logs and events for monitoring and correlation?",
+    "A": "HIPS",
+    "B": "SIEM",
+    "C": "MDM",
+    "D": "FDE",
+    "correct": "B",
+    "explanation_de": "SIEM steht für Security Information and Event Management. Es sammelt, korreliert und alarmiert zu Sicherheitsereignissen.\n\n \n\n Merkhilfe: SIEM ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729184967596",
+      "1729184967598"
+    ]
+  },
+  {
+    "card_id": "1729185023357",
+    "question": "M2-121: Which principle grants users only the access required to perform their duties?",
+    "A": "Implicit trust",
+    "B": "Open access",
+    "C": "Privilege escalation",
+    "D": "Least privilege",
+    "correct": "D",
+    "explanation_de": "Least Privilege begrenzt Rechte auf das Notwendige. Weniger Rechte bedeuten weniger Schaden bei Fehlern oder Kompromittierung.\n\n \n\n Merkhilfe: Least privilege ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729185023358"
+    ]
+  },
+  {
+    "card_id": "1729185105937",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729185105938"
+    ]
+  },
+  {
+    "card_id": "1729185192740",
+    "question": "M2-122: Which check evaluates device health such as patch, firewall, and anti-malware status before network access?",
+    "A": "Posture assessment",
+    "B": "Birthday attack",
+    "C": "Packet capture",
+    "D": "War dialing",
+    "correct": "A",
+    "explanation_de": "Posture Assessment prüft Sicherheitszustand eines Endgeraets. Nicht konforme Geräte können in Quarantaene landen.\n\n \n\n Merkhilfe: Posture assessment ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": []
+  },
+  {
+    "card_id": "1729185236521",
+    "question": "M2-123: What does EDR stand for?",
+    "A": "Endpoint Detection and Response",
+    "B": "Encrypted Data Repository",
+    "C": "External Device Registration",
+    "D": "Enterprise DNS Relay",
+    "correct": "A",
+    "explanation_de": "EDR bedeutet Endpoint Detection and Response. Es erkennt, untersucht und reagiert auf Bedrohungen an Endpunkten.\n\n \n\n Merkhilfe: Endpoint Detection and Response ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729185236520"
+    ]
+  },
+  {
+    "card_id": "1729185261231",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729185261232"
+    ]
+  },
+  {
+    "card_id": "1729185362809",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729185362810",
+      "1729185362811"
+    ]
+  },
+  {
+    "card_id": "1729185426811",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729185426810"
+    ]
+  },
+  {
+    "card_id": "1729185482633",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729185537950",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729185537949"
+    ]
+  },
+  {
+    "card_id": "1729185722283",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729185940822",
+    "question": "M2-124: Which process configures a system to make it less susceptible to attacks?",
+    "A": "Smishing",
+    "B": "Replay",
+    "C": "Hardening",
+    "D": "Amplification",
+    "correct": "C",
+    "explanation_de": "Hardening reduziert Angriffsoberflaeche durch sichere Konfiguration, Patches, deaktivierte Dienste und Zugriffsbeschränkung.\n\n \n\n Merkhilfe: Hardening ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729185940821"
+    ]
+  },
+  {
+    "card_id": "1729185985424",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729186041888",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729186041887"
+    ]
+  },
+  {
+    "card_id": "1729186138314",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729186138315"
+    ]
+  },
+  {
+    "card_id": "1729186250125",
+    "question": "M2-125: Which approach combines multiple tools and policies to secure a system?",
+    "A": "Single point of failure",
+    "B": "Open trust",
+    "C": "Password reuse",
+    "D": "Defense in depth",
+    "correct": "D",
+    "explanation_de": "Defense in Depth kombiniert Schutzmassnahmen. Mehrere Schichten senken das Risiko, dass ein einzelner Fehler alles oeffnet.\n\n \n\n Merkhilfe: Defense in depth ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729186250126"
+    ]
+  },
+  {
+    "card_id": "1729186308174",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729186320332",
+      "1729186324896",
+      "1729186330585"
+    ]
+  },
+  {
+    "card_id": "1729186480144",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729186480145"
+    ]
+  },
+  {
+    "card_id": "1729186549472",
+    "question": "M2-126: Which firewall type runs on each individual endpoint instead of only at a network perimeter?",
+    "A": "Circuit-level gateway",
+    "B": "Cloud access broker",
+    "C": "DNS sinkhole",
+    "D": "Host-based firewall",
+    "correct": "D",
+    "explanation_de": "Host-based Firewalls laufen auf einzelnen Clients oder Servern. Sie können Verkehr direkt am Endpunkt kontrollieren.\n\n \n\n Merkhilfe: Host-based firewall ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729186549471"
+    ]
+  },
+  {
+    "card_id": "1729186561852",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729186610661",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729186610660"
+    ]
+  },
+  {
+    "card_id": "1729186648738",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729186648737"
+    ]
+  },
+  {
+    "card_id": "1729186688493",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729186688492"
+    ]
+  },
+  {
+    "card_id": "1729186709321",
+    "question": "M2-127: What does HIPS stand for?",
+    "A": "Host-based Intrusion Prevention System",
+    "B": "Hardware Identity Protection Service",
+    "C": "Hosted Internet Proxy Server",
+    "D": "Hash Integrity Processing Standard",
+    "correct": "A",
+    "explanation_de": "HIPS ist ein hostbasiertes Intrusion Prevention System. Es überwacht und blockiert verdaechtige Aktivitaeten lokal am Endpunkt.\n\n \n\n Merkhilfe: Host-based Intrusion Prevention System ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729186709320"
+    ]
+  },
+  {
+    "card_id": "1729186723937",
+    "question": "M2-128: What does IPS stand for?",
+    "A": "Internet Protection Service",
+    "B": "Identity Provisioning Server",
+    "C": "Integrity Proof Standard",
+    "D": "Intrusion Prevention System",
+    "correct": "D",
+    "explanation_de": "IPS bedeutet Intrusion Prevention System. Im Gegensatz zu reinem Monitoring kann es verdaechtige Aktivitaeten blockieren.\n\n \n\n Merkhilfe: Intrusion Prevention System ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729186723938"
+    ]
+  },
+  {
+    "card_id": "1729186757336",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729186777151",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729186804141",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729186870154",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729186870155"
+    ]
+  },
+  {
+    "card_id": "1729186913302",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729186913301"
+    ]
+  },
+  {
+    "card_id": "1729187014350",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729187047599",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729187111650",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729187111651"
+    ]
+  },
+  {
+    "card_id": "1729187191969",
+    "question": "M2-129: Which authentication control should be used with centralized authentication to secure infrastructure devices?",
+    "A": "Directory traversal",
+    "B": "Birthday attack",
+    "C": "Multi-factor authentication",
+    "D": "Typosquatting",
+    "correct": "C",
+    "explanation_de": "MFA ergaenzt zentrale Authentifizierung durch weitere Faktoren. Das reduziert Risiko durch kompromittierte Passwoerter.\n\n \n\n Merkhilfe: Multi-factor authentication ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "delete_duplicates": [
+      "1729187191970"
+    ]
+  },
+  {
+    "card_id": "1729187444680",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729187444681"
+    ]
+  }
+]

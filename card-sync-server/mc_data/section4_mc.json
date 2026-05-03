@@ -1,0 +1,2530 @@
+[
+  {
+    "card_id": "1729437550852",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729437550853"
+    ]
+  },
+  {
+    "card_id": "1729437088721",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729437088722",
+      "1729437088723",
+      "1729437088724",
+      "1729437088725"
+    ]
+  },
+  {
+    "card_id": "1729437536405",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729437140857",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729437140856"
+    ]
+  },
+  {
+    "card_id": "1729437277821",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729437233356",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729437233358",
+      "1729437233357",
+      "1729437233355"
+    ]
+  },
+  {
+    "card_id": "1729437413273",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729437413274"
+    ]
+  },
+  {
+    "card_id": "1729437385020",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729437385021",
+      "1729437385022"
+    ]
+  },
+  {
+    "card_id": "1729437319571",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729438130196",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729438287510",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729438287511"
+    ]
+  },
+  {
+    "card_id": "1729438350930",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729438350931",
+      "1729438350932"
+    ]
+  },
+  {
+    "card_id": "1729438559190",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729438559191",
+      "1729438559188",
+      "1729438559189",
+      "1729438559187"
+    ]
+  },
+  {
+    "card_id": "1729438444959",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729437774013",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729438182661",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729437852676",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729438709606",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729438781820",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729438781821"
+    ]
+  },
+  {
+    "card_id": "1729437834722",
+    "question": "M4-001: Which term describes this concept: The process of configuring a system to provide only required services in order to reduce its vulnerability?",
+    "A": "Hardening",
+    "B": "Message Integrity Check",
+    "C": "Sandboxing",
+    "D": "Fuzzing",
+    "correct": "A",
+    "explanation_de": "Hardening ist der passende Security+-Begriff für diese Beschreibung: The process of configuring a system to provide only required services in order to reduce its vulnerability is called Hardening. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Hardening = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729437834723"
+    ]
+  },
+  {
+    "card_id": "1729438098012",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729438098013"
+    ]
+  },
+  {
+    "card_id": "1729438430942",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729438430943"
+    ]
+  },
+  {
+    "card_id": "1729437905383",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729437905384"
+    ]
+  },
+  {
+    "card_id": "1729438002934",
+    "question": "M4-002: Which term describes this concept: A Hardening technique that creates a logical separation between different types or sets of data?",
+    "A": "Data Segmentation",
+    "B": "Hardening",
+    "C": "Code Signing",
+    "D": "Fuzzing",
+    "correct": "A",
+    "explanation_de": "Data Segmentation ist der passende Security+-Begriff für diese Beschreibung: A Hardening technique that creates a logical separation between different types or sets of data is called Data Segmentation. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Data Segmentation = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729438002933"
+    ]
+  },
+  {
+    "card_id": "1729437951464",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729438845038",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729438658491",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729438658490"
+    ]
+  },
+  {
+    "card_id": "1729440031875",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729440031876"
+    ]
+  },
+  {
+    "card_id": "1729440145964",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729440145965"
+    ]
+  },
+  {
+    "card_id": "1729440668087",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729440602813",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729440602814"
+    ]
+  },
+  {
+    "card_id": "1729440297418",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729440297417"
+    ]
+  },
+  {
+    "card_id": "1729440403173",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729440403172"
+    ]
+  },
+  {
+    "card_id": "1729439987379",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729439987378"
+    ]
+  },
+  {
+    "card_id": "1729440251893",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729440251894"
+    ]
+  },
+  {
+    "card_id": "1729439943629",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729439691290",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729439691287",
+      "1729439691288",
+      "1729439691286",
+      "1729439691289"
+    ]
+  },
+  {
+    "card_id": "1729439909659",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729439909660",
+      "1729439909662",
+      "1729439909661",
+      "1729439909663"
+    ]
+  },
+  {
+    "card_id": "1729440641655",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729440641656"
+    ]
+  },
+  {
+    "card_id": "1729440091258",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729440091257"
+    ]
+  },
+  {
+    "card_id": "1729439723761",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729439723762"
+    ]
+  },
+  {
+    "card_id": "1729440059407",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729439835110",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729439835111"
+    ]
+  },
+  {
+    "card_id": "1729440347748",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729440347749"
+    ]
+  },
+  {
+    "card_id": "1729440078392",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729440078391"
+    ]
+  },
+  {
+    "card_id": "1729440491076",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729440491077",
+      "1729440491078"
+    ]
+  },
+  {
+    "card_id": "1729440217514",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729440217515"
+    ]
+  },
+  {
+    "card_id": "1729439790828",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729439790827"
+    ]
+  },
+  {
+    "card_id": "1729440716935",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729440716934"
+    ]
+  },
+  {
+    "card_id": "1729442284084",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729442284085"
+    ]
+  },
+  {
+    "card_id": "1729442226718",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729442226719"
+    ]
+  },
+  {
+    "card_id": "1729442092052",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729442092053"
+    ]
+  },
+  {
+    "card_id": "1729441905854",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729441806351",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729441806352"
+    ]
+  },
+  {
+    "card_id": "1729441793256",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729441793257"
+    ]
+  },
+  {
+    "card_id": "1729442117208",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729442117209"
+    ]
+  },
+  {
+    "card_id": "1729442351618",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729442351619"
+    ]
+  },
+  {
+    "card_id": "1729441957703",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729441957702"
+    ]
+  },
+  {
+    "card_id": "1729441842859",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729441842860",
+      "1729441842858"
+    ]
+  },
+  {
+    "card_id": "1729441863499",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729442020860",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729442020859"
+    ]
+  },
+  {
+    "card_id": "1729441502775",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729441722574",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729441722573"
+    ]
+  },
+  {
+    "card_id": "1729442141039",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729442141038"
+    ]
+  },
+  {
+    "card_id": "1729441334918",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729441334919"
+    ]
+  },
+  {
+    "card_id": "1729441565599",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729441565600"
+    ]
+  },
+  {
+    "card_id": "1729442205721",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729442205724",
+      "1729442205722",
+      "1729442205723"
+    ]
+  },
+  {
+    "card_id": "1729441755408",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729441755407",
+      "1729441755406"
+    ]
+  },
+  {
+    "card_id": "1729441480780",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729441617142",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729441617141"
+    ]
+  },
+  {
+    "card_id": "1729441649458",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729441649457"
+    ]
+  },
+  {
+    "card_id": "1729441675731",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729441675730"
+    ]
+  },
+  {
+    "card_id": "1729441581791",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729441581792"
+    ]
+  },
+  {
+    "card_id": "1729442482382",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729442263517",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729442263518"
+    ]
+  },
+  {
+    "card_id": "1729441416045",
+    "question": "M4-003: Which term describes this concept: The process of checking that the data received is exactly the same as the data was sent, and has not been modified in transit?",
+    "A": "Code Signing",
+    "B": "Message Integrity Check",
+    "C": "Hardening",
+    "D": "Sandboxing",
+    "correct": "B",
+    "explanation_de": "Message Integrity Check ist der passende Security+-Begriff für diese Beschreibung: The process of checking that the data received is exactly the same as the data was sent, and has not been modified in transit, is called a Message Integrity Check. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Message Integrity Check = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729441416046"
+    ]
+  },
+  {
+    "card_id": "1729442246022",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729442246023"
+    ]
+  },
+  {
+    "card_id": "1729443553847",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729443553846"
+    ]
+  },
+  {
+    "card_id": "1729443363422",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729443363423"
+    ]
+  },
+  {
+    "card_id": "1729443174330",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729443174329"
+    ]
+  },
+  {
+    "card_id": "1729443658634",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729443658633",
+      "1729443658635"
+    ]
+  },
+  {
+    "card_id": "1729443312815",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729443312814"
+    ]
+  },
+  {
+    "card_id": "1729443721270",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729443141424",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729443141425"
+    ]
+  },
+  {
+    "card_id": "1729443485522",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729443485521"
+    ]
+  },
+  {
+    "card_id": "1729443870451",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729443250112",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729443250111",
+      "1729443250110"
+    ]
+  },
+  {
+    "card_id": "1729443520771",
+    "question": "M4-004: Which term is the process of only allowing an application access to the data it needs to operate?",
+    "A": "Message Integrity Check",
+    "B": "Code Signing",
+    "C": "Sandboxing",
+    "D": "Fuzzing",
+    "correct": "C",
+    "explanation_de": "Sandboxing ist der passende Security+-Begriff für diese Beschreibung: Sandboxing is the process of only allowing an application access to the data it needs to operate. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Sandboxing = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729443520770"
+    ]
+  },
+  {
+    "card_id": "1729442942310",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729442942311"
+    ]
+  },
+  {
+    "card_id": "1729443455782",
+    "question": "M4-005: Which term provides a guarantee that the code has not changed in transit to the end host, and that was actually sent by the listed developer?",
+    "A": "Fuzzing",
+    "B": "Code Signing",
+    "C": "Sandboxing",
+    "D": "Data Segmentation",
+    "correct": "B",
+    "explanation_de": "Code Signing ist der passende Security+-Begriff für diese Beschreibung: Code Signing provides a guarantee that the code has not changed in transit to the end host, and that was actually sent by the listed developer. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Code Signing = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729443455784",
+      "1729443455783"
+    ]
+  },
+  {
+    "card_id": "1729443283923",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729443598450",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729443598451"
+    ]
+  },
+  {
+    "card_id": "1729442989380",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729442989381"
+    ]
+  },
+  {
+    "card_id": "1729443021643",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729443021642"
+    ]
+  },
+  {
+    "card_id": "1729443217131",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729443217130"
+    ]
+  },
+  {
+    "card_id": "1729443096377",
+    "question": "M4-006: Which term describes this concept: The process of providing different types of input for an application to see what it does with the input?",
+    "A": "Hardening",
+    "B": "Message Integrity Check",
+    "C": "Sandboxing",
+    "D": "Fuzzing",
+    "correct": "D",
+    "explanation_de": "Fuzzing ist der passende Security+-Begriff für diese Beschreibung: The process of providing different types of input for an application to see what it does with the input is called Fuzzing. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Fuzzing = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729443096379",
+      "1729443096378"
+    ]
+  },
+  {
+    "card_id": "1729524592834",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729524592831",
+      "1729524592833",
+      "1729524592832"
+    ]
+  },
+  {
+    "card_id": "1729524997489",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729524997488",
+      "1729524997487"
+    ]
+  },
+  {
+    "card_id": "1729525076291",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729525076292",
+      "1729525076293"
+    ]
+  },
+  {
+    "card_id": "1729524243648",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729524243649"
+    ]
+  },
+  {
+    "card_id": "1729524123438",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729524123437"
+    ]
+  },
+  {
+    "card_id": "1729524162074",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729524615996",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729524445480",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729524445481"
+    ]
+  },
+  {
+    "card_id": "1729524764012",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729524764011"
+    ]
+  },
+  {
+    "card_id": "1729524879992",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729524879993",
+      "1729524879995",
+      "1729524879994"
+    ]
+  },
+  {
+    "card_id": "1729525033374",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729525033373"
+    ]
+  },
+  {
+    "card_id": "1729524801531",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729524801532"
+    ]
+  },
+  {
+    "card_id": "1729524393182",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729524533586",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729524717126",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729525688307",
+    "question": "M4-007: Which term is a simple type of Vulnerability Scan which shows all open ports on a device?",
+    "A": "False Negative",
+    "B": "Bug Bounty",
+    "C": "Port Scan",
+    "D": "False Positive",
+    "correct": "C",
+    "explanation_de": "Port Scan ist der passende Security+-Begriff für diese Beschreibung: A Port Scan is a simple type of Vulnerability Scan which shows all open ports on a device. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Port Scan = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729525688308"
+    ]
+  },
+  {
+    "card_id": "1729525596595",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729525736082",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729525736083"
+    ]
+  },
+  {
+    "card_id": "1729525990105",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729525990104"
+    ]
+  },
+  {
+    "card_id": "1729525933231",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729525933230"
+    ]
+  },
+  {
+    "card_id": "1729525656119",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729525570343",
+    "question": "M4-008: Which term are used to determine if a system may be susceptible to a type of attack?",
+    "A": "Vulnerability Scans",
+    "B": "Port Scan",
+    "C": "Dark Web",
+    "D": "False Negative",
+    "correct": "A",
+    "explanation_de": "Vulnerability Scans ist der passende Security+-Begriff für diese Beschreibung: Vulnerability Scans are used to determine if a system may be susceptible to a type of attack. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Vulnerability Scans = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729525570342"
+    ]
+  },
+  {
+    "card_id": "1729525802481",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729525802482"
+    ]
+  },
+  {
+    "card_id": "1729525897300",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729525897299"
+    ]
+  },
+  {
+    "card_id": "1729526924446",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729526924447"
+    ]
+  },
+  {
+    "card_id": "1729526895936",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729526535541",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729526535540"
+    ]
+  },
+  {
+    "card_id": "1729526478893",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729526478892"
+    ]
+  },
+  {
+    "card_id": "1729526661617",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729526661618",
+      "1729526661616"
+    ]
+  },
+  {
+    "card_id": "1729526448891",
+    "question": "M4-009: Which term is a good source of information about threats via various reports or public hearings?",
+    "A": "False Negative",
+    "B": "Government",
+    "C": "Risk Tolerance",
+    "D": "Vulnerability Scans",
+    "correct": "B",
+    "explanation_de": "Government ist der passende Security+-Begriff für diese Beschreibung: The Government is a good source of information about threats via various reports or public hearings. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Government = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729526448892"
+    ]
+  },
+  {
+    "card_id": "1729526854554",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729526854555"
+    ]
+  },
+  {
+    "card_id": "1729526753844",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729526753843"
+    ]
+  },
+  {
+    "card_id": "1729526713518",
+    "question": "M4-010: Which term is an overlay network that uses the internet for transport which is only accessible by using specialized software.?",
+    "A": "Dark Web",
+    "B": "Compensating Control",
+    "C": "Vulnerability Scans",
+    "D": "False Positive",
+    "correct": "A",
+    "explanation_de": "Dark Web ist der passende Security+-Begriff für diese Beschreibung: The Dark Web is an overlay network that uses the internet for transport which is only accessible by using specialized software.. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Dark Web = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729526713519",
+      "1729526713520"
+    ]
+  },
+  {
+    "card_id": "1729526582657",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729526582656"
+    ]
+  },
+  {
+    "card_id": "1729526402459",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729526402458",
+      "1729526402460"
+    ]
+  },
+  {
+    "card_id": "1729527683776",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729527683775"
+    ]
+  },
+  {
+    "card_id": "1729527609931",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729527609930"
+    ]
+  },
+  {
+    "card_id": "1729527756949",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729527756950",
+      "1729527756948"
+    ]
+  },
+  {
+    "card_id": "1729527562632",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729527562631",
+      "1729527562630"
+    ]
+  },
+  {
+    "card_id": "1729527801593",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729527498298",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729527498299"
+    ]
+  },
+  {
+    "card_id": "1729528141750",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729527651277",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729527994797",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729528034674",
+    "question": "M4-011: Which term is a reward for finding and reporting software vulnerabilities to the developer?",
+    "A": "Dark Web",
+    "B": "Bug Bounty",
+    "C": "Port Scan",
+    "D": "Compensating Control",
+    "correct": "B",
+    "explanation_de": "Bug Bounty ist der passende Security+-Begriff für diese Beschreibung: A Bug Bounty is a reward for finding and reporting software vulnerabilities to the developer. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Bug Bounty = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729528034675"
+    ]
+  },
+  {
+    "card_id": "1729527823059",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729529204879",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729529204878"
+    ]
+  },
+  {
+    "card_id": "1729529009741",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729529009742"
+    ]
+  },
+  {
+    "card_id": "1729529266978",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729529266977"
+    ]
+  },
+  {
+    "card_id": "1729529439876",
+    "question": "M4-012: Which term describes this concept: The process of prioritizing which systems to patch first?",
+    "A": "Compensating Control",
+    "B": "False Negative",
+    "C": "False Positive",
+    "D": "Risk Tolerance",
+    "correct": "D",
+    "explanation_de": "Risk Tolerance ist der passende Security+-Begriff für diese Beschreibung: The process of prioritizing which systems to patch first is known as Risk Tolerance. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Risk Tolerance = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729529439875"
+    ]
+  },
+  {
+    "card_id": "1729528888195",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729528888196"
+    ]
+  },
+  {
+    "card_id": "1729529510115",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729529510114"
+    ]
+  },
+  {
+    "card_id": "1729528737899",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729529566555",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729528807950",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729528807951"
+    ]
+  },
+  {
+    "card_id": "1729528688237",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729528688238"
+    ]
+  },
+  {
+    "card_id": "1729528670460",
+    "question": "M4-013: Which term is when a vulnerability scan does not detect a vulnerability that does actually exist?",
+    "A": "False Positive",
+    "B": "Port Scan",
+    "C": "False Negative",
+    "D": "Compensating Control",
+    "correct": "C",
+    "explanation_de": "False Negative ist der passende Security+-Begriff für diese Beschreibung: A False Negative is when a vulnerability scan does not detect a vulnerability that does actually exist. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: False Negative = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729528670461"
+    ]
+  },
+  {
+    "card_id": "1729528932926",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729528932925"
+    ]
+  },
+  {
+    "card_id": "1729529362116",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729529362115"
+    ]
+  },
+  {
+    "card_id": "1729528371221",
+    "question": "M4-014: Which term describes this concept: Reports of a vulnerability from whatever source, which do not actually exist, are?",
+    "A": "False Positive",
+    "B": "Bug Bounty",
+    "C": "Compensating Control",
+    "D": "Government",
+    "correct": "A",
+    "explanation_de": "False Positive ist der passende Security+-Begriff für diese Beschreibung: Reports of a vulnerability from whatever source, which do not actually exist, are called a False Positive. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: False Positive = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729528371220"
+    ]
+  },
+  {
+    "card_id": "1729528838565",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729528838566"
+    ]
+  },
+  {
+    "card_id": "1729528968116",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729530986061",
+    "question": "M4-015: Which term is one put into place temporarily until a patch is able to be applied?",
+    "A": "False Positive",
+    "B": "False Negative",
+    "C": "Government",
+    "D": "Compensating Control",
+    "correct": "D",
+    "explanation_de": "Compensating Control ist der passende Security+-Begriff für diese Beschreibung: A Compensating Control is one put into place temporarily until a patch is able to be applied. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Compensating Control = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729530986060"
+    ]
+  },
+  {
+    "card_id": "1729530663396",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729530663395"
+    ]
+  },
+  {
+    "card_id": "1729530514090",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729530514089"
+    ]
+  },
+  {
+    "card_id": "1729530743028",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729530743029"
+    ]
+  },
+  {
+    "card_id": "1729530163224",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729530163225"
+    ]
+  },
+  {
+    "card_id": "1729530621785",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729530621786"
+    ]
+  },
+  {
+    "card_id": "1729530217171",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729530217170"
+    ]
+  },
+  {
+    "card_id": "1729530284082",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729530284083"
+    ]
+  },
+  {
+    "card_id": "1729530394847",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729530563647",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729536873477",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729536873476"
+    ]
+  },
+  {
+    "card_id": "1729539908729",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729539908727",
+      "1729539908728"
+    ]
+  },
+  {
+    "card_id": "1729540077401",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729540077400"
+    ]
+  },
+  {
+    "card_id": "1729540036900",
+    "question": "M4-016: Which term is information that can be acted upon once it is known?",
+    "A": "Hardening",
+    "B": "Legal Hold",
+    "C": "Single Sign On",
+    "D": "Actionable Data",
+    "correct": "D",
+    "explanation_de": "Actionable Data ist der passende Security+-Begriff für diese Beschreibung: Actionable Data is information that can be acted upon once it is known. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Actionable Data = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729540036899"
+    ]
+  },
+  {
+    "card_id": "1729536896176",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729540651006",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729540651007"
+    ]
+  },
+  {
+    "card_id": "1729541095795",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729541095796"
+    ]
+  },
+  {
+    "card_id": "1729540543014",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729540622475",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729540622476"
+    ]
+  },
+  {
+    "card_id": "1729541045399",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729541045400"
+    ]
+  },
+  {
+    "card_id": "1729540345138",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729540345139"
+    ]
+  },
+  {
+    "card_id": "1729540861519",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729540861517",
+      "1729540861518"
+    ]
+  },
+  {
+    "card_id": "1729541134548",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729541134549"
+    ]
+  },
+  {
+    "card_id": "1729540831764",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729540831765"
+    ]
+  },
+  {
+    "card_id": "1729540977382",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729540977383"
+    ]
+  },
+  {
+    "card_id": "1729540418943",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729540460689",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729540460690"
+    ]
+  },
+  {
+    "card_id": "1729541030110",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729541030109"
+    ]
+  },
+  {
+    "card_id": "1729541530181",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729541530182"
+    ]
+  },
+  {
+    "card_id": "1729541870975",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729541870976"
+    ]
+  },
+  {
+    "card_id": "1729541837513",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729541513428",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729541513427"
+    ]
+  },
+  {
+    "card_id": "1729541750758",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729541812365",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729541557044",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729541557043"
+    ]
+  },
+  {
+    "card_id": "1729541599593",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729542703264",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729542642915",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729542642916"
+    ]
+  },
+  {
+    "card_id": "1729542952663",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729542952662"
+    ]
+  },
+  {
+    "card_id": "1729542617267",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729542617266"
+    ]
+  },
+  {
+    "card_id": "1729542657381",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729542861167",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729542838699",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729542838700"
+    ]
+  },
+  {
+    "card_id": "1729542909872",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729542909873"
+    ]
+  },
+  {
+    "card_id": "1729542555582",
+    "question": "M4-017: Which term provides control of inbound and outbound data?",
+    "A": "Discretionary Access Control",
+    "B": "Active Directory",
+    "C": "Content Filtering",
+    "D": "Digital Key Identified Mail",
+    "correct": "C",
+    "explanation_de": "Content Filtering ist der passende Security+-Begriff für diese Beschreibung: Content Filtering provides control of inbound and outbound data. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Content Filtering = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729542555581",
+      "1729542555580"
+    ]
+  },
+  {
+    "card_id": "1729542531766",
+    "question": "M4-018: Which term is sometimes known as a URL filter, or a website category filter?",
+    "A": "File Integrity Monitor",
+    "B": "Tripwire",
+    "C": "Active Directory",
+    "D": "Content Filter",
+    "correct": "D",
+    "explanation_de": "Content Filter ist der passende Security+-Begriff für diese Beschreibung: A Content Filter is sometimes known as a URL filter, or a website category filter. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Content Filter = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729542531768",
+      "1729542531767"
+    ]
+  },
+  {
+    "card_id": "1729543018478",
+    "question": "M4-019: Which term is a database containing every component on the network?",
+    "A": "Discretionary Access Control",
+    "B": "Active Directory",
+    "C": "Content Filter",
+    "D": "Endpoint",
+    "correct": "B",
+    "explanation_de": "Active Directory ist der passende Security+-Begriff für diese Beschreibung: Active Directory is a database containing every component on the network. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Active Directory = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729543026428"
+    ]
+  },
+  {
+    "card_id": "1729543230159",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729543068100",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729543068097",
+      "1729543068096",
+      "1729543068098",
+      "1729543068099"
+    ]
+  },
+  {
+    "card_id": "1729543415508",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729543415509"
+    ]
+  },
+  {
+    "card_id": "1729543040294",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729543300068",
+    "question": "M4-020: Which term means the user has the ability to set their own access permissions?",
+    "A": "Tripwire",
+    "B": "Discretionary Access Control",
+    "C": "Active Directory",
+    "D": "Content Filter",
+    "correct": "B",
+    "explanation_de": "Discretionary Access Control ist der passende Security+-Begriff für diese Beschreibung: Discretionary Access Control means the user has the ability to set their own access permissions. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Discretionary Access Control = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729543300067"
+    ]
+  },
+  {
+    "card_id": "1729543211267",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729543342741",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729543342742"
+    ]
+  },
+  {
+    "card_id": "1729543103328",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729543103327"
+    ]
+  },
+  {
+    "card_id": "1729543364230",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729543364231"
+    ]
+  },
+  {
+    "card_id": "1729543318616",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729543318617"
+    ]
+  },
+  {
+    "card_id": "1729543460279",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729543460280"
+    ]
+  },
+  {
+    "card_id": "1729543662038",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729543662039"
+    ]
+  },
+  {
+    "card_id": "1729543693530",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729544006586",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729544006585"
+    ]
+  },
+  {
+    "card_id": "1729544401577",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729544401576"
+    ]
+  },
+  {
+    "card_id": "1729544194709",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729544194708"
+    ]
+  },
+  {
+    "card_id": "1729544144999",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729544145000"
+    ]
+  },
+  {
+    "card_id": "1729544663386",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729544414421",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729544414422"
+    ]
+  },
+  {
+    "card_id": "1729544280806",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729544236865",
+    "question": "M4-021: Which term uses public and private keys to verify the sender of a message?",
+    "A": "Digital Key Identified Mail",
+    "B": "Endpoint",
+    "C": "Content Filter",
+    "D": "Active Directory",
+    "correct": "A",
+    "explanation_de": "Digital Key Identified Mail ist der passende Security+-Begriff für diese Beschreibung: Digital Key Identified Mail uses public and private keys to verify the sender of a message. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Digital Key Identified Mail = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729544236866"
+    ]
+  },
+  {
+    "card_id": "1729544116133",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729544116134"
+    ]
+  },
+  {
+    "card_id": "1729544469919",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729543961319",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729544093542",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729544093541"
+    ]
+  },
+  {
+    "card_id": "1729544061073",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729544061074",
+      "1729544061075"
+    ]
+  },
+  {
+    "card_id": "1729544613079",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729544613080"
+    ]
+  },
+  {
+    "card_id": "1729544170582",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729544844021",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729544752114",
+    "question": "M4-022: Which term provides alerts if core application or operating system files are modified?",
+    "A": "Content Filter",
+    "B": "Digital Key Identified Mail",
+    "C": "File Integrity Monitor",
+    "D": "Endpoint",
+    "correct": "C",
+    "explanation_de": "File Integrity Monitor ist der passende Security+-Begriff für diese Beschreibung: A File Integrity Monitor provides alerts if core application or operating system files are modified. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: File Integrity Monitor = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729544752115"
+    ]
+  },
+  {
+    "card_id": "1729544886003",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729544886002"
+    ]
+  },
+  {
+    "card_id": "1729544906684",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729544906683"
+    ]
+  },
+  {
+    "card_id": "1729544816197",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729544816198"
+    ]
+  },
+  {
+    "card_id": "1729545071940",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729545071941"
+    ]
+  },
+  {
+    "card_id": "1729544771376",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729544771377"
+    ]
+  },
+  {
+    "card_id": "1729545003169",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729545003170"
+    ]
+  },
+  {
+    "card_id": "1729545172423",
+    "question": "M4-023: Which description matches a popular FIM for Linux?",
+    "A": "Digital Key Identified Mail",
+    "B": "Content Filtering",
+    "C": "Tripwire",
+    "D": "Content Filter",
+    "correct": "C",
+    "explanation_de": "Tripwire ist der passende Security+-Begriff für diese Beschreibung: A popular FIM for Linux is Tripwire. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Tripwire = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729545172424"
+    ]
+  },
+  {
+    "card_id": "1729546542568",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729546542567"
+    ]
+  },
+  {
+    "card_id": "1729547250384",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729547250383"
+    ]
+  },
+  {
+    "card_id": "1729545965530",
+    "question": "M4-024: Which term is the device being used by the user?",
+    "A": "Tripwire",
+    "B": "Endpoint",
+    "C": "Content Filter",
+    "D": "Digital Key Identified Mail",
+    "correct": "B",
+    "explanation_de": "Endpoint ist der passende Security+-Begriff für diese Beschreibung: An Endpoint is the device being used by the user. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Endpoint = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729545965529"
+    ]
+  },
+  {
+    "card_id": "1729547172335",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729547172334"
+    ]
+  },
+  {
+    "card_id": "1729547190580",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729547190579"
+    ]
+  },
+  {
+    "card_id": "1729547286589",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729547286590",
+      "1729547286588"
+    ]
+  },
+  {
+    "card_id": "1729547117889",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729547117888"
+    ]
+  },
+  {
+    "card_id": "1729546688995",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729606117257",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729606117258",
+      "1729606117259"
+    ]
+  },
+  {
+    "card_id": "1729606974643",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729605700762",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729605700761"
+    ]
+  },
+  {
+    "card_id": "1729606815535",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729606815534"
+    ]
+  },
+  {
+    "card_id": "1729606750099",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729606750100"
+    ]
+  },
+  {
+    "card_id": "1729608379548",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729608379547"
+    ]
+  },
+  {
+    "card_id": "1729606835433",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729606835432"
+    ]
+  },
+  {
+    "card_id": "1729607065149",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729607065148"
+    ]
+  },
+  {
+    "card_id": "1729606855496",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729606855497"
+    ]
+  },
+  {
+    "card_id": "1729607009403",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729607009402"
+    ]
+  },
+  {
+    "card_id": "1729608533015",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729608533016"
+    ]
+  },
+  {
+    "card_id": "1729608340520",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729608340519"
+    ]
+  },
+  {
+    "card_id": "1729606914251",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729606914252"
+    ]
+  },
+  {
+    "card_id": "1729606200740",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729606200739"
+    ]
+  },
+  {
+    "card_id": "1729608886627",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729608262897",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729608262898"
+    ]
+  },
+  {
+    "card_id": "1729606424320",
+    "question": "M4-025: Which term describes this concept: Logging in once to be able to access multiple systems?",
+    "A": "Single Sign On",
+    "B": "Authentication Factor",
+    "C": "Password Age",
+    "D": "Biometrics",
+    "correct": "A",
+    "explanation_de": "Single Sign On ist der passende Security+-Begriff für diese Beschreibung: Logging in once to be able to access multiple systems is called Single Sign On. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Single Sign On = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729606424321"
+    ]
+  },
+  {
+    "card_id": "1729606786083",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729606786082"
+    ]
+  },
+  {
+    "card_id": "1729606994413",
+    "question": "M4-026: Which term describes this concept: Individual devices within the Directory Information Tree are?",
+    "A": "Password Manager",
+    "B": "Access Control",
+    "C": "Leaf Objects",
+    "D": "Password Age",
+    "correct": "C",
+    "explanation_de": "Leaf Objects ist der passende Security+-Begriff für diese Beschreibung: Individual devices within the Directory Information Tree are known as Leaf Objects. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Leaf Objects = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729606994414"
+    ]
+  },
+  {
+    "card_id": "1729606385894",
+    "question": "M4-027: Which term is the process of verifying a person's identity through outside sources such as government or financial institutions?",
+    "A": "Password Age",
+    "B": "Password Manager",
+    "C": "Access Control",
+    "D": "Attestation",
+    "correct": "D",
+    "explanation_de": "Attestation ist der passende Security+-Begriff für diese Beschreibung: Attestation is the process of verifying a person's identity through outside sources such as government or financial institutions. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Attestation = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729606385893",
+      "1729606385892"
+    ]
+  },
+  {
+    "card_id": "1729605684779",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729605684780"
+    ]
+  },
+  {
+    "card_id": "1729608432262",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729608432263"
+    ]
+  },
+  {
+    "card_id": "1729608200753",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729608200752"
+    ]
+  },
+  {
+    "card_id": "1729606895921",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729608409927",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729608409926"
+    ]
+  },
+  {
+    "card_id": "1729608310865",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729608310864",
+      "1729608310863"
+    ]
+  },
+  {
+    "card_id": "1729609483742",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729609483741"
+    ]
+  },
+  {
+    "card_id": "1729610215506",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729609703139",
+    "question": "M4-028: Which term describes this concept: The Windows implementation of RBAC?",
+    "A": "Password Manager",
+    "B": "Groups",
+    "C": "Biometrics",
+    "D": "Single Sign On",
+    "correct": "B",
+    "explanation_de": "Groups ist der passende Security+-Begriff für diese Beschreibung: The Windows implementation of RBAC is called Groups. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Groups = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729609703138"
+    ]
+  },
+  {
+    "card_id": "1729609553997",
+    "question": "M4-029: Which term describes this concept: If the creator or owner of a file is the one deciding who has what access to a file, this?",
+    "A": "Access Control",
+    "B": "Biometrics",
+    "C": "Discretionary Access Control",
+    "D": "Leaf Objects",
+    "correct": "C",
+    "explanation_de": "Discretionary Access Control ist der passende Security+-Begriff für diese Beschreibung: If the creator or owner of a file is the one deciding who has what access to a file, this is known as Discretionary Access Control. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Discretionary Access Control = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729609553996"
+    ]
+  },
+  {
+    "card_id": "1729609885167",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729609885168"
+    ]
+  },
+  {
+    "card_id": "1729609442057",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729609442056"
+    ]
+  },
+  {
+    "card_id": "1729610286388",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729610286389"
+    ]
+  },
+  {
+    "card_id": "1729609638997",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729609638996"
+    ]
+  },
+  {
+    "card_id": "1729609777207",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729609777206"
+    ]
+  },
+  {
+    "card_id": "1729609978476",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729609978477"
+    ]
+  },
+  {
+    "card_id": "1729609608787",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729609351815",
+    "question": "M4-030: Which term is the process of enforcing policies to allow or disallow access to data?",
+    "A": "Password Manager",
+    "B": "Discretionary Access Control",
+    "C": "Passwordless Authentication",
+    "D": "Access Control",
+    "correct": "D",
+    "explanation_de": "Access Control ist der passende Security+-Begriff für diese Beschreibung: Access Control is the process of enforcing policies to allow or disallow access to data. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Access Control = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729609351816"
+    ]
+  },
+  {
+    "card_id": "1729609650008",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729609650009"
+    ]
+  },
+  {
+    "card_id": "1729610646378",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729610646377"
+    ]
+  },
+  {
+    "card_id": "1729610765047",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729610765048",
+      "1729610765049"
+    ]
+  },
+  {
+    "card_id": "1729610459924",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729610459923"
+    ]
+  },
+  {
+    "card_id": "1729610563442",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729610563443"
+    ]
+  },
+  {
+    "card_id": "1729610407765",
+    "question": "M4-031: Which term is any of a number of login parameters?",
+    "A": "Discretionary Access Control",
+    "B": "Leaf Objects",
+    "C": "Single Sign On",
+    "D": "Authentication Factor",
+    "correct": "D",
+    "explanation_de": "Authentication Factor ist der passende Security+-Begriff für diese Beschreibung: An Authentication Factor is any of a number of login parameters. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Authentication Factor = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729610407766"
+    ]
+  },
+  {
+    "card_id": "1729610578431",
+    "question": "M4-032: Which term describes this concept: Something you are is typically?",
+    "A": "Biometrics",
+    "B": "Entropy",
+    "C": "Attestation",
+    "D": "Leaf Objects",
+    "correct": "A",
+    "explanation_de": "Biometrics ist der passende Security+-Begriff für diese Beschreibung: Something you are is typically referred to as Biometrics. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Biometrics = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729610578430"
+    ]
+  },
+  {
+    "card_id": "1729610492603",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729610492604"
+    ]
+  },
+  {
+    "card_id": "1729610443311",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729610443314",
+      "1729610443313",
+      "1729610443312"
+    ]
+  },
+  {
+    "card_id": "1729610893450",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729610893448",
+      "1729610893449"
+    ]
+  },
+  {
+    "card_id": "1729610928517",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729611381593",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729610995931",
+    "question": "M4-033: Which term describes how unpredictable a password might be?",
+    "A": "Entropy",
+    "B": "Discretionary Access Control",
+    "C": "Single Sign On",
+    "D": "Attestation",
+    "correct": "A",
+    "explanation_de": "Entropy ist der passende Security+-Begriff für diese Beschreibung: Entropy describes how unpredictable a password might be. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Entropy = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729610995932"
+    ]
+  },
+  {
+    "card_id": "1729611234473",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729611063216",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729611318844",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729611176369",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729611176368"
+    ]
+  },
+  {
+    "card_id": "1729611036480",
+    "question": "M4-034: Which term is the time since a password was created?",
+    "A": "Password Age",
+    "B": "Authentication Factor",
+    "C": "Passwordless Authentication",
+    "D": "Discretionary Access Control",
+    "correct": "A",
+    "explanation_de": "Password Age ist der passende Security+-Begriff für diese Beschreibung: Password Age is the time since a password was created. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Password Age = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729611036481"
+    ]
+  },
+  {
+    "card_id": "1729611286985",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729611286987",
+      "1729611286986"
+    ]
+  },
+  {
+    "card_id": "1729611118404",
+    "question": "M4-035: Which term allows users to store all login information in a single place?",
+    "A": "Passwordless Authentication",
+    "B": "Discretionary Access Control",
+    "C": "Entropy",
+    "D": "Password Manager",
+    "correct": "D",
+    "explanation_de": "Password Manager ist der passende Security+-Begriff für diese Beschreibung: A Password Manager allows users to store all login information in a single place. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Password Manager = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729611118405"
+    ]
+  },
+  {
+    "card_id": "1729611199039",
+    "question": "M4-036: Which term uses something besides a password to log in?",
+    "A": "Password Age",
+    "B": "Groups",
+    "C": "Passwordless Authentication",
+    "D": "Access Control",
+    "correct": "C",
+    "explanation_de": "Passwordless Authentication ist der passende Security+-Begriff für diese Beschreibung: Passwordless Authentication uses something besides a password to log in. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Passwordless Authentication = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729611199038"
+    ]
+  },
+  {
+    "card_id": "1729611432331",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729611432332",
+      "1729611432333"
+    ]
+  },
+  {
+    "card_id": "1729612110305",
+    "question": "M4-037: Which term allows the automation of tasks, rather than performing them manually?",
+    "A": "Guardrail",
+    "B": "Technical Debt",
+    "C": "Scripting",
+    "D": "Government",
+    "correct": "C",
+    "explanation_de": "Scripting ist der passende Security+-Begriff für diese Beschreibung: Scripting allows the automation of tasks, rather than performing them manually. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Scripting = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729612110303",
+      "1729612110304"
+    ]
+  },
+  {
+    "card_id": "1729612399884",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729612248834",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729612543398",
+    "question": "M4-038: Which term refers to addressing symptoms rather than the root cause?",
+    "A": "Technical Debt",
+    "B": "Guardrail",
+    "C": "Scripting",
+    "D": "Hardening",
+    "correct": "A",
+    "explanation_de": "Technical Debt ist der passende Security+-Begriff für diese Beschreibung: Technical Debt refers to addressing symptoms rather than the root cause. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Technical Debt = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729612543399"
+    ]
+  },
+  {
+    "card_id": "1729612571452",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729612571451"
+    ]
+  },
+  {
+    "card_id": "1729612337101",
+    "question": "M4-039: Which term is an automated verification of information going into a system to protect against human mistakes?",
+    "A": "Scripting",
+    "B": "Technical Debt",
+    "C": "Actionable Data",
+    "D": "Guardrail",
+    "correct": "D",
+    "explanation_de": "Guardrail ist der passende Security+-Begriff für diese Beschreibung: A Guardrail is an automated verification of information going into a system to protect against human mistakes. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Guardrail = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729612337100"
+    ]
+  },
+  {
+    "card_id": "1729612124957",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729612475293",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729612475294"
+    ]
+  },
+  {
+    "card_id": "1729612181118",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729612445670",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729612445671"
+    ]
+  },
+  {
+    "card_id": "1729612157535",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729612503292",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729612503293"
+    ]
+  },
+  {
+    "card_id": "1729613550680",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729613550681"
+    ]
+  },
+  {
+    "card_id": "1729613653647",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729613653648",
+      "1729613653649"
+    ]
+  },
+  {
+    "card_id": "1729613201660",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729613201657",
+      "1729613201656",
+      "1729613201658",
+      "1729613201659",
+      "1729613201661"
+    ]
+  },
+  {
+    "card_id": "1729613146785",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729613146786"
+    ]
+  },
+  {
+    "card_id": "1729613594547",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729613594546"
+    ]
+  },
+  {
+    "card_id": "1729613487403",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729613718535",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729613674074",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729614326733",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729614326732"
+    ]
+  },
+  {
+    "card_id": "1729614353765",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729614400121",
+    "question": "M4-040: Which term is the process of searching for vulnerabilities before an attacker can find them?",
+    "A": "Digital Forensics",
+    "B": "Legal Hold",
+    "C": "Groups",
+    "D": "Threat Hunting",
+    "correct": "D",
+    "explanation_de": "Threat Hunting ist der passende Security+-Begriff für diese Beschreibung: Threat Hunting is the process of searching for vulnerabilities before an attacker can find them. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Threat Hunting = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729614400122"
+    ]
+  },
+  {
+    "card_id": "1729614206314",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729614206313"
+    ]
+  },
+  {
+    "card_id": "1729615029887",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729615029888"
+    ]
+  },
+  {
+    "card_id": "1729615333134",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729615061513",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729615061514",
+      "1729615061512"
+    ]
+  },
+  {
+    "card_id": "1729615301934",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729615301935",
+      "1729615301936"
+    ]
+  },
+  {
+    "card_id": "1729615091745",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729615239453",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729614914125",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729614914126"
+    ]
+  },
+  {
+    "card_id": "1729614992204",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729615172971",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729615129955",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729615129954"
+    ]
+  },
+  {
+    "card_id": "1729614972339",
+    "question": "M4-041: Which term is a type of Data Acquisition Request where a legal entity uses a document to describe the type and quantity of data that needs to be stored?",
+    "A": "Threat Hunting",
+    "B": "Digital Forensics",
+    "C": "Compensating Control",
+    "D": "Legal Hold",
+    "correct": "D",
+    "explanation_de": "Legal Hold ist der passende Security+-Begriff für diese Beschreibung: A Legal Hold is a type of Data Acquisition Request where a legal entity uses a document to describe the type and quantity of data that needs to be stored. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Legal Hold = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729614972338"
+    ]
+  },
+  {
+    "card_id": "1729615403334",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729615403335"
+    ]
+  },
+  {
+    "card_id": "1729614808452",
+    "question": "M4-042: Which term is the process of collecting data about a security event during and especially after?",
+    "A": "Legal Hold",
+    "B": "Threat Hunting",
+    "C": "Guardrail",
+    "D": "Digital Forensics",
+    "correct": "D",
+    "explanation_de": "Digital Forensics ist der passende Security+-Begriff für diese Beschreibung: Digital Forensics is the process of collecting data about a security event during and especially after. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Digital Forensics = dieser genaue Prüfbegriff.",
+    "delete_duplicates": [
+      "1729614808451"
+    ]
+  },
+  {
+    "card_id": "1729616024267",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729616379463",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729616379464"
+    ]
+  },
+  {
+    "card_id": "1729616113209",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729616113210"
+    ]
+  },
+  {
+    "card_id": "1729615950708",
+    "needs_review": true
+  },
+  {
+    "card_id": "1729616341789",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729616341790"
+    ]
+  },
+  {
+    "card_id": "1729616206409",
+    "needs_review": true,
+    "delete_duplicates": [
+      "1729616206408"
+    ]
+  },
+  {
+    "card_id": "1729616407607",
+    "needs_review": true
+  }
+]

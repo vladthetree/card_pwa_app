@@ -137,6 +137,7 @@ interface JoinProfileResponse {
 export interface ServerDeckSummary {
   id: string
   name: string
+  parentDeckId?: string | null
   source?: string
   createdAt?: number
   updatedAt?: number

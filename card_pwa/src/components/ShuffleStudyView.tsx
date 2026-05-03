@@ -26,6 +26,7 @@ import { initialSessionState, sessionReducer } from '../services/studySessionRed
 import { buildLearningCoachSummary } from '../services/learningCoach'
 import type { Card, Rating, ShuffleCollection } from '../types'
 import { formatDeckName } from '../utils/cardTextParser'
+import { flattenDeckTree } from '../utils/securityDeckHierarchy'
 import { getReviewXp } from '../utils/gamification'
 import CardFace from './CardFace'
 import EditCardModal from './EditCardModal'
@@ -114,7 +115,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   const sessionId = useMemo(() => buildShuffleSessionId(collection.id), [collection.id])
   const latestShuffleCardById = useMemo(() => new Map(cards.map(card => [card.id, card])), [cards])
   const deckNameById = useMemo(
-    () => new Map(decks.map(deck => [deck.id, formatDeckName(deck.name)])),
+    () => new Map(flattenDeckTree(decks).map(deck => [deck.id, formatDeckName(deck.name)])),
     [decks],
   )
   const currentCard = useMemo(() => session.cards[0] ?? null, [session.cards])

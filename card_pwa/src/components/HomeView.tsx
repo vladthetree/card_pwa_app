@@ -17,6 +17,7 @@ import { useHomeDeckFilters } from '../hooks/home/useHomeDeckFilters'
 import { useHomeStorageEstimate } from '../hooks/home/useHomeStorageEstimate'
 import { useHomeDerivedData } from '../hooks/home/useHomeDerivedData'
 import { useHomeViewController } from '../hooks/home/useHomeViewController'
+import { flattenDeckTree } from '../utils/securityDeckHierarchy'
 
 const CreateCardModal = lazy(() => import('./CreateCardModal.tsx'))
 const SettingsModal = lazy(() => import('./SettingsModal.tsx'))
@@ -60,6 +61,7 @@ export default function HomeView({
   const buildVersionLabel = useMemo(() => formatServiceWorkerVersionLabel(), [])
   const buildVersionTitle = useMemo(() => formatBuildVersionTitle(), [])
   const isShuffleManageMode = mode === 'shuffle-manage'
+  const allDecks = useMemo(() => flattenDeckTree(decks), [decks])
 
   const controller = useHomeViewController({
     t,
@@ -311,7 +313,7 @@ export default function HomeView({
           {controller.metricsShuffleCollection && (
             <ShuffleMetricsModal
               collection={controller.metricsShuffleCollection}
-              decks={decks}
+              decks={allDecks}
               language={settings.language}
               onClose={controller.closeMetricsShuffleCollection}
             />
@@ -368,7 +370,7 @@ export default function HomeView({
               isOpen
               language={settings.language}
               prefersReducedMotion={prefersReducedMotion}
-              decks={decks}
+              decks={allDecks}
               syncedDeckIds={derivedData.syncedDeckIds}
               studyCardLimit={settings.studyCardLimit}
               nextDayStartsAt={settings.nextDayStartsAt}
