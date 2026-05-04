@@ -365,7 +365,7 @@ async function applyDeckCreate(payload: unknown) {
   await db.decks.put(deck)
 }
 
-async function applyDeckDelete(payload: unknown, fallbackTs = 0) {
+async function applyDeckDelete(payload: unknown, fallbackTs = 0, options: { force?: boolean } = {}) {
   if (!payload || typeof payload !== 'object') return
   const value = payload as { deckId?: string; timestamp?: number; deletedAt?: number }
   const deckId = value.deckId ? String(value.deckId) : ''
@@ -374,7 +374,7 @@ async function applyDeckDelete(payload: unknown, fallbackTs = 0) {
   // ── LWW guard: skip delete if local deck is newer ──
   // fallbackTs comes from the pull response's clientTimestamp field
   const deleteTs = Number(value.deletedAt ?? value.timestamp ?? fallbackTs ?? 0)
-  if (deleteTs > 0) {
+  if (!options.force && deleteTs > 0) {
     const existing = await db.decks.get(deckId)
     if (existing) {
       const localTs = existing.updatedAt ?? existing.createdAt
@@ -533,7 +533,7 @@ async function applyOperation(op: PulledOperation) {
       await applyDeckCreate(op.payload)
       return
     case 'deck.delete':
-      await applyDeckDelete(op.payload, fallbackTs)
+      await applyDeckDelete(op.payload, fallbackTs, { force: op.sourceClient === 'server-maintenance-publisher' })
       return
     case 'card.create':
       await applyCardCreate(op.payload)

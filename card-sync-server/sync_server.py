@@ -131,6 +131,34 @@ def infer_security_objective_code(deck_name: str | None) -> str | None:
   return code if code in valid else None
 
 
+def is_legacy_messer_deck_name(deck_name: str | None) -> bool:
+  if not deck_name:
+    return False
+  lowered = deck_name.lower()
+  return "professor messer" in lowered and "::section" in lowered
+
+
+def legacy_messer_deck_delete_payload(payload: dict, client_timestamp=None) -> dict | None:
+  """Return a tombstone payload when a stale client tries to recreate an old Messer deck."""
+  deck_id = str(payload.get("id") or "").strip()
+  deck_name = str(payload.get("name") or "")
+  if not deck_id or not is_legacy_messer_deck_name(deck_name):
+    return None
+
+  candidate_ts = parse_int(
+    payload.get("updatedAt")
+    or payload.get("deletedAt")
+    or payload.get("createdAt")
+    or payload.get("timestamp")
+    or client_timestamp
+    or now_ms(),
+    now_ms(),
+    min_value=0,
+  )
+  delete_ts = max(now_ms(), candidate_ts + 1)
+  return {"deckId": deck_id, "deletedAt": delete_ts, "timestamp": delete_ts}
+
+
 def get_default_profile_id(conn) -> str | None:
   """Return user_id of the Default profile, or None if it doesn't exist."""
   row = conn.execute(
@@ -831,8 +859,18 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       if existing and not lww_should_apply(existing[0], existing[1], candidate_ts, source_client):
         continue
 
-      conn.execute("UPDATE server_decks SET deleted_at=?, updated_at=?, last_source_client=? WHERE id=? AND user_id=?",
-                   (deleted_at, candidate_ts, source_client, deck_id, state_user_id))
+      if existing:
+        conn.execute("UPDATE server_decks SET deleted_at=?, updated_at=?, last_source_client=? WHERE id=? AND user_id=?",
+                     (deleted_at, candidate_ts, source_client, deck_id, state_user_id))
+      else:
+        conn.execute(
+          """
+          INSERT INTO server_decks
+          (id, name, parent_deck_id, created_at, source, updated_at, deleted_at, last_source_client, user_id)
+          VALUES (?, NULL, NULL, ?, 'delete', ?, ?, ?, ?)
+          """,
+          (deck_id, candidate_ts, candidate_ts, deleted_at, source_client, state_user_id),
+        )
       conn.execute("UPDATE server_cards SET deleted_at=?, is_deleted=1, updated_at=?, last_source_client=? WHERE deck_id=? AND user_id=?",
                    (deleted_at, candidate_ts, source_client, deck_id, state_user_id))
 
@@ -1889,6 +1927,18 @@ class Handler(BaseHTTPRequestHandler):
       return
 
     payload = _prepare_payload_for_storage(op_type, payload, client_ts)
+    blocked_legacy_deck_payload = (
+      legacy_messer_deck_delete_payload(payload, client_ts)
+      if op_type == "deck.create" and isinstance(payload, dict)
+      else None
+    )
+    if blocked_legacy_deck_payload:
+      op_type = "deck.delete"
+      payload = blocked_legacy_deck_payload
+      source = "server-maintenance-publish"
+      source_client = "server-maintenance-publisher"
+      op_id = f"server-maintenance-publish:blocked-legacy-deck:{op_id}"
+      client_ts = payload["timestamp"]
 
     conn = open_db()
     try:

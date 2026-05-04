@@ -94,6 +94,35 @@ describe('operationResolver', () => {
     expect(result.reviews.deleteByCardId).toEqual(['c2'])
   })
 
+  it('lets server maintenance deck.delete override newer local deck metadata', () => {
+    const result = resolveOperations({
+      operations: [
+        {
+          id: 4,
+          opId: 'op-maint-delete',
+          type: 'deck.delete',
+          sourceClient: 'server-maintenance-publisher',
+          payload: { deckId: 'legacy-deck', deletedAt: 100 },
+        },
+      ],
+      existing: {
+        cards: [],
+        decks: [
+          {
+            id: 'legacy-deck',
+            name: 'Professor Messer old path',
+            source: 'anki-import',
+            createdAt: 1,
+            updatedAt: 200,
+          },
+        ],
+      },
+      fallbackTs: 0,
+    })
+
+    expect(result.decks.delete).toEqual(['legacy-deck'])
+  })
+
   it('declares unsupported operations for worker path', () => {
     expect(
       supportsWorkerResolution({
