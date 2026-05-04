@@ -466,15 +466,21 @@ export async function listServerDecks(
   }
 }
 
-export function readSelectedDeckIds(userId: string): string[] {
+/**
+ * Returns the explicitly stored deck selection for a user.
+ * - `null`  → key not in storage = default mode (sync all except review decks)
+ * - `[]`    → explicitly empty = sync no decks
+ * - `[...]` → only those specific deck IDs
+ */
+export function readSelectedDeckIds(userId: string): string[] | null {
   try {
     const raw = localStorage.getItem(`${PROFILE_SELECTED_DECKS_PREFIX}${userId}`)
-    if (!raw) return []
+    if (raw === null) return null
     const parsed = JSON.parse(raw)
-    if (!Array.isArray(parsed)) return []
+    if (!Array.isArray(parsed)) return null
     return parsed.filter((id): id is string => typeof id === 'string' && id.trim().length > 0)
   } catch {
-    return []
+    return null
   }
 }
 
@@ -482,6 +488,14 @@ export function writeSelectedDeckIds(userId: string, deckIds: string[]): void {
   try {
     const unique = Array.from(new Set(deckIds.map(id => id.trim()).filter(Boolean)))
     localStorage.setItem(`${PROFILE_SELECTED_DECKS_PREFIX}${userId}`, JSON.stringify(unique))
+  } catch {
+    // best effort
+  }
+}
+
+export function deleteSelectedDeckIdsKey(userId: string): void {
+  try {
+    localStorage.removeItem(`${PROFILE_SELECTED_DECKS_PREFIX}${userId}`)
   } catch {
     // best effort
   }

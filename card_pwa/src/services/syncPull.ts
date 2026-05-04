@@ -117,13 +117,27 @@ const syncApplier = createWorker<
   (payload) => resolveOperations(payload),
 )
 
+const REVIEW_ROOT_ID = 'needs-review-root'
+
 async function readSelectedDeckFilter(): Promise<Set<string> | null> {
   try {
     const profile = await db.profile.get('current')
     if (!profile || profile.mode !== 'linked' || !profile.userId) return null
     const selected = readSelectedDeckIds(profile.userId)
-    if (selected.length === 0) return null
     const decks = (await db.decks.toArray()).filter(deck => !deck.isDeleted)
+
+    if (selected === null) {
+      // Default: sync everything except review decks
+      const nonReviewIds = decks
+        .filter(d => d.id !== REVIEW_ROOT_ID && d.parentDeckId !== REVIEW_ROOT_ID)
+        .map(d => d.id)
+      // No review decks locally → no filter needed
+      if (nonReviewIds.length === decks.length) return null
+      return new Set(nonReviewIds)
+    }
+
+    if (selected.length === 0) return new Set() // explicitly empty → sync nothing
+
     return expandDeckIdsWithDescendants(decks, new Set(selected))
   } catch {
     return null
@@ -172,7 +186,10 @@ function filterSnapshotBySelectedDecks(
 
 async function shouldApplyOperationForSelectedDecks(op: PulledOperation, selectedDecks: Set<string> | null): Promise<boolean> {
   if (!selectedDecks) return true
-  if (op.type === 'deck.create') return true
+  if (op.type === 'deck.create') {
+    const id = (op.payload as Record<string, unknown>)?.id
+    return typeof id !== 'string' || !id || selectedDecks.has(id)
+  }
   if (op.type === 'shuffleCollection.upsert' || op.type === 'shuffleCollection.delete') return true
   if (!op.payload || typeof op.payload !== 'object') return true
 

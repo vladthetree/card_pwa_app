@@ -1,26 +1,21 @@
-/**
- * syncedDeckScope.ts
- *
- * Provides the authoritative set of deck IDs that are eligible for study
- * (and shuffle) in the current profile mode.
- *
- * - Linked profile: intersection of readSelectedDeckIds(userId) and all local,
- *   non-deleted decks.
- * - Local-only profile: all local, non-deleted decks.
- *
- * No Shuffle-specific logic lives here — this module is a pure helper that
- * anything (Shuffle or future features) can consume.
- */
-
 import { db } from '../db'
 import { isSyncActive } from './syncConfig'
 import { readSelectedDeckIds } from './profileService'
 
+const REVIEW_ROOT_ID = 'needs-review-root'
+
+function isReviewDeck(deckId: string, decks: Array<{ id: string; parentDeckId?: string | null }>): boolean {
+  if (deckId === REVIEW_ROOT_ID) return true
+  const deck = decks.find(d => d.id === deckId)
+  return deck?.parentDeckId === REVIEW_ROOT_ID
+}
+
 /**
- * Returns the IDs of all decks that are currently "in scope" for study.
+ * Returns the IDs of all decks that are currently "in scope" for sync/study.
  *
- * @param userId  The userId of the linked profile (required when the profile
- *                is in linked mode; ignored in local-only mode).
+ * - null   in storage → default: all except review decks
+ * - []     in storage → explicitly empty: nothing
+ * - [...]  in storage → only those specific decks
  */
 export async function getSyncedDeckIds(userId?: string): Promise<string[]> {
   const localDecks = await db.decks.filter(d => !d.isDeleted).toArray()
@@ -28,8 +23,13 @@ export async function getSyncedDeckIds(userId?: string): Promise<string[]> {
 
   if (isSyncActive() && userId) {
     const serverSelected = readSelectedDeckIds(userId)
-    // Empty serverSelected means "all synced decks" (user never narrowed down).
-    if (serverSelected.length === 0) return localIds
+
+    if (serverSelected === null) {
+      // Default: all decks except review decks
+      return localIds.filter(id => !isReviewDeck(id, localDecks))
+    }
+    if (serverSelected.length === 0) return []
+
     const serverSet = expandDeckIdsWithDescendants(localDecks, new Set(serverSelected))
     return localIds.filter(id => serverSet.has(id))
   }

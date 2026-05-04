@@ -91,7 +91,7 @@ async function getSelectedDeckFilter(): Promise<Set<string> | null> {
     const profile = await db.profile.get('current')
     if (!profile || profile.mode !== 'linked' || !profile.userId) return null
     const selected = readSelectedDeckIds(profile.userId)
-    if (selected.length === 0) return null
+    if (selected === null || selected.length === 0) return null
     const decks = (await db.decks.toArray()).filter(deck => !deck.isDeleted)
     return expandDeckIdsWithDescendants(decks, new Set(selected))
   } catch {
