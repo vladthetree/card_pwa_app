@@ -296,6 +296,53 @@ class TestPushAndIdempotency:
         rows = db_helper.query("SELECT op_id, source_client FROM sync_operations WHERE op_id='review-1'")
         assert len(rows) == 1
         assert rows[0][1] == "client-A"
+
+    def test_legacy_messer_deck_create_is_persisted_as_delete(self, api, db_helper):
+        """Stale clients must not resurrect old Professor Messer path decks."""
+        created = api.create_profile(device_id="legacy-messer-device", profile_name="Legacy Messer")
+        token = created["profileToken"]
+        legacy_name = (
+            "Professor Messer CompTIA Security+ SY0-701 v1.1 Free Video Course"
+            "::Section 1: General Security Concepts::1.1: Security Controls"
+        )
+
+        result = api.push(
+            op_id="legacy-messer-recreate",
+            op_type="deck.create",
+            payload={
+                "id": "1728574508386",
+                "name": legacy_name,
+                "parentDeckId": "1773008953575",
+                "createdAt": 1000,
+                "updatedAt": 2000,
+                "source": "anki-import",
+            },
+            client_id="stale-client",
+            client_timestamp=2000,
+            auth_token=token,
+        )
+
+        assert result["ok"] is True
+        assert result["stored"] is True
+
+        deck_rows = db_helper.query(
+            "SELECT deleted_at, last_source_client FROM server_decks WHERE id='1728574508386'"
+        )
+        assert len(deck_rows) == 1
+        assert deck_rows[0][0] is not None
+        assert deck_rows[0][1] == "server-maintenance-publisher"
+
+        op_rows = db_helper.query(
+            """
+            SELECT op_type, source_client, payload_json
+            FROM sync_operations
+            WHERE op_id LIKE 'server-maintenance-publish:blocked-legacy-deck:%'
+            """
+        )
+        assert len(op_rows) == 1
+        assert op_rows[0][0] == "deck.delete"
+        assert op_rows[0][1] == "server-maintenance-publisher"
+        assert json.loads(op_rows[0][2])["deckId"] == "1728574508386"
     
     def test_duplicate_push_is_idempotent(self, api, db_helper, server):
         """Same opId not duplicated; second request returns duplicate=true."""

@@ -14,6 +14,30 @@ import { REVIEW_UPDATED_EVENT } from '../constants/appIdentity'
 import type { Deck, Card, GamificationProfile, GlobalStats, ShuffleCollection } from '../types'
 import { buildSelectedShuffleCards, type ShuffleStudyCard } from '../services/ShuffleSessionManager'
 
+const DB_CHANGE_DEBOUNCE_MS = 180
+
+function makeVisibilityDebounce(
+  getCancelled: () => boolean,
+  callbackRef: { current: () => void },
+): { schedule: () => void; clear: () => void } {
+  let timer: number | null = null
+  return {
+    schedule() {
+      if (document.visibilityState === 'hidden') return
+      if (timer !== null) window.clearTimeout(timer)
+      timer = window.setTimeout(() => {
+        timer = null
+        if (getCancelled() || document.visibilityState === 'hidden') return
+        callbackRef.current()
+      }, DB_CHANGE_DEBOUNCE_MS)
+    },
+    clear() {
+      if (timer !== null) window.clearTimeout(timer)
+      timer = null
+    },
+  }
+}
+
 export async function getGlobalDbRevision(): Promise<number> {
   const [deckCount, cardCount, reviewCount, shuffleCollectionCount] = await Promise.all([
     db.decks.count(),
@@ -34,11 +58,8 @@ function useOnDbChange(callback: () => void, deckId?: string | null) {
   useEffect(() => {
     let cancelled = false
     let hasSeenInitial = false
-
-    const onReviewUpdated = () => {
-      if (document.visibilityState === 'hidden') return
-      callbackRef.current()
-    }
+    const debounce = makeVisibilityDebounce(() => cancelled, callbackRef)
+    const onReviewUpdated = () => debounce.schedule()
 
     // When a deckId is provided, scope the observable to that deck's cards only.
     // This prevents a card edit in deck A from triggering a reload in deck B's view.
@@ -55,18 +76,16 @@ function useOnDbChange(callback: () => void, deckId?: string | null) {
           hasSeenInitial = true
           return
         }
-        if (document.visibilityState === 'hidden') return
-        callbackRef.current()
+        debounce.schedule()
       },
-      error: () => {
-        // best effort only
-      },
+      error: () => {},
     })
 
     window.addEventListener(REVIEW_UPDATED_EVENT, onReviewUpdated)
 
     return () => {
       cancelled = true
+      debounce.clear()
       subscription.unsubscribe()
       window.removeEventListener(REVIEW_UPDATED_EVENT, onReviewUpdated)
     }
@@ -85,11 +104,8 @@ function useOnShuffleDbChange(callback: () => void, collectionId: string | null)
 
     let cancelled = false
     let hasSeenInitial = false
-
-    const onReviewUpdated = () => {
-      if (document.visibilityState === 'hidden') return
-      callbackRef.current()
-    }
+    const debounce = makeVisibilityDebounce(() => cancelled, callbackRef)
+    const onReviewUpdated = () => debounce.schedule()
 
     const observable = liveQuery(async () => {
       const collection = await db.shuffleCollections.get(collectionId)
@@ -116,18 +132,16 @@ function useOnShuffleDbChange(callback: () => void, collectionId: string | null)
           hasSeenInitial = true
           return
         }
-        if (document.visibilityState === 'hidden') return
-        callbackRef.current()
+        debounce.schedule()
       },
-      error: () => {
-        // best effort only
-      },
+      error: () => {},
     })
 
     window.addEventListener(REVIEW_UPDATED_EVENT, onReviewUpdated)
 
     return () => {
       cancelled = true
+      debounce.clear()
       subscription.unsubscribe()
       window.removeEventListener(REVIEW_UPDATED_EVENT, onReviewUpdated)
     }
@@ -138,17 +152,33 @@ export function useDecks() {
   const [decks, setDecks] = useState<Deck[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const hasLoadedRef = useRef(false)
+  const loadVersionRef = useRef(0)
 
   const load = useCallback(async () => {
+    const loadVersion = loadVersionRef.current + 1
+    loadVersionRef.current = loadVersion
+    const showInitialLoading = !hasLoadedRef.current
+
     try {
-      setLoading(true)
+      if (showInitialLoading) {
+        setLoading(true)
+      }
       setError(null)
-      setDecks(await fetchDecks())
+      const nextDecks = await fetchDecks()
+      if (loadVersionRef.current !== loadVersion) return
+      setDecks(nextDecks)
+      hasLoadedRef.current = true
     } catch (e) {
+      if (loadVersionRef.current !== loadVersion) return
       setError(e instanceof Error ? e.message : String(e))
-      setDecks([])
+      if (!hasLoadedRef.current) {
+        setDecks([])
+      }
     } finally {
-      setLoading(false)
+      if (loadVersionRef.current === loadVersion) {
+        setLoading(false)
+      }
     }
   }, [])
 
@@ -164,17 +194,33 @@ export function useShuffleCollections() {
   const [collections, setCollections] = useState<ShuffleCollection[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const hasLoadedRef = useRef(false)
+  const loadVersionRef = useRef(0)
 
   const load = useCallback(async () => {
+    const loadVersion = loadVersionRef.current + 1
+    loadVersionRef.current = loadVersion
+    const showInitialLoading = !hasLoadedRef.current
+
     try {
-      setLoading(true)
+      if (showInitialLoading) {
+        setLoading(true)
+      }
       setError(null)
-      setCollections(await listShuffleCollections())
+      const nextCollections = await listShuffleCollections()
+      if (loadVersionRef.current !== loadVersion) return
+      setCollections(nextCollections)
+      hasLoadedRef.current = true
     } catch (e) {
+      if (loadVersionRef.current !== loadVersion) return
       setError(e instanceof Error ? e.message : String(e))
-      setCollections([])
+      if (!hasLoadedRef.current) {
+        setCollections([])
+      }
     } finally {
-      setLoading(false)
+      if (loadVersionRef.current === loadVersion) {
+        setLoading(false)
+      }
     }
   }, [])
 
@@ -190,21 +236,40 @@ export function useDeckCards(deckId: string | null) {
   const [cards, setCards] = useState<Card[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const loadedDeckIdRef = useRef<string | null>(null)
+  const loadVersionRef = useRef(0)
 
   const load = useCallback(async () => {
+    const loadVersion = loadVersionRef.current + 1
+    loadVersionRef.current = loadVersion
+
     if (!deckId) {
+      loadedDeckIdRef.current = null
+      setCards([])
       setLoading(false)
       return
     }
+
+    const showInitialLoading = loadedDeckIdRef.current !== deckId
     try {
-      setLoading(true)
+      if (showInitialLoading) {
+        setLoading(true)
+      }
       setError(null)
-      setCards(await fetchDeckCards(deckId))
+      const nextCards = await fetchDeckCards(deckId)
+      if (loadVersionRef.current !== loadVersion) return
+      setCards(nextCards)
+      loadedDeckIdRef.current = deckId
     } catch (e) {
+      if (loadVersionRef.current !== loadVersion) return
       setError(e instanceof Error ? e.message : String(e))
-      setCards([])
+      if (loadedDeckIdRef.current !== deckId) {
+        setCards([])
+      }
     } finally {
-      setLoading(false)
+      if (loadVersionRef.current === loadVersion) {
+        setLoading(false)
+      }
     }
   }, [deckId])
 
@@ -227,20 +292,31 @@ export function useShuffleCards(
   const [cards, setCards] = useState<ShuffleStudyCard[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const loadedCollectionIdRef = useRef<string | null>(null)
+  const loadVersionRef = useRef(0)
 
   const load = useCallback(async () => {
+    const loadVersion = loadVersionRef.current + 1
+    loadVersionRef.current = loadVersion
+
     if (!collectionId) {
+      loadedCollectionIdRef.current = null
       setCards([])
       setLoading(false)
       return
     }
 
+    const showInitialLoading = loadedCollectionIdRef.current !== collectionId
     try {
-      setLoading(true)
+      if (showInitialLoading) {
+        setLoading(true)
+      }
       setError(null)
 
       const collection = await getShuffleCollection(collectionId)
+      if (loadVersionRef.current !== loadVersion) return
       if (!collection) {
+        loadedCollectionIdRef.current = null
         setCards([])
         setLoading(false)
         return
@@ -251,12 +327,19 @@ export function useShuffleCards(
         maxCards: options.maxCards,
         nextDayStartsAt: options.nextDayStartsAt,
       })
+      if (loadVersionRef.current !== loadVersion) return
       setCards(selectedCards)
+      loadedCollectionIdRef.current = collectionId
     } catch (e) {
+      if (loadVersionRef.current !== loadVersion) return
       setError(e instanceof Error ? e.message : String(e))
-      setCards([])
+      if (loadedCollectionIdRef.current !== collectionId) {
+        setCards([])
+      }
     } finally {
-      setLoading(false)
+      if (loadVersionRef.current === loadVersion) {
+        setLoading(false)
+      }
     }
   }, [collectionId, options.maxCards, options.nextDayStartsAt, options.userId])
 

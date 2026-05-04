@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ChevronDown, ChevronRight, Layers3, MoreHorizontal, List, BarChart3, Trash2 } from 'lucide-react'
 import { STRINGS } from '../contexts/SettingsContext'
+import { STORAGE_KEYS } from '../constants/appIdentity'
 import { UI_TOKENS } from '../constants/ui'
 import { animationItem } from '../constants/animations'
 import { useFloatingMenu } from '../hooks/useFloatingMenu'
@@ -16,6 +17,32 @@ function dueBadgeClass(due: number): string {
   if (due <= 5)  return 'text-emerald-300 border-emerald-500/30 bg-emerald-500/[0.08]'
   if (due <= 20) return 'text-amber-300 border-amber-500/30 bg-amber-500/[0.08]'
   return 'text-rose-300 border-rose-500/35 bg-rose-500/[0.08]'
+}
+
+function readExpandedSubDeckIds(): Set<string> {
+  if (typeof window === 'undefined') return new Set()
+  try {
+    const raw = window.sessionStorage.getItem(STORAGE_KEYS.expandedSubdeckIds)
+    const parsed = raw ? JSON.parse(raw) : []
+    return new Set(Array.isArray(parsed) ? parsed.filter(id => typeof id === 'string') : [])
+  } catch {
+    return new Set()
+  }
+}
+
+function storeDeckExpansion(deckId: string, expanded: boolean): void {
+  if (typeof window === 'undefined') return
+  try {
+    const expandedIds = readExpandedSubDeckIds()
+    if (expanded) {
+      expandedIds.add(deckId)
+    } else {
+      expandedIds.delete(deckId)
+    }
+    window.sessionStorage.setItem(STORAGE_KEYS.expandedSubdeckIds, JSON.stringify(Array.from(expandedIds)))
+  } catch {
+    // ignore
+  }
 }
 
 export function DeckCard({ deck, language, onStartStudy, onDelete, schedule, deckScheduleOverview, onShowMetrics, onManageCards, nested = false }: {
@@ -33,7 +60,7 @@ export function DeckCard({ deck, language, onStartStudy, onDelete, schedule, dec
   const deckTitle = formatDeckName(deck.name)
   const prefersReducedMotion = useReducedMotion()
   const [menuOpen, setMenuOpen] = useState(false)
-  const [subDecksOpen, setSubDecksOpen] = useState(false)
+  const [subDecksOpen, setSubDecksOpen] = useState(() => readExpandedSubDeckIds().has(deck.id))
   const subDecksRef = useRef<HTMLDivElement | null>(null)
   const subDecks = nested ? [] : deck.subDecks ?? []
   const hasSubDecks = subDecks.length > 0
@@ -91,7 +118,11 @@ export function DeckCard({ deck, language, onStartStudy, onDelete, schedule, dec
             type="button"
             onClick={(e) => {
               e.stopPropagation()
-              setSubDecksOpen(value => !value)
+              setSubDecksOpen(value => {
+                const next = !value
+                storeDeckExpansion(deck.id, next)
+                return next
+              })
             }}
             className="ds-icon-button absolute right-14 top-3 z-10 h-9 w-9 border-[#2f2f35] bg-[#101010] text-zinc-200 opacity-100 hover:border-[--brand-primary-50]"
             aria-expanded={subDecksOpen}

@@ -17,6 +17,7 @@ export const STORAGE_KEYS = {
   homeDeckSortMode: 'card-pwa-home-deck-sort-mode',
   homeShuffleDecksTop: 'card-pwa-home-shuffle-decks-top',
   homeShuffleOnlyMode: 'card-pwa-home-shuffle-only-mode',
+  expandedSubdeckIds: 'card-pwa:expanded-subdeck-ids',
 } as const
 
 export const DATABASE_NAMES = {

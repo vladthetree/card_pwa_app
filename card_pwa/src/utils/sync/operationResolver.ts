@@ -70,6 +70,10 @@ function shouldApplyIncomingCardState(
   return incomingTs >= localTs
 }
 
+function shouldForceDeckDelete(op: ResolverOperation): boolean {
+  return op.sourceClient === 'server-maintenance-publisher'
+}
+
 export function resolveOperations(input: OperationResolverInput): OperationDiff {
   const cards = new Map(input.existing.cards.map(card => [card.id, card]))
   const decks = new Map(input.existing.decks.map(deck => [deck.id, deck]))
@@ -109,7 +113,7 @@ export function resolveOperations(input: OperationResolverInput): OperationDiff 
 
       const deleteTs = Number(value.deletedAt ?? value.timestamp ?? fallbackTs ?? 0)
       const existingDeck = decks.get(deckId)
-      if (deleteTs > 0 && existingDeck) {
+      if (!shouldForceDeckDelete(op) && deleteTs > 0 && existingDeck) {
         const localTs = existingDeck.updatedAt ?? existingDeck.createdAt
         if (localTs > deleteTs) continue
       }
