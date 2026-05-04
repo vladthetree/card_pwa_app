@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import { useDecks, useGamificationProfile, useShuffleCollections, useStats } from '../hooks/useCardDb'
@@ -6,6 +6,7 @@ import { usePwaInstall } from '../hooks/usePwaInstall'
 import { useServerHeartbeat } from '../hooks/useServerHeartbeat'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import type { Deck, ShuffleCollection } from '../types'
+import { STORAGE_KEYS } from '../constants/appIdentity'
 import { UI_TOKENS } from '../constants/ui'
 import { formatBuildVersionTitle, formatServiceWorkerVersionLabel } from '../utils/buildInfo'
 import { HomeHeaderBar } from './home/HomeHeaderBar'
@@ -13,6 +14,7 @@ import { HomeStatsSection } from './home/HomeStatsSection'
 import { HomeDeckToolbar } from './home/HomeDeckToolbar'
 import { HomeDeckListSection } from './home/HomeDeckListSection'
 import { HomeShuffleSection } from './home/HomeShuffleSection'
+import { HomeReviewSection } from './home/HomeReviewSection'
 import { useHomeDeckFilters } from '../hooks/home/useHomeDeckFilters'
 import { useHomeStorageEstimate } from '../hooks/home/useHomeStorageEstimate'
 import { useHomeDerivedData } from '../hooks/home/useHomeDerivedData'
@@ -63,6 +65,29 @@ export default function HomeView({
   const isShuffleManageMode = mode === 'shuffle-manage'
   const allDecks = useMemo(() => flattenDeckTree(decks), [decks])
 
+  const [activeTab, setActiveTab] = useState<'decks' | 'review'>(() => {
+    if (typeof window === 'undefined') return 'decks'
+    return window.localStorage.getItem(STORAGE_KEYS.homeActiveTab) === 'review' ? 'review' : 'decks'
+  })
+
+  const { normalDecks, reviewDecks } = useMemo(() => {
+    const reviewRoot = decks.find(d => d.id === 'needs-review-root')
+    return {
+      reviewDecks: reviewRoot?.subDecks ?? [],
+      normalDecks: decks.filter(d => d.id !== 'needs-review-root'),
+    }
+  }, [decks])
+
+  const reviewDueCount = useMemo(
+    () => reviewDecks.reduce((sum, d) => sum + d.due, 0),
+    [reviewDecks],
+  )
+
+  const switchTab = (tab: 'decks' | 'review') => {
+    setActiveTab(tab)
+    window.localStorage.setItem(STORAGE_KEYS.homeActiveTab, tab)
+  }
+
   const controller = useHomeViewController({
     t,
     settings: {
@@ -94,7 +119,7 @@ export default function HomeView({
     filteredDecks,
     visibleDecks,
   } = useHomeDeckFilters({
-    decks,
+    decks: normalDecks,
     deckTagIndex: derivedData.deckTagIndex,
     deckScheduleOverview: derivedData.deckScheduleOverview,
     language: settings.language,
@@ -156,6 +181,38 @@ export default function HomeView({
 
       <div className="relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden">
         {!isShuffleManageMode && (
+          <div className="mb-2 flex gap-1 rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-1 flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => switchTab('decks')}
+              className={`flex-1 rounded-[9px] py-1.5 text-xs font-semibold transition-colors ${
+                activeTab === 'decks'
+                  ? 'bg-[#1c1c1f] text-white'
+                  : 'text-white/40 hover:text-white/70'
+              }`}
+            >
+              {settings.language === 'de' ? 'Decks' : 'Decks'}
+            </button>
+            <button
+              type="button"
+              onClick={() => switchTab('review')}
+              className={`flex flex-1 items-center justify-center gap-1.5 rounded-[9px] py-1.5 text-xs font-semibold transition-colors ${
+                activeTab === 'review'
+                  ? 'bg-[#1c1c1f] text-white'
+                  : 'text-white/40 hover:text-white/70'
+              }`}
+            >
+              Review
+              {reviewDueCount > 0 && (
+                <span className="rounded-full border border-rose-500/30 bg-rose-500/15 px-1.5 py-px text-[9px] font-bold leading-none text-rose-300">
+                  {reviewDueCount}
+                </span>
+              )}
+            </button>
+          </div>
+        )}
+
+        {!isShuffleManageMode && activeTab === 'decks' && (
           <HomeDeckToolbar
             t={t}
             language={settings.language}
@@ -242,13 +299,13 @@ export default function HomeView({
           </div>
         )}
 
-        {!isShuffleManageMode && (
+        {!isShuffleManageMode && activeTab === 'decks' && (
           <HomeDeckListSection
             t={t}
             language={settings.language}
             error={error}
             loading={loading}
-            decks={decks}
+            decks={normalDecks}
             filteredDecks={filteredDecks}
             visibleDecks={visibleDecks}
             deckScheduleOverview={derivedData.deckScheduleOverview}
@@ -263,6 +320,18 @@ export default function HomeView({
             onEditShuffleCollection={controller.openEditShuffleCollection}
             onDeleteShuffleCollection={controller.handleDeleteShuffleCollection}
             onShowShuffleMetrics={controller.openMetricsShuffleCollection}
+            onDelete={controller.handleDelete}
+            onShowMetrics={controller.openMetricsDeck}
+            onManageCards={controller.openCardsDeck}
+          />
+        )}
+
+        {!isShuffleManageMode && activeTab === 'review' && (
+          <HomeReviewSection
+            language={settings.language}
+            decks={reviewDecks}
+            deckScheduleOverview={derivedData.deckScheduleOverview}
+            onStartStudy={onStartStudy}
             onDelete={controller.handleDelete}
             onShowMetrics={controller.openMetricsDeck}
             onManageCards={controller.openCardsDeck}
