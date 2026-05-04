@@ -18,6 +18,7 @@ export const STORAGE_KEYS = {
   homeShuffleDecksTop: 'card-pwa-home-shuffle-decks-top',
   homeShuffleOnlyMode: 'card-pwa-home-shuffle-only-mode',
   expandedSubdeckIds: 'card-pwa:expanded-subdeck-ids',
+  homeActiveTab: 'card-pwa-home-active-tab',
 } as const
 
 export const DATABASE_NAMES = {
