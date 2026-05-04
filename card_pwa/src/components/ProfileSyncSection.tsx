@@ -20,6 +20,7 @@ import {
   resetLocalStudyDataForProfileSwitch,
   deleteLocalDataForDecks,
   writeSelectedDeckIds,
+  deleteSelectedDeckIdsKey,
   writeProfileHintCookie,
   snapshotLocalStudyDataForRollback,
   restoreLocalStudyDataFromRollback,
@@ -197,7 +198,7 @@ export default function ProfileSyncSection({ language }: Props) {
   const [loadingProfiles, setLoadingProfiles] = useState(false)
   const [loadingDecks, setLoadingDecks] = useState(false)
   const [switchingUserId, setSwitchingUserId] = useState<string | null>(null)
-  const [selectedDeckIds, setSelectedDeckIds] = useState<string[]>([])
+  const [selectedDeckIds, setSelectedDeckIds] = useState<string[] | null>(null)
   const [removingDevice, setRemovingDevice] = useState(false)
   const [showRemoveDeviceConfirm, setShowRemoveDeviceConfirm] = useState(false)
   const [showProfileList, setShowProfileList] = useState(false)
@@ -325,27 +326,43 @@ export default function ProfileSyncSection({ language }: Props) {
     setLoadingDecks(false)
   }
 
-  const selectedDeckSet = selectedDeckIds.length > 0 ? new Set(selectedDeckIds) : null
+  const REVIEW_ROOT_ID = 'needs-review-root'
   const allServerDeckIds = serverDecks.map(deck => deck.id)
-  const selectedCount = selectedDeckSet
-    ? serverDecks.filter(deck => selectedDeckSet.has(deck.id)).length
-    : serverDecks.length
+  const allNonReviewServerDeckIds = allServerDeckIds.filter(
+    id => id !== REVIEW_ROOT_ID && !id.startsWith('needs-review-'),
+  )
 
-  const persistSelectedDeckIds = async (nextIds: string[]) => {
+  // null = default (all non-review checked); [] = nothing; [...ids] = explicit
+  const isDeckChecked = (deckId: string): boolean => {
+    if (selectedDeckIds === null) return !deckId.startsWith('needs-review-') && deckId !== REVIEW_ROOT_ID
+    return selectedDeckIds.includes(deckId)
+  }
+  const selectedCount = selectedDeckIds === null
+    ? allNonReviewServerDeckIds.length
+    : serverDecks.filter(d => selectedDeckIds.includes(d.id)).length
+
+  const persistSelectedDeckIds = async (nextIds: string[] | null) => {
     if (!profile?.userId) return
-    const unique = Array.from(new Set(nextIds)).filter(id => allServerDeckIds.includes(id))
-    const normalized = unique.length === allServerDeckIds.length ? [] : unique
+    // null = default (all non-review); otherwise filter to valid server deck IDs
+    const valid = nextIds !== null
+      ? Array.from(new Set(nextIds)).filter(id => allServerDeckIds.includes(id))
+      : null
 
-    // Determine which decks were just deselected and remove their local data immediately
-    const previousSelected = selectedDeckIds.length > 0 ? selectedDeckIds : allServerDeckIds
-    const nextSet = new Set(normalized.length > 0 ? normalized : allServerDeckIds)
-    const removedDeckIds = previousSelected.filter(id => !nextSet.has(id))
+    // Determine which decks were just removed so we can clean up local data
+    const previousIds = selectedDeckIds ?? allNonReviewServerDeckIds
+    const nextIdsForDiff = valid ?? allNonReviewServerDeckIds
+    const nextSet = new Set(nextIdsForDiff)
+    const removedDeckIds = previousIds.filter(id => !nextSet.has(id))
     if (removedDeckIds.length > 0) {
       await deleteLocalDataForDecks(removedDeckIds)
     }
 
-    writeSelectedDeckIds(profile.userId, normalized)
-    setSelectedDeckIds(normalized)
+    if (valid === null) {
+      deleteSelectedDeckIdsKey(profile.userId)
+    } else {
+      writeSelectedDeckIds(profile.userId, valid)
+    }
+    setSelectedDeckIds(valid)
     await wakeDeferredSyncQueue()
     await resetSyncPullState()
     if (isOnline) {
@@ -354,7 +371,7 @@ export default function ProfileSyncSection({ language }: Props) {
   }
 
   const handleToggleDeckSync = async (deckId: string) => {
-    const current = selectedDeckSet ? Array.from(selectedDeckSet) : allServerDeckIds
+    const current = selectedDeckIds ?? allNonReviewServerDeckIds
     const next = current.includes(deckId)
       ? current.filter(id => id !== deckId)
       : [...current, deckId]
@@ -362,7 +379,11 @@ export default function ProfileSyncSection({ language }: Props) {
   }
 
   const handleSelectAllDecks = async () => {
-    await persistSelectedDeckIds(allServerDeckIds)
+    await persistSelectedDeckIds(null) // null = default = all non-review
+  }
+
+  const handleDeselectAllDecks = async () => {
+    await persistSelectedDeckIds([])
   }
 
   useEffect(() => {
@@ -621,8 +642,8 @@ export default function ProfileSyncSection({ language }: Props) {
     : `${publicProfiles.length} profile${publicProfiles.length === 1 ? '' : 's'}`
   const deckListLabel = serverDecks.length === 0
     ? '0'
-    : selectedDeckIds.length === 0
-      ? String(serverDecks.length)
+    : selectedDeckIds === null
+      ? String(allNonReviewServerDeckIds.length)
       : `${selectedCount}/${serverDecks.length}`
 
   return (
@@ -837,18 +858,30 @@ export default function ProfileSyncSection({ language }: Props) {
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-3 rounded-lg border border-zinc-900 bg-black/25 px-3 py-2 text-xs text-zinc-500">
                   <span>
-                    {selectedDeckIds.length === 0
+                    {selectedDeckIds === null
                       ? t.selected_all_decks
-                      : `${t.selected_some_decks} (${selectedCount}/${serverDecks.length})`}
+                      : selectedDeckIds.length === 0
+                        ? `0/${serverDecks.length}`
+                        : `${t.selected_some_decks} (${selectedCount}/${serverDecks.length})`}
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => void handleSelectAllDecks()}
-                    disabled={busy || loadingDecks || selectedDeckIds.length === 0}
-                    className="text-zinc-400 hover:text-white disabled:opacity-40 transition-colors"
-                  >
-                    {t.select_all_decks}
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => void handleSelectAllDecks()}
+                      disabled={busy || loadingDecks || selectedDeckIds === null}
+                      className="text-zinc-400 hover:text-white disabled:opacity-40 transition-colors"
+                    >
+                      {t.select_all_decks}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void handleDeselectAllDecks()}
+                      disabled={busy || loadingDecks || (selectedDeckIds !== null && selectedDeckIds.length === 0)}
+                      className="text-zinc-400 hover:text-white disabled:opacity-40 transition-colors"
+                    >
+                      {language === 'de' ? 'Alle abwählen' : 'Deselect all'}
+                    </button>
+                  </div>
                 </div>
                 <button
                   type="button"
@@ -869,7 +902,7 @@ export default function ProfileSyncSection({ language }: Props) {
                           <label className="flex items-center gap-2">
                             <input
                               type="checkbox"
-                              checked={!selectedDeckSet || selectedDeckSet.has(deck.id)}
+                              checked={isDeckChecked(deck.id)}
                               onChange={() => void handleToggleDeckSync(deck.id)}
                               disabled={busy || loadingDecks}
                               className="h-4 w-4 accent-emerald-500"
