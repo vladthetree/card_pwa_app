@@ -17,48 +17,76 @@ import type { ProfileRecord } from '../db'
  */
 export function useAutoJoinDefaultProfile(): void {
   const { profile, isProfileHydrated, setProfile } = useSettings()
-  const attemptedRef = useRef(false)
+  const attemptedEndpointRef = useRef<string | null>(null)
 
   useEffect(() => {
     if (!isProfileHydrated) return
     if (profile?.mode === 'linked') return
-    if (attemptedRef.current) return
-    attemptedRef.current = true
 
     const endpoint = profile?.endpoint?.trim() || getDefaultProfileSyncEndpoint()
     if (!endpoint) return
-    if (!navigator.onLine) return
 
-    void (async () => {
-      const info = await fetchDefaultProfileInfo(endpoint)
-      if (!info?.userId) return
+    let cancelled = false
 
-      const deviceId = getOrCreateDeviceId()
-      const joined = await joinPublicProfile(
-        endpoint,
-        info.userId,
-        deviceId,
-        navigator.userAgent.slice(0, 60),
-      )
-      if (!joined.ok || !joined.userId || !joined.profileToken) return
+    const attemptJoin = () => {
+      if (cancelled) return
+      if (!navigator.onLine) return
+      if (attemptedEndpointRef.current === endpoint) return
+      attemptedEndpointRef.current = endpoint
 
-      const now = Date.now()
-      const nextProfile: ProfileRecord = {
-        id: 'current',
-        mode: 'linked',
-        deviceId,
-        userId: joined.userId,
-        displayName: joined.profileName,
-        profileToken: joined.profileToken,
-        endpoint,
-        linkedAt: now,
-        recoveryCodeShown: true,
-        createdAt: now,
-        updatedAt: now,
-      }
-      setProfile(nextProfile)
-      writeProfileHintCookie(joined.userId)
-      void runSyncCycleNow({ force: true })
-    })()
-  }, [isProfileHydrated, profile?.mode])
+      void (async () => {
+        const info = await fetchDefaultProfileInfo(endpoint)
+        if (cancelled) return
+        if (!info?.userId) {
+          attemptedEndpointRef.current = null
+          return
+        }
+
+        const deviceId = getOrCreateDeviceId()
+        const joined = await joinPublicProfile(
+          endpoint,
+          info.userId,
+          deviceId,
+          navigator.userAgent.slice(0, 60),
+        )
+        if (cancelled) return
+        if (!joined.ok || !joined.userId || !joined.profileToken) {
+          attemptedEndpointRef.current = null
+          return
+        }
+
+        const now = Date.now()
+        const nextProfile: ProfileRecord = {
+          id: 'current',
+          mode: 'linked',
+          deviceId,
+          userId: joined.userId,
+          displayName: joined.profileName,
+          profileToken: joined.profileToken,
+          endpoint,
+          linkedAt: now,
+          recoveryCodeShown: true,
+          createdAt: now,
+          updatedAt: now,
+        }
+        setProfile(nextProfile)
+        writeProfileHintCookie(joined.userId)
+        void runSyncCycleNow({ force: true })
+      })()
+    }
+
+    const attemptJoinWhenVisible = () => {
+      if (document.visibilityState === 'visible') attemptJoin()
+    }
+
+    attemptJoin()
+    window.addEventListener('online', attemptJoin)
+    document.addEventListener('visibilitychange', attemptJoinWhenVisible)
+
+    return () => {
+      cancelled = true
+      window.removeEventListener('online', attemptJoin)
+      document.removeEventListener('visibilitychange', attemptJoinWhenVisible)
+    }
+  }, [isProfileHydrated, profile?.endpoint, profile?.mode, setProfile])
 }

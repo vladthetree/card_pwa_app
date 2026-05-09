@@ -276,8 +276,8 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     dispatch({ type: 'FLIP' })
   }, [])
 
-  const handleAnswerEvaluated = useCallback((isCorrect: boolean) => {
-    setAnswerWasIncorrect(!isCorrect)
+  const handleAnswerEvaluated = useCallback((score: number) => {
+    setAnswerWasIncorrect(score < 1.0)
   }, [])
 
   const registerSessionReward = useCallback((rating: Rating, elapsedMs: number) => {

@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { STORAGE_KEYS } from '../../constants/appIdentity'
 
 const state = vi.hoisted(() => ({
   response: null as Response | null,
+  storage: new Map<string, string>(),
 }))
 
 const fetchWithTimeoutMock = vi.fn(async () => {
@@ -37,6 +39,19 @@ function jsonResponse(body: unknown, ok = true, status = 200): Response {
 describe('profileService', () => {
   beforeEach(() => {
     state.response = null
+    state.storage = new Map<string, string>()
+    Object.defineProperty(globalThis, 'localStorage', {
+      value: {
+        getItem: (key: string) => state.storage.get(key) ?? null,
+        setItem: (key: string, value: string) => {
+          state.storage.set(key, value)
+        },
+        removeItem: (key: string) => {
+          state.storage.delete(key)
+        },
+      },
+      configurable: true,
+    })
     fetchWithTimeoutMock.mockClear()
   })
 
@@ -70,6 +85,26 @@ describe('profileService', () => {
       expect.objectContaining({ method: 'POST' }),
       15_000,
     )
+  })
+
+  it('writes a profile-api error log for failed login/profile API responses', async () => {
+    state.response = jsonResponse({
+      ok: false,
+      error: 'default_profile_not_configured',
+    })
+
+    const { fetchDefaultProfileInfo } = await import('../../services/profileService')
+    const result = await fetchDefaultProfileInfo('/sync')
+
+    expect(result).toBeNull()
+    const logs = JSON.parse(state.storage.get(STORAGE_KEYS.errorLog) ?? '[]')
+    expect(logs).toHaveLength(1)
+    expect(logs[0]).toMatchObject({
+      source: 'profile-api',
+      message: 'Profile API failed: fetch default profile',
+    })
+    expect(logs[0].details).toContain('target: /auth/default-profile')
+    expect(logs[0].details).toContain('reason: default_profile_not_configured')
   })
 
   it('sends Authorization header when listing protected server profiles', async () => {

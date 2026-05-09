@@ -1,4 +1,5 @@
-import { lazy, Suspense, useMemo, useState } from 'react'
+import { lazy, Suspense, useMemo } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import { useDecks, useGamificationProfile, useShuffleCollections, useStats } from '../hooks/useCardDb'
@@ -6,7 +7,6 @@ import { usePwaInstall } from '../hooks/usePwaInstall'
 import { useServerHeartbeat } from '../hooks/useServerHeartbeat'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import type { Deck, ShuffleCollection } from '../types'
-import { STORAGE_KEYS } from '../constants/appIdentity'
 import { UI_TOKENS } from '../constants/ui'
 import { formatBuildVersionTitle, formatServiceWorkerVersionLabel } from '../utils/buildInfo'
 import { HomeHeaderBar } from './home/HomeHeaderBar'
@@ -14,12 +14,13 @@ import { HomeStatsSection } from './home/HomeStatsSection'
 import { HomeDeckToolbar } from './home/HomeDeckToolbar'
 import { HomeDeckListSection } from './home/HomeDeckListSection'
 import { HomeShuffleSection } from './home/HomeShuffleSection'
-import { HomeReviewSection } from './home/HomeReviewSection'
+import { HomeBottomBar } from './home/HomeBottomBar'
 import { useHomeDeckFilters } from '../hooks/home/useHomeDeckFilters'
 import { useHomeStorageEstimate } from '../hooks/home/useHomeStorageEstimate'
 import { useHomeDerivedData } from '../hooks/home/useHomeDerivedData'
 import { useHomeViewController } from '../hooks/home/useHomeViewController'
 import { flattenDeckTree } from '../utils/securityDeckHierarchy'
+import { isReviewDeck } from '../utils/reviewDecks'
 
 const CreateCardModal = lazy(() => import('./CreateCardModal.tsx'))
 const SettingsModal = lazy(() => import('./SettingsModal.tsx'))
@@ -63,30 +64,12 @@ export default function HomeView({
   const buildVersionLabel = useMemo(() => formatServiceWorkerVersionLabel(), [])
   const buildVersionTitle = useMemo(() => formatBuildVersionTitle(), [])
   const isShuffleManageMode = mode === 'shuffle-manage'
-  const allDecks = useMemo(() => flattenDeckTree(decks), [decks])
-
-  const [activeTab, setActiveTab] = useState<'decks' | 'review'>(() => {
-    if (typeof window === 'undefined') return 'decks'
-    return window.localStorage.getItem(STORAGE_KEYS.homeActiveTab) === 'review' ? 'review' : 'decks'
-  })
-
-  const { normalDecks, reviewDecks } = useMemo(() => {
-    const reviewRoot = decks.find(d => d.id === 'needs-review-root')
-    return {
-      reviewDecks: reviewRoot?.subDecks ?? [],
-      normalDecks: decks.filter(d => d.id !== 'needs-review-root'),
-    }
-  }, [decks])
-
-  const reviewDueCount = useMemo(
-    () => reviewDecks.reduce((sum, d) => sum + d.due, 0),
-    [reviewDecks],
+  const bottomBarPortalTarget = typeof document !== 'undefined' ? document.body : null
+  const homeDecks = useMemo(
+    () => settings.showReviewDecks ? decks : decks.filter(deck => !isReviewDeck(deck)),
+    [decks, settings.showReviewDecks],
   )
-
-  const switchTab = (tab: 'decks' | 'review') => {
-    setActiveTab(tab)
-    window.localStorage.setItem(STORAGE_KEYS.homeActiveTab, tab)
-  }
+  const selectableDecks = useMemo(() => flattenDeckTree(homeDecks), [homeDecks])
 
   const controller = useHomeViewController({
     t,
@@ -101,7 +84,7 @@ export default function HomeView({
   })
 
   const derivedData = useHomeDerivedData({
-    decks,
+    decks: homeDecks,
     shuffleCollections,
     profileMode: profile?.mode,
     profileUserId: profile?.userId,
@@ -119,7 +102,7 @@ export default function HomeView({
     filteredDecks,
     visibleDecks,
   } = useHomeDeckFilters({
-    decks: normalDecks,
+    decks: homeDecks,
     deckTagIndex: derivedData.deckTagIndex,
     deckScheduleOverview: derivedData.deckScheduleOverview,
     language: settings.language,
@@ -181,57 +164,27 @@ export default function HomeView({
 
       <div className="relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden">
         {!isShuffleManageMode && (
-          <div className="mb-2 flex gap-1 rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-1 flex-shrink-0">
-            <button
-              type="button"
-              onClick={() => switchTab('decks')}
-              className={`flex-1 rounded-[9px] py-1.5 text-xs font-semibold transition-colors ${
-                activeTab === 'decks'
-                  ? 'bg-[#1c1c1f] text-white'
-                  : 'text-white/40 hover:text-white/70'
-              }`}
-            >
-              {settings.language === 'de' ? 'Decks' : 'Decks'}
-            </button>
-            <button
-              type="button"
-              onClick={() => switchTab('review')}
-              className={`flex flex-1 items-center justify-center gap-1.5 rounded-[9px] py-1.5 text-xs font-semibold transition-colors ${
-                activeTab === 'review'
-                  ? 'bg-[#1c1c1f] text-white'
-                  : 'text-white/40 hover:text-white/70'
-              }`}
-            >
-              Review
-              {reviewDueCount > 0 && (
-                <span className="rounded-full border border-rose-500/30 bg-rose-500/15 px-1.5 py-px text-[9px] font-bold leading-none text-rose-300">
-                  {reviewDueCount}
-                </span>
-              )}
-            </button>
+          <div className="hidden sm:block">
+            <HomeDeckToolbar
+              t={t}
+              language={settings.language}
+              shuffleModeEnabled={settings.shuffleModeEnabled}
+              showShuffleOnly={controller.showShuffleOnly}
+              deckSearchQuery={deckSearchQuery}
+              deckSortMode={deckSortMode}
+              dashboardMode={controller.dashboardMode}
+              onDeckSearchQueryChange={setDeckSearchQuery}
+              onDeckSortModeChange={setDeckSortMode}
+              onToggleShuffleOnly={controller.toggleShuffleOnly}
+              onDashboardModeChange={controller.setDashboardMode}
+              onReload={reload}
+              onCreateDeck={controller.openCreateDeckModal}
+              onCreateVirtualDeck={controller.openCreateShuffleCollection}
+              onCreateCard={controller.openCreateCard}
+              onImport={controller.openImport}
+              onExport={controller.openExport}
+            />
           </div>
-        )}
-
-        {!isShuffleManageMode && activeTab === 'decks' && (
-          <HomeDeckToolbar
-            t={t}
-            language={settings.language}
-            shuffleModeEnabled={settings.shuffleModeEnabled}
-            showShuffleOnly={controller.showShuffleOnly}
-            deckSearchQuery={deckSearchQuery}
-            deckSortMode={deckSortMode}
-            dashboardMode={controller.dashboardMode}
-            onDeckSearchQueryChange={setDeckSearchQuery}
-            onDeckSortModeChange={setDeckSortMode}
-            onToggleShuffleOnly={controller.toggleShuffleOnly}
-            onDashboardModeChange={controller.setDashboardMode}
-            onReload={reload}
-            onCreateDeck={controller.openCreateDeckModal}
-            onCreateVirtualDeck={controller.openCreateShuffleCollection}
-            onCreateCard={controller.openCreateCard}
-            onImport={controller.openImport}
-            onExport={controller.openExport}
-          />
         )}
 
         {settings.shuffleModeEnabled && isShuffleManageMode && (
@@ -299,13 +252,13 @@ export default function HomeView({
           </div>
         )}
 
-        {!isShuffleManageMode && activeTab === 'decks' && (
+        {!isShuffleManageMode && (
           <HomeDeckListSection
             t={t}
             language={settings.language}
             error={error}
             loading={loading}
-            decks={normalDecks}
+            decks={homeDecks}
             filteredDecks={filteredDecks}
             visibleDecks={visibleDecks}
             deckScheduleOverview={derivedData.deckScheduleOverview}
@@ -325,19 +278,35 @@ export default function HomeView({
             onManageCards={controller.openCardsDeck}
           />
         )}
-
-        {!isShuffleManageMode && activeTab === 'review' && (
-          <HomeReviewSection
-            language={settings.language}
-            decks={reviewDecks}
-            deckScheduleOverview={derivedData.deckScheduleOverview}
-            onStartStudy={onStartStudy}
-            onDelete={controller.handleDelete}
-            onShowMetrics={controller.openMetricsDeck}
-            onManageCards={controller.openCardsDeck}
-          />
-        )}
       </div>
+
+      {!isShuffleManageMode && bottomBarPortalTarget && createPortal(
+        <HomeBottomBar
+          t={t}
+          language={settings.language}
+          shuffleModeEnabled={settings.shuffleModeEnabled}
+          showShuffleOnly={controller.showShuffleOnly}
+          deckSearchQuery={deckSearchQuery}
+          deckSortMode={deckSortMode}
+          dashboardMode={controller.dashboardMode}
+          canInstall={canInstall}
+          isInstalled={isInstalled}
+          isInstalling={isInstalling}
+          onDeckSearchQueryChange={setDeckSearchQuery}
+          onDeckSortModeChange={setDeckSortMode}
+          onToggleShuffleOnly={controller.toggleShuffleOnly}
+          onDashboardModeChange={controller.setDashboardMode}
+          onReload={reload}
+          onCreateDeck={controller.openCreateDeckModal}
+          onCreateVirtualDeck={controller.openCreateShuffleCollection}
+          onCreateCard={controller.openCreateCard}
+          onImport={controller.openImport}
+          onExport={controller.openExport}
+          onShowSettings={controller.openSettings}
+          onInstall={() => { void controller.handleInstall() }}
+        />,
+        bottomBarPortalTarget
+      )}
 
       {settings.showBuildVersion && (
         <div className="pointer-events-none mt-2 mb-1 flex justify-end pr-1">
@@ -382,7 +351,7 @@ export default function HomeView({
           {controller.metricsShuffleCollection && (
             <ShuffleMetricsModal
               collection={controller.metricsShuffleCollection}
-              decks={allDecks}
+              decks={selectableDecks}
               language={settings.language}
               onClose={controller.closeMetricsShuffleCollection}
             />
@@ -439,7 +408,7 @@ export default function HomeView({
               isOpen
               language={settings.language}
               prefersReducedMotion={prefersReducedMotion}
-              decks={allDecks}
+              decks={selectableDecks}
               syncedDeckIds={derivedData.syncedDeckIds}
               studyCardLimit={settings.studyCardLimit}
               nextDayStartsAt={settings.nextDayStartsAt}

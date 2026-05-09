@@ -438,15 +438,6 @@ export async function createDeck(
       source: 'manual',
     })
 
-    await enqueueSyncOperation('deck.create', {
-      id: deckId,
-      name: normalizedName,
-      parentDeckId: options.parentDeckId ?? null,
-      createdAt,
-      updatedAt,
-      source: 'manual',
-    })
-
     return { ok: true, deckId }
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : String(err) }

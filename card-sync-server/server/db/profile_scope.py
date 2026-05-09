@@ -4,9 +4,17 @@ def scope_user_id(user_id):
 
 
 def profile_auth_required(conn):
-  """Return True once the server contains any profile data."""
+  """Return True once the server contains a profile bound to a device."""
   try:
-    return (conn.execute("SELECT 1 FROM users LIMIT 1").fetchone() is not None)
+    return (conn.execute("""
+      SELECT 1
+      FROM users u
+      WHERE EXISTS (
+        SELECT 1 FROM devices d WHERE d.user_id = u.user_id
+      )
+      OR COALESCE(NULLIF(TRIM(u.profile_name), ''), 'Default') != 'Default'
+      LIMIT 1
+    """).fetchone() is not None)
   except Exception:
     return False
 

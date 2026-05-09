@@ -1,11 +1,7 @@
-import { useState } from 'react'
-import { createPortal } from 'react-dom'
-import { motion } from 'framer-motion'
-import { Bell, Download, HardDrive, HelpCircle, Menu, Settings as SettingsIcon } from 'lucide-react'
+import { Bell, Download, HardDrive, HelpCircle, Settings as SettingsIcon } from 'lucide-react'
 import PWA_Logo from '../../assets/Logo.svg'
 import { APP_NAME } from '../../constants/appIdentity'
 import { UI_TOKENS } from '../../constants/ui'
-import { useFloatingMenu } from '../../hooks/useFloatingMenu'
 import StreakBadge from '../StreakBadge'
 import DailyGoalRing from '../DailyGoalRing'
 
@@ -42,19 +38,6 @@ export function HomeHeaderBar({
   onShowSettings,
   onShowFaq,
 }: Props) {
-  const [showMobileMenu, setShowMobileMenu] = useState(false)
-  const {
-    anchorRef: mobileMenuAnchorRef,
-    menuRef: mobileMenuRef,
-    floatingStyle: mobileMenuFloatingStyle,
-    updatePosition: updateMobileMenuPosition,
-  } = useFloatingMenu<HTMLButtonElement, HTMLDivElement>({
-    isOpen: showMobileMenu,
-    onClose: () => setShowMobileMenu(false),
-    width: 232,
-    maxHeight: 260,
-  })
-
   return (
     <div className={UI_TOKENS.header.row}>
       <div className={UI_TOKENS.header.brand}>
@@ -75,99 +58,9 @@ export function HomeHeaderBar({
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-1 sm:hidden">
+      <div className="flex shrink-0 items-center gap-1.5 sm:hidden">
         <DailyGoalRing size={30} strokeWidth={3} />
         <StreakBadge compact />
-        <button
-          onClick={onShowSettings}
-          className={UI_TOKENS.button.iconAction}
-          title={t.settings}
-          aria-label={t.settings}
-        >
-          <SettingsIcon size={16} strokeWidth={1.5} />
-        </button>
-        <button
-          ref={mobileMenuAnchorRef}
-          type="button"
-          onClick={() => {
-            const willOpen = !showMobileMenu
-            setShowMobileMenu(willOpen)
-            if (willOpen) {
-              updateMobileMenuPosition()
-              window.requestAnimationFrame(updateMobileMenuPosition)
-            }
-          }}
-          className={UI_TOKENS.button.iconAction}
-          aria-haspopup="menu"
-          aria-expanded={showMobileMenu}
-          aria-label={language === 'de' ? 'Weitere Aktionen' : 'More actions'}
-          title={language === 'de' ? 'Weitere Aktionen' : 'More actions'}
-        >
-          <Menu size={16} strokeWidth={1.5} />
-        </button>
-
-        {showMobileMenu && mobileMenuFloatingStyle && createPortal(
-          <motion.div
-            ref={mobileMenuRef}
-            initial={{ opacity: 0, y: -4, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -4, scale: 0.97 }}
-            transition={{ duration: 0.12 }}
-            className="fixed z-[1300] ds-menu overflow-y-auto py-1"
-            style={mobileMenuFloatingStyle}
-            role="menu"
-          >
-            <div className="px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
-              {language === 'de' ? 'Schnellzugriff' : 'Quick actions'}
-            </div>
-            {canInstall && !isInstalled && (
-              <button
-                type="button"
-                onClick={() => {
-                  setShowMobileMenu(false)
-                  onInstall()
-                }}
-                disabled={isInstalling}
-                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white/82 transition hover:bg-[#111] hover:text-white disabled:opacity-70"
-                role="menuitem"
-              >
-                {isInstalling ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                ) : (
-                  <Download size={14} strokeWidth={1.5} />
-                )}
-                <span>{t.install}</span>
-              </button>
-            )}
-            {notificationPermission === 'default' && (
-              <button
-                type="button"
-                onClick={() => {
-                  setShowMobileMenu(false)
-                  onRequestNotificationPermission()
-                }}
-                className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white/82 transition hover:bg-[#111] hover:text-white"
-                role="menuitem"
-              >
-                <Bell size={14} strokeWidth={1.5} />
-                <span>{language === 'de' ? 'Benachrichtigungen erlauben' : 'Enable notifications'}</span>
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => {
-                setShowMobileMenu(false)
-                onShowFaq()
-              }}
-              className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white/82 transition hover:bg-[#111] hover:text-white"
-              role="menuitem"
-            >
-              <HelpCircle size={14} strokeWidth={1.5} />
-              <span>{t.faq}</span>
-            </button>
-          </motion.div>,
-          document.body,
-        )}
       </div>
 
       <div className="hidden shrink-0 items-center gap-1 sm:flex sm:gap-2">

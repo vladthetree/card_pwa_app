@@ -5,6 +5,12 @@ import { db } from '../db'
 import { logError } from './errorLog'
 import { readSelectedDeckIds } from './profileService'
 import {
+  isReviewDeck,
+  isReviewDeckId,
+  readReviewDecksEnabledFromStorage,
+} from '../utils/reviewDecks'
+import { collectDeckIdsWithActiveCardsOrDescendants } from '../utils/deckContentScope'
+import {
   isSyncActive,
   getSyncConfig,
   getSyncBaseEndpoint,
@@ -67,6 +73,16 @@ function nextBackoffMs(retries: number) {
   return Math.min(max, base * 2 ** retries)
 }
 
+async function readSyncApiResponseError(response: Response): Promise<string | null> {
+  try {
+    const json = (await response.json()) as { ok?: boolean; error?: string }
+    if (json?.ok === false) return json.error ?? 'api_not_ok'
+  } catch {
+    // Some successful sync responses do not need a JSON body.
+  }
+  return null
+}
+
 function supportsServiceWorkerController() {
   return supportsServiceWorker() && !!navigator.serviceWorker?.controller
 }
@@ -91,9 +107,19 @@ async function getSelectedDeckFilter(): Promise<Set<string> | null> {
     const profile = await db.profile.get('current')
     if (!profile || profile.mode !== 'linked' || !profile.userId) return null
     const selected = readSelectedDeckIds(profile.userId)
-    if (selected === null || selected.length === 0) return null
     const decks = (await db.decks.toArray()).filter(deck => !deck.isDeleted)
-    return expandDeckIdsWithDescendants(decks, new Set(selected))
+    const showReviewDecks = readReviewDecksEnabledFromStorage()
+    if (selected === null) {
+      return null
+    }
+    if (selected.length === 0) return new Set()
+    const visibleSelected = showReviewDecks
+      ? selected
+      : selected.filter(id => {
+          const deck = decks.find(item => item.id === id)
+          return deck ? !isReviewDeck(deck) : !isReviewDeckId(id)
+        })
+    return expandDeckIdsWithDescendants(decks, new Set(visibleSelected))
   } catch {
     return null
   }
@@ -125,8 +151,14 @@ function expandDeckIdsWithDescendants(
 
 async function shouldSyncOperation(type: SyncOperationType, payload: unknown): Promise<boolean> {
   const selectedDecks = await getSelectedDeckFilter()
+  if (!readReviewDecksEnabledFromStorage() && await operationTargetsReviewDeck(type, payload)) return false
+  if (type === 'deck.create') {
+    const deckId = readPayloadString(payload, 'id')
+    if (!deckId) return false
+    if (selectedDecks && !selectedDecks.has(deckId)) return false
+    return deckCreateHasSyncableContent(deckId)
+  }
   if (!selectedDecks) return true
-  if (type === 'deck.create') return true
   if (type === 'shuffleCollection.upsert' || type === 'shuffleCollection.delete') return true
   if (!payload || typeof payload !== 'object') return true
 
@@ -144,6 +176,39 @@ async function shouldSyncOperation(type: SyncOperationType, payload: unknown): P
   }
 
   return true
+}
+
+function readPayloadString(payload: unknown, key: string): string | null {
+  if (!payload || typeof payload !== 'object') return null
+  const value = (payload as Record<string, unknown>)[key]
+  return typeof value === 'string' && value.trim() ? value.trim() : null
+}
+
+async function deckCreateHasSyncableContent(deckId: string): Promise<boolean> {
+  const [decks, cards] = await Promise.all([
+    db.decks.filter(deck => !deck.isDeleted).toArray(),
+    db.cards.toArray(),
+  ])
+  return collectDeckIdsWithActiveCardsOrDescendants(decks, cards).has(deckId)
+}
+
+async function operationTargetsReviewDeck(type: SyncOperationType, payload: unknown): Promise<boolean> {
+  if (!payload || typeof payload !== 'object') return false
+
+  const value = payload as Record<string, unknown>
+  const directDeckId = value.deckId
+  if (typeof directDeckId === 'string' && isReviewDeckId(directDeckId)) return true
+
+  const id = value.id
+  if (type === 'deck.create' && typeof id === 'string' && isReviewDeckId(id)) return true
+
+  const cardId = value.cardId ?? value.id
+  if (typeof cardId === 'string' && cardId) {
+    const card = await db.cards.get(cardId)
+    return card ? isReviewDeckId(card.deckId) : false
+  }
+
+  return false
 }
 
 export async function enqueueSyncOperation(
@@ -220,7 +285,39 @@ async function sendOperation(record: SyncQueueRecord): Promise<SendResult> {
     }),
   })
 
-  return response.ok ? 'sent' : 'failed'
+  const apiError = await readSyncApiResponseError(response)
+
+  if (!response.ok) {
+    logError(
+      'sync-api',
+      `Sync push failed: ${record.type}`,
+      [
+        `target: ${endpoint.replace(/^https?:\/\/[^/]+/i, '')}`,
+        `status: ${response.status}`,
+        `reason: ${apiError ?? `http_${response.status}`}`,
+        `opId: ${record.opId}`,
+        `retry: ${record.retries}`,
+      ].join('\n'),
+    )
+    return 'failed'
+  }
+
+  if (apiError) {
+    logError(
+      'sync-api',
+      `Sync push failed: ${record.type}`,
+      [
+        `target: ${endpoint.replace(/^https?:\/\/[^/]+/i, '')}`,
+        `status: ${response.status}`,
+        `reason: ${apiError}`,
+        `opId: ${record.opId}`,
+        `retry: ${record.retries}`,
+      ].join('\n'),
+    )
+    return 'failed'
+  }
+
+  return 'sent'
 }
 
 export async function flushSyncQueue(options: FlushOptions = {}): Promise<{ processed: number; pending: number }> {
@@ -270,7 +367,16 @@ export async function flushSyncQueue(options: FlushOptions = {}): Promise<{ proc
           nextRetryAt: now() + nextBackoffMs(retries),
         })
       }
-    } catch {
+    } catch (error) {
+      logError(
+        'sync-api',
+        `Sync push exception: ${item.type}`,
+        [
+          `opId: ${item.opId}`,
+          `retry: ${item.retries}`,
+          error instanceof Error ? `${error.name}: ${error.message}` : String(error),
+        ].join('\n'),
+      )
       const retries = item.retries + 1
       await syncDb.queue.update(item.id!, {
         retries,

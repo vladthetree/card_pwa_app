@@ -109,6 +109,36 @@ tail -f ~/card-sync-server/logs/systemd-sync-server.out.log
 tail -f ~/card-sync-server/logs/systemd-sync-server.err.log
 ```
 
+## DB-Backups
+
+SQLite-Backups liegen unter `backups/db/`. Der Projektroot sollte nur die aktive
+`sync.db` enthalten.
+
+Aktuelles Backup erzeugen:
+
+```bash
+python maintenance/db-tools/manage_db_backups.py backup --label manual --keep 10
+```
+
+Alte Root-Backups einsammeln:
+
+```bash
+python maintenance/db-tools/manage_db_backups.py collect-legacy
+```
+
+Backups anzeigen und `manifest.json` aktualisieren:
+
+```bash
+python maintenance/db-tools/manage_db_backups.py list
+```
+
+Retention erst trocken prüfen, dann ausführen:
+
+```bash
+python maintenance/db-tools/manage_db_backups.py prune --keep 10
+python maintenance/db-tools/manage_db_backups.py prune --keep 10 --yes
+```
+
 ## Prüfung
 
 ```bash

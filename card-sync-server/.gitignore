@@ -3,8 +3,10 @@ certs/
 
 # Datenbank
 sync.db
+sync.db.*
 *.db-shm
 *.db-wal
+backups/
 
 # Logs
 logs/

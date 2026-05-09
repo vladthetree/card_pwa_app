@@ -149,6 +149,16 @@ def api(server):
             r = requests.post(f"http://localhost:{port}/auth/profile/switch", json=body, headers=self._headers(auth_token))
             return r.json() if r.text else {}
 
+        def join_public_profile(self, user_id, device_id, device_label="Device"):
+            """POST /auth/profile/join"""
+            body = {
+                "userId": user_id,
+                "deviceId": device_id,
+                "deviceLabel": device_label,
+            }
+            r = requests.post(f"http://localhost:{port}/auth/profile/join", json=body)
+            return r.json() if r.text else {}
+
         def issue_pairing_code(self, auth_token):
             """POST /auth/pair/issue"""
             r = requests.post(
@@ -1410,14 +1420,46 @@ class TestProfileSwitch:
         assert second["profileName"] == "Visible Again"
         assert "profileToken" not in second
 
-        users = db_helper.query("SELECT COUNT(*) FROM users")
+        non_default_users = db_helper.query("SELECT COUNT(*) FROM users WHERE profile_name != 'Default'")
+        ignored_profiles = db_helper.query("SELECT COUNT(*) FROM users WHERE profile_name='Ignored New Name'")
         devices = db_helper.query("SELECT COUNT(*) FROM devices WHERE device_id='same-device'")
         active_tokens = db_helper.query(
             "SELECT COUNT(*) FROM device_tokens WHERE device_id='same-device' AND revoked_at IS NULL"
         )
-        assert users[0][0] == 1
+        assert non_default_users[0][0] == 1
+        assert ignored_profiles[0][0] == 0
         assert devices[0][0] == 1
         assert active_tokens[0][0] == 1
+
+    def test_public_profile_join_relinks_existing_device_without_fk_conflict(self, api, db_helper):
+        first = api.create_profile(device_id="rejoin-device", profile_name="First")
+        second = api.create_profile(device_id="target-device", profile_name="Target")
+
+        joined = api.join_public_profile(
+            user_id=second["userId"],
+            device_id="rejoin-device",
+            device_label="Browser",
+        )
+
+        assert joined["ok"] is True
+        assert joined["userId"] == second["userId"]
+        assert joined["deviceId"] == "rejoin-device"
+        assert joined["profileToken"].startswith("dt_")
+        assert joined["profileToken"] != first["profileToken"]
+
+        device_rows = db_helper.query(
+            "SELECT user_id FROM devices WHERE device_id='rejoin-device'"
+        )
+        active_tokens = db_helper.query(
+            "SELECT COUNT(*) FROM device_tokens WHERE device_id='rejoin-device' AND revoked_at IS NULL"
+        )
+        revoked_old_tokens = db_helper.query(
+            "SELECT COUNT(*) FROM device_tokens WHERE device_id='rejoin-device' AND revoked_at IS NOT NULL"
+        )
+
+        assert device_rows == [(second["userId"],)]
+        assert active_tokens[0][0] == 1
+        assert revoked_old_tokens[0][0] >= 1
 
     def test_list_profiles_returns_profile_metadata(self, api):
         created = api.create_profile(device_id="dev-profile-2", profile_name="Ben")
@@ -1591,6 +1633,75 @@ class TestProfileSwitch:
         assert [deck["name"] for deck in rebuilt_second["decks"]] == ["Deck B"]
         assert [card["front"] for card in rebuilt_first["cards"]] == ["Front A"]
         assert [card["front"] for card in rebuilt_second["cards"]] == ["Front B"]
+
+    def test_sync_deck_listing_and_snapshot_hide_empty_decks(self, api):
+        created = api.create_profile(device_id="non-empty-dev", profile_name="Non Empty")
+        token = created["profileToken"]
+
+        api.push(
+            op_id="empty-deck",
+            op_type="deck.create",
+            payload={"id": "empty-deck", "name": "Empty", "source": "manual", "createdAt": 1000, "updatedAt": 1000},
+            client_id="client-a",
+            client_timestamp=1000,
+            auth_token=token,
+        )
+        api.push(
+            op_id="parent-deck",
+            op_type="deck.create",
+            payload={"id": "parent-deck", "name": "Parent", "source": "manual", "createdAt": 1000, "updatedAt": 1000},
+            client_id="client-a",
+            client_timestamp=1000,
+            auth_token=token,
+        )
+        api.push(
+            op_id="child-deck",
+            op_type="deck.create",
+            payload={
+                "id": "child-deck",
+                "name": "Child",
+                "parentDeckId": "parent-deck",
+                "source": "manual",
+                "createdAt": 1000,
+                "updatedAt": 1000,
+            },
+            client_id="client-a",
+            client_timestamp=1000,
+            auth_token=token,
+        )
+        api.push(
+            op_id="child-card",
+            op_type="card.create",
+            payload={
+                "id": "child-card",
+                "deckId": "child-deck",
+                "noteId": "note-child",
+                "front": "Q",
+                "back": "A",
+                "tags": [],
+                "extra": {},
+                "type": 0,
+                "queue": 0,
+                "due": 0,
+                "dueAt": 0,
+                "interval": 0,
+                "factor": 2500,
+                "reps": 0,
+                "lapses": 0,
+                "algorithm": "sm2",
+                "createdAt": 1000,
+                "updatedAt": 1000,
+            },
+            client_id="client-a",
+            client_timestamp=1000,
+            auth_token=token,
+        )
+
+        listed = api.list_decks(auth_token=token)
+        snapshot = api.snapshot("non-empty-reader", auth_token=token)
+
+        assert {deck["id"] for deck in listed["decks"]} == {"parent-deck", "child-deck"}
+        assert {deck["id"] for deck in snapshot["decks"]} == {"parent-deck", "child-deck"}
 
     def test_same_profile_second_device_sees_progress_and_review_history(self, api):
         first = api.create_profile(device_id="progress-dev-a", profile_name="Progress")

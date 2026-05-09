@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { STORAGE_KEYS } from '../../constants/appIdentity'
 import type { CardRecord, DeckRecord, ProfileRecord, ReviewRecord } from '../../db'
 
 type CardGetterMock = ReturnType<typeof vi.fn<() => Promise<CardRecord | undefined>>>
@@ -13,11 +14,16 @@ const state = vi.hoisted(() => ({
   syncMeta: new Map<string, unknown>(),
 }))
 
-function mockResponse(body: unknown): Response {
+function mockResponse(body: unknown, ok = true, status = 200): Response {
   return {
-    ok: true,
+    ok,
+    status,
     json: async () => body,
   } as Response
+}
+
+function responseSpec(body: unknown, ok: boolean, status: number) {
+  return { __responseSpec: true, body, ok, status }
 }
 
 const mockDb = vi.hoisted(() => ({
@@ -107,6 +113,10 @@ vi.mock('../../db', () => ({
 
 const fetchWithTimeoutMock = vi.fn(async () => {
   const next = state.responses.shift()
+  if (next && typeof next === 'object' && '__responseSpec' in next) {
+    const spec = next as ReturnType<typeof responseSpec>
+    return mockResponse(spec.body, spec.ok, spec.status)
+  }
   return mockResponse(next)
 })
 
@@ -188,6 +198,25 @@ describe('syncPull normalization', () => {
 
     const handshakeCall = fetchWithTimeoutMock.mock.calls[0] as unknown as [string, { headers?: Record<string, string> }]
     expect(handshakeCall[1].headers).toMatchObject({ Authorization: 'Bearer secret-token' })
+  })
+
+  it('writes a sync-api error log when the pull API rejects delta fetches', async () => {
+    state.responses = [
+      { ok: true, needsSnapshot: false, serverCursor: 0 },
+      responseSpec({ ok: false, error: 'token_invalid' }, true, 200),
+    ]
+
+    const { pullAndApplySyncDeltas } = await import('../../services/syncPull')
+    await pullAndApplySyncDeltas()
+
+    const logs = JSON.parse(localStorage.getItem(STORAGE_KEYS.errorLog) ?? '[]')
+    expect(logs).toHaveLength(1)
+    expect(logs[0]).toMatchObject({
+      source: 'sync-api',
+      message: 'Sync API failed: pull deltas',
+    })
+    expect(logs[0].details).toContain('target: /sync/pull?since=0&limit=200&clientId=test-client')
+    expect(logs[0].details).toContain('reason: token_invalid')
   })
 
   it('defaults algorithm to sm2 unless explicitly fsrs', async () => {
@@ -728,6 +757,146 @@ describe('syncPull normalization', () => {
         sourceClient: 'device-a',
       }),
     ])
+  })
+
+  it('filters empty decks out of bootstrap upload', async () => {
+    mockDb.decks.toArray.mockImplementationOnce(async (): Promise<DeckRecord[]> => ([
+      {
+        id: 'empty-deck',
+        name: 'Empty',
+        createdAt: 1000,
+        updatedAt: 1000,
+        source: 'manual',
+      },
+      {
+        id: 'parent-deck',
+        name: 'Parent',
+        createdAt: 1000,
+        updatedAt: 1000,
+        source: 'manual',
+      },
+      {
+        id: 'child-deck',
+        name: 'Child',
+        parentDeckId: 'parent-deck',
+        createdAt: 1000,
+        updatedAt: 1000,
+        source: 'manual',
+      },
+    ]))
+    mockDb.cards.toArray.mockImplementationOnce(async (): Promise<CardRecord[]> => ([
+      {
+        id: 'child-card',
+        noteId: 'note-child',
+        deckId: 'child-deck',
+        front: 'Q',
+        back: 'A',
+        tags: [],
+        extra: { acronym: '', examples: '', port: '', protocol: '' },
+        type: 0,
+        queue: 0,
+        due: 0,
+        dueAt: 0,
+        interval: 0,
+        factor: 2500,
+        reps: 0,
+        lapses: 0,
+        createdAt: 1000,
+        updatedAt: 1000,
+      },
+    ]))
+    state.responses = [
+      { ok: true, needsClientBootstrapUpload: true, bootstrapUploadCapabilities: { reviews: true } },
+      { ok: true, serverCursor: 42 },
+      { ok: true, operations: [], nextCursor: 42, hasMore: false },
+    ]
+
+    const { pullAndApplySyncDeltas } = await import('../../services/syncPull')
+    await pullAndApplySyncDeltas()
+
+    const bootstrapCall = fetchWithTimeoutMock.mock.calls.find(call => String((call as unknown[])[0]).includes('/bootstrap/upload'))
+    const body = JSON.parse(String((bootstrapCall as unknown as [string, { body: string }])[1].body))
+    expect(body.decks.map((deck: { id: string }) => deck.id)).toEqual(['parent-deck', 'child-deck'])
+  })
+
+  it('does not bootstrap review decks unless review decks are enabled', async () => {
+    mockDb.decks.toArray.mockImplementationOnce(async (): Promise<DeckRecord[]> => ([
+      {
+        id: 'normal-deck',
+        name: 'Normal',
+        createdAt: 1000,
+        updatedAt: 1000,
+        source: 'manual',
+      },
+      {
+        id: 'needs-review-root',
+        name: 'Review',
+        createdAt: 1000,
+        updatedAt: 1000,
+        source: 'system',
+      },
+      {
+        id: 'needs-review-objective-1-1',
+        name: 'Review 1.1',
+        parentDeckId: 'needs-review-root',
+        createdAt: 1000,
+        updatedAt: 1000,
+        source: 'system',
+      },
+    ]))
+    mockDb.cards.toArray.mockImplementationOnce(async (): Promise<CardRecord[]> => ([
+      {
+        id: 'normal-card',
+        noteId: 'note-normal',
+        deckId: 'normal-deck',
+        front: 'Q',
+        back: 'A',
+        tags: [],
+        extra: { acronym: '', examples: '', port: '', protocol: '' },
+        type: 0,
+        queue: 0,
+        due: 0,
+        dueAt: 0,
+        interval: 0,
+        factor: 2500,
+        reps: 0,
+        lapses: 0,
+        createdAt: 1000,
+        updatedAt: 1000,
+      },
+      {
+        id: 'review-card',
+        noteId: 'note-review',
+        deckId: 'needs-review-objective-1-1',
+        front: 'Review Q',
+        back: 'Review A',
+        tags: [],
+        extra: { acronym: '', examples: '', port: '', protocol: '' },
+        type: 0,
+        queue: 0,
+        due: 0,
+        dueAt: 0,
+        interval: 0,
+        factor: 2500,
+        reps: 0,
+        lapses: 0,
+        createdAt: 1000,
+        updatedAt: 1000,
+      },
+    ]))
+    state.responses = [
+      { ok: true, needsClientBootstrapUpload: true, bootstrapUploadCapabilities: { reviews: true } },
+      { ok: true, serverCursor: 42 },
+      { ok: true, operations: [], nextCursor: 42, hasMore: false },
+    ]
+
+    const { pullAndApplySyncDeltas } = await import('../../services/syncPull')
+    await pullAndApplySyncDeltas()
+
+    const bootstrapCall = fetchWithTimeoutMock.mock.calls.find(call => String((call as unknown[])[0]).includes('/bootstrap/upload'))
+    const body = JSON.parse(String((bootstrapCall as unknown as [string, { body: string }])[1].body))
+    expect(body.decks.map((deck: { id: string }) => deck.id)).toEqual(['normal-deck'])
+    expect(body.cards.map((card: { id: string }) => card.id)).toEqual(['normal-card'])
   })
 
   it('aborts bootstrap upload when local review history exists but the server lacks review support', async () => {

@@ -1,4 +1,4 @@
-import { db, type CardRecord } from '../../db'
+import { db, type CardRecord, type DeckRecord } from '../../db'
 import { SM2 } from '../../utils/sm2'
 import { enqueueSyncOperation } from '../../services/syncQueue'
 import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
@@ -60,6 +60,7 @@ export async function createCard(card: Omit<CardRecord, 'createdAt'>): Promise<{
       stability: derivedAlgorithm === 'fsrs' ? Math.max(0.5, card.stability ?? card.interval ?? 1) : card.stability,
       difficulty: derivedAlgorithm === 'fsrs' ? Math.max(1, Math.min(10, card.difficulty ?? (card.factor ?? 2500) / 500)) : card.difficulty,
     })
+    await enqueueDeckCreateChain(card.deckId)
     await enqueueSyncOperation('card.create', {
       ...card,
       createdAt,
@@ -69,6 +70,31 @@ export async function createCard(card: Omit<CardRecord, 'createdAt'>): Promise<{
     return { ok: true }
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : String(err) }
+  }
+}
+
+async function enqueueDeckCreateChain(deckId: string): Promise<void> {
+  const chain: DeckRecord[] = []
+  const seen = new Set<string>()
+  let currentId: string | null | undefined = deckId
+
+  while (currentId && !seen.has(currentId)) {
+    seen.add(currentId)
+    const deck: DeckRecord | undefined = await db.decks.get(currentId)
+    if (!deck || deck.isDeleted) break
+    chain.unshift(deck)
+    currentId = deck.parentDeckId
+  }
+
+  for (const deck of chain) {
+    await enqueueSyncOperation('deck.create', {
+      id: deck.id,
+      name: deck.name,
+      parentDeckId: deck.parentDeckId ?? null,
+      createdAt: deck.createdAt,
+      updatedAt: deck.updatedAt ?? deck.createdAt,
+      source: deck.source,
+    })
   }
 }
 
@@ -116,4 +142,3 @@ export async function deleteCard(cardId: string): Promise<{ ok: boolean; error?:
     return { ok: false, error: message }
   }
 }
-

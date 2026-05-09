@@ -24,6 +24,50 @@ describe('normalizeCard', () => {
     expect(normalized?.algorithm).toBe('sm2')
   })
 
+  it('accepts camelCase noteId', () => {
+    const normalized = normalizeCard({
+      id: 'card-2',
+      noteId: 'note-2',
+      deckId: 'deck-1',
+      front: 'Q',
+      back: 'A',
+    })
+    expect(normalized).not.toBeNull()
+    expect(normalized?.noteId).toBe('note-2')
+  })
+
+  it('returns null when noteId is null (server sends null for unseeded note_id)', () => {
+    // Regression: manually seeded cards with note_id=NULL in the DB are serialised
+    // by the snapshot endpoint as { noteId: null }.  normalizeCard must reject them
+    // so the caller knows the card is malformed rather than silently accepting it.
+    expect(normalizeCard({
+      id: 'card-x',
+      noteId: null,
+      deckId: 'deck-1',
+      front: 'Q',
+      back: 'A',
+    })).toBeNull()
+  })
+
+  it('returns null when noteId is undefined / missing', () => {
+    expect(normalizeCard({
+      id: 'card-x',
+      deckId: 'deck-1',
+      front: 'Q',
+      back: 'A',
+    })).toBeNull()
+  })
+
+  it('returns null when noteId is a number instead of a string', () => {
+    expect(normalizeCard({
+      id: 'card-x',
+      noteId: 42,
+      deckId: 'deck-1',
+      front: 'Q',
+      back: 'A',
+    })).toBeNull()
+  })
+
   it('returns null for invalid payloads', () => {
     expect(normalizeCard(null)).toBeNull()
     expect(normalizeCard({ id: 'x' })).toBeNull()

@@ -3,7 +3,14 @@ import { STORAGE_KEYS } from '../constants/appIdentity'
 export interface ErrorLogEntry {
   id: string
   timestamp: number
-  source: 'window.error' | 'window.unhandledrejection' | 'console.error' | 'error-boundary' | 'sync-queue'
+  source:
+    | 'window.error'
+    | 'window.unhandledrejection'
+    | 'console.error'
+    | 'error-boundary'
+    | 'sync-queue'
+    | 'profile-api'
+    | 'sync-api'
   message: string
   details?: string
 }

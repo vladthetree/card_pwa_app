@@ -12,6 +12,11 @@ const serviceWorkerVersion = `${appVersion}+${buildStamp}`
 const httpsRequested = process.env.DEV_HTTPS === '1'
 const certPath = resolve(process.cwd(), process.env.DEV_CERT_FILE ?? '.cert/dev-cert.pem')
 const keyPath = resolve(process.cwd(), process.env.DEV_KEY_FILE ?? '.cert/dev-key.pem')
+const syncProxyTarget = process.env.VITE_SYNC_PROXY_TARGET
+  ?? process.env.PWA_SYNC_PROXY_TARGET
+  ?? 'https://127.0.0.1:8787'
+const syncProxySecure = process.env.VITE_SYNC_PROXY_TLS_VERIFY === '1'
+  || process.env.PWA_SYNC_PROXY_TLS_VERIFY === '1'
 
 if (httpsRequested && (!existsSync(certPath) || !existsSync(keyPath))) {
   throw new Error(
@@ -70,6 +75,23 @@ export default defineConfig({
     https: httpsConfig,
     port: 5173,
     strictPort: true,
+    proxy: {
+      '/auth': {
+        target: syncProxyTarget,
+        changeOrigin: true,
+        secure: syncProxySecure,
+      },
+      '/health': {
+        target: syncProxyTarget,
+        changeOrigin: true,
+        secure: syncProxySecure,
+      },
+      '/sync': {
+        target: syncProxyTarget,
+        changeOrigin: true,
+        secure: syncProxySecure,
+      },
+    },
   },
   optimizeDeps: {
     // sql.js muss pre-gebundelt werden damit Vite CJS → ESM konvertiert

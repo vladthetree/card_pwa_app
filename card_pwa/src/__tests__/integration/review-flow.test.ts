@@ -141,6 +141,49 @@ describe('Review Flow Integration', () => {
     }
   })
 
+  // ── UC-5: PBQ partial score forces Again ────────────────────────────────────
+  //
+  // When the user submits an Ordering or Matching card with score < 1.0, StudyView
+  // sets answerWasIncorrect = true and passes effectiveRating = 1 (Again) to the
+  // scheduler regardless of which button the user pressed.
+  //
+  // The tests below verify the downstream consequence: rating = 1 on a review card
+  // sends it to relearning, so a half-correct PBQ answer never advances the card.
+  describe('UC-5  PBQ partial score is treated as Again (SM2)', () => {
+    it('UC-5a: ordering score 1.0 (all correct) → user can press Good → card stays in review', () => {
+      const reviewCard = createNewCard({ type: 2, queue: 2, reps: 6, lapses: 0, interval: 14, factor: 2500 })
+      // score = 1.0 → answerWasIncorrect = false → effectiveRating = user choice (3 = Good)
+      const result = calculateCardStateAfterReview(reviewCard, 3)
+      expect(result.type).toBe(2)  // still review
+      expect(result.queue).toBe(2)
+      expect(result.interval).toBeGreaterThan(0)
+    })
+
+    it('UC-5b: ordering score 0.5 (half correct) → forced Again → card moves to relearning', () => {
+      const reviewCard = createNewCard({ type: 2, queue: 2, reps: 6, lapses: 0, interval: 14, factor: 2500 })
+      // score = 0.5 → answerWasIncorrect = true → effectiveRating = 1 (Again)
+      const result = calculateCardStateAfterReview(reviewCard, 1)
+      expect(result.type).toBe(3)  // relearning
+      expect(result.queue).toBe(1)
+      expect(result.lapses).toBe(1)
+    })
+
+    it('UC-5c: matching score 0.0 (nothing correct) → forced Again → card moves to relearning', () => {
+      const reviewCard = createNewCard({ type: 2, queue: 2, reps: 4, lapses: 1, interval: 7, factor: 2300 })
+      const result = calculateCardStateAfterReview(reviewCard, 1)
+      expect(result.type).toBe(3)
+      expect(result.lapses).toBe(2)
+    })
+
+    it('UC-5d: new PBQ card with score 0.5 → Again → stays in learning (not promoted)', () => {
+      const newCard = createNewCard({ type: 0, queue: 0, reps: 0, interval: 0 })
+      const result = calculateCardStateAfterReview(newCard, 1)
+      expect(result.type).toBe(1)   // learning
+      expect(result.queue).toBe(1)
+      expect(result.reps).toBe(0)   // wrong answer does not increment reps in SM2
+    })
+  })
+
   it('throws on invalid ratings for both algorithms', () => {
     const card = createNewCard({ type: 2, queue: 2, reps: 3, interval: 3 })
 

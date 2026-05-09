@@ -10,6 +10,8 @@ import { SW_CHANNELS } from './constants/appIdentity'
 import { supportsServiceWorker } from './env'
 import { useAutoJoinDefaultProfile } from './hooks/useAutoJoinDefaultProfile'
 
+const IOS_HOME_INDICATOR_INSET = 34
+
 /**
  * Resolves the initial view from URL params so PWA shortcuts (e.g. `/?view=study`
  * or `/?view=import` from the web-app manifest) navigate to the right place
@@ -24,6 +26,93 @@ function getInitialView(): View {
     // HomeView will show the study prompt prominently when this param is present.
   }
   return 'home'
+}
+
+function isStandaloneDisplayMode(): boolean {
+  if (typeof window === 'undefined') return false
+
+  const navigatorLike = navigator as Navigator & { standalone?: boolean }
+  const matchesDisplayMode = (mode: 'standalone' | 'fullscreen') => (
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia(`(display-mode: ${mode})`).matches
+  )
+
+  return (
+    navigatorLike.standalone === true ||
+    matchesDisplayMode('standalone') ||
+    matchesDisplayMode('fullscreen')
+  )
+}
+
+function clampBottomInset(value: number): number {
+  if (!Number.isFinite(value) || value <= 0) return 0
+  return Math.min(IOS_HOME_INDICATOR_INSET, Math.round(value))
+}
+
+function readSafeAreaInset(edge: 'top' | 'bottom'): number {
+  const probe = document.createElement('div')
+  probe.style.position = 'fixed'
+  probe.style.visibility = 'hidden'
+  probe.style.pointerEvents = 'none'
+  probe.style.paddingTop = edge === 'top' ? 'env(safe-area-inset-top, 0px)' : '0px'
+  probe.style.paddingBottom = edge === 'bottom' ? 'env(safe-area-inset-bottom, 0px)' : '0px'
+  document.body.appendChild(probe)
+
+  const styles = window.getComputedStyle(probe)
+  const value = Number.parseFloat(edge === 'top' ? styles.paddingTop : styles.paddingBottom) || 0
+  probe.remove()
+
+  return value
+}
+
+function useViewportCssVars() {
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const root = document.documentElement
+    let rafId: number | null = null
+
+    const update = () => {
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId)
+      }
+
+      rafId = window.requestAnimationFrame(() => {
+        const layoutHeight = Math.round(
+          window.innerHeight ||
+          root.clientHeight ||
+          document.body?.clientHeight ||
+          0,
+        )
+        const isStandalone = isStandaloneDisplayMode()
+        const screenHeight = Math.round(window.screen?.height || layoutHeight)
+        const excludedHeight = Math.max(0, screenHeight - layoutHeight)
+        const envTopInset = readSafeAreaInset('top')
+        const envBottomInset = readSafeAreaInset('bottom')
+        const bottomGap = isStandalone
+          ? clampBottomInset(envBottomInset > 0 ? 0 : excludedHeight - envTopInset)
+          : 0
+
+        root.style.setProperty('--app-viewport-height', `${layoutHeight}px`)
+        root.style.setProperty('--app-bottom-viewport-gap', `${bottomGap}px`)
+        root.toggleAttribute('data-standalone-pwa', isStandalone)
+      })
+    }
+
+    update()
+    window.addEventListener('resize', update)
+    window.addEventListener('orientationchange', update)
+    window.visualViewport?.addEventListener('resize', update)
+
+    return () => {
+      window.removeEventListener('resize', update)
+      window.removeEventListener('orientationchange', update)
+      window.visualViewport?.removeEventListener('resize', update)
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId)
+      }
+    }
+  }, [])
 }
 
 const HomeView = lazy(() => import('./components/HomeView'))
@@ -41,6 +130,7 @@ function ViewFallback() {
 
 function AppShell() {
   const { settings } = useSettings()
+  useViewportCssVars()
   useAutoJoinDefaultProfile()
   const swSupported = supportsServiceWorker()
   const prefersReducedMotion = useReducedMotion()
@@ -146,7 +236,14 @@ function AppShell() {
   return (
     <AppErrorBoundary>
       <AppInitializer>
-        <div className="flex h-[100dvh] min-h-0 flex-col overflow-hidden" style={{ background: 'var(--theme-background)', height: '100dvh' }}>
+        <div
+          className="flex h-[100dvh] min-h-0 flex-col overflow-hidden"
+          style={{
+            background: 'var(--theme-background)',
+            height: 'var(--app-viewport-height, 100dvh)',
+            minHeight: 'var(--app-viewport-height, 100dvh)',
+          }}
+        >
           <ToastContainer />
           <Suspense fallback={null}>
             {swSupported && waitingWorker && (

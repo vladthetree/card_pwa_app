@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X } from 'lucide-react'
+import { X, Plus } from 'lucide-react'
 import { useDeckCards } from '../../hooks/useCardDb'
 import { STRINGS } from '../../contexts/SettingsContext'
 import { UI_TOKENS } from '../../constants/ui'
 import type { Deck, Card } from '../../types'
-import { formatDeckName, parseAnswerText, parseQuestionText } from '../../utils/cardTextParser'
+import { formatDeckName, parseAnswerText, parseAnyQuestion } from '../../utils/cardTextParser'
+import { getCardVariant } from '../../utils/cardVariant'
 import EditCardModal from '../EditCardModal.tsx'
+import CreateCardModal from '../CreateCardModal.tsx'
 
 interface Props {
   deck: Deck
@@ -18,6 +20,7 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
   const t = STRINGS[language]
   const { cards, loading, error, reload } = useDeckCards(deck.id)
   const [editingCard, setEditingCard] = useState<Card | null>(null)
+  const [showCreateCard, setShowCreateCard] = useState(false)
 
   const handleCardSaved = async () => {
     setEditingCard(null)
@@ -49,13 +52,22 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
             <h3 className={UI_TOKENS.modal.title}>{t.deck_cards_title}</h3>
             <p className={UI_TOKENS.modal.subtitle}>{formatDeckName(deck.name)}</p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className={UI_TOKENS.modal.closeButton}
-          >
-            <X size={16} strokeWidth={1.5} />
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowCreateCard(true)}
+              className="flex items-center gap-1.5 rounded-[10px] border border-[--brand-primary-40] bg-[--brand-primary-08] px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[--brand-primary] transition hover:bg-[--brand-primary-12]"
+            >
+              <Plus size={11} strokeWidth={2} /> {t.create_card}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className={UI_TOKENS.modal.closeButton}
+            >
+              <X size={16} strokeWidth={1.5} />
+            </button>
+          </div>
         </div>
 
         <div className="overflow-y-auto pr-1 max-h-[65vh]">
@@ -68,18 +80,39 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
           ) : (
             <div className="space-y-2">
               {cards.map(card => {
-                const parsedQuestion = parseQuestionText(card.front)
+                const variant = getCardVariant(card.front)
+                const anyQuestion = parseAnyQuestion(card.front)
                 const parsedAnswer = parseAnswerText(card.back)
-                const optionEntries = Object.entries(parsedQuestion.options)
+
+                const frontPreview = (() => {
+                  if (anyQuestion.type === 'ordering') {
+                    return `[${language === 'de' ? 'Reihenfolge' : 'Ordering'}] ${anyQuestion.question || anyQuestion.items.join(' → ')}`
+                  }
+                  if (anyQuestion.type === 'matching') {
+                    return `[${language === 'de' ? 'Zuordnung' : 'Matching'}] ${anyQuestion.question || anyQuestion.pairs.map(p => `${p.left} → ${p.right}`).join(', ')}`
+                  }
+                  return anyQuestion.question || card.front.replace(/\n+/g, ' ')
+                })()
+
+                const optionEntries = anyQuestion.type === 'standard' ? Object.entries(anyQuestion.options) : []
+
+                const variantBadge = variant === 'ordering'
+                  ? <span className="rounded-[3px] border border-violet-500/30 bg-violet-500/10 px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-violet-400">{language === 'de' ? 'Reihenfolge' : 'Ordering'}</span>
+                  : variant === 'matching'
+                  ? <span className="rounded-[3px] border border-cyan-500/30 bg-cyan-500/10 px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-cyan-400">{language === 'de' ? 'Zuordnung' : 'Matching'}</span>
+                  : null
 
                 return (
                   <div key={card.id} className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3 space-y-3 shadow-card">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                         <div className="min-w-0">
-                          <p className="text-[10px] uppercase tracking-wide text-zinc-500 mb-1 font-mono">{language === 'de' ? 'Frage' : 'Question'}</p>
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="text-[10px] uppercase tracking-wide text-zinc-500 font-mono">{language === 'de' ? 'Frage' : 'Question'}</p>
+                            {variantBadge}
+                          </div>
                           <p className="text-sm text-zinc-50 font-medium whitespace-pre-wrap break-words">
-                            {parsedQuestion.question || card.front.replace(/\n+/g, ' ')}
+                            {frontPreview}
                           </p>
                         </div>
                         <div className="min-w-0">
@@ -128,6 +161,12 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
             onClose={() => setEditingCard(null)}
             onSaved={handleCardSaved}
             onDeleted={handleCardDeleted}
+          />
+        )}
+        {showCreateCard && (
+          <CreateCardModal
+            defaultDeckId={deck.id}
+            onClose={async () => { setShowCreateCard(false); await reload() }}
           />
         )}
       </AnimatePresence>

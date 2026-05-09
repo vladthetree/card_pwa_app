@@ -19,6 +19,25 @@ const shuffleCollection: ShuffleCollection = {
   updatedAt: 1,
 }
 
+const reviewRoot: Deck = {
+  id: 'needs-review-root',
+  name: 'Review',
+  total: 1,
+  new: 0,
+  learning: 0,
+  due: 1,
+  subDecks: [
+    {
+      id: 'needs-review-objective-1-1',
+      name: 'Review 1.1',
+      total: 1,
+      new: 0,
+      learning: 0,
+      due: 1,
+    },
+  ],
+}
+
 const captured = vi.hoisted(() => ({
   toolbarProps: null as Record<string, unknown> | null,
   deckListProps: null as Record<string, unknown> | null,
@@ -26,7 +45,7 @@ const captured = vi.hoisted(() => ({
 }))
 
 vi.mock('../../hooks/useCardDb', () => ({
-  useDecks: () => ({ decks: [deck], loading: false, error: null, reload: vi.fn() }),
+  useDecks: () => ({ decks: [deck, reviewRoot], loading: false, error: null, reload: vi.fn() }),
   useShuffleCollections: () => ({ collections: [shuffleCollection] }),
   useStats: () => ({ stats: {} }),
   useGamificationProfile: () => ({ profile: {} }),
@@ -276,12 +295,14 @@ describe('HomeView shell wiring', () => {
 
     expect(html).toContain('toolbar')
     expect(html).toContain('deck-list')
+    expect(html).not.toContain('Review')
     expect(html).not.toContain('create-card-modal')
     expect(html).not.toContain('settings-modal')
     expect(html).not.toContain('faq-modal')
     expect(html).not.toContain('future-forecast-modal')
     expect(html).not.toContain('export-modal')
     expect(captured.toolbarProps?.showShuffleOnly).toBe(false)
+    expect(captured.deckListProps?.decks).toEqual([deck])
     expect(captured.deckListProps?.deckScheduleOverview).toEqual({
       'deck-1': {
         today: { total: 5, new: 2, review: 3 },

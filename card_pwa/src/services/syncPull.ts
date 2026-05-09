@@ -25,6 +25,13 @@ import {
   fetchWithTimeout,
 } from './syncConfig'
 import { readSelectedDeckIds } from './profileService'
+import {
+  isReviewDeck,
+  isReviewDeckId,
+  readReviewDecksEnabledFromStorage,
+} from '../utils/reviewDecks'
+import { filterDecksWithActiveCardsOrDescendants } from '../utils/deckContentScope'
+import { logError } from './errorLog'
 
 const SYNC_META_CURSOR_KEY = 'sync-cursor'
 const SYNC_META_APPLIED_OP_IDS_KEY = 'sync-applied-op-ids'
@@ -37,6 +44,43 @@ const SYNC_META_BOOTSTRAP_KEY = 'bootstrap-completed-at'
 
 function getSyncAuthHeaders(): Record<string, string> {
   return makeAuthHeaders(getSyncConfig())
+}
+
+function describeSyncApiTarget(target: string): string {
+  try {
+    const base = typeof window === 'undefined' ? 'http://card-pwa.local' : window.location.origin
+    const url = new URL(target, base)
+    return `${url.pathname}${url.search}`
+  } catch {
+    return target.replace(/^https?:\/\/[^/]+/i, '')
+  }
+}
+
+function stringifySyncException(error: unknown): string {
+  if (error instanceof Error) return `${error.name}: ${error.message}`
+  if (typeof error === 'string') return error
+  try {
+    return JSON.stringify(error)
+  } catch {
+    return String(error)
+  }
+}
+
+function logSyncApiFailure(action: string, target: string, reason: string, details?: string): void {
+  logError(
+    'sync-api',
+    `Sync API failed: ${action}`,
+    [
+      `target: ${describeSyncApiTarget(target)}`,
+      `reason: ${reason}`,
+      details,
+    ].filter(Boolean).join('\n'),
+  )
+}
+
+function syncResponseError(data: { ok?: boolean; error?: string }): string | null {
+  if (data.ok === false) return data.error ?? 'api_not_ok'
+  return null
 }
 
 function hasSyncMetaTable(): boolean {
@@ -117,28 +161,27 @@ const syncApplier = createWorker<
   (payload) => resolveOperations(payload),
 )
 
-const REVIEW_ROOT_ID = 'needs-review-root'
-
 async function readSelectedDeckFilter(): Promise<Set<string> | null> {
   try {
     const profile = await db.profile.get('current')
     if (!profile || profile.mode !== 'linked' || !profile.userId) return null
     const selected = readSelectedDeckIds(profile.userId)
     const decks = (await db.decks.toArray()).filter(deck => !deck.isDeleted)
+    const showReviewDecks = readReviewDecksEnabledFromStorage()
 
     if (selected === null) {
-      // Default: sync everything except review decks
-      const nonReviewIds = decks
-        .filter(d => d.id !== REVIEW_ROOT_ID && d.parentDeckId !== REVIEW_ROOT_ID)
-        .map(d => d.id)
-      // No review decks locally → no filter needed
-      if (nonReviewIds.length === decks.length) return null
-      return new Set(nonReviewIds)
+      return null
     }
 
     if (selected.length === 0) return new Set() // explicitly empty → sync nothing
 
-    return expandDeckIdsWithDescendants(decks, new Set(selected))
+    const visibleSelected = showReviewDecks
+      ? selected
+      : selected.filter(id => {
+          const deck = decks.find(item => item.id === id)
+          return deck ? !isReviewDeck(deck) : !isReviewDeckId(id)
+        })
+    return expandDeckIdsWithDescendants(decks, new Set(visibleSelected))
   } catch {
     return null
   }
@@ -174,17 +217,58 @@ function filterSnapshotBySelectedDecks(
   cards: CardRecord[],
   reviews: Omit<ReviewRecord, 'id'>[],
 ): { decks: DeckRecord[]; cards: CardRecord[]; reviews: Omit<ReviewRecord, 'id'>[] } {
-  if (!selectedDecks) return { decks, cards, reviews }
+  const showReviewDecks = readReviewDecksEnabledFromStorage()
 
-  const filteredDecks = decks.filter(deck => selectedDecks.has(deck.id))
-  const filteredCards = cards.filter(card => selectedDecks.has(card.deckId))
+  if (!selectedDecks) {
+    if (showReviewDecks) {
+      return {
+        decks: filterDecksWithActiveCardsOrDescendants(decks, cards),
+        cards,
+        reviews,
+      }
+    }
+
+    const filteredDecks = decks.filter(deck => !isReviewDeck(deck))
+    const filteredCards = cards.filter(card => !isReviewDeckId(card.deckId))
+    const allowedCardIds = new Set(filteredCards.map(card => card.id))
+    const filteredReviews = reviews.filter(review => allowedCardIds.has(review.cardId))
+    return {
+      decks: filterDecksWithActiveCardsOrDescendants(filteredDecks, filteredCards),
+      cards: filteredCards,
+      reviews: filteredReviews,
+    }
+  }
+
+  const filteredDecks = decks.filter(deck => {
+    if (!showReviewDecks && isReviewDeck(deck)) return false
+    return selectedDecks.has(deck.id)
+  })
+  const allowedDeckIds = new Set(filteredDecks.map(deck => deck.id))
+  const filteredCards = cards.filter(card => allowedDeckIds.has(card.deckId))
   const allowedCardIds = new Set(filteredCards.map(card => card.id))
   const filteredReviews = reviews.filter(review => allowedCardIds.has(review.cardId))
 
-  return { decks: filteredDecks, cards: filteredCards, reviews: filteredReviews }
+  return {
+    decks: filterDecksWithActiveCardsOrDescendants(filteredDecks, filteredCards),
+    cards: filteredCards,
+    reviews: filteredReviews,
+  }
+}
+
+function operationTargetsReviewDeck(op: PulledOperation): boolean {
+  if (!op.payload || typeof op.payload !== 'object') return false
+  const payload = op.payload as Record<string, unknown>
+  const directDeckId = payload.deckId
+  if (typeof directDeckId === 'string' && isReviewDeckId(directDeckId)) return true
+
+  const id = payload.id
+  if (op.type === 'deck.create' && typeof id === 'string' && isReviewDeckId(id)) return true
+
+  return false
 }
 
 async function shouldApplyOperationForSelectedDecks(op: PulledOperation, selectedDecks: Set<string> | null): Promise<boolean> {
+  if (!readReviewDecksEnabledFromStorage() && operationTargetsReviewDeck(op)) return false
   if (!selectedDecks) return true
   if (op.type === 'deck.create') {
     const id = (op.payload as Record<string, unknown>)?.id
@@ -738,9 +822,19 @@ async function runHandshake(clientId: string): Promise<HandshakeResponse | null>
       }),
     })
 
-    if (!response.ok) return null
-    return (await response.json()) as HandshakeResponse
-  } catch {
+    if (!response.ok) {
+      logSyncApiFailure('handshake', endpoint, `http_${response.status}`, `status: ${response.status}`)
+      return null
+    }
+    const data = (await response.json()) as HandshakeResponse & { error?: string }
+    const apiError = syncResponseError(data)
+    if (apiError) {
+      logSyncApiFailure('handshake', endpoint, apiError, `status: ${response.status}`)
+      return null
+    }
+    return data
+  } catch (error: unknown) {
+    logSyncApiFailure('handshake', endpoint, stringifySyncException(error))
     return null
   }
 }
@@ -756,9 +850,17 @@ async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
         ...getSyncAuthHeaders(),
       },
     })
-    if (!response.ok) return false
+    if (!response.ok) {
+      logSyncApiFailure('snapshot', query, `http_${response.status}`, `status: ${response.status}`)
+      return false
+    }
 
-    const data = (await response.json()) as SnapshotResponse
+    const data = (await response.json()) as SnapshotResponse & { error?: string }
+    const apiError = syncResponseError(data)
+    if (apiError) {
+      logSyncApiFailure('snapshot', query, apiError, `status: ${response.status}`)
+      return false
+    }
     const rawDecks = Array.isArray(data.decks) ? data.decks : []
     const rawCards = Array.isArray(data.cards) ? data.cards : []
     const rawReviews = Array.isArray(data.reviews) ? data.reviews : []
@@ -836,7 +938,8 @@ async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
 
     await clearAppliedOpIds()
     return true
-  } catch {
+  } catch (error: unknown) {
+    logSyncApiFailure('snapshot', endpoint, stringifySyncException(error))
     return false
   }
 }
@@ -849,7 +952,7 @@ async function runBootstrapUpload(
   if (!endpoint) return null
 
   try {
-    const [decks, cards, reviews, shuffleCollections] = await Promise.all([
+    const [rawDecks, rawCards, rawReviews, shuffleCollections] = await Promise.all([
       db.decks.toArray(),
       db.cards.toArray(),
       options?.includeReviews ? db.reviews.toArray() : Promise.resolve([] as ReviewRecord[]),
@@ -857,6 +960,12 @@ async function runBootstrapUpload(
         ? db.shuffleCollections.toArray()
         : Promise.resolve([] as ShuffleCollectionRecord[]),
     ])
+    const selectedDecks = await readSelectedDeckFilter()
+    const {
+      decks,
+      cards,
+      reviews,
+    } = filterSnapshotBySelectedDecks(selectedDecks, rawDecks, rawCards, rawReviews)
     const activeCardIds = new Set(cards.filter(card => !card.isDeleted).map(card => card.id))
 
     const response = await fetchWithTimeout(endpoint, {
@@ -927,9 +1036,19 @@ async function runBootstrapUpload(
       }),
     })
 
-    if (!response.ok) return null
-    return (await response.json()) as BootstrapUploadResponse
-  } catch {
+    if (!response.ok) {
+      logSyncApiFailure('bootstrap upload', endpoint, `http_${response.status}`, `status: ${response.status}`)
+      return null
+    }
+    const data = (await response.json()) as BootstrapUploadResponse & { error?: string }
+    const apiError = syncResponseError(data)
+    if (apiError) {
+      logSyncApiFailure('bootstrap upload', endpoint, apiError, `status: ${response.status}`)
+      return data
+    }
+    return data
+  } catch (error: unknown) {
+    logSyncApiFailure('bootstrap upload', endpoint, stringifySyncException(error))
     return null
   }
 }
@@ -1021,9 +1140,17 @@ export async function pullAndApplySyncDeltas(limit = 200) {
           ...getSyncAuthHeaders(),
         },
       })
-      if (!response.ok) break
+      if (!response.ok) {
+        logSyncApiFailure('pull deltas', query, `http_${response.status}`, `status: ${response.status}`)
+        break
+      }
 
-      const data = (await response.json()) as PullResponse
+      const data = (await response.json()) as PullResponse & { error?: string }
+      const apiError = syncResponseError(data)
+      if (apiError) {
+        logSyncApiFailure('pull deltas', query, apiError, `status: ${response.status}`)
+        break
+      }
       const operations = Array.isArray(data.operations) ? data.operations : []
 
       if (operations.length === 0) {
@@ -1074,7 +1201,8 @@ export async function pullAndApplySyncDeltas(limit = 200) {
 
       if (!data.hasMore) break
     }
-  } catch {
+  } catch (error: unknown) {
+    logSyncApiFailure('pull deltas', endpoint, stringifySyncException(error))
     // Network/transient errors should not crash sync runtime.
   }
 

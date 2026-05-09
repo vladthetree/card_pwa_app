@@ -312,6 +312,69 @@ def open_db(row_factory=None):
     conn.row_factory = row_factory
   return conn
 
+def active_deck_ids_with_cards_or_descendants(conn, user_id=None):
+  """Active decks that either contain active cards or are ancestors of such decks."""
+  params = (user_id,) if user_id else ()
+  user_clause = "AND user_id=?" if user_id else ""
+  deck_rows = conn.execute(
+    f"SELECT id, parent_deck_id FROM server_decks WHERE deleted_at IS NULL {user_clause}",
+    params,
+  ).fetchall()
+  card_rows = conn.execute(
+    f"""
+    SELECT DISTINCT deck_id
+    FROM server_cards
+    WHERE deleted_at IS NULL
+      AND IFNULL(is_deleted, 0) = 0
+      AND deck_id IS NOT NULL
+      {user_clause}
+    """,
+    params,
+  ).fetchall()
+
+  active_ids = {row[0] for row in deck_rows}
+  parent_by_id = {
+    row[0]: row[1] if row[1] in active_ids else None
+    for row in deck_rows
+  }
+  keep = set()
+
+  for row in card_rows:
+    current = row[0]
+    while current and current in active_ids and current not in keep:
+      keep.add(current)
+      current = parent_by_id.get(current)
+
+  return keep
+
+def active_deck_ids_from_bootstrap_payload(decks, cards):
+  active_decks = [
+    deck for deck in decks
+    if isinstance(deck, dict) and not deck.get("isDeleted") and deck.get("deletedAt") is None
+  ]
+  active_ids = {
+    str(deck.get("id") or "").strip()
+    for deck in active_decks
+    if str(deck.get("id") or "").strip()
+  }
+  parent_by_id = {}
+  for deck in active_decks:
+    deck_id = str(deck.get("id") or "").strip()
+    raw_parent = deck.get("parentDeckId", deck.get("parent_deck_id"))
+    parent_id = raw_parent.strip() if isinstance(raw_parent, str) else None
+    parent_by_id[deck_id] = parent_id if parent_id in active_ids else None
+
+  keep = set()
+  for card in cards:
+    if not isinstance(card, dict) or card.get("isDeleted") or card.get("deletedAt") is not None:
+      continue
+    current = str(card.get("deckId") or "").strip()
+    while current and current in active_ids and current not in keep:
+      keep.add(current)
+      current = parent_by_id.get(current)
+
+  return keep
+
 def _push_detail(op_type, payload):
   """One-line summary of what a push operation touches."""
   p = payload or {}
@@ -1374,7 +1437,7 @@ class Handler(BaseHTTPRequestHandler):
       profiles = [{
         "userId": row["user_id"],
         "profileName": row["profile_name"],
-        "deckCount": int(row["deck_count"] or 0),
+        "deckCount": len(active_deck_ids_with_cards_or_descendants(conn, row["user_id"])),
         "isDefault": row["profile_name"] == DEFAULT_PROFILE_NAME,
       } for row in rows]
       self._send_json(200, {"ok": True, "profiles": profiles})
@@ -1414,12 +1477,13 @@ class Handler(BaseHTTPRequestHandler):
         self._send_json(404, {"ok": False, "error": "profile_not_found"})
         return
 
-      # Revoke existing tokens for this device and remove it from any current profile.
+      # Revoke existing tokens for this device before issuing the new binding.
+      # issue_device_token upserts the devices row; deleting it here would break
+      # the device_tokens -> devices foreign key for devices that already synced.
       conn.execute(
         "UPDATE device_tokens SET revoked_at=? WHERE device_id=? AND revoked_at IS NULL",
         (now, device_id)
       )
-      conn.execute("DELETE FROM devices WHERE device_id=?", (device_id,))
 
       profile_token = issue_device_token(conn, user_id, device_id, device_label, now)
       conn.commit()
@@ -2058,12 +2122,16 @@ class Handler(BaseHTTPRequestHandler):
         "shuffleCollectionsRejected": 0,
       }
 
+      syncable_deck_ids = active_deck_ids_from_bootstrap_payload(decks, cards)
+
       # Upsert decks with LWW + tombstone support.
       for deck in decks:
         if not isinstance(deck, dict):
           continue
         deck_id = str(deck.get("id") or "").strip()
         if not deck_id:
+          continue
+        if deck_id not in syncable_deck_ids and not deck.get("isDeleted") and deck.get("deletedAt") is None:
           continue
 
         candidate_ts = parse_int(deck.get("updatedAt") or deck.get("createdAt") or sent_at, sent_at, min_value=0)
@@ -2393,10 +2461,7 @@ class Handler(BaseHTTPRequestHandler):
         f"SELECT COUNT(*) FROM server_cards WHERE deleted_at IS NULL AND IFNULL(is_deleted, 0) = 0 {user_filter}",
         user_params
       ).fetchone()[0] or 0
-      active_decks = conn.execute(
-        f"SELECT COUNT(*) FROM server_decks WHERE deleted_at IS NULL {user_filter}",
-        user_params
-      ).fetchone()[0] or 0
+      active_decks = len(active_deck_ids_with_cards_or_descendants(conn, self._current_user_id))
       active_reviews = conn.execute(
         f"""SELECT COUNT(*) FROM server_reviews
             WHERE undone_at IS NULL {user_filter}
@@ -2474,6 +2539,7 @@ class Handler(BaseHTTPRequestHandler):
 
     conn = open_db(sqlite3.Row)
     try:
+      syncable_deck_ids = None if include_deleted else active_deck_ids_with_cards_or_descendants(conn, self._current_user_id)
       user_filter, user_params = self._user_filter_sql("d")
       if include_deleted:
         where_clause = f"WHERE 1=1 {user_filter}"
@@ -2501,7 +2567,7 @@ class Handler(BaseHTTPRequestHandler):
         "updatedAt": row["updated_at"],
         "isDeleted": row["deleted_at"] is not None,
         "ownerProfileName": row["owner_profile_name"],
-      } for row in rows]
+      } for row in rows if syncable_deck_ids is None or row["id"] in syncable_deck_ids]
 
       log(f"SYNC_DECKS  ip={client_ip}  count={len(decks)}")
       self._send_json(200, {"ok": True, "decks": decks})
@@ -2546,7 +2612,10 @@ class Handler(BaseHTTPRequestHandler):
       ).fetchall()
       
       decks = []
+      syncable_deck_ids = None if include_deleted else active_deck_ids_with_cards_or_descendants(conn, self._current_user_id)
       for r in decks_rows:
+        if syncable_deck_ids is not None and r["id"] not in syncable_deck_ids:
+          continue
         decks.append({
           "id": r["id"],
           "name": r["name"],
