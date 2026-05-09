@@ -3,10 +3,11 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import {
   Brain,
   Bell,
-  Bug,
   Palette,
   Settings as SettingsIcon,
   RefreshCw,
+  SlidersHorizontal,
+  Database,
   X,
   User,
 } from 'lucide-react'
@@ -24,7 +25,7 @@ import { UI_TOKENS } from '../constants/ui'
 import { subscribeToWebPushNotificationsWithStatus, type WebPushSubscribeStatus } from '../services/webPush'
 import { db } from '../db'
 import { BACKUP_METADATA, DATABASE_NAMES, STORAGE_KEYS } from '../constants/appIdentity'
-import { clearSyncQueue, closeSyncQueueDatabase } from '../services/syncQueue'
+import { clearSyncQueue, closeSyncQueueDatabase, wakeDeferredSyncQueue } from '../services/syncQueue'
 import { resetSyncPullState } from '../services/syncPull'
 import { readSyncAuthTokenFromSettings, writeSyncAuthTokenToSettings } from '../services/syncConfig'
 import { resetLocalStudyDataForProfileSwitch } from '../services/profileService'
@@ -39,7 +40,7 @@ interface Props {
   onClose: () => void
 }
 
-type SettingsSectionKey = 'profile' | 'appearance' | 'learning' | 'notifications' | 'diagnostics'
+type SettingsSectionKey = 'profile' | 'appearance' | 'study' | 'algorithm' | 'notifications' | 'maintenance'
 
 
 
@@ -76,6 +77,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     setDailyReminderEnabled,
     setDailyReminderTime,
     setShowBuildVersion,
+    setShowReviewDecks,
     setStudyCardLimit,
     setShuffleModeEnabled,
     setDailyGoal,
@@ -780,11 +782,11 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
               </SettingsSection>
 
               <SettingsSection
-                title={t.learning}
-                description={t.learning_help}
+                title={settings.language === 'de' ? 'Lernen' : 'Study'}
+                description={settings.language === 'de' ? 'Sprache, Tagesziel und sichtbare Lernmodi.' : 'Language, daily goal, and visible study modes.'}
                 icon={<Brain size={18} />}
-                isOpen={openSection === 'learning'}
-                onToggle={() => toggleSection('learning')}
+                isOpen={openSection === 'study'}
+                onToggle={() => toggleSection('study')}
               >
                 <div className="pt-5 space-y-5">
                   <div>
@@ -872,6 +874,46 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
 
                   <div>
                     <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
+                      {settings.language === 'de' ? 'Review-Decks' : 'Review decks'}
+                    </label>
+                    <div className={`${UI_TOKENS.surface.panelSoft} p-4`}>
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-medium text-white">
+                            {settings.language === 'de' ? 'Review-Decks anzeigen und synchronisieren' : 'Show and sync review decks'}
+                          </p>
+                          <p className="mt-1 text-xs leading-relaxed text-white/45">
+                            {settings.language === 'de'
+                              ? 'Blendet serverseitige Review-Decks in Home und in der Sync-Deckauswahl ein. Standardmäßig bleiben sie ausgeblendet.'
+                              : 'Shows server-side review decks on Home and in sync deck selection. They stay hidden by default.'}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const next = !settings.showReviewDecks
+                            setShowReviewDecks(next)
+                            if (next) void wakeDeferredSyncQueue()
+                          }}
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full border transition ${
+                            settings.showReviewDecks
+                              ? 'border-emerald-400/40 bg-emerald-500/25'
+                              : 'border-white/20 bg-white/10'
+                          }`}
+                          aria-pressed={settings.showReviewDecks}
+                        >
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                              settings.showReviewDecks ? 'translate-x-5' : 'translate-x-1'
+                            }`}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
                       {t.daily_goal_setting}
                     </label>
                     <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
@@ -895,6 +937,17 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     </div>
                   </div>
 
+                </div>
+              </SettingsSection>
+
+              <SettingsSection
+                title={settings.language === 'de' ? 'Algorithmus' : 'Algorithm'}
+                description={settings.language === 'de' ? 'Scheduler wählen und Beta-Parameter nur bei Bedarf anpassen.' : 'Choose the scheduler and adjust beta parameters only when needed.'}
+                icon={<SlidersHorizontal size={18} />}
+                isOpen={openSection === 'algorithm'}
+                onToggle={() => toggleSection('algorithm')}
+              >
+                <div className="pt-5 space-y-5">
                   <div>
                     <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
                       {t.algorithm}
@@ -922,100 +975,114 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     </div>
                   </div>
 
-                  <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
-                    <p className="text-xs text-white/50 font-medium uppercase tracking-wide">
-                      Algorithm Parameters (Beta)
-                    </p>
-                    <p className="text-xs text-white/40 leading-relaxed">
-                      {settings.algorithm === 'sm2' ? t.algorithm_params_hint_sm2 : t.algorithm_params_hint_fsrs}
-                    </p>
+                  <details className={`${UI_TOKENS.surface.panelSoft} group/algorithm p-4`}>
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-left">
+                      <span>
+                        <span className="block text-xs text-white/50 font-medium uppercase tracking-wide">
+                          Algorithm Parameters (Beta)
+                        </span>
+                        <span className="mt-1 block text-xs text-white/40 leading-relaxed">
+                          {settings.language === 'de'
+                            ? 'Nur öffnen, wenn du die Scheduler-Gewichtung bewusst feinjustieren willst.'
+                            : 'Open only when you want to tune scheduler weighting deliberately.'}
+                        </span>
+                      </span>
+                      <span className="text-lg leading-none text-white/30 group-open/algorithm:hidden">+</span>
+                      <span className="hidden text-lg leading-none text-white/30 group-open/algorithm:inline">-</span>
+                    </summary>
 
-                    {settings.algorithm === 'sm2' ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <label className="text-xs text-white/65">
-                          <ParameterLabel text="Hard Multiplier" info={t.param_hard_multiplier_info} />
-                          <input
-                            type="number"
-                            step="0.05"
-                            value={settings.algorithmParams.sm2.hardMultiplier}
-                            onChange={e => updateNumber(e.target.value, value => setSm2Params({ hardMultiplier: value }))}
-                            className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
-                          />
-                        </label>
-                        <label className="text-xs text-white/65">
-                          <ParameterLabel text="Easy Multiplier" info={t.param_easy_multiplier_info} />
-                          <input
-                            type="number"
-                            step="0.05"
-                            value={settings.algorithmParams.sm2.easyMultiplier}
-                            onChange={e => updateNumber(e.target.value, value => setSm2Params({ easyMultiplier: value }))}
-                            className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
-                          />
-                        </label>
-                        <label className="text-xs text-white/65">
-                          <ParameterLabel text="Ease Again" info={t.param_ease_again_info} />
-                          <input
-                            type="number"
-                            step="10"
-                            value={settings.algorithmParams.sm2.easeAgain}
-                            onChange={e => updateNumber(e.target.value, value => setSm2Params({ easeAgain: value }))}
-                            className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
-                          />
-                        </label>
-                        <label className="text-xs text-white/65">
-                          <ParameterLabel text="Ease Easy" info={t.param_ease_easy_info} />
-                          <input
-                            type="number"
-                            step="10"
-                            value={settings.algorithmParams.sm2.easeEasy}
-                            onChange={e => updateNumber(e.target.value, value => setSm2Params({ easeEasy: value }))}
-                            className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
-                          />
-                        </label>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <label className="text-xs text-white/65">
-                          <ParameterLabel text="Request Retention" info={t.param_request_retention_info} />
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={settings.algorithmParams.fsrs.requestRetention}
-                            onChange={e => updateNumber(e.target.value, value => setFsrsParams({ requestRetention: value }))}
-                            className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
-                          />
-                        </label>
-                        <label className="text-xs text-white/65">
-                          <ParameterLabel text="Hard Penalty" info={t.param_hard_penalty_info} />
-                          <input
-                            type="number"
-                            step="0.05"
-                            value={settings.algorithmParams.fsrs.hardPen}
-                            onChange={e => updateNumber(e.target.value, value => setFsrsParams({ hardPen: value }))}
-                            className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
-                          />
-                        </label>
-                        <label className="text-xs text-white/65">
-                          <ParameterLabel text="Easy Bonus" info={t.param_easy_bonus_info} />
-                          <input
-                            type="number"
-                            step="0.05"
-                            value={settings.algorithmParams.fsrs.easyBonus}
-                            onChange={e => updateNumber(e.target.value, value => setFsrsParams({ easyBonus: value }))}
-                            className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
-                          />
-                        </label>
-                      </div>
-                    )}
+                    <div className="mt-4 space-y-3">
+                      <p className="text-xs text-white/40 leading-relaxed">
+                        {settings.algorithm === 'sm2' ? t.algorithm_params_hint_sm2 : t.algorithm_params_hint_fsrs}
+                      </p>
 
-                    <button
-                      type="button"
-                      onClick={resetAlgorithmParams}
-                      className={`w-full ${UI_TOKENS.button.ghost} py-2`}
-                    >
-                      Reset Algorithm Parameters
-                    </button>
-                  </div>
+                      {settings.algorithm === 'sm2' ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <label className="text-xs text-white/65">
+                            <ParameterLabel text="Hard Multiplier" info={t.param_hard_multiplier_info} />
+                            <input
+                              type="number"
+                              step="0.05"
+                              value={settings.algorithmParams.sm2.hardMultiplier}
+                              onChange={e => updateNumber(e.target.value, value => setSm2Params({ hardMultiplier: value }))}
+                              className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                            />
+                          </label>
+                          <label className="text-xs text-white/65">
+                            <ParameterLabel text="Easy Multiplier" info={t.param_easy_multiplier_info} />
+                            <input
+                              type="number"
+                              step="0.05"
+                              value={settings.algorithmParams.sm2.easyMultiplier}
+                              onChange={e => updateNumber(e.target.value, value => setSm2Params({ easyMultiplier: value }))}
+                              className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                            />
+                          </label>
+                          <label className="text-xs text-white/65">
+                            <ParameterLabel text="Ease Again" info={t.param_ease_again_info} />
+                            <input
+                              type="number"
+                              step="10"
+                              value={settings.algorithmParams.sm2.easeAgain}
+                              onChange={e => updateNumber(e.target.value, value => setSm2Params({ easeAgain: value }))}
+                              className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                            />
+                          </label>
+                          <label className="text-xs text-white/65">
+                            <ParameterLabel text="Ease Easy" info={t.param_ease_easy_info} />
+                            <input
+                              type="number"
+                              step="10"
+                              value={settings.algorithmParams.sm2.easeEasy}
+                              onChange={e => updateNumber(e.target.value, value => setSm2Params({ easeEasy: value }))}
+                              className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                            />
+                          </label>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <label className="text-xs text-white/65">
+                            <ParameterLabel text="Request Retention" info={t.param_request_retention_info} />
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={settings.algorithmParams.fsrs.requestRetention}
+                              onChange={e => updateNumber(e.target.value, value => setFsrsParams({ requestRetention: value }))}
+                              className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                            />
+                          </label>
+                          <label className="text-xs text-white/65">
+                            <ParameterLabel text="Hard Penalty" info={t.param_hard_penalty_info} />
+                            <input
+                              type="number"
+                              step="0.05"
+                              value={settings.algorithmParams.fsrs.hardPen}
+                              onChange={e => updateNumber(e.target.value, value => setFsrsParams({ hardPen: value }))}
+                              className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                            />
+                          </label>
+                          <label className="text-xs text-white/65">
+                            <ParameterLabel text="Easy Bonus" info={t.param_easy_bonus_info} />
+                            <input
+                              type="number"
+                              step="0.05"
+                              value={settings.algorithmParams.fsrs.easyBonus}
+                              onChange={e => updateNumber(e.target.value, value => setFsrsParams({ easyBonus: value }))}
+                              className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                            />
+                          </label>
+                        </div>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={resetAlgorithmParams}
+                        className={`w-full ${UI_TOKENS.button.ghost} py-2`}
+                      >
+                        Reset Algorithm Parameters
+                      </button>
+                    </div>
+                  </details>
 
                   <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-2`}>
                     <p className="text-xs text-white/50 font-medium uppercase tracking-wide">
@@ -1064,106 +1131,125 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     </div>
                   </div>
 
-                  {notificationChannels.map(channel => {
-                    const channelConfig = settings.notificationChannels[channel.key]
-                    const channelEnabled = channel.key === 'dailyReminder' ? settings.dailyReminderEnabled : channelConfig.enabled
+                  <details className="group/channels">
+                    <summary className="flex cursor-pointer list-none items-center justify-between rounded-[12px] border border-[#18181b] bg-[#080808] px-3 py-3 text-left transition hover:bg-white/[0.035]">
+                      <span>
+                        <span className="block text-xs font-semibold uppercase tracking-wide text-white/60">
+                          {settings.language === 'de' ? 'Kanäle & Vorlagen' : 'Channels & templates'}
+                        </span>
+                        <span className="mt-1 block text-xs text-white/40">
+                          {settings.language === 'de'
+                            ? 'Reminder, Statusmeldungen und Textvorlagen nur bei Bedarf öffnen.'
+                            : 'Open reminders, status alerts, and templates only when needed.'}
+                        </span>
+                      </span>
+                      <span className="text-lg leading-none text-white/30 group-open/channels:hidden">+</span>
+                      <span className="hidden text-lg leading-none text-white/30 group-open/channels:inline">-</span>
+                    </summary>
 
-                    return (
-                      <div key={channel.key} className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
-                        <p className="text-xs text-white/50 font-medium uppercase tracking-wide">{channel.label}</p>
-                        <p className="text-xs text-white/40 leading-relaxed">{channel.description}</p>
+                    <div className="mt-3 space-y-3">
+                      {notificationChannels.map(channel => {
+                        const channelConfig = settings.notificationChannels[channel.key]
+                        const channelEnabled = channel.key === 'dailyReminder' ? settings.dailyReminderEnabled : channelConfig.enabled
 
-                        {channel.key === 'dailyReminder' && isIosRuntime && (
-                          <p className="text-[11px] text-amber-200/90 leading-relaxed rounded-lg border border-amber-300/20 bg-amber-500/10 p-2.5">
-                            {t.daily_reminder_ios_install_hint}
-                          </p>
-                        )}
+                        return (
+                          <div key={channel.key} className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
+                            <p className="text-xs text-white/50 font-medium uppercase tracking-wide">{channel.label}</p>
+                            <p className="text-xs text-white/40 leading-relaxed">{channel.description}</p>
 
-                        <div className="flex items-center justify-between gap-3 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3">
-                          <span className="text-xs text-white/70">{t.notification_channel_toggle_label}</span>
-                          <button
-                            type="button"
-                            onClick={() => { void applyNotificationChannelEnabled(channel.key, !channelEnabled) }}
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full border transition ${
-                              channelEnabled
-                                ? 'border-emerald-400/40 bg-emerald-500/25'
-                                : 'border-white/20 bg-white/10'
-                            }`}
-                            aria-pressed={channelEnabled}
-                          >
-                            <span
-                              className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                                channelEnabled ? 'translate-x-5' : 'translate-x-1'
-                              }`}
-                            />
-                          </button>
-                        </div>
+                            {channel.key === 'dailyReminder' && isIosRuntime && (
+                              <p className="text-[11px] text-amber-200/90 leading-relaxed rounded-lg border border-amber-300/20 bg-amber-500/10 p-2.5">
+                                {t.daily_reminder_ios_install_hint}
+                              </p>
+                            )}
 
-                        {channel.key === 'dailyReminder' && (
-                          <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3 space-y-2">
-                            <label className="block text-xs text-white/70 uppercase tracking-wide">{t.daily_reminder_time_label}</label>
-                            <input
-                              type="time"
-                              value={settings.dailyReminderTime}
-                              onChange={e => { void applyDailyReminderTime(e.target.value) }}
-                              className="w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
-                              disabled={!channelEnabled}
-                            />
-                          </div>
-                        )}
-
-                        <details className="group rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
-                          <summary className="cursor-pointer list-none text-xs font-medium uppercase tracking-wide text-white/55 transition hover:text-white/80">
-                            {settings.language === 'de' ? 'Vorlage bearbeiten' : 'Edit template'}
-                            <span className="ml-2 text-white/30 group-open:hidden">+</span>
-                            <span className="ml-2 hidden text-white/30 group-open:inline">-</span>
-                          </summary>
-                          <div className="mt-3 space-y-3">
-                            <div className="space-y-2">
-                              <label className="block text-xs text-white/65 uppercase tracking-wide">{t.notification_template_title_label}</label>
-                              <input
-                                type="text"
-                                maxLength={120}
-                                value={channelConfig.title}
-                                onChange={e => applyNotificationTemplate(channel.key, e.target.value, channelConfig.body)}
-                                placeholder={channel.defaultTitle}
-                                className="w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
-                              />
+                            <div className="flex items-center justify-between gap-3 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3">
+                              <span className="text-xs text-white/70">{t.notification_channel_toggle_label}</span>
+                              <button
+                                type="button"
+                                onClick={() => { void applyNotificationChannelEnabled(channel.key, !channelEnabled) }}
+                                className={`relative inline-flex h-6 w-11 items-center rounded-full border transition ${
+                                  channelEnabled
+                                    ? 'border-emerald-400/40 bg-emerald-500/25'
+                                    : 'border-white/20 bg-white/10'
+                                }`}
+                                aria-pressed={channelEnabled}
+                              >
+                                <span
+                                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                                    channelEnabled ? 'translate-x-5' : 'translate-x-1'
+                                  }`}
+                                />
+                              </button>
                             </div>
 
-                            <div className="space-y-2">
-                              <label className="block text-xs text-white/65 uppercase tracking-wide">{t.notification_template_body_label}</label>
-                              <textarea
-                                rows={2}
-                                maxLength={280}
-                                value={channelConfig.body}
-                                onChange={e => applyNotificationTemplate(channel.key, channelConfig.title, e.target.value)}
-                                placeholder={channel.defaultBody}
-                                className="w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white resize-y"
-                              />
-                            </div>
+                            {channel.key === 'dailyReminder' && (
+                              <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3 space-y-2">
+                                <label className="block text-xs text-white/70 uppercase tracking-wide">{t.daily_reminder_time_label}</label>
+                                <input
+                                  type="time"
+                                  value={settings.dailyReminderTime}
+                                  onChange={e => { void applyDailyReminderTime(e.target.value) }}
+                                  className="w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                                  disabled={!channelEnabled}
+                                />
+                              </div>
+                            )}
 
-                            <button
-                              type="button"
-                              onClick={() => resetNotificationTemplate(channel.key)}
-                              className={`${UI_TOKENS.button.ghost} py-2`}
-                            >
-                              {t.notification_template_reset}
-                            </button>
+                            <details className="group/template rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
+                              <summary className="cursor-pointer list-none text-xs font-medium uppercase tracking-wide text-white/55 transition hover:text-white/80">
+                                {settings.language === 'de' ? 'Vorlage bearbeiten' : 'Edit template'}
+                                <span className="ml-2 text-white/30 group-open/template:hidden">+</span>
+                                <span className="ml-2 hidden text-white/30 group-open/template:inline">-</span>
+                              </summary>
+                              <div className="mt-3 space-y-3">
+                                <div className="space-y-2">
+                                  <label className="block text-xs text-white/65 uppercase tracking-wide">{t.notification_template_title_label}</label>
+                                  <input
+                                    type="text"
+                                    maxLength={120}
+                                    value={channelConfig.title}
+                                    onChange={e => applyNotificationTemplate(channel.key, e.target.value, channelConfig.body)}
+                                    placeholder={channel.defaultTitle}
+                                    className="w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <label className="block text-xs text-white/65 uppercase tracking-wide">{t.notification_template_body_label}</label>
+                                  <textarea
+                                    rows={2}
+                                    maxLength={280}
+                                    value={channelConfig.body}
+                                    onChange={e => applyNotificationTemplate(channel.key, channelConfig.title, e.target.value)}
+                                    placeholder={channel.defaultBody}
+                                    className="w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white resize-y"
+                                  />
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => resetNotificationTemplate(channel.key)}
+                                  className={`${UI_TOKENS.button.ghost} py-2`}
+                                >
+                                  {t.notification_template_reset}
+                                </button>
+                              </div>
+                            </details>
                           </div>
-                        </details>
-                      </div>
-                    )
-                  })}
+                        )
+                      })}
+                    </div>
+                  </details>
                 </div>
               </SettingsSection>
 
               <SettingsSection
-                title={t.diagnostics}
-                description={t.diagnostics_help}
-                icon={<Bug size={18} />}
-                isOpen={openSection === 'diagnostics'}
-                onToggle={() => toggleSection('diagnostics')}
+                title={settings.language === 'de' ? 'Wartung' : 'Maintenance'}
+                description={settings.language === 'de' ? 'Diagnose, Sync-Details und lokale Daten zurücksetzen.' : 'Diagnostics, sync details, and local data reset.'}
+                icon={<Database size={18} />}
+                isOpen={openSection === 'maintenance'}
+                onToggle={() => toggleSection('maintenance')}
               >
                 <div className="pt-5 space-y-4">
 

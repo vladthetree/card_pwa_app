@@ -63,6 +63,11 @@
     --app-font-family: 'Share Tech Mono', 'IBM Plex Mono', monospace;
     --app-font-family-sans: 'Space Grotesk', 'Inter', system-ui, sans-serif;
     --app-font-family-mono: 'Share Tech Mono', 'IBM Plex Mono', monospace;
+    --app-viewport-height: 100dvh;
+    --app-bottom-viewport-gap: 0px;
+    --app-bottom-safe-area: max(env(safe-area-inset-bottom, 0px), var(--app-bottom-viewport-gap));
+    --home-bottom-bar-bg: #080808;
+    --home-bottom-bar-reserved: calc(4rem + var(--app-bottom-safe-area));
   }
 
   html, body, #root {
@@ -128,6 +133,14 @@
     background: var(--theme-background);
     touch-action: pan-y;
     scrollbar-width: none;
+  }
+
+  @supports (overflow: clip) {
+    html,
+    body,
+    #root {
+      overflow: clip;
+    }
   }
 
   /* Hide scrollbars */
@@ -484,6 +497,21 @@
 
   .ds-card {
     @apply rounded-ds-lg border border-ds-border bg-ds-card shadow-card;
+  }
+
+  .home-bottom-bar {
+    bottom: calc(0px - var(--app-bottom-viewport-gap));
+    padding-bottom: var(--app-bottom-safe-area);
+    background: var(--home-bottom-bar-bg);
+  }
+
+  .home-bottom-sheet-panel {
+    bottom: calc(0px - var(--app-bottom-viewport-gap));
+    padding-bottom: calc(var(--app-bottom-safe-area) + 1rem);
+  }
+
+  .home-bottom-scroll-padding {
+    padding-bottom: calc(var(--home-bottom-bar-reserved) + 1rem);
   }
 
   .ds-panel {

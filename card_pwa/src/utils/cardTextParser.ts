@@ -42,9 +42,42 @@ export class TextParser {
 // ─── Question Parser ─────────────────────────────────────────────────────
 
 export interface Question {
+  type: 'standard'
   question: string
   options: Record<string, string>
 }
+
+// ─── Ordering Types ──────────────────────────────────────────────────────
+
+export interface OrderingQuestion {
+  type: 'ordering'
+  question: string
+  items: string[]
+}
+
+export interface OrderingAnswer {
+  type: 'ordering'
+  correctOrder: number[]  // 0-based indices in correct order
+  explanation: string
+  merkhilfe: string | null
+}
+
+// ─── Matching Types ──────────────────────────────────────────────────────
+
+export interface MatchingQuestion {
+  type: 'matching'
+  question: string
+  pairs: Array<{ left: string; right: string }>
+}
+
+export interface MatchingAnswer {
+  type: 'matching'
+  pairs: Array<{ left: string; right: string }>
+  merkhilfe: string | null
+}
+
+export type AnyQuestion = Question | OrderingQuestion | MatchingQuestion
+export type AnyAnswer   = Answer   | OrderingAnswer   | MatchingAnswer
 
 /**
  * QuestionParser: Parsst Frage-Seite einer Karte
@@ -99,7 +132,7 @@ export class QuestionParser {
       question = lines.slice(0, parsed.startLine).join('\n').trim()
     }
 
-    return { question, options }
+    return { type: 'standard', question, options }
   }
 
   /**
@@ -157,6 +190,7 @@ export class QuestionParser {
 // ─── Answer Parser ──────────────────────────────────────────────────────
 
 export interface Answer {
+  type: 'standard'
   correct: string | null
   correctOptions: string[]
   answer: string
@@ -217,6 +251,7 @@ export class AnswerParser {
     }
 
     return {
+      type: 'standard',
       correct,
       correctOptions,
       answer,
@@ -224,6 +259,141 @@ export class AnswerParser {
       nicht,
     }
   }
+}
+
+// ─── Ordering Parser ──────────────────────────────────────────────────────
+
+export class OrderingParser {
+  private static readonly HEADER = /^ORDERING:\s*/i
+  private static readonly ITEM   = /^(\d+)[.)]\s+(.+)$/
+
+  static isOrdering(text: string): boolean {
+    return this.HEADER.test(text.trim())
+  }
+
+  static parse(text: string): OrderingQuestion {
+    const normalized = TextParser.normalizeHtmlEntities(text)
+    const lines = normalized.split('\n').map(l => l.trim()).filter(Boolean)
+
+    const itemLines: string[] = []
+    const questionLines: string[] = []
+    let headerSeen = false
+
+    for (const line of lines) {
+      if (!headerSeen) { headerSeen = true; continue }
+      const m = line.match(this.ITEM)
+      if (m) {
+        itemLines.push(m[2].trim())
+      } else {
+        questionLines.push(line)
+      }
+    }
+
+    return { type: 'ordering', question: questionLines.join(' ').trim(), items: itemLines }
+  }
+}
+
+export class OrderingAnswerParser {
+  private static readonly ORDER_LINE = /^CORRECT_ORDER:\s*([\d,\s]+)/i
+
+  static parse(text: string): OrderingAnswer {
+    const normalized = TextParser.normalizeHtmlEntities(text)
+    const lines = normalized.split('\n')
+
+    let correctOrder: number[] = []
+    const rest: string[] = []
+
+    for (const line of lines) {
+      const m = line.match(this.ORDER_LINE)
+      if (m) {
+        correctOrder = m[1].split(',')
+          .map(s => parseInt(s.trim(), 10) - 1)  // 1-based → 0-based
+          .filter(n => !isNaN(n))
+      } else {
+        rest.push(line)
+      }
+    }
+
+    const joined = rest.join('\n').trim()
+    const merkhilfeIdx = joined.indexOf('Merkhilfe:')
+    const explanation = merkhilfeIdx !== -1 ? joined.slice(0, merkhilfeIdx).trim() : joined
+    const merkhilfe  = merkhilfeIdx !== -1 ? joined.slice(merkhilfeIdx + 10).trim() : null
+
+    return { type: 'ordering', correctOrder, explanation, merkhilfe }
+  }
+}
+
+// ─── Matching Parser ──────────────────────────────────────────────────────
+
+export class MatchingParser {
+  private static readonly HEADER = /^MATCHING:\s*/i
+  private static readonly PAIR   = /^(.+?)\s*>>\s*(.+)$/
+
+  static isMatching(text: string): boolean {
+    return this.HEADER.test(text.trim())
+  }
+
+  static parse(text: string): MatchingQuestion {
+    const normalized = TextParser.normalizeHtmlEntities(text)
+    const lines = normalized.split('\n').map(l => l.trim()).filter(Boolean)
+
+    const pairs: Array<{ left: string; right: string }> = []
+    const questionLines: string[] = []
+    let headerSeen = false
+
+    for (const line of lines) {
+      if (!headerSeen) { headerSeen = true; continue }
+      const m = line.match(this.PAIR)
+      if (m) {
+        pairs.push({ left: m[1].trim(), right: m[2].trim() })
+      } else {
+        questionLines.push(line)
+      }
+    }
+
+    return { type: 'matching', question: questionLines.join(' ').trim(), pairs }
+  }
+}
+
+export class MatchingAnswerParser {
+  private static readonly PAIR = /^(.+?)\s*=\s*(.+)$/
+
+  static parse(text: string): MatchingAnswer {
+    const normalized = TextParser.normalizeHtmlEntities(text)
+    const lines = normalized.split('\n')
+    const pairs: Array<{ left: string; right: string }> = []
+    const rest: string[] = []
+
+    for (const line of lines) {
+      const trimmed = line.trim()
+      const m = trimmed.match(this.PAIR)
+      if (m && !trimmed.startsWith('Merkhilfe')) {
+        pairs.push({ left: m[1].trim(), right: m[2].trim() })
+      } else {
+        rest.push(line)
+      }
+    }
+
+    const joined = rest.join('\n').trim()
+    const idx = joined.indexOf('Merkhilfe:')
+    const merkhilfe = idx !== -1 ? joined.slice(idx + 10).trim() : null
+
+    return { type: 'matching', pairs, merkhilfe }
+  }
+}
+
+// ─── Dispatch Functions ───────────────────────────────────────────────────
+
+export function parseAnyQuestion(text: string): AnyQuestion {
+  if (OrderingParser.isOrdering(text)) return OrderingParser.parse(text)
+  if (MatchingParser.isMatching(text))  return MatchingParser.parse(text)
+  return QuestionParser.parse(text)
+}
+
+export function parseAnyAnswer(text: string, questionType: AnyQuestion['type']): AnyAnswer {
+  if (questionType === 'ordering') return OrderingAnswerParser.parse(text)
+  if (questionType === 'matching') return MatchingAnswerParser.parse(text)
+  return AnswerParser.parse(text)
 }
 
 /**

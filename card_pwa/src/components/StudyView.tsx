@@ -20,6 +20,7 @@ import {
 import { buildLearningCoachSummary } from '../services/learningCoach'
 import type { Deck, Card, Rating } from '../types'
 import { formatDeckName } from '../utils/cardTextParser'
+import { getCardVariant } from '../utils/cardVariant'
 import { getReviewXp } from '../utils/gamification'
 import { useSessionPersistence } from '../hooks/useSessionPersistence'
 import { useHandsetLayout } from '../hooks/useHandsetLayout'
@@ -416,6 +417,10 @@ export default function StudyView({ deck, onExit }: Props) {
   const handleTouchEnd = useCallback((event: React.TouchEvent) => {
     if (!isHandsetLayout || session.isDone || session.isSubmitting) return
 
+    // PBQ cards (ordering/matching) handle their own touch interactions
+    const variant = getCardVariant(currentCard?.front ?? '')
+    if (variant === 'ordering' || variant === 'matching') return
+
     const start = touchStartRef.current
     touchStartRef.current = null
     const touch = event.changedTouches[0]
@@ -429,10 +434,10 @@ export default function StudyView({ deck, onExit }: Props) {
     if (Math.abs(deltaX) >= 40 && Math.abs(deltaY) <= 50) {
       handleFlip()
     }
-  }, [isHandsetLayout, session.isDone, session.isSubmitting, handleFlip])
+  }, [isHandsetLayout, session.isDone, session.isSubmitting, currentCard, handleFlip])
 
-  const handleAnswerEvaluated = useCallback((isCorrect: boolean) => {
-    setAnswerWasIncorrect(!isCorrect)
+  const handleAnswerEvaluated = useCallback((score: number) => {
+    setAnswerWasIncorrect(score < 1.0)
   }, [])
 
   const handleRate = useCallback(

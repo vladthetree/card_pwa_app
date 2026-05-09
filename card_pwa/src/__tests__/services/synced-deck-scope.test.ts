@@ -31,6 +31,19 @@ import { getSyncedDeckIds } from '../../services/syncedDeckScope'
 
 describe('getSyncedDeckIds', () => {
   beforeEach(() => {
+    const storage = new Map<string, string>()
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: {
+        getItem: (key: string) => storage.get(key) ?? null,
+        setItem: (key: string, value: string) => {
+          storage.set(key, value)
+        },
+        removeItem: (key: string) => {
+          storage.delete(key)
+        },
+      },
+    })
     mockedState.decks = []
     mockedState.syncActive = false
     mockedState.selectedDeckIds = null
@@ -70,6 +83,35 @@ describe('getSyncedDeckIds', () => {
     ]
 
     await expect(getSyncedDeckIds('user-1')).resolves.toEqual(['deck-a', 'deck-b'])
+  })
+
+  it('keeps review decks out of an explicit selection until enabled in settings', async () => {
+    mockedState.syncActive = true
+    mockedState.selectedDeckIds = ['deck-a', 'needs-review-root', 'needs-review-objective-1-1']
+    mockedState.decks = [
+      { id: 'deck-a', name: 'A', createdAt: 1, source: 'manual' },
+      { id: 'needs-review-root', name: 'Review', createdAt: 2, source: 'system' },
+      { id: 'needs-review-objective-1-1', name: 'Review 1.1', createdAt: 3, source: 'system', parentDeckId: 'needs-review-root' },
+    ]
+
+    await expect(getSyncedDeckIds('user-1')).resolves.toEqual(['deck-a'])
+  })
+
+  it('includes review decks when the user enables them in settings', async () => {
+    localStorage.setItem('card-pwa-settings', JSON.stringify({ showReviewDecks: true }))
+    mockedState.syncActive = true
+    mockedState.selectedDeckIds = null
+    mockedState.decks = [
+      { id: 'deck-a', name: 'A', createdAt: 1, source: 'manual' },
+      { id: 'needs-review-root', name: 'Review', createdAt: 2, source: 'system' },
+      { id: 'needs-review-objective-1-1', name: 'Review 1.1', createdAt: 3, source: 'system', parentDeckId: 'needs-review-root' },
+    ]
+
+    await expect(getSyncedDeckIds('user-1')).resolves.toEqual([
+      'deck-a',
+      'needs-review-root',
+      'needs-review-objective-1-1',
+    ])
   })
 
   it('empty selection [] syncs nothing', async () => {

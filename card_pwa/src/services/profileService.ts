@@ -20,6 +20,7 @@ import {
 } from '../db'
 import { generateUuidV7 } from '../utils/id'
 import { fetchWithTimeout, SYNC_FETCH_TIMEOUT_MS } from './syncConfig'
+import { logError } from './errorLog'
 
 const DEVICE_ID_KEY = 'card-pwa-device-id'
 const LEGACY_CLIENT_ID_KEY = 'card-pwa-sync-client-id'
@@ -204,6 +205,70 @@ function httpError(res: Response, json: { error?: string } | null): string {
   return json?.error ?? `http_${res.status}`
 }
 
+function describeApiTarget(target: string): string {
+  try {
+    const base = typeof window === 'undefined' ? 'http://card-pwa.local' : window.location.origin
+    const url = new URL(target, base)
+    return `${url.pathname}${url.search}`
+  } catch {
+    return target.replace(/^https?:\/\/[^/]+/i, '')
+  }
+}
+
+function stringifyApiException(error: unknown): string {
+  if (error instanceof Error) return `${error.name}: ${error.message}`
+  if (typeof error === 'string') return error
+  try {
+    return JSON.stringify(error)
+  } catch {
+    return String(error)
+  }
+}
+
+function logProfileApiFailure(action: string, target: string, reason: string, details?: string): void {
+  logError(
+    'profile-api',
+    `Profile API failed: ${action}`,
+    [
+      `target: ${describeApiTarget(target)}`,
+      `reason: ${reason}`,
+      details,
+    ].filter(Boolean).join('\n'),
+  )
+}
+
+async function resolveProfileApiResponse<T extends { ok?: boolean; error?: string }>(
+  action: string,
+  target: string,
+  res: Response,
+): Promise<{ json: T | null; error?: string }> {
+  const json = await readJsonResponse<T>(res)
+
+  if (!json) {
+    const error = res.ok ? 'invalid_server_response' : `http_${res.status}`
+    logProfileApiFailure(action, target, error, `status: ${res.status}\ninvalid_server_response`)
+    return { json: null, error }
+  }
+
+  if (!res.ok) {
+    const error = httpError(res, json)
+    logProfileApiFailure(action, target, error, `status: ${res.status}`)
+    return { json, error }
+  }
+
+  if (json.ok === false) {
+    const error = json.error ?? 'api_not_ok'
+    logProfileApiFailure(action, target, error, `status: ${res.status}`)
+    return { json, error }
+  }
+
+  return { json }
+}
+
+function logProfileApiException(action: string, target: string, error: unknown): void {
+  logProfileApiFailure(action, target, stringifyApiException(error))
+}
+
 /** POST /auth/profile — create a new server profile. */
 export async function createServerProfile(
   endpoint: string,
@@ -212,13 +277,14 @@ export async function createServerProfile(
   profileName?: string,
 ): Promise<CreateProfileResponse> {
   const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const target = `${base}/auth/profile`
   try {
     const body: Record<string, string> = { deviceId, deviceLabel: deviceLabel ?? 'Browser' }
     if (profileName?.trim()) {
       body.profileName = profileName.trim()
     }
     const res = await fetchWithTimeout(
-      `${base}/auth/profile`,
+      target,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -226,11 +292,11 @@ export async function createServerProfile(
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    const json = await readJsonResponse<CreateProfileResponse>(res)
-    if (!json) return { ok: false, error: 'invalid_server_response' }
-    if (!res.ok) return { ok: false, error: httpError(res, json) }
+    const { json, error } = await resolveProfileApiResponse<CreateProfileResponse>('create profile', target, res)
+    if (error || !json) return { ok: false, error: error ?? 'invalid_server_response' }
     return json
   } catch (e: unknown) {
+    logProfileApiException('create profile', target, e)
     return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
   }
 }
@@ -241,9 +307,10 @@ export async function issuePairingCode(
   profileToken: string,
 ): Promise<PairIssueResponse> {
   const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const target = `${base}/auth/pair/issue`
   try {
     const res = await fetchWithTimeout(
-      `${base}/auth/pair/issue`,
+      target,
       {
         method: 'POST',
         headers: {
@@ -254,11 +321,11 @@ export async function issuePairingCode(
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    const json = await readJsonResponse<PairIssueResponse>(res)
-    if (!json) return { ok: false, error: 'invalid_server_response' }
-    if (!res.ok) return { ok: false, error: httpError(res, json) }
+    const { json, error } = await resolveProfileApiResponse<PairIssueResponse>('issue pairing code', target, res)
+    if (error || !json) return { ok: false, error: error ?? 'invalid_server_response' }
     return json
   } catch (e: unknown) {
+    logProfileApiException('issue pairing code', target, e)
     return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
   }
 }
@@ -271,9 +338,10 @@ export async function redeemPairingCode(
   deviceLabel?: string,
 ): Promise<PairRedeemResponse> {
   const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const target = `${base}/auth/pair/redeem`
   try {
     const res = await fetchWithTimeout(
-      `${base}/auth/pair/redeem`,
+      target,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -281,11 +349,11 @@ export async function redeemPairingCode(
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    const json = await readJsonResponse<PairRedeemResponse>(res)
-    if (!json) return { ok: false, error: 'invalid_server_response' }
-    if (!res.ok) return { ok: false, error: httpError(res, json) }
+    const { json, error } = await resolveProfileApiResponse<PairRedeemResponse>('redeem pairing code', target, res)
+    if (error || !json) return { ok: false, error: error ?? 'invalid_server_response' }
     return json
   } catch (e: unknown) {
+    logProfileApiException('redeem pairing code', target, e)
     return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
   }
 }
@@ -298,9 +366,10 @@ export async function recoverWithCode(
   deviceLabel?: string,
 ): Promise<RecoverResponse> {
   const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const target = `${base}/auth/recover`
   try {
     const res = await fetchWithTimeout(
-      `${base}/auth/recover`,
+      target,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -308,11 +377,11 @@ export async function recoverWithCode(
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    const json = await readJsonResponse<RecoverResponse>(res)
-    if (!json) return { ok: false, error: 'invalid_server_response' }
-    if (!res.ok) return { ok: false, error: httpError(res, json) }
+    const { json, error } = await resolveProfileApiResponse<RecoverResponse>('recover profile', target, res)
+    if (error || !json) return { ok: false, error: error ?? 'invalid_server_response' }
     return json
   } catch (e: unknown) {
+    logProfileApiException('recover profile', target, e)
     return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
   }
 }
@@ -323,9 +392,10 @@ export async function revokeDeviceToken(
   profileToken: string,
 ): Promise<boolean> {
   const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const target = `${base}/auth/revoke`
   try {
     const res = await fetchWithTimeout(
-      `${base}/auth/revoke`,
+      target,
       {
         method: 'POST',
         headers: {
@@ -336,8 +406,19 @@ export async function revokeDeviceToken(
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    return res.ok
-  } catch {
+    const json = await readJsonResponse<{ ok?: boolean; error?: string }>(res)
+    if (!res.ok) {
+      const error = httpError(res, json)
+      logProfileApiFailure('revoke device token', target, error, `status: ${res.status}`)
+      return false
+    }
+    if (json?.ok === false) {
+      logProfileApiFailure('revoke device token', target, json.error ?? 'api_not_ok', `status: ${res.status}`)
+      return false
+    }
+    return true
+  } catch (e: unknown) {
+    logProfileApiException('revoke device token', target, e)
     return false
   }
 }
@@ -348,9 +429,10 @@ export async function removeDeviceFromServer(
   profileToken: string,
 ): Promise<boolean> {
   const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const target = `${base}/auth/device/remove`
   try {
     const res = await fetchWithTimeout(
-      `${base}/auth/device/remove`,
+      target,
       {
         method: 'POST',
         headers: {
@@ -361,8 +443,19 @@ export async function removeDeviceFromServer(
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    return res.ok
-  } catch {
+    const json = await readJsonResponse<{ ok?: boolean; error?: string }>(res)
+    if (!res.ok) {
+      const error = httpError(res, json)
+      logProfileApiFailure('remove device', target, error, `status: ${res.status}`)
+      return false
+    }
+    if (json?.ok === false) {
+      logProfileApiFailure('remove device', target, json.error ?? 'api_not_ok', `status: ${res.status}`)
+      return false
+    }
+    return true
+  } catch (e: unknown) {
+    logProfileApiException('remove device', target, e)
     return false
   }
 }
@@ -388,14 +481,15 @@ export async function listServerProfiles(
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    const json = await readJsonResponse<ListProfilesResponse>(res)
-    if (!json) return { ok: false, error: 'invalid_server_response' }
-    if (!res.ok) return { ok: false, error: httpError(res, json) }
+    const { json, error } = await resolveProfileApiResponse<ListProfilesResponse>('list server profiles', query, res)
+    if (error || !json) return { ok: false, error: error ?? 'invalid_server_response' }
     return {
       ok: true,
       profiles: Array.isArray(json.profiles) ? json.profiles : [],
     }
   } catch (e: unknown) {
+    const query = `${base}/auth/profiles?limit=${encodeURIComponent(String(limit))}`
+    logProfileApiException('list server profiles', query, e)
     return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
   }
 }
@@ -409,13 +503,14 @@ export async function switchServerProfile(
   profileToken?: string,
 ): Promise<SwitchProfileResponse> {
   const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const target = `${base}/auth/profile/switch`
   try {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' }
     if (profileToken?.trim()) {
       headers.Authorization = `Bearer ${profileToken.trim()}`
     }
     const res = await fetchWithTimeout(
-      `${base}/auth/profile/switch`,
+      target,
       {
         method: 'POST',
         headers,
@@ -423,11 +518,11 @@ export async function switchServerProfile(
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    const json = await readJsonResponse<SwitchProfileResponse>(res)
-    if (!json) return { ok: false, error: 'invalid_server_response' }
-    if (!res.ok) return { ok: false, error: httpError(res, json) }
+    const { json, error } = await resolveProfileApiResponse<SwitchProfileResponse>('switch profile', target, res)
+    if (error || !json) return { ok: false, error: error ?? 'invalid_server_response' }
     return json
   } catch (e: unknown) {
+    logProfileApiException('switch profile', target, e)
     return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
   }
 }
@@ -438,6 +533,7 @@ export async function listServerDecks(
   profileToken?: string,
 ): Promise<ListDecksResponse> {
   const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const target = `${base}/sync/decks`
   try {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -447,21 +543,21 @@ export async function listServerDecks(
     }
 
     const res = await fetchWithTimeout(
-      `${base}/sync/decks`,
+      target,
       {
         method: 'GET',
         headers,
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    const json = await readJsonResponse<ListDecksResponse>(res)
-    if (!json) return { ok: false, error: 'invalid_server_response' }
-    if (!res.ok) return { ok: false, error: httpError(res, json) }
+    const { json, error } = await resolveProfileApiResponse<ListDecksResponse>('list server decks', target, res)
+    if (error || !json) return { ok: false, error: error ?? 'invalid_server_response' }
     return {
       ok: true,
       decks: Array.isArray(json.decks) ? json.decks : [],
     }
   } catch (e: unknown) {
+    logProfileApiException('list server decks', target, e)
     return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
   }
 }
@@ -571,17 +667,18 @@ export async function restoreLocalStudyDataFromRollback(snapshot: LocalStudyData
 /** GET /auth/public-profiles — list all public profiles with deck counts. No auth required. */
 export async function listPublicProfiles(endpoint: string): Promise<PublicProfilesResponse> {
   const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const target = `${base}/auth/public-profiles`
   try {
     const res = await fetchWithTimeout(
-      `${base}/auth/public-profiles`,
+      target,
       { method: 'GET', headers: { 'Content-Type': 'application/json' } },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    const json = await readJsonResponse<PublicProfilesResponse>(res)
-    if (!json) return { ok: false, error: 'invalid_server_response' }
-    if (!res.ok) return { ok: false, error: httpError(res, json) }
+    const { json, error } = await resolveProfileApiResponse<PublicProfilesResponse>('list public profiles', target, res)
+    if (error || !json) return { ok: false, error: error ?? 'invalid_server_response' }
     return { ok: true, profiles: Array.isArray(json.profiles) ? json.profiles : [] }
   } catch (e: unknown) {
+    logProfileApiException('list public profiles', target, e)
     return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
   }
 }
@@ -594,9 +691,10 @@ export async function joinPublicProfile(
   deviceLabel?: string,
 ): Promise<JoinProfileResponse> {
   const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const target = `${base}/auth/profile/join`
   try {
     const res = await fetchWithTimeout(
-      `${base}/auth/profile/join`,
+      target,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -604,11 +702,11 @@ export async function joinPublicProfile(
       },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    const json = await readJsonResponse<JoinProfileResponse>(res)
-    if (!json) return { ok: false, error: 'invalid_server_response' }
-    if (!res.ok) return { ok: false, error: httpError(res, json) }
+    const { json, error } = await resolveProfileApiResponse<JoinProfileResponse>('join public profile', target, res)
+    if (error || !json) return { ok: false, error: error ?? 'invalid_server_response' }
     return json
   } catch (e: unknown) {
+    logProfileApiException('join public profile', target, e)
     return { ok: false, error: e instanceof Error ? e.message : 'network_error' }
   }
 }
@@ -618,17 +716,22 @@ export async function fetchDefaultProfileInfo(
   endpoint: string,
 ): Promise<{ userId: string; profileName: string } | null> {
   const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const target = `${base}/auth/default-profile`
   try {
     const res = await fetchWithTimeout(
-      `${base}/auth/default-profile`,
+      target,
       { method: 'GET', headers: { 'Content-Type': 'application/json' } },
       SYNC_FETCH_TIMEOUT_MS,
     )
-    if (!res.ok) return null
-    const json = await readJsonResponse<{ ok: boolean; userId?: string; profileName?: string; error?: string }>(res)
-    if (!json?.ok || !json.userId) return null
+    const { json, error } = await resolveProfileApiResponse<{ ok: boolean; userId?: string; profileName?: string; error?: string }>(
+      'fetch default profile',
+      target,
+      res,
+    )
+    if (error || !json?.ok || !json.userId) return null
     return { userId: json.userId, profileName: json.profileName ?? 'Default' }
-  } catch {
+  } catch (e: unknown) {
+    logProfileApiException('fetch default profile', target, e)
     return null
   }
 }

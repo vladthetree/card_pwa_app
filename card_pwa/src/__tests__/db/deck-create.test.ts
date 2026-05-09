@@ -61,19 +61,13 @@ describe('createDeck', () => {
     expect(mockedDb.decks.add).not.toHaveBeenCalled()
   })
 
-  it('creates deck with UUIDv7 id and enqueues sync operation', async () => {
+  it('creates an empty deck locally without enqueueing sync', async () => {
     const result = await createDeck('New Deck')
 
     expect(result.ok).toBe(true)
     expect(result.deckId).toBeDefined()
     expect(result.deckId).toMatch(uuidV7Pattern)
     expect(mockedDb.decks.add).toHaveBeenCalledTimes(1)
-    expect(mockedSyncQueue.enqueueSyncOperation).toHaveBeenCalledWith(
-      'deck.create',
-      expect.objectContaining({
-        id: result.deckId,
-        name: 'New Deck',
-      }),
-    )
+    expect(mockedSyncQueue.enqueueSyncOperation).not.toHaveBeenCalled()
   })
 })

@@ -131,7 +131,7 @@ export function HomeDeckListSection({
 
   return (
     <div
-      className="relative z-0 min-h-0 flex-1 overflow-y-auto no-scrollbar pb-4 pr-1"
+      className="home-bottom-scroll-padding relative z-0 min-h-0 flex-1 overflow-y-auto no-scrollbar pr-1 sm:pb-4"
       style={{ WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'contain', touchAction: 'pan-y' }}
       data-testid="home-deck-list-scroll"
     >

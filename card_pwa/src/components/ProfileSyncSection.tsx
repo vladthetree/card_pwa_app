@@ -31,6 +31,7 @@ import { resetSyncPullState } from '../services/syncPull'
 import { clearSyncQueue, wakeDeferredSyncQueue } from '../services/syncQueue'
 import { runSyncCycleNow } from '../services/syncCoordinator'
 import { getDefaultProfileSyncEndpoint } from '../services/syncConfig'
+import { isReviewDeck } from '../utils/reviewDecks'
 import ConfirmModal from './ConfirmModal'
 
 const STRINGS = {
@@ -186,7 +187,7 @@ function resolveErrorMessage(error: string, t: typeof STRINGS['de'] | typeof STR
 
 export default function ProfileSyncSection({ language }: Props) {
   const t = STRINGS[language]
-  const { profile, setProfile } = useSettings()
+  const { settings, profile, setProfile } = useSettings()
 
   const [busy, setBusy] = useState(false)
   const [profileNameInput, setProfileNameInput] = useState('')
@@ -326,31 +327,32 @@ export default function ProfileSyncSection({ language }: Props) {
     setLoadingDecks(false)
   }
 
-  const REVIEW_ROOT_ID = 'needs-review-root'
   const allServerDeckIds = serverDecks.map(deck => deck.id)
-  const allNonReviewServerDeckIds = allServerDeckIds.filter(
-    id => id !== REVIEW_ROOT_ID && !id.startsWith('needs-review-'),
-  )
+  const visibleServerDecks = settings.showReviewDecks ? serverDecks : serverDecks.filter(deck => !isReviewDeck(deck))
+  const visibleServerDeckIds = visibleServerDecks.map(deck => deck.id)
+  const defaultSelectedDeckIds = settings.showReviewDecks
+    ? allServerDeckIds
+    : visibleServerDeckIds
 
-  // null = default (all non-review checked); [] = nothing; [...ids] = explicit
+  // null = default (visible decks checked); [] = nothing; [...ids] = explicit
   const isDeckChecked = (deckId: string): boolean => {
-    if (selectedDeckIds === null) return !deckId.startsWith('needs-review-') && deckId !== REVIEW_ROOT_ID
+    if (selectedDeckIds === null) return defaultSelectedDeckIds.includes(deckId)
     return selectedDeckIds.includes(deckId)
   }
   const selectedCount = selectedDeckIds === null
-    ? allNonReviewServerDeckIds.length
-    : serverDecks.filter(d => selectedDeckIds.includes(d.id)).length
+    ? defaultSelectedDeckIds.length
+    : visibleServerDecks.filter(d => selectedDeckIds.includes(d.id)).length
 
   const persistSelectedDeckIds = async (nextIds: string[] | null) => {
     if (!profile?.userId) return
-    // null = default (all non-review); otherwise filter to valid server deck IDs
+    // null = default (visible decks); otherwise filter to visible server deck IDs
     const valid = nextIds !== null
-      ? Array.from(new Set(nextIds)).filter(id => allServerDeckIds.includes(id))
+      ? Array.from(new Set(nextIds)).filter(id => visibleServerDeckIds.includes(id))
       : null
 
     // Determine which decks were just removed so we can clean up local data
-    const previousIds = selectedDeckIds ?? allNonReviewServerDeckIds
-    const nextIdsForDiff = valid ?? allNonReviewServerDeckIds
+    const previousIds = selectedDeckIds ?? defaultSelectedDeckIds
+    const nextIdsForDiff = valid ?? defaultSelectedDeckIds
     const nextSet = new Set(nextIdsForDiff)
     const removedDeckIds = previousIds.filter(id => !nextSet.has(id))
     if (removedDeckIds.length > 0) {
@@ -371,7 +373,7 @@ export default function ProfileSyncSection({ language }: Props) {
   }
 
   const handleToggleDeckSync = async (deckId: string) => {
-    const current = selectedDeckIds ?? allNonReviewServerDeckIds
+    const current = selectedDeckIds ?? defaultSelectedDeckIds
     const next = current.includes(deckId)
       ? current.filter(id => id !== deckId)
       : [...current, deckId]
@@ -379,7 +381,7 @@ export default function ProfileSyncSection({ language }: Props) {
   }
 
   const handleSelectAllDecks = async () => {
-    await persistSelectedDeckIds(null) // null = default = all non-review
+    await persistSelectedDeckIds(null) // null = default = visible decks
   }
 
   const handleDeselectAllDecks = async () => {
@@ -640,11 +642,11 @@ export default function ProfileSyncSection({ language }: Props) {
   const profileListLabel = language === 'de'
     ? `${publicProfiles.length} Profil${publicProfiles.length === 1 ? '' : 'e'}`
     : `${publicProfiles.length} profile${publicProfiles.length === 1 ? '' : 's'}`
-  const deckListLabel = serverDecks.length === 0
+  const deckListLabel = visibleServerDecks.length === 0
     ? '0'
     : selectedDeckIds === null
-      ? String(allNonReviewServerDeckIds.length)
-      : `${selectedCount}/${serverDecks.length}`
+      ? String(defaultSelectedDeckIds.length)
+      : `${selectedCount}/${visibleServerDecks.length}`
 
   return (
     <>
@@ -850,19 +852,19 @@ export default function ProfileSyncSection({ language }: Props) {
                 </button>
               </div>
 
-            {serverDecks.length === 0 && !loadingDecks && (
+            {visibleServerDecks.length === 0 && !loadingDecks && (
               <p className="text-xs text-zinc-500">-</p>
             )}
 
-            {serverDecks.length > 0 && (
+            {visibleServerDecks.length > 0 && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-3 rounded-lg border border-zinc-900 bg-black/25 px-3 py-2 text-xs text-zinc-500">
                   <span>
                     {selectedDeckIds === null
                       ? t.selected_all_decks
                       : selectedDeckIds.length === 0
-                        ? `0/${serverDecks.length}`
-                        : `${t.selected_some_decks} (${selectedCount}/${serverDecks.length})`}
+                        ? `0/${visibleServerDecks.length}`
+                        : `${t.selected_some_decks} (${selectedCount}/${visibleServerDecks.length})`}
                   </span>
                   <div className="flex items-center gap-3">
                     <button
@@ -894,7 +896,7 @@ export default function ProfileSyncSection({ language }: Props) {
                 {showDeckList && (
                   <div className="max-h-56 overflow-y-auto rounded-lg border border-zinc-900">
                     <ul>
-                      {serverDecks.map(deck => (
+                      {visibleServerDecks.map(deck => (
                         <li
                           key={deck.id}
                           className="px-3 py-2 text-sm text-zinc-200 border-b border-zinc-900 last:border-b-0"

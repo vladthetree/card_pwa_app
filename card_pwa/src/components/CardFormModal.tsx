@@ -4,11 +4,11 @@ import { X, Plus, Loader2, CheckCircle, Trash2, Info, Minus } from 'lucide-react
 import { db, type DeckRecord } from '../db'
 import { createCard, updateCard, deleteCard } from '../db/queries'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
-import { QuestionParser, AnswerParser } from '../utils/cardTextParser'
+import { QuestionParser, AnswerParser, OrderingParser } from '../utils/cardTextParser'
+import { getCardVariant, type CardVariant } from '../utils/cardVariant'
 import { SM2 } from '../utils/sm2'
 import { UI_TOKENS } from '../constants/ui'
 import { generateUuidV7 } from '../utils/id'
-import { enqueueSyncOperation } from '../services/syncQueue'
 import type { Card } from '../types'
 
 type Props = {
@@ -94,6 +94,23 @@ export default function CardFormModal(props: Props) {
 
   const buildInitialForm = (): FormState => {
     if (props.mode === 'edit') {
+      const variant = getCardVariant(props.card.front)
+      // For PBQ cards use raw front/back (their content is already the canonical format)
+      if (variant === 'ordering' || variant === 'matching') {
+        const { backText, mnemonic } = extractMnemonic(props.card.back)
+        return {
+          deckId: '',
+          newDeckName: '',
+          front: props.card.front,
+          back: backText,
+          tags: props.card.tags.join('; '),
+          mnemonic,
+          isMultipleChoice: false,
+          mcOptions: ['', '', '', ''],
+          correctAnswer: null,
+          questionText: '',
+        }
+      }
       const parsedQuestion = QuestionParser.parse(props.card.front)
       const parsedAnswer = AnswerParser.parse(props.card.back)
       const optionValues = Object.values(parsedQuestion.options)
@@ -133,6 +150,40 @@ export default function CardFormModal(props: Props) {
 
   const [form, setForm] = useState<FormState>(buildInitialForm)
 
+  const initialVariant: CardVariant = (() => {
+    if (props.mode === 'edit') {
+      const v = getCardVariant(props.card.front)
+      if (v === 'ordering' || v === 'matching') return v
+      const pq = QuestionParser.parse(props.card.front)
+      return Object.keys(pq.options).length >= 2 ? 'mc' : 'standard'
+    }
+    return 'standard'
+  })()
+  const [cardVariant, setCardVariantState] = useState<CardVariant>(initialVariant)
+
+  const ORDERING_TEMPLATE = `ORDERING:\n[Aufgabenstellung hier eingeben]\n\n1) Step eins\n2) Step zwei\n3) Step drei\n4) Step vier`
+  const MATCHING_TEMPLATE = `MATCHING:\n[Aufgabenstellung hier eingeben]\n\nBegriff A >> Kategorie X\nBegriff B >> Kategorie Y\nBegriff C >> Kategorie X`
+
+  const handleVariantChange = (variant: CardVariant) => {
+    setCardVariantState(variant)
+    if (variant === 'mc') {
+      setForm(prev => ({ ...prev, isMultipleChoice: true, front: '', back: '' }))
+    } else if (variant === 'ordering') {
+      setForm(prev => ({ ...prev, isMultipleChoice: false, front: ORDERING_TEMPLATE, back: 'CORRECT_ORDER: 1,2,3,4\n' }))
+    } else if (variant === 'matching') {
+      setForm(prev => ({ ...prev, isMultipleChoice: false, front: MATCHING_TEMPLATE, back: '' }))
+    } else {
+      setForm(prev => ({ ...prev, isMultipleChoice: false, front: '', back: '' }))
+    }
+  }
+
+  const handleGenerateCorrectOrder = () => {
+    const parsed = OrderingParser.parse(form.front)
+    if (parsed.items.length === 0) return
+    const orderStr = parsed.items.map((_, i) => i + 1).join(',')
+    setForm(prev => ({ ...prev, back: `CORRECT_ORDER: ${orderStr}\n` }))
+  }
+
   // Set default deckId once decks load (create mode)
   useEffect(() => {
     if (props.mode === 'create' && !form.deckId && decks.length > 0) {
@@ -144,10 +195,6 @@ export default function CardFormModal(props: Props) {
   const set = useCallback((field: keyof FormState) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => setForm(prev => ({ ...prev, [field]: e.target.value })), [])
-
-  const setCheckbox = useCallback((field: keyof FormState) => (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => setForm(prev => ({ ...prev, [field]: e.target.checked })), [])
 
   const setMcOption = useCallback((index: number) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm(prev => {
@@ -175,7 +222,23 @@ export default function CardFormModal(props: Props) {
     }), [])
 
   const buildContent = (): { frontContent: string; backContent: string } | null => {
-    if (form.isMultipleChoice) {
+    if (cardVariant === 'ordering') {
+      const front = form.front.trim()
+      const back  = form.back.trim()
+      if (!front) { setError(t.front_back_required); return null }
+      if (!back)  { setError(t.front_back_required); return null }
+      if (!/^ORDERING:/i.test(front)) { setError(t.front_back_required); return null }
+      return { frontContent: front, backContent: back }
+    }
+    if (cardVariant === 'matching') {
+      const front = form.front.trim()
+      const back  = form.back.trim()
+      if (!front) { setError(t.front_back_required); return null }
+      if (!back)  { setError(t.front_back_required); return null }
+      if (!/^MATCHING:/i.test(front)) { setError(t.front_back_required); return null }
+      return { frontContent: front, backContent: back }
+    }
+    if (cardVariant === 'mc' || form.isMultipleChoice) {
       if (!form.questionText.trim()) { setError(t.question_empty); return null }
       const filledOptions = form.mcOptions.filter(o => o.trim())
       if (filledOptions.length < 2) { setError(t.all_options_required); return null }
@@ -211,14 +274,6 @@ export default function CardFormModal(props: Props) {
         await db.decks.add({
           id: deckId,
           name: deckName,
-          createdAt,
-          updatedAt: createdAt,
-          source: 'manual',
-        })
-        await enqueueSyncOperation('deck.create', {
-          id: deckId,
-          name: deckName,
-          parentDeckId: null,
           createdAt,
           updatedAt: createdAt,
           source: 'manual',
@@ -370,23 +425,44 @@ export default function CardFormModal(props: Props) {
               </div>
             )}
 
-            {/* Multiple Choice Toggle */}
+            {/* Card type selector */}
             <div>
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.isMultipleChoice}
-                  onChange={setCheckbox('isMultipleChoice')}
-                  className="h-5 w-5"
-                />
-                <span className="text-xs text-white/70 font-medium">
-                  {props.mode === 'create' ? t.create_multiple_choice : t.multiple_choice_card}
-                </span>
-              </label>
+              <p className="text-xs text-white/50 mb-2 font-medium uppercase tracking-wide">{t.card_type_label}</p>
+              <div className="flex flex-wrap gap-2">
+                {(['standard', 'mc', 'ordering', 'matching'] as CardVariant[]).map(v => {
+                  const labels: Record<CardVariant, string> = {
+                    standard: t.front_side + ' / ' + t.back_side,
+                    mc: t.multiple_choice_card,
+                    ordering: t.ordering_card,
+                    matching: t.matching_card,
+                  }
+                  const activeClsMap: Record<CardVariant, string> = {
+                    standard: 'border-[--brand-primary-60] bg-[--brand-primary-12] text-[--brand-primary]',
+                    mc: 'border-[--brand-secondary-60] bg-[--brand-secondary-12] text-[--brand-secondary]',
+                    ordering: 'border-violet-500/60 bg-violet-500/12 text-violet-300',
+                    matching: 'border-cyan-500/60 bg-cyan-500/12 text-cyan-300',
+                  }
+                  const isActive = cardVariant === v
+                  return (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => handleVariantChange(v)}
+                      className={`rounded-[10px] border px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] transition-all duration-150 ${
+                        isActive
+                          ? activeClsMap[v]
+                          : 'border-[#27272a] bg-transparent text-zinc-500 hover:border-zinc-600 hover:text-zinc-300'
+                      }`}
+                    >
+                      {labels[v]}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
 
             {/* Form body */}
-            {form.isMultipleChoice ? (
+            {(cardVariant === 'mc') ? (
               <>
                 <Field label={t.question}>
                   <textarea
@@ -450,6 +526,56 @@ export default function CardFormModal(props: Props) {
                     placeholder={t.extra_explanation_placeholder}
                     rows={2}
                     className={`${inputCls} resize-none`}
+                  />
+                </Field>
+              </>
+            ) : cardVariant === 'ordering' ? (
+              <>
+                <Field label={t.front_required}>
+                  <textarea
+                    value={form.front}
+                    onChange={set('front')}
+                    rows={6}
+                    className={`${inputCls} resize-none font-mono text-[13px]`}
+                  />
+                </Field>
+                <Field
+                  label={t.back_required}
+                  labelRight={
+                    <button
+                      type="button"
+                      onClick={handleGenerateCorrectOrder}
+                      className="text-xs text-white/40 hover:text-white/70 transition"
+                    >
+                      {t.generate_correct_order}
+                    </button>
+                  }
+                >
+                  <textarea
+                    value={form.back}
+                    onChange={set('back')}
+                    rows={4}
+                    className={`${inputCls} resize-none font-mono text-[13px]`}
+                  />
+                </Field>
+              </>
+            ) : cardVariant === 'matching' ? (
+              <>
+                <Field label={t.front_required}>
+                  <textarea
+                    value={form.front}
+                    onChange={set('front')}
+                    rows={6}
+                    className={`${inputCls} resize-none font-mono text-[13px]`}
+                  />
+                </Field>
+                <Field label={t.back_required}>
+                  <textarea
+                    value={form.back}
+                    onChange={set('back')}
+                    placeholder={'Begriff A = Kategorie X\nBegriff B = Kategorie Y\n\nMerkhilfe: ...'}
+                    rows={4}
+                    className={`${inputCls} resize-none font-mono text-[13px]`}
                   />
                 </Field>
               </>

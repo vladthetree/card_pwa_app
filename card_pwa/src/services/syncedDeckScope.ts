@@ -1,14 +1,7 @@
 import { db } from '../db'
 import { isSyncActive } from './syncConfig'
 import { readSelectedDeckIds } from './profileService'
-
-const REVIEW_ROOT_ID = 'needs-review-root'
-
-function isReviewDeck(deckId: string, decks: Array<{ id: string; parentDeckId?: string | null }>): boolean {
-  if (deckId === REVIEW_ROOT_ID) return true
-  const deck = decks.find(d => d.id === deckId)
-  return deck?.parentDeckId === REVIEW_ROOT_ID
-}
+import { isReviewDeck, isReviewDeckId, readReviewDecksEnabledFromStorage } from '../utils/reviewDecks'
 
 /**
  * Returns the IDs of all decks that are currently "in scope" for sync/study.
@@ -23,14 +16,20 @@ export async function getSyncedDeckIds(userId?: string): Promise<string[]> {
 
   if (isSyncActive() && userId) {
     const serverSelected = readSelectedDeckIds(userId)
+    const showReviewDecks = readReviewDecksEnabledFromStorage()
 
     if (serverSelected === null) {
-      // Default: all decks except review decks
-      return localIds.filter(id => !isReviewDeck(id, localDecks))
+      return showReviewDecks ? localIds : localDecks.filter(deck => !isReviewDeck(deck)).map(deck => deck.id)
     }
     if (serverSelected.length === 0) return []
 
-    const serverSet = expandDeckIdsWithDescendants(localDecks, new Set(serverSelected))
+    const selected = showReviewDecks
+      ? serverSelected
+      : serverSelected.filter(id => {
+          const deck = localDecks.find(item => item.id === id)
+          return deck ? !isReviewDeck(deck) : !isReviewDeckId(id)
+        })
+    const serverSet = expandDeckIdsWithDescendants(localDecks, new Set(selected))
     return localIds.filter(id => serverSet.has(id))
   }
 

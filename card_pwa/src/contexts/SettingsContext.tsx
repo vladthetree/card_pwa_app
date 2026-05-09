@@ -43,6 +43,7 @@ interface Settings {
   dailyReminderEnabled: boolean
   dailyReminderTime: string
   showBuildVersion: boolean
+  showReviewDecks: boolean
   /** Hour (0–23) at which a new study day begins. Default 4 = 04:00 AM.
    *  Prevents schedule shifts when studying past midnight (Issue #8). */
   nextDayStartsAt: number
@@ -66,6 +67,7 @@ interface SettingsContextType {
   setDailyReminderEnabled: (enabled: boolean) => void
   setDailyReminderTime: (time: string) => void
   setShowBuildVersion: (enabled: boolean) => void
+  setShowReviewDecks: (enabled: boolean) => void
   setStudyCardLimit: (limit: number) => void
   setShuffleModeEnabled: (enabled: boolean) => void
   setNextDayStartsAt: (hour: number) => void
@@ -161,6 +163,7 @@ const DEFAULT_SETTINGS: Settings = {
   dailyReminderEnabled: false,
   dailyReminderTime: '20:00',
   showBuildVersion: true,
+  showReviewDecks: false,
   nextDayStartsAt: 4,
   dailyGoal: 20,
 }
@@ -198,6 +201,7 @@ function normalizeSettings(input: Partial<Settings> | undefined): Settings {
       dailyReminderEnabled: normalizedDailyReminderEnabled,
     dailyReminderTime: normalizeDailyReminderTime(input?.dailyReminderTime),
     showBuildVersion: input?.showBuildVersion !== false,
+    showReviewDecks: input?.showReviewDecks === true,
     nextDayStartsAt: Number.isInteger(rawNextDayStartsAt) && rawNextDayStartsAt >= 0 && rawNextDayStartsAt <= 23 ? rawNextDayStartsAt : 4,
     dailyGoal: normalizeDailyGoal(input?.dailyGoal),
   }
@@ -351,6 +355,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     saveSettings({ ...settings, showBuildVersion })
   }
 
+  const setShowReviewDecks = (showReviewDecks: boolean) => {
+    saveSettings({ ...settings, showReviewDecks })
+  }
+
   const setStudyCardLimit = (limit: number) => {
     saveSettings({ ...settings, studyCardLimit: normalizeStudyCardLimit(limit) })
   }
@@ -428,6 +436,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setDailyReminderEnabled,
         setDailyReminderTime,
         setShowBuildVersion,
+        setShowReviewDecks,
         setStudyCardLimit,
         setShuffleModeEnabled,
         setNextDayStartsAt,

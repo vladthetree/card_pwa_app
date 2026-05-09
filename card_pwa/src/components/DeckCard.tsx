@@ -12,13 +12,6 @@ import { DeckSchedulePanel } from './DeckSchedulePanel'
 import { formatDeckName } from '../utils/cardTextParser'
 import type { Deck, DeckScheduleOverview } from '../types'
 
-function dueBadgeClass(due: number): string {
-  if (due === 0) return 'text-zinc-500 border-[#18181b] bg-transparent'
-  if (due <= 5)  return 'text-emerald-300 border-emerald-500/30 bg-emerald-500/[0.08]'
-  if (due <= 20) return 'text-amber-300 border-amber-500/30 bg-amber-500/[0.08]'
-  return 'text-rose-300 border-rose-500/35 bg-rose-500/[0.08]'
-}
-
 function readExpandedSubDeckIds(): Set<string> {
   if (typeof window === 'undefined') return new Set()
   try {
@@ -103,16 +96,6 @@ export function DeckCard({ deck, language, onStartStudy, onDelete, schedule, dec
         whileHover={prefersReducedMotion ? {} : { y: -2, transition: { duration: 0.18 } }}
         whileTap={prefersReducedMotion ? {} : { scale: 0.99, transition: { duration: 0.1 } }}
       >
-        {/* Due badge */}
-        {dueNow > 0 && (
-          <div
-            className={`absolute top-3 ${hasSubDecks ? 'right-24' : 'right-12'} rounded-[6px] border px-2 py-0.5 text-[10px] font-mono font-bold tabular-nums tracking-wide ${dueBadgeClass(dueNow)}`}
-            aria-label={`${dueNow} ${t.stats_now_due}`}
-          >
-            {dueNow}
-          </div>
-        )}
-
         {hasSubDecks && (
           <button
             type="button"

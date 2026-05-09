@@ -1,16 +1,21 @@
+import { lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { memo, useState, useEffect, useMemo, useRef } from 'react'
 import { Edit, Check, X } from 'lucide-react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
-import { parseQuestionText, parseAnswerText } from '../utils/cardTextParser'
+import { parseQuestionText, parseAnswerText, parseAnyQuestion, parseAnyAnswer } from '../utils/cardTextParser'
+import type { OrderingAnswer, MatchingAnswer } from '../utils/cardTextParser'
 import type { Card } from '../types'
+
+const OrderingCard = lazy(() => import('./OrderingCard'))
+const MatchingCard  = lazy(() => import('./MatchingCard'))
 
 interface Props {
   card: Card
   flipped: boolean
   onFlip: () => void
   onEdit?: () => void
-  onAnswerEvaluated?: (isCorrect: boolean) => void
+  onAnswerEvaluated?: (score: number) => void
   compact?: boolean
   originDeckName?: string
 }
@@ -107,6 +112,38 @@ function shuffleKeys(keys: string[]): string[] {
 const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName }: Props) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
+
+  // Dispatch to PBQ sub-components when card type requires it
+  const anyQuestion = useMemo(() => parseAnyQuestion(card.front), [card.id, card.front])
+
+  if (anyQuestion.type === 'ordering') {
+    const anyAnswer = parseAnyAnswer(card.back, 'ordering') as OrderingAnswer
+    return (
+      <Suspense fallback={null}>
+        <OrderingCard
+          card={card} question={anyQuestion} answer={anyAnswer}
+          flipped={flipped} onFlip={onFlip} onEdit={onEdit}
+          onAnswerEvaluated={onAnswerEvaluated ?? (() => {})}
+          compact={compact} originDeckName={originDeckName}
+        />
+      </Suspense>
+    )
+  }
+
+  if (anyQuestion.type === 'matching') {
+    const anyAnswer = parseAnyAnswer(card.back, 'matching') as MatchingAnswer
+    return (
+      <Suspense fallback={null}>
+        <MatchingCard
+          card={card} question={anyQuestion} answer={anyAnswer}
+          flipped={flipped} onFlip={onFlip} onEdit={onEdit}
+          onAnswerEvaluated={onAnswerEvaluated ?? (() => {})}
+          compact={compact} originDeckName={originDeckName}
+        />
+      </Suspense>
+    )
+  }
+
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
   const [impactPhase, setImpactPhase] = useState<'idle' | 'selected' | 'flipping'>('idle')
   const [flipInActive, setFlipInActive] = useState(false)
@@ -213,7 +250,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
     const answeredCorrectly = correctKeys.includes(letter)
     setSelectedAnswer(letter)
     setImpactPhase('selected')
-    onAnswerEvaluated?.(answeredCorrectly)
+    onAnswerEvaluated?.(answeredCorrectly ? 1.0 : 0.0)
     pendingAutoFlipRef.current = true
 
     if (!answeredCorrectly) {

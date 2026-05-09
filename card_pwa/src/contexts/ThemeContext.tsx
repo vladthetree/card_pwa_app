@@ -62,6 +62,7 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+const APP_CHROME_COLOR = '#080808'
 
 interface ThemeProviderProps {
   children: ReactNode
@@ -84,13 +85,13 @@ function hexToRgbTuple(hex: string): [number, number, number] {
 function getThemeChromeColor(key: ThemeKey): string {
   switch (key) {
     case 'blueSteel':
-      return '#050505'
+      return APP_CHROME_COLOR
     case 'ghost':
-      return '#050505'
+      return APP_CHROME_COLOR
     case 'default':
-      return '#050505'
+      return APP_CHROME_COLOR
     default:
-      return '#050505'
+      return APP_CHROME_COLOR
   }
 }
 
