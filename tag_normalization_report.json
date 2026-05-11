@@ -1,0 +1,1844 @@
+{
+  "database": "/home/_vb/card_pwa_app/card-sync-server/sync.db",
+  "applied": true,
+  "final_tags": [
+    "asset_management",
+    "authentication",
+    "authorization",
+    "automation_orchestration",
+    "business_continuity_disaster_recovery",
+    "change_management",
+    "cloud_security",
+    "cryptography",
+    "data_security",
+    "detection_response",
+    "digital_forensics",
+    "email_security",
+    "endpoint_security",
+    "governance_risk_compliance",
+    "hardening",
+    "identity_access_management",
+    "incident_response",
+    "logging_monitoring",
+    "malware_analysis",
+    "mobile_security",
+    "network_security",
+    "operational_technology",
+    "physical_security",
+    "security_architecture",
+    "security_awareness",
+    "security_operations",
+    "threat_intelligence",
+    "threats_attacks",
+    "vulnerability_management",
+    "wireless_security",
+    "application_security"
+  ],
+  "existing_tag_analysis": {
+    "existing_tag_counts": [
+      {
+        "tag": "needs_review",
+        "count": 2312,
+        "issue": "generic_operational_or_forbidden"
+      },
+      {
+        "tag": "source_messer",
+        "count": 1905,
+        "issue": "generic_operational_or_forbidden"
+      },
+      {
+        "tag": "source_soc_analyst",
+        "count": 1157,
+        "issue": "generic_operational_or_forbidden"
+      },
+      {
+        "tag": "origin_01_05_pre_subdecks",
+        "count": 678,
+        "issue": "generic_operational_or_forbidden"
+      },
+      {
+        "tag": "validated",
+        "count": 254,
+        "issue": "generic_operational_or_forbidden"
+      },
+      {
+        "tag": "Security_Operations",
+        "count": 180,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "Security_Program_Management_Oversight",
+        "count": 132,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "Threats_Vulnerabilities_Mitigations",
+        "count": 114,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "General_Security_Concepts",
+        "count": 60,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Network_Security",
+        "count": 20,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Forensics",
+        "count": 18,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Incident_Response",
+        "count": 18,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Access_Control",
+        "count": 16,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Vulnerability_Management",
+        "count": 16,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Identity_Management",
+        "count": 14,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Hardening",
+        "count": 12,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Secure_Coding",
+        "count": 12,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Authentication",
+        "count": 10,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Log_Analysis",
+        "count": 8,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Network_Monitoring",
+        "count": 8,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Cloud_Security",
+        "count": 4,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Data_Protection",
+        "count": 4,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Endpoint_Security",
+        "count": 4,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Malware_Analysis",
+        "count": 4,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Mobile_Security",
+        "count": 4,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Monitoring",
+        "count": 4,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "duplicate",
+        "count": 2,
+        "issue": "generic_operational_or_forbidden"
+      },
+      {
+        "tag": "SecOps_Logging",
+        "count": 2,
+        "issue": "legacy_topic_tag"
+      },
+      {
+        "tag": "SecOps_Threat_Intelligence",
+        "count": 2,
+        "issue": "generic_operational_or_forbidden"
+      }
+    ],
+    "cards_without_tags_before": 12,
+    "cards_with_duplicate_tags_before": 0
+  },
+  "tag_mapping_old_to_new": {
+    "duplicate": [
+      {
+        "new_tag": "cryptography",
+        "count": 1
+      },
+      {
+        "new_tag": "authentication",
+        "count": 1
+      },
+      {
+        "new_tag": "endpoint_security",
+        "count": 1
+      },
+      {
+        "new_tag": "mobile_security",
+        "count": 1
+      },
+      {
+        "new_tag": "network_security",
+        "count": 1
+      }
+    ],
+    "General_Security_Concepts": [
+      {
+        "new_tag": "cryptography",
+        "count": 24
+      },
+      {
+        "new_tag": "security_architecture",
+        "count": 20
+      },
+      {
+        "new_tag": "authorization",
+        "count": 10
+      },
+      {
+        "new_tag": "authentication",
+        "count": 10
+      },
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 10
+      },
+      {
+        "new_tag": "network_security",
+        "count": 8
+      },
+      {
+        "new_tag": "physical_security",
+        "count": 8
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 6
+      },
+      {
+        "new_tag": "business_continuity_disaster_recovery",
+        "count": 4
+      },
+      {
+        "new_tag": "data_security",
+        "count": 4
+      },
+      {
+        "new_tag": "cloud_security",
+        "count": 4
+      },
+      {
+        "new_tag": "hardening",
+        "count": 4
+      },
+      {
+        "new_tag": "email_security",
+        "count": 2
+      },
+      {
+        "new_tag": "threats_attacks",
+        "count": 2
+      },
+      {
+        "new_tag": "endpoint_security",
+        "count": 2
+      },
+      {
+        "new_tag": "wireless_security",
+        "count": 2
+      },
+      {
+        "new_tag": "change_management",
+        "count": 2
+      },
+      {
+        "new_tag": "vulnerability_management",
+        "count": 2
+      },
+      {
+        "new_tag": "mobile_security",
+        "count": 2
+      },
+      {
+        "new_tag": "incident_response",
+        "count": 2
+      }
+    ],
+    "needs_review": [
+      {
+        "new_tag": "network_security",
+        "count": 417
+      },
+      {
+        "new_tag": "cryptography",
+        "count": 355
+      },
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 311
+      },
+      {
+        "new_tag": "vulnerability_management",
+        "count": 223
+      },
+      {
+        "new_tag": "threats_attacks",
+        "count": 222
+      },
+      {
+        "new_tag": "business_continuity_disaster_recovery",
+        "count": 200
+      },
+      {
+        "new_tag": "authentication",
+        "count": 194
+      },
+      {
+        "new_tag": "endpoint_security",
+        "count": 135
+      },
+      {
+        "new_tag": "application_security",
+        "count": 134
+      },
+      {
+        "new_tag": "data_security",
+        "count": 126
+      },
+      {
+        "new_tag": "incident_response",
+        "count": 107
+      },
+      {
+        "new_tag": "physical_security",
+        "count": 105
+      },
+      {
+        "new_tag": "authorization",
+        "count": 92
+      },
+      {
+        "new_tag": "security_architecture",
+        "count": 82
+      },
+      {
+        "new_tag": "wireless_security",
+        "count": 79
+      },
+      {
+        "new_tag": "logging_monitoring",
+        "count": 78
+      },
+      {
+        "new_tag": "cloud_security",
+        "count": 78
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 74
+      },
+      {
+        "new_tag": "email_security",
+        "count": 58
+      },
+      {
+        "new_tag": "identity_access_management",
+        "count": 57
+      },
+      {
+        "new_tag": "hardening",
+        "count": 55
+      },
+      {
+        "new_tag": "malware_analysis",
+        "count": 45
+      },
+      {
+        "new_tag": "mobile_security",
+        "count": 42
+      },
+      {
+        "new_tag": "automation_orchestration",
+        "count": 33
+      },
+      {
+        "new_tag": "asset_management",
+        "count": 31
+      },
+      {
+        "new_tag": "threat_intelligence",
+        "count": 29
+      },
+      {
+        "new_tag": "security_awareness",
+        "count": 29
+      },
+      {
+        "new_tag": "operational_technology",
+        "count": 27
+      },
+      {
+        "new_tag": "change_management",
+        "count": 22
+      },
+      {
+        "new_tag": "security_operations",
+        "count": 12
+      },
+      {
+        "new_tag": "digital_forensics",
+        "count": 9
+      }
+    ],
+    "origin_01_05_pre_subdecks": [
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 178
+      },
+      {
+        "new_tag": "network_security",
+        "count": 174
+      },
+      {
+        "new_tag": "cryptography",
+        "count": 102
+      },
+      {
+        "new_tag": "business_continuity_disaster_recovery",
+        "count": 80
+      },
+      {
+        "new_tag": "security_architecture",
+        "count": 74
+      },
+      {
+        "new_tag": "threats_attacks",
+        "count": 74
+      },
+      {
+        "new_tag": "vulnerability_management",
+        "count": 72
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 70
+      },
+      {
+        "new_tag": "endpoint_security",
+        "count": 62
+      },
+      {
+        "new_tag": "application_security",
+        "count": 58
+      },
+      {
+        "new_tag": "authentication",
+        "count": 56
+      },
+      {
+        "new_tag": "authorization",
+        "count": 54
+      },
+      {
+        "new_tag": "cloud_security",
+        "count": 54
+      },
+      {
+        "new_tag": "data_security",
+        "count": 50
+      },
+      {
+        "new_tag": "malware_analysis",
+        "count": 40
+      },
+      {
+        "new_tag": "incident_response",
+        "count": 38
+      },
+      {
+        "new_tag": "security_awareness",
+        "count": 34
+      },
+      {
+        "new_tag": "security_operations",
+        "count": 34
+      },
+      {
+        "new_tag": "logging_monitoring",
+        "count": 30
+      },
+      {
+        "new_tag": "digital_forensics",
+        "count": 30
+      },
+      {
+        "new_tag": "hardening",
+        "count": 28
+      },
+      {
+        "new_tag": "email_security",
+        "count": 26
+      },
+      {
+        "new_tag": "operational_technology",
+        "count": 24
+      },
+      {
+        "new_tag": "threat_intelligence",
+        "count": 22
+      },
+      {
+        "new_tag": "physical_security",
+        "count": 18
+      },
+      {
+        "new_tag": "wireless_security",
+        "count": 18
+      },
+      {
+        "new_tag": "mobile_security",
+        "count": 16
+      },
+      {
+        "new_tag": "change_management",
+        "count": 8
+      },
+      {
+        "new_tag": "asset_management",
+        "count": 8
+      },
+      {
+        "new_tag": "identity_access_management",
+        "count": 8
+      },
+      {
+        "new_tag": "automation_orchestration",
+        "count": 2
+      }
+    ],
+    "SecOps_Access_Control": [
+      {
+        "new_tag": "authorization",
+        "count": 14
+      },
+      {
+        "new_tag": "authentication",
+        "count": 4
+      },
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 4
+      },
+      {
+        "new_tag": "network_security",
+        "count": 2
+      },
+      {
+        "new_tag": "endpoint_security",
+        "count": 2
+      },
+      {
+        "new_tag": "identity_access_management",
+        "count": 2
+      },
+      {
+        "new_tag": "data_security",
+        "count": 2
+      },
+      {
+        "new_tag": "cryptography",
+        "count": 2
+      }
+    ],
+    "SecOps_Authentication": [
+      {
+        "new_tag": "authentication",
+        "count": 10
+      },
+      {
+        "new_tag": "mobile_security",
+        "count": 2
+      },
+      {
+        "new_tag": "security_operations",
+        "count": 2
+      },
+      {
+        "new_tag": "threats_attacks",
+        "count": 2
+      },
+      {
+        "new_tag": "business_continuity_disaster_recovery",
+        "count": 2
+      },
+      {
+        "new_tag": "network_security",
+        "count": 2
+      },
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 2
+      }
+    ],
+    "SecOps_Cloud_Security": [
+      {
+        "new_tag": "cloud_security",
+        "count": 4
+      },
+      {
+        "new_tag": "logging_monitoring",
+        "count": 2
+      },
+      {
+        "new_tag": "security_operations",
+        "count": 2
+      },
+      {
+        "new_tag": "network_security",
+        "count": 2
+      },
+      {
+        "new_tag": "security_awareness",
+        "count": 2
+      }
+    ],
+    "SecOps_Data_Protection": [
+      {
+        "new_tag": "data_security",
+        "count": 4
+      },
+      {
+        "new_tag": "email_security",
+        "count": 2
+      },
+      {
+        "new_tag": "cryptography",
+        "count": 2
+      },
+      {
+        "new_tag": "physical_security",
+        "count": 2
+      }
+    ],
+    "SecOps_Endpoint_Security": [
+      {
+        "new_tag": "endpoint_security",
+        "count": 4
+      },
+      {
+        "new_tag": "malware_analysis",
+        "count": 4
+      },
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 2
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 2
+      }
+    ],
+    "SecOps_Forensics": [
+      {
+        "new_tag": "digital_forensics",
+        "count": 18
+      },
+      {
+        "new_tag": "security_operations",
+        "count": 8
+      },
+      {
+        "new_tag": "cryptography",
+        "count": 4
+      },
+      {
+        "new_tag": "endpoint_security",
+        "count": 4
+      },
+      {
+        "new_tag": "network_security",
+        "count": 2
+      },
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 2
+      }
+    ],
+    "SecOps_Hardening": [
+      {
+        "new_tag": "hardening",
+        "count": 8
+      },
+      {
+        "new_tag": "cryptography",
+        "count": 2
+      },
+      {
+        "new_tag": "threat_intelligence",
+        "count": 2
+      },
+      {
+        "new_tag": "endpoint_security",
+        "count": 2
+      },
+      {
+        "new_tag": "application_security",
+        "count": 2
+      },
+      {
+        "new_tag": "mobile_security",
+        "count": 2
+      },
+      {
+        "new_tag": "operational_technology",
+        "count": 2
+      },
+      {
+        "new_tag": "network_security",
+        "count": 2
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 2
+      },
+      {
+        "new_tag": "authorization",
+        "count": 2
+      },
+      {
+        "new_tag": "cloud_security",
+        "count": 2
+      }
+    ],
+    "SecOps_Identity_Management": [
+      {
+        "new_tag": "authentication",
+        "count": 10
+      },
+      {
+        "new_tag": "authorization",
+        "count": 6
+      },
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 2
+      },
+      {
+        "new_tag": "identity_access_management",
+        "count": 2
+      },
+      {
+        "new_tag": "security_operations",
+        "count": 2
+      },
+      {
+        "new_tag": "mobile_security",
+        "count": 2
+      }
+    ],
+    "SecOps_Incident_Response": [
+      {
+        "new_tag": "incident_response",
+        "count": 10
+      },
+      {
+        "new_tag": "digital_forensics",
+        "count": 6
+      },
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 6
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 4
+      },
+      {
+        "new_tag": "security_operations",
+        "count": 4
+      },
+      {
+        "new_tag": "security_awareness",
+        "count": 4
+      },
+      {
+        "new_tag": "threats_attacks",
+        "count": 4
+      },
+      {
+        "new_tag": "business_continuity_disaster_recovery",
+        "count": 2
+      },
+      {
+        "new_tag": "data_security",
+        "count": 2
+      },
+      {
+        "new_tag": "email_security",
+        "count": 2
+      },
+      {
+        "new_tag": "vulnerability_management",
+        "count": 2
+      }
+    ],
+    "SecOps_Log_Analysis": [
+      {
+        "new_tag": "logging_monitoring",
+        "count": 6
+      },
+      {
+        "new_tag": "security_operations",
+        "count": 2
+      },
+      {
+        "new_tag": "authentication",
+        "count": 2
+      },
+      {
+        "new_tag": "email_security",
+        "count": 2
+      },
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 2
+      },
+      {
+        "new_tag": "application_security",
+        "count": 2
+      },
+      {
+        "new_tag": "network_security",
+        "count": 2
+      }
+    ],
+    "SecOps_Logging": [
+      {
+        "new_tag": "logging_monitoring",
+        "count": 2
+      },
+      {
+        "new_tag": "network_security",
+        "count": 2
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 2
+      }
+    ],
+    "SecOps_Malware_Analysis": [
+      {
+        "new_tag": "malware_analysis",
+        "count": 4
+      },
+      {
+        "new_tag": "endpoint_security",
+        "count": 2
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 2
+      }
+    ],
+    "SecOps_Mobile_Security": [
+      {
+        "new_tag": "mobile_security",
+        "count": 4
+      },
+      {
+        "new_tag": "hardening",
+        "count": 2
+      },
+      {
+        "new_tag": "network_security",
+        "count": 2
+      }
+    ],
+    "SecOps_Monitoring": [
+      {
+        "new_tag": "detection_response",
+        "count": 4
+      },
+      {
+        "new_tag": "email_security",
+        "count": 2
+      },
+      {
+        "new_tag": "security_operations",
+        "count": 2
+      },
+      {
+        "new_tag": "logging_monitoring",
+        "count": 2
+      },
+      {
+        "new_tag": "malware_analysis",
+        "count": 2
+      }
+    ],
+    "SecOps_Network_Monitoring": [
+      {
+        "new_tag": "network_security",
+        "count": 8
+      },
+      {
+        "new_tag": "logging_monitoring",
+        "count": 8
+      },
+      {
+        "new_tag": "data_security",
+        "count": 2
+      },
+      {
+        "new_tag": "cryptography",
+        "count": 2
+      },
+      {
+        "new_tag": "authentication",
+        "count": 2
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 2
+      }
+    ],
+    "SecOps_Network_Security": [
+      {
+        "new_tag": "network_security",
+        "count": 12
+      },
+      {
+        "new_tag": "cryptography",
+        "count": 6
+      },
+      {
+        "new_tag": "wireless_security",
+        "count": 4
+      },
+      {
+        "new_tag": "authentication",
+        "count": 4
+      },
+      {
+        "new_tag": "application_security",
+        "count": 4
+      },
+      {
+        "new_tag": "authorization",
+        "count": 4
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 2
+      },
+      {
+        "new_tag": "threats_attacks",
+        "count": 2
+      },
+      {
+        "new_tag": "email_security",
+        "count": 2
+      }
+    ],
+    "SecOps_Secure_Coding": [
+      {
+        "new_tag": "application_security",
+        "count": 12
+      },
+      {
+        "new_tag": "security_operations",
+        "count": 4
+      },
+      {
+        "new_tag": "data_security",
+        "count": 2
+      },
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 2
+      },
+      {
+        "new_tag": "vulnerability_management",
+        "count": 2
+      }
+    ],
+    "SecOps_Threat_Intelligence": [
+      {
+        "new_tag": "threat_intelligence",
+        "count": 2
+      },
+      {
+        "new_tag": "vulnerability_management",
+        "count": 2
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 2
+      }
+    ],
+    "SecOps_Vulnerability_Management": [
+      {
+        "new_tag": "vulnerability_management",
+        "count": 16
+      },
+      {
+        "new_tag": "hardening",
+        "count": 6
+      },
+      {
+        "new_tag": "threat_intelligence",
+        "count": 4
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 4
+      },
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 4
+      },
+      {
+        "new_tag": "cloud_security",
+        "count": 2
+      },
+      {
+        "new_tag": "network_security",
+        "count": 2
+      },
+      {
+        "new_tag": "application_security",
+        "count": 2
+      },
+      {
+        "new_tag": "security_operations",
+        "count": 2
+      }
+    ],
+    "Security_Operations": [
+      {
+        "new_tag": "network_security",
+        "count": 38
+      },
+      {
+        "new_tag": "authentication",
+        "count": 32
+      },
+      {
+        "new_tag": "security_operations",
+        "count": 28
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 26
+      },
+      {
+        "new_tag": "authorization",
+        "count": 26
+      },
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 26
+      },
+      {
+        "new_tag": "digital_forensics",
+        "count": 24
+      },
+      {
+        "new_tag": "vulnerability_management",
+        "count": 22
+      },
+      {
+        "new_tag": "application_security",
+        "count": 22
+      },
+      {
+        "new_tag": "logging_monitoring",
+        "count": 20
+      },
+      {
+        "new_tag": "cryptography",
+        "count": 18
+      },
+      {
+        "new_tag": "hardening",
+        "count": 16
+      },
+      {
+        "new_tag": "endpoint_security",
+        "count": 14
+      },
+      {
+        "new_tag": "data_security",
+        "count": 12
+      },
+      {
+        "new_tag": "mobile_security",
+        "count": 10
+      },
+      {
+        "new_tag": "malware_analysis",
+        "count": 10
+      },
+      {
+        "new_tag": "email_security",
+        "count": 10
+      },
+      {
+        "new_tag": "incident_response",
+        "count": 10
+      },
+      {
+        "new_tag": "threat_intelligence",
+        "count": 8
+      },
+      {
+        "new_tag": "cloud_security",
+        "count": 8
+      },
+      {
+        "new_tag": "threats_attacks",
+        "count": 8
+      },
+      {
+        "new_tag": "security_awareness",
+        "count": 6
+      },
+      {
+        "new_tag": "business_continuity_disaster_recovery",
+        "count": 4
+      },
+      {
+        "new_tag": "wireless_security",
+        "count": 4
+      },
+      {
+        "new_tag": "identity_access_management",
+        "count": 4
+      },
+      {
+        "new_tag": "physical_security",
+        "count": 2
+      },
+      {
+        "new_tag": "operational_technology",
+        "count": 2
+      }
+    ],
+    "Security_Program_Management_Oversight": [
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 108
+      },
+      {
+        "new_tag": "vulnerability_management",
+        "count": 22
+      },
+      {
+        "new_tag": "business_continuity_disaster_recovery",
+        "count": 18
+      },
+      {
+        "new_tag": "network_security",
+        "count": 16
+      },
+      {
+        "new_tag": "cryptography",
+        "count": 14
+      },
+      {
+        "new_tag": "incident_response",
+        "count": 12
+      },
+      {
+        "new_tag": "data_security",
+        "count": 10
+      },
+      {
+        "new_tag": "security_awareness",
+        "count": 8
+      },
+      {
+        "new_tag": "endpoint_security",
+        "count": 6
+      },
+      {
+        "new_tag": "security_operations",
+        "count": 6
+      },
+      {
+        "new_tag": "change_management",
+        "count": 6
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 6
+      },
+      {
+        "new_tag": "logging_monitoring",
+        "count": 6
+      },
+      {
+        "new_tag": "application_security",
+        "count": 4
+      },
+      {
+        "new_tag": "threat_intelligence",
+        "count": 4
+      },
+      {
+        "new_tag": "malware_analysis",
+        "count": 4
+      },
+      {
+        "new_tag": "authorization",
+        "count": 4
+      },
+      {
+        "new_tag": "digital_forensics",
+        "count": 4
+      },
+      {
+        "new_tag": "operational_technology",
+        "count": 2
+      },
+      {
+        "new_tag": "identity_access_management",
+        "count": 2
+      },
+      {
+        "new_tag": "threats_attacks",
+        "count": 2
+      },
+      {
+        "new_tag": "physical_security",
+        "count": 2
+      },
+      {
+        "new_tag": "cloud_security",
+        "count": 2
+      },
+      {
+        "new_tag": "security_architecture",
+        "count": 2
+      }
+    ],
+    "source_messer": [
+      {
+        "new_tag": "cryptography",
+        "count": 350
+      },
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 326
+      },
+      {
+        "new_tag": "network_security",
+        "count": 319
+      },
+      {
+        "new_tag": "vulnerability_management",
+        "count": 299
+      },
+      {
+        "new_tag": "threats_attacks",
+        "count": 297
+      },
+      {
+        "new_tag": "authentication",
+        "count": 187
+      },
+      {
+        "new_tag": "business_continuity_disaster_recovery",
+        "count": 150
+      },
+      {
+        "new_tag": "endpoint_security",
+        "count": 146
+      },
+      {
+        "new_tag": "security_architecture",
+        "count": 144
+      },
+      {
+        "new_tag": "authorization",
+        "count": 135
+      },
+      {
+        "new_tag": "incident_response",
+        "count": 128
+      },
+      {
+        "new_tag": "physical_security",
+        "count": 121
+      },
+      {
+        "new_tag": "application_security",
+        "count": 114
+      },
+      {
+        "new_tag": "data_security",
+        "count": 110
+      },
+      {
+        "new_tag": "cloud_security",
+        "count": 100
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 97
+      },
+      {
+        "new_tag": "logging_monitoring",
+        "count": 79
+      },
+      {
+        "new_tag": "malware_analysis",
+        "count": 72
+      },
+      {
+        "new_tag": "wireless_security",
+        "count": 72
+      },
+      {
+        "new_tag": "hardening",
+        "count": 63
+      },
+      {
+        "new_tag": "identity_access_management",
+        "count": 55
+      },
+      {
+        "new_tag": "security_awareness",
+        "count": 52
+      },
+      {
+        "new_tag": "automation_orchestration",
+        "count": 44
+      },
+      {
+        "new_tag": "mobile_security",
+        "count": 41
+      },
+      {
+        "new_tag": "threat_intelligence",
+        "count": 38
+      },
+      {
+        "new_tag": "operational_technology",
+        "count": 27
+      },
+      {
+        "new_tag": "asset_management",
+        "count": 26
+      },
+      {
+        "new_tag": "change_management",
+        "count": 25
+      },
+      {
+        "new_tag": "email_security",
+        "count": 19
+      },
+      {
+        "new_tag": "digital_forensics",
+        "count": 14
+      },
+      {
+        "new_tag": "security_operations",
+        "count": 6
+      }
+    ],
+    "source_soc_analyst": [
+      {
+        "new_tag": "network_security",
+        "count": 244
+      },
+      {
+        "new_tag": "cryptography",
+        "count": 221
+      },
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 135
+      },
+      {
+        "new_tag": "authentication",
+        "count": 123
+      },
+      {
+        "new_tag": "business_continuity_disaster_recovery",
+        "count": 122
+      },
+      {
+        "new_tag": "application_security",
+        "count": 78
+      },
+      {
+        "new_tag": "data_security",
+        "count": 70
+      },
+      {
+        "new_tag": "endpoint_security",
+        "count": 55
+      },
+      {
+        "new_tag": "wireless_security",
+        "count": 51
+      },
+      {
+        "new_tag": "threats_attacks",
+        "count": 51
+      },
+      {
+        "new_tag": "security_architecture",
+        "count": 48
+      },
+      {
+        "new_tag": "email_security",
+        "count": 41
+      },
+      {
+        "new_tag": "authorization",
+        "count": 37
+      },
+      {
+        "new_tag": "physical_security",
+        "count": 34
+      },
+      {
+        "new_tag": "logging_monitoring",
+        "count": 33
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 33
+      },
+      {
+        "new_tag": "cloud_security",
+        "count": 26
+      },
+      {
+        "new_tag": "vulnerability_management",
+        "count": 26
+      },
+      {
+        "new_tag": "incident_response",
+        "count": 21
+      },
+      {
+        "new_tag": "mobile_security",
+        "count": 19
+      },
+      {
+        "new_tag": "identity_access_management",
+        "count": 18
+      },
+      {
+        "new_tag": "hardening",
+        "count": 14
+      },
+      {
+        "new_tag": "threat_intelligence",
+        "count": 13
+      },
+      {
+        "new_tag": "malware_analysis",
+        "count": 13
+      },
+      {
+        "new_tag": "automation_orchestration",
+        "count": 13
+      },
+      {
+        "new_tag": "asset_management",
+        "count": 11
+      },
+      {
+        "new_tag": "security_operations",
+        "count": 10
+      },
+      {
+        "new_tag": "operational_technology",
+        "count": 8
+      },
+      {
+        "new_tag": "change_management",
+        "count": 5
+      },
+      {
+        "new_tag": "digital_forensics",
+        "count": 5
+      },
+      {
+        "new_tag": "security_awareness",
+        "count": 3
+      }
+    ],
+    "Threats_Vulnerabilities_Mitigations": [
+      {
+        "new_tag": "threats_attacks",
+        "count": 62
+      },
+      {
+        "new_tag": "endpoint_security",
+        "count": 24
+      },
+      {
+        "new_tag": "vulnerability_management",
+        "count": 22
+      },
+      {
+        "new_tag": "network_security",
+        "count": 22
+      },
+      {
+        "new_tag": "malware_analysis",
+        "count": 20
+      },
+      {
+        "new_tag": "cryptography",
+        "count": 18
+      },
+      {
+        "new_tag": "application_security",
+        "count": 16
+      },
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 14
+      },
+      {
+        "new_tag": "security_awareness",
+        "count": 12
+      },
+      {
+        "new_tag": "email_security",
+        "count": 10
+      },
+      {
+        "new_tag": "authentication",
+        "count": 8
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 8
+      },
+      {
+        "new_tag": "threat_intelligence",
+        "count": 6
+      },
+      {
+        "new_tag": "cloud_security",
+        "count": 6
+      },
+      {
+        "new_tag": "asset_management",
+        "count": 6
+      },
+      {
+        "new_tag": "wireless_security",
+        "count": 6
+      },
+      {
+        "new_tag": "data_security",
+        "count": 6
+      },
+      {
+        "new_tag": "hardening",
+        "count": 4
+      },
+      {
+        "new_tag": "authorization",
+        "count": 4
+      },
+      {
+        "new_tag": "incident_response",
+        "count": 2
+      },
+      {
+        "new_tag": "logging_monitoring",
+        "count": 2
+      },
+      {
+        "new_tag": "identity_access_management",
+        "count": 2
+      },
+      {
+        "new_tag": "business_continuity_disaster_recovery",
+        "count": 2
+      }
+    ],
+    "validated": [
+      {
+        "new_tag": "governance_risk_compliance",
+        "count": 88
+      },
+      {
+        "new_tag": "threats_attacks",
+        "count": 66
+      },
+      {
+        "new_tag": "cryptography",
+        "count": 52
+      },
+      {
+        "new_tag": "network_security",
+        "count": 42
+      },
+      {
+        "new_tag": "vulnerability_management",
+        "count": 40
+      },
+      {
+        "new_tag": "endpoint_security",
+        "count": 30
+      },
+      {
+        "new_tag": "malware_analysis",
+        "count": 22
+      },
+      {
+        "new_tag": "security_architecture",
+        "count": 20
+      },
+      {
+        "new_tag": "business_continuity_disaster_recovery",
+        "count": 20
+      },
+      {
+        "new_tag": "authorization",
+        "count": 18
+      },
+      {
+        "new_tag": "authentication",
+        "count": 18
+      },
+      {
+        "new_tag": "detection_response",
+        "count": 18
+      },
+      {
+        "new_tag": "data_security",
+        "count": 18
+      },
+      {
+        "new_tag": "application_security",
+        "count": 18
+      },
+      {
+        "new_tag": "incident_response",
+        "count": 14
+      },
+      {
+        "new_tag": "email_security",
+        "count": 12
+      },
+      {
+        "new_tag": "security_awareness",
+        "count": 12
+      },
+      {
+        "new_tag": "physical_security",
+        "count": 10
+      },
+      {
+        "new_tag": "cloud_security",
+        "count": 10
+      },
+      {
+        "new_tag": "wireless_security",
+        "count": 8
+      },
+      {
+        "new_tag": "change_management",
+        "count": 8
+      },
+      {
+        "new_tag": "hardening",
+        "count": 8
+      },
+      {
+        "new_tag": "threat_intelligence",
+        "count": 8
+      },
+      {
+        "new_tag": "asset_management",
+        "count": 6
+      },
+      {
+        "new_tag": "security_operations",
+        "count": 6
+      },
+      {
+        "new_tag": "identity_access_management",
+        "count": 4
+      },
+      {
+        "new_tag": "mobile_security",
+        "count": 2
+      },
+      {
+        "new_tag": "logging_monitoring",
+        "count": 2
+      },
+      {
+        "new_tag": "operational_technology",
+        "count": 2
+      }
+    ]
+  },
+  "final_tag_counts": {
+    "application_security": 250,
+    "asset_management": 45,
+    "authentication": 366,
+    "authorization": 226,
+    "automation_orchestration": 59,
+    "business_continuity_disaster_recovery": 352,
+    "change_management": 38,
+    "cloud_security": 180,
+    "cryptography": 679,
+    "data_security": 230,
+    "detection_response": 200,
+    "digital_forensics": 49,
+    "email_security": 88,
+    "endpoint_security": 263,
+    "governance_risk_compliance": 641,
+    "hardening": 105,
+    "identity_access_management": 81,
+    "incident_response": 189,
+    "logging_monitoring": 142,
+    "malware_analysis": 127,
+    "mobile_security": 76,
+    "network_security": 741,
+    "operational_technology": 59,
+    "physical_security": 173,
+    "security_architecture": 266,
+    "security_awareness": 89,
+    "security_operations": 50,
+    "threat_intelligence": 75,
+    "threats_attacks": 422,
+    "vulnerability_management": 399,
+    "wireless_security": 141
+  },
+  "stats": {
+    "total_cards": 3752,
+    "cards_with_tag_changes": 3752,
+    "corrected_final_tag_assignments": 6801,
+    "removed_old_tag_instances": 6794,
+    "review_cards": 3498,
+    "unclassifiable_cards": 0
+  },
+  "low_confidence": [],
+  "analysis_database": "/home/_vb/card_pwa_app/card-sync-server/sync.db.before_tag_normalization_20260509_204332",
+  "note": "Reports and old->new mapping are generated from the pre-normalization backup; live database verification is from the normalized sync.db.",
+  "database_verification": {
+    "invalid_tag_count_cards": [],
+    "non_final_tags": [],
+    "duplicate_tag_cards": 0,
+    "final_tag_counts_after": {
+      "application_security": 248,
+      "asset_management": 45,
+      "authentication": 368,
+      "authorization": 226,
+      "automation_orchestration": 59,
+      "business_continuity_disaster_recovery": 352,
+      "change_management": 38,
+      "cloud_security": 180,
+      "cryptography": 680,
+      "data_security": 231,
+      "detection_response": 201,
+      "digital_forensics": 48,
+      "email_security": 88,
+      "endpoint_security": 263,
+      "governance_risk_compliance": 643,
+      "hardening": 105,
+      "identity_access_management": 80,
+      "incident_response": 188,
+      "logging_monitoring": 141,
+      "malware_analysis": 127,
+      "mobile_security": 76,
+      "network_security": 741,
+      "operational_technology": 60,
+      "physical_security": 173,
+      "security_architecture": 266,
+      "security_awareness": 89,
+      "security_operations": 50,
+      "threat_intelligence": 75,
+      "threats_attacks": 421,
+      "vulnerability_management": 398,
+      "wireless_security": 141
+    },
+    "active_cards_by_user": [
+      {
+        "user_id": "ba458562-58a0-45a2-aea8-b7d14f3a12a3",
+        "active_cards": 3032,
+        "min_tags": 1,
+        "max_tags": 3
+      },
+      {
+        "user_id": "d85028f2-c429-430f-bb7b-a9292ce3c133",
+        "active_cards": 720,
+        "min_tags": 1,
+        "max_tags": 3
+      }
+    ],
+    "shuffle_collections_by_user": [
+      {
+        "user_id": "ba458562-58a0-45a2-aea8-b7d14f3a12a3",
+        "shuffles": 9
+      },
+      {
+        "user_id": "d85028f2-c429-430f-bb7b-a9292ce3c133",
+        "shuffles": 1
+      }
+    ],
+    "published_sync_ops": [
+      {
+        "source": "server-maintenance-publish",
+        "user_id": "ba458562-58a0-45a2-aea8-b7d14f3a12a3",
+        "ops": 14732
+      },
+      {
+        "source": "server-maintenance-publish",
+        "user_id": "d85028f2-c429-430f-bb7b-a9292ce3c133",
+        "ops": 1470
+      },
+      {
+        "source": "tag-normalization",
+        "user_id": "ba458562-58a0-45a2-aea8-b7d14f3a12a3",
+        "ops": 3061
+      },
+      {
+        "source": "tag-normalization",
+        "user_id": "d85028f2-c429-430f-bb7b-a9292ce3c133",
+        "ops": 2160
+      }
+    ]
+  }
+}
