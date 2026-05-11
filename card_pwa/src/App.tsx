@@ -5,12 +5,12 @@ import { SettingsProvider, useSettings } from './contexts/SettingsContext'
 import AppInitializer from './components/AppInitializer'
 import AppErrorBoundary from './components/AppErrorBoundary'
 import ToastContainer from './components/ToastContainer'
-import type { Deck, ShuffleCollection, View } from './types'
+import type { Card, Deck, ShuffleCollection, View } from './types'
 import { SW_CHANNELS } from './constants/appIdentity'
 import { supportsServiceWorker } from './env'
 import { useAutoJoinDefaultProfile } from './hooks/useAutoJoinDefaultProfile'
 
-const IOS_HOME_INDICATOR_INSET = 34
+const SAFE_AREA_DEBUG_STORAGE_KEY = 'card-pwa-safe-area-debug'
 
 /**
  * Resolves the initial view from URL params so PWA shortcuts (e.g. `/?view=study`
@@ -28,27 +28,6 @@ function getInitialView(): View {
   return 'home'
 }
 
-function isStandaloneDisplayMode(): boolean {
-  if (typeof window === 'undefined') return false
-
-  const navigatorLike = navigator as Navigator & { standalone?: boolean }
-  const matchesDisplayMode = (mode: 'standalone' | 'fullscreen') => (
-    typeof window.matchMedia === 'function' &&
-    window.matchMedia(`(display-mode: ${mode})`).matches
-  )
-
-  return (
-    navigatorLike.standalone === true ||
-    matchesDisplayMode('standalone') ||
-    matchesDisplayMode('fullscreen')
-  )
-}
-
-function clampBottomInset(value: number): number {
-  if (!Number.isFinite(value) || value <= 0) return 0
-  return Math.min(IOS_HOME_INDICATOR_INSET, Math.round(value))
-}
-
 function readSafeAreaInset(edge: 'top' | 'bottom'): number {
   const probe = document.createElement('div')
   probe.style.position = 'fixed'
@@ -63,6 +42,23 @@ function readSafeAreaInset(edge: 'top' | 'bottom'): number {
   probe.remove()
 
   return value
+}
+
+function shouldEnableSafeAreaDebug(): boolean {
+  if (typeof window === 'undefined') return false
+
+  const params = new URLSearchParams(window.location.search)
+  const requested = params.get('safeAreaDebug')
+  if (requested === '1') {
+    window.localStorage.setItem(SAFE_AREA_DEBUG_STORAGE_KEY, '1')
+    return true
+  }
+  if (requested === '0') {
+    window.localStorage.removeItem(SAFE_AREA_DEBUG_STORAGE_KEY)
+    return false
+  }
+
+  return window.localStorage.getItem(SAFE_AREA_DEBUG_STORAGE_KEY) === '1'
 }
 
 function useViewportCssVars() {
@@ -84,18 +80,18 @@ function useViewportCssVars() {
           document.body?.clientHeight ||
           0,
         )
-        const isStandalone = isStandaloneDisplayMode()
-        const screenHeight = Math.round(window.screen?.height || layoutHeight)
-        const excludedHeight = Math.max(0, screenHeight - layoutHeight)
-        const envTopInset = readSafeAreaInset('top')
-        const envBottomInset = readSafeAreaInset('bottom')
-        const bottomGap = isStandalone
-          ? clampBottomInset(envBottomInset > 0 ? 0 : excludedHeight - envTopInset)
-          : 0
-
         root.style.setProperty('--app-viewport-height', `${layoutHeight}px`)
-        root.style.setProperty('--app-bottom-viewport-gap', `${bottomGap}px`)
-        root.toggleAttribute('data-standalone-pwa', isStandalone)
+
+        const envVal = readSafeAreaInset('bottom')
+        if (envVal > 0) {
+          root.style.setProperty('--app-bottom-safe-area', `${envVal}px`)
+          root.style.setProperty('--app-bottom-viewport-gap', '0px')
+        } else {
+          const diff = window.screen.height - window.innerHeight
+          const gap = diff > 0 && diff <= 50 ? diff : 0
+          root.style.setProperty('--app-bottom-safe-area', `${gap}px`)
+          root.style.setProperty('--app-bottom-viewport-gap', `${gap}px`)
+        }
       })
     }
 
@@ -113,6 +109,79 @@ function useViewportCssVars() {
       }
     }
   }, [])
+}
+
+function SafeAreaDebugOverlay() {
+  const [enabled, setEnabled] = useState(shouldEnableSafeAreaDebug)
+  const [lines, setLines] = useState<string[]>([])
+
+  useEffect(() => {
+    if (!enabled) return
+
+    const collect = () => {
+      const root = document.documentElement
+      const body = document.body
+      const bar = document.querySelector('[data-safe-area-bottom-bar]') as HTMLElement | null
+      const barRect = bar?.getBoundingClientRect()
+      const barStyle = bar ? window.getComputedStyle(bar) : null
+      const rootRect = root.getBoundingClientRect()
+      const vv = window.visualViewport
+      const standalone = (
+        (navigator as Navigator & { standalone?: boolean }).standalone === true ||
+        window.matchMedia?.('(display-mode: standalone)').matches ||
+        window.matchMedia?.('(display-mode: fullscreen)').matches
+      )
+
+      setLines([
+        `standalone ${standalone ? 'yes' : 'no'}`,
+        `inner ${window.innerWidth} x ${window.innerHeight}`,
+        `screen ${window.screen.width} x ${window.screen.height}`,
+        `visual ${Math.round(vv?.width ?? 0)} x ${Math.round(vv?.height ?? 0)} top ${Math.round(vv?.offsetTop ?? 0)}`,
+        `env top/bottom ${readSafeAreaInset('top')} / ${readSafeAreaInset('bottom')}`,
+        `css safe ${window.getComputedStyle(root).getPropertyValue('--app-bottom-safe-area').trim()}`,
+        `css gap ${window.getComputedStyle(root).getPropertyValue('--app-bottom-viewport-gap').trim()}`,
+        `root h ${Math.round(rootRect.height)} body h ${Math.round(body.getBoundingClientRect().height)}`,
+        `bar top ${Math.round(barRect?.top ?? -1)} bottom ${Math.round(barRect?.bottom ?? -1)} h ${Math.round(barRect?.height ?? -1)}`,
+        `bar css bottom ${barStyle?.bottom ?? 'n/a'} pb ${barStyle?.paddingBottom ?? 'n/a'}`,
+      ])
+    }
+
+    collect()
+    const interval = window.setInterval(collect, 1000)
+    window.addEventListener('resize', collect)
+    window.addEventListener('orientationchange', collect)
+    window.visualViewport?.addEventListener('resize', collect)
+
+    return () => {
+      window.clearInterval(interval)
+      window.removeEventListener('resize', collect)
+      window.removeEventListener('orientationchange', collect)
+      window.visualViewport?.removeEventListener('resize', collect)
+    }
+  }, [enabled])
+
+  if (!enabled) return null
+
+  return (
+    <div className="fixed left-2 top-2 z-[9999] max-w-[calc(100vw-1rem)] rounded-[8px] border border-white/20 bg-black/90 p-2 font-mono text-[10px] leading-tight text-white shadow-2xl">
+      <div className="mb-1 flex items-center justify-between gap-3 text-[11px] font-bold">
+        <span>safe-area debug</span>
+        <button
+          type="button"
+          className="rounded border border-white/20 px-1 text-[10px] text-white/80"
+          onClick={() => {
+            window.localStorage.removeItem(SAFE_AREA_DEBUG_STORAGE_KEY)
+            setEnabled(false)
+          }}
+        >
+          off
+        </button>
+      </div>
+      {lines.map(line => (
+        <div key={line}>{line}</div>
+      ))}
+    </div>
+  )
 }
 
 const HomeView = lazy(() => import('./components/HomeView'))
@@ -136,6 +205,7 @@ function AppShell() {
   const prefersReducedMotion = useReducedMotion()
   const [view, setView] = useState<View>(getInitialView)
   const [activeDeck, setActiveDeck] = useState<Deck | null>(null)
+  const [activeTagCards, setActiveTagCards] = useState<Card[] | null>(null)
   const [activeShuffleCollection, setActiveShuffleCollection] = useState<ShuffleCollection | null>(null)
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null)
   const [pendingReloadAfterStudy, setPendingReloadAfterStudy] = useState(false)
@@ -211,6 +281,22 @@ function AppShell() {
 
   const startStudy = (deck: Deck) => {
     setActiveDeck(deck)
+    setActiveTagCards(null)
+    setActiveShuffleCollection(null)
+    setView('study')
+  }
+
+  const startTagStudy = (tag: string, cards: Card[]) => {
+    const syntheticDeck: Deck = {
+      id: `tag:${tag}`,
+      name: `#${tag}`,
+      total: cards.length,
+      new: cards.filter(c => c.type === 'new').length,
+      learning: cards.filter(c => c.type === 'learning' || c.type === 'relearning').length,
+      due: cards.filter(c => c.type === 'review').length,
+    }
+    setActiveDeck(syntheticDeck)
+    setActiveTagCards(cards)
     setActiveShuffleCollection(null)
     setView('study')
   }
@@ -230,6 +316,7 @@ function AppShell() {
   const goHome = () => {
     setView('home')
     setActiveDeck(null)
+    setActiveTagCards(null)
     setActiveShuffleCollection(null)
   }
 
@@ -245,6 +332,7 @@ function AppShell() {
           }}
         >
           <ToastContainer />
+          <SafeAreaDebugOverlay />
           <Suspense fallback={null}>
             {swSupported && waitingWorker && (
               <UpdateBanner
@@ -266,6 +354,7 @@ function AppShell() {
               >
                 <HomeView
                   onStartStudy={startStudy}
+                  onStartTagStudy={startTagStudy}
                   onStartShuffleStudy={startShuffleStudy}
                   onOpenShuffleManager={openShuffleManager}
                 />
@@ -300,7 +389,7 @@ function AppShell() {
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0 h-full study-view"
               >
-                <StudyView deck={activeDeck} onExit={goHome} />
+                <StudyView deck={activeDeck} preloadedCards={activeTagCards ?? undefined} onExit={goHome} />
               </motion.div>
             )}
 

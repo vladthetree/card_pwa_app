@@ -7,6 +7,9 @@ import {
 } from 'lucide-react'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 import type { HomeDashboardMode } from './HomeStatsSection'
+import { Tag } from 'lucide-react'
+
+type HomeTab = 'decks' | 'tags'
 import { UI_TOKENS } from '../../constants/ui'
 
 interface Props {
@@ -17,9 +20,11 @@ interface Props {
   deckSearchQuery: string
   deckSortMode: DeckSortMode
   dashboardMode: HomeDashboardMode
+  homeTab: HomeTab
   canInstall: boolean
   isInstalled: boolean
   isInstalling: boolean
+  onHomeTabChange: (tab: HomeTab) => void
   onDeckSearchQueryChange: (v: string) => void
   onDeckSortModeChange: (v: DeckSortMode) => void
   onToggleShuffleOnly: () => void
@@ -48,9 +53,11 @@ export function HomeBottomBar({
   deckSearchQuery,
   deckSortMode,
   dashboardMode,
+  homeTab,
   canInstall,
   isInstalled,
   isInstalling,
+  onHomeTabChange,
   onDeckSearchQueryChange,
   onDeckSortModeChange,
   onToggleShuffleOnly,
@@ -76,12 +83,15 @@ export function HomeBottomBar({
     { key: 'pilot',   label: 'Pilot',   icon: Sparkles },
   ]
 
-  const isFilterActive = showShuffleOnly || deckSortMode !== 'name'
+  const isFilterActive = showShuffleOnly || deckSortMode !== 'name' || homeTab === 'tags'
 
   return (
     <>
       {/* ── Bar ──────────────────────────────────────────────────────────── */}
-      <div className="home-bottom-bar fixed left-0 right-0 z-[100] sm:hidden border-t border-[#1f1f23] shadow-[0_-4px_24px_rgba(0,0,0,0.55)] backdrop-blur-xl">
+      <div
+        className="home-bottom-bar fixed left-0 right-0 z-[100] sm:hidden border-t border-[#1f1f23] shadow-[0_-4px_24px_rgba(0,0,0,0.55)] backdrop-blur-xl"
+        data-safe-area-bottom-bar
+      >
         <div className={`${UI_TOKENS.layout.homeMaxWidth} mx-auto px-2`}>
           <div className="flex items-center gap-1.5 py-1.5">
 
@@ -189,16 +199,27 @@ export function HomeBottomBar({
               <p className={SHEET_LABEL}>{language === 'de' ? 'Ansicht' : 'View'}</p>
               <button
                 type="button"
-                onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); closeFilter() }}
+                onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('decks'); closeFilter() }}
                 className={SHEET_ITEM}
               >
                 <span>{language === 'de' ? 'Decks' : 'Decks'}</span>
-                {!showShuffleOnly && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
+                {!showShuffleOnly && homeTab === 'decks' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
+              </button>
+              <button
+                type="button"
+                onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('tags'); closeFilter() }}
+                className={SHEET_ITEM}
+              >
+                <span className="inline-flex items-center gap-2.5">
+                  <Tag size={15} strokeWidth={1.5} className="text-white/50" />
+                  {language === 'de' ? 'Nach Tags' : 'By tags'}
+                </span>
+                {!showShuffleOnly && homeTab === 'tags' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
               </button>
               {shuffleModeEnabled && (
                 <button
                   type="button"
-                  onClick={() => { if (!showShuffleOnly) onToggleShuffleOnly(); closeFilter() }}
+                  onClick={() => { if (!showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('decks'); closeFilter() }}
                   className={SHEET_ITEM}
                 >
                   <span>{language === 'de' ? 'Shuffle-Decks' : 'Shuffle decks'}</span>

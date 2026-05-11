@@ -15,7 +15,26 @@
       "Bash(sqlite3 /home/_vb/card_pwa_app/card-sync-server/sync.db \"SELECT user_id, COUNT\\(*\\) FROM server_decks GROUP BY user_id;\")",
       "Bash(sqlite3 /home/_vb/card_pwa_app/card-sync-server/sync.db \"SELECT user_id, COUNT\\(*\\) FROM server_cards WHERE is_deleted=0 GROUP BY user_id;\")",
       "Bash(python -c ' *)",
-      "Bash(python scripts/import_apkg.py --skip-validation --dry-run)"
+      "Bash(python scripts/import_apkg.py --skip-validation --dry-run)",
+      "Bash(sqlite3 /home/_vb/card_pwa_app/card-sync-server/sync.db)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(pip install *)",
+      "Bash(python3 -c \"import anthropic; print\\('OK', anthropic.__version__\\)\")",
+      "Bash(python3 scripts/cloze_to_mc.py --dry-run --limit 5)",
+      "Bash(python3 scripts/cloze_to_mc.py --limit 5)",
+      "Read(//home/_vb/**)",
+      "Bash(python3 scripts/apply_mc_data.py mc_data/section1_mc.json --dry-run)",
+      "Bash(python3 scripts/apply_mc_data.py mc_data/section1_mc.json)",
+      "Bash(sqlite3 sync.db ' *)",
+      "Read(//tmp/**)",
+      "Bash(sqlite3 sync.db \"SELECT COUNT\\(*\\) FROM server_cards WHERE is_deleted=0 AND back LIKE '>> CORRECT:%' AND tags_json LIKE '%source_messer%';\")",
+      "Bash(sqlite3 sync.db \"SELECT id FROM server_cards WHERE is_deleted=0 AND back LIKE '>> CORRECT:%' AND tags_json LIKE '%source_messer%' ORDER BY id LIMIT 3; SELECT id FROM server_cards WHERE is_deleted=0 AND back LIKE '>> CORRECT:%' AND tags_json LIKE '%source_messer%' ORDER BY id DESC LIMIT 3;\")",
+      "Bash(sqlite3 /home/_vb/card_pwa_app/card-sync-server/sync.db \"SELECT id, name, source, parent_deck_id FROM server_decks WHERE deleted_at IS NULL ORDER BY name;\")",
+      "Bash(python3)",
+      "Bash(python3 /tmp/update_sy0701_merkhilfen.py)"
+    ],
+    "additionalDirectories": [
+      "/tmp"
     ]
   }
 }

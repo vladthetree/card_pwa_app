@@ -65,7 +65,7 @@
     --app-font-family-mono: 'Share Tech Mono', 'IBM Plex Mono', monospace;
     --app-viewport-height: 100dvh;
     --app-bottom-viewport-gap: 0px;
-    --app-bottom-safe-area: max(env(safe-area-inset-bottom, 0px), var(--app-bottom-viewport-gap));
+    --app-bottom-safe-area: env(safe-area-inset-bottom, 0px);
     --home-bottom-bar-bg: #080808;
     --home-bottom-bar-reserved: calc(4rem + var(--app-bottom-safe-area));
   }
@@ -78,7 +78,7 @@
   }
 
   html {
-    background: var(--theme-background);
+    background: var(--home-bottom-bar-bg);
     overscroll-behavior: none;
     overscroll-behavior-x: none;
     overscroll-behavior-y: none;
@@ -93,7 +93,7 @@
     min-height: 100svh;
     min-height: 100dvh;
     overflow: hidden;
-    background: var(--theme-background);
+    background: var(--home-bottom-bar-bg);
     color: var(--theme-text);
     font-family: var(--app-font-family);
     -webkit-font-smoothing: antialiased;
