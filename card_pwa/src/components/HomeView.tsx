@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
@@ -6,7 +6,7 @@ import { useDecks, useGamificationProfile, useShuffleCollections, useStats } fro
 import { usePwaInstall } from '../hooks/usePwaInstall'
 import { useServerHeartbeat } from '../hooks/useServerHeartbeat'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
-import type { Deck, ShuffleCollection } from '../types'
+import type { Card, Deck, ShuffleCollection } from '../types'
 import { UI_TOKENS } from '../constants/ui'
 import { formatBuildVersionTitle, formatServiceWorkerVersionLabel } from '../utils/buildInfo'
 import { HomeHeaderBar } from './home/HomeHeaderBar'
@@ -15,6 +15,8 @@ import { HomeDeckToolbar } from './home/HomeDeckToolbar'
 import { HomeDeckListSection } from './home/HomeDeckListSection'
 import { HomeShuffleSection } from './home/HomeShuffleSection'
 import { HomeBottomBar } from './home/HomeBottomBar'
+import { HomeTagBrowseSection } from './home/HomeTagBrowseSection'
+import { useTagCardIndex } from '../hooks/home/useTagCardIndex'
 import { useHomeDeckFilters } from '../hooks/home/useHomeDeckFilters'
 import { useHomeStorageEstimate } from '../hooks/home/useHomeStorageEstimate'
 import { useHomeDerivedData } from '../hooks/home/useHomeDerivedData'
@@ -40,17 +42,23 @@ interface Props {
   mode?: 'default' | 'shuffle-manage'
   onBackHome?: () => void
   onStartStudy: (deck: Deck) => void
+  onStartTagStudy?: (tag: string, cards: Card[]) => void
   onStartShuffleStudy: (collection: ShuffleCollection) => void
   onOpenShuffleManager?: () => void
 }
+
+type HomeTab = 'decks' | 'tags'
 
 export default function HomeView({
   mode = 'default',
   onBackHome,
   onStartStudy,
+  onStartTagStudy,
   onStartShuffleStudy,
   onOpenShuffleManager,
 }: Props) {
+  const [homeTab, setHomeTab] = useState<HomeTab>('decks')
+  const tagCardIndex = useTagCardIndex()
   const { decks, loading, error, reload } = useDecks()
   const { collections: shuffleCollections } = useShuffleCollections()
   const { settings, profile } = useSettings()
@@ -253,30 +261,46 @@ export default function HomeView({
         )}
 
         {!isShuffleManageMode && (
-          <HomeDeckListSection
-            t={t}
-            language={settings.language}
-            error={error}
-            loading={loading}
-            decks={homeDecks}
-            filteredDecks={filteredDecks}
-            visibleDecks={visibleDecks}
-            deckScheduleOverview={derivedData.deckScheduleOverview}
-            shuffleModeEnabled={settings.shuffleModeEnabled}
-            showShuffleOnly={controller.showShuffleOnly}
-            shuffleCollections={shuffleCollections}
-            shuffleSummaries={derivedData.shuffleSummaries}
-            onReload={reload}
-            onShowImport={controller.openImport}
-            onStartStudy={onStartStudy}
-            onStartShuffleStudy={onStartShuffleStudy}
-            onEditShuffleCollection={controller.openEditShuffleCollection}
-            onDeleteShuffleCollection={controller.handleDeleteShuffleCollection}
-            onShowShuffleMetrics={controller.openMetricsShuffleCollection}
-            onDelete={controller.handleDelete}
-            onShowMetrics={controller.openMetricsDeck}
-            onManageCards={controller.openCardsDeck}
-          />
+          <>
+            {homeTab === 'decks' && (
+              <HomeDeckListSection
+                t={t}
+                language={settings.language}
+                error={error}
+                loading={loading}
+                decks={homeDecks}
+                filteredDecks={filteredDecks}
+                visibleDecks={visibleDecks}
+                deckScheduleOverview={derivedData.deckScheduleOverview}
+                shuffleModeEnabled={settings.shuffleModeEnabled}
+                showShuffleOnly={controller.showShuffleOnly}
+                shuffleCollections={shuffleCollections}
+                shuffleSummaries={derivedData.shuffleSummaries}
+                onReload={reload}
+                onShowImport={controller.openImport}
+                onStartStudy={onStartStudy}
+                onStartShuffleStudy={onStartShuffleStudy}
+                onEditShuffleCollection={controller.openEditShuffleCollection}
+                onDeleteShuffleCollection={controller.handleDeleteShuffleCollection}
+                onShowShuffleMetrics={controller.openMetricsShuffleCollection}
+                onDelete={controller.handleDelete}
+                onShowMetrics={controller.openMetricsDeck}
+                onManageCards={controller.openCardsDeck}
+              />
+            )}
+
+            {homeTab === 'tags' && (
+              <div className="flex-1 min-h-0 overflow-y-auto">
+                <HomeTagBrowseSection
+                  language={settings.language}
+                  tagIndex={tagCardIndex.tagIndex}
+                  allTags={tagCardIndex.allTags}
+                  loading={tagCardIndex.loading}
+                  onStartTagStudy={(tag, cards) => onStartTagStudy?.(tag, cards)}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -289,9 +313,11 @@ export default function HomeView({
           deckSearchQuery={deckSearchQuery}
           deckSortMode={deckSortMode}
           dashboardMode={controller.dashboardMode}
+          homeTab={homeTab}
           canInstall={canInstall}
           isInstalled={isInstalled}
           isInstalling={isInstalling}
+          onHomeTabChange={setHomeTab}
           onDeckSearchQueryChange={setDeckSearchQuery}
           onDeckSortModeChange={setDeckSortMode}
           onToggleShuffleOnly={controller.toggleShuffleOnly}

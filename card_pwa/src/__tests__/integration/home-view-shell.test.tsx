@@ -115,6 +115,14 @@ vi.mock('../../hooks/home/useHomeDerivedData', () => ({
   }),
 }))
 
+vi.mock('../../hooks/home/useTagCardIndex', () => ({
+  useTagCardIndex: () => ({
+    tagIndex: {},
+    allTags: [],
+    loading: false,
+  }),
+}))
+
 vi.mock('../../hooks/home/useHomeViewController', () => ({
   useHomeViewController: () => ({
     showCreateCard: true,

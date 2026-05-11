@@ -36,6 +36,9 @@ import StudyHeaderProgress, { type RewardHint } from './StudyHeaderProgress'
 interface Props {
   /** Deck to study */
   deck: Deck
+  /** When provided, these cards are used directly instead of loading by deck ID.
+   *  Each card retains its deckId so metrics are recorded against the original deck. */
+  preloadedCards?: Card[]
   /** Callback when user exits study session */
   onExit: () => void
 }
@@ -73,8 +76,11 @@ function ErrorAlert({ message, onRetry }: { message: string; onRetry: () => void
  * StudyView: Main study session component
  * Nutzt StudySessionManager für State-Management
  */
-export default function StudyView({ deck, onExit }: Props) {
-  const { cards, loading, error, reload } = useDeckCards(deck.id)
+export default function StudyView({ deck, preloadedCards, onExit }: Props) {
+  const { cards: deckCards, loading: deckLoading, error: deckError, reload } = useDeckCards(preloadedCards ? null : deck.id)
+  const cards = preloadedCards ?? deckCards
+  const loading = preloadedCards ? false : deckLoading
+  const error = preloadedCards ? null : deckError
   const { settings, isAlgorithmMigrating, setQuestionTextSize } = useSettings()
   const t = STRINGS[settings.language]
   const prefersReducedMotion = useReducedMotion()

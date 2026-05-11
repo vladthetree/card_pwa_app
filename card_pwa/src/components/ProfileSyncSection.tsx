@@ -12,6 +12,7 @@ import {
   revokeDeviceToken,
   removeDeviceFromServer,
   getOrCreateDeviceId,
+  rotateDeviceId,
   makeLocalProfile,
   listPublicProfiles,
   listServerDecks,
@@ -414,7 +415,7 @@ export default function ProfileSyncSection({ language }: Props) {
     setError(null)
     setNotice(null)
     setCreatedRecoveryCode(null)
-    const deviceId = getOrCreateDeviceId()
+    const deviceId = rotateDeviceId()
     const res = await createServerProfile(
       effectiveEndpoint,
       deviceId,

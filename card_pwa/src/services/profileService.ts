@@ -49,6 +49,20 @@ export function getOrCreateDeviceId(): string {
   }
 }
 
+/** Generate and persist a brand-new device ID, replacing any existing one.
+ *  Use this when creating a new server profile so the old device ID
+ *  (potentially already linked to a different profile) doesn't cause a conflict.
+ */
+export function rotateDeviceId(): string {
+  try {
+    const next = generateUuidV7()
+    localStorage.setItem(DEVICE_ID_KEY, next)
+    return next
+  } catch {
+    return generateUuidV7()
+  }
+}
+
 // ─── Profile CRUD (IndexedDB) ─────────────────────────────────────────────────
 
 export async function loadProfile(): Promise<ProfileRecord | null> {

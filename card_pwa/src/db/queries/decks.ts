@@ -195,6 +195,11 @@ export async function fetchDeckCards(deckId: string): Promise<Card[]> {
   return rows.map(mapCard)
 }
 
+export async function fetchAllCards(): Promise<Card[]> {
+  const rows = (await db.cards.toArray()).filter(r => !r.isDeleted)
+  return rows.map(mapCard)
+}
+
 export async function getDeckTagIndex(deckIds: string[]): Promise<Record<string, string[]>> {
   if (deckIds.length === 0) return {}
 
