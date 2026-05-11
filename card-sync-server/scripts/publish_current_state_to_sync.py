@@ -223,6 +223,39 @@ def publish_cards(conn: sqlite3.Connection, user_id: str, dry_run: bool) -> int:
     return published
 
 
+def publish_shuffle_collections(conn: sqlite3.Connection, user_id: str, dry_run: bool) -> int:
+    rows = conn.execute(
+        """
+        SELECT id, name, deck_ids_json, created_at, updated_at, deleted_at
+        FROM server_shuffle_collections
+        WHERE user_id=?
+        ORDER BY id
+        """,
+        (user_id,),
+    ).fetchall()
+
+    published = 0
+    for row in rows:
+        ts = int(row["updated_at"] or row["created_at"] or now_ms())
+        deck_ids = parse_json_list(row["deck_ids_json"])
+        payload = {
+            "id": row["id"],
+            "name": row["name"] or "",
+            "deckIds": deck_ids,
+            "createdAt": row["created_at"] or ts,
+            "updatedAt": ts,
+            "timestamp": ts,
+        }
+        if row["deleted_at"] is not None:
+            payload["deletedAt"] = int(row["deleted_at"])
+            payload["isDeleted"] = True
+
+        op_id = f"{SOURCE}:shuffleCollection.upsert:{row['id']}:{ts}"
+        published += int(insert_operation(conn, user_id, "shuffleCollection.upsert", payload, op_id, ts, dry_run))
+
+    return published
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true")
@@ -238,6 +271,7 @@ def main() -> None:
     card_update = publish_cards(conn, user_id, args.dry_run)
     card_create = publish_active_card_creates(conn, user_id, args.dry_run)
     deck_delete = publish_deleted_decks(conn, user_id, args.dry_run)
+    shuffle_upsert = publish_shuffle_collections(conn, user_id, args.dry_run)
     if not args.dry_run:
         conn.commit()
     conn.close()
@@ -246,6 +280,7 @@ def main() -> None:
     print(f"deck_delete_ops={deck_delete}")
     print(f"card_update_ops={card_update}")
     print(f"card_create_ops={card_create}")
+    print(f"shuffle_upsert_ops={shuffle_upsert}")
     if args.dry_run:
         print("[dry-run] Keine Änderungen gespeichert.")
 
