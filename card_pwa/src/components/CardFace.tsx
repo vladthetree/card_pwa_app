@@ -9,6 +9,7 @@ import type { Card } from '../types'
 
 const OrderingCard = lazy(() => import('./OrderingCard'))
 const MatchingCard  = lazy(() => import('./MatchingCard'))
+const DragMatchCard = lazy(() => import('./DragMatchCard'))
 
 interface Props {
   card: Card
@@ -136,6 +137,24 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
       <Suspense fallback={null}>
         <MatchingCard
           card={card} question={anyQuestion} answer={anyAnswer}
+          flipped={flipped} onFlip={onFlip} onEdit={onEdit}
+          onAnswerEvaluated={onAnswerEvaluated ?? (() => {})}
+          compact={compact} originDeckName={originDeckName}
+        />
+      </Suspense>
+    )
+  }
+
+  // M2 Drag-Match: 4-Optionen-/1-richtig-Karten (>= 2 Optionen im `front`) erhalten den
+  // additiven Drag-/Tap-Renderer statt der Inline-Tap-MC. Plain-Flip-Karten (keine Optionen)
+  // fallen weiter durch zur Inline-Darstellung unten — bestehende Logik bleibt unverändert.
+  const mcQuestion = parseQuestionText(card.front)
+  if (Object.keys(mcQuestion.options).length >= 2) {
+    const mcAnswer = parseAnswerText(card.back)
+    return (
+      <Suspense fallback={null}>
+        <DragMatchCard
+          card={card} question={mcQuestion} answer={mcAnswer}
           flipped={flipped} onFlip={onFlip} onEdit={onEdit}
           onAnswerEvaluated={onAnswerEvaluated ?? (() => {})}
           compact={compact} originDeckName={originDeckName}
