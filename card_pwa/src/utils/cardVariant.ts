@@ -1,3 +1,5 @@
+import { parseAnswerText, parseQuestionText, type Answer, type Question } from './cardTextParser'
+
 export type CardVariant = 'standard' | 'mc' | 'ordering' | 'matching'
 
 export function getCardVariant(front: string): CardVariant {
@@ -5,6 +7,22 @@ export function getCardVariant(front: string): CardVariant {
   if (/^ORDERING:/i.test(trimmed)) return 'ordering'
   if (/^MATCHING:/i.test(trimmed)) return 'matching'
   return 'standard'
+}
+
+/**
+ * M2 Drag-Match (Source of Truth: docs/M2-drag-match.md): genau vier
+ * Optionen A-D und genau eine korrekte Antwort. Andere Multiple-Choice-Formen
+ * bleiben Standardkarten mit Inline-Auswertung.
+ */
+export function isDragMatchShape(
+  question: Pick<Question, 'options'>,
+  answer: Pick<Answer, 'correctOptions'>,
+): boolean {
+  return Object.keys(question.options).length === 4 && answer.correctOptions.length === 1
+}
+
+export function isDragMatchCard(front: string, back: string): boolean {
+  return isDragMatchShape(parseQuestionText(front), parseAnswerText(back))
 }
 
 /**

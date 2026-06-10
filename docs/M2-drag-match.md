@@ -33,7 +33,8 @@ back: >> CORRECT: <Buchstabe> | <Kurzantwort>
 [optional] PDF-Bezug: SY0-701 Obj <x.y>
 ```
 
-- Erkennung: ≥ 2 Optionszeilen im `front` → M2-Renderer (`parseQuestionText`).
+- Erkennung: genau 4 Optionszeilen (`A:`–`D:`) im `front` **und** genau ein Correct-Marker
+  im `back` → M2-Renderer (`parseQuestionText`/`parseAnswerText`, `isDragMatchShape`).
 - `>> CORRECT: X | …` ist Pflicht und muss die **erste Zeile** des `back` sein.
 - Genau **eine** richtige Option; Mehrfach-Korrekt wird von M2 nicht unterstützt.
 

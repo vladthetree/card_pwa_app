@@ -4,7 +4,7 @@
 # ============================================================================
 # Initialisiert das Projekt nach einem frischen `git clone` (z. B. via SSH):
 #   - Backend  (card-sync-server, Python)  -> HTTPS auf Port 8787, systemd --user
-#   - Frontend (card_pwa, Vite/React PWA)  -> HTTPS auf Port 8443, systemd (system)
+#   - Frontend (card_pwa, Vite/React PWA)  -> HTTPS auf Port 8444, systemd (system)
 #
 # Das Script ist idempotent: bereits vorhandene Zertifikate, venv, node_modules
 # und Konfig werden nicht überschrieben (außer mit --force-certs / --force-deps).
@@ -31,10 +31,11 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKEND_DIR="$ROOT_DIR/card-sync-server"
 FRONTEND_DIR="$ROOT_DIR/card_pwa"
 SERVICE_USER="${USER:-$(id -un)}"
+SERVICE_GROUP="${SERVICE_GROUP:-$(id -gn)}"
 
 # ── Konfig (überschreibbar via Umgebung) ────────────────────────────────────
 SYNC_PORT="${SYNC_PORT:-8787}"
-PWA_PORT="${PWA_PORT:-8443}"
+PWA_PORT="${PWA_PORT:-8444}"
 
 # ── Flags ───────────────────────────────────────────────────────────────────
 TARGET="all"
@@ -66,6 +67,35 @@ ok()   { echo -e "  ${c_green}✓${c_off} $*"; }
 skip() { echo -e "  ${c_yellow}↷${c_off} $* (übersprungen)"; }
 warn() { echo -e "  ${c_yellow}⚠${c_off}  $*" >&2; }
 die()  { echo -e "${c_red}✗ $*${c_off}" >&2; trap - ERR; exit 1; }
+
+upsert_env_var() {
+  local file="$1"
+  local key="$2"
+  local value="$3"
+  local tmp
+  tmp="$(mktemp)"
+
+  if [ -f "$file" ]; then
+    awk -v key="$key" -v value="$value" '
+      BEGIN { replaced = 0 }
+      index($0, key "=") == 1 {
+        if (!replaced) {
+          print key "=" value
+          replaced = 1
+        }
+        next
+      }
+      { print }
+      END {
+        if (!replaced) print key "=" value
+      }
+    ' "$file" > "$tmp"
+  else
+    printf '%s=%s\n' "$key" "$value" > "$tmp"
+  fi
+
+  mv "$tmp" "$file"
+}
 
 # ── Voraussetzungen prüfen ──────────────────────────────────────────────────
 # Prüft alle benötigten Programme. Fehlt eines, bricht das Script ab.
@@ -119,23 +149,24 @@ setup_backend() {
     skip "Backend-Zertifikat existiert"
   fi
 
-  # 3) Laufzeitkonfiguration (.env.sync-server) – HTTPS aktivieren
+  # 3) Laufzeitkonfiguration (.env.sync-server) – wiederholbar synchronisieren
   if [ ! -f ".env.sync-server" ]; then
     cat > ".env.sync-server" <<EOF
 # Laufzeitkonfiguration für card-sync-server (lokal) – von setup.sh erzeugt.
 # Wird von systemd (EnvironmentFile) und scripts/run/run-https.sh geladen.
-SYNC_USE_HTTPS=1
-SYNC_HOST=0.0.0.0
-SYNC_PORT=$SYNC_PORT
-SYNC_CERT_FILE=$BACKEND_DIR/certs/cert.pem
-SYNC_KEY_FILE=$BACKEND_DIR/certs/key.pem
 # Optional: API-Token für authentifizierte Sync-Requests (leer = offen im LAN)
 # SYNC_API_TOKEN=
 EOF
-    ok ".env.sync-server angelegt (HTTPS aktiviert)"
+    ok ".env.sync-server angelegt"
   else
     skip ".env.sync-server existiert"
   fi
+  upsert_env_var ".env.sync-server" "SYNC_USE_HTTPS" "1"
+  upsert_env_var ".env.sync-server" "SYNC_HOST" "0.0.0.0"
+  upsert_env_var ".env.sync-server" "SYNC_PORT" "$SYNC_PORT"
+  upsert_env_var ".env.sync-server" "SYNC_CERT_FILE" "$BACKEND_DIR/certs/cert.pem"
+  upsert_env_var ".env.sync-server" "SYNC_KEY_FILE" "$BACKEND_DIR/certs/key.pem"
+  ok ".env.sync-server synchronisiert (HTTPS/Port/Pfade)"
 
   mkdir -p logs
 
@@ -143,11 +174,6 @@ EOF
   if [ "$SKIP_SYSTEMD" -eq 1 ]; then
     skip "systemd (--skip-systemd)"
     return
-  fi
-
-  if [ "$(basename "$ROOT_DIR")" != "card_pwa_app" ]; then
-    warn "Repo liegt nicht unter ~/card_pwa_app – die mitgelieferten User-Units"
-    warn "erwarten %h/card_pwa_app/card-sync-server. Ggf. ops/*.service anpassen."
   fi
 
   if ! systemctl --user show-environment >/dev/null 2>&1; then
@@ -198,7 +224,7 @@ setup_frontend() {
 
   # 3) Prod-Zertifikat
   if [ "$FORCE_CERTS" -eq 1 ] || [ ! -f ".cert/prod-cert.pem" ] || [ ! -f ".cert/prod-key.pem" ]; then
-    npm run prod:cert:setup
+    CERT_FORCE="$FORCE_CERTS" npm run prod:cert:setup
     ok "Frontend-Zertifikat erzeugt (.cert/)"
   else
     skip "Frontend-Zertifikat existiert"
@@ -227,16 +253,24 @@ install_frontend_service() {
   local tmp; tmp="$(mktemp)"
   sed -e "s#/home/_vb/card_pwa_app/card_pwa#$FRONTEND_DIR#g" \
       -e "s#^User=.*#User=$SERVICE_USER#" \
-      -e "s#^Group=.*#Group=$SERVICE_USER#" \
+      -e "s#^Group=.*#Group=$SERVICE_GROUP#" \
+      -e "s#^Environment=PWA_PORT=.*#Environment=PWA_PORT=$PWA_PORT#" \
+      -e "s#^Environment=PWA_SYNC_PROXY_TARGET=.*#Environment=PWA_SYNC_PROXY_TARGET=https://127.0.0.1:$SYNC_PORT#" \
       "$template" > "$tmp"
 
   if ! sudo -n true 2>/dev/null; then
     echo "  (sudo wird für die Installation des System-Service benötigt)"
   fi
-  sudo cp "$tmp" "$unit"
+  if sudo test -f "$unit" && sudo cmp -s "$tmp" "$unit"; then
+    skip "System-Service unverändert"
+  else
+    sudo cp "$tmp" "$unit"
+    ok "System-Service Unit aktualisiert ($unit)"
+  fi
   rm -f "$tmp"
   sudo systemctl daemon-reload
-  sudo systemctl enable --now card-pwa-prod.service
+  sudo systemctl enable card-pwa-prod.service >/dev/null
+  sudo systemctl restart card-pwa-prod.service
   ok "System-Service card-pwa-prod.service installiert und gestartet"
 }
 

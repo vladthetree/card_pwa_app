@@ -9,27 +9,38 @@
 ## 0. TL;DR — wo wir stehen
 
 - **Phase 1 ✅ KOMPLETT (inkl. Push):** `origin/main` = `0326e4e` (Nutzer hat gepusht).
-- **Phase 2 (A–G) ✅ KOMPLETT umgesetzt (lokal, verifiziert), 7 Commits:**
+- **Phase 2 (A–G) ✅ KOMPLETT umgesetzt (lokal, verifiziert), 8 lokale Commits + aktuelle Arbeitskopie:**
   - `e8f6dc5` **A) Mono-Schrift** in den Studien-Renderern (CardFace/Ordering/Matching).
   - `3cd0434` **B) Fokus-Modus** (`settings.focusMode`, Header per `visibility` → kein Sprung).
   - `3bd7f2b` **C) cardId-Metrik** (`buildCardSuccessStats`/`fetchCardSuccessStats`, additiv).
   - `f7ca2be` **D) M3 Free Recall** (`FreeRecallCard`, `RECALL:`-Präfix/Tag `free-recall`;
     ⚠️ neu generiert, ohne Screenshot).
   - `ed7ed7d` **E) Daily-Quest-Kachel (Pilot) + Clean-Modus** (Dashboard KPI/Heatmap/Pilot/Clean).
-  - `79c42f3` **G) Labs** (Liste + Detail + „Antwort prüfen"; Inventar **36/71**, 9 Szenarien
-    screenshot-belegt, Rest neu generiert; Auffüllen per `docs/labs.md`). **F)** Menü-Einträge
+  - `79c42f3` **G) Labs** (Liste + Detail + „Antwort prüfen"; Basis-Inventar 36/71, 9 Szenarien
+    screenshot-belegt, Rest neu generiert). **F)** Menü-Einträge
     Clean+Labs stecken in `ed7ed7d`/`79c42f3`.
   - `52dd061` **Phase 2b: docs/** (M1/M2/M3/shuffle/labs-Autorendoku, Repo-Wurzel `docs/`).
-- ✅ **Abnahme:** `TZ=UTC npm run build` grün; `TZ=UTC npm test -- --run` → **436/436** grün.
-- ⛔ **Diese 7 Commits sind UNGEPUSHT** — Push vom Pi scheitert weiter (keine Credentials).
+- `2b35f6b` Restore-Runbook/Handoff/Log aktualisiert.
+- **Zusatz 2026-06-10 (aktuelle Arbeitskopie, noch nicht committed):** Labs-Inventar auf **71/71**
+  aufgefuellt, `LAB_SOURCES`/`LAB_SCENARIO_SOURCE_REFS` mit oeffentlichen Quellen, `docs/labs-sources.md`,
+  Tests fuer Inventar, Quellenpflicht und nicht-vorsortierte Ordering-Szenarien. Danach Audit:
+  Kartenmodus-Doku als Source of Truth, M2 nur noch **4 Optionen + 1 Correct**, TXT-Backup-Import
+  fuer echte mehrzeilige `card-pwa-meta`-Backups repariert, Setup-Skripte clone-/port-stabiler.
+  Neu: `npm run validate:cards` (779/779 Karten, 33/33 Decks, Labs 71/71; 68 Warnungen fuer
+  5-Options-MC-Karten) und `scripts/verify-setup.sh` (nicht-destruktiver Setup-Check).
+- ✅ **Abnahme:** `TZ=UTC npm run build` grün; `TZ=UTC npm test -- --run --testTimeout 10000`
+  → **455/455** grün. Standard-5s-Full-Run hat 1 Timeout, isoliert läuft der Test grün.
+- ⛔ **8 lokale Commits sind UNGEPUSHT** — Push vom Pi scheitert weiter (keine Credentials);
+  die 71/71-Labs-Erweiterung liegt zusaetzlich als Arbeitskopie vor.
 - **Nächste Schritte:** ① Nutzer pusht (`git push origin main`); ② **Phase 3 Daten-Import**
   (Hard Rule 2 beachten: erst importieren, dann syncen); ③ Phase 4 Abnahme am Gerät
-  (Seite-an-Seite gegen Screenshots); ④ optional Labs-Inventar 36→71 per `docs/labs.md`.
+  (Seite-an-Seite gegen Screenshots); ④ Labs-Quellen/71er-Erweiterung committen und pushen.
 
 ## 1. Git-/Repo-Zustand (exakt)
 
-- Aktueller Branch: **`main`**, HEAD = **`52dd061`** (docs/), 7 Commits vor `origin/main`
-  (= `0326e4e`). Kein Force nötig — reiner Fast-Forward-Push.
+- Aktueller Branch: **`main`**, HEAD = **`2b35f6b`** (Restore-Doku), 8 Commits vor `origin/main`
+  (= `0326e4e`). Kein Force nötig — reiner Fast-Forward-Push. Zusaetzlich gibt es uncommitted
+  Arbeitskopie-Aenderungen fuer Labs 71/71 + Quellenpflicht.
 - Lokaler Hilfs-Branch **`restore/may17`** zeigt auf `55cd385` (kann bleiben).
 - `git status -s` → modifiziert (Nutzer-Arbeitsstand, bewusst uncommitted): `deploy_prod.sh`,
   `stop-server.sh`, gelöscht `run-https.sh`; `Project_Restore/` bleibt untracked/lokal.
@@ -37,11 +48,13 @@
 
 ## 2. Offene BLOCKER (Nutzer-Aktion nötig)
 
-1. **Push `origin/main`** — 7 Commits (`e8f6dc5`…`52dd061`) lokal; `git push` scheitert:
+1. **Push `origin/main`** — 8 Commits (`e8f6dc5`…`2b35f6b`) lokal; `git push` scheitert:
    `could not read Username` (kein `gh`, kein SSH-Key, kein Token auf dem Pi). Der Phase-1-Push
    lief offenbar von einem anderen Gerät. → PAT/SSH bereitstellen, dann `git push origin main`.
 2. **Phase 3 Daten-Import** — In-App via `ImportView` (`#card-pwa:backup-v1`-Datei aus
    `Project_Restore/`); **Hard Rule 2**: erst Server/App befüllen, dann Handy syncen lassen.
+   Audit 2026-06-10: Server-DB ist weiterhin leer (alle relevanten Tabellen 0); TXT-Backup-Import
+   liest `card-pwa-meta` jetzt testgesichert korrekt.
 
 ## 3. HARD RULES (unverändert gültig — Details TODO.md §2)
 
@@ -100,7 +113,8 @@
 Alle Schritte umgesetzt, Build + Tests grün. Konkret:
 1. ✅ **CardFace verdrahtet** — MC-Zweig in [`CardFace.tsx`](../card_pwa/src/components/CardFace.tsx)
    **vor** den `useState`-Hooks (nach dem matching-Early-Return): `parseQuestionText(card.front)`,
-   bei `>= 2` Optionen lazy `<DragMatchCard …/>` in `<Suspense>`. Hook-sicher, weil StudyView/
+   Drag-Match nur bei **genau 4 Optionen A-D + genau 1 Correct-Marker** (`isDragMatchShape`,
+   Source of Truth: `docs/M2-drag-match.md`). Hook-sicher, weil StudyView/
    ShuffleStudyView CardFace in `<motion.div key={currentCard.id}>` (AnimatePresence) rendern →
    pro Karte frischer Mount (gleicher Schutz wie ordering/matching). Inline-Tap-MC bleibt als
    toter Zweig im Code; Plain-Flip (ohne Optionen) unverändert → bestehende Logik intakt.
@@ -117,22 +131,24 @@ Alle Schritte umgesetzt, Build + Tests grün. Konkret:
 5. ✅ **Verifiziert:** `TZ=UTC npm run build` grün; `TZ=UTC npm test -- --run` → **391/391** grün.
 6. ✅ RECOVERY_LOG §2/§4 + TODO.md aktualisiert (Beleg: Screenshots + CSV `card_id 1779669260169`).
 
-> **Offene Folge-Aufgabe aus M2:** Schrift-Befund — die `Default_Card_View`-Aufnahme (M1) ist
-> ebenfalls **Mono**, `CardFace` nutzt dort aber `font-sans`. Für 100%-Treue müsste die Studien-
-> Ansicht **global auf Mono** umgestellt werden (eigener Schritt; viele Komponenten betroffen).
+> **M2-Folgeaufgabe erledigt:** Der Schrift-Befund aus `Default_Card_View…jpeg` wurde in Stage 2A
+> umgesetzt; Studien-Renderer nutzen Mono.
 
-> **Nächstes Todo: Fokus-Modus** (orthogonal: Header ausblenden, Platz **reservieren**, kein
-> Layout-Sprung — in `StudyView`/`CardFace`), dann M3, cardId-Metrik, Dashboard, Menü, Labs.
+> Fokus-Modus, M3, cardId-Metrik, Dashboard, Menü und Labs sind umgesetzt; offene Arbeit liegt
+> jetzt bei Daten-Import, Geräteabnahme und Push/Commit der lokalen Änderungen.
 
 ## 5. Restliche Stages (Reihenfolge siehe TODO.md)
 
 - ~~**Stage 2** (Fokus, M3, cardId, Dashboard/Quest, Menü, Labs)~~ → ✅ **fertig** (Commits §0).
-  Offener Rest: **Labs-Inventar 36→71** auffüllen (`docs/labs.md`, Quoten: Firewalls/IR je ≥ 12).
+  Labs-Inventar ist in der aktuellen Arbeitskopie **71/71** inklusive Quellenpflicht.
 - ~~**Stage 3 (docs/)**~~ → ✅ **fertig** (`52dd061`): `docs/M1-flip.md`, `M2-drag-match.md`,
   `M3-free-recall.md`, `shuffle.md`, `labs.md`.
+- **Labs 71/71 (Arbeitskopie) — UMGESETZT, aber noch committen:** `card_pwa/src/data/labScenarios.ts`
+  enthaelt 71 Szenarien; `docs/labs-sources.md` dokumentiert oeffentliche Quellen; Tests sind gruen.
 - **Stage 4 (Daten) — OFFEN:** `sync.db` sichern → App/Server aus Backup befüllen (kein
   Seed-Skript vorhanden, Import-Pfad ist In-App via `ImportView`/`utils/dbBackup.ts`, Header
   `#card-pwa:backup-v1`) → **erst dann** Handy reconnecten (Nutzer-Aktion, Hard Rule 2).
+  Der TXT-Import von `card-pwa-meta` wurde in der Arbeitskopie repariert und getestet.
   779 Karten / 33 Decks / FSRS / Settings.
 - **Stage 5 — OFFEN:** Abnahme gegen Screenshots (TODO.md Phase 4); Deploy des neuen Builds
   auf `:8443` erst nach bewusstem Nutzer-Entscheid (Hard Rule 1).
@@ -146,25 +162,26 @@ Alle Schritte umgesetzt, Build + Tests grün. Konkret:
 | `card_pwa/src/components/home/HomeDailyQuestTile.tsx` | Pilot-Kachel „Daily Quest" |
 | `card_pwa/src/db/queries/decks.ts → fetchDailyQuestCards` | gemischte Quest-Session über alle Decks |
 | `card_pwa/src/components/labs/LabsView.tsx` / `LabScenarioView.tsx` / `labUi.tsx` | Labs-Liste + Szenario-Detail |
-| `card_pwa/src/data/labScenarios.ts` | Labs-Inventar (36/71, Provenance im Header) |
+| `card_pwa/src/data/labScenarios.ts` | Labs-Inventar (71/71), Quellen-Registry `LAB_SOURCES`/`LAB_SCENARIO_SOURCE_REFS` |
 | `card_pwa/src/utils/labProgress.ts` | GESCHAFFT-Persistenz (localStorage) |
 | `card_pwa/src/utils/gamification.ts → buildCardSuccessStats` | Erfolgsmessung pro cardId |
-| `docs/*.md` (Repo-Wurzel) | KI-Autorendoku je Modus |
+| `docs/*.md` (Repo-Wurzel) | KI-Autorendoku je Modus + `labs-sources.md` |
 
 ## 6. Verifikation / nützliche Befehle
 
 ```bash
 cd /home/_vb/card_pwa_app
-git log --oneline origin/main..main        # zeigt die 7 ungepushten Stage-2-Commits
+git log --oneline origin/main..main        # zeigt die 8 ungepushten Stage-2-Commits
 cd card_pwa
 TZ=UTC npm run build                       # muss grün sein
-TZ=UTC npm test -- --run                   # 436/436 grün (OHNE TZ=UTC schlägt 1 TZ-Test fehl)
+TZ=UTC npm test -- --run --testTimeout 10000 # 455/455 grün
+npm run validate:cards                     # Backup/Labs-Validator
+../scripts/verify-setup.sh                 # Setup-/Port-/Shell-Check
 ```
 
-- **TZ-Test:** `src/__tests__/db/backlog-smoother.test.ts > uses custom nextDayStartsAt …`
-  erwartet 21, bekommt 52 in Europe/Berlin. Ursache: Test fixiert UTC-Zeiten, `getDayStartMs()`
-  rechnet lokal. **Kein Logikfehler**, identisch auf `main`. **Nicht** die Produktivlogik ändern;
-  optionales Härtungs-Todo: TZ im Test/`vitest`-Setup pinnen.
+- **Test-Hinweis:** Der Standard-5s-Gesamtlauf kann aktuell an
+  `src/__tests__/integration/home-view-shell.test.tsx` timeouten; isoliert läuft der Test grün
+  (ca. 4,7s Testzeit). Fuer stabile Full-Runs `--testTimeout 10000` nutzen oder den Test entschlacken.
 
 ## 7. Schlüsseldateien (Karten-Rendering)
 
@@ -174,7 +191,7 @@ TZ=UTC npm test -- --run                   # 436/436 grün (OHNE TZ=UTC schlägt
 | `card_pwa/src/components/CardFace.tsx` | **Zentrale Render-Weiche**: ordering/matching → Sub-Komponente, sonst Inline-MC/Flip |
 | `card_pwa/src/components/MatchingCard.tsx` / `OrderingCard.tsx` | PBQ-Renderer (Drag/Reihenfolge) — Vorbild für `DragMatchCard` |
 | `card_pwa/src/utils/cardTextParser.ts` | `parseQuestionText`/`parseAnswerText`/`parseAnyQuestion` etc. |
-| `card_pwa/src/utils/cardVariant.ts` | `getCardVariant` (standard/ordering/matching) |
+| `card_pwa/src/utils/cardVariant.ts` | `getCardVariant` (standard/ordering/matching) + `isDragMatchShape` (M2: 4 Optionen + 1 Correct) |
 | `card_pwa/src/components/CardFormModal.tsx` | Editor: nutzt `mc`-Variante (Referenz für MC-Datenmodell) |
 
 > Belege/Provenance immer in `RECOVERY_LOG.md` §4 nachtragen; `TODO.md`-Haken pflegen.

@@ -3,6 +3,7 @@ import type { Algorithm, Language } from '../../contexts/SettingsContext'
 import type { ParsedImport, ImportedCard, ImportedDeck } from './types'
 import { SM2 } from '../sm2'
 import { decodeTxtMetadata } from '../dbBackup'
+import { BACKUP_METADATA } from '../../constants/appIdentity'
 import { normalizeImportedMcCard } from './mcNormalizer'
 import { generateUuidV7 } from '../id'
 
@@ -230,47 +231,103 @@ function parseLooseMcBlock(input: string): ParsedMcBlock | null {
 }
 
 function parseTxtRows(dataLines: string[], separator: string): string[][] {
+  if (dataLines.some(line => line.includes(`${separator}${BACKUP_METADATA.prefix}`) || line.includes(`${separator}${BACKUP_METADATA.legacyPrefix}`))) {
+    return parsePwaBackupTxtRows(dataLines, separator)
+  }
+
+  return parseGenericTxtRows(dataLines, separator)
+}
+
+function parseGenericTxtRows(dataLines: string[], separator: string): string[][] {
   const rows: string[][] = []
-  let frontLines: string[] = []
-  let backLines: string[] = []
-  let hasSeparator = false
+  let current: string[] | null = null
+  let leadingFrontLines: string[] = []
 
   const flush = () => {
-    const front = frontLines.join('\n').trim()
-    const back = backLines.join('\n').trim()
-    if (front || back) {
-      rows.push([front, back])
+    if (current) {
+      const normalized = [...current]
+      normalized[0] = (normalized[0] || '').trim()
+      normalized[1] = (normalized[1] || '').trim()
+      if (normalized[0] || normalized[1]) rows.push(normalized)
+    } else {
+      const front = leadingFrontLines.join('\n').trim()
+      if (front) rows.push([front, ''])
     }
-    frontLines = []
-    backLines = []
-    hasSeparator = false
+    current = null
+    leadingFrontLines = []
   }
 
   for (const line of dataLines) {
     if (line.includes(separator)) {
-      if (hasSeparator) {
-        flush()
-      }
+      if (current) flush()
 
-      const idx = line.indexOf(separator)
-      const left = line.slice(0, idx)
-      const right = line.slice(idx + separator.length)
-      frontLines.push(left)
-      if (right.length > 0) {
-        backLines.push(right)
+      const cols = line.split(separator)
+      if (leadingFrontLines.length > 0) {
+        cols[0] = [...leadingFrontLines, cols[0] || ''].join('\n')
+        leadingFrontLines = []
       }
-      hasSeparator = true
+      current = cols
       continue
     }
 
-    if (hasSeparator) {
-      backLines.push(line)
+    if (current) {
+      current[1] = current[1] ? `${current[1]}\n${line}` : line
     } else {
-      frontLines.push(line)
+      leadingFrontLines.push(line)
     }
   }
 
   flush()
+  return rows
+}
+
+function splitPwaBackupBlock(block: string, separator: string): string[] | null {
+  const metaPrefixIdx = block.lastIndexOf(`${separator}${BACKUP_METADATA.prefix}`)
+  const legacyMetaPrefixIdx = block.lastIndexOf(`${separator}${BACKUP_METADATA.legacyPrefix}`)
+  const metaIdx = Math.max(metaPrefixIdx, legacyMetaPrefixIdx)
+  if (metaIdx === -1) return null
+
+  const meta = block.slice(metaIdx + separator.length).trim()
+  const beforeMeta = block.slice(0, metaIdx)
+  const tagsIdx = beforeMeta.lastIndexOf(separator)
+  if (tagsIdx === -1) return null
+
+  const tags = beforeMeta.slice(tagsIdx + separator.length).trim()
+  const frontBack = beforeMeta.slice(0, tagsIdx)
+  const frontBackSepIdx = frontBack.indexOf(separator)
+  if (frontBackSepIdx === -1) return null
+
+  const front = frontBack.slice(0, frontBackSepIdx).trim()
+  const back = frontBack.slice(frontBackSepIdx + separator.length).trim()
+  return [front, back, tags, meta]
+}
+
+function parsePwaBackupTxtRows(dataLines: string[], separator: string): string[][] {
+  const rows: string[][] = []
+  let current: string[] = []
+
+  const flushFallback = () => {
+    if (current.length === 0) return
+    rows.push(...parseGenericTxtRows(current.filter(line => line.trim()), separator))
+    current = []
+  }
+
+  for (const line of dataLines) {
+    if (current.length === 0 && !line.trim()) continue
+    current.push(line)
+
+    if (!line.includes(`${separator}${BACKUP_METADATA.prefix}`) && !line.includes(`${separator}${BACKUP_METADATA.legacyPrefix}`)) {
+      continue
+    }
+
+    const parsed = splitPwaBackupBlock(current.join('\n'), separator)
+    if (parsed) {
+      rows.push(parsed)
+      current = []
+    }
+  }
+
+  flushFallback()
   return rows
 }
 
@@ -329,7 +386,7 @@ export async function parseCsvText(
     const dataLines = lines.slice(dataStart)
     const hasSeparatedRows = dataLines.some(line => line.includes(meta.separator))
     rowsToProcess = hasSeparatedRows
-      ? parseTxtRows(dataLines.filter(l => l.trim()), meta.separator)
+      ? parseTxtRows(dataLines, meta.separator)
       : splitTxtIntoBlocks(dataLines).map(block => [block, ''])
   } else {
     // CSV mit PapaParse auto-detect
@@ -361,7 +418,7 @@ export async function parseCsvText(
     return created
   }
 
-  const defaultDeck = ensureDeck(deckName)
+  let defaultDeck: ImportedDeck | null = null
 
   // Karten erstellen
   const cards: ImportedCard[] = []
@@ -383,14 +440,16 @@ export async function parseCsvText(
 
     const { front, back } = normalizeImportedMcCard(rawFront, rawBack)
 
+    const metadata = decodeTxtMetadata((cols[3] || '').trim())
+    const base = metadata?.card
+    const targetDeck = metadata ? ensureDeck(metadata.deckName) : (defaultDeck ??= ensureDeck(deckName))
+
     // Tags (Spalte 3, space-separated falls vorhanden)
     const tags = cols[2]
       ? cols[2].trim().split(' ').filter(Boolean)
-      : []
+      : (base?.tags ?? [])
 
-    const metadata = decodeTxtMetadata((cols[3] || '').trim())
-    const targetDeck = metadata ? ensureDeck(metadata.deckName) : defaultDeck
-    const base = metadata?.card
+    const targetAlgorithm = base?.algorithm ?? algorithm
     const sourceFactor = base?.factor ?? SM2.DEFAULT_EASE
     const sourceInterval = base?.interval ?? 0
     const fsrsDifficulty = Math.max(1, Math.min(10, base?.difficulty ?? (sourceFactor / 500)))
@@ -407,14 +466,19 @@ export async function parseCsvText(
       type:     base?.type ?? SM2.CARD_TYPE_NEW,
       queue:    base?.queue ?? SM2.QUEUE_NEW,
       due:      base?.due ?? daysSinceEpoch,
+      dueAt:    base?.dueAt,
       interval: sourceInterval,
-      factor:   algorithm === 'fsrs' ? Math.round(fsrsDifficulty * 500) : sourceFactor,
-      stability: algorithm === 'fsrs' ? fsrsStability : base?.stability,
-      difficulty: algorithm === 'fsrs' ? fsrsDifficulty : base?.difficulty,
+      factor:   targetAlgorithm === 'fsrs' ? Math.round(fsrsDifficulty * 500) : sourceFactor,
+      stability: targetAlgorithm === 'fsrs' ? fsrsStability : base?.stability,
+      difficulty: targetAlgorithm === 'fsrs' ? fsrsDifficulty : base?.difficulty,
       reps:     base?.reps ?? 0,
       lapses:   base?.lapses ?? 0,
-      algorithm,
+      algorithm: targetAlgorithm,
       createdAt: base?.createdAt ?? now,
+      updatedAt: base?.updatedAt,
+      isDeleted: base?.isDeleted,
+      deletedAt: base?.deletedAt,
+      metadata: base?.metadata,
     })
   }
 

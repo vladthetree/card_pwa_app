@@ -4,7 +4,9 @@
 > Handy-Screenshots vom 8. Juni 2026 (`…23.38.26/.47/.57/.39.17/.39.49.jpeg`,
 > RECOVERY_LOG §1). Inventar: `card_pwa/src/data/labScenarios.ts`.
 > **Ziel-Inventar: 71 Szenarien** (Pill „4 / 71" im Original) — alle SY0-701-Domains,
-> Schwerpunkt **Firewalls / Incident Response** (Nutzer-Vorgabe).
+> Schwerpunkt **Firewalls / Incident Response** (Nutzer-Vorgabe). Ab 2026-06-10
+> ist jedes Szenario ueber `LAB_SCENARIO_SOURCE_REFS` auf oeffentliche Quellen
+> zurueckfuehrbar.
 
 ## Zweck
 
@@ -43,9 +45,20 @@ Szenarien sind TypeScript-Objekte in `card_pwa/src/data/labScenarios.ts`:
 }
 ```
 
+Quellen werden bewusst zentral statt in jedem Objekt gepflegt:
+
+```ts
+LAB_SOURCES                  // oeffentliche Quellen mit URL, Publisher, Abrufdatum
+LAB_SCENARIO_SOURCE_REFS     // scenarioId -> sourceIds
+getLabScenarioSources(id)    // aufgeloeste Quellen fuer ein Szenario
+```
+
 Invarianten (durch `__tests__/utils/lab-scenarios.test.ts` abgesichert):
 - IDs eindeutig; `categoryId` existiert; jedes `right` kommt in `options` vor;
   `correctOrder` ist eine Permutation von `0..steps.length-1`.
+- Inventar hat exakt 71 Szenarien; Firewalls und Incident Response haben je 12
+  Szenarien; jedes Szenario nennt mindestens zwei oeffentliche Quellen und immer
+  die offiziellen CompTIA-SY0-701-Objectives.
 - `steps` niemals in Lösungs-Reihenfolge autorieren (sonst ist das Szenario trivial).
 
 ## Dos & Don'ts
@@ -71,8 +84,10 @@ Invarianten (durch `__tests__/utils/lab-scenarios.test.ts` abgesichert):
 | Fortgeschritten | 4–6 Paare/Schritte, Evidence nötig | 4–5 |
 | Experte | 5–7 Schritte, Reihenfolge-Feinheiten (First-Match, Forensik-Prioritäten) | 4–5 |
 
-Ziel-Verteilung bis zum 71er-Inventar: je Kategorie ≥ 8, davon `firewalls` und
-`incident-response` je ≥ 12 (Schwerpunkt), Schwierigkeits-Mix ≈ 40/40/20.
+Ziel-Verteilung im 71er-Inventar: `grundlagen` 8, `bedrohungen` 8, `firewalls` 12,
+`architektur` 8, `iam` 8, `incident-response` 12, `krypto` 8, `governance` 7.
+Die 71er-Zahl stammt aus dem Handy-Screenshot; wegen des Schwerpunkts Firewalls/IR
+ist Governance bewusst bei 7 statt 8.
 
 ## Beispiel-Prompt
 

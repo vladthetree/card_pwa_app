@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="${ROOT_DIR:-$HOME/card_pwa_app/card-sync-server}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEFAULT_ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+ROOT_DIR="${ROOT_DIR:-$DEFAULT_ROOT_DIR}"
 LOG_DIR="${LOG_DIR:-$ROOT_DIR/logs}"
 WATCHDOG_LOG="${WATCHDOG_LOG:-$LOG_DIR/watchdog.log}"
 SERVICE_NAME="${SERVICE_NAME:-card-sync-server.service}"

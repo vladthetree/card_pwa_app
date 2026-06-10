@@ -1,7 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { CSV_WORKER_THRESHOLD_BYTES, parseCsv, parseCsvText } from '../../utils/import/csvImporter'
+import type { CardRecord } from '../../db'
 
 const uuidV7Pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+
+function encodeTxtMetadataForTest(payload: { card: CardRecord; deckName: string }): string {
+  const json = JSON.stringify(payload)
+  return `card-pwa-meta:${globalThis.btoa(unescape(encodeURIComponent(json)))}`
+}
 
 describe('csvImporter', () => {
   afterEach(() => {
@@ -64,6 +70,83 @@ describe('csvImporter', () => {
     expect(parsed.cards).toHaveLength(1)
     expect(parsed.cards[0].front).toBe('Frage')
     expect(parsed.cards[0].back).toBe('Antwort')
+  })
+
+  it('restores card-pwa txt backup metadata as original card scheduling fields', async () => {
+    const baseCard: CardRecord = {
+      id: 'card-restore-1',
+      noteId: 'note-restore-1',
+      deckId: 'deck-original',
+      front: [
+        'Welche Kontrolle begrenzt laterale Bewegung?',
+        'A: Gemeinsamer Admin-Account',
+        'B: Mikrosegmentierung',
+        'C: Flaches VLAN',
+        'D: Offenes Ost-West-Routing',
+      ].join('\n'),
+      back: [
+        '>> CORRECT: B | Mikrosegmentierung',
+        '',
+        'Mikrosegmentierung begrenzt Ost-West-Traffic und reduziert laterale Bewegung.',
+        '',
+        'Merkhilfe: Kleine Segmente, kleine Blast Radius.',
+      ].join('\n'),
+      tags: ['security', 'iam'],
+      extra: { acronym: 'ZTNA', examples: 'Least privilege', port: '', protocol: '' },
+      type: 2,
+      queue: 2,
+      due: 20610,
+      dueAt: 1780000000000,
+      interval: 42,
+      factor: 2700,
+      stability: 18,
+      difficulty: 5.4,
+      reps: 9,
+      lapses: 1,
+      createdAt: 1710000000000,
+      updatedAt: 1720000000000,
+      algorithm: 'fsrs',
+      metadata: {
+        preMigrationAlgorithm: 'sm2',
+        preMigrationFactor: 2500,
+        preMigrationInterval: 12,
+        migratedAt: 1715000000000,
+      },
+    }
+    const meta = encodeTxtMetadataForTest({ card: baseCard, deckName: 'Security::IAM' })
+    const txt = [
+      '#separator:tab',
+      '#html:true',
+      '#notetype:Basic',
+      '#card-pwa:backup-v1',
+      [baseCard.front, baseCard.back, baseCard.tags.join(' '), meta].join('\t'),
+    ].join('\n')
+
+    const parsed = await parseCsvText('card-pwa-backup.txt', txt, 'de', 'sm2')
+    const card = parsed.cards[0]
+
+    expect(parsed.decks).toHaveLength(1)
+    expect(parsed.decks[0].name).toBe('Security::IAM')
+    expect(card.id).toBe(baseCard.id)
+    expect(card.noteId).toBe(baseCard.noteId)
+    expect(card.deckId).toBe(parsed.decks[0].id)
+    expect(card.front).toBe(baseCard.front)
+    expect(card.back).toBe(baseCard.back)
+    expect(card.tags).toEqual(baseCard.tags)
+    expect(card.type).toBe(baseCard.type)
+    expect(card.queue).toBe(baseCard.queue)
+    expect(card.due).toBe(baseCard.due)
+    expect(card.dueAt).toBe(baseCard.dueAt)
+    expect(card.interval).toBe(baseCard.interval)
+    expect(card.factor).toBe(Math.round((baseCard.difficulty ?? 0) * 500))
+    expect(card.stability).toBe(baseCard.stability)
+    expect(card.difficulty).toBe(baseCard.difficulty)
+    expect(card.reps).toBe(baseCard.reps)
+    expect(card.lapses).toBe(baseCard.lapses)
+    expect(card.algorithm).toBe(baseCard.algorithm)
+    expect(card.createdAt).toBe(baseCard.createdAt)
+    expect(card.updatedAt).toBe(baseCard.updatedAt)
+    expect(card.metadata).toEqual(baseCard.metadata)
   })
 
   it('throws when file contains no usable rows', async () => {

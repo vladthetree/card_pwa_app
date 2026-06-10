@@ -5,7 +5,7 @@ import { Edit, Check, X } from 'lucide-react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import { parseQuestionText, parseAnswerText, parseAnyQuestion, parseAnyAnswer } from '../utils/cardTextParser'
 import type { OrderingAnswer, MatchingAnswer } from '../utils/cardTextParser'
-import { isFreeRecallCard } from '../utils/cardVariant'
+import { isDragMatchShape, isFreeRecallCard } from '../utils/cardVariant'
 import type { Card } from '../types'
 
 const OrderingCard   = lazy(() => import('./OrderingCard'))
@@ -163,12 +163,12 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
     )
   }
 
-  // M2 Drag-Match: 4-Optionen-/1-richtig-Karten (>= 2 Optionen im `front`) erhalten den
-  // additiven Drag-/Tap-Renderer statt der Inline-Tap-MC. Plain-Flip-Karten (keine Optionen)
-  // fallen weiter durch zur Inline-Darstellung unten — bestehende Logik bleibt unverändert.
+  // M2 Drag-Match: docs/M2-drag-match.md ist die Source of Truth:
+  // genau 4 Optionen (A-D) und genau 1 korrekte Antwort. Andere MC-Formen
+  // fallen auf die bestehende Inline-Darstellung unten zurück.
   const mcQuestion = parseQuestionText(card.front)
-  if (Object.keys(mcQuestion.options).length >= 2) {
-    const mcAnswer = parseAnswerText(card.back)
+  const mcAnswer = parseAnswerText(card.back)
+  if (isDragMatchShape(mcQuestion, mcAnswer)) {
     return (
       <Suspense fallback={null}>
         <DragMatchCard
