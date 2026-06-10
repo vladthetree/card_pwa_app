@@ -23,6 +23,7 @@ import { useHomeDerivedData } from '../hooks/home/useHomeDerivedData'
 import { useHomeViewController } from '../hooks/home/useHomeViewController'
 import { flattenDeckTree } from '../utils/securityDeckHierarchy'
 import { isReviewDeck } from '../utils/reviewDecks'
+import { fetchDailyQuestCards } from '../db/queries'
 
 const CreateCardModal = lazy(() => import('./CreateCardModal.tsx'))
 const SettingsModal = lazy(() => import('./SettingsModal.tsx'))
@@ -45,7 +46,12 @@ interface Props {
   onStartTagStudy?: (tag: string, cards: Card[]) => void
   onStartShuffleStudy: (collection: ShuffleCollection) => void
   onOpenShuffleManager?: () => void
+  /** Daily Quest (Pilot-Kachel): gemischte Session über mehrere Decks. */
+  onStartDailyQuest?: (cards: Card[]) => void
 }
+
+/** Quest-Größe laut Screenshot `…23.36.20.jpeg` („Jetzt: 25 Karten"). */
+const DAILY_QUEST_SIZE = 25
 
 type HomeTab = 'decks' | 'tags'
 
@@ -56,6 +62,7 @@ export default function HomeView({
   onStartTagStudy,
   onStartShuffleStudy,
   onOpenShuffleManager,
+  onStartDailyQuest,
 }: Props) {
   const [homeTab, setHomeTab] = useState<HomeTab>('decks')
   const tagCardIndex = useTagCardIndex()
@@ -116,6 +123,36 @@ export default function HomeView({
     language: settings.language,
   })
 
+  // Daily Quest (Pilot-Kachel): Untertitel-Hinweis = Deck mit den meisten heute
+  // fälligen Karten; Session = fällige Karten deckübergreifend (max. 25).
+  const [questStarting, setQuestStarting] = useState(false)
+  const questTopDeckName = useMemo(() => {
+    let bestName: string | null = null
+    let bestCount = 0
+    for (const deck of homeDecks) {
+      const today = derivedData.deckScheduleOverview[deck.id]?.today
+      if (today && today.total > bestCount) {
+        bestCount = today.total
+        bestName = deck.name
+      }
+    }
+    return bestName
+  }, [homeDecks, derivedData.deckScheduleOverview])
+  const questSize = Math.min(DAILY_QUEST_SIZE, stats?.nowDue ?? 0)
+
+  const handleStartDailyQuest = async () => {
+    if (questStarting || !onStartDailyQuest) return
+    setQuestStarting(true)
+    try {
+      const questCards = await fetchDailyQuestCards(DAILY_QUEST_SIZE, settings.nextDayStartsAt)
+      if (questCards.length > 0) {
+        onStartDailyQuest(questCards)
+      }
+    } finally {
+      setQuestStarting(false)
+    }
+  }
+
   const renderHeaderBar = () => (
     <HomeHeaderBar
       t={t}
@@ -165,6 +202,11 @@ export default function HomeView({
               stats={stats}
               gamificationProfile={gamificationProfile}
               onOpenFutureForecast={controller.openFutureForecast}
+              questSize={questSize}
+              questTopDeckName={questTopDeckName}
+              questStarting={questStarting}
+              onStartDailyQuest={() => { void handleStartDailyQuest() }}
+              onShowDecks={() => setHomeTab('decks')}
             />
           </div>
         </div>

@@ -301,6 +301,24 @@ function AppShell() {
     setView('study')
   }
 
+  // Daily Quest (Pilot-Kachel): gemischte Session über mehrere Decks. Nutzt wie
+  // die Tag-Session ein synthetisches Deck mit vorab geladenen Karten; Reviews
+  // fließen über die deckId der Karten weiter in die Ursprungsdecks.
+  const startDailyQuest = (cards: Card[]) => {
+    const syntheticDeck: Deck = {
+      id: 'daily-quest',
+      name: settings.language === 'de' ? 'Daily Quest' : 'Daily Quest',
+      total: cards.length,
+      new: cards.filter(c => c.type === 'new').length,
+      learning: cards.filter(c => c.type === 'learning' || c.type === 'relearning').length,
+      due: cards.filter(c => c.type === 'review').length,
+    }
+    setActiveDeck(syntheticDeck)
+    setActiveTagCards(cards)
+    setActiveShuffleCollection(null)
+    setView('study')
+  }
+
   const startShuffleStudy = (collection: ShuffleCollection) => {
     setActiveShuffleCollection(collection)
     setActiveDeck(null)
@@ -357,6 +375,7 @@ function AppShell() {
                   onStartTagStudy={startTagStudy}
                   onStartShuffleStudy={startShuffleStudy}
                   onOpenShuffleManager={openShuffleManager}
+                  onStartDailyQuest={startDailyQuest}
                 />
               </motion.div>
             )}

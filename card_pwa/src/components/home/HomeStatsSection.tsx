@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion'
 import ReviewHeatmap from '../ReviewHeatmap.tsx'
 import { StatPill } from '../StatPill'
-import { GamificationPanel } from './GamificationPanel'
+import { HomeDailyQuestTile } from './HomeDailyQuestTile'
 import type { GamificationProfile } from '../../types'
 
-export type HomeDashboardMode = 'kpi' | 'heatmap' | 'pilot'
+// 'clean' (Beleg `…23.40.53.jpeg`): Dashboard-Kachel komplett ausgeblendet.
+export type HomeDashboardMode = 'kpi' | 'heatmap' | 'pilot' | 'clean'
 
 interface Props {
   t: Record<string, string>
@@ -17,6 +18,12 @@ interface Props {
   } | null
   gamificationProfile: GamificationProfile | null
   onOpenFutureForecast: () => void
+  /** Daily Quest (Pilot-Modus, Beleg `…23.36.20.jpeg`) */
+  questSize: number
+  questTopDeckName: string | null
+  questStarting: boolean
+  onStartDailyQuest: () => void
+  onShowDecks: () => void
 }
 
 export function HomeStatsSection({
@@ -24,8 +31,12 @@ export function HomeStatsSection({
   language,
   mode,
   stats,
-  gamificationProfile,
   onOpenFutureForecast,
+  questSize,
+  questTopDeckName,
+  questStarting,
+  onStartDailyQuest,
+  onShowDecks,
 }: Props) {
   return (
     <>
@@ -43,9 +54,20 @@ export function HomeStatsSection({
         </motion.div>
       )}
 
+      {/* Pilot = Daily Quest (Beleg `…23.36.20.jpeg`): gemischte Session über
+          mehrere Decks. Das frühere GamificationPanel bleibt als Komponente
+          erhalten, der 8.-Juni-Stand zeigt im Pilot-Modus aber die Quest-Kachel. */}
       {mode === 'pilot' && (
         <div className="relative z-20 w-full pb-1">
-          <GamificationPanel language={language} profile={gamificationProfile} />
+          <HomeDailyQuestTile
+            language={language}
+            questSize={questSize}
+            dueTodayTotal={stats?.nowDue ?? 0}
+            topDeckName={questTopDeckName}
+            starting={questStarting}
+            onStart={onStartDailyQuest}
+            onShowDecks={onShowDecks}
+          />
         </div>
       )}
 
