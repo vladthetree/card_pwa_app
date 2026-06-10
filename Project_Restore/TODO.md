@@ -1,7 +1,11 @@
 # Wiederherstellung Card PWA — Runbook für die ausführende KI
 
-> ⏩ **AKTUELLER STAND / ÜBERGABE:** Siehe [`HANDOFF.md`](./HANDOFF.md) — Phase 1 ist lokal fertig
-> (Push offen, Credentials fehlen), Stage 2 steht beim M2 Drag-Match-Renderer (Recherche fertig).
+> ⏩ **AKTUELLER STAND / ÜBERGABE (2026-06-10 Abend):** Siehe [`HANDOFF.md`](./HANDOFF.md) —
+> **Phase 1 gepusht** (`origin/main` = `0326e4e`). **Phase 2 ist KOMPLETT umgesetzt** (A–G:
+> Mono, Fokus-Modus, cardId-Metrik, M3, Daily-Quest/Clean-Dashboard, Ansichten-Menü, Labs)
+> + **Phase 2b (docs/) fertig**. Build grün, **436/436 Tests** grün. **7 neue Commits
+> warten auf Push** (Credentials auf dem Pi fehlen weiterhin). Offen: Phase 3 (Daten-Import,
+> Nutzer-Aktion) und Phase 4 (Abnahme am Gerät).
 
 > **Dieses Dokument ist ein Auftrag an eine KI.** Lies Abschnitt 1–4 vollständig, halte
 > dich strikt an die **Hard Rules** (Abschnitt 2), arbeite die **Phasen** der Reihe nach ab
@@ -120,9 +124,10 @@ Holt ~80 % der verlorenen Arbeit zurück (26. Apr → 17. Mai). Der Branch enth�
 - [x] Review der 12 Commits: **keine Löschungen**, geänderte Dateien passen zum Feature-Set.
 - [x] Nach `main` **per Fast-Forward** übernommen (kein Squash) → `main` = `55cd385`.
 - [x] Cleanup-Commit `ff4f1eb`: `ignore/` (7.2M Müll) entfernt + `.gitignore`-Typo `ignose/`→`ignore/`.
-- [ ] **`main` pushen** → **BLOCKIERT: keine GitHub-Credentials** auf dem Pi (kein gh/SSH/Token).
-      *Nutzer-Aktion nötig: PAT/SSH bereitstellen, dann `git push origin main`.*
-- **Abnahme Phase 1:** Build + Tests grün ✅; `main` enthält neue Dateien ✅; **gepusht: offen** ⏳.
+- [x] **`main` gepusht** (2026-06-10): `origin/main` = `0326e4e` (Phase-1-Stand inkl. M2).
+      ⚠️ Die **7 Stage-2-Commits danach** (`e8f6dc5`…`52dd061`) sind wieder **nur lokal** —
+      Push vom Pi scheitert weiterhin an fehlenden Credentials (Nutzer-Aktion).
+- **Abnahme Phase 1:** Build + Tests grün ✅; `main` enthält neue Dateien ✅; gepusht ✅.
 
 ---
 
@@ -131,20 +136,23 @@ Holt ~80 % der verlorenen Arbeit zurück (26. Apr → 17. Mai). Der Branch enth�
 Diese Features sind in den Screenshots belegt, aber **noch nicht im Branch**
 (`git grep` im Branch = 0 Treffer für „Labs", „Szenarien", „Antwort prüfen", „DRAG-MATCH"):
 
-- [ ] **Labs** – Reiter „Interaktive Sicherheits-Szenarien", Fortschritt (z. B. 4/71),
-      Kategorien (z. B. „Security-Grundlagen · 1/8 Szenarien"), Schwierigkeit
-      **Einsteiger / Fortgeschritten / Experte**, „GESCHAFFT"-Status, Zeit (3–5 Min).
-      *(Belege: `WhatsApp …23.38.26/.47/.57/.39.17/.39.49.jpeg`)*
-- [ ] **Szenario-Detail**: Abschnitte **BEWEISMATERIAL** / **NETZWERKTOPOLOGIE** / **Ziel**,
-      Interaktion **Dropdown-Zuordnung** *oder* **Drag-Reihenfolge** + Button **„Antwort prüfen"**.
-      Baut auf `MatchingCard`/`OrderingCard` (Phase 1) auf.
-- [ ] **71 Labs-Szenarien (Inhalt)**: Basis **CompTIA SY0-701**, alle Domains, Schwerpunkt
-      **Firewalls / Incident Response** (vom Nutzer bestätigt). Im Backup liegen nur ~28
-      PBQ-Karten → der Rest kommt aus dem **Handy-Bundle** oder wird per `docs/labs.md` neu generiert.
-- [ ] **Dashboard-Kachel oben** (statt Topbar), umschaltbar: **KPI / Heatmap / Pilot / Clean**.
-      „Pilot" = **Daily Quest** („Jetzt: 25 Karten …", „25 Karten starten"). *(Beleg: `…23.36.20.jpeg`)*
-- [ ] **Ansichten-Menü** (Bottom-Sheet): ANSICHT = Decks / Nach Tags / Shuffle-Decks / Labs;
-      SORTIERUNG = Name / Fällig; DASHBOARD = KPI / Heatmap / Pilot / Clean. *(Beleg: `…23.40.53.jpeg`)*
+- [x] **Labs** ✅ (2026-06-10) – `components/labs/LabsView.tsx`: Reiter „Interaktive
+      Sicherheits-Szenarien", Fortschritts-Pill (n/71), aufklappbare Kategorien („n/m SZENARIEN"),
+      Schwierigkeit **Einsteiger / Fortgeschritten / Experte**, „GESCHAFFT"-Status (localStorage),
+      Zeit (3–5 Min). *(Belege: `WhatsApp …23.38.26/.47/.57/.39.17/.39.49.jpeg`)*
+- [x] **Szenario-Detail** ✅ – `components/labs/LabScenarioView.tsx`: **BEWEISMATERIAL** /
+      **NETZWERKTOPOLOGIE** / **Ziel**-Callout, **Dropdown-Zuordnung** *oder* **Drag-Reihenfolge**
+      (framer `Reorder`) + **„Antwort prüfen"**. Scoring über `pbqScoring.ts`.
+- [~] **71 Labs-Szenarien (Inhalt)**: **36 von 71** in `data/labScenarios.ts` — 9 davon
+      screenshot-belegt (u. a. Control-Funktion, Standard-Change, Geo-Block **exakt** nach Bild),
+      Rest ⚠️ neu generiert. **Auffüllen auf 71** reproduzierbar per [`docs/labs.md`](../docs/labs.md)
+      (Kategorie-Quoten: Firewalls/IR je ≥ 12). Fortschritts-Pill zeigt fest „n / 71".
+- [x] **Dashboard-Kachel oben** ✅ – Modi **KPI / Heatmap / Pilot / Clean**; „Pilot" =
+      **Daily Quest** (`HomeDailyQuestTile`, „Jetzt: 25 Karten …" → gemischte Session über alle
+      Decks via `fetchDailyQuestCards`); „Clean" blendet die Kachel aus. *(Beleg: `…23.36.20.jpeg`)*
+- [x] **Ansichten-Menü** ✅ (Bottom-Sheet, war großteils im Branch): ANSICHT = Decks / Nach Tags /
+      Shuffle-Decks / **Labs (neu)**; SORTIERUNG = Name / Fällig; DASHBOARD = KPI / Heatmap /
+      Pilot / **Clean (neu)**. *(Beleg: `…23.40.53.jpeg`)*
 - [ ] **Studien-Formate** (automatische Wahl je Karte) — **belegt durch Screenshots**:
   - **M1 Flip** (Standard/Fallback): Vorder-/Rückseite, Rating-Leiste **Nochmal(1)/Schwer(2)/
     Gut(3)/Leicht(4)** (FSRS). *(Beleg: `Default_Card_View_enabled_Fokus_mode.jpeg`)*
@@ -156,29 +164,113 @@ Diese Features sind in den Screenshots belegt, aber **noch nicht im Branch**
     Optionen werden **gemischt + nach Position neu beschriftet** (kanonisch B erscheint im Screenshot
     als „D"), Korrektheit über **Identität**. → **eigener Studien-Renderer** (NICHT PBQ-`MatchingCard`!).
     *(Belege: `Drag-Match1_…`, `Drag-Match2_enabled_Fokus_mode.jpeg`, CSV `card_id 1779669260169`)*
-  - **M3 Free Recall**: frei erinnern → aufdecken → selbst bewerten. *(noch ohne Screenshot)*
-- [ ] **Fokus-Modus**: blendet Karten-Header aus; Platz bleibt **leer aber reserviert**
-      (kein Layout-Sprung). *(Belegt in allen 3 neuen Screenshots, große leere Fläche.)*
-- [ ] **Erfolgsmessung pro `cardId`** (nicht nur `noteId`): eine Karte kann **mehrere Varianten**
-      haben; maßgeblich ist die **Card-ID** (Nutzer bestätigt). Grundlage: `cardVariant.ts` (Phase 1).
-- [ ] **Vorgehen:** Handy-Bundle gegen Branch-Build diffen → fehlende Logik aus Sourcemaps
-      übernehmen; wo keine Sourcemap, anhand Screenshots nachbauen. Jede Übernahme in RECOVERY_LOG §4.
-- **Abnahme Phase 2:** Alle obigen Features sichtbar/funktional wie in den Screenshots; Tests grün.
+  - **M3 Free Recall** ✅ (2026-06-10): `FreeRecallCard.tsx` — erinnern → aufdecken → selbst
+    bewerten (Gewusst→1.0 / Nicht gewusst→0.0→Again). Encoding `RECALL:`-Präfix oder Tag
+    `free-recall` (Definition: `docs/M3-free-recall.md`). ⚠️ **neu generiert, ohne Screenshot**.
+- [x] **Fokus-Modus** ✅ (2026-06-10): `settings.focusMode` + Toggle in SettingsModal;
+      Header in StudyView/ShuffleStudyView per `visibility` (invisible) ausgeblendet —
+      Platz bleibt **reserviert**, kein Layout-Sprung; Zurück-Button bleibt sichtbar.
+- [x] **Erfolgsmessung pro `cardId`** ✅ (2026-06-10): `buildCardSuccessStats` +
+      `fetchCardSuccessStats` — Aggregation pro Card-ID (Variante), additiv; Reviews trugen
+      `cardId` bereits, Gamification-Profil unverändert (Test belegt Gleichheit).
+- [x] **Vorgehen:** Handy-Bundle existiert nicht (Nutzer-Entscheid) → komplett **aus Screenshots +
+      Backup-Daten + Branch-Code** rekonstruiert; jede Übernahme in RECOVERY_LOG §4 belegt.
+- **Abnahme Phase 2:** Features umgesetzt wie in den Screenshots ✅; Build grün ✅; **436/436 Tests** ✅.
+  Seite-an-Seite-Sichtprüfung am Gerät = Teil von Phase 4.
 
 ---
 
-## Phase 2b – KI-Autoren-Doku pro Modus (`docs/`) NEU erstellen
+## Phase 2 — Konkreter Arbeitsplan (✅ KOMPLETT umgesetzt 2026-06-10, Commits `e8f6dc5`…`52dd061`)
+
+> Reihenfolge bewusst: erst die zwei kleinen, screenshot-belegten UI-Angleichungen (Schrift,
+> Fokus-Modus), dann die Mess-Grundlage (cardId), dann die größeren Features. Nach **jedem**
+> Schritt: `cd card_pwa && TZ=UTC npm run build && TZ=UTC npm test -- --run` grün + RECOVERY_LOG §4.
+> Bestehende Logik bleibt **additiv** (Nutzer-Auflage). „M2 Drag-Match" + „M1 Flip" sind als
+> Vorbild/Anker bereits vorhanden.
+
+### A) M1/Studien-Schrift global auf Mono ✅ (Commit `e8f6dc5`)
+*Befund 2026-06-10: `Default_Card_View…jpeg` (M1) rendert Frage/Antwort in **Mono** (Share Tech
+Mono), aber `CardFace` nutzt `font-sans` (Space Grotesk). M2 ist schon Mono.*
+- Dateien: [`CardFace.tsx`](../card_pwa/src/components/CardFace.tsx) (Frage-, Antwort-, Options-Text),
+  zur Konsistenz prüfen: [`OrderingCard.tsx`](../card_pwa/src/components/OrderingCard.tsx),
+  [`MatchingCard.tsx`](../card_pwa/src/components/MatchingCard.tsx).
+- Schritte: `font-sans` in den **Studien**-Renderern → `font-mono` (Basisfont). Home/Settings/Editor
+  **nicht** anfassen. Optional: Schalter, falls Sans bewusst bleiben soll (Default = Mono).
+- Abnahme: Seite-an-Seite gegen `Default_Card_View…jpeg`; Build + Tests grün.
+
+### B) Fokus-Modus ✅ (Commit `3cd0434`; belegt in allen 3 Karten-Screenshots)
+*Header ausgeblendet, Platz aber **reserviert** → kein Layout-Sprung (große leere Fläche oben).*
+- Dateien: [`StudyView.tsx`](../card_pwa/src/components/StudyView.tsx),
+  [`ShuffleStudyView.tsx`](../card_pwa/src/components/ShuffleStudyView.tsx), `CardFace.tsx`,
+  `StudyHeaderProgress`; Toggle in `SettingsModal`/`SettingsContext` (`settings.focusMode`).
+- Schritte: Setting `focusMode: boolean` + Toggle; im Studien-Header Sichtbarkeit per
+  `visibility:hidden`/`opacity-0` **statt** `display:none` (Höhe bleibt reserviert); Progress-Leiste
+  analog. Karten-interner Header (A/B-Badge) bleibt — nur der **äußere** Session-Header geht weg.
+- Abnahme: Toggle blendet Header aus, Karte springt **nicht**; Vergleich gegen die 3 Screenshots.
+
+### C) Erfolgsmessung pro `cardId` (statt nur `noteId`) ✅ (Commit `3bd7f2b`)
+*Nutzer bestätigt: eine Note kann mehrere Karten-Varianten haben; maßgeblich ist die Card-ID.*
+- Dateien: [`db/queries/gamification.ts`](../card_pwa/src/db/queries/gamification.ts),
+  [`utils/gamification.ts`](../card_pwa/src/utils/gamification.ts), Review-/Session-Recording
+  [`services/StudySessionManager.ts`](../card_pwa/src/services/StudySessionManager.ts),
+  Basis [`cardVariant.ts`](../card_pwa/src/utils/cardVariant.ts).
+- Schritte: Review-Events/Statistik um `cardId` ergänzen (additiv, `noteId` behalten); Aggregation
+  pro `cardId`. Tests in `__tests__/db`/`__tests__/services` erweitern.
+- Abnahme: Metrik je Variante getrennt; bestehende Stats unverändert; Tests grün.
+
+### D) M3 Free Recall ✅ (Commit `f7ca2be`; **kein Screenshot** → neu generiert, so markiert)
+- Dateien: neuer Renderer `components/FreeRecallCard.tsx` (Vorbild: M2/Ordering), CardFace-Zweig,
+  i18n (`freerecall_*`). Auswahl: Karten ohne Optionen, die als Free-Recall markiert sind
+  (Format/Tag prüfen — sonst `docs/M3-free-recall.md` definiert das Encoding).
+- Schritte: „erinnern → aufdecken → selbst bewerten" (Self-Rating mappt auf FSRS 1–4 via StudyView).
+- Abnahme: Tests (Aufdecken-Pfad, Self-Rating → `onAnswerEvaluated`); in RECOVERY_LOG als
+  **„neu generiert, ohne Original-Screenshot"** kennzeichnen.
+
+### E) Dashboard-Kachel oben (KPI / Heatmap / Pilot / Clean) + Daily Quest ✅ (Commit `ed7ed7d`; Beleg `…23.36.20.jpeg`)
+- Dateien: [`HomeView`](../card_pwa/src/components/HomeView.tsx) (+ `components/home/`), neue
+  `HomeDashboardTile` mit 4 Modi; „Pilot" = Daily Quest („Jetzt: 25 Karten …" → „25 Karten starten",
+  gemischte Session über mehrere Decks).
+- Schritte: Topbar durch umschaltbare Kachel ersetzen (additiv); Modus in `settings`/lokalem State.
+- Abnahme: 4 Modi umschaltbar; Daily Quest startet Misch-Session; Vergleich gegen Screenshot.
+
+### F) Ansichten-Menü (Bottom-Sheet) ✅ (Bestand aus Branch + Clean/Labs-Einträge in `ed7ed7d`/`79c42f3`; Beleg `…23.40.53.jpeg`)
+- ANSICHT = Decks / Nach Tags / Shuffle-Decks / Labs · SORTIERUNG = Name / Fällig ·
+  DASHBOARD = KPI / Heatmap / Pilot / Clean.
+- Dateien: `HomeView` + `components/home/HomeBottomBar.tsx` (Trigger), neues Bottom-Sheet.
+- Abnahme: alle drei Gruppen schaltbar; Auswahl wirkt auf Home; Vergleich gegen Screenshot.
+
+### G) Labs-Feature ✅ (Commit `79c42f3`; Inhalte 36/71, Rest per docs/labs.md; Belege `…23.38.26/.47/.57`, `…23.39.17/.49.jpeg`)
+1. **Liste**: Reiter „Interaktive Sicherheits-Szenarien", Fortschritt (z. B. 4/71), Kategorien
+   („Security-Grundlagen · 1/8"), Schwierigkeit **Einsteiger/Fortgeschritten/Experte**,
+   „GESCHAFFT"-Status, Zeit (3–5 Min).
+2. **Szenario-Detail**: Abschnitte **BEWEISMATERIAL / NETZWERKTOPOLOGIE / Ziel**, Interaktion
+   **Dropdown-Zuordnung** *oder* **Drag-Reihenfolge** + Button **„Antwort prüfen"** — baut auf
+   `MatchingCard`/`OrderingCard` + `pbqScoring.ts` auf.
+3. **71 Inhalte**: SY0-701, alle Domains, Schwerpunkt **Firewalls / Incident Response**. Backup
+   hat nur ~28 PBQ-Karten → Rest per `docs/labs.md` **neu generieren** (so markieren).
+- Abnahme: Liste + Detail + „Antwort prüfen" funktionieren; Inhalte vorhanden; Tests grün.
+
+### H) Push `origin/main` ⛔ **WEITER BLOCKIERT (Nutzer-Aktion)**
+- Phase-1-Stand wurde gepusht (`origin/main` = `0326e4e`), aber die **7 Stage-2-Commits**
+  (`e8f6dc5` Mono, `3cd0434` Fokus, `3bd7f2b` cardId, `f7ca2be` M3, `ed7ed7d` Dashboard,
+  `79c42f3` Labs, `52dd061` docs/) sind nur lokal — vom Pi aus weiterhin **keine Credentials**
+  (geprüft 2026-06-10: `git push` → could not read Username). Sobald PAT/SSH da:
+  `git push origin main` (kein Force, Historie erhalten).
+
+---
+
+## Phase 2b – KI-Autoren-Doku pro Modus (`docs/`) ✅ ERLEDIGT (Commit `52dd061`)
 
 `docs/` existiert nirgends in Git → **neu schreiben** (Entscheidung Abschnitt 4) und committen.
 Zweck: reproduzierbare KI-gestützte Content-Erstellung pro Lernmodus.
 
-- [ ] Pro Modus eine Datei: `docs/M1-flip.md`, `docs/M2-drag-match.md`, `docs/M3-free-recall.md`,
-      `docs/shuffle.md`, `docs/labs.md`.
-- [ ] Jede Doku enthält: **Zweck**, **Eingabe-/Encoding-Format** (siehe Referenz unten),
-      **Dos & Don'ts**, Schwierigkeits-/Längen-Vorgaben, **Beispiel-Prompt + Beispiel-Output**.
-- [ ] `docs/labs.md`: SY0-701, alle Domains, Schwerpunkt Firewalls / Incident Response;
-      Szenario-Struktur (BEWEISMATERIAL/NETZWERKTOPOLOGIE/Ziel) + Schwierigkeitsstufen reproduzierbar.
-- [ ] `docs/` versionieren, **committen & pushen**.
+- [x] Pro Modus eine Datei: `docs/M1-flip.md`, `docs/M2-drag-match.md`, `docs/M3-free-recall.md`,
+      `docs/shuffle.md`, `docs/labs.md`. ✅ (Repo-Wurzel `docs/`)
+- [x] Jede Doku enthält: **Zweck**, **Eingabe-/Encoding-Format**, **Dos & Don'ts**,
+      Schwierigkeits-/Längen-Vorgaben, **Beispiel-Prompt + Beispiel-Output**. ✅
+- [x] `docs/labs.md`: SY0-701, alle Domains, Schwerpunkt Firewalls / Incident Response;
+      Szenario-Struktur + Schwierigkeitsstufen + Invarianten (testgesichert) reproduzierbar. ✅
+- [x] `docs/` versioniert & committet (`52dd061`); **Push siehe H (blockiert)**.
 - **Abnahme Phase 2b:** Für jeden Modus erzeugt die Doku mit einem Beispiel-Prompt valide Inhalte
       im jeweils korrekten Encoding.
 

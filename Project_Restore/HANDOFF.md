@@ -1,44 +1,47 @@
 # HANDOFF — Übergabe an die nächste KI
 
 > Zweck: exakter Zwischenstand, damit eine andere KI **nahtlos** weiterarbeiten kann.
-> Sprache: Deutsch. Stand: **2026-06-10**. Lies zuerst [`TODO.md`](./TODO.md) (Runbook) und
-> [`RECOVERY_LOG.md`](./RECOVERY_LOG.md) (Belege). Halte beide weiter aktuell.
+> Sprache: Deutsch. Stand: **2026-06-10 (Abend)**. Lies zuerst [`TODO.md`](./TODO.md) (Runbook)
+> und [`RECOVERY_LOG.md`](./RECOVERY_LOG.md) (Belege). Halte beide weiter aktuell.
 
 ---
 
 ## 0. TL;DR — wo wir stehen
 
-- **Phase 1 (Branch-Restore) ist LOKAL fertig.** `main` per Fast-Forward auf den Mai-17-Stand
-  gehoben + Cleanup-Commit (`ff4f1eb`). Build grün.
-- **NUR der Push nach `origin/main` fehlt** → **blockiert: keine GitHub-Credentials** auf dem Pi.
-- **Stage 2 / M2 Drag-Match ist FERTIG (lokal, verifiziert):**
-  - ✅ i18n (`dragmatch_*`, de+en), Renderer `DragMatchCard.tsx`, Scoring-Helfer
-    `utils/dragMatchScoring.ts`, CardFace-MC-Zweig (lazy) verdrahtet.
-  - ✅ **Build grün, 391/391 Tests grün (unter `TZ=UTC`)** — 13 neue Tests (Scoring an der echten
-    ZTNA-Karte + Render-Struktur). Rekonstruktion **100 % aus den Drag-Match-Screenshots + CSV-Karte**:
-    Mono-Schrift, Shuffle + Positions-Relabeling (kanonisch B → angezeigt „D"), Korrektheit über Identität.
-  - ⏳ Commit steht noch aus (lokal) bzw. ist gerade erfolgt — siehe `git log`.
-- **Nächster konkreter Schritt:** **Fokus-Modus** (orthogonal, §5) — danach M3, cardId-Metrik, Dashboard,
-  Menü, Labs. **Folge-To-do aus M2:** Studien-Ansicht global auf **Mono** umstellen (M1 `CardFace` nutzt
-  noch `font-sans`, die `Default_Card_View`-Aufnahme zeigt aber Mono) → RECOVERY_LOG §2/§4.
+- **Phase 1 ✅ KOMPLETT (inkl. Push):** `origin/main` = `0326e4e` (Nutzer hat gepusht).
+- **Phase 2 (A–G) ✅ KOMPLETT umgesetzt (lokal, verifiziert), 7 Commits:**
+  - `e8f6dc5` **A) Mono-Schrift** in den Studien-Renderern (CardFace/Ordering/Matching).
+  - `3cd0434` **B) Fokus-Modus** (`settings.focusMode`, Header per `visibility` → kein Sprung).
+  - `3bd7f2b` **C) cardId-Metrik** (`buildCardSuccessStats`/`fetchCardSuccessStats`, additiv).
+  - `f7ca2be` **D) M3 Free Recall** (`FreeRecallCard`, `RECALL:`-Präfix/Tag `free-recall`;
+    ⚠️ neu generiert, ohne Screenshot).
+  - `ed7ed7d` **E) Daily-Quest-Kachel (Pilot) + Clean-Modus** (Dashboard KPI/Heatmap/Pilot/Clean).
+  - `79c42f3` **G) Labs** (Liste + Detail + „Antwort prüfen"; Inventar **36/71**, 9 Szenarien
+    screenshot-belegt, Rest neu generiert; Auffüllen per `docs/labs.md`). **F)** Menü-Einträge
+    Clean+Labs stecken in `ed7ed7d`/`79c42f3`.
+  - `52dd061` **Phase 2b: docs/** (M1/M2/M3/shuffle/labs-Autorendoku, Repo-Wurzel `docs/`).
+- ✅ **Abnahme:** `TZ=UTC npm run build` grün; `TZ=UTC npm test -- --run` → **436/436** grün.
+- ⛔ **Diese 7 Commits sind UNGEPUSHT** — Push vom Pi scheitert weiter (keine Credentials).
+- **Nächste Schritte:** ① Nutzer pusht (`git push origin main`); ② **Phase 3 Daten-Import**
+  (Hard Rule 2 beachten: erst importieren, dann syncen); ③ Phase 4 Abnahme am Gerät
+  (Seite-an-Seite gegen Screenshots); ④ optional Labs-Inventar 36→71 per `docs/labs.md`.
 
 ## 1. Git-/Repo-Zustand (exakt)
 
-- Aktueller Branch: **`main`**, HEAD = **`ff4f1eb`** (`chore: drop committed ignore/ …`),
-  darunter `55cd385` (= alter Branch-Tip `origin/claude/review-code-H4gIA`).
-- Lokaler Hilfs-Branch **`restore/may17`** zeigt ebenfalls auf `55cd385` (kann bleiben).
-- `git status -s` → nur untracked: `Project_Restore/`, `card_pwa/.env.production`, `setup.sh`
-  (alles erwartet, nicht committen außer bewusst).
-- **`origin/main` ist noch `f9c615f`** (alt!) — wird erst durch den ausstehenden Push aktuell.
-- Git-Identität lokal gesetzt: `vlad <vlad@card-pwa.local>` (passend zur Historie).
+- Aktueller Branch: **`main`**, HEAD = **`52dd061`** (docs/), 7 Commits vor `origin/main`
+  (= `0326e4e`). Kein Force nötig — reiner Fast-Forward-Push.
+- Lokaler Hilfs-Branch **`restore/may17`** zeigt auf `55cd385` (kann bleiben).
+- `git status -s` → modifiziert (Nutzer-Arbeitsstand, bewusst uncommitted): `deploy_prod.sh`,
+  `stop-server.sh`, gelöscht `run-https.sh`; `Project_Restore/` bleibt untracked/lokal.
+- Git-Identität lokal: `vlad <vlad@card-pwa.local>`.
 
 ## 2. Offene BLOCKER (Nutzer-Aktion nötig)
 
-1. **Push `origin/main`** — `git push origin main` scheitert: HTTPS-Remote ohne Credentials
-   (kein `gh`, kein SSH-Key, kein `GITHUB_TOKEN`). → Nutzer muss PAT/SSH bereitstellen.
-   Zu pushen sind 13 Commits (12 vom Branch + `ff4f1eb`).
-2. **Handy-Bundle/Sourcemaps** — kommt laut Nutzer **nie**. Phase 2 daher **best-effort aus
-   Screenshots + Backup-Daten + Branch-Code**, jede Übernahme als „rekonstruiert/neu generiert" markieren.
+1. **Push `origin/main`** — 7 Commits (`e8f6dc5`…`52dd061`) lokal; `git push` scheitert:
+   `could not read Username` (kein `gh`, kein SSH-Key, kein Token auf dem Pi). Der Phase-1-Push
+   lief offenbar von einem anderen Gerät. → PAT/SSH bereitstellen, dann `git push origin main`.
+2. **Phase 3 Daten-Import** — In-App via `ImportView` (`#card-pwa:backup-v1`-Datei aus
+   `Project_Restore/`); **Hard Rule 2**: erst Server/App befüllen, dann Handy syncen lassen.
 
 ## 3. HARD RULES (unverändert gültig — Details TODO.md §2)
 
@@ -123,24 +126,39 @@ Alle Schritte umgesetzt, Build + Tests grün. Konkret:
 
 ## 5. Restliche Stages (Reihenfolge siehe TODO.md)
 
-- **Stage 2 weiter:** Fokus-Modus, M3 Free-Recall (neu generiert), Erfolgsmessung pro `cardId`,
-  Dashboard-Kachel (KPI/Heatmap/Pilot/Clean) + Daily Quest, Ansichten-Menü, **Labs-Feature**
-  (Liste 4/71 + Szenario-Detail + „Antwort prüfen", baut auf Matching/OrderingCard auf;
-  71 Inhalte best-effort via `docs/labs.md` neu generieren).
-- **Stage 3 (docs/):** `docs/M1-flip.md`, `M2-drag-match.md`, `M3-free-recall.md`, `shuffle.md`, `labs.md`.
-- **Stage 4 (Daten):** `sync.db` sichern → Server aus Backup befüllen (kein Seed-Skript vorhanden,
-  Import-Pfad ist In-App via `ImportView`/`utils/dbBackup.ts`, Header `#card-pwa:backup-v1`) →
-  **erst dann** Handy reconnecten (Nutzer-Aktion). 779 Karten / 33 Decks / FSRS / Settings.
-- **Stage 5:** Abnahme gegen Screenshots (TODO.md Phase 4).
+- ~~**Stage 2** (Fokus, M3, cardId, Dashboard/Quest, Menü, Labs)~~ → ✅ **fertig** (Commits §0).
+  Offener Rest: **Labs-Inventar 36→71** auffüllen (`docs/labs.md`, Quoten: Firewalls/IR je ≥ 12).
+- ~~**Stage 3 (docs/)**~~ → ✅ **fertig** (`52dd061`): `docs/M1-flip.md`, `M2-drag-match.md`,
+  `M3-free-recall.md`, `shuffle.md`, `labs.md`.
+- **Stage 4 (Daten) — OFFEN:** `sync.db` sichern → App/Server aus Backup befüllen (kein
+  Seed-Skript vorhanden, Import-Pfad ist In-App via `ImportView`/`utils/dbBackup.ts`, Header
+  `#card-pwa:backup-v1`) → **erst dann** Handy reconnecten (Nutzer-Aktion, Hard Rule 2).
+  779 Karten / 33 Decks / FSRS / Settings.
+- **Stage 5 — OFFEN:** Abnahme gegen Screenshots (TODO.md Phase 4); Deploy des neuen Builds
+  auf `:8443` erst nach bewusstem Nutzer-Entscheid (Hard Rule 1).
+
+### Neue Schlüsseldateien aus Stage 2 (Ergänzung zu §7)
+
+| Datei | Rolle |
+|---|---|
+| `card_pwa/src/components/FreeRecallCard.tsx` | M3-Renderer (erinnern → aufdecken → selbst bewerten) |
+| `card_pwa/src/utils/freeRecallScoring.ts` · `utils/cardVariant.ts` | M3-Score + Erkennung (`RECALL:`/Tag) |
+| `card_pwa/src/components/home/HomeDailyQuestTile.tsx` | Pilot-Kachel „Daily Quest" |
+| `card_pwa/src/db/queries/decks.ts → fetchDailyQuestCards` | gemischte Quest-Session über alle Decks |
+| `card_pwa/src/components/labs/LabsView.tsx` / `LabScenarioView.tsx` / `labUi.tsx` | Labs-Liste + Szenario-Detail |
+| `card_pwa/src/data/labScenarios.ts` | Labs-Inventar (36/71, Provenance im Header) |
+| `card_pwa/src/utils/labProgress.ts` | GESCHAFFT-Persistenz (localStorage) |
+| `card_pwa/src/utils/gamification.ts → buildCardSuccessStats` | Erfolgsmessung pro cardId |
+| `docs/*.md` (Repo-Wurzel) | KI-Autorendoku je Modus |
 
 ## 6. Verifikation / nützliche Befehle
 
 ```bash
 cd /home/_vb/card_pwa_app
-git log --oneline origin/main..main        # zeigt die noch ungepushten Commits
+git log --oneline origin/main..main        # zeigt die 7 ungepushten Stage-2-Commits
 cd card_pwa
 TZ=UTC npm run build                       # muss grün sein
-TZ=UTC npm test -- --run                   # 378/378 grün (OHNE TZ=UTC schlägt 1 TZ-Test fehl)
+TZ=UTC npm test -- --run                   # 436/436 grün (OHNE TZ=UTC schlägt 1 TZ-Test fehl)
 ```
 
 - **TZ-Test:** `src/__tests__/db/backlog-smoother.test.ts > uses custom nextDayStartsAt …`
