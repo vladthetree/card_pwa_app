@@ -81,6 +81,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     setStudyCardLimit,
     setShuffleModeEnabled,
     setDailyGoal,
+    setFocusMode,
     setSm2Params,
     setFsrsParams,
     resetAlgorithmParams,
@@ -865,6 +866,42 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                           <span
                             className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
                               settings.shuffleModeEnabled ? 'translate-x-5' : 'translate-x-1'
+                            }`}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
+                      {settings.language === 'de' ? 'Fokus-Modus' : 'Focus mode'}
+                    </label>
+                    <div className={`${UI_TOKENS.surface.panelSoft} p-4`}>
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-medium text-white">
+                            {settings.language === 'de' ? 'Session-Header beim Lernen ausblenden' : 'Hide session header while studying'}
+                          </p>
+                          <p className="mt-1 text-xs leading-relaxed text-white/45">
+                            {settings.language === 'de'
+                              ? 'Blendet Statistiken und Fortschritt in der Lernansicht aus. Der Platz bleibt reserviert, die Karte springt nicht; der Zurück-Button bleibt sichtbar.'
+                              : 'Hides stats and progress in the study view. The space stays reserved so the card does not jump; the back button remains visible.'}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setFocusMode(!settings.focusMode)}
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full border transition ${
+                            settings.focusMode
+                              ? 'border-emerald-400/40 bg-emerald-500/25'
+                              : 'border-white/20 bg-white/10'
+                          }`}
+                          aria-pressed={settings.focusMode}
+                        >
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                              settings.focusMode ? 'translate-x-5' : 'translate-x-1'
                             }`}
                           />
                         </button>

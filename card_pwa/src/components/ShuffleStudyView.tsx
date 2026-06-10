@@ -545,6 +545,10 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     )
   }
 
+  // Focus mode: hide session header content but keep its space reserved
+  // (visibility instead of display) so the card never jumps. Back button stays.
+  const focusHidden = settings.focusMode ? 'invisible' : ''
+
   return (
     <div className={`${isHandsetLayout ? 'fixed inset-0' : 'min-h-screen'} flex flex-col overflow-hidden bg-[#050505] text-white`}>
       <div
@@ -559,18 +563,18 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
           >
             <ArrowLeft size={18} />
           </button>
-          <div className="min-w-0 flex-1">
+          <div className={`min-w-0 flex-1 ${focusHidden}`}>
             <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-amber-200/75">
               <Shuffle size={14} />
               <span>{settings.language === 'de' ? 'Shuffle-Modus' : 'Shuffle mode'}</span>
             </div>
             <div className="truncate text-lg font-semibold">{collection.name}</div>
           </div>
-          <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-xs font-mono text-white/60">
+          <div className={`rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-xs font-mono text-white/60 ${focusHidden}`}>
             {collection.deckIds.length} {settings.language === 'de' ? 'Decks' : 'decks'}
           </div>
         </div>
-        <div className={`mx-auto max-w-5xl ${isHandsetLayout ? 'mt-2' : 'mt-3'}`}>
+        <div className={`mx-auto max-w-5xl ${isHandsetLayout ? 'mt-2' : 'mt-3'} ${focusHidden}`}>
           <StudyHeaderProgress
             current={session.sessionCount}
             total={session.sessionCount + session.cards.length}
