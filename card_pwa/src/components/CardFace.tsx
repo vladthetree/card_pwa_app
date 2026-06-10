@@ -5,11 +5,13 @@ import { Edit, Check, X } from 'lucide-react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import { parseQuestionText, parseAnswerText, parseAnyQuestion, parseAnyAnswer } from '../utils/cardTextParser'
 import type { OrderingAnswer, MatchingAnswer } from '../utils/cardTextParser'
+import { isFreeRecallCard } from '../utils/cardVariant'
 import type { Card } from '../types'
 
-const OrderingCard = lazy(() => import('./OrderingCard'))
-const MatchingCard  = lazy(() => import('./MatchingCard'))
-const DragMatchCard = lazy(() => import('./DragMatchCard'))
+const OrderingCard   = lazy(() => import('./OrderingCard'))
+const MatchingCard   = lazy(() => import('./MatchingCard'))
+const DragMatchCard  = lazy(() => import('./DragMatchCard'))
+const FreeRecallCard = lazy(() => import('./FreeRecallCard'))
 
 interface Props {
   card: Card
@@ -137,6 +139,22 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
       <Suspense fallback={null}>
         <MatchingCard
           card={card} question={anyQuestion} answer={anyAnswer}
+          flipped={flipped} onFlip={onFlip} onEdit={onEdit}
+          onAnswerEvaluated={onAnswerEvaluated ?? (() => {})}
+          compact={compact} originDeckName={originDeckName}
+        />
+      </Suspense>
+    )
+  }
+
+  // M3 Free Recall: Karten mit `RECALL:`-Präfix oder Tag `free-recall`
+  // (erinnern → aufdecken → selbst bewerten). Vor dem MC-Zweig geprüft,
+  // damit Free-Recall auch dann greift, wenn der Text Optionszeilen enthielte.
+  if (isFreeRecallCard(card.front, card.tags)) {
+    return (
+      <Suspense fallback={null}>
+        <FreeRecallCard
+          card={card}
           flipped={flipped} onFlip={onFlip} onEdit={onEdit}
           onAnswerEvaluated={onAnswerEvaluated ?? (() => {})}
           compact={compact} originDeckName={originDeckName}
