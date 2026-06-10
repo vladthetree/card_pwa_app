@@ -362,7 +362,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                 </div>
 
                 <div className={`${bodyClass} flex flex-col`}>
-                  <p className={`font-sans font-medium leading-[1.55] text-[#f0ede8] ${compactQuestionClass}`}>
+                  <p className={`font-mono font-medium leading-[1.55] text-[#f0ede8] ${compactQuestionClass}`}>
                     {question.question}
                   </p>
 
@@ -395,7 +395,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                             className={`${optionBaseClass} ${optionTextClass} ${optionCls} ${impactPhase === 'idle' ? 'cursor-pointer active:scale-[0.99]' : 'cursor-default'}`}
                           >
                             <span className="font-mono font-bold text-zinc-500">{letter})</span>
-                            <span className="min-w-0 font-sans">{question.options[letter]}</span>
+                            <span className="min-w-0 font-mono">{question.options[letter]}</span>
                           </button>
                         )
                       })}
@@ -470,13 +470,13 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                       isAnswerCorrect ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' : 'border-rose-500/40 bg-rose-500/10 text-rose-300'
                     }`}>
                       {isAnswerCorrect ? <Check size={16} strokeWidth={1.5} /> : <X size={16} strokeWidth={1.5} />}
-                      <span className={`${correctAnswerTextClass} font-sans font-bold`}>
+                      <span className={`${correctAnswerTextClass} font-mono font-bold`}>
                         {isAnswerCorrect ? `${t.correct_label}: ${correctDisplay}` : `${t.wrong_label}: ${selectedDisplay}`}
                       </span>
                     </div>
                   )}
 
-                  <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-[#f0ede8]`}>
+                  <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-mono font-medium leading-[1.55] text-[#f0ede8]`}>
                     {answered.answer}
                   </p>
 
@@ -485,7 +485,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                       <span className="mb-[2px] block font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[--brand-primary]">
                         {t.mnemonic}
                       </span>
-                      <span className="font-sans text-[12px] italic leading-[1.4] text-zinc-300/70">
+                      <span className="font-mono text-[12px] italic leading-[1.4] text-zinc-300/70">
                         {answered.merkhilfe}
                       </span>
                     </div>

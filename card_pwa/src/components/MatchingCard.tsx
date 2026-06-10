@@ -155,7 +155,7 @@ const MatchingCard = memo(function MatchingCard({
           {/* Scrollable content */}
           <div className="min-h-0 flex-1 overflow-y-auto no-scrollbar px-[14px] pt-[14px] overscroll-contain">
             {question.question && (
-              <p className={`font-sans font-medium leading-[1.55] text-[#f0ede8] ${compact ? 'text-[15px]' : 'text-[16px]'} mb-4`}>
+              <p className={`font-mono font-medium leading-[1.55] text-[#f0ede8] ${compact ? 'text-[15px]' : 'text-[16px]'} mb-4`}>
                 {question.question}
               </p>
             )}
@@ -184,7 +184,7 @@ const MatchingCard = memo(function MatchingCard({
                         : 'border-[#27272a] bg-[#0a0a0a] hover:border-[#3f3f46]'
                     }`}
                   >
-                    <span className={`font-sans text-[14px] leading-snug ${
+                    <span className={`font-mono text-[14px] leading-snug ${
                       state.submitted && feedback === 'correct' ? 'text-emerald-300' :
                       state.submitted && feedback === 'incorrect' ? 'text-rose-300' :
                       isSelected ? 'text-cyan-300' : 'text-zinc-200'
@@ -192,12 +192,12 @@ const MatchingCard = memo(function MatchingCard({
                       {left}
                     </span>
                     {connected && !state.submitted && (
-                      <span className="rounded-[6px] border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 font-sans text-[11px] text-cyan-400 shrink-0 max-w-[120px] truncate">
+                      <span className="rounded-[6px] border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 font-mono text-[11px] text-cyan-400 shrink-0 max-w-[120px] truncate">
                         {connected}
                       </span>
                     )}
                     {state.submitted && connected && (
-                      <span className={`rounded-[6px] border px-2 py-0.5 font-sans text-[11px] shrink-0 max-w-[120px] truncate ${
+                      <span className={`rounded-[6px] border px-2 py-0.5 font-mono text-[11px] shrink-0 max-w-[120px] truncate ${
                         feedback === 'correct'
                           ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
                           : 'border-rose-500/30 bg-rose-500/10 text-rose-400'
@@ -222,7 +222,7 @@ const MatchingCard = memo(function MatchingCard({
                       key={right}
                       type="button"
                       onClick={(e) => { e.stopPropagation(); handleRightTap(right) }}
-                      className="min-h-[40px] rounded-[10px] border border-[#27272a] bg-[#0a0a0a] px-4 font-sans text-[13px] text-zinc-200 transition-all duration-150 hover:border-cyan-500/40 hover:bg-cyan-500/8 hover:text-cyan-300 active:scale-[0.98]"
+                      className="min-h-[40px] rounded-[10px] border border-[#27272a] bg-[#0a0a0a] px-4 font-mono text-[13px] text-zinc-200 transition-all duration-150 hover:border-cyan-500/40 hover:bg-cyan-500/8 hover:text-cyan-300 active:scale-[0.98]"
                     >
                       {right}
                     </button>
@@ -286,16 +286,16 @@ const MatchingCard = memo(function MatchingCard({
                 ? 'border-amber-500/40 bg-amber-500/10 text-amber-300'
                 : 'border-rose-500/40 bg-rose-500/10 text-rose-300'
             }`}>
-              <span className={`font-sans font-bold ${compact ? 'text-[13px]' : 'text-sm'}`}>{scoreLabel}</span>
+              <span className={`font-mono font-bold ${compact ? 'text-[13px]' : 'text-sm'}`}>{scoreLabel}</span>
             </div>
           )}
 
           <div className="flex flex-col gap-2">
             {question.pairs.map(pair => (
               <div key={pair.left} className="flex items-center gap-2 text-[14px]">
-                <span className="text-zinc-300 font-sans">{pair.left}</span>
+                <span className="text-zinc-300 font-mono">{pair.left}</span>
                 <span className="text-zinc-600">→</span>
-                <span className="text-[#f0ede8] font-sans font-medium">{pair.right}</span>
+                <span className="text-[#f0ede8] font-mono font-medium">{pair.right}</span>
               </div>
             ))}
           </div>
@@ -305,7 +305,7 @@ const MatchingCard = memo(function MatchingCard({
               <span className="mb-[2px] block font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[--brand-primary]">
                 {t.mnemonic}
               </span>
-              <span className="font-sans text-[12px] italic leading-[1.4] text-zinc-300/70">
+              <span className="font-mono text-[12px] italic leading-[1.4] text-zinc-300/70">
                 {answer.merkhilfe}
               </span>
             </div>
