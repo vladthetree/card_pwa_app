@@ -1,5 +1,12 @@
 import { describe, it, expect, afterEach, vi } from 'vitest'
-import { LAB_CATEGORIES, LAB_SCENARIOS } from '../../data/labScenarios'
+import {
+  LAB_CATEGORIES,
+  LAB_SCENARIOS,
+  LAB_SCENARIO_SOURCE_REFS,
+  LAB_SOURCES,
+  LAB_TARGET_INVENTORY,
+  getLabScenarioSources,
+} from '../../data/labScenarios'
 import { computeMatchingScore, computeOrderingScore } from '../../utils/pbqScoring'
 import { readCompletedLabs, persistCompletedLab } from '../../utils/labProgress'
 import { STORAGE_KEYS } from '../../constants/appIdentity'
@@ -11,6 +18,10 @@ import { STORAGE_KEYS } from '../../constants/appIdentity'
  */
 
 describe('Labs — Inventar-Integrität', () => {
+  it('Inventar ist auf den belegten 71er-Zielstand aufgefuellt', () => {
+    expect(LAB_SCENARIOS.length).toBe(LAB_TARGET_INVENTORY)
+  })
+
   it('alle Szenario-IDs sind eindeutig', () => {
     const ids = LAB_SCENARIOS.map(s => s.id)
     expect(new Set(ids).size).toBe(ids.length)
@@ -32,6 +43,41 @@ describe('Labs — Inventar-Integrität', () => {
     }
   })
 
+  it('Zielverteilung deckt alle Kategorien ab und betont Firewalls/Incident Response', () => {
+    const counts = new Map<string, number>()
+    for (const scenario of LAB_SCENARIOS) counts.set(scenario.categoryId, (counts.get(scenario.categoryId) ?? 0) + 1)
+    expect(counts.get('firewalls')).toBe(12)
+    expect(counts.get('incident-response')).toBe(12)
+    for (const category of LAB_CATEGORIES) {
+      expect(counts.get(category.id) ?? 0, category.id).toBeGreaterThanOrEqual(category.id === 'governance' ? 7 : 8)
+    }
+  })
+
+  it('jedes Szenario ist mit oeffentlichen Quellen belegbar', () => {
+    const scenarioIds = new Set(LAB_SCENARIOS.map(s => s.id))
+    const sourceIds = new Set(LAB_SOURCES.map(s => s.id))
+    expect(new Set(LAB_SOURCES.map(s => s.id)).size).toBe(LAB_SOURCES.length)
+
+    for (const source of LAB_SOURCES) {
+      expect(source.url.startsWith('https://'), source.id).toBe(true)
+      expect(source.publisher.length, source.id).toBeGreaterThan(2)
+      expect(source.accessed, source.id).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+      expect(source.note.length, source.id).toBeGreaterThan(20)
+    }
+
+    for (const scenario of LAB_SCENARIOS) {
+      const refs = LAB_SCENARIO_SOURCE_REFS[scenario.id]
+      expect(refs?.length ?? 0, scenario.id).toBeGreaterThanOrEqual(2)
+      expect(refs, scenario.id).toContain('comptia-sy0-701-objectives')
+      expect(getLabScenarioSources(scenario.id).length, scenario.id).toBe(refs.length)
+      for (const sourceId of refs) expect(sourceIds.has(sourceId), `${scenario.id}: ${sourceId}`).toBe(true)
+    }
+
+    for (const scenarioId of Object.keys(LAB_SCENARIO_SOURCE_REFS)) {
+      expect(scenarioIds.has(scenarioId), scenarioId).toBe(true)
+    }
+  })
+
   it('Matching: jede korrekte Antwort ist in den Optionen enthalten', () => {
     for (const scenario of LAB_SCENARIOS) {
       if (scenario.interaction.type !== 'matching') continue
@@ -50,6 +96,14 @@ describe('Labs — Inventar-Integrität', () => {
       for (const idx of correctOrder) {
         expect(idx >= 0 && idx < steps.length, scenario.id).toBe(true)
       }
+    }
+  })
+
+  it('Ordering: Anzeige-Reihenfolge ist nicht bereits die Loesung', () => {
+    for (const scenario of LAB_SCENARIOS) {
+      if (scenario.interaction.type !== 'ordering') continue
+      const identity = scenario.interaction.steps.map((_step, index) => index)
+      expect(scenario.interaction.correctOrder, scenario.id).not.toEqual(identity)
     }
   })
 

@@ -9,7 +9,7 @@ Group=_vb
 WorkingDirectory=/home/_vb/card_pwa_app/card_pwa
 Environment=NODE_ENV=production
 Environment=PWA_HOST=0.0.0.0
-Environment=PWA_PORT=8443
+Environment=PWA_PORT=8444
 Environment=PWA_CERT_FILE=.cert/prod-cert.pem
 Environment=PWA_KEY_FILE=.cert/prod-key.pem
 Environment=PWA_LOG_DIR=logs

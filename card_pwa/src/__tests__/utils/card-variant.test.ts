@@ -6,11 +6,11 @@
  *   - matching  → tap-to-connect pairs        (MATCHING: prefix)
  *   - standard  → classic Q/A flip card
  *
- * getCardVariant() is the single decision point for which UI is shown.
- * A wrong detection means the user sees the wrong renderer.
+ * getCardVariant() is the prefix decision point for PBQ renderers. M2
+ * Drag-Match is data-shaped and follows docs/M2-drag-match.md.
  */
 import { describe, expect, it } from 'vitest'
-import { getCardVariant } from '../../utils/cardVariant'
+import { getCardVariant, isDragMatchCard } from '../../utils/cardVariant'
 
 describe('UC-3  Card variant detection (getCardVariant)', () => {
   // ── Ordering ────────────────────────────────────────────────────────────────
@@ -66,5 +66,37 @@ describe('UC-3  Card variant detection (getCardVariant)', () => {
 
   it('UC-3j: empty string → standard variant (no crash)', () => {
     expect(getCardVariant('')).toBe('standard')
+  })
+})
+
+describe('M2 Drag-Match source-of-truth detection', () => {
+  const fourOptionFront = [
+    'Welche Aussage beschreibt Zero Trust am besten?',
+    'A: Ein internes Netz gilt automatisch als vertrauenswuerdig.',
+    'B: Jeder Zugriff wird kontextbasiert geprueft.',
+    'C: VPN ersetzt alle Zugriffskontrollen.',
+    'D: MFA ist nur fuer Administratoren noetig.',
+  ].join('\n')
+
+  it('detects exactly four options and one correct answer as Drag-Match', () => {
+    expect(isDragMatchCard(fourOptionFront, '>> CORRECT: B | Jeder Zugriff wird kontextbasiert geprueft.')).toBe(true)
+  })
+
+  it('does not treat two-option MC as Drag-Match', () => {
+    const front = [
+      'Welche Aussage ist korrekt?',
+      'A: Allow',
+      'B: Deny',
+    ].join('\n')
+
+    expect(isDragMatchCard(front, '>> CORRECT: A | Allow')).toBe(false)
+  })
+
+  it('does not treat multi-answer MC as Drag-Match', () => {
+    expect(isDragMatchCard(fourOptionFront, '>> CORRECT: B, D | Zwei Antworten')).toBe(false)
+  })
+
+  it('does not treat unmarked MC as Drag-Match', () => {
+    expect(isDragMatchCard(fourOptionFront, 'Erklaerung ohne Correct-Marker')).toBe(false)
   })
 })

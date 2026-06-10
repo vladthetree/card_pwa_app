@@ -3,9 +3,43 @@
 > ⏩ **AKTUELLER STAND / ÜBERGABE (2026-06-10 Abend):** Siehe [`HANDOFF.md`](./HANDOFF.md) —
 > **Phase 1 gepusht** (`origin/main` = `0326e4e`). **Phase 2 ist KOMPLETT umgesetzt** (A–G:
 > Mono, Fokus-Modus, cardId-Metrik, M3, Daily-Quest/Clean-Dashboard, Ansichten-Menü, Labs)
-> + **Phase 2b (docs/) fertig**. Build grün, **436/436 Tests** grün. **7 neue Commits
-> warten auf Push** (Credentials auf dem Pi fehlen weiterhin). Offen: Phase 3 (Daten-Import,
-> Nutzer-Aktion) und Phase 4 (Abnahme am Gerät).
+> + **Phase 2b (docs/) fertig**. Zusatz 2026-06-10: Labs-Inventar **71/71**,
+> Quellen-Registry mit oeffentlichen URLs, `docs/labs-sources.md`. Zusatz-Audit 2026-06-10:
+> Kartenmodus-Doku als Source of Truth abgeglichen, M2-Erkennung auf **4 Optionen + 1 Correct**
+> gehaertet, TXT-Backup-Import fuer `card-pwa-meta` repariert, Setup-Skripte clone-/port-stabiler.
+> Build grün, **455/455 Tests** grün mit `--testTimeout 10000` (Standard-5s-Run hat einen
+> isoliert gruenen Home-Integrationstest an der Timeout-Kante). **8 lokale Commits warten auf Push**
+> (`e8f6dc5`…`2b35f6b`; Credentials auf dem Pi fehlen weiterhin) + aktuelle Arbeitskopie.
+> Offen: Phase 3 (Daten-Import, Nutzer-Aktion) und Phase 4 (Abnahme am Gerät).
+
+## Status-Trennung (2026-06-10, aktuell)
+
+### ✅ Erledigt / verifiziert
+
+- Phase 1: Branch-Restore aus `origin/claude/review-code-H4gIA`, Cleanup und Phase-1-Push
+  bis `origin/main = 0326e4e`.
+- Phase 2 A–G: Mono-Studienansicht, Fokus-Modus, cardId-Metrik, M3 Free Recall,
+  Daily Quest/Clean Dashboard, Ansichten-Menü, Labs-Feature.
+- M1/M2/M3-Studienformate: M1-Fallback, M2 Drag-Match nur bei 4 Optionen + 1 Correct,
+  M3 per `RECALL:`/Tag `free-recall`.
+- Labs-Inventar: 71/71 Szenarien, öffentliche Quellen-Registry, `docs/labs-sources.md`,
+  Verteilung und Quellenpflicht testgesichert.
+- Phase 2b: Autoren-Doku in `docs/` fuer M1/M2/M3/Shuffle/Labs.
+- Technische Härtung in aktueller Arbeitskopie: mehrzeiliger TXT-Backup-Import,
+  `validate:cards`, `verify-setup.sh`, stabiler Vitest-Timeout, Setup-Port 8444.
+- Verifikation: `TZ=UTC npm run build`, `TZ=UTC npm test -- --run`, `npm run validate:cards`,
+  `./scripts/verify-setup.sh`, `npm run check:safe-area` zuletzt grün.
+
+### ⛔ Noch nicht erledigt / offen
+
+- 8 lokale Commits (`e8f6dc5`…`2b35f6b`) plus aktuelle Arbeitskopie sind noch nicht gepusht.
+- Phase 3: Datenimport in App/Server ist noch nicht erfolgt; `sync.db` ist weiterhin leer.
+- Vor jeder Schreibaktion an `sync.db`: Backup erstellen; Handy erst nach erfolgreichem Import syncen.
+- Phase 4: Geräte-/Screenshot-Abnahme ist noch offen. Die Features sind weitgehend implementiert,
+  aber die Seite-an-Seite-Prüfung am echten Gerät ist nicht dokumentiert abgeschlossen.
+- M3 und Settings/Sync-Status haben weiterhin keinen Screenshot-Beleg vom Handy-Stand.
+- 68 Kartenwarnungen aus `npm run validate:cards`: MC-aehnliche Karten mit 5 Optionen; keine
+  Fehler, aber sinnvoller Kartenpflege-Backlog.
 
 > **Dieses Dokument ist ein Auftrag an eine KI.** Lies Abschnitt 1–4 vollständig, halte
 > dich strikt an die **Hard Rules** (Abschnitt 2), arbeite die **Phasen** der Reihe nach ab
@@ -125,7 +159,7 @@ Holt ~80 % der verlorenen Arbeit zurück (26. Apr → 17. Mai). Der Branch enth�
 - [x] Nach `main` **per Fast-Forward** übernommen (kein Squash) → `main` = `55cd385`.
 - [x] Cleanup-Commit `ff4f1eb`: `ignore/` (7.2M Müll) entfernt + `.gitignore`-Typo `ignose/`→`ignore/`.
 - [x] **`main` gepusht** (2026-06-10): `origin/main` = `0326e4e` (Phase-1-Stand inkl. M2).
-      ⚠️ Die **7 Stage-2-Commits danach** (`e8f6dc5`…`52dd061`) sind wieder **nur lokal** —
+      ⚠️ Die **8 Stage-2/Restore-Docs-Commits danach** (`e8f6dc5`…`2b35f6b`) sind wieder **nur lokal** —
       Push vom Pi scheitert weiterhin an fehlenden Credentials (Nutzer-Aktion).
 - **Abnahme Phase 1:** Build + Tests grün ✅; `main` enthält neue Dateien ✅; gepusht ✅.
 
@@ -143,18 +177,22 @@ Diese Features sind in den Screenshots belegt, aber **noch nicht im Branch**
 - [x] **Szenario-Detail** ✅ – `components/labs/LabScenarioView.tsx`: **BEWEISMATERIAL** /
       **NETZWERKTOPOLOGIE** / **Ziel**-Callout, **Dropdown-Zuordnung** *oder* **Drag-Reihenfolge**
       (framer `Reorder`) + **„Antwort prüfen"**. Scoring über `pbqScoring.ts`.
-- [~] **71 Labs-Szenarien (Inhalt)**: **36 von 71** in `data/labScenarios.ts` — 9 davon
-      screenshot-belegt (u. a. Control-Funktion, Standard-Change, Geo-Block **exakt** nach Bild),
-      Rest ⚠️ neu generiert. **Auffüllen auf 71** reproduzierbar per [`docs/labs.md`](../docs/labs.md)
-      (Kategorie-Quoten: Firewalls/IR je ≥ 12). Fortschritts-Pill zeigt fest „n / 71".
+- [x] **71 Labs-Szenarien (Inhalt)** ✅ (2026-06-10): `data/labScenarios.ts` enthält **71/71**
+      Szenarien — 9 screenshot-belegt (u. a. Control-Funktion, Standard-Change, Geo-Block
+      **exakt** nach Bild), Rest ⚠️ neu generiert. Jede neue/alte Szenario-Information ist ueber
+      `LAB_SOURCES` + `LAB_SCENARIO_SOURCE_REFS` auf oeffentliche Quellen nachvollziehbar
+      (offizielles CompTIA-SY0-701-PDF + NIST/CISA/OWASP/AWS/Cisco/Palo Alto/MITRE). Verteilung:
+      Grundlagen 8, Bedrohungen 8, Firewalls 12, Architektur 8, IAM 8, Incident Response 12,
+      Krypto 8, Governance 7. Dokumentiert in [`docs/labs.md`](../docs/labs.md) und
+      [`docs/labs-sources.md`](../docs/labs-sources.md).
 - [x] **Dashboard-Kachel oben** ✅ – Modi **KPI / Heatmap / Pilot / Clean**; „Pilot" =
       **Daily Quest** (`HomeDailyQuestTile`, „Jetzt: 25 Karten …" → gemischte Session über alle
       Decks via `fetchDailyQuestCards`); „Clean" blendet die Kachel aus. *(Beleg: `…23.36.20.jpeg`)*
 - [x] **Ansichten-Menü** ✅ (Bottom-Sheet, war großteils im Branch): ANSICHT = Decks / Nach Tags /
       Shuffle-Decks / **Labs (neu)**; SORTIERUNG = Name / Fällig; DASHBOARD = KPI / Heatmap /
       Pilot / **Clean (neu)**. *(Beleg: `…23.40.53.jpeg`)*
-- [ ] **Studien-Formate** (automatische Wahl je Karte) — **belegt durch Screenshots**:
-  - **M1 Flip** (Standard/Fallback): Vorder-/Rückseite, Rating-Leiste **Nochmal(1)/Schwer(2)/
+- [x] **Studien-Formate** (automatische Wahl je Karte) — **belegt durch Screenshots / Doku**
+  - **M1 Flip** ✅ (Standard/Fallback): Vorder-/Rückseite, Rating-Leiste **Nochmal(1)/Schwer(2)/
     Gut(3)/Leicht(4)** (FSRS). *(Beleg: `Default_Card_View_enabled_Fokus_mode.jpeg`)*
   - **M2 Drag-Match** — ✅ **FERTIG (lokal, verifiziert)**: Renderer `DragMatchCard.tsx` (Drag **+**
     Tap, Drop-Zone, Falsch-Feedback, Erklärung), Scoring-Helfer `utils/dragMatchScoring.ts`,
@@ -175,7 +213,7 @@ Diese Features sind in den Screenshots belegt, aber **noch nicht im Branch**
       `cardId` bereits, Gamification-Profil unverändert (Test belegt Gleichheit).
 - [x] **Vorgehen:** Handy-Bundle existiert nicht (Nutzer-Entscheid) → komplett **aus Screenshots +
       Backup-Daten + Branch-Code** rekonstruiert; jede Übernahme in RECOVERY_LOG §4 belegt.
-- **Abnahme Phase 2:** Features umgesetzt wie in den Screenshots ✅; Build grün ✅; **436/436 Tests** ✅.
+- **Abnahme Phase 2:** Features umgesetzt wie in den Screenshots ✅; Labs-Inventar 71/71 + Quellenpflicht ✅; Build grün ✅; aktuell **455/455 Tests** grün mit `--testTimeout 10000` ✅.
   Seite-an-Seite-Sichtprüfung am Gerät = Teil von Phase 4.
 
 ---
@@ -190,7 +228,8 @@ Diese Features sind in den Screenshots belegt, aber **noch nicht im Branch**
 
 ### A) M1/Studien-Schrift global auf Mono ✅ (Commit `e8f6dc5`)
 *Befund 2026-06-10: `Default_Card_View…jpeg` (M1) rendert Frage/Antwort in **Mono** (Share Tech
-Mono), aber `CardFace` nutzt `font-sans` (Space Grotesk). M2 ist schon Mono.*
+Mono). Der 17-Mai-Branch nutzte hier noch `font-sans`; das wurde in Commit `e8f6dc5` fuer die
+Studien-Renderer auf `font-mono` umgestellt.*
 - Dateien: [`CardFace.tsx`](../card_pwa/src/components/CardFace.tsx) (Frage-, Antwort-, Options-Text),
   zur Konsistenz prüfen: [`OrderingCard.tsx`](../card_pwa/src/components/OrderingCard.tsx),
   [`MatchingCard.tsx`](../card_pwa/src/components/MatchingCard.tsx).
@@ -239,7 +278,7 @@ Mono), aber `CardFace` nutzt `font-sans` (Space Grotesk). M2 ist schon Mono.*
 - Dateien: `HomeView` + `components/home/HomeBottomBar.tsx` (Trigger), neues Bottom-Sheet.
 - Abnahme: alle drei Gruppen schaltbar; Auswahl wirkt auf Home; Vergleich gegen Screenshot.
 
-### G) Labs-Feature ✅ (Commit `79c42f3`; Inhalte 36/71, Rest per docs/labs.md; Belege `…23.38.26/.47/.57`, `…23.39.17/.49.jpeg`)
+### G) Labs-Feature ✅ (Commit `79c42f3`; erweitert 2026-06-10 auf 71/71 + Quellenpflicht; Belege `…23.38.26/.47/.57`, `…23.39.17/.49.jpeg`)
 1. **Liste**: Reiter „Interaktive Sicherheits-Szenarien", Fortschritt (z. B. 4/71), Kategorien
    („Security-Grundlagen · 1/8"), Schwierigkeit **Einsteiger/Fortgeschritten/Experte**,
    „GESCHAFFT"-Status, Zeit (3–5 Min).
@@ -248,12 +287,15 @@ Mono), aber `CardFace` nutzt `font-sans` (Space Grotesk). M2 ist schon Mono.*
    `MatchingCard`/`OrderingCard` + `pbqScoring.ts` auf.
 3. **71 Inhalte**: SY0-701, alle Domains, Schwerpunkt **Firewalls / Incident Response**. Backup
    hat nur ~28 PBQ-Karten → Rest per `docs/labs.md` **neu generieren** (so markieren).
+   ✅ Erledigt: 71/71 in `data/labScenarios.ts`, `LAB_SCENARIO_SOURCE_REFS` belegt jedes
+   Szenario mit oeffentlichen Quellen; Tests erzwingen Inventar, Quellen und nicht-triviale
+   Ordering-Reihenfolgen.
 - Abnahme: Liste + Detail + „Antwort prüfen" funktionieren; Inhalte vorhanden; Tests grün.
 
 ### H) Push `origin/main` ⛔ **WEITER BLOCKIERT (Nutzer-Aktion)**
-- Phase-1-Stand wurde gepusht (`origin/main` = `0326e4e`), aber die **7 Stage-2-Commits**
+- Phase-1-Stand wurde gepusht (`origin/main` = `0326e4e`), aber die **8 lokalen Commits**
   (`e8f6dc5` Mono, `3cd0434` Fokus, `3bd7f2b` cardId, `f7ca2be` M3, `ed7ed7d` Dashboard,
-  `79c42f3` Labs, `52dd061` docs/) sind nur lokal — vom Pi aus weiterhin **keine Credentials**
+  `79c42f3` Labs, `52dd061` docs/, `2b35f6b` Restore-Doku) sind nur lokal — vom Pi aus weiterhin **keine Credentials**
   (geprüft 2026-06-10: `git push` → could not read Username). Sobald PAT/SSH da:
   `git push origin main` (kein Force, Historie erhalten).
 
@@ -265,18 +307,19 @@ Mono), aber `CardFace` nutzt `font-sans` (Space Grotesk). M2 ist schon Mono.*
 Zweck: reproduzierbare KI-gestützte Content-Erstellung pro Lernmodus.
 
 - [x] Pro Modus eine Datei: `docs/M1-flip.md`, `docs/M2-drag-match.md`, `docs/M3-free-recall.md`,
-      `docs/shuffle.md`, `docs/labs.md`. ✅ (Repo-Wurzel `docs/`)
+      `docs/shuffle.md`, `docs/labs.md`; Quellenuebersicht: `docs/labs-sources.md`. ✅ (Repo-Wurzel `docs/`)
 - [x] Jede Doku enthält: **Zweck**, **Eingabe-/Encoding-Format**, **Dos & Don'ts**,
       Schwierigkeits-/Längen-Vorgaben, **Beispiel-Prompt + Beispiel-Output**. ✅
 - [x] `docs/labs.md`: SY0-701, alle Domains, Schwerpunkt Firewalls / Incident Response;
-      Szenario-Struktur + Schwierigkeitsstufen + Invarianten (testgesichert) reproduzierbar. ✅
+      Szenario-Struktur + Schwierigkeitsstufen + Invarianten (testgesichert) reproduzierbar;
+      Zielverteilung 71/71 und Quellenpflicht dokumentiert. ✅
 - [x] `docs/` versioniert & committet (`52dd061`); **Push siehe H (blockiert)**.
 - **Abnahme Phase 2b:** Für jeden Modus erzeugt die Doku mit einem Beispiel-Prompt valide Inhalte
       im jeweils korrekten Encoding.
 
 ---
 
-## Phase 3 – Daten wiederherstellen (Karten + Fortschritt)
+## Phase 3 – Daten wiederherstellen (Karten + Fortschritt) ⛔ OFFEN
 
 > Reihenfolge-Regel (Hard Rule 2): **Erst Server/DB aus Backup befüllen, dann Handy syncen lassen.**
 
@@ -284,17 +327,25 @@ Zweck: reproduzierbare KI-gestützte Content-Erstellung pro Lernmodus.
       Stellt wieder her: **779 Karten**, **33 Decks** (Schemata `sy0-701-objective-x-y` „1.1 …" +
       numerische Alt-IDs „01_General_Security_Concepts …"), **FSRS-Status** je Karte, **Settings**
       `{"language":"de","algorithm":"fsrs"}`.
+      Audit 2026-06-10: `parseCsvText` liest TXT-Spalten 3/4 jetzt korrekt; `card-pwa-meta`
+      restauriert IDs, Scheduling, Algorithmus, `dueAt`, `updatedAt` und Metadaten testgesichert.
 - [ ] **CSV** als Autoren-/Diff-/Re-Import-Quelle nutzen (`…T21-54-32.csv`; Header:
       `card_id,note_id,deck_id,deck_name,front,back,tags,acronym,examples,port,protocol,type,queue,
       due,interval,factor,reps,lapses,created_at`).
 - [ ] PBQ-Karten prüfen (Decks `pbq-test-deck-001` „Interaktive Übungen", `sy0-701-acronyms-bonus`).
 - [ ] `sync.db` vor jeder Schreibaktion kopieren; danach Server aus Backup befüllen; **erst dann**
       Handy reconnecten.
+      Audit 2026-06-10: `card-sync-server/sync.db` erneut geprueft; `server_cards`,
+      `server_decks`, Reviews, Users, Devices, Sync-Ops und Shuffle-Collections = **0**.
 - **Abnahme Phase 3:** 779 Karten / 33 Decks in der App; FSRS-Fälligkeiten plausibel; PBQ-Karten rendern.
 
 ---
 
-## Phase 4 – Abnahme / Definition of Done (gegen Screenshots verifizieren)
+## Phase 4 – Abnahme / Definition of Done (gegen Screenshots verifizieren) ⛔ OFFEN
+
+> Hinweis: Die folgenden Punkte sind **Abnahme-Checks**, nicht zwingend offene
+> Implementierungsaufgaben. Viele Features sind implementiert; die dokumentierte
+> Sichtprüfung am Gerät ist aber noch nicht abgeschlossen.
 
 - [ ] Home ohne Topbar, nur Dashboard-Kachel + Bottom-Bar (Sync, Filter, Settings, Streak 🔥, „+").
 - [ ] Deck-Karten: Subdeck-Zähler + 3 Spalten (neu/lernen/review) für „Heute fällig" & „Morgen".

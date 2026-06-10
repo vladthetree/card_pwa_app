@@ -15,7 +15,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "check:safe-area": "node ./scripts/check-safe-area-legacy.mjs",
-    "verify:phase5": "npm run check:safe-area && npm run build && npm test -- --run",
+    "verify:phase5": "npm run check:safe-area && npm run build && TZ=UTC vitest --run",
+    "validate:cards": "node ./scripts/validate-cards.mjs",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage"
   },

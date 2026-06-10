@@ -3,7 +3,9 @@ set -eu
 
 SERVICE_NAME="${SERVICE_NAME:-card-sync-server.service}"
 HEALTH_TIMEOUT="${HEALTH_TIMEOUT:-3}"
-ROOT_DIR="${ROOT_DIR:-$HOME/card_pwa_app/card-sync-server}"
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+DEFAULT_ROOT_DIR="$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)"
+ROOT_DIR="${ROOT_DIR:-$DEFAULT_ROOT_DIR}"
 ENV_FILE="${ENV_FILE:-$ROOT_DIR/.env.sync-server}"
 
 env_truthy() {

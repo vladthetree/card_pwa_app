@@ -1,10 +1,12 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+# Root wrapper → delegates to the real deploy script in card_pwa/.
+# POSIX sh (no bashisms) so it also runs fine via `sh deploy_prod.sh`.
+set -eu
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TARGET="$ROOT_DIR/card_pwa/deploy_prod.sh"
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+TARGET="$SCRIPT_DIR/card_pwa/deploy_prod.sh"
 
-if [[ ! -x "$TARGET" ]]; then
+if [ ! -x "$TARGET" ]; then
   echo "[root deploy_prod] target script missing or not executable: $TARGET" >&2
   exit 1
 fi

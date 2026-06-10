@@ -7,6 +7,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    testTimeout: 10000,
     setupFiles: [],
     coverage: {
       provider: 'v8',
