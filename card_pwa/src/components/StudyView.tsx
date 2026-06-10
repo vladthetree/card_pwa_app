@@ -789,6 +789,10 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
     )
   }
 
+  // Focus mode: hide session header content but keep its space reserved
+  // (visibility instead of display) so the card never jumps. Back button stays.
+  const focusHidden = settings.focusMode ? 'invisible' : ''
+
   // Study Screen
   return (
     <div className={`${isHandsetLayout ? 'fixed inset-0' : 'h-[100dvh]'} flex flex-col overflow-hidden`}>
@@ -809,7 +813,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
 
             {/* Center: primary session state */}
             <div
-              className="flex min-w-0 flex-1 flex-col items-center justify-center"
+              className={`flex min-w-0 flex-1 flex-col items-center justify-center ${focusHidden}`}
               title={`${t.stats_due}: ${sessionPendingCount}`}
               aria-label={`${t.stats_due}: ${sessionPendingCount}`}
             >
@@ -822,7 +826,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
             </div>
 
             {/* Right: Action buttons */}
-            <div className="flex items-center gap-1 flex-shrink-0">
+            <div className={`flex items-center gap-1 flex-shrink-0 ${focusHidden}`}>
               <StreakBadge compact />
               <button
                 type="button"
@@ -876,15 +880,17 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
                 >
                   <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
                 </button>
-                <div className="text-white/60 text-sm">
-                  {formatDeckName(deck.name)}
+                <div className={`flex items-center gap-3 ${focusHidden}`}>
+                  <div className="text-white/60 text-sm">
+                    {formatDeckName(deck.name)}
+                  </div>
+                  <StreakBadge />
+                  <DailyGoalRing size={32} strokeWidth={3} />
                 </div>
-                <StreakBadge />
-                <DailyGoalRing size={32} strokeWidth={3} />
               </div>
 
               {/* Center: Stats */}
-              <div className="flex items-center gap-2 flex-1 justify-center">
+              <div className={`flex items-center gap-2 flex-1 justify-center ${focusHidden}`}>
                 {headerStats.map(stat => (
                   <div
                     key={stat.key}
@@ -923,7 +929,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
               </div>
 
               {/* Right: Settings */}
-              <div className="flex items-center gap-2 flex-shrink-0">
+              <div className={`flex items-center gap-2 flex-shrink-0 ${focusHidden}`}>
                 <span className="text-[11px] px-2.5 py-1 rounded-[6px] border border-[#18181b] text-white/40 font-mono uppercase tracking-wide">
                   {settings.algorithm === 'sm2' ? 'SM2' : 'FSRS'}
                 </span>
@@ -941,23 +947,27 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
                 </button>
               </div>
             </div>
+            <div className={focusHidden}>
+              <StudyHeaderProgress
+                current={session.sessionCount}
+                total={session.sessionCount + session.cards.length}
+                reward={rewardToast}
+                reducedMotion={prefersReducedMotion}
+              />
+            </div>
+          </>
+        )}
+
+        {/* Progress bar for mobile */}
+        {isHandsetLayout && (
+          <div className={focusHidden}>
             <StudyHeaderProgress
               current={session.sessionCount}
               total={session.sessionCount + session.cards.length}
               reward={rewardToast}
               reducedMotion={prefersReducedMotion}
             />
-          </>
-        )}
-
-        {/* Progress bar for mobile */}
-        {isHandsetLayout && (
-          <StudyHeaderProgress
-            current={session.sessionCount}
-            total={session.sessionCount + session.cards.length}
-            reward={rewardToast}
-            reducedMotion={prefersReducedMotion}
-          />
+          </div>
         )}
       </div>
 

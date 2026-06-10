@@ -49,6 +49,9 @@ interface Settings {
   nextDayStartsAt: number
   /** Daily review goal used for the progress ring on Home. 0 disables it. */
   dailyGoal: number
+  /** Focus mode: hides the study session header (deck stats, progress) while
+   *  reserving its space, so the card does not jump. Back button stays visible. */
+  focusMode: boolean
 }
 
 interface SettingsContextType {
@@ -72,6 +75,7 @@ interface SettingsContextType {
   setShuffleModeEnabled: (enabled: boolean) => void
   setNextDayStartsAt: (hour: number) => void
   setDailyGoal: (goal: number) => void
+  setFocusMode: (enabled: boolean) => void
   setSm2Params: (params: Partial<SM2Params>) => void
   setFsrsParams: (params: Partial<FSRSParams>) => void
   resetAlgorithmParams: () => void
@@ -166,6 +170,7 @@ const DEFAULT_SETTINGS: Settings = {
   showReviewDecks: false,
   nextDayStartsAt: 4,
   dailyGoal: 20,
+  focusMode: false,
 }
 
 function normalizeDailyGoal(value: unknown): number {
@@ -175,7 +180,7 @@ function normalizeDailyGoal(value: unknown): number {
   return Math.max(0, Math.min(500, rounded))
 }
 
-function normalizeSettings(input: Partial<Settings> | undefined): Settings {
+export function normalizeSettings(input: Partial<Settings> | undefined): Settings {
   const rawNextDayStartsAt = Number(input?.nextDayStartsAt)
   const normalizedChannels = normalizeNotificationChannels(input?.notificationChannels)
   const normalizedDailyReminderEnabled = typeof input?.dailyReminderEnabled === 'boolean'
@@ -204,6 +209,7 @@ function normalizeSettings(input: Partial<Settings> | undefined): Settings {
     showReviewDecks: input?.showReviewDecks === true,
     nextDayStartsAt: Number.isInteger(rawNextDayStartsAt) && rawNextDayStartsAt >= 0 && rawNextDayStartsAt <= 23 ? rawNextDayStartsAt : 4,
     dailyGoal: normalizeDailyGoal(input?.dailyGoal),
+    focusMode: input?.focusMode === true,
   }
 }
 
@@ -376,6 +382,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     saveSettings({ ...settings, dailyGoal: normalizeDailyGoal(goal) })
   }
 
+  const setFocusMode = (focusMode: boolean) => {
+    saveSettings({ ...settings, focusMode })
+  }
+
   const setSm2Params = (params: Partial<SM2Params>) => {
     saveSettings({
       ...settings,
@@ -441,6 +451,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setShuffleModeEnabled,
         setNextDayStartsAt,
         setDailyGoal,
+        setFocusMode,
         setSm2Params,
         setFsrsParams,
         resetAlgorithmParams,
