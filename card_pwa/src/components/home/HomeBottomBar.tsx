@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  BarChart3, CalendarDays, Check, Download, EyeOff, FolderPlus, Plus,
+  BarChart3, CalendarDays, Check, Download, EyeOff, FlaskConical, FolderPlus, Plus,
   RefreshCw, Search, Settings, SlidersHorizontal, Sparkles, Upload, X,
   Shuffle,
 } from 'lucide-react'
@@ -37,6 +37,8 @@ interface Props {
   onExport: () => void
   onShowSettings: () => void
   onInstall: () => void
+  /** Labs im ANSICHT-Menü (Beleg `…23.40.53.jpeg`). */
+  onOpenLabs?: () => void
 }
 
 const SHEET_BACKDROP = 'fixed inset-0 z-[190] bg-black/60 backdrop-blur-[2px]'
@@ -70,6 +72,7 @@ export function HomeBottomBar({
   onExport,
   onShowSettings,
   onInstall,
+  onOpenLabs,
 }: Props) {
   const [filterOpen,  setFilterOpen]  = useState(false)
   const [actionsOpen, setActionsOpen] = useState(false)
@@ -225,6 +228,18 @@ export function HomeBottomBar({
                 >
                   <span>{language === 'de' ? 'Shuffle-Decks' : 'Shuffle decks'}</span>
                   {showShuffleOnly && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
+                </button>
+              )}
+              {onOpenLabs && (
+                <button
+                  type="button"
+                  onClick={() => { closeFilter(); onOpenLabs() }}
+                  className={SHEET_ITEM}
+                >
+                  <span className="inline-flex items-center gap-2.5">
+                    <FlaskConical size={15} strokeWidth={1.5} className="text-white/50" />
+                    Labs
+                  </span>
                 </button>
               )}
 
