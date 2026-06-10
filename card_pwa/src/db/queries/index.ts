@@ -8,6 +8,7 @@ export {
   fetchDecks,
   fetchDeckCards,
   fetchAllCards,
+  fetchDailyQuestCards,
   getDeckHomeMetadata,
   getDeckTagIndex,
   fetchDeckStudyCandidates,
@@ -31,7 +32,7 @@ export {
   smoothBacklog,
 } from './reviews'
 
-export { fetchGamificationProfile } from './gamification'
+export { fetchGamificationProfile, fetchCardSuccessStats } from './gamification'
 
 export {
   readActiveSession,

@@ -4,6 +4,7 @@ import { factorToDifficulty } from '../../utils/algorithmParams'
 import { getDayStartMs } from '../../utils/time'
 import { generateUuidV7 } from '../../utils/id'
 import { enqueueSyncOperation } from '../../services/syncQueue'
+import { sortStudyCards } from '../../services/StudySessionManager'
 import type { Deck, Card, DeckScheduleOverview } from '../../types'
 
 function mapCard(r: CardRecord): Card {
@@ -198,6 +199,16 @@ export async function fetchDeckCards(deckId: string): Promise<Card[]> {
 export async function fetchAllCards(): Promise<Card[]> {
   const rows = (await db.cards.toArray()).filter(r => !r.isDeleted)
   return rows.map(mapCard)
+}
+
+/**
+ * Daily Quest (Dashboard-Kachel "Pilot", Beleg `…23.36.20.jpeg`): gemischte
+ * Session über alle Decks — fällige Karten deckübergreifend, priorisiert wie
+ * eine reguläre Session (sortStudyCards), gekappt auf `limit`.
+ */
+export async function fetchDailyQuestCards(limit: number, nextDayStartsAt = 0): Promise<Card[]> {
+  const cards = await fetchAllCards()
+  return sortStudyCards(cards, { maxCards: limit, nextDayStartsAt })
 }
 
 export async function getDeckTagIndex(deckIds: string[]): Promise<Record<string, string[]>> {

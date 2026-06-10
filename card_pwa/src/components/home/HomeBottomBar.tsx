@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  BarChart3, CalendarDays, Check, Download, FolderPlus, Plus,
+  BarChart3, CalendarDays, Check, Download, EyeOff, FolderPlus, Plus,
   RefreshCw, Search, Settings, SlidersHorizontal, Sparkles, Upload, X,
   Shuffle,
 } from 'lucide-react'
@@ -81,6 +81,7 @@ export function HomeBottomBar({
     { key: 'kpi',     label: 'KPI',     icon: BarChart3 },
     { key: 'heatmap', label: 'Heatmap', icon: CalendarDays },
     { key: 'pilot',   label: 'Pilot',   icon: Sparkles },
+    { key: 'clean',   label: 'Clean',   icon: EyeOff },
   ]
 
   const isFilterActive = showShuffleOnly || deckSortMode !== 'name' || homeTab === 'tags'
