@@ -14,6 +14,41 @@ export interface GamificationReviewInput {
   rating: Rating
   timeMs: number
   timestamp: number
+  /** Card-level identity: a note can have several card variants, success is
+   *  measured per card id (not per note). Optional for backward compatibility. */
+  cardId?: string
+}
+
+export interface CardSuccessStats {
+  cardId: string
+  totalReviews: number
+  successfulReviews: number
+  /** 0–100, rating >= 3 counts as success (same rule as deck/global stats). */
+  successRate: number
+  lastReviewedAt: number | null
+}
+
+/**
+ * Aggregates review success per card id. Reviews without a cardId are skipped
+ * (legacy events); existing note-level stats stay untouched.
+ */
+export function buildCardSuccessStats(reviews: GamificationReviewInput[]): Map<string, CardSuccessStats> {
+  const stats = new Map<string, CardSuccessStats>()
+  for (const review of reviews) {
+    if (!review.cardId) continue
+    let entry = stats.get(review.cardId)
+    if (!entry) {
+      entry = { cardId: review.cardId, totalReviews: 0, successfulReviews: 0, successRate: 0, lastReviewedAt: null }
+      stats.set(review.cardId, entry)
+    }
+    entry.totalReviews += 1
+    if (review.rating >= 3) entry.successfulReviews += 1
+    entry.lastReviewedAt = Math.max(entry.lastReviewedAt ?? 0, review.timestamp)
+  }
+  for (const entry of stats.values()) {
+    entry.successRate = Math.round((entry.successfulReviews / entry.totalReviews) * 100)
+  }
+  return stats
 }
 
 export interface BuildGamificationProfileInput {
