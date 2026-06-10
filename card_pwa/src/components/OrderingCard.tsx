@@ -113,7 +113,7 @@ function ItemRow({ id, label, position, feedback, correctPosition, submitted, is
 
       {/* Label */}
       <div className="flex min-w-0 flex-1 items-center px-3 py-2">
-        <span className={`font-sans text-[14px] leading-snug ${textCls}`}>{label}</span>
+        <span className={`font-mono text-[14px] leading-snug ${textCls}`}>{label}</span>
         {submitted && feedback === 'incorrect' && correctPosition !== undefined && (
           <span className="ml-auto shrink-0 pl-2 font-mono text-[9px] text-zinc-500">
             → #{correctPosition + 1}
@@ -254,7 +254,7 @@ const OrderingCard = memo(function OrderingCard({
           {/* Scrollable list */}
           <div className={`min-h-0 flex-1 overflow-y-auto no-scrollbar px-[12px] pt-[12px] overscroll-contain ${compact ? '' : 'pb-[12px]'}`}>
             {question.question && (
-              <p className={`font-sans font-medium leading-[1.55] text-[#f0ede8] ${compact ? 'text-[15px]' : 'text-[16px]'} mb-4`}>
+              <p className={`font-mono font-medium leading-[1.55] text-[#f0ede8] ${compact ? 'text-[15px]' : 'text-[16px]'} mb-4`}>
                 {question.question}
               </p>
             )}
@@ -351,11 +351,11 @@ const OrderingCard = memo(function OrderingCard({
                 ? 'border-amber-500/40 bg-amber-500/10 text-amber-300'
                 : 'border-rose-500/40 bg-rose-500/10 text-rose-300'
             }`}>
-              <span className={`font-sans font-bold ${compact ? 'text-[13px]' : 'text-sm'}`}>{scoreLabel}</span>
+              <span className={`font-mono font-bold ${compact ? 'text-[13px]' : 'text-sm'}`}>{scoreLabel}</span>
             </div>
           )}
 
-          <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-[#f0ede8]`}>
+          <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-mono font-medium leading-[1.55] text-[#f0ede8]`}>
             {answer.explanation}
           </p>
 
@@ -364,7 +364,7 @@ const OrderingCard = memo(function OrderingCard({
               <span className="mb-[2px] block font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[--brand-primary]">
                 {t.mnemonic}
               </span>
-              <span className="font-sans text-[12px] italic leading-[1.4] text-zinc-300/70">
+              <span className="font-mono text-[12px] italic leading-[1.4] text-zinc-300/70">
                 {answer.merkhilfe}
               </span>
             </div>
