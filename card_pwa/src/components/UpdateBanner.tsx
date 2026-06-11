@@ -1,13 +1,12 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { RefreshCw, X } from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
 import { useSettings } from '../contexts/SettingsContext'
 
 interface Props {
-  onUpdateNow: () => void
-  onDismiss: () => void
+  deferredReload?: boolean
 }
 
-export default function UpdateBanner({ onUpdateNow, onDismiss }: Props) {
+export default function UpdateBanner({ deferredReload = false }: Props) {
   const { settings } = useSettings()
   const isGerman = settings.language === 'de'
   const prefersReducedMotion = useReducedMotion()
@@ -22,39 +21,17 @@ export default function UpdateBanner({ onUpdateNow, onDismiss }: Props) {
       role="status"
       aria-live="polite"
     >
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start gap-3">
+        <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-emerald-300" strokeWidth={1.8} />
         <div className="min-w-0">
           <p className="text-sm font-medium text-white/92">
-            {isGerman ? 'Neue Version bereit.' : 'New version ready.'}
+            {isGerman ? 'Update installiert.' : 'Update installed.'}
           </p>
           <p className="mt-0.5 text-xs leading-relaxed text-white/60">
-            {isGerman ? 'Aktualisieren, sobald es für dich passt.' : 'Update whenever it suits you.'}
+            {deferredReload
+              ? (isGerman ? 'Wird nach der Lernsession automatisch übernommen.' : 'It will apply automatically after this study session.')
+              : (isGerman ? 'Die App übernimmt es automatisch.' : 'The app will apply it automatically.')}
           </p>
-        </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <button
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation()
-              onUpdateNow()
-            }}
-            className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-black text-white transition-all duration-200 ease-out active:scale-95 sm:min-h-0 sm:px-3 sm:py-1.5"
-            style={{ background: 'linear-gradient(135deg, var(--brand-primary-80), var(--brand-primary))' }}
-          >
-            <RefreshCw size={12} />
-            {isGerman ? 'Aktualisieren' : 'Update'}
-          </button>
-          <button
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation()
-              onDismiss()
-            }}
-            className="ds-icon-button inline-flex h-11 w-11 sm:h-9 sm:w-9"
-            aria-label={isGerman ? 'Hinweis schließen' : 'Dismiss notice'}
-          >
-            <X size={14} />
-          </button>
         </div>
       </div>
     </motion.div>

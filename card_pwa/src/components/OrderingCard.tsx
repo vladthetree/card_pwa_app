@@ -1,4 +1,4 @@
-import { memo, useMemo, useState, useCallback } from 'react'
+import { memo, useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import {
   DndContext,
   DragEndEvent,
@@ -157,6 +157,19 @@ const OrderingCard = memo(function OrderingCard({
   const [activeId, setActiveId]   = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [score, setScore]         = useState<number | null>(null)
+  const submittedRef = useRef(false)
+  const flipTimerRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    submittedRef.current = false
+
+    return () => {
+      if (flipTimerRef.current !== null) {
+        window.clearTimeout(flipTimerRef.current)
+        flipTimerRef.current = null
+      }
+    }
+  }, [card.id])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -180,13 +193,20 @@ const OrderingCard = memo(function OrderingCard({
   }, [])
 
   const handleSubmit = useCallback(() => {
-    if (submitted) return
+    if (submitted || submittedRef.current) return
+    submittedRef.current = true
     const s = computeOrderingScore(order, answer.correctOrder, question.items)
     setScore(s)
     setSubmitted(true)
     onAnswerEvaluated(s)
     const delay = prefersReducedMotion ? 300 : (s === 1.0 ? 600 : 1200)
-    setTimeout(() => onFlip(), delay)
+    if (flipTimerRef.current !== null) {
+      window.clearTimeout(flipTimerRef.current)
+    }
+    flipTimerRef.current = window.setTimeout(() => {
+      flipTimerRef.current = null
+      onFlip()
+    }, delay)
   }, [submitted, order, answer.correctOrder, question.items, onAnswerEvaluated, onFlip, prefersReducedMotion])
 
   const correctItems = useMemo(

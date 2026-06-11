@@ -5826,7 +5826,7 @@ D: grep -c event101 -i logfile.txt",">> CORRECT: B | Der grep-Flag -c zählt die
 
  
 
- Merkhilfe: -c = count (zählen). -n = number (Zeilennummern anzeigen, nicht zählen!). Option B hat die korrekte grep-Syntax: Optionen → Muster → Datei. Option C hat die Datei vor dem Flag (technisch funktioniert es manchmal, aber B ist korrekt).","Security Monitoring","","","","","0","0","39","0","2500","0","0","1775943272884"
+ Merkhilfe: -c = count (zählen). -n = number (Zeilennummern anzeigen, nicht zählen!). Die korrekte grep-Syntax lautet: Optionen → Muster → Datei. Die Variante mit der Datei vor dem Flag ist nicht die beste Antwort (technisch funktioniert es manchmal, aber die gezeigte korrekte Syntax ist sauberer).","Security Monitoring","","","","","0","0","39","0","2500","0","0","1775943272884"
 "1773101490324","19cd51419f4","1773275633285","04_Security_Operations","67. Eric wants to determine how much bandwidth was used during a compromise and where the traffic was directed to. What technology can he implement before the event to help him see this detail and allow him to have an effective bandwidth monitoring solution?
 A: A firewall
 B: NetFlow

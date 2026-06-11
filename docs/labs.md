@@ -2,7 +2,8 @@
 
 > Status: **neu generiert 2026-06-10**. Struktur und UI rekonstruiert aus den
 > Handy-Screenshots vom 8. Juni 2026 (`…23.38.26/.47/.57/.39.17/.39.49.jpeg`,
-> RECOVERY_LOG §1). Inventar: `card_pwa/src/data/labScenarios.ts`.
+> RECOVERY_LOG §1, jetzt in der Git-Historie bis `f72ffd6`).
+> Inventar: `card_pwa/src/data/labScenarios.ts`.
 > **Ziel-Inventar: 71 Szenarien** (Pill „4 / 71" im Original) — alle SY0-701-Domains,
 > Schwerpunkt **Firewalls / Incident Response** (Nutzer-Vorgabe). Ab 2026-06-10
 > ist jedes Szenario ueber `LAB_SCENARIO_SOURCE_REFS` auf oeffentliche Quellen

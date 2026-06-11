@@ -1,7 +1,7 @@
 /**
  * Labs — "Interaktive Sicherheits-Szenarien" (SY0-701).
  *
- * Provenance (RECOVERY_LOG §4): Struktur, Kategorien-Layout und die mit
+ * Provenance (RECOVERY_LOG §4, Git-Historie bis f72ffd6): Struktur, Kategorien-Layout und die mit
  * (BELEGT) markierten Szenarien sind aus den Handy-Screenshots vom 8. Juni 2026
  * rekonstruiert (`WhatsApp …23.38.26/.47/.57/.39.17/.39.49.jpeg`). Alle übrigen
  * Szenarien sind ⚠️ NEU GENERIERT nach docs/labs.md (Ziel-Inventar: 71 Szenarien,

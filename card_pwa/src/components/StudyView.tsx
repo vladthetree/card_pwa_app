@@ -984,8 +984,10 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
           {/* Card display */}
           <AnimatePresence mode="wait" initial={false}>
             {currentCard && (
+              // Include the attempt count so an Again-requeued single card
+              // remounts with fresh answer/PBQ state instead of staying submitted.
               <motion.div
-                key={currentCard.id}
+                key={`${currentCard.id}:${session.sessionCount}`}
                 initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 22, scale: 0.96 }}
                 animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
                 exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -14, scale: 0.97 }}

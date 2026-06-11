@@ -1,4 +1,4 @@
-import { memo, useMemo, useReducer, useCallback } from 'react'
+import { memo, useMemo, useReducer, useCallback, useEffect, useRef } from 'react'
 import { Edit } from 'lucide-react'
 import { useReducedMotion } from 'framer-motion'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
@@ -87,6 +87,19 @@ const MatchingCard = memo(function MatchingCard({
     submitted: false,
     score: null,
   })
+  const submittedRef = useRef(false)
+  const flipTimerRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    submittedRef.current = false
+
+    return () => {
+      if (flipTimerRef.current !== null) {
+        window.clearTimeout(flipTimerRef.current)
+        flipTimerRef.current = null
+      }
+    }
+  }, [card.id])
 
   const handleLeftTap = useCallback((left: string) => {
     if (state.submitted) return
@@ -99,12 +112,19 @@ const MatchingCard = memo(function MatchingCard({
   }, [state.submitted, state.selectedLeft])
 
   const handleSubmit = useCallback(() => {
-    if (state.submitted) return
+    if (state.submitted || submittedRef.current) return
+    submittedRef.current = true
     const s = computeMatchingScore(state.connections, question.pairs)
     dispatch({ type: 'SUBMIT', score: s })
     onAnswerEvaluated(s)
     const delay = prefersReducedMotion ? 300 : (s === 1.0 ? 600 : 1200)
-    setTimeout(() => onFlip(), delay)
+    if (flipTimerRef.current !== null) {
+      window.clearTimeout(flipTimerRef.current)
+    }
+    flipTimerRef.current = window.setTimeout(() => {
+      flipTimerRef.current = null
+      onFlip()
+    }, delay)
   }, [state.submitted, state.connections, question.pairs, onAnswerEvaluated, onFlip, prefersReducedMotion])
 
   const allConnected = leftItems.every(l => !!state.connections[l])

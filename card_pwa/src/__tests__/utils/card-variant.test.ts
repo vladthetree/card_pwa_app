@@ -11,6 +11,7 @@
  */
 import { describe, expect, it } from 'vitest'
 import { getCardVariant, isDragMatchCard } from '../../utils/cardVariant'
+import { parseQuestionText } from '../../utils/cardTextParser'
 
 describe('UC-3  Card variant detection (getCardVariant)', () => {
   // ── Ordering ────────────────────────────────────────────────────────────────
@@ -80,6 +81,21 @@ describe('M2 Drag-Match source-of-truth detection', () => {
 
   it('detects exactly four options and one correct answer as Drag-Match', () => {
     expect(isDragMatchCard(fourOptionFront, '>> CORRECT: B | Jeder Zugriff wird kontextbasiert geprueft.')).toBe(true)
+  })
+
+  it('keeps imported question numbers out of the M2 option set', () => {
+    const numberedQuestionFront = [
+      '64: Valerie receives an authentication prompt while accessing a file server. What zero-trust component is this?',
+      'A: A policy enforcement point',
+      'B: A policy administrator',
+      'C: The policy engine',
+      'D: The trust manager',
+    ].join('\n')
+
+    const parsed = parseQuestionText(numberedQuestionFront)
+    expect(parsed.question).toBe('64: Valerie receives an authentication prompt while accessing a file server. What zero-trust component is this?')
+    expect(Object.keys(parsed.options)).toEqual(['A', 'B', 'C', 'D'])
+    expect(isDragMatchCard(numberedQuestionFront, '>> CORRECT: A | Policy enforcement point')).toBe(true)
   })
 
   it('does not treat two-option MC as Drag-Match', () => {

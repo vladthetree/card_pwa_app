@@ -1,6 +1,7 @@
 # M3 Free Recall — KI-Autorendoku (erinnern → aufdecken → selbst bewerten)
 
-> Status: **neu generiert 2026-06-10, ohne Original-Screenshot** (RECOVERY_LOG §4).
+> Status: **neu generiert 2026-06-10, ohne Original-Screenshot** (RECOVERY_LOG §4,
+> jetzt in der Git-Historie bis `f72ffd6`).
 > Dieses Dokument **definiert** das Encoding (Entscheidung TODO.md Phase 2 D);
 > Renderer: `FreeRecallCard.tsx`, Erkennung: `isFreeRecallCard()` in `cardVariant.ts`.
 
