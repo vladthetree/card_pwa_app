@@ -177,16 +177,9 @@ export default function HomeView({
 
   return (
     <div className={`${UI_TOKENS.layout.homeMaxWidth} mx-auto flex h-full min-h-0 w-full flex-col overflow-hidden px-3 sm:px-4`}>
+      {/* Mobile: keine Topbar — Referenz Handy-Stand 8. Juni (Status liegt in
+          Profil & Sync, Streak/Settings/+ in der Bottom-Bar). Header nur ≥md. */}
       <div className="relative z-20 flex-shrink-0 pt-safe-2 sm:pt-safe-4">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35 }}
-          className="mb-2 md:hidden"
-        >
-          {renderHeaderBar()}
-        </motion.div>
-
         <div className="grid gap-2 sm:gap-3 md:min-h-[140px]">
           <div className="w-full min-w-0 flex flex-col gap-3">
             <motion.div
@@ -355,7 +348,6 @@ export default function HomeView({
           language={settings.language}
           shuffleModeEnabled={settings.shuffleModeEnabled}
           showShuffleOnly={controller.showShuffleOnly}
-          deckSearchQuery={deckSearchQuery}
           deckSortMode={deckSortMode}
           dashboardMode={controller.dashboardMode}
           homeTab={homeTab}
@@ -363,7 +355,6 @@ export default function HomeView({
           isInstalled={isInstalled}
           isInstalling={isInstalling}
           onHomeTabChange={setHomeTab}
-          onDeckSearchQueryChange={setDeckSearchQuery}
           onDeckSortModeChange={setDeckSortMode}
           onToggleShuffleOnly={controller.toggleShuffleOnly}
           onDashboardModeChange={controller.setDashboardMode}

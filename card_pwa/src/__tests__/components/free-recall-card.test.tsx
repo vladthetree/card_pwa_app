@@ -5,7 +5,8 @@ import type { Card } from '../../types'
 
 /**
  * Render-/Struktur-Test für den M3-Free-Recall-Renderer.
- * ⚠️ NEU GENERIERT, OHNE ORIGINAL-SCREENSHOT (RECOVERY_LOG §4) — Ablauf laut
+ * ⚠️ NEU GENERIERT, OHNE ORIGINAL-SCREENSHOT (RECOVERY_LOG §4, Git-Historie
+ * bis f72ffd6) — Ablauf laut
  * TODO.md: erinnern → aufdecken → selbst bewerten. Der Score-Pfad
  * (Gewusst→1.0 / Nicht gewusst→0.0) ist im Schwestertest
  * `utils/free-recall-scoring.test.ts` über den realen Code-Pfad abgedeckt.

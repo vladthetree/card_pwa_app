@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { SettingsProvider, useSettings } from './contexts/SettingsContext'
@@ -208,15 +208,20 @@ function AppShell() {
   const [activeDeck, setActiveDeck] = useState<Deck | null>(null)
   const [activeTagCards, setActiveTagCards] = useState<Card[] | null>(null)
   const [activeShuffleCollection, setActiveShuffleCollection] = useState<ShuffleCollection | null>(null)
-  const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null)
+  const [updateInstalledNotice, setUpdateInstalledNotice] = useState(false)
   const [pendingReloadAfterStudy, setPendingReloadAfterStudy] = useState(false)
+  const updateNoticeTimerRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (!swSupported) return
 
     const onUpdate = (event: Event) => {
       const customEvent = event as CustomEvent<{ waitingWorker: ServiceWorker | null }>
-      setWaitingWorker(customEvent.detail?.waitingWorker ?? null)
+      const waitingWorker = customEvent.detail?.waitingWorker ?? null
+      if (!waitingWorker) return
+
+      setUpdateInstalledNotice(true)
+      waitingWorker.postMessage({ type: 'SKIP_WAITING' })
     }
 
     window.addEventListener(SW_CHANNELS.updateEvent, onUpdate)
@@ -224,11 +229,33 @@ function AppShell() {
   }, [swSupported])
 
   useEffect(() => {
+    if (!updateInstalledNotice) return
+
+    if (updateNoticeTimerRef.current !== null) {
+      window.clearTimeout(updateNoticeTimerRef.current)
+    }
+
+    updateNoticeTimerRef.current = window.setTimeout(() => {
+      setUpdateInstalledNotice(false)
+      updateNoticeTimerRef.current = null
+    }, 5000)
+
+    return () => {
+      if (updateNoticeTimerRef.current !== null) {
+        window.clearTimeout(updateNoticeTimerRef.current)
+        updateNoticeTimerRef.current = null
+      }
+    }
+  }, [updateInstalledNotice])
+
+  useEffect(() => {
     if (!swSupported) return
 
     let reloadTimer: number | null = null
 
     const onControllerChange = () => {
+      setUpdateInstalledNotice(true)
+
       if (view === 'study' || view === 'shuffle-study') {
         setPendingReloadAfterStudy(true)
         return
@@ -275,10 +302,6 @@ function AppShell() {
     if (view !== 'shuffle-manage') return
     setView('home')
   }, [settings.shuffleModeEnabled, view])
-
-  const applyUpdate = () => {
-    waitingWorker?.postMessage({ type: 'SKIP_WAITING' })
-  }
 
   const startStudy = (deck: Deck) => {
     setActiveDeck(deck)
@@ -360,10 +383,9 @@ function AppShell() {
           <ToastContainer />
           <SafeAreaDebugOverlay />
           <Suspense fallback={null}>
-            {swSupported && waitingWorker && (
+            {swSupported && updateInstalledNotice && (
               <UpdateBanner
-                onUpdateNow={applyUpdate}
-                onDismiss={() => setWaitingWorker(null)}
+                deferredReload={view === 'study' || view === 'shuffle-study'}
               />
             )}
           </Suspense>

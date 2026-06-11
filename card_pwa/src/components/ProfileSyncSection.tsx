@@ -29,6 +29,11 @@ import {
   type ServerDeckSummary,
 } from '../services/profileService'
 import { resetSyncPullState } from '../services/syncPull'
+import {
+  getSyncReachabilityState,
+  startSyncReachabilityRuntime,
+  subscribeToSyncReachability,
+} from '../services/syncReachability'
 import { clearSyncQueue, wakeDeferredSyncQueue } from '../services/syncQueue'
 import { runSyncCycleNow } from '../services/syncCoordinator'
 import { getDefaultProfileSyncEndpoint } from '../services/syncConfig'
@@ -39,6 +44,8 @@ const STRINGS = {
   de: {
     title: 'Profil & Sync',
     description: 'Lokale Nutzung oder geräteübergreifende Synchronisierung.',
+    server_online: 'Server online',
+    server_offline: 'Server offline',
     mode_local: 'Nur lokal',
     mode_local_desc: 'Deine Daten bleiben auf diesem Gerät. Kein Server benötigt.',
     mode_linked: 'Mit Profil verknüpft',
@@ -93,6 +100,8 @@ const STRINGS = {
   en: {
     title: 'Profile & Sync',
     description: 'Use locally or sync across devices.',
+    server_online: 'Server online',
+    server_offline: 'Server offline',
     mode_local: 'Local only',
     mode_local_desc: 'Your data stays on this device. No server required.',
     mode_linked: 'Linked to profile',
@@ -207,6 +216,7 @@ export default function ProfileSyncSection({ language }: Props) {
   const [showDeckList, setShowDeckList] = useState(false)
   const [showCreateProfile, setShowCreateProfile] = useState(false)
   const [isOnline, setIsOnline] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine))
+  const [serverReachable, setServerReachable] = useState(() => getSyncReachabilityState() === 'connected')
   const [createdRecoveryCode, setCreatedRecoveryCode] = useState<string | null>(null)
 
   const effectiveEndpoint = profile?.endpoint?.trim() || getDefaultProfileSyncEndpoint()
@@ -222,6 +232,19 @@ export default function ProfileSyncSection({ language }: Props) {
     return () => {
       window.removeEventListener('online', updateOnlineState)
       window.removeEventListener('offline', updateOnlineState)
+    }
+  }, [])
+
+  useEffect(() => {
+    const stopRuntime = startSyncReachabilityRuntime()
+    const unsubscribe = subscribeToSyncReachability(next => {
+      setServerReachable(next === 'connected')
+    })
+    setServerReachable(getSyncReachabilityState() === 'connected')
+
+    return () => {
+      unsubscribe()
+      stopRuntime()
     }
   }, [])
 
@@ -652,6 +675,17 @@ export default function ProfileSyncSection({ language }: Props) {
   return (
     <>
       <div className="space-y-5 pt-3">
+        {/* Server reachability */}
+        <div className="flex items-center gap-2 px-1">
+          <span
+            className={`server-status-lamp ${serverReachable ? 'server-status-lamp--connected' : 'server-status-lamp--disconnected'}`}
+            aria-hidden="true"
+          />
+          <span className="text-xs uppercase tracking-[0.12em] text-white/60">
+            {serverReachable ? t.server_online : t.server_offline}
+          </span>
+        </div>
+
         {/* Status banner */}
         <div className={`rounded-[14px] border px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] ${
           isLinked ? 'border-zinc-800 bg-[#0a0a0a]' : 'border-zinc-900 bg-[#080808]'

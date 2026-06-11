@@ -1,4 +1,4 @@
-import { memo, useMemo, useRef, useState, useCallback } from 'react'
+import { memo, useMemo, useRef, useState, useCallback, useEffect } from 'react'
 import { Edit, X } from 'lucide-react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
@@ -83,15 +83,35 @@ const DragMatchCard = memo(function DragMatchCard({
   const dropZoneRef = useRef<HTMLDivElement | null>(null)
   // Verhindert, dass nach einem echten Drag zusätzlich der Klick die Auswahl auslöst.
   const wasDraggedRef = useRef(false)
+  const selectedKeyRef = useRef<string | null>(null)
+  const flipTimerRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    selectedKeyRef.current = null
+
+    return () => {
+      if (flipTimerRef.current !== null) {
+        window.clearTimeout(flipTimerRef.current)
+        flipTimerRef.current = null
+      }
+    }
+  }, [card.id])
 
   const handleSelect = useCallback((key: string) => {
-    if (selectedKey !== null) return
+    if (selectedKeyRef.current !== null) return
+    selectedKeyRef.current = key
     setSelectedKey(key)
     const score = scoreDragMatchChoice(answer, key)
     onAnswerEvaluated(score)
     const delay = prefersReducedMotion ? 400 : (score === 1 ? 700 : 1800)
-    setTimeout(() => onFlip(), delay)
-  }, [selectedKey, answer, onAnswerEvaluated, onFlip, prefersReducedMotion])
+    if (flipTimerRef.current !== null) {
+      window.clearTimeout(flipTimerRef.current)
+    }
+    flipTimerRef.current = window.setTimeout(() => {
+      flipTimerRef.current = null
+      onFlip()
+    }, delay)
+  }, [answer, onAnswerEvaluated, onFlip, prefersReducedMotion])
 
   // Drag-Ende: prüfen, ob der Chip über der Drop-Zone losgelassen wurde.
   const handleDragEnd = useCallback((key: string, point: { x: number; y: number }) => {
@@ -263,17 +283,20 @@ const DragMatchCard = memo(function DragMatchCard({
                   type="button"
                   data-testid={`dragmatch-option-${displayLetter}`}
                   drag={!submitted && !prefersReducedMotion}
+                  dragElastic={0.04}
+                  dragMomentum={false}
                   dragSnapToOrigin
-                  whileDrag={{ scale: 1.04, zIndex: 30 }}
+                  whileDrag={{ scale: 1.03, zIndex: 30 }}
                   onDragStart={() => { wasDraggedRef.current = true }}
                   onDragEnd={(_e, info) => handleDragEnd(key, info.point)}
+                  style={{ touchAction: submitted ? 'auto' : 'none' }}
                   onClick={(e) => {
                     e.stopPropagation()
                     if (wasDraggedRef.current) { wasDraggedRef.current = false; return }
                     handleSelect(key)
                   }}
                   disabled={submitted}
-                  className={`block rounded-[12px] border px-3 py-3 text-left font-mono leading-snug transition-all duration-200 ${cls} ${
+                  className={`block transform-gpu select-none rounded-[12px] border px-3 py-3 text-left font-mono leading-snug transition-colors duration-150 ease-out will-change-transform ${cls} ${
                     submitted ? 'cursor-default' : 'cursor-grab active:cursor-grabbing active:scale-[0.99]'
                   }`}
                 >

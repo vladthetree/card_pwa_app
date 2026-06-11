@@ -593,8 +593,10 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
 
         <AnimatePresence mode="wait" initial={false}>
           {currentCard && (
+            // Include the attempt count so an Again-requeued single card
+            // remounts with fresh answer/PBQ state instead of staying submitted.
             <motion.div
-              key={currentCard.id}
+              key={`${currentCard.id}:${session.sessionCount}`}
               initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: 14 }}
               animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, x: 0 }}
               exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -12 }}

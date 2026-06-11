@@ -11,6 +11,7 @@ import {
 import { smoothBacklog } from '../../db/queries'
 import type { CardRecord } from '../../db'
 import { SM2 } from '../../utils/sm2'
+import { getDayStartMs } from '../../utils/time'
 
 // ─── DB Mock ─────────────────────────────────────────────────────────────────
 
@@ -257,19 +258,21 @@ describe('smoothBacklog', () => {
   })
 
   it('uses custom nextDayStartsAt when determining whether cards are overdue', async () => {
-    vi.setSystemTime(new Date('2026-04-11T02:00:00.000Z'))
+    const localNowMs = new Date(2026, 3, 11, 2, 0, 0).getTime()
+    const studyDayStartMs = getDayStartMs(localNowMs, 4)
+    vi.setSystemTime(localNowMs)
 
     mockedDb.state.cards = [
       ...Array.from({ length: 31 }, (_, i) =>
         makeCard({
           id: `before-boundary-${i}`,
-          dueAt: Date.UTC(2026, 3, 10, 1, 0, 0),
+          dueAt: studyDayStartMs - 60 * 60_000,
         }),
       ),
       ...Array.from({ length: 31 }, (_, i) =>
         makeCard({
           id: `after-boundary-${i}`,
-          dueAt: Date.UTC(2026, 3, 10, 6, 0, 0),
+          dueAt: studyDayStartMs + 60 * 60_000,
         }),
       ),
     ]

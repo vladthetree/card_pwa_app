@@ -2,9 +2,10 @@ import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   BarChart3, CalendarDays, Check, Download, EyeOff, FlaskConical, FolderPlus, Plus,
-  RefreshCw, Search, Settings, SlidersHorizontal, Sparkles, Upload, X,
+  RefreshCw, Settings, SlidersHorizontal, Sparkles, Upload,
   Shuffle,
 } from 'lucide-react'
+import StreakBadge from '../StreakBadge'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 import type { HomeDashboardMode } from './HomeStatsSection'
 import { Tag } from 'lucide-react'
@@ -17,7 +18,6 @@ interface Props {
   language: 'de' | 'en'
   shuffleModeEnabled: boolean
   showShuffleOnly: boolean
-  deckSearchQuery: string
   deckSortMode: DeckSortMode
   dashboardMode: HomeDashboardMode
   homeTab: HomeTab
@@ -25,7 +25,6 @@ interface Props {
   isInstalled: boolean
   isInstalling: boolean
   onHomeTabChange: (tab: HomeTab) => void
-  onDeckSearchQueryChange: (v: string) => void
   onDeckSortModeChange: (v: DeckSortMode) => void
   onToggleShuffleOnly: () => void
   onDashboardModeChange: (mode: HomeDashboardMode) => void
@@ -52,7 +51,6 @@ export function HomeBottomBar({
   language,
   shuffleModeEnabled,
   showShuffleOnly,
-  deckSearchQuery,
   deckSortMode,
   dashboardMode,
   homeTab,
@@ -60,7 +58,6 @@ export function HomeBottomBar({
   isInstalled,
   isInstalling,
   onHomeTabChange,
-  onDeckSearchQueryChange,
   onDeckSortModeChange,
   onToggleShuffleOnly,
   onDashboardModeChange,
@@ -97,29 +94,8 @@ export function HomeBottomBar({
         data-safe-area-bottom-bar
       >
         <div className={`${UI_TOKENS.layout.homeMaxWidth} mx-auto px-2`}>
-          <div className="flex items-center gap-1.5 py-1.5">
-
-            {/* Search */}
-            <label className="relative flex h-11 flex-1 items-center rounded-[12px] border border-[#1f1f23] bg-[#0e0e10] pl-3 pr-1 text-xs transition-colors focus-within:border-[rgba(249,115,22,0.45)]">
-              <Search size={14} strokeWidth={1.5} className="pointer-events-none mr-2 shrink-0 text-white/40" />
-              <input
-                type="search"
-                value={deckSearchQuery}
-                onChange={e => onDeckSearchQueryChange(e.target.value)}
-                placeholder={language === 'de' ? 'Suchen…' : 'Search…'}
-                className="h-full min-w-0 flex-1 bg-transparent text-[13px] text-white/85 outline-none placeholder:text-white/35"
-              />
-              {deckSearchQuery.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => onDeckSearchQueryChange('')}
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] text-white/50 hover:text-white"
-                  aria-label={language === 'de' ? 'Suche leeren' : 'Clear search'}
-                >
-                  <X size={12} strokeWidth={2} />
-                </button>
-              )}
-            </label>
+          {/* Foto-Referenz 8. Juni: nur Icons + Streak-Pill, keine Suchleiste. */}
+          <div className="flex items-center justify-around gap-1.5 py-1.5">
 
             {/* Reload */}
             <button
@@ -156,6 +132,9 @@ export function HomeBottomBar({
             >
               <Settings size={17} strokeWidth={1.5} />
             </button>
+
+            {/* Streak */}
+            <StreakBadge compact />
 
             {/* Create / Actions */}
             <button

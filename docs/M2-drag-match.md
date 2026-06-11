@@ -2,7 +2,8 @@
 
 > Status: **neu generiert 2026-06-10**. Encoding verifiziert an der echten ZTNA-Karte
 > (CSV-Backup, `card_id 1779669260169`) und den Screenshots
-> `Drag-Match1/2_enabled_Fokus_mode.jpeg` (RECOVERY_LOG §2).
+> `Drag-Match1/2_enabled_Fokus_mode.jpeg` (RECOVERY_LOG §2, jetzt in der
+> Git-Historie bis `f72ffd6`).
 
 ## Zweck
 

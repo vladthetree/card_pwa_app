@@ -9,7 +9,8 @@ import type { Card } from '../types'
 /**
  * FreeRecallCard — Studien-Renderer "M3 Free Recall".
  *
- * ⚠️ NEU GENERIERT, OHNE ORIGINAL-SCREENSHOT (RECOVERY_LOG §4): Der 8.-Juni-
+ * ⚠️ NEU GENERIERT, OHNE ORIGINAL-SCREENSHOT (RECOVERY_LOG §4, Git-Historie
+ * bis f72ffd6): Der 8.-Juni-
  * Handy-Stand enthielt laut Nutzer einen Free-Recall-Modus, es existiert aber
  * kein Bild-Beleg. Ablauf laut TODO.md: erinnern → aufdecken → selbst bewerten.
  *
