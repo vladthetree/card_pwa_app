@@ -98,10 +98,9 @@ describe('DragMatchCard — Vorderseite (rekonstruiert aus Drag-Match1)', () => 
     }
   })
 
-  it('rendert durchgängig Mono-Schrift (font-mono) wie in den Screenshots', () => {
+  it('nutzt Mono für technische UI und Sans für längere Lerntexte', () => {
     expect(html).toContain('font-mono')
-    // kein proportionales font-sans im Drag-Match-Renderer
-    expect(html).not.toContain('font-sans')
+    expect(html).toContain('font-sans')
   })
 })
 

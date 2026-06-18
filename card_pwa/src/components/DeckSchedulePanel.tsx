@@ -107,24 +107,24 @@ export function DeckSchedulePanel({
 
       {rows.map(row => (
         <div key={row.key} className="grid grid-cols-[3.9rem_repeat(3,minmax(1.5rem,1fr))] gap-1.5 sm:grid-cols-[4.5rem_repeat(3,minmax(0,1fr))] sm:gap-2">
-          <div className="flex items-center justify-center rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-2 py-1.5 sm:px-3 sm:py-2">
+          <div className="flex items-center justify-center rounded-[10px] border border-[#18181b] bg-[#0a0a0a] px-2 py-1.5 sm:px-3 sm:py-2">
             <span className="text-[10px] font-mono uppercase tracking-[0.1em] text-zinc-500 text-center leading-tight sm:tracking-widest">
               {row.label}
             </span>
           </div>
           <div
-            className="flex min-h-[2.15rem] items-center justify-center rounded-xl border px-1.5 sm:min-h-[2.55rem] sm:px-2"
-            style={{ borderColor: 'var(--brand-primary-25)', background: 'var(--brand-primary-12)' }}
+            className="flex min-h-[2.15rem] items-center justify-center rounded-[10px] border bg-[#0a0a0a] px-1.5 sm:min-h-[2.55rem] sm:px-2"
+            style={{ borderColor: 'var(--brand-primary-25)' }}
           >
             <p className="text-xl sm:text-3xl font-mono tabular-nums leading-none" style={{ color: 'var(--brand-primary)' }}>{row.data.total}</p>
           </div>
           <div
-            className="flex min-h-[2.15rem] items-center justify-center rounded-xl border px-1.5 sm:min-h-[2.55rem] sm:px-2"
-            style={{ borderColor: 'var(--brand-secondary-25)', background: 'var(--brand-secondary-12)' }}
+            className="flex min-h-[2.15rem] items-center justify-center rounded-[10px] border bg-[#0a0a0a] px-1.5 sm:min-h-[2.55rem] sm:px-2"
+            style={{ borderColor: 'var(--brand-secondary-25)' }}
           >
             <p className="text-xl sm:text-3xl font-mono tabular-nums leading-none" style={{ color: 'var(--brand-secondary)' }}>{row.data.new}</p>
           </div>
-          <div className="flex min-h-[2.15rem] items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/50 px-1.5 sm:min-h-[2.55rem] sm:px-2">
+          <div className="flex min-h-[2.15rem] items-center justify-center rounded-[10px] border border-zinc-800 bg-[#0a0a0a] px-1.5 sm:min-h-[2.55rem] sm:px-2">
             <p className="text-xl sm:text-3xl font-mono text-zinc-300 tabular-nums leading-none">{row.data.review}</p>
           </div>
         </div>

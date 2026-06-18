@@ -574,7 +574,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
           <ErrorAlert message={error} onRetry={reload} />
           <div className="ds-card p-8 text-center text-white/80">
             <p className="mb-4">{t.loading_cards_failed}</p>
-            <button onClick={reload} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black hover:bg-white/90 transition font-semibold">
+            <button onClick={reload} className="inline-flex items-center gap-2 rounded-[12px] bg-[--brand-primary] px-4 py-2 font-semibold text-black transition hover:brightness-110 active:scale-[0.98]">
               <RefreshCw size={16} /> {t.retry}
             </button>
           </div>
@@ -591,7 +591,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
           <p className="text-sm">{t.no_cards_to_study}</p>
           <button
             onClick={handleExit}
-            className="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black hover:bg-white/90 transition font-semibold"
+            className="mt-5 inline-flex items-center gap-2 rounded-[12px] bg-[--brand-primary] px-4 py-2 font-semibold text-black transition hover:brightness-110 active:scale-[0.98]"
           >
             <ArrowLeft size={16} /> {t.home}
           </button>
@@ -617,7 +617,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
           <p className="text-sm mb-4">{t.please_wait}</p>
           <button
             onClick={handleExit}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black hover:bg-white/90 transition font-semibold"
+            className="inline-flex items-center gap-2 rounded-[12px] bg-[--brand-primary] px-4 py-2 font-semibold text-black transition hover:brightness-110 active:scale-[0.98]"
           >
             <ArrowLeft size={16} /> {t.home}
           </button>
@@ -716,7 +716,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
             <div className="mt-4 flex gap-3">
               <button
                 onClick={handleExit}
-                className="flex-1 py-3 rounded-[12px] bg-white text-black hover:bg-white/90 font-semibold transition-all"
+                className="flex-1 rounded-[12px] bg-[--brand-primary] py-3 font-semibold text-black transition-all hover:brightness-110 active:scale-[0.98]"
               >
                 {t.home}
               </button>

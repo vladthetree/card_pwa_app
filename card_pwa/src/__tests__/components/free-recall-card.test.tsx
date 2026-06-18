@@ -61,9 +61,9 @@ describe('FreeRecallCard — Vorderseite (erinnern)', () => {
     expect(html).not.toContain('Lessons Learned')
   })
 
-  it('rendert durchgängig Mono-Schrift wie M1/M2', () => {
+  it('nutzt Mono für technische UI und Sans für längere Lerntexte', () => {
     expect(html).toContain('font-mono')
-    expect(html).not.toContain('font-sans')
+    expect(html).toContain('font-sans')
   })
 })
 

@@ -1,7 +1,7 @@
 import { useCallback, useState, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
-import { BarChart3, CalendarDays, Check, ChevronDown, Download, EyeOff, FolderPlus, Plus, RefreshCw, Search, Shuffle, Sparkles, Upload, X } from 'lucide-react'
+import { BarChart3, CalendarDays, Check, ChevronDown, Download, EyeOff, FolderPlus, Plus, RefreshCw, Search, Shuffle, Target, Upload, X } from 'lucide-react'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 import { useFloatingMenu } from '../../hooks/useFloatingMenu'
 import type { HomeDashboardMode } from './HomeStatsSection'
@@ -145,15 +145,15 @@ export function HomeDeckToolbar({
     label: string
     icon: typeof BarChart3
   }> = [
+    { key: 'pilot', label: language === 'de' ? 'Pilot' : 'Pilot', icon: Target },
     { key: 'kpi', label: 'KPI', icon: BarChart3 },
     { key: 'heatmap', label: language === 'de' ? 'Heatmap' : 'Heatmap', icon: CalendarDays },
-    { key: 'pilot', label: language === 'de' ? 'Pilot' : 'Pilot', icon: Sparkles },
     { key: 'clean', label: 'Clean', icon: EyeOff },
   ]
 
   const filterLabel = language === 'de' ? 'Filter' : 'Filter'
   const featureLabel = language === 'de' ? 'Feature' : 'Feature'
-  const activeFeatureLabel = dashboardOptions.find(option => option.key === dashboardMode)?.label ?? 'KPI'
+  const activeFeatureLabel = dashboardOptions.find(option => option.key === dashboardMode)?.label ?? 'Pilot'
   const decksLabel = language === 'de' ? 'Decks' : 'Decks'
   const shuffleDecksLabel = language === 'de' ? 'Shuffle-Decks' : 'Shuffle decks'
   const activeFilterValue = showShuffleOnly ? shuffleDecksLabel : decksLabel

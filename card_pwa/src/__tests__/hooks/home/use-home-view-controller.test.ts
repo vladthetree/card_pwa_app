@@ -27,7 +27,7 @@ describe('useHomeViewController helpers', () => {
       persistShuffleOnlyMode,
     } = await import('../../../hooks/home/useHomeViewController')
 
-    expect(readInitialDashboardMode()).toBe('kpi')
+    expect(readInitialDashboardMode()).toBe('pilot')
     expect(readInitialShuffleOnlyMode()).toBe(false)
 
     persistDashboardMode('pilot')
@@ -38,14 +38,14 @@ describe('useHomeViewController helpers', () => {
     expect(window.localStorage.getItem('card-pwa-home-shuffle-only-mode')).toBe('1')
   })
 
-  it('migrates removed life dashboard mode back to kpi', async () => {
+  it('migrates removed life dashboard mode back to the Daily Quest mode', async () => {
     window.localStorage.setItem('card-pwa-home-dashboard-mode', 'life')
     window.localStorage.setItem('card-pwa-home-heatmap', '1')
 
     const { readInitialDashboardMode } = await import('../../../hooks/home/useHomeViewController')
 
-    expect(readInitialDashboardMode()).toBe('kpi')
-    expect(window.localStorage.getItem('card-pwa-home-dashboard-mode')).toBe('kpi')
+    expect(readInitialDashboardMode()).toBe('pilot')
+    expect(window.localStorage.getItem('card-pwa-home-dashboard-mode')).toBe('pilot')
     expect(window.localStorage.getItem('card-pwa-home-heatmap')).toBe('0')
   })
 

@@ -88,13 +88,13 @@ export function DeckCard({ deck, language, onStartStudy, onDelete, schedule, dec
         initial={nested ? false : cardEnter.initial}
         animate={cardEnter.animate}
         transition={nested ? undefined : cardEnter.transition}
-        className={`group relative w-full transition-all duration-300 ease-out hover:border-[#3f3f46] ${
+        className={`group relative w-full transition-all duration-150 ease-out hover:border-[#3f3f46] ${
           nested
             ? 'rounded-[12px] border border-[#242428] bg-[#080808] p-3 shadow-none'
             : 'ds-card p-3 sm:p-5'
         }`}
-        whileHover={prefersReducedMotion ? {} : { y: -2, transition: { duration: 0.18 } }}
-        whileTap={prefersReducedMotion ? {} : { scale: 0.99, transition: { duration: 0.1 } }}
+        whileHover={prefersReducedMotion ? {} : { y: -1, transition: { duration: 0.14 } }}
+        whileTap={prefersReducedMotion ? {} : { scale: 0.98, transition: { duration: 0.1 } }}
       >
         {hasSubDecks && (
           <button

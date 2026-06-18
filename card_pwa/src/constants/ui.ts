@@ -1,4 +1,4 @@
-const T = 'transition-all duration-300 ease-out'
+const T = 'transition-all duration-150 ease-out'
 
 export const UI_TOKENS = {
   layout: {
@@ -37,14 +37,14 @@ export const UI_TOKENS = {
 
   // ─── Rating button colors (replaces inline hex strings in RatingBar) ───────
   rating: {
-    again: 'bg-red-950/70 text-red-300 hover:brightness-[1.15]',
-    hard:  'bg-orange-950/70 text-yellow-300 hover:brightness-[1.15]',
-    good:  'bg-blue-950/80 text-blue-300 hover:brightness-[1.15]',
-    easy:  'bg-green-950/80 text-green-300 hover:brightness-[1.15]',
+    again: 'border-red-500/30 bg-red-500/10 text-red-200 hover:border-red-400/45',
+    hard:  'border-amber-500/30 bg-amber-500/10 text-amber-200 hover:border-amber-400/45',
+    good:  'border-blue-500/30 bg-blue-500/10 text-blue-200 hover:border-blue-400/45',
+    easy:  'border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:border-emerald-400/45',
   },
 
   header: {
-    row: 'flex items-center justify-between gap-2 rounded-[14px] border border-ds-border bg-[#050505]/85 px-2.5 py-2 shadow-card backdrop-blur-sm sm:mb-2 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:shadow-none sm:backdrop-blur-none',
+    row: 'flex items-center justify-between gap-2 rounded-[14px] border border-ds-border bg-[#050505]/85 px-2.5 py-2 backdrop-blur-sm sm:mb-2 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none',
     brand: 'flex min-w-0 items-center gap-2 sm:gap-3',
     title: 'text-2xl font-bold text-theme-text tracking-tight',
     subtitle: 'text-theme-text-secondary text-sm',
@@ -82,15 +82,15 @@ export const UI_TOKENS = {
 
   button: {
     // Mobile-first: keep interactive targets close to iOS's 44x44pt guidance.
-    ghost:         `px-3 py-1.5 rounded-[12px] border border-ds-border bg-ds-card text-white/80 hover:text-white hover:border-ds-border-hover hover:bg-[#111] ${T} active:scale-95 text-xs`,
-    iconGhost:     `flex min-h-11 min-w-11 items-center gap-2 px-3 py-2 ds-icon-button ${T} active:scale-95 sm:min-h-0 sm:min-w-0 sm:py-1.5`,
-    secondary:     `py-2 px-3 rounded-[12px] text-xs border ${T} active:scale-95 border-ds-border bg-ds-card text-white/70 hover:text-white hover:border-ds-border-hover`,
-    secondaryActive: `py-2 px-3 rounded-[12px] text-xs border ${T} active:scale-95 border-ds-border-hover bg-ds-panel text-white`,
-    footerSecondary: `flex-1 py-3 rounded-[12px] border border-ds-border bg-ds-card text-white/80 hover:text-white hover:border-ds-border-hover ${T} active:scale-95`,
-    footerPrimary:   `flex-1 py-3 rounded-[12px] bg-white text-black hover:bg-white/90 font-semibold ${T} active:scale-95 disabled:opacity-60`,
+    ghost:         `px-3 py-1.5 rounded-[12px] border border-ds-border bg-ds-card text-white/80 hover:text-white hover:border-ds-border-hover hover:bg-[#111] ${T} active:scale-[0.98] text-xs`,
+    iconGhost:     `flex min-h-11 min-w-11 items-center gap-2 px-3 py-2 ds-icon-button ${T} active:scale-[0.98] sm:min-h-0 sm:min-w-0 sm:py-1.5`,
+    secondary:     `py-2 px-3 rounded-[12px] text-xs border ${T} active:scale-[0.98] border-ds-border bg-ds-card text-white/70 hover:text-white hover:border-ds-border-hover`,
+    secondaryActive: `py-2 px-3 rounded-[12px] text-xs border ${T} active:scale-[0.98] border-ds-border-hover bg-ds-panel text-white`,
+    footerSecondary: `flex-1 py-3 rounded-[12px] border border-ds-border bg-ds-card text-white/80 hover:text-white hover:border-ds-border-hover ${T} active:scale-[0.98]`,
+    footerPrimary:   `flex-1 py-3 rounded-[12px] bg-[--brand-primary] text-black hover:brightness-110 font-semibold ${T} active:scale-[0.98] disabled:opacity-60`,
     // Min 44×44px icon button for iOS touch targets
-    iconAction:    `ds-icon-button flex w-11 h-11 ${T} active:scale-95`,
+    iconAction:    `ds-icon-button flex w-11 h-11 ${T} active:scale-[0.98]`,
     // Compact 36px icon button for dense UI (desktop / secondary controls)
-    iconCompact:   `ds-icon-button flex w-9 h-9 ${T} active:scale-95`,
+    iconCompact:   `ds-icon-button flex w-9 h-9 ${T} active:scale-[0.98]`,
   },
 } as const

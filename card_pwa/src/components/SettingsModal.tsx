@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import {
   Brain,
@@ -8,6 +8,8 @@ import {
   RefreshCw,
   SlidersHorizontal,
   Database,
+  Download,
+  Upload,
   X,
   User,
 } from 'lucide-react'
@@ -34,13 +36,16 @@ import { InfoHint } from './InfoHint'
 import { SettingsSection } from './SettingsSection'
 import ConfirmModal from './ConfirmModal'
 import ProfileSyncSection from './ProfileSyncSection'
+import { exportDbBackupAsCsv, exportDbBackupAsTxt } from '../utils/dbBackup'
 
 interface Props {
   isOpen: boolean
   onClose: () => void
 }
 
-type SettingsSectionKey = 'profile' | 'appearance' | 'study' | 'algorithm' | 'notifications' | 'maintenance'
+type SettingsSectionKey = 'profile' | 'appearance' | 'study' | 'algorithm' | 'notifications' | 'data' | 'maintenance'
+
+const ImportView = lazy(() => import('./ImportView.tsx'))
 
 
 
@@ -99,6 +104,8 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
   const [syncAuthToken, setSyncAuthToken] = useState(() => readSyncAuthTokenFromSettings())
   const [notificationTestStatus, setNotificationTestStatus] = useState<string | null>(null)
   const [localDataStatus, setLocalDataStatus] = useState<string | null>(null)
+  const [dataExportStatus, setDataExportStatus] = useState<string | null>(null)
+  const [showImportView, setShowImportView] = useState(false)
   const [confirmModal, setConfirmModal] = useState<{
     title: string
     message: string
@@ -177,6 +184,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
       setNotificationPermission(typeof Notification === 'undefined' ? 'unsupported' : Notification.permission)
       setNotificationTestStatus(null)
       setLocalDataStatus(null)
+      setDataExportStatus(null)
     }
   }, [isOpen])
 
@@ -565,6 +573,20 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     setNotificationTestStatus(mapWebPushStatusToText(status, t))
   }
 
+  const runDataExport = async (format: 'txt' | 'csv') => {
+    setDataExportStatus(null)
+    try {
+      if (format === 'txt') {
+        await exportDbBackupAsTxt()
+      } else {
+        await exportDbBackupAsCsv()
+      }
+      setDataExportStatus(settings.language === 'de' ? 'Export gestartet.' : 'Export started.')
+    } catch {
+      setDataExportStatus(settings.language === 'de' ? 'Export fehlgeschlagen.' : 'Export failed.')
+    }
+  }
+
   const mapWebPushStatusToText = (status: WebPushSubscribeStatus, strings: Record<string, string>) => {
     switch (status) {
       case 'subscribed':
@@ -645,8 +667,8 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
               </SettingsSection>
 
               <SettingsSection
-                title={t.appearance}
-                description={t.appearance_help}
+                title={settings.language === 'de' ? 'Display / Fokus' : 'Display / Focus'}
+                description={settings.language === 'de' ? 'Schrift, Theme, Fokus-Modus und technische Anzeige.' : 'Fonts, theme, focus mode, and technical display.'}
                 icon={<Palette size={18} />}
                 isOpen={openSection === 'appearance'}
                 onToggle={() => toggleSection('appearance')}
@@ -779,11 +801,47 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     </div>
                   </div>
 
+                  <div>
+                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
+                      {settings.language === 'de' ? 'Fokus-Modus' : 'Focus mode'}
+                    </label>
+                    <div className={`${UI_TOKENS.surface.panelSoft} p-4`}>
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-medium text-white">
+                            {settings.language === 'de' ? 'Session-Header beim Lernen ausblenden' : 'Hide session header while studying'}
+                          </p>
+                          <p className="mt-1 text-xs leading-relaxed text-white/45">
+                            {settings.language === 'de'
+                              ? 'Blendet Statistiken und Fortschritt in der Lernansicht aus. Der Platz bleibt reserviert, die Karte springt nicht; der Zurück-Button bleibt sichtbar.'
+                              : 'Hides stats and progress in the study view. The space stays reserved so the card does not jump; the back button remains visible.'}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setFocusMode(!settings.focusMode)}
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full border transition ${
+                            settings.focusMode
+                              ? 'border-emerald-400/40 bg-emerald-500/25'
+                              : 'border-white/20 bg-white/10'
+                          }`}
+                          aria-pressed={settings.focusMode}
+                        >
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                              settings.focusMode ? 'translate-x-5' : 'translate-x-1'
+                            }`}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </SettingsSection>
 
               <SettingsSection
-                title={settings.language === 'de' ? 'Lernen' : 'Study'}
+                title={settings.language === 'de' ? 'Language / Daily Learning' : 'Language / Daily Learning'}
                 description={settings.language === 'de' ? 'Sprache, Tagesziel und sichtbare Lernmodi.' : 'Language, daily goal, and visible study modes.'}
                 icon={<Brain size={18} />}
                 isOpen={openSection === 'study'}
@@ -801,7 +859,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                           onClick={() => setLanguage(lang)}
                           className={`py-2.5 px-3 rounded-xl font-medium transition-all ${
                             settings.language === lang
-                              ? 'bg-white/20 text-white border border-white/40'
+                              ? 'border border-[--brand-primary-50] bg-[--brand-primary-08] text-white'
                               : 'bg-[#0c0c0c] text-zinc-400 hover:text-zinc-200 border border-[#18181b]'
                           }`}
                         >
@@ -866,42 +924,6 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                           <span
                             className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
                               settings.shuffleModeEnabled ? 'translate-x-5' : 'translate-x-1'
-                            }`}
-                          />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
-                      {settings.language === 'de' ? 'Fokus-Modus' : 'Focus mode'}
-                    </label>
-                    <div className={`${UI_TOKENS.surface.panelSoft} p-4`}>
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="text-sm font-medium text-white">
-                            {settings.language === 'de' ? 'Session-Header beim Lernen ausblenden' : 'Hide session header while studying'}
-                          </p>
-                          <p className="mt-1 text-xs leading-relaxed text-white/45">
-                            {settings.language === 'de'
-                              ? 'Blendet Statistiken und Fortschritt in der Lernansicht aus. Der Platz bleibt reserviert, die Karte springt nicht; der Zurück-Button bleibt sichtbar.'
-                              : 'Hides stats and progress in the study view. The space stays reserved so the card does not jump; the back button remains visible.'}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setFocusMode(!settings.focusMode)}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full border transition ${
-                            settings.focusMode
-                              ? 'border-emerald-400/40 bg-emerald-500/25'
-                              : 'border-white/20 bg-white/10'
-                          }`}
-                          aria-pressed={settings.focusMode}
-                        >
-                          <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                              settings.focusMode ? 'translate-x-5' : 'translate-x-1'
                             }`}
                           />
                         </button>
@@ -978,7 +1000,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
               </SettingsSection>
 
               <SettingsSection
-                title={settings.language === 'de' ? 'Algorithmus' : 'Algorithm'}
+                title={settings.language === 'de' ? 'Learning Algorithm' : 'Learning Algorithm'}
                 description={settings.language === 'de' ? 'Scheduler wählen und Beta-Parameter nur bei Bedarf anpassen.' : 'Choose the scheduler and adjust beta parameters only when needed.'}
                 icon={<SlidersHorizontal size={18} />}
                 isOpen={openSection === 'algorithm'}
@@ -997,7 +1019,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                           disabled={isAlgorithmMigrating}
                           className={`w-full text-left py-3 px-4 rounded-xl border transition-all ${
                             settings.algorithm === algo
-                              ? 'bg-white/20 border-white/40'
+                              ? 'border-[--brand-primary-50] bg-[--brand-primary-08]'
                               : 'bg-[#0c0c0c] border-[#18181b] hover:bg-[#111]'
                           } ${isAlgorithmMigrating ? 'opacity-60 cursor-not-allowed' : ''}`}
                         >
@@ -1137,8 +1159,8 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
               </SettingsSection>
 
               <SettingsSection
-                title={t.notifications}
-                description={t.notifications_help}
+                title={settings.language === 'de' ? 'PWA / Update' : 'PWA / Update'}
+                description={settings.language === 'de' ? 'Benachrichtigungen, Service Worker und lokale PWA-Signale.' : 'Notifications, service worker, and local PWA signals.'}
                 icon={<Bell size={18} />}
                 isOpen={openSection === 'notifications'}
                 onToggle={() => toggleSection('notifications')}
@@ -1282,8 +1304,53 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
               </SettingsSection>
 
               <SettingsSection
-                title={settings.language === 'de' ? 'Wartung' : 'Maintenance'}
-                description={settings.language === 'de' ? 'Diagnose, Sync-Details und lokale Daten zurücksetzen.' : 'Diagnostics, sync details, and local data reset.'}
+                title={settings.language === 'de' ? 'Import / Export' : 'Import / Export'}
+                description={settings.language === 'de' ? 'Karten importieren und lokale Backups exportieren.' : 'Import cards and export local backups.'}
+                icon={<Download size={18} />}
+                isOpen={openSection === 'data'}
+                onToggle={() => toggleSection('data')}
+              >
+                <div className="pt-5 space-y-4">
+                  <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
+                    <p className="text-xs text-white/50 font-medium uppercase tracking-wide">
+                      {settings.language === 'de' ? 'Lokale Daten' : 'Local data'}
+                    </p>
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                      <button
+                        type="button"
+                        onClick={() => setShowImportView(true)}
+                        className={`${UI_TOKENS.button.ghost} justify-center py-2.5`}
+                      >
+                        <Upload size={13} strokeWidth={1.5} />
+                        {settings.language === 'de' ? 'Import' : 'Import'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { void runDataExport('txt') }}
+                        className={`${UI_TOKENS.button.ghost} justify-center py-2.5`}
+                      >
+                        <Download size={13} strokeWidth={1.5} />
+                        TXT
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { void runDataExport('csv') }}
+                        className={`${UI_TOKENS.button.ghost} justify-center py-2.5`}
+                      >
+                        <Download size={13} strokeWidth={1.5} />
+                        CSV
+                      </button>
+                    </div>
+                    {dataExportStatus && (
+                      <p className="text-xs text-emerald-300/90 leading-relaxed">{dataExportStatus}</p>
+                    )}
+                  </div>
+                </div>
+              </SettingsSection>
+
+              <SettingsSection
+                title={settings.language === 'de' ? 'Diagnostics' : 'Diagnostics'}
+                description={settings.language === 'de' ? 'Sync-Details, Fehlerlogs und gefährliche lokale Aktionen.' : 'Sync details, error logs, and dangerous local actions.'}
                 icon={<Database size={18} />}
                 isOpen={openSection === 'maintenance'}
                 onToggle={() => toggleSection('maintenance')}
@@ -1508,6 +1575,15 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
           </motion.div>
         </motion.div>
       )}
+
+      <Suspense fallback={null}>
+        {showImportView && (
+          <ImportView
+            isOpen
+            onClose={() => setShowImportView(false)}
+          />
+        )}
+      </Suspense>
 
       <ConfirmModal
         isOpen={confirmModal !== null}
