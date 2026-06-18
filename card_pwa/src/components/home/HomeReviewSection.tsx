@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion'
 import { BookOpen } from 'lucide-react'
-import { animationContainer } from '../../constants/animations'
 import { DeckCard } from '../DeckCard'
 import type { Deck, DeckScheduleOverview } from '../../types'
 
@@ -43,7 +42,7 @@ export function HomeReviewSection({
       className="relative z-0 min-h-0 flex-1 overflow-y-auto no-scrollbar pb-4 pr-1"
       style={{ WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'contain', touchAction: 'pan-y' }}
     >
-      <motion.div variants={animationContainer} initial="hidden" animate="show" className="flex flex-col gap-2.5 sm:gap-3">
+      <div className="flex flex-col gap-2.5 sm:gap-3">
         {decks.map(deck => (
           <DeckCard
             key={deck.id}
@@ -57,7 +56,7 @@ export function HomeReviewSection({
             onManageCards={onManageCards}
           />
         ))}
-      </motion.div>
+      </div>
     </div>
   )
 }

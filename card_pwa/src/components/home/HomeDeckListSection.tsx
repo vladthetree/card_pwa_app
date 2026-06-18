@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion'
 import { RefreshCw, AlertCircle, Upload, Shuffle, Layers3, Pencil, Trash2, BarChart3 } from 'lucide-react'
-import { animationContainer } from '../../constants/animations'
 import { DeckCard } from '../DeckCard'
 import type { Deck, DeckScheduleOverview, ShuffleCollection } from '../../types'
 
@@ -164,7 +163,7 @@ export function HomeDeckListSection({
           </p>
         </motion.div>
       ) : (
-        <motion.div variants={animationContainer} initial="hidden" animate="show" className="flex flex-col gap-2.5 sm:gap-3">
+        <div className="flex flex-col gap-2.5 sm:gap-3">
           {!showShuffleOnly && visibleDecks.map((deck) => (
             <DeckCard
               key={deck.id}
@@ -180,7 +179,7 @@ export function HomeDeckListSection({
           ))}
 
           {showShuffleOnly && renderShuffleCards()}
-        </motion.div>
+        </div>
       )}
     </div>
   )

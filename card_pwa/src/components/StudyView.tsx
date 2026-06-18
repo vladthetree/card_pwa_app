@@ -2,14 +2,13 @@ import { useState, useEffect, useCallback, useMemo, useReducer, useRef } from 'r
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { ArrowLeft, RotateCcw, CheckCircle, AlertCircle, RefreshCw, Type, Info, Sparkles } from 'lucide-react'
 import { useDeckCards } from '../hooks/useCardDb'
-import { recordReview, undoReview, forceCardReviewTomorrow, readActiveSession, writeActiveSession, clearActiveSession } from '../db/queries'
+import { recordReview, undoReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession } from '../db/queries'
 import { STRINGS, useSettings, type QuestionTextSize } from '../contexts/SettingsContext'
 import { sortStudyCards } from '../services/StudySessionManager'
+import { buildDragMatchModePlan } from '../services/studyModeSelector'
 import {
   buildPersistedStudySession,
   DEFAULT_STUDY_CARD_LIMIT,
-  parsePersistedStudySession,
-  restoreCardsByOrder,
   sanitizeCardLimit,
   type PersistedStudySession,
 } from '../services/studySessionPersistence'
@@ -97,9 +96,9 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
   const studyCardLimit = sanitizeCardLimit(settings.studyCardLimit ?? DEFAULT_STUDY_CARD_LIMIT)
   const sessionRef = useRef(session)
   const studyCardLimitRef = useRef(studyCardLimit)
-  const restoreRunIdRef = useRef(0)
-  const sessionDoneRef = useRef(session.isDone)
-  const sessionCardsLengthRef = useRef(session.cards.length)
+  const dragMatchModePlanRef = useRef<Set<string>>(new Set())
+  const dragMatchModePlanReadyRef = useRef(false)
+  const dragMatchModeSeedRef = useRef(`${Date.now()}:${Math.random()}`)
   // Tracks wall-clock start of the active study session for display only.
   const sessionWallStartRef = useRef<number | null>(null)
 
@@ -115,11 +114,6 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
   useEffect(() => {
     sessionRef.current = session
   }, [session])
-
-  useEffect(() => {
-    sessionDoneRef.current = session.isDone
-    sessionCardsLengthRef.current = session.cards.length
-  }, [session.isDone, session.cards.length])
 
   useEffect(() => {
     if (session.cards.length > 0 && !session.isDone && sessionWallStartRef.current === null) {
@@ -166,87 +160,38 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
   useEffect(() => {
     sessionMomentumRef.current = 0
     setRewardToast(null)
+    dragMatchModePlanRef.current = new Set()
+    dragMatchModePlanReadyRef.current = false
+    dragMatchModeSeedRef.current = `${deck.id}:${Date.now()}:${Math.random()}`
   }, [deck.id])
 
   const buildSessionCards = useCallback((inputCards: Card[], limit: number): Card[] => {
     return sortStudyCards(inputCards, {
       maxCards: sanitizeCardLimit(limit),
       nextDayStartsAt: settings.nextDayStartsAt,
+      runSeed: dragMatchModeSeedRef.current,
     })
   }, [settings.nextDayStartsAt])
-
-  const readPersistedSession = useCallback(async (): Promise<PersistedStudySession | null> => {
-    const raw = await readActiveSession(deck.id)
-    const parsed = parsePersistedStudySession(raw, deck.id)
-    if (!parsed) {
-      void clearActiveSession(deck.id)
-      return null
-    }
-    return parsed
-  }, [deck.id])
 
   const clearPersistedSession = useCallback(() => {
     void clearActiveSession(deck.id)
   }, [deck.id])
 
   const handleExit = useCallback(() => {
+    clearPersistedSession()
     onExit()
-  }, [onExit])
+  }, [clearPersistedSession, onExit])
 
   useEffect(() => {
     if (loading) return
     if (session.isDone) return
     if (session.cards.length > 0) return
 
-    const runId = ++restoreRunIdRef.current
-    let cancelled = false
-
-    const isStale = () => cancelled || restoreRunIdRef.current !== runId
-
-    const canApplyRestore = () => !sessionDoneRef.current && sessionCardsLengthRef.current === 0
-
-    void (async () => {
-      const snapshot = await readPersistedSession()
-      if (isStale()) return
-      const sortedCards = buildSessionCards(cards, studyCardLimit)
-      if (isStale()) return
-
-      if (!snapshot) {
-        if (!canApplyRestore()) return
-        dispatch({ type: 'INIT', cards: sortedCards })
-        return
-      }
-
-      const persistedCardLimit = sanitizeCardLimit(snapshot.cardLimit ?? DEFAULT_STUDY_CARD_LIMIT)
-      if (persistedCardLimit !== studyCardLimit) {
-        clearPersistedSession()
-        if (!canApplyRestore()) return
-        dispatch({ type: 'INIT', cards: sortedCards })
-        return
-      }
-
-      // Restore against the full deck card set (not only currently-due cards)
-      // so paused sessions keep their queue order even if due times moved forward.
-      const sortedByPersistedOrder = restoreCardsByOrder(cards, snapshot.cardIds)
-
-      if (sortedByPersistedOrder.length === 0) {
-        clearPersistedSession()
-        if (!canApplyRestore()) return
-        dispatch({ type: 'INIT', cards: sortedCards })
-        return
-      }
-
-      if (!canApplyRestore()) return
-      dispatch({ type: 'RESTORE', cards: sortedByPersistedOrder, snapshot })
-    })()
-
-    return () => {
-      cancelled = true
-    }
+    clearPersistedSession()
+    dispatch({ type: 'INIT', cards: buildSessionCards(cards, studyCardLimit) })
   }, [
     cards,
     loading,
-    readPersistedSession,
     clearPersistedSession,
     buildSessionCards,
     studyCardLimit,
@@ -330,6 +275,13 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
     () => session.cards[0] ?? null,
     [session.cards]
   )
+  if (!loading && session.cards.length > 0 && !dragMatchModePlanReadyRef.current) {
+    dragMatchModePlanRef.current = buildDragMatchModePlan(session.cards, dragMatchModeSeedRef.current)
+    dragMatchModePlanReadyRef.current = true
+  }
+  const useDragMatchForCurrentCard = currentCard
+    ? dragMatchModePlanRef.current.has(currentCard.id) && (session.againCounts[currentCard.id] ?? 0) === 0
+    : false
 
   const sessionPendingCount = session.cards.length
   const sessionRequeueCount = useMemo(
@@ -600,8 +552,11 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
     setAnswerWasIncorrect(false)
     sessionMomentumRef.current = 0
     setRewardToast(null)
+    dragMatchModePlanRef.current = new Set()
+    dragMatchModePlanReadyRef.current = false
+    dragMatchModeSeedRef.current = `${deck.id}:restart:${Date.now()}:${Math.random()}`
     dispatch({ type: 'INIT', cards: sortedCards })
-  }, [buildSessionCards, cards, studyCardLimit, clearPersistedSession])
+  }, [buildSessionCards, cards, studyCardLimit, clearPersistedSession, deck.id])
 
   const handleEditCard = useCallback(() => {
     if (!currentCard) return
@@ -806,6 +761,8 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
             {/* Left: Back button */}
             <button
               onClick={handleExit}
+              aria-label={t.home}
+              data-testid="study-back-button"
               className="ds-icon-button group flex-shrink-0 flex h-11 w-11"
             >
               <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
@@ -876,6 +833,8 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
               <div className="flex items-center gap-3 flex-shrink-0">
                 <button
                   onClick={handleExit}
+                  aria-label={t.home}
+                  data-testid="study-back-button"
                   className="ds-icon-button group flex h-10 w-10"
                 >
                   <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
@@ -981,16 +940,18 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
             {session.error && <ErrorAlert message={session.error} onRetry={handleRetry} />}
           </AnimatePresence>
 
-          {/* Card display */}
-          <AnimatePresence mode="wait" initial={false}>
-            {currentCard && (
+          {/* Card display. Bewusst OHNE exit-gated AnimatePresence (wait-Modus):
+              dessen Exit→Enter-Übergabe konnte beim Kartenwechsel hängen bleiben
+              und die Folgekarte nie mounten (schwarzer Kartenbereich). Der Key-
+              Wechsel remountet die Karte direkt, nur mit Enter-Animation.
+              Guard: __tests__/ui/no-animatepresence-wait.test.ts */}
+          {currentCard && (
               // Include the attempt count so an Again-requeued single card
               // remounts with fresh answer/PBQ state instead of staying submitted.
               <motion.div
                 key={`${currentCard.id}:${session.sessionCount}`}
                 initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 22, scale: 0.96 }}
                 animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-                exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -14, scale: 0.97 }}
                 transition={{ duration: prefersReducedMotion ? 0.12 : 0.22, ease: [0.22, 1, 0.36, 1] }}
                 className={`w-full ${isHandsetLayout ? 'flex h-full min-h-0 flex-col' : ''}`}
                 style={isHandsetLayout ? { maxHeight: '100%' } : undefined}
@@ -1009,13 +970,13 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
                         onEdit={handleEditCard}
                         onAnswerEvaluated={handleAnswerEvaluated}
                         compact={isHandsetLayout}
+                        useDragMatchMode={useDragMatchForCurrentCard}
                       />
                     </div>
                   </div>
                 </div>
               </motion.div>
             )}
-          </AnimatePresence>
 
           {/* Desktop/Tablet rating bar remains inline */}
           {!isHandsetLayout && (

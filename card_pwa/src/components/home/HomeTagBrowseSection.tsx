@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { BookOpen, ChevronDown, ChevronRight, Loader2, Tag } from 'lucide-react'
-import { animationItem } from '../../constants/animations'
+import { cardEnter } from '../../constants/animations'
 import type { Card } from '../../types'
 
 interface Props {
@@ -154,7 +154,9 @@ function TagSection({
 
   return (
     <motion.div
-      variants={animationItem}
+      initial={cardEnter.initial}
+      animate={cardEnter.animate}
+      transition={cardEnter.transition}
       className="ds-card group min-w-0 p-3 transition-all duration-300 ease-out hover:border-[#3f3f46] sm:p-5"
       whileHover={prefersReducedMotion ? {} : { y: -2, transition: { duration: 0.18 } }}
       whileTap={prefersReducedMotion ? {} : { scale: 0.99, transition: { duration: 0.1 } }}

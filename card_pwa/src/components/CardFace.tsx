@@ -21,6 +21,7 @@ interface Props {
   onAnswerEvaluated?: (score: number) => void
   compact?: boolean
   originDeckName?: string
+  useDragMatchMode?: boolean
 }
 
 /**
@@ -112,7 +113,7 @@ function shuffleKeys(keys: string[]): string[] {
  * CardFace: Renders front/back of flashcard with interactive elements
  * Memoized to prevent unnecessary re-renders on parent updates
  */
-const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName }: Props) {
+const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName, useDragMatchMode = true }: Props) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
 
@@ -168,7 +169,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   // fallen auf die bestehende Inline-Darstellung unten zurück.
   const mcQuestion = parseQuestionText(card.front)
   const mcAnswer = parseAnswerText(card.back)
-  if (isDragMatchShape(mcQuestion, mcAnswer)) {
+  if (useDragMatchMode && isDragMatchShape(mcQuestion, mcAnswer)) {
     return (
       <Suspense fallback={null}>
         <DragMatchCard

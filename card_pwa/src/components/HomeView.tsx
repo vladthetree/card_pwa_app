@@ -179,7 +179,9 @@ export default function HomeView({
     <div className={`${UI_TOKENS.layout.homeMaxWidth} mx-auto flex h-full min-h-0 w-full flex-col overflow-hidden px-3 sm:px-4`}>
       {/* Mobile: keine Topbar — Referenz Handy-Stand 8. Juni (Status liegt in
           Profil & Sync, Streak/Settings/+ in der Bottom-Bar). Header nur ≥md. */}
-      <div className="relative z-20 flex-shrink-0 pt-safe-2 sm:pt-safe-4">
+      {/* pb-3 mobil: Luft zwischen Dashboard-Kachel/KPIs und der Deckliste —
+          ohne Abstand überlappten sich die Kartenschatten leicht. */}
+      <div className="relative z-20 flex-shrink-0 pt-safe-2 pb-3 sm:pt-safe-4 sm:pb-0">
         <div className="grid gap-2 sm:gap-3 md:min-h-[140px]">
           <div className="w-full min-w-0 flex flex-col gap-3">
             <motion.div

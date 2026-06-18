@@ -45,7 +45,10 @@ export default defineConfig({
     plugins: () => [],
   },
   build: {
-    sourcemap: true,
+    // Prod liefert keine Source Maps aus (kleinerer Download; stale SW-Bundles
+    // forderten sonst gelöschte .map-Dateien an → DevTools-JSON-Fehler).
+    // Für Debug-Builds: PWA_SOURCEMAP=1 npm run build
+    sourcemap: process.env.PWA_SOURCEMAP === '1',
     rollupOptions: {
       output: {
         manualChunks(id) {

@@ -287,6 +287,7 @@ export function useShuffleCards(
     userId?: string
     maxCards?: number
     nextDayStartsAt?: number
+    runSeed?: string | number
   } = {},
 ) {
   const [cards, setCards] = useState<ShuffleStudyCard[]>([])
@@ -326,6 +327,7 @@ export function useShuffleCards(
         userId: options.userId,
         maxCards: options.maxCards,
         nextDayStartsAt: options.nextDayStartsAt,
+        runSeed: options.runSeed,
       })
       if (loadVersionRef.current !== loadVersion) return
       setCards(selectedCards)
@@ -341,7 +343,7 @@ export function useShuffleCards(
         setLoading(false)
       }
     }
-  }, [collectionId, options.maxCards, options.nextDayStartsAt, options.userId])
+  }, [collectionId, options.maxCards, options.nextDayStartsAt, options.runSeed, options.userId])
 
   useEffect(() => {
     void load()

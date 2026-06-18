@@ -18,8 +18,9 @@ import { STORAGE_KEYS } from '../../constants/appIdentity'
  */
 
 describe('Labs — Inventar-Integrität', () => {
-  it('Inventar ist auf den belegten 71er-Zielstand aufgefuellt', () => {
+  it('Inventar ist auf den 100er-Zielstand ausgebaut (Ausbau ueber den belegten 71er-Stand hinaus)', () => {
     expect(LAB_SCENARIOS.length).toBe(LAB_TARGET_INVENTORY)
+    expect(LAB_TARGET_INVENTORY).toBe(100)
   })
 
   it('alle Szenario-IDs sind eindeutig', () => {
@@ -46,10 +47,20 @@ describe('Labs — Inventar-Integrität', () => {
   it('Zielverteilung deckt alle Kategorien ab und betont Firewalls/Incident Response', () => {
     const counts = new Map<string, number>()
     for (const scenario of LAB_SCENARIOS) counts.set(scenario.categoryId, (counts.get(scenario.categoryId) ?? 0) + 1)
-    expect(counts.get('firewalls')).toBe(12)
-    expect(counts.get('incident-response')).toBe(12)
+    expect(counts.get('firewalls')).toBe(14)
+    expect(counts.get('incident-response')).toBe(14)
+    expect(counts.get('betrieb')).toBe(12)
     for (const category of LAB_CATEGORIES) {
-      expect(counts.get(category.id) ?? 0, category.id).toBeGreaterThanOrEqual(category.id === 'governance' ? 7 : 8)
+      expect(counts.get(category.id) ?? 0, category.id).toBeGreaterThanOrEqual(9)
+    }
+  })
+
+  it('Security-Operations-Kategorie deckt die Domain-4-Luecken 4.1–4.4 und 4.7 ab', () => {
+    const betriebObjectives = new Set(
+      LAB_SCENARIOS.filter(s => s.categoryId === 'betrieb').map(s => s.objective.split(' ')[0]),
+    )
+    for (const objective of ['4.1', '4.2', '4.3', '4.4', '4.7']) {
+      expect(betriebObjectives.has(objective), objective).toBe(true)
     }
   })
 

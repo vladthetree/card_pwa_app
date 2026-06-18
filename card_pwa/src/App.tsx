@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { SettingsProvider, useSettings } from './contexts/SettingsContext'
 import AppInitializer from './components/AppInitializer'
@@ -390,13 +390,16 @@ function AppShell() {
             )}
           </Suspense>
           <Suspense fallback={<ViewFallback />}>
-            <AnimatePresence mode="wait" initial={false}>
+            {/* View-Wechsel bewusst OHNE exit-gated AnimatePresence (wait-Modus):
+                dessen Exit→Enter-Handover konnte hängen (z. B. Study → Home nach
+                einer Drag-Match-Antwort) und die Zielansicht nie mounten. Die
+                Views remounten über ihre Keys nur mit Enter-Animation.
+                Guard: __tests__/ui/no-animatepresence-wait.test.ts */}
             {view === 'home' && (
               <motion.div
                 key="home"
                 initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
                 animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-                exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0 h-full home-view"
               >
@@ -416,7 +419,6 @@ function AppShell() {
                 key="shuffle-manage"
                 initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
                 animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-                exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0 h-full home-view"
               >
@@ -435,7 +437,6 @@ function AppShell() {
                 key="study"
                 initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.995 }}
                 animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-                exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.995 }}
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0 h-full study-view"
               >
@@ -448,7 +449,6 @@ function AppShell() {
                 key="shuffle-study"
                 initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.995 }}
                 animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-                exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.995 }}
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0 h-full study-view"
               >
@@ -461,14 +461,12 @@ function AppShell() {
                 key="labs"
                 initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
                 animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-                exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0 h-full"
               >
                 <LabsView language={settings.language} onExit={goHome} />
               </motion.div>
             )}
-            </AnimatePresence>
           </Suspense>
         </div>
       </AppInitializer>

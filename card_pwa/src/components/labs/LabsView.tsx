@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
-import { ArrowLeft, Check, ChevronDown, ChevronRight, Compass, Target } from 'lucide-react'
+import { ArrowLeft, Check, ChevronDown, ChevronRight, Compass, Dices, Target } from 'lucide-react'
 import { LAB_CATEGORIES, LAB_SCENARIOS, LAB_TARGET_INVENTORY, type LabScenario } from '../../data/labScenarios'
 import { readCompletedLabs, persistCompletedLab } from '../../utils/labProgress'
+import { generateFreshLab, type GeneratedLab } from '../../utils/labGenerator'
+import { readTrainingSolved, persistTrainingSolved } from '../../utils/labTraining'
 import { LAB_DIFFICULTY_BADGE } from './labUi'
 import LabScenarioView from './LabScenarioView'
 
@@ -14,8 +16,14 @@ import LabScenarioView from './LabScenarioView'
  */
 
 const COPY = {
-  de: { title: 'Labs', subtitle: 'Interaktive Sicherheits-Szenarien', scenarios: 'Szenarien', done: 'Geschafft', min: 'Min', back: 'Zurück' },
-  en: { title: 'Labs', subtitle: 'Interactive security scenarios', scenarios: 'Scenarios', done: 'Done', min: 'min', back: 'Back' },
+  de: {
+    title: 'Labs', subtitle: 'Interaktive Sicherheits-Szenarien', scenarios: 'Szenarien', done: 'Geschafft', min: 'Min', back: 'Zurück',
+    training: 'Übungs-Lab generieren', trainingHint: 'Zufällig aus dem Themen-Pool — zählt extra',
+  },
+  en: {
+    title: 'Labs', subtitle: 'Interactive security scenarios', scenarios: 'Scenarios', done: 'Done', min: 'min', back: 'Back',
+    training: 'Generate practice lab', trainingHint: 'Random from the topic pool — counted separately',
+  },
 } as const
 
 interface Props {
@@ -26,7 +34,9 @@ interface Props {
 export default function LabsView({ language, onExit }: Props) {
   const copy = COPY[language]
   const [completed, setCompleted] = useState<Set<string>>(() => readCompletedLabs())
+  const [trainingSolved, setTrainingSolved] = useState<Set<string>>(() => readTrainingSolved())
   const [activeScenario, setActiveScenario] = useState<LabScenario | null>(null)
+  const [activeTraining, setActiveTraining] = useState<GeneratedLab | null>(null)
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
 
   const totalInventory = Math.max(LAB_TARGET_INVENTORY, LAB_SCENARIOS.length)
@@ -41,6 +51,15 @@ export default function LabsView({ language, onExit }: Props) {
     setCompleted(persistCompletedLab(scenarioId))
   }
 
+  const startTraining = (categoryId: string) => {
+    const generated = generateFreshLab(categoryId, trainingSolved)
+    if (generated) setActiveTraining(generated)
+  }
+
+  const handleTrainingSolved = (generated: GeneratedLab) => {
+    setTrainingSolved(persistTrainingSolved(generated.signature))
+  }
+
   const toggleCategory = (categoryId: string) => {
     setCollapsed(prev => {
       const next = new Set(prev)
@@ -48,6 +67,17 @@ export default function LabsView({ language, onExit }: Props) {
       else next.add(categoryId)
       return next
     })
+  }
+
+  if (activeTraining) {
+    return (
+      <LabScenarioView
+        language={language}
+        scenario={activeTraining.scenario}
+        onBack={() => setActiveTraining(null)}
+        onSolved={() => handleTrainingSolved(activeTraining)}
+      />
+    )
   }
 
   if (activeScenario) {
@@ -73,6 +103,15 @@ export default function LabsView({ language, onExit }: Props) {
             <div className="font-mono text-[22px] font-bold leading-tight text-white">{copy.title}</div>
             <div className="truncate font-mono text-[12px] text-zinc-500">{copy.subtitle}</div>
           </div>
+          {trainingSolved.size > 0 && (
+            <span
+              data-testid="labs-training-progress"
+              className="flex shrink-0 items-center gap-1.5 rounded-[10px] border border-violet-500/40 bg-violet-500/8 px-2.5 py-1.5 font-mono text-[12px] font-bold text-violet-300"
+            >
+              <Dices size={13} strokeWidth={1.5} />
+              {trainingSolved.size}
+            </span>
+          )}
           <span
             data-testid="labs-progress"
             className="flex shrink-0 items-center gap-1.5 rounded-[10px] border border-emerald-500/40 bg-emerald-500/8 px-2.5 py-1.5 font-mono text-[12px] font-bold text-emerald-300"
@@ -119,6 +158,21 @@ export default function LabsView({ language, onExit }: Props) {
 
                 {!isCollapsed && (
                   <div className="mt-3 flex flex-col gap-2">
+                    <button
+                      type="button"
+                      data-testid={`lab-training-${category.id}`}
+                      onClick={() => startTraining(category.id)}
+                      className="flex w-full items-center gap-3 rounded-[14px] border border-dashed border-violet-500/40 bg-violet-500/5 px-3 py-3 text-left transition-colors hover:border-violet-400/70"
+                    >
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] border border-violet-500/30 bg-violet-500/10 text-violet-300">
+                        <Dices size={15} strokeWidth={1.5} />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-mono text-[13px] text-violet-200">{copy.training}</span>
+                        <span className="mt-0.5 block truncate font-mono text-[10px] text-zinc-500">{copy.trainingHint}</span>
+                      </span>
+                      <ChevronRight size={15} className="shrink-0 text-zinc-600" />
+                    </button>
                     {scenarios.map(scenario => {
                       const badge = LAB_DIFFICULTY_BADGE[scenario.difficulty]
                       const isDone = completed.has(scenario.id)

@@ -12,10 +12,10 @@ import { correctDragMatchKey, scoreDragMatchChoice } from '../utils/dragMatchSco
  * + Karten-Backup `card-pwa-backup-…T21-54-32.csv`, card_id 1779669260169).
  *
  * Zweck: 4-Optionen-/1-richtig-Karten (Format `>> CORRECT: X | …` im `back`).
- * Im Branch wurden diese Karten als Tap-Auswahl gerendert; dieser Renderer ist
- * die additive Interaktions-Variante: die richtige Antwort wird in eine Drop-Zone
- * gezogen ODER angetippt. Beides nutzt denselben Auswertungs-Pfad
- * (`scoreDragMatchChoice`), sodass die bestehende FSRS-Logik in StudyView greift.
+ * Die Antwort wird AUSSCHLIESSLICH per Drag in die Drop-Zone gegeben
+ * (Nutzer-Vorgabe 2026-06-11: Tap darf NICHT als Antwort zählen — Tap-Auswahl
+ * gibt es nur im Inline-MC-Renderer). Auswertung über `scoreDragMatchChoice`,
+ * sodass die bestehende FSRS-Logik in StudyView greift.
  *
  * Wie im Screenshot belegt: die Optionen werden gemischt und nach Anzeige-Position
  * neu mit A–D beschriftet; die Korrektheit hängt an der kanonischen Identität der
@@ -81,8 +81,6 @@ const DragMatchCard = memo(function DragMatchCard({
   const selectedText = selectedKey ? (question.options[selectedKey] ?? '—') : '—'
 
   const dropZoneRef = useRef<HTMLDivElement | null>(null)
-  // Verhindert, dass nach einem echten Drag zusätzlich der Klick die Auswahl auslöst.
-  const wasDraggedRef = useRef(false)
   const selectedKeyRef = useRef<string | null>(null)
   const flipTimerRef = useRef<number | null>(null)
 
@@ -282,22 +280,17 @@ const DragMatchCard = memo(function DragMatchCard({
                   key={key}
                   type="button"
                   data-testid={`dragmatch-option-${displayLetter}`}
-                  drag={!submitted && !prefersReducedMotion}
+                  drag={!submitted}
                   dragElastic={0.04}
                   dragMomentum={false}
                   dragSnapToOrigin
+                  dragTransition={{ bounceStiffness: 500, bounceDamping: 28 }}
                   whileDrag={{ scale: 1.03, zIndex: 30 }}
-                  onDragStart={() => { wasDraggedRef.current = true }}
                   onDragEnd={(_e, info) => handleDragEnd(key, info.point)}
                   style={{ touchAction: submitted ? 'auto' : 'none' }}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    if (wasDraggedRef.current) { wasDraggedRef.current = false; return }
-                    handleSelect(key)
-                  }}
                   disabled={submitted}
                   className={`block transform-gpu select-none rounded-[12px] border px-3 py-3 text-left font-mono leading-snug transition-colors duration-150 ease-out will-change-transform ${cls} ${
-                    submitted ? 'cursor-default' : 'cursor-grab active:cursor-grabbing active:scale-[0.99]'
+                    submitted ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'
                   }`}
                 >
                   <span className="text-[12px] font-bold text-zinc-500">{displayLetter})</span>{' '}

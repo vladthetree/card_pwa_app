@@ -1,6 +1,8 @@
 # Labs — Quellen und Verifikation
 
-Stand: 2026-06-10. Diese Datei dokumentiert die oeffentliche Quellenbasis fuer
+Stand: 2026-06-11 (Ausbau auf 100 Szenarien inkl. neuer Kategorie Security
+Operations; Verteilung siehe docs/labs.md). Diese Datei dokumentiert die
+oeffentliche Quellenbasis fuer
 `card_pwa/src/data/labScenarios.ts`. Die maschinenlesbare Quelle bleibt die
 Registry `LAB_SOURCES` + `LAB_SCENARIO_SOURCE_REFS` in `labScenarios.ts`; Tests
 erzwingen, dass jedes Szenario mindestens zwei Quellen referenziert und immer
@@ -28,21 +30,25 @@ die offiziellen CompTIA-SY0-701-Objectives enthaelt.
 | https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final | NIST | Kryptografisches Key Management |
 | https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=908084 | NIST | Encryption Basics fuer Data at Rest/In Transit |
 | https://csrc.nist.gov/pubs/sp/800/88/r2/ipd | NIST | Media Sanitization (aktuelle oeffentliche Draft-Fassung) |
+| https://www.cisecurity.org/cis-benchmarks | Center for Internet Security | Konsens-Haertungs-Baselines fuer OS, Cloud und Anwendungen |
+| https://csrc.nist.gov/pubs/sp/800/94/final | NIST | IDS/IPS-Typen, Platzierung inline vs. passiv, Erkennungsmethoden |
+| https://csrc.nist.gov/pubs/sp/800/97/final | NIST | 802.11i/WPA2 und 802.1X/EAP-Authentisierung |
+| https://www.wi-fi.org/discover-wi-fi/security | Wi-Fi Alliance | WPA3-Personal/Enterprise, SAE, Enhanced Open (OWE) |
+| https://csrc.nist.gov/pubs/sp/800/124/r2/final | NIST | Mobile-Deployment-Modelle (BYOD/COPE/CYOD) und MDM |
+| https://csrc.nist.gov/pubs/sp/800/40/r4/final | NIST | Enterprise-Patch-Management, Routine- und Notfall-Remediation |
+| https://www.first.org/cvss/v3.1/specification-document | FIRST | CVSS-Metriken und Severity-Bewertung |
+| https://www.cisa.gov/known-exploited-vulnerabilities-catalog | CISA | Aktiv ausgenutzte CVEs (KEV) als Priorisierungssignal |
+| https://csrc.nist.gov/pubs/sp/800/115/final | NIST | Scan-, Test- und Assessment-Methoden inkl. Pentest |
+| https://csrc.nist.gov/pubs/sp/800/92/final | NIST | Log-Management als Monitoring-/SIEM-Grundlage |
+| https://csrc.nist.gov/pubs/sp/800/177/r1/final | NIST | E-Mail-Authentisierung mit SPF, DKIM und DMARC |
+| https://csrc.nist.gov/pubs/sp/800/82/r3/final | NIST | OT-/ICS-/SCADA-Sicherheit und Segmentierung |
+| https://csrc.nist.gov/pubs/sp/800/63/c/upd2/final | NIST | Federation, Assertions und IdP/RP-Vertrauen |
+| https://csrc.nist.gov/pubs/sp/800/84/final | NIST | Tabletop-Uebungen, funktionale Tests, Exercise-Programme |
+| https://csrc.nist.gov/pubs/sp/800/30/r1/final | NIST | Risiko-Assessment (Likelihood/Impact, Dokumentation) |
+| https://eur-lex.europa.eu/eli/reg/2016/679/oj | EUR-Lex / Europaeische Union | DSGVO: Controller/Processor, Meldepflichten |
+| https://engage.mitre.org/ | MITRE | Deception: Honeypots, Decoys, Adversary Engagement |
+| https://cheatsheetseries.owasp.org/cheatsheets/Credential_Stuffing_Prevention_Cheat_Sheet.html | OWASP | Credential Stuffing vs. Spraying vs. Brute Force |
 
-## Inventarstand
-
-Zielzahl aus dem Handy-Screenshot: 71 Szenarien.
-
-| Kategorie | Anzahl |
-|---|---:|
-| Security-Grundlagen | 8 |
-| Bedrohungen & Angriffe | 8 |
-| Firewalls & Netzwerk | 12 |
-| Sichere Architektur | 8 |
-| Identitaet & Zugriff | 8 |
-| Incident Response | 12 |
-| Kryptografie & PKI | 8 |
-| Governance & Risiko | 7 |
 
 Verifikation:
 

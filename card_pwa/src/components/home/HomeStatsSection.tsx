@@ -40,8 +40,10 @@ export function HomeStatsSection({
 }: Props) {
   return (
     <>
+      {/* Kein delay im Fade: verzögertes Einblenden wirkte bei Re-Renders wie
+          Flackern/Nachladen. */}
       {stats && mode === 'kpi' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="grid grid-cols-3 gap-2 sm:gap-3">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }} className="grid grid-cols-3 gap-2 sm:gap-3">
           <StatPill label={t.stats_total} value={stats.total} color="text-white" />
           <StatPill label={t.stats_now_due} value={stats.nowDue} color="text-[color:var(--brand-primary)]" />
           <StatPill

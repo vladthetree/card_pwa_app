@@ -121,6 +121,53 @@
 ### 4. Verbesserungs-Backlog (nach 1–3; aus App-Sichtung 2026-06-11)
 
 **Erledigt (2026-06-11):**
+- [x] **UI-Bug-Batch (Abend):** ① Unsichtbare-aber-klickbare Decks nach
+      Shuffle→Labs→Decks: Ursache war Framer-Varianten-Orchestrierung
+      (`initial="hidden"/animate="show"` + Stagger) — remountende Kinder blieben in
+      `hidden` (Opacity 0). Fix: selbstständige Enter-Animation pro Karte
+      (`constants/animations.ts → cardEnter`, DeckCard/TagBrowse/DeckList/Review).
+      ② „In Zukunft"-Modal-Flackern: Subtree-Remounts + 0.2s-Delay-Fade des
+      KPI-Grids entschärft; Headless-Messung: 0 Remounts/Toggles über 5s.
+      ③ Mobil mehr Luft zwischen Dashboard/KPI und Deckliste (`pb-3`).
+      ④ Ansichten-Sheet ohne dekorative Icons (nur Auswahl-Häkchen bleiben).
+      ⑤ Labs ohne Bottom-Bar ist **screenshot-treu** (`…23.38.26.jpeg`: nur
+      Zurück-Pfeil) — kein Bug; Zurück-Pfeil → Home verifiziert.
+      Alles browser-verifiziert (Tab-Flow, Opacity-Messung, Modal-Beobachtung)
+      + Study-E2E-Regression grün; 466/466 Unit-Tests.
+- [x] **Source-Map-Fehler in DevTools behoben (= Verbesserungsbericht P2 „Production-
+      Build kleiner ausliefern"):** Stale SW-Bundles forderten gelöschte `.map`-Dateien
+      an, und der SPA-Fallback lieferte dafür `index.html` mit HTTP 200 → DevTools
+      parste HTML als JSON. Fixes: ① Prod-Build ohne Source Maps (`vite.config.ts`,
+      Debug weiter via `PWA_SOURCEMAP=1 npm run build`) — dist/ von 6,6 MB auf
+      **2,0 MB**; ② `prod-server.mjs`: fehlende Dateien mit Endung bzw. unter
+      `/assets/` liefern jetzt echten **404**, SPA-Fallback nur noch für
+      Navigationspfade. Verifiziert: stale .map → 404, neues Bundle ohne
+      `sourceMappingURL`, SPA-Routen weiter 200, E2E-Smoke grün.
+- [x] **Bugfix „Zurück-Pfeil nach Drag-Match führt nicht zum Homescreen":** dieselbe
+      Hänger-Klasse wie der schwarze Kartenbereich — `App.tsx` gatete ALLE View-Wechsel
+      (Study→Home etc.) durch exit-gated AnimatePresence; verlor der Study-Exit seine
+      Completion, mountete Home nie. Fix: Views remounten per Key nur mit
+      Enter-Animation (auch ImportView-Statusphasen entschärft). Neue Tests:
+      ① Vitest-Regressions-Guard `__tests__/ui/no-animatepresence-wait.test.ts`
+      (verbietet wait/popLayout in src/, fand beim ersten Lauf prompt den vierten
+      Treffer in ImportView); ② repo-eigener E2E-Smoke `npm run e2e:study`
+      (`scripts/e2e-study-back-smoke.mjs`, System-Chromium + puppeteer-core):
+      Session starten → Drag-Match per echtem Drag beantworten → Tap-zählt-nicht
+      prüfen → Auflösung sichtbar → Zurück-Pfeil → Homescreen, 4 Runden. Beide grün
+      (466/466 Unit + 4/4 E2E-Runden). Zurück-Buttons haben jetzt `aria-label` +
+      `data-testid="study-back-button"`.
+- [x] **Bugfix „schwarzer Screen nach Rating / Karte weg nach Auflösung":** Headless-
+      Browser-Repro zeigte: nach dem Bewerten blieb der Kartenbereich intermittierend
+      dauerhaft leer (nur Undo-Button, kein JS-Fehler). Ursache: `AnimatePresence
+      mode="wait"` um den Kartencontainer — der Exit→Enter-Handover konnte hängen,
+      die Folgekarte mountete nie. Fix: Karten-Remount rein über React-Key (Enter-
+      Animation bleibt, kein Exit-Gate) in StudyView + ShuffleStudyView. Verifiziert:
+      8 Karten in Folge bewertet, 0 Hänger. Nebeneffekt: Kartenwechsel ist schneller.
+- [x] **Drag-Match: Tap zählt nicht mehr als Antwort** (Nutzer-Vorgabe): Antwort
+      ausschließlich per Drag in die Drop-Zone; Drag jetzt auch bei Reduced-Motion
+      aktiv. Drag-Feel verbessert: CSS-`active:scale` kollidierte mit dem Framer-
+      Drag-Transform (Ruckeln) — entfernt; Zurückschnappen gestrafft
+      (`dragTransition`). Tap-MC-Karten (Inline-Renderer) tappen weiterhin normal.
 - [x] **Bugfix „keine Decks / Server offline":** `prod-server.mjs` proxied nur `/sync*` —
       die Auth-Endpunkte (`/auth/default-profile` für Auto-Join) liefen in den
       SPA-Fallback (HTML statt JSON) → kein Profil, kein Sync, keine Decks. Fix: Proxy

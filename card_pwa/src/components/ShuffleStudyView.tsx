@@ -4,7 +4,6 @@ import { ArrowLeft, RefreshCw, Shuffle } from 'lucide-react'
 import {
   clearShuffleSession,
   forceCardReviewTomorrow,
-  readShuffleSession,
   recordReview,
   undoReview,
   writeShuffleSession,
@@ -17,12 +16,10 @@ import {
   buildPersistedStudySession,
   buildShuffleSessionId,
   DEFAULT_STUDY_CARD_LIMIT,
-  parsePersistedStudySession,
-  restoreCardsByOrder,
   sanitizeCardLimit,
-  type PersistedStudySession,
 } from '../services/studySessionPersistence'
 import { initialSessionState, sessionReducer } from '../services/studySessionReducer'
+import { buildDragMatchModePlan } from '../services/studyModeSelector'
 import { buildLearningCoachSummary } from '../services/learningCoach'
 import type { Card, Rating, ShuffleCollection } from '../types'
 import { formatDeckName } from '../utils/cardTextParser'
@@ -75,9 +72,11 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   const prefersReducedMotion = useReducedMotion()
   const { isHandsetLayout, isHandsetLandscape } = useHandsetLayout()
   const studyCardLimit = sanitizeCardLimit(settings.studyCardLimit ?? DEFAULT_STUDY_CARD_LIMIT)
+  const dragMatchModeSeedRef = useRef(`${Date.now()}:${Math.random()}`)
   const { cards, loading, error, reload } = useShuffleCards(collection.id, {
     maxCards: studyCardLimit,
     nextDayStartsAt: settings.nextDayStartsAt,
+    runSeed: dragMatchModeSeedRef.current,
   })
   const { decks } = useDecks()
 
@@ -88,16 +87,10 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   const [sessionDeckCounts, setSessionDeckCounts] = useState<Record<string, number>>({})
   const sessionMomentumRef = useRef(0)
   const rewardToastTimerRef = useRef<number | null>(null)
-  const sessionDoneRef = useRef(session.isDone)
-  const sessionCardsLengthRef = useRef(session.cards.length)
-  const restoreRunIdRef = useRef(0)
+  const dragMatchModePlanRef = useRef<Set<string>>(new Set())
+  const dragMatchModePlanReadyRef = useRef(false)
 
   useWakeLock()
-
-  useEffect(() => {
-    sessionDoneRef.current = session.isDone
-    sessionCardsLengthRef.current = session.cards.length
-  }, [session.isDone, session.cards.length])
 
   useEffect(() => {
     return () => {
@@ -110,6 +103,9 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   useEffect(() => {
     sessionMomentumRef.current = 0
     setRewardToast(null)
+    dragMatchModePlanRef.current = new Set()
+    dragMatchModePlanReadyRef.current = false
+    dragMatchModeSeedRef.current = `${collection.id}:${Date.now()}:${Math.random()}`
   }, [collection.id])
 
   const sessionId = useMemo(() => buildShuffleSessionId(collection.id), [collection.id])
@@ -119,6 +115,13 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     [decks],
   )
   const currentCard = useMemo(() => session.cards[0] ?? null, [session.cards])
+  if (!loading && session.cards.length > 0 && !dragMatchModePlanReadyRef.current) {
+    dragMatchModePlanRef.current = buildDragMatchModePlan(session.cards, dragMatchModeSeedRef.current)
+    dragMatchModePlanReadyRef.current = true
+  }
+  const useDragMatchForCurrentCard = currentCard
+    ? dragMatchModePlanRef.current.has(currentCard.id) && (session.againCounts[currentCard.id] ?? 0) === 0
+    : false
   const sessionDeckSummary = useMemo(() => (
     Object.entries(sessionDeckCounts)
       .map(([deckId, count]) => ({
@@ -130,69 +133,24 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   ), [deckNameById, sessionDeckCounts])
   const maxSelectableRating: Rating = answerWasIncorrect ? 3 : 4
 
-  const readPersistedSession = useCallback(async (): Promise<PersistedStudySession | null> => {
-    const raw = await readShuffleSession(collection.id)
-    const parsed = parsePersistedStudySession(raw, sessionId)
-    if (!parsed) {
-      void clearShuffleSession(collection.id)
-      return null
-    }
-    return parsed
-  }, [collection.id, sessionId])
-
   const clearPersistedSession = useCallback(() => {
     void clearShuffleSession(collection.id)
   }, [collection.id])
+
+  const handleExit = useCallback(() => {
+    clearPersistedSession()
+    onExit()
+  }, [clearPersistedSession, onExit])
 
   useEffect(() => {
     if (loading) return
     if (session.isDone) return
     if (session.cards.length > 0) return
 
-    const runId = ++restoreRunIdRef.current
-    let cancelled = false
-
-    const isStale = () => cancelled || restoreRunIdRef.current !== runId
-    const canApplyRestore = () => !sessionDoneRef.current && sessionCardsLengthRef.current === 0
-
-    void (async () => {
-      const snapshot = await readPersistedSession()
-      if (isStale()) return
-
-      if (!snapshot) {
-        if (!canApplyRestore()) return
-        setSessionDeckCounts(buildDeckCounts(cards))
-        dispatch({ type: 'INIT', cards })
-        return
-      }
-
-      const persistedCardLimit = sanitizeCardLimit(snapshot.cardLimit ?? DEFAULT_STUDY_CARD_LIMIT)
-      if (persistedCardLimit !== studyCardLimit) {
-        clearPersistedSession()
-        if (!canApplyRestore()) return
-        setSessionDeckCounts(buildDeckCounts(cards))
-        dispatch({ type: 'INIT', cards })
-        return
-      }
-
-      const restoredCards = restoreCardsByOrder(cards, snapshot.cardIds)
-      if (restoredCards.length === 0) {
-        clearPersistedSession()
-        if (!canApplyRestore()) return
-        setSessionDeckCounts(buildDeckCounts(cards))
-        dispatch({ type: 'INIT', cards })
-        return
-      }
-
-      if (!canApplyRestore()) return
-      setSessionDeckCounts(buildDeckCounts(restoredCards))
-      dispatch({ type: 'RESTORE', cards: restoredCards, snapshot })
-    })()
-
-    return () => {
-      cancelled = true
-    }
-  }, [cards, clearPersistedSession, loading, readPersistedSession, session.cards.length, session.isDone, studyCardLimit])
+    clearPersistedSession()
+    setSessionDeckCounts(buildDeckCounts(cards))
+    dispatch({ type: 'INIT', cards })
+  }, [cards, clearPersistedSession, loading, session.cards.length, session.isDone])
 
   useEffect(() => {
     if (session.isDone) {
@@ -449,12 +407,12 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
         if (e.key === '3') handleRate(3)
         if (e.key === '4' && maxSelectableRating === 4) handleRate(4)
       }
-      if (e.key === 'Escape') onExit()
+      if (e.key === 'Escape') handleExit()
     }
 
     window.addEventListener('keydown', handleKeydown)
     return () => window.removeEventListener('keydown', handleKeydown)
-  }, [handleFlip, handleRate, maxSelectableRating, onExit, session.error, session.isDone, session.isFlipped, session.isSubmitting])
+  }, [handleFlip, handleRate, maxSelectableRating, handleExit, session.error, session.isDone, session.isFlipped, session.isSubmitting])
 
   if (error && !loading && cards.length === 0) {
     return (
@@ -524,7 +482,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
               </button>
               <button
                 type="button"
-                onClick={onExit}
+                onClick={handleExit}
                 className="rounded-[12px] bg-white px-4 py-2 text-sm font-semibold text-black transition hover:bg-white/90"
               >
                 {settings.language === 'de' ? 'Zur Startseite' : 'Back home'}
@@ -557,7 +515,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
         <div className="mx-auto flex max-w-5xl items-center gap-3">
           <button
             type="button"
-            onClick={onExit}
+            onClick={handleExit}
             className="ds-icon-button inline-flex h-11 w-11"
             aria-label={settings.language === 'de' ? 'Zurück' : 'Back'}
           >
@@ -591,15 +549,15 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
           {session.error && <ErrorAlert message={session.error} onRetry={handleRetry} />}
         </AnimatePresence>
 
-        <AnimatePresence mode="wait" initial={false}>
-          {currentCard && (
+        {/* Bewusst OHNE exit-gated AnimatePresence (wait-Modus) — siehe StudyView:
+            der Exit→Enter-Handover konnte hängen und die Folgekarte nie mounten. */}
+        {currentCard && (
             // Include the attempt count so an Again-requeued single card
             // remounts with fresh answer/PBQ state instead of staying submitted.
             <motion.div
               key={`${currentCard.id}:${session.sessionCount}`}
               initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: 14 }}
               animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, x: 0 }}
-              exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -12 }}
               transition={{ duration: prefersReducedMotion ? 0.12 : 0.16, ease: 'easeOut' }}
               className={`mx-auto w-full max-w-5xl ${isHandsetLayout ? 'flex h-full min-h-0 flex-col' : ''}`}
               style={isHandsetLayout ? { maxHeight: '100%' } : undefined}
@@ -613,12 +571,12 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
                     onEdit={handleEditCard}
                     onAnswerEvaluated={handleAnswerEvaluated}
                     compact={isHandsetLayout}
+                    useDragMatchMode={useDragMatchForCurrentCard}
                   />
                 </div>
               </div>
             </motion.div>
           )}
-        </AnimatePresence>
 
         {!isHandsetLayout && session.isFlipped && currentCard && (
           <div className="mx-auto mt-5 w-full max-w-5xl">
