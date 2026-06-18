@@ -20,7 +20,7 @@ import type { Card } from '../types'
  * Selbstbewertung: "Gewusst" → onAnswerEvaluated(1.0) (freie FSRS-Wahl 1–4),
  * "Nicht gewusst" → onAnswerEvaluated(0.0) → StudyView erzwingt Rating 1
  * (Again), dieselbe Sonderregel wie bei falschen MC-Antworten (P2.2).
- * Schrift: durchgängig Mono, konsistent mit M1/M2 (Screenshot-Befund).
+ * Schrift: Mono für technische UI, Space Grotesk für längere Lerntexte.
  */
 
 interface Props {
@@ -68,7 +68,7 @@ const FreeRecallCard = memo(function FreeRecallCard({
     : 'flex-1 overflow-y-auto no-scrollbar px-6 py-6 md:px-8 md:py-8'
 
   const typeBadge = (
-    <span className="rounded-[3px] border border-violet-500/50 bg-violet-500/10 px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-violet-300">
+    <span className="rounded-[3px] border border-[--brand-secondary-50] bg-[--brand-secondary-12] px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-[--brand-secondary]">
       {t.freerecall_type_badge}
     </span>
   )
@@ -99,14 +99,14 @@ const FreeRecallCard = memo(function FreeRecallCard({
           </div>
 
           <div data-study-scroll="allow" className={`${bodyClass} flex flex-col overscroll-y-contain`}>
-            <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-mono font-medium leading-[1.55] text-[#f0ede8]`}>
+            <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-[#f0ede8]`}>
               {answered.answer}
             </p>
 
             {answered.merkhilfe && (
               <div className="mt-3 border-l-2 border-[--brand-primary-50] bg-[--brand-primary-08] px-[10px] py-[6px]">
                 <span className="mb-[2px] block font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[--brand-primary]">{t.mnemonic}</span>
-                <span className="font-mono text-[12px] italic leading-[1.4] text-zinc-300/70">{answered.merkhilfe}</span>
+                <span className="font-sans text-[12px] italic leading-[1.4] text-zinc-300/70">{answered.merkhilfe}</span>
               </div>
             )}
 
@@ -179,7 +179,7 @@ const FreeRecallCard = memo(function FreeRecallCard({
         </div>
 
         <div className={`${bodyClass} flex flex-col`}>
-          <p className={`font-mono font-medium leading-[1.55] text-[#f0ede8] ${compact ? 'text-[15px]' : 'text-[16px] md:text-lg'}`}>
+          <p className={`font-sans font-medium leading-[1.55] text-[#f0ede8] ${compact ? 'text-[15px]' : 'text-[16px] md:text-lg'}`}>
             {questionText}
           </p>
 

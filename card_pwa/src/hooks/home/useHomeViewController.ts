@@ -21,15 +21,15 @@ interface HomeDeckCreateStrings {
 }
 
 export function readInitialDashboardMode(): HomeDashboardMode {
-  if (typeof window === 'undefined') return 'kpi'
+  if (typeof window === 'undefined') return 'pilot'
   const stored = window.localStorage.getItem(STORAGE_KEYS.homeDashboardMode)
-  if (stored === 'heatmap' || stored === 'pilot' || stored === 'clean') return stored
+  if (stored === 'kpi' || stored === 'heatmap' || stored === 'pilot' || stored === 'clean') return stored
   if (stored === 'life') {
-    window.localStorage.setItem(STORAGE_KEYS.homeDashboardMode, 'kpi')
+    window.localStorage.setItem(STORAGE_KEYS.homeDashboardMode, 'pilot')
     window.localStorage.setItem(STORAGE_KEYS.homeShowHeatmap, '0')
-    return 'kpi'
+    return 'pilot'
   }
-  return window.localStorage.getItem(STORAGE_KEYS.homeShowHeatmap) === '1' ? 'heatmap' : 'kpi'
+  return window.localStorage.getItem(STORAGE_KEYS.homeShowHeatmap) === '1' ? 'heatmap' : 'pilot'
 }
 
 export function persistDashboardMode(mode: HomeDashboardMode): void {

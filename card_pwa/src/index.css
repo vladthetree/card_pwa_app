@@ -13,35 +13,30 @@
     --ds-bg: #050505;
     --ds-floor: #0a0a0a;
     --ds-card: #0c0c0c;
-    --ds-panel: #101012;
-    --ds-panel-hover: #111111;
+    --ds-panel: #111113;
+    --ds-panel-hover: #111113;
     --ds-border: #18181b;
-    --ds-border-strong: #27272a;
+    --ds-border-strong: #3f3f46;
     --ds-border-hover: #3f3f46;
     --ds-fg: #f0ede8;
+    --ds-text-normal: #d4d4d8;
     --ds-muted: #71717a;
     --ds-subtle: #52525b;
     --ds-code-bg: #18181b;
     --ds-accent-primary: #f97316;
     --ds-accent-secondary: #3b82f6;
+    --ds-accent-emerald: #10b981;
+    --ds-accent-red: #ef4444;
+    --ds-accent-amber: #f59e0b;
     --shadow-card:
-      inset 0 1px 0 rgba(255,255,255,.06),
-      inset 0 -1px 0 rgba(0,0,0,.5),
-      0 1px 0 rgba(0,0,0,.5),
-      0 4px 10px -2px rgba(0,0,0,.55),
-      0 12px 22px -6px rgba(0,0,0,.35);
+      inset 0 1px 0 rgba(255,255,255,.035),
+      0 1px 2px rgba(0,0,0,.32);
     --shadow-menu:
-      inset 0 1px 0 rgba(255,255,255,.07),
-      inset 0 -1px 0 rgba(0,0,0,.6),
-      0 2px 0 rgba(0,0,0,.5),
-      0 8px 16px -4px rgba(0,0,0,.55),
-      0 24px 40px -8px rgba(0,0,0,.45);
+      inset 0 1px 0 rgba(255,255,255,.045),
+      0 18px 42px -24px rgba(0,0,0,.88);
     --shadow-modal:
-      inset 0 1px 0 rgba(255,255,255,.08),
-      inset 0 -1px 0 rgba(0,0,0,.7),
-      0 3px 0 rgba(0,0,0,.55),
-      0 18px 32px -6px rgba(0,0,0,.7),
-      0 42px 64px -16px rgba(0,0,0,.55);
+      inset 0 1px 0 rgba(255,255,255,.055),
+      0 26px 70px -36px rgba(0,0,0,.9);
     --brand-primary: rgb(249, 115, 22);
     --brand-primary-08: rgba(249, 115, 22, 0.08);
     --brand-primary-12: rgba(249, 115, 22, 0.12);
@@ -106,6 +101,10 @@
     font: inherit;
   }
 
+  input[type='range'] {
+    accent-color: var(--brand-primary);
+  }
+
   @supports (-webkit-touch-callout: none) {
     input,
     textarea,
@@ -160,7 +159,7 @@
     /* Restrict to only the properties that actually animate to avoid
        triggering composite-layer promotion on every tap (iOS perf). */
     transition-property: color, background-color, border-color, opacity, transform, box-shadow;
-    transition-duration: 300ms;
+    transition-duration: 160ms;
     transition-timing-function: ease-out;
     /* Eliminate the 300ms tap delay on older iOS (<13) and prevent the
        blue/grey highlight flash that appears on tap in Safari/WebView. */
@@ -366,7 +365,7 @@
 
   @keyframes study-wrong-flash {
     0% { box-shadow: 0 0 0 rgba(225, 29, 72, 0); background-color: rgba(225, 29, 72, 0); }
-    35% { box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.28), 0 0 32px rgba(225, 29, 72, 0.2); background-color: rgba(225, 29, 72, 0.08); }
+    35% { box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.28); background-color: rgba(239, 68, 68, 0.06); }
     100% { box-shadow: 0 0 0 rgba(225, 29, 72, 0); background-color: rgba(225, 29, 72, 0); }
   }
 
@@ -378,14 +377,14 @@
 
   @keyframes study-glow-success {
     0%   { box-shadow: 0 0 0px rgba(16, 185, 129, 0); }
-    50%  { box-shadow: 0 0 60px rgba(16, 185, 129, 0.4), inset 0 0 20px rgba(16, 185, 129, 0.2); }
-    100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.1); }
+    50%  { box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.28), inset 0 0 0 1px rgba(16, 185, 129, 0.12); }
+    100% { box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.14); }
   }
 
   @keyframes study-glow-error {
     0%   { box-shadow: 0 0 0px rgba(225, 29, 72, 0); }
-    50%  { box-shadow: 0 0 60px rgba(225, 29, 72, 0.4), inset 0 0 20px rgba(225, 29, 72, 0.2); }
-    100% { box-shadow: 0 0 20px rgba(225, 29, 72, 0.1); }
+    50%  { box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.28), inset 0 0 0 1px rgba(239, 68, 68, 0.12); }
+    100% { box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.14); }
   }
 
   .study-flip-out    { animation: study-flip-out 220ms cubic-bezier(0.4, 0, 0.6, 1) forwards; }
@@ -492,7 +491,7 @@
   }
 
   .glass-hover {
-    @apply hover:bg-ds-panel-hover hover:border-ds-border-hover transition-all duration-300 ease-out;
+    @apply hover:bg-ds-panel-hover hover:border-ds-border-hover transition-all duration-150 ease-out;
   }
 
   .ds-card {
@@ -524,8 +523,8 @@
     border: 1px solid var(--ds-border-strong);
     background: rgba(9, 9, 11, 0.98);
     box-shadow: var(--shadow-menu);
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
   }
 
   .ds-modal {
@@ -533,11 +532,11 @@
   }
 
   .ds-icon-button {
-    @apply inline-flex items-center justify-center rounded-ds border border-ds-border bg-ds-card text-zinc-500 transition-all duration-200 ease-out hover:border-ds-border-hover hover:bg-[#111] hover:text-zinc-50 active:scale-95;
+    @apply inline-flex items-center justify-center rounded-ds border border-ds-border bg-ds-card text-zinc-500 transition-all duration-150 ease-out hover:border-ds-border-hover hover:bg-[#111] hover:text-zinc-50 active:scale-[0.98];
   }
 
   .ds-chip {
-    @apply rounded-[3px] border border-ds-border-strong bg-ds-card px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-zinc-400;
+    @apply rounded-[6px] border border-ds-border bg-ds-card px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-zinc-400;
   }
 
   .ds-code {
@@ -545,9 +544,8 @@
   }
 
   .btn-rating {
-    @apply flex-1 rounded-ds font-bold text-[14px] duration-200 ease-out
-           active:scale-95;
-    border: 0;
+    @apply flex-1 rounded-ds border font-bold text-[14px] duration-150 ease-out
+           active:scale-[0.98];
     transition-property: color, background-color, border-color, opacity, transform, filter, outline-color;
   }
   /* Restrict hover lift to pointer-capable devices — on touch screens :hover
@@ -558,7 +556,7 @@
   }
 
   /* Neon glow helpers */
-  .glow-purple { box-shadow: 0 0 20px rgba(155,93,229,0.35); }
-  .glow-blue   { box-shadow: 0 0 20px rgba(76,201,240,0.35); }
-  .glow-green  { box-shadow: 0 0 20px rgba(6,214,160,0.35);  }
+  .glow-purple { box-shadow: 0 0 0 1px rgba(59,130,246,0.18); }
+  .glow-blue   { box-shadow: 0 0 0 1px rgba(59,130,246,0.18); }
+  .glow-green  { box-shadow: 0 0 0 1px rgba(16,185,129,0.18);  }
 }

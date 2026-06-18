@@ -17,11 +17,11 @@ import LabScenarioView from './LabScenarioView'
 
 const COPY = {
   de: {
-    title: 'Labs', subtitle: 'Interaktive Sicherheits-Szenarien', scenarios: 'Szenarien', done: 'Geschafft', min: 'Min', back: 'Zurück',
+    title: 'Labs', subtitle: 'Interaktive Sicherheits-Szenarien', scenarios: 'Szenarien', done: 'GESCHAFFT', min: 'Min', back: 'Zurück',
     training: 'Übungs-Lab generieren', trainingHint: 'Zufällig aus dem Themen-Pool — zählt extra',
   },
   en: {
-    title: 'Labs', subtitle: 'Interactive security scenarios', scenarios: 'Scenarios', done: 'Done', min: 'min', back: 'Back',
+    title: 'Labs', subtitle: 'Interactive security scenarios', scenarios: 'Scenarios', done: 'DONE', min: 'min', back: 'Back',
     training: 'Generate practice lab', trainingHint: 'Random from the topic pool — counted separately',
   },
 } as const
@@ -106,7 +106,7 @@ export default function LabsView({ language, onExit }: Props) {
           {trainingSolved.size > 0 && (
             <span
               data-testid="labs-training-progress"
-              className="flex shrink-0 items-center gap-1.5 rounded-[10px] border border-violet-500/40 bg-violet-500/8 px-2.5 py-1.5 font-mono text-[12px] font-bold text-violet-300"
+              className="flex shrink-0 items-center gap-1.5 rounded-[10px] border border-blue-500/30 bg-blue-500/10 px-2.5 py-1.5 font-mono text-[12px] font-bold text-blue-300"
             >
               <Dices size={13} strokeWidth={1.5} />
               {trainingSolved.size}
@@ -114,7 +114,7 @@ export default function LabsView({ language, onExit }: Props) {
           )}
           <span
             data-testid="labs-progress"
-            className="flex shrink-0 items-center gap-1.5 rounded-[10px] border border-emerald-500/40 bg-emerald-500/8 px-2.5 py-1.5 font-mono text-[12px] font-bold text-emerald-300"
+            className="flex shrink-0 items-center gap-1.5 rounded-[10px] border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1.5 font-mono text-[12px] font-bold text-emerald-300"
           >
             <Target size={13} strokeWidth={1.5} />
             {completed.size} / {totalInventory}
@@ -131,7 +131,7 @@ export default function LabsView({ language, onExit }: Props) {
             const doneCount = scenarios.filter(s => completed.has(s.id)).length
             const isCollapsed = collapsed.has(category.id)
             return (
-              <section key={category.id} className="rounded-[16px] border border-[#18181b] bg-[#0a0a0a] p-3">
+              <section key={category.id} className="rounded-[14px] border border-[#18181b] bg-[#0a0a0a] p-3">
                 <button
                   type="button"
                   onClick={() => toggleCategory(category.id)}
@@ -162,13 +162,13 @@ export default function LabsView({ language, onExit }: Props) {
                       type="button"
                       data-testid={`lab-training-${category.id}`}
                       onClick={() => startTraining(category.id)}
-                      className="flex w-full items-center gap-3 rounded-[14px] border border-dashed border-violet-500/40 bg-violet-500/5 px-3 py-3 text-left transition-colors hover:border-violet-400/70"
+                      className="flex w-full items-center gap-3 rounded-[12px] border border-dashed border-[--brand-primary-50] bg-[--brand-primary-08] px-3 py-3 text-left transition-colors hover:border-[--brand-primary]"
                     >
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] border border-violet-500/30 bg-violet-500/10 text-violet-300">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] border border-[--brand-primary-25] bg-[#0c0c0c] text-[--brand-primary]">
                         <Dices size={15} strokeWidth={1.5} />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate font-mono text-[13px] text-violet-200">{copy.training}</span>
+                        <span className="block truncate font-mono text-[13px] text-zinc-100">{copy.training}</span>
                         <span className="mt-0.5 block truncate font-mono text-[10px] text-zinc-500">{copy.trainingHint}</span>
                       </span>
                       <ChevronRight size={15} className="shrink-0 text-zinc-600" />
@@ -182,7 +182,7 @@ export default function LabsView({ language, onExit }: Props) {
                           type="button"
                           data-testid={`lab-scenario-${scenario.id}`}
                           onClick={() => setActiveScenario(scenario)}
-                          className="flex w-full items-center gap-3 rounded-[14px] border border-[#1f1f23] bg-[#0c0c0c] px-3 py-3 text-left transition-colors hover:border-[#3f3f46]"
+                          className="flex w-full items-center gap-3 rounded-[12px] border border-[#1f1f23] bg-[#0c0c0c] px-3 py-3 text-left transition-colors hover:border-[#3f3f46]"
                         >
                           <span className={`shrink-0 rounded-[6px] border px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.14em] ${badge.cls}`}>
                             {badge.label}
@@ -194,7 +194,7 @@ export default function LabsView({ language, onExit }: Props) {
                             </span>
                           </span>
                           {isDone && (
-                            <span className="flex shrink-0 items-center gap-1 rounded-[8px] border border-emerald-500/40 bg-emerald-500/8 px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-emerald-300">
+                            <span className="flex shrink-0 items-center gap-1 rounded-[8px] border border-emerald-500/40 bg-emerald-500/10 px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-emerald-300">
                               <Check size={11} strokeWidth={2} /> {copy.done}
                             </span>
                           )}

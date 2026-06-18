@@ -35,8 +35,8 @@ describe('Dashboard-Modus clean — Persistenz', () => {
     expect(readInitialDashboardMode()).toBe('clean')
   })
 
-  it('fällt bei unbekannten Werten weiter auf kpi zurück', () => {
+  it('fällt bei unbekannten Werten auf den Daily-Quest-Modus zurück', () => {
     stubWindowWithStorage({ [STORAGE_KEYS.homeDashboardMode]: 'bogus' })
-    expect(readInitialDashboardMode()).toBe('kpi')
+    expect(readInitialDashboardMode()).toBe('pilot')
   })
 })

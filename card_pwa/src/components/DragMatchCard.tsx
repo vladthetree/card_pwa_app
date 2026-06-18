@@ -24,7 +24,7 @@ import { correctDragMatchKey, scoreDragMatchChoice } from '../utils/dragMatchSco
  * Screenshot als "D".
  *
  * Eigener Renderer, NICHT der PBQ-`MatchingCard` (Mehrfach-Paare).
- * Schrift: durchgängig Mono (Share Tech Mono) — exakt wie in den Screenshots.
+ * Schrift: Mono für technische UI, Space Grotesk für längere Lerntexte.
  */
 
 interface Props {
@@ -170,14 +170,14 @@ const DragMatchCard = memo(function DragMatchCard({
               </div>
             )}
 
-            <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-mono font-medium leading-[1.55] text-[#f0ede8]`}>
+            <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-[#f0ede8]`}>
               {answer.answer}
             </p>
 
             {answer.merkhilfe && (
               <div className="mt-3 border-l-2 border-[--brand-primary-50] bg-[--brand-primary-08] px-[10px] py-[6px]">
                 <span className="mb-[2px] block font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[--brand-primary]">{t.mnemonic}</span>
-                <span className="font-mono text-[12px] italic leading-[1.4] text-zinc-300/70">{answer.merkhilfe}</span>
+                <span className="font-sans text-[12px] italic leading-[1.4] text-zinc-300/70">{answer.merkhilfe}</span>
               </div>
             )}
           </div>
@@ -213,7 +213,7 @@ const DragMatchCard = memo(function DragMatchCard({
         </div>
 
         <div className={`${bodyClass} flex flex-col`}>
-          <p className={`font-mono font-medium leading-[1.55] text-[#f0ede8] ${compact ? 'text-[15px]' : 'text-[16px] md:text-lg'}`}>
+          <p className={`font-sans font-medium leading-[1.55] text-[#f0ede8] ${compact ? 'text-[15px]' : 'text-[16px] md:text-lg'}`}>
             {question.question}
           </p>
 
@@ -257,7 +257,7 @@ const DragMatchCard = memo(function DragMatchCard({
               {answer.answer && (
                 <div className="rounded-[12px] border border-[#27272a] bg-[#0a0a0a] px-3 py-3">
                   <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-zinc-500">{t.dragmatch_explanation}</span>
-                  <p className="mt-1.5 font-mono text-[14px] leading-[1.5] text-zinc-300">{answer.answer}</p>
+                  <p className="mt-1.5 font-sans text-[14px] leading-[1.5] text-zinc-300">{answer.answer}</p>
                 </div>
               )}
             </div>
@@ -294,7 +294,7 @@ const DragMatchCard = memo(function DragMatchCard({
                   }`}
                 >
                   <span className="text-[12px] font-bold text-zinc-500">{displayLetter})</span>{' '}
-                  <span className="text-[14px] text-zinc-200">{text}</span>
+                  <span className="font-sans text-[14px] text-zinc-200">{text}</span>
                 </motion.button>
               )
             })}

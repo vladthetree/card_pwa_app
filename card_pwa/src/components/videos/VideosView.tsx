@@ -28,6 +28,8 @@ const COPY = {
     offlineTitle: 'Offline',
     offlineHint: 'Für die Videowiedergabe ist eine Internetverbindung nötig.',
     objective: 'Objective',
+    seen: 'GESEHEN',
+    open: 'OFFEN',
   },
   en: {
     title: 'Videos',
@@ -39,8 +41,12 @@ const COPY = {
     offlineTitle: 'Offline',
     offlineHint: 'Playing videos requires an internet connection.',
     objective: 'Objective',
+    seen: 'SEEN',
+    open: 'OPEN',
   },
 } as const
+
+const VIDEO_STATUS_STORAGE_KEY = 'card-pwa-messer-video-status'
 
 interface Props {
   language: 'de' | 'en'
@@ -61,11 +67,22 @@ function useOnline(): boolean {
   return online
 }
 
+function readViewedVideos(): Set<string> {
+  if (typeof window === 'undefined') return new Set()
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(VIDEO_STATUS_STORAGE_KEY) ?? '[]')
+    return new Set(Array.isArray(parsed) ? parsed.filter(id => typeof id === 'string') : [])
+  } catch {
+    return new Set()
+  }
+}
+
 export default function VideosView({ language, onExit }: Props) {
   const copy = COPY[language]
   const online = useOnline()
   const [active, setActive] = useState<MesserVideo | null>(null)
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set())
+  const [viewedVideos, setViewedVideos] = useState<Set<string>>(readViewedVideos)
 
   const byDomain = useMemo(() => {
     const map = new Map<number, MesserVideo[]>()
@@ -81,6 +98,16 @@ export default function VideosView({ language, onExit }: Props) {
       else next.add(domain)
       return next
     })
+  }
+
+  const openVideo = (video: MesserVideo) => {
+    setViewedVideos(prev => {
+      const next = new Set(prev)
+      next.add(video.objective)
+      window.localStorage.setItem(VIDEO_STATUS_STORAGE_KEY, JSON.stringify(Array.from(next)))
+      return next
+    })
+    setActive(video)
   }
 
   // Body-Scroll sperren, solange der Player offen ist.
@@ -106,7 +133,7 @@ export default function VideosView({ language, onExit }: Props) {
             <div className="truncate font-mono text-[12px] text-zinc-500">{copy.subtitle}</div>
           </div>
           {!online && (
-            <span className="flex shrink-0 items-center gap-1.5 rounded-[10px] border border-amber-500/40 bg-amber-500/8 px-2.5 py-1.5 font-mono text-[11px] font-bold text-amber-300">
+            <span className="flex shrink-0 items-center gap-1.5 rounded-[10px] border border-amber-500/40 bg-amber-500/10 px-2.5 py-1.5 font-mono text-[11px] font-bold text-amber-300">
               <WifiOff size={13} strokeWidth={1.5} />
               {copy.offlineTitle}
             </span>
@@ -122,7 +149,7 @@ export default function VideosView({ language, onExit }: Props) {
             if (videos.length === 0) return null
             const isCollapsed = collapsed.has(domain.domain)
             return (
-              <section key={domain.domain} className="rounded-[16px] border border-[#18181b] bg-[#0a0a0a] p-3">
+              <section key={domain.domain} className="rounded-[14px] border border-[#18181b] bg-[#0a0a0a] p-3">
                 <button
                   type="button"
                   onClick={() => toggleDomain(domain.domain)}
@@ -156,8 +183,8 @@ export default function VideosView({ language, onExit }: Props) {
                         key={video.objective}
                         type="button"
                         data-testid={`messer-video-${video.objective}`}
-                        onClick={() => setActive(video)}
-                        className="flex w-full items-center gap-3 rounded-[14px] border border-[#1f1f23] bg-[#0c0c0c] px-3 py-3 text-left transition-colors hover:border-[#3f3f46]"
+                        onClick={() => openVideo(video)}
+                        className="flex w-full items-center gap-3 rounded-[12px] border border-[#1f1f23] bg-[#0c0c0c] px-3 py-3 text-left transition-colors hover:border-[#3f3f46]"
                       >
                         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border border-sky-500/30 bg-sky-500/10 text-sky-300">
                           <Play size={15} strokeWidth={1.5} />
@@ -167,6 +194,13 @@ export default function VideosView({ language, onExit }: Props) {
                           <span className="mt-0.5 block truncate font-mono text-[11px] text-zinc-500">
                             {copy.objective} {video.objective}
                           </span>
+                        </span>
+                        <span className={`shrink-0 rounded-[6px] border px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.12em] ${
+                          viewedVideos.has(video.objective)
+                            ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+                            : 'border-sky-500/30 bg-sky-500/10 text-sky-300'
+                        }`}>
+                          {viewedVideos.has(video.objective) ? copy.seen : copy.open}
                         </span>
                       </button>
                     ))}

@@ -317,7 +317,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   const answerTone = hasAnswered
     ? (isAnswerCorrect ? 'border-emerald-500/45' : 'border-rose-500/45')
     : 'border-[#18181b]'
-  const cardShellClass = `border ${flipped ? answerTone : 'border-[#18181b]'} flex flex-col overflow-hidden rounded-[12px] bg-[#0c0c0c] shadow-card transition-all duration-300 ease-out ${
+  const cardShellClass = `border ${flipped ? answerTone : 'border-[#18181b]'} flex flex-col overflow-hidden rounded-[12px] bg-[#0c0c0c] shadow-card transition-all duration-150 ease-out ${
     compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[420px] md:min-h-[500px]'
   }${flipped && correctGlowActive ? ' study-glow-success' : ''}`
   const bodyClass = compact
@@ -381,7 +381,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                 </div>
 
                 <div className={`${bodyClass} flex flex-col`}>
-                  <p className={`font-mono font-medium leading-[1.55] text-[#f0ede8] ${compactQuestionClass}`}>
+                  <p className={`font-sans font-medium leading-[1.55] text-[#f0ede8] ${compactQuestionClass}`}>
                     {question.question}
                   </p>
 
@@ -414,7 +414,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                             className={`${optionBaseClass} ${optionTextClass} ${optionCls} ${impactPhase === 'idle' ? 'cursor-pointer active:scale-[0.99]' : 'cursor-default'}`}
                           >
                             <span className="font-mono font-bold text-zinc-500">{letter})</span>
-                            <span className="min-w-0 font-mono">{question.options[letter]}</span>
+                            <span className="min-w-0 font-sans">{question.options[letter]}</span>
                           </button>
                         )
                       })}
@@ -495,7 +495,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                     </div>
                   )}
 
-                  <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-mono font-medium leading-[1.55] text-[#f0ede8]`}>
+                  <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-[#f0ede8]`}>
                     {answered.answer}
                   </p>
 
@@ -504,7 +504,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                       <span className="mb-[2px] block font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[--brand-primary]">
                         {t.mnemonic}
                       </span>
-                      <span className="font-mono text-[12px] italic leading-[1.4] text-zinc-300/70">
+                      <span className="font-sans text-[12px] italic leading-[1.4] text-zinc-300/70">
                         {answered.merkhilfe}
                       </span>
                     </div>

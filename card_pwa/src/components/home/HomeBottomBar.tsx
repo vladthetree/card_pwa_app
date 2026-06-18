@@ -41,11 +41,11 @@ interface Props {
   onOpenVideos?: () => void
 }
 
-const SHEET_BACKDROP = 'fixed inset-0 z-[190] bg-black/60 backdrop-blur-[2px]'
-const SHEET_PANEL    = 'home-bottom-sheet-panel fixed left-0 right-0 z-[200] rounded-t-[20px] border-t border-[#1f1f23] bg-[#0a0a0a] px-4 pt-3'
+const SHEET_BACKDROP = 'fixed inset-0 z-[190] bg-black/70 backdrop-blur-[2px]'
+const SHEET_PANEL    = 'home-bottom-sheet-panel fixed left-0 right-0 z-[200] rounded-t-[24px] border-t border-[#18181b] bg-[#0a0a0a] px-4 pt-3 shadow-menu'
 const DRAG_HANDLE    = 'mx-auto mb-4 h-1 w-10 rounded-full bg-[#333]'
 const SHEET_LABEL    = 'px-1 pb-2 pt-1 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35'
-const SHEET_ITEM     = 'flex w-full items-center justify-between gap-3 rounded-[12px] px-3 py-3.5 text-left text-[15px] text-white/80 transition-colors hover:bg-[#111] hover:text-white active:bg-[#111] active:text-white'
+const SHEET_ITEM     = 'flex w-full items-center justify-between gap-3 rounded-[12px] px-3 py-3.5 text-left text-[15px] text-white/80 transition-colors hover:bg-[#111113] hover:text-white active:bg-[#111113] active:text-white'
 
 export function HomeBottomBar({
   t,
@@ -81,9 +81,9 @@ export function HomeBottomBar({
 
   // Nutzer-Vorgabe 2026-06-11: Menüeinträge im Ansichten-Sheet ohne Icons.
   const dashboardOptions: Array<{ key: HomeDashboardMode; label: string }> = [
+    { key: 'pilot',   label: 'Pilot' },
     { key: 'kpi',     label: 'KPI' },
     { key: 'heatmap', label: 'Heatmap' },
-    { key: 'pilot',   label: 'Pilot' },
     { key: 'clean',   label: 'Clean' },
   ]
 
@@ -93,7 +93,7 @@ export function HomeBottomBar({
     <>
       {/* ── Bar ──────────────────────────────────────────────────────────── */}
       <div
-        className="home-bottom-bar fixed left-0 right-0 z-[100] sm:hidden border-t border-[#1f1f23] shadow-[0_-4px_24px_rgba(0,0,0,0.55)] backdrop-blur-xl"
+        className="home-bottom-bar fixed left-0 right-0 z-[100] border-t border-[#18181b] backdrop-blur-xl sm:hidden"
         data-safe-area-bottom-bar
       >
         <div className={`${UI_TOKENS.layout.homeMaxWidth} mx-auto px-2`}>
@@ -104,7 +104,7 @@ export function HomeBottomBar({
             <button
               type="button"
               onClick={onReload}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] text-white/55 transition-colors hover:bg-[#1a1a1a] hover:text-white active:scale-95"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] text-white/50 transition-colors hover:bg-[#111113] hover:text-white active:scale-[0.98]"
               aria-label={t.reload}
               title={t.reload}
             >
@@ -115,7 +115,9 @@ export function HomeBottomBar({
             <button
               type="button"
               onClick={() => { setActionsOpen(false); setFilterOpen(v => !v) }}
-              className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] text-white/55 transition-colors hover:bg-[#1a1a1a] hover:text-white active:scale-95"
+              className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] transition-colors hover:bg-[#111113] hover:text-white active:scale-[0.98] ${
+                filterOpen ? 'bg-[#111113] text-[--brand-primary]' : 'text-white/50'
+              }`}
               aria-label={language === 'de' ? 'Filter & Sortierung' : 'Filter & sort'}
               title={language === 'de' ? 'Filter & Sortierung' : 'Filter & sort'}
             >
@@ -129,7 +131,7 @@ export function HomeBottomBar({
             <button
               type="button"
               onClick={onShowSettings}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] text-white/55 transition-colors hover:bg-[#1a1a1a] hover:text-white active:scale-95"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] text-white/50 transition-colors hover:bg-[#111113] hover:text-white active:scale-[0.98]"
               aria-label={t.settings}
               title={t.settings}
             >
@@ -143,7 +145,11 @@ export function HomeBottomBar({
             <button
               type="button"
               onClick={() => { setFilterOpen(false); setActionsOpen(v => !v) }}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-[--brand-primary-50] bg-[--brand-primary-10] text-[--brand-primary] transition-colors hover:bg-[--brand-primary-20] active:scale-95"
+              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border transition-colors active:scale-[0.98] ${
+                actionsOpen
+                  ? 'border-[--brand-primary-50] bg-[--brand-primary-20] text-[--brand-primary]'
+                  : 'border-[--brand-primary-25] bg-[--brand-primary-08] text-[--brand-primary] hover:bg-[--brand-primary-12]'
+              }`}
               aria-label={language === 'de' ? 'Erstellen & Aktionen' : 'Create & actions'}
               title={language === 'de' ? 'Erstellen' : 'Create'}
             >
