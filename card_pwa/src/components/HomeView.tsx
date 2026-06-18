@@ -50,6 +50,8 @@ interface Props {
   onStartDailyQuest?: (cards: Card[]) => void
   /** Labs (Ansichten-Menü, Beleg `…23.40.53.jpeg`). */
   onOpenLabs?: () => void
+  /** Lernvideos (Professor Messer) — eigene Ansicht, im Ansichten-Menü. */
+  onOpenVideos?: () => void
 }
 
 /** Quest-Größe laut Screenshot `…23.36.20.jpeg` („Jetzt: 25 Karten"). */
@@ -66,6 +68,7 @@ export default function HomeView({
   onOpenShuffleManager,
   onStartDailyQuest,
   onOpenLabs,
+  onOpenVideos,
 }: Props) {
   const [homeTab, setHomeTab] = useState<HomeTab>('decks')
   const tagCardIndex = useTagCardIndex()
@@ -369,6 +372,7 @@ export default function HomeView({
           onShowSettings={controller.openSettings}
           onInstall={() => { void controller.handleInstall() }}
           onOpenLabs={onOpenLabs}
+          onOpenVideos={onOpenVideos}
         />,
         bottomBarPortalTarget
       )}

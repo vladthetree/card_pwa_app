@@ -37,6 +37,8 @@ interface Props {
   onInstall: () => void
   /** Labs im ANSICHT-Menü (Beleg `…23.40.53.jpeg`). */
   onOpenLabs?: () => void
+  /** Lernvideos (Professor Messer) im ANSICHT-Menü. */
+  onOpenVideos?: () => void
 }
 
 const SHEET_BACKDROP = 'fixed inset-0 z-[190] bg-black/60 backdrop-blur-[2px]'
@@ -69,6 +71,7 @@ export function HomeBottomBar({
   onShowSettings,
   onInstall,
   onOpenLabs,
+  onOpenVideos,
 }: Props) {
   const [filterOpen,  setFilterOpen]  = useState(false)
   const [actionsOpen, setActionsOpen] = useState(false)
@@ -213,6 +216,15 @@ export function HomeBottomBar({
                   className={SHEET_ITEM}
                 >
                   <span>Labs</span>
+                </button>
+              )}
+              {onOpenVideos && (
+                <button
+                  type="button"
+                  onClick={() => { closeFilter(); onOpenVideos() }}
+                  className={SHEET_ITEM}
+                >
+                  <span>{language === 'de' ? 'Lernvideos' : 'Videos'}</span>
                 </button>
               )}
 
