@@ -5,7 +5,7 @@ import { ChevronDown, ChevronRight, Layers3, MoreHorizontal, List, BarChart3, Tr
 import { STRINGS } from '../contexts/SettingsContext'
 import { STORAGE_KEYS } from '../constants/appIdentity'
 import { UI_TOKENS } from '../constants/ui'
-import { animationItem } from '../constants/animations'
+import { cardEnter } from '../constants/animations'
 import { useFloatingMenu } from '../hooks/useFloatingMenu'
 import { DeckTitleMarquee } from './DeckTitleMarquee'
 import { DeckSchedulePanel } from './DeckSchedulePanel'
@@ -85,9 +85,9 @@ export function DeckCard({ deck, language, onStartStudy, onDelete, schedule, dec
   return (
     <div className="min-w-0">
       <motion.div
-        variants={nested ? undefined : animationItem}
-        initial={nested ? false : undefined}
-        animate={nested ? { opacity: 1, y: 0 } : undefined}
+        initial={nested ? false : cardEnter.initial}
+        animate={cardEnter.animate}
+        transition={nested ? undefined : cardEnter.transition}
         className={`group relative w-full transition-all duration-300 ease-out hover:border-[#3f3f46] ${
           nested
             ? 'rounded-[12px] border border-[#242428] bg-[#080808] p-3 shadow-none'

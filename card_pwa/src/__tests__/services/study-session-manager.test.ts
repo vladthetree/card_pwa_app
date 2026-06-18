@@ -95,6 +95,19 @@ describe('StudySessionManager', () => {
     expect(result.map(card => card.id)).toEqual(['a-card', 'b-card'])
   })
 
+  it('varies equal-priority run batches when a run seed is supplied', () => {
+    const cards = Array.from({ length: 10 }, (_, idx) =>
+      createCard({ id: `seeded-${idx}`, type: 'new', due: 200 + idx, dueAt: 0 })
+    )
+
+    const first = sortStudyCards(cards, { maxCards: 4, runSeed: 'run-a' }).map(card => card.id)
+    const repeat = sortStudyCards(cards, { maxCards: 4, runSeed: 'run-a' }).map(card => card.id)
+    const second = sortStudyCards(cards, { maxCards: 4, runSeed: 'run-b' }).map(card => card.id)
+
+    expect(repeat).toEqual(first)
+    expect(second).not.toEqual(first)
+  })
+
   it('treats non-finite maxCards as unlimited', () => {
     const cards = Array.from({ length: 6 }, (_, idx) =>
       createCard({ id: `u-${idx}`, type: 'new', due: 200 + idx })

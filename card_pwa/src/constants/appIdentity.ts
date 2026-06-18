@@ -20,6 +20,7 @@ export const STORAGE_KEYS = {
   expandedSubdeckIds: 'card-pwa:expanded-subdeck-ids',
   homeActiveTab: 'card-pwa-home-active-tab',
   labsCompleted: 'card-pwa-labs-completed',
+  labsTrainingSolved: 'card-pwa-labs-training-solved',
 } as const
 
 export const DATABASE_NAMES = {

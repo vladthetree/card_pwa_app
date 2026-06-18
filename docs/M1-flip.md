@@ -24,6 +24,8 @@ tags:  [ "<Objective-Tag>", ... ]
 
 - Beginnt `front` mit `A:`/`B:`-Optionszeilen → die Karte wird **M2**, nicht M1.
 - Beginnt `front` mit `ORDERING:`/`MATCHING:` → PBQ-Renderer. Mit `RECALL:` → M3.
+- Beginnt `front` mit `SZENARIO:` → **M4 Szenario-Cloze** (docs/M4-szenario-cloze.md);
+  in Ausbaustufe 1 rendert M4 bewusst als M1-Flip (Text+Wortbank vorn, Loesung hinten).
 - Umlaute im Datenbestand historisch als ue/oe/ae transliteriert — beibehalten,
   damit Karten konsistent zum 779-Karten-Backup bleiben.
 

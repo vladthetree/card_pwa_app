@@ -1,14 +1,13 @@
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  BarChart3, CalendarDays, Check, Download, EyeOff, FlaskConical, FolderPlus, Plus,
-  RefreshCw, Settings, SlidersHorizontal, Sparkles, Upload,
+  Check, Download, FolderPlus, Plus,
+  RefreshCw, Settings, SlidersHorizontal, Upload,
   Shuffle,
 } from 'lucide-react'
 import StreakBadge from '../StreakBadge'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 import type { HomeDashboardMode } from './HomeStatsSection'
-import { Tag } from 'lucide-react'
 
 type HomeTab = 'decks' | 'tags'
 import { UI_TOKENS } from '../../constants/ui'
@@ -77,11 +76,12 @@ export function HomeBottomBar({
   const closeFilter  = useCallback(() => setFilterOpen(false),  [])
   const closeActions = useCallback(() => setActionsOpen(false), [])
 
-  const dashboardOptions: Array<{ key: HomeDashboardMode; label: string; icon: typeof BarChart3 }> = [
-    { key: 'kpi',     label: 'KPI',     icon: BarChart3 },
-    { key: 'heatmap', label: 'Heatmap', icon: CalendarDays },
-    { key: 'pilot',   label: 'Pilot',   icon: Sparkles },
-    { key: 'clean',   label: 'Clean',   icon: EyeOff },
+  // Nutzer-Vorgabe 2026-06-11: Menüeinträge im Ansichten-Sheet ohne Icons.
+  const dashboardOptions: Array<{ key: HomeDashboardMode; label: string }> = [
+    { key: 'kpi',     label: 'KPI' },
+    { key: 'heatmap', label: 'Heatmap' },
+    { key: 'pilot',   label: 'Pilot' },
+    { key: 'clean',   label: 'Clean' },
   ]
 
   const isFilterActive = showShuffleOnly || deckSortMode !== 'name' || homeTab === 'tags'
@@ -193,10 +193,7 @@ export function HomeBottomBar({
                 onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('tags'); closeFilter() }}
                 className={SHEET_ITEM}
               >
-                <span className="inline-flex items-center gap-2.5">
-                  <Tag size={15} strokeWidth={1.5} className="text-white/50" />
-                  {language === 'de' ? 'Nach Tags' : 'By tags'}
-                </span>
+                <span>{language === 'de' ? 'Nach Tags' : 'By tags'}</span>
                 {!showShuffleOnly && homeTab === 'tags' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
               </button>
               {shuffleModeEnabled && (
@@ -215,10 +212,7 @@ export function HomeBottomBar({
                   onClick={() => { closeFilter(); onOpenLabs() }}
                   className={SHEET_ITEM}
                 >
-                  <span className="inline-flex items-center gap-2.5">
-                    <FlaskConical size={15} strokeWidth={1.5} className="text-white/50" />
-                    Labs
-                  </span>
+                  <span>Labs</span>
                 </button>
               )}
 
@@ -247,23 +241,17 @@ export function HomeBottomBar({
 
               <div className="my-2 border-t border-[#1f1f23]" />
               <p className={SHEET_LABEL}>{language === 'de' ? 'Dashboard' : 'Dashboard'}</p>
-              {dashboardOptions.map(opt => {
-                const Icon = opt.icon
-                return (
-                  <button
-                    key={opt.key}
-                    type="button"
-                    onClick={() => { onDashboardModeChange(opt.key); closeFilter() }}
-                    className={SHEET_ITEM}
-                  >
-                    <span className="inline-flex items-center gap-2.5">
-                      <Icon size={15} strokeWidth={1.5} className="text-white/50" />
-                      {opt.label}
-                    </span>
-                    {dashboardMode === opt.key && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
-                  </button>
-                )
-              })}
+              {dashboardOptions.map(opt => (
+                <button
+                  key={opt.key}
+                  type="button"
+                  onClick={() => { onDashboardModeChange(opt.key); closeFilter() }}
+                  className={SHEET_ITEM}
+                >
+                  <span>{opt.label}</span>
+                  {dashboardMode === opt.key && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
+                </button>
+              ))}
             </motion.div>
           </div>
         )}

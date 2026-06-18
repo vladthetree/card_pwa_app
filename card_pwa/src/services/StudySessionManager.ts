@@ -7,6 +7,7 @@ interface SortStudyCardsOptions {
   maxCards?: number
   nowMs?: number
   nextDayStartsAt?: number
+  runSeed?: string | number
 }
 
 export function getCardWeight(card: Card): number {
@@ -16,6 +17,16 @@ export function getCardWeight(card: Card): number {
 
   // All cards start with the same base weight; repeated failures increase urgency.
   return 1 + lapses * 2.5 + incorrectRatio * 3
+}
+
+function seededRank(seed: string | number, card: Card): number {
+  const input = `${seed}:${card.id}`
+  let hash = 2166136261
+  for (let i = 0; i < input.length; i += 1) {
+    hash ^= input.charCodeAt(i)
+    hash = Math.imul(hash, 16777619)
+  }
+  return hash >>> 0
 }
 
 export function sortStudyCards(cards: Card[], options: SortStudyCardsOptions = {}): Card[] {
@@ -59,6 +70,8 @@ export function sortStudyCards(cards: Card[], options: SortStudyCardsOptions = {
     return priority[cardType]
   }
 
+  const useFreshRunOrder = options.runSeed !== undefined
+
   const compareCards = (a: Card, b: Card): number => {
     const aIsTimeBound = a.type !== 'new'
     const bIsTimeBound = b.type !== 'new'
@@ -71,13 +84,23 @@ export function sortStudyCards(cards: Card[], options: SortStudyCardsOptions = {
     const typeDiff = getPriority(a.type) - getPriority(b.type)
     if (typeDiff !== 0) return typeDiff
 
-    // Earlier due cards first inside same type.
-    const dueDiff = resolveDueAt(a) - resolveDueAt(b)
-    if (dueDiff !== 0) return dueDiff
+    // Earlier due cards first inside same type. For fresh runs, keep exact
+    // timing for learning/relearning steps but vary review/new cards so aborting
+    // and starting again does not recreate the same batch.
+    const keepExactDueOrder = !useFreshRunOrder || a.type === 'learning' || a.type === 'relearning' || b.type === 'learning' || b.type === 'relearning'
+    if (keepExactDueOrder) {
+      const dueDiff = resolveDueAt(a) - resolveDueAt(b)
+      if (dueDiff !== 0) return dueDiff
+    }
 
     // For equal due cards, prioritize cards with higher failure pressure.
     const weightDiff = getCardWeight(b) - getCardWeight(a)
     if (weightDiff !== 0) return weightDiff
+
+    if (useFreshRunOrder) {
+      const seedDiff = seededRank(options.runSeed as string | number, a) - seededRank(options.runSeed as string | number, b)
+      if (seedDiff !== 0) return seedDiff
+    }
 
     return a.id.localeCompare(b.id)
   }
@@ -91,5 +114,4 @@ export function sortStudyCards(cards: Card[], options: SortStudyCardsOptions = {
 
   return [...exemptCards, ...cappedLimited].sort(compareCards)
 }
-
 

@@ -15,6 +15,7 @@ interface ShuffleSelectionOptions {
   maxCards?: number
   nowMs?: number
   nextDayStartsAt?: number
+  runSeed?: string | number
 }
 
 export function getShuffleWeight(card: Card, nowMs = Date.now()): number {
@@ -81,6 +82,16 @@ function resolveDueAt(card: Card): number {
   return Math.max(0, Math.floor(card.due)) * DAY_MS
 }
 
+function seededRank(seed: string | number, card: Card): number {
+  const input = `${seed}:${card.id}`
+  let hash = 2166136261
+  for (let i = 0; i < input.length; i += 1) {
+    hash ^= input.charCodeAt(i)
+    hash = Math.imul(hash, 16777619)
+  }
+  return hash >>> 0
+}
+
 function getTypePriority(cardType: Card['type']): number {
   const priority: Record<Card['type'], number> = {
     learning: 0,
@@ -91,7 +102,7 @@ function getTypePriority(cardType: Card['type']): number {
   return priority[cardType]
 }
 
-function compareShuffleCards(a: Card, b: Card, nowMs: number): number {
+function compareShuffleCards(a: Card, b: Card, nowMs: number, runSeed?: string | number): number {
   const aIsTimeBound = a.type !== 'new'
   const bIsTimeBound = b.type !== 'new'
   if (aIsTimeBound || bIsTimeBound) {
@@ -111,6 +122,11 @@ function compareShuffleCards(a: Card, b: Card, nowMs: number): number {
 
   const baseWeightDiff = getCardWeight(b) - getCardWeight(a)
   if (baseWeightDiff !== 0) return baseWeightDiff
+
+  if (runSeed !== undefined) {
+    const seedDiff = seededRank(runSeed, a) - seededRank(runSeed, b)
+    if (seedDiff !== 0) return seedDiff
+  }
 
   return a.id.localeCompare(b.id)
 }
@@ -141,7 +157,7 @@ export function selectShuffleCards(
 ): ShuffleStudyCard[] {
   const nowMs = options.nowMs ?? Date.now()
   const sorted = asShuffleStudyCards(sortStudyCards(pool, options))
-  const weighted = [...sorted].sort((a, b) => compareShuffleCards(a, b, nowMs))
+  const weighted = [...sorted].sort((a, b) => compareShuffleCards(a, b, nowMs, options.runSeed))
   return interleaveDecks(weighted)
 }
 

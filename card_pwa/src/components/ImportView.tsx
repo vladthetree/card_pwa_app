@@ -219,7 +219,7 @@ export default function ImportView({ isOpen, onClose }: Props) {
               >
                 <input ref={inputRef} type="file" accept={ACCEPTED} className="hidden" onChange={handleFileInput} />
 
-                <AnimatePresence mode="wait" initial={false}>
+                <AnimatePresence initial={false}>
                   {status.phase === 'idle' && (
                     <motion.div
                       key="idle"
