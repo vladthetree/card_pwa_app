@@ -188,6 +188,7 @@ const HomeView = lazy(() => import('./components/HomeView'))
 const StudyView = lazy(() => import('./components/StudyView'))
 const ShuffleStudyView = lazy(() => import('./components/ShuffleStudyView'))
 const LabsView = lazy(() => import('./components/labs/LabsView'))
+const VideosView = lazy(() => import('./components/videos/VideosView'))
 const UpdateBanner = lazy(() => import('./components/UpdateBanner'))
 
 function ViewFallback() {
@@ -362,6 +363,13 @@ function AppShell() {
     setView('labs')
   }
 
+  const openVideos = () => {
+    setActiveDeck(null)
+    setActiveTagCards(null)
+    setActiveShuffleCollection(null)
+    setView('videos')
+  }
+
   const goHome = () => {
     setView('home')
     setActiveDeck(null)
@@ -410,6 +418,7 @@ function AppShell() {
                   onOpenShuffleManager={openShuffleManager}
                   onStartDailyQuest={startDailyQuest}
                   onOpenLabs={openLabs}
+                  onOpenVideos={openVideos}
                 />
               </motion.div>
             )}
@@ -465,6 +474,18 @@ function AppShell() {
                 className="flex-1 min-h-0 h-full"
               >
                 <LabsView language={settings.language} onExit={goHome} />
+              </motion.div>
+            )}
+
+            {view === 'videos' && (
+              <motion.div
+                key="videos"
+                initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
+                animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+                transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
+                className="flex-1 min-h-0 h-full"
+              >
+                <VideosView language={settings.language} onExit={goHome} />
               </motion.div>
             )}
           </Suspense>
