@@ -1,7 +1,7 @@
 import { useCallback, useState, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
-import { BarChart3, CalendarDays, Check, ChevronDown, Download, EyeOff, FolderPlus, Plus, RefreshCw, Search, Shuffle, Target, Upload, X } from 'lucide-react'
+import { BarChart3, CalendarDays, Check, ChevronDown, Download, EyeOff, FlaskConical, FolderPlus, Plus, RefreshCw, Search, Shuffle, Target, Upload, Video, X } from 'lucide-react'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 import { useFloatingMenu } from '../../hooks/useFloatingMenu'
 import type { HomeDashboardMode } from './HomeStatsSection'
@@ -24,6 +24,10 @@ interface Props {
   onCreateCard: () => void
   onImport: () => void
   onExport: () => void
+  /** Labs-Ansicht (Professor Messer / Übungen) — im Aktionsmenü. */
+  onOpenLabs?: () => void
+  /** Lernvideos-Ansicht — im Aktionsmenü. */
+  onOpenVideos?: () => void
 }
 
 export function HomeDeckToolbar({
@@ -44,6 +48,8 @@ export function HomeDeckToolbar({
   onCreateCard,
   onImport,
   onExport,
+  onOpenLabs,
+  onOpenVideos,
 }: Props) {
   const [showActionsMenu, setShowActionsMenu] = useState(false)
   const [showFilterMenu, setShowFilterMenu] = useState(false)
@@ -65,7 +71,7 @@ export function HomeDeckToolbar({
     isOpen: showActionsMenu,
     onClose: closeActionsMenu,
     width: 248,
-    maxHeight: 292,
+    maxHeight: 420,
   })
 
   const {
@@ -433,6 +439,39 @@ export function HomeDeckToolbar({
                   >
                     <Download size={13} strokeWidth={1.5} /> {t.backup_export_title}
                   </button>
+                  {(onOpenVideos || onOpenLabs) && (
+                    <div className="border-t border-[#18181b] px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
+                      {language === 'de' ? 'Ansichten' : 'Views'}
+                    </div>
+                  )}
+                  {onOpenVideos && (
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        closeActionsMenu()
+                        onOpenVideos()
+                      }}
+                      className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                      role="menuitem"
+                    >
+                      <Video size={13} strokeWidth={1.5} /> {language === 'de' ? 'Lernvideos' : 'Videos'}
+                    </button>
+                  )}
+                  {onOpenLabs && (
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        closeActionsMenu()
+                        onOpenLabs()
+                      }}
+                      className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                      role="menuitem"
+                    >
+                      <FlaskConical size={13} strokeWidth={1.5} /> Labs
+                    </button>
+                  )}
                 </motion.div>,
                 document.body,
               )}

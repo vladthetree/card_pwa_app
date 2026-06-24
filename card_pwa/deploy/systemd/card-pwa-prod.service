@@ -12,7 +12,10 @@ Environment=PWA_HOST=0.0.0.0
 Environment=PWA_PORT=8444
 Environment=PWA_CERT_FILE=.cert/prod-cert.pem
 Environment=PWA_KEY_FILE=.cert/prod-key.pem
+Environment=PWA_CA_FILE=.cert/rootCA.pem
 Environment=PWA_LOG_DIR=logs
+# Verzeichnis der selbst gehosteten Lernvideos (.mp4), ausgeliefert unter /media/messer/
+Environment=PWA_MEDIA_DIR=/home/_vb/youtube-playlists/CompTIA SY0-701 Security+ Training Course [PLG49S3nxzAnl4QDVqK-hOnoqcSKEIDDuv]
 Environment=PWA_SYNC_PROXY_TARGET=https://127.0.0.1:8787
 Environment=PWA_SYNC_PROXY_TLS_VERIFY=0
 ExecStart=/usr/bin/node /home/_vb/card_pwa_app/card_pwa/scripts/prod-server.mjs

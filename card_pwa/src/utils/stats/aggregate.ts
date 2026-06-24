@@ -1,4 +1,5 @@
 import type { CardRecord, ReviewRecord } from '../../db'
+import { resolveDueAtMs } from '../time'
 
 export interface HeatmapBucket {
   dayStartMs: number
@@ -88,9 +89,7 @@ export function forecastDue(cards: CardRecord[], days: number, nowMs = Date.now(
     if (card.isDeleted) continue
     if (card.type !== 1 && card.type !== 2 && card.type !== 3) continue
 
-    const dueAtMs = Number.isFinite(card.dueAt)
-      ? Math.round(card.dueAt as number)
-      : Math.max(0, Math.floor(card.due)) * dayMs
+    const dueAtMs = resolveDueAtMs(card)
 
     if (dueAtMs < tomorrowStart || dueAtMs >= horizonEnd) continue
 

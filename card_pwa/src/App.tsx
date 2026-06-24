@@ -9,6 +9,7 @@ import type { Card, Deck, ShuffleCollection, View } from './types'
 import { SW_CHANNELS } from './constants/appIdentity'
 import { supportsServiceWorker } from './env'
 import { useAutoJoinDefaultProfile } from './hooks/useAutoJoinDefaultProfile'
+import { useFullscreenPreference } from './hooks/useFullscreen'
 
 const SAFE_AREA_DEBUG_STORAGE_KEY = 'card-pwa-safe-area-debug'
 
@@ -61,7 +62,7 @@ function shouldEnableSafeAreaDebug(): boolean {
   return window.localStorage.getItem(SAFE_AREA_DEBUG_STORAGE_KEY) === '1'
 }
 
-function useViewportCssVars() {
+function useViewportCssVars(immersiveBottom: boolean) {
   useEffect(() => {
     if (typeof window === 'undefined') return
 
@@ -81,6 +82,16 @@ function useViewportCssVars() {
           0,
         )
         root.style.setProperty('--app-viewport-height', `${layoutHeight}px`)
+
+        // Immersive mode (the "fullscreen" toggle): collapse the bottom
+        // home-indicator inset so the UI runs edge-to-edge. This is the part of
+        // "fullscreen" that actually works on iPhone, where the Fullscreen API
+        // is unavailable.
+        if (immersiveBottom) {
+          root.style.setProperty('--app-bottom-safe-area', '0px')
+          root.style.setProperty('--app-bottom-viewport-gap', '0px')
+          return
+        }
 
         const envVal = readSafeAreaInset('bottom')
         if (envVal > 0) {
@@ -108,7 +119,7 @@ function useViewportCssVars() {
         window.cancelAnimationFrame(rafId)
       }
     }
-  }, [])
+  }, [immersiveBottom])
 }
 
 function SafeAreaDebugOverlay() {
@@ -201,8 +212,12 @@ function ViewFallback() {
 
 function AppShell() {
   const { settings } = useSettings()
-  useViewportCssVars()
+  // Setzt --app-bottom-safe-area auf die echte iOS-Safe-Area, damit die
+  // Action-Sheets (Filter/Erstellen) über dem Home-Indicator bleiben. Die
+  // Hauptnavigation sitzt jetzt oben; der Inhalt scrollt darunter edge-to-edge.
+  useViewportCssVars(false)
   useAutoJoinDefaultProfile()
+  useFullscreenPreference(settings.fullscreenEnabled)
   const swSupported = supportsServiceWorker()
   const prefersReducedMotion = useReducedMotion()
   const [view, setView] = useState<View>(getInitialView)

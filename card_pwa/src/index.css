@@ -62,7 +62,6 @@
     --app-bottom-viewport-gap: 0px;
     --app-bottom-safe-area: env(safe-area-inset-bottom, 0px);
     --home-bottom-bar-bg: #080808;
-    --home-bottom-bar-reserved: calc(4rem + var(--app-bottom-safe-area));
   }
 
   html, body, #root {
@@ -498,19 +497,15 @@
     @apply rounded-ds-lg border border-ds-border bg-ds-card shadow-card;
   }
 
-  .home-bottom-bar {
-    bottom: calc(0px - var(--app-bottom-viewport-gap));
-    padding-bottom: var(--app-bottom-safe-area);
-    background: var(--home-bottom-bar-bg);
-  }
-
   .home-bottom-sheet-panel {
     bottom: calc(0px - var(--app-bottom-viewport-gap));
     padding-bottom: calc(var(--app-bottom-safe-area) + 1rem);
   }
 
+  /* Untere Scroll-Polsterung: nur Safe-Area + etwas Luft, damit die letzte
+     Karte über dem Home-Indicator bleibt (keine fixe Bottom-Bar mehr). */
   .home-bottom-scroll-padding {
-    padding-bottom: calc(var(--home-bottom-bar-reserved) + 1rem);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
   }
 
   .ds-panel {

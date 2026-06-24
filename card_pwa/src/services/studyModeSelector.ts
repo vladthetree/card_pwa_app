@@ -1,17 +1,9 @@
 import { isDragMatchCard } from '../utils/cardVariant'
+import { fnv1aUnit } from '../utils/hash'
 import type { Card } from '../types'
 
 export const DRAG_MATCH_STIMULUS_RATIO = 0.2
 const MIN_ELIGIBLE_FOR_DRAG_MATCH = 4
-
-function hashToUnit(input: string): number {
-  let hash = 2166136261
-  for (let i = 0; i < input.length; i += 1) {
-    hash ^= input.charCodeAt(i)
-    hash = Math.imul(hash, 16777619)
-  }
-  return (hash >>> 0) / 0xffffffff
-}
 
 export function buildDragMatchModePlan(
   cards: Array<Pick<Card, 'id' | 'front' | 'back'>>,
@@ -37,7 +29,7 @@ export function buildDragMatchModePlan(
   const ranked = eligible
     .map(item => ({
       ...item,
-      score: hashToUnit(`${seed}:${item.index}:${item.card.id}`),
+      score: fnv1aUnit(`${seed}:${item.index}:${item.card.id}`),
     }))
     .sort((a, b) => a.score - b.score)
 

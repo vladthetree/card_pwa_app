@@ -5,7 +5,7 @@ import { type AlgorithmParams } from '../../utils/algorithmParams'
 import { enqueueSyncOperation } from '../../services/syncQueue'
 import { makeOpId } from '../../services/syncConfig'
 import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
-import { getDayStartMs } from '../../utils/time'
+import { getDayStartMs, resolveDueAtMs } from '../../utils/time'
 import {
   shouldSmoothBacklog,
   computeNewDueDay,
@@ -83,11 +83,6 @@ export async function fetchGlobalStats(nextDayStartsAt = 0): Promise<GlobalStats
   const dayMs = 86_400_000
   const daysSinceEpoch = Math.floor(nowMs / dayMs)
   const todayStartMs = getDayStartMs(nowMs, nextDayStartsAt)
-
-  function resolveDueAtMs(card: CardRecord): number {
-    if (Number.isFinite(card.dueAt)) return Math.round(card.dueAt as number)
-    return Math.max(0, Math.floor(card.due)) * dayMs
-  }
 
   function resolveDueEpoch(card: CardRecord): number {
     return Math.max(0, Math.floor(card.due))

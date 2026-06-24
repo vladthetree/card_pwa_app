@@ -91,13 +91,12 @@ export function HomeBottomBar({
 
   return (
     <>
-      {/* ── Bar ──────────────────────────────────────────────────────────── */}
-      <div
-        className="home-bottom-bar fixed left-0 right-0 z-[100] border-t border-[#18181b] backdrop-blur-xl sm:hidden"
-        data-safe-area-bottom-bar
-      >
+      {/* ── Top-Navigationsleiste (Mobile) ───────────────────────────────────
+          Früher eine fixe Leiste am unteren Rand. Jetzt als Header oben (wie
+          DoHabit): Inhalt scrollt darunter edge-to-edge, kein Balken unten. */}
+      <div className="border-b border-[#18181b] sm:hidden">
         <div className={`${UI_TOKENS.layout.homeMaxWidth} mx-auto px-2`}>
-          {/* Foto-Referenz 8. Juni: nur Icons + Streak-Pill, keine Suchleiste. */}
+          {/* Icons + Streak-Pill, keine Suchleiste. */}
           <div className="flex items-center justify-around gap-1.5 py-1.5">
 
             {/* Reload */}
