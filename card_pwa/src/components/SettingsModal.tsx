@@ -12,6 +12,7 @@ import {
   Upload,
   X,
   User,
+  Tags,
 } from 'lucide-react'
 import {
   useSettings,
@@ -36,6 +37,8 @@ import { InfoHint } from './InfoHint'
 import { SettingsSection } from './SettingsSection'
 import ConfirmModal from './ConfirmModal'
 import ProfileSyncSection from './ProfileSyncSection'
+import TagBrowserSection from './TagBrowserSection'
+import { profileScopeId } from '../services/profileService'
 import { exportDbBackupAsCsv, exportDbBackupAsTxt } from '../utils/dbBackup'
 
 interface Props {
@@ -43,7 +46,7 @@ interface Props {
   onClose: () => void
 }
 
-type SettingsSectionKey = 'profile' | 'appearance' | 'study' | 'algorithm' | 'notifications' | 'data' | 'maintenance'
+type SettingsSectionKey = 'profile' | 'appearance' | 'study' | 'algorithm' | 'notifications' | 'tags' | 'data' | 'maintenance'
 
 const ImportView = lazy(() => import('./ImportView.tsx'))
 
@@ -90,6 +93,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     setSm2Params,
     setFsrsParams,
     resetAlgorithmParams,
+    profile,
   } = useSettings()
   const { themeKey, setTheme } = useTheme()
   const t = STRINGS[settings.language]
@@ -1301,6 +1305,21 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     </div>
                   </details>
                 </div>
+              </SettingsSection>
+
+              <SettingsSection
+                title={settings.language === 'de' ? 'Tags' : 'Tags'}
+                description={settings.language === 'de'
+                  ? 'Alle Inhalte zu einem Tag abrufen — aus Video-Notizen und Lernkarten.'
+                  : 'Retrieve everything for a tag — from video notes and flashcards.'}
+                icon={<Tags size={18} />}
+                isOpen={openSection === 'tags'}
+                onToggle={() => toggleSection('tags')}
+              >
+                <TagBrowserSection
+                  language={settings.language === 'de' ? 'de' : 'en'}
+                  profileId={profileScopeId(profile)}
+                />
               </SettingsSection>
 
               <SettingsSection

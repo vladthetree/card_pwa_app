@@ -1,6 +1,7 @@
 import Dexie, { type Table } from 'dexie'
 import { DATABASE_NAMES } from '../constants/appIdentity'
 import { buildSecurityDeckHierarchyPlan } from '../utils/securityDeckHierarchy'
+import { extractTags } from '../utils/videoTags'
 
 // ─── Record Types (IndexedDB Storage Format) ────────────────────────────────
 
@@ -147,6 +148,44 @@ export interface ShuffleCollectionRecord {
   deletedAt?: number
 }
 
+/**
+ * Freitext-Notizzettel zu einem Lernvideo (Desktop-Videomodus). Über `objective`
+ * /`videoId` mit dem jeweiligen Professor-Messer-Video verbunden; `tags` werden
+ * aus den Inline-`#tags` des Inhalts abgeleitet und verknüpfen Notizen.
+ *
+ * Notizen sind gerätelokal (kein Server-Sync), aber PRO PROFIL getrennt: der
+ * Primary Key ist das Paar `[profileId+objective]`, damit z. B. das Profil
+ * „Vlad" eigene Notizen pro Objective führt, ohne dass andere Profile sie sehen.
+ * `profileId` ist der Profil-Scope (verlinkt: userId, sonst 'local').
+ */
+export interface VideoNoteRecord {
+  profileId: string   // Profil-Scope (Teil des Compound-Primary-Keys)
+  objective: string   // entspricht MesserVideo.objective (z. B. "1.2")
+  videoId: string
+  content: string
+  tags: string[]
+  createdAt: number
+  updatedAt: number
+}
+
+/**
+ * Offline-Kopie eines selbst gehosteten Lernvideos. Metadaten und der (große)
+ * Blob liegen bewusst getrennt: Listen/Statusanzeigen lesen nur `videoDownloads`
+ * (klein), die eigentliche Datei kommt erst beim Abspielen aus `videoBlobs`.
+ */
+export interface VideoDownloadRecord {
+  file: string        // Primary key — Originaldateiname der .mp4
+  objective: string
+  title: string
+  size: number        // Bytes
+  createdAt: number
+}
+
+export interface VideoBlobRecord {
+  file: string        // Primary key — Originaldateiname der .mp4
+  blob: Blob
+}
+
 // ─── Dexie Database Class ────────────────────────────────────────────────────
 
 export class CardPwaDB extends Dexie {
@@ -159,6 +198,9 @@ export class CardPwaDB extends Dexie {
   cardStats!: Table<CardStatsRecord, string>
   deckProgress!: Table<DeckProgressRecord, string>
   shuffleCollections!: Table<ShuffleCollectionRecord, string>
+  videoNotes2!: Table<VideoNoteRecord, [string, string]>
+  videoDownloads!: Table<VideoDownloadRecord, string>
+  videoBlobs!: Table<VideoBlobRecord, string>
 
   constructor() {
     super(DATABASE_NAMES.app)
@@ -302,6 +344,123 @@ export class CardPwaDB extends Dexie {
           await deckTable.update(update.id, update.changes)
         }
       })
+
+    // Version 14: Add videoNotes table — per-video notepad with tags for the
+    // desktop video mode. Multi-entry index on tags enables tag-based lookup.
+    this.version(14).stores({
+      decks: 'id, name, parentDeckId, createdAt, isDeleted',
+      cards: 'id, noteId, deckId, type, due, dueAt, createdAt, algorithm, stability, difficulty, isDeleted, [deckId+due], [deckId+dueAt], [deckId+algorithm], [deckId+type], [deckId+stability], [deckId+difficulty]',
+      reviews: '++id, cardId, timestamp, rating, [cardId+timestamp], [timestamp+rating]',
+      activeSessions: 'id, updatedAt',
+      syncMeta: 'key',
+      profile: 'id',
+      cardStats: 'cardId, deckId, updatedAt, [deckId+updatedAt]',
+      deckProgress: 'deckId, updatedAt',
+      shuffleCollections: 'id, updatedAt, isDeleted',
+      videoNotes: 'objective, videoId, updatedAt, *tags',
+    })
+
+    // Version 15: Offline-Kopien selbst gehosteter Lernvideos. Metadaten und
+    // Blob getrennt, damit Listen die großen Blobs nicht laden müssen.
+    this.version(15).stores({
+      decks: 'id, name, parentDeckId, createdAt, isDeleted',
+      cards: 'id, noteId, deckId, type, due, dueAt, createdAt, algorithm, stability, difficulty, isDeleted, [deckId+due], [deckId+dueAt], [deckId+algorithm], [deckId+type], [deckId+stability], [deckId+difficulty]',
+      reviews: '++id, cardId, timestamp, rating, [cardId+timestamp], [timestamp+rating]',
+      activeSessions: 'id, updatedAt',
+      syncMeta: 'key',
+      profile: 'id',
+      cardStats: 'cardId, deckId, updatedAt, [deckId+updatedAt]',
+      deckProgress: 'deckId, updatedAt',
+      shuffleCollections: 'id, updatedAt, isDeleted',
+      videoNotes: 'objective, videoId, updatedAt, *tags',
+      videoDownloads: 'file, objective, createdAt',
+      videoBlobs: 'file',
+    })
+
+    // Version 16: Index-Pruning. Ein Audit zeigte, dass keine Query je die
+    // Compound-Indizes oder die Felder stability/difficulty/algorithm/due/dueAt/
+    // createdAt als Index-Einstieg nutzt — Filter laufen in JS nach einem
+    // where('deckId')-Fetch. Diese Indizes waren reiner Schreib-Overhead (jede
+    // Kartenschreibung pflegte 17 statt 4 Index-Bäume; teuer bei Anki-Importen).
+    // Entfernt werden sie auf den drei schreibintensiven Tabellen; `isDeleted`
+    // (cards) und `updatedAt` (cardStats) bleiben als Reserve für künftige
+    // Purge-/Delta-Sync-Queries. Korrektheits-neutral: kein genutzter Index
+    // entfällt, kein Daten-Transform nötig — Dexie baut nur die Indexmenge neu.
+    // Nicht aufgeführte Tabellen behalten ihr v15-Schema unverändert.
+    this.version(16).stores({
+      cards: 'id, noteId, deckId, type, isDeleted',
+      reviews: '++id, cardId, timestamp',
+      cardStats: 'cardId, updatedAt',
+    })
+
+    // Version 17: Tags wandern in den Notiztext (Inline-`#tag`). Das frühere
+    // separate Tag-Eingabefeld entfällt; damit bestehende Chip-Tags nicht
+    // verloren gehen, werden sie als `#tag` an den Inhalt angehängt (Leerzeichen
+    // → `-`) und `tags` anschließend aus dem Inhalt neu abgeleitet. Primary Key
+    // unverändert — nur Datentransform.
+    this.version(17)
+      .stores({
+        videoNotes: 'objective, videoId, updatedAt, *tags',
+      })
+      .upgrade(async tx => {
+        await tx.table('videoNotes').toCollection().modify((note: VideoNoteRecord) => {
+          if (!note.tags || note.tags.length === 0) return
+          const inlineKeys = new Set(extractTags(note.content).map(tag => tag.toLowerCase()))
+          const missing = note.tags
+            .map(tag => tag.trim())
+            .filter(tag => tag && !inlineKeys.has(tag.toLowerCase()))
+          if (missing.length === 0) return
+          const appended = missing.map(tag => `#${tag.replace(/\s+/g, '-')}`).join(' ')
+          note.content = note.content ? `${note.content}\n\n${appended}` : appended
+          note.tags = extractTags(note.content)
+        })
+      })
+
+    // Version 18: Notizen werden PRO PROFIL getrennt. Dexie kann den Primary Key
+    // einer bestehenden Tabelle NICHT ändern ("Not yet support for changing
+    // primary key"), daher wird eine NEUE Tabelle `videoNotes2` mit
+    // Compound-Primary-Key `[profileId+objective]` angelegt und der Bestand aus
+    // der alten `videoNotes` hineinkopiert (dem aktuell aktiven Profil
+    // zugeordnet: verlinkt → userId, sonst 'local'). Die alte Tabelle bleibt in
+    // v18 lesbar und wird erst in v19 verworfen.
+    this.version(18)
+      .stores({
+        videoNotes2: '[profileId+objective], videoId, updatedAt, *tags, profileId',
+      })
+      .upgrade(async tx => {
+        const oldRows = await tx.table('videoNotes').toArray()
+        if (oldRows.length === 0) return
+        const profile = await tx.table('profile').get('current')
+        const scope = profile?.mode === 'linked' && profile.userId ? profile.userId : 'local'
+        const migrated = oldRows.map(row => {
+          // Alt-Chip-Tags defensiv in den Content falten (falls v17 nicht lief).
+          let content: string = row.content ?? ''
+          const inlineKeys = new Set(extractTags(content).map(tag => tag.toLowerCase()))
+          const missing: string[] = (row.tags ?? [])
+            .map((tag: string) => tag.trim())
+            .filter((tag: string) => tag && !inlineKeys.has(tag.toLowerCase()))
+          if (missing.length > 0) {
+            const appended = missing.map(tag => `#${tag.replace(/\s+/g, '-')}`).join(' ')
+            content = content ? `${content}\n\n${appended}` : appended
+          }
+          return {
+            profileId: scope,
+            objective: row.objective,
+            videoId: row.videoId,
+            content,
+            tags: extractTags(content),
+            createdAt: row.createdAt ?? Date.now(),
+            updatedAt: row.updatedAt ?? Date.now(),
+          }
+        })
+        await tx.table('videoNotes2').bulkPut(migrated)
+      })
+
+    // Version 19: alte (profilübergreifende) `videoNotes`-Tabelle verwerfen — der
+    // Bestand liegt seit v18 in `videoNotes2`.
+    this.version(19).stores({
+      videoNotes: null,
+    })
   }
 }
 

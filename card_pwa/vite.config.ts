@@ -1,7 +1,20 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { defineConfig } from 'vite'
+import { defineConfig, type PluginOption } from 'vite'
 import react from '@vitejs/plugin-react'
+// @ts-expect-error — reines Node-ESM ohne Typen, von Vite (esbuild) auflösbar.
+import { resolveMediaDir, createMesserMediaMiddleware } from './scripts/mediaServer.mjs'
+
+/** Dev-Plugin: liefert die selbst gehosteten Lernvideos unter /media/messer/. */
+function messerLocalMedia(): PluginOption {
+  return {
+    name: 'messer-local-media',
+    configureServer(server) {
+      const dir = resolveMediaDir(process.env.PWA_MEDIA_DIR)
+      server.middlewares.use(createMesserMediaMiddleware(dir))
+    },
+  }
+}
 
 const packageJsonPath = resolve(process.cwd(), 'package.json')
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8')) as { version?: string }
@@ -39,6 +52,7 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    messerLocalMedia(),
   ],
   worker: {
     format: 'es',

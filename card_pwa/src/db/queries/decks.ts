@@ -201,6 +201,24 @@ export async function fetchAllCards(): Promise<Card[]> {
   return rows.map(mapCard)
 }
 
+/** Lernkarten, die einen bestimmten Tag tragen (case-insensitiv) — für die
+ *  tagbasierte Sammlung (Obsidian-artige Quelle „Lernkarten"). Liefert die
+ *  Karte samt `deckId` zur Quellenangabe. */
+export async function listCardsByTag(tag: string): Promise<Array<{ deckId: string; card: Card }>> {
+  const needle = tag.trim().toLowerCase()
+  if (!needle) return []
+  const rows = (await db.cards.toArray()).filter(
+    r => !r.isDeleted && r.tags.some(t => t.trim().toLowerCase() === needle),
+  )
+  return rows.map(r => ({ deckId: r.deckId, card: mapCard(r) }))
+}
+
+/** Map deckId → Deckname (aktive Decks) — für Quellenlabels. */
+export async function getDeckNameMap(): Promise<Record<string, string>> {
+  const decks = (await db.decks.toArray()).filter(d => !d.isDeleted)
+  return Object.fromEntries(decks.map(d => [d.id, d.name]))
+}
+
 /**
  * Daily Quest (Dashboard-Kachel "Pilot", Beleg `…23.36.20.jpeg`): gemischte
  * Session über alle Decks — fällige Karten deckübergreifend, priorisiert wie

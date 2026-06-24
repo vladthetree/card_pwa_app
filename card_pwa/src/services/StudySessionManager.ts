@@ -1,5 +1,6 @@
 import type { Card } from '../types'
-import { getDayStartMs } from '../utils/time'
+import { DAY_MS, getDayStartMs, resolveDueAtMs } from '../utils/time'
+import { compareByDueRank, getCardTypePriority, seededRank } from './cardOrdering'
 
 export const WEIGHT_PRIORITY_WINDOW = 50
 
@@ -19,28 +20,15 @@ export function getCardWeight(card: Card): number {
   return 1 + lapses * 2.5 + incorrectRatio * 3
 }
 
-function seededRank(seed: string | number, card: Card): number {
-  const input = `${seed}:${card.id}`
-  let hash = 2166136261
-  for (let i = 0; i < input.length; i += 1) {
-    hash ^= input.charCodeAt(i)
-    hash = Math.imul(hash, 16777619)
-  }
-  return hash >>> 0
-}
-
 export function sortStudyCards(cards: Card[], options: SortStudyCardsOptions = {}): Card[] {
   const nowMs = options.nowMs ?? Date.now()
   const nextDayStartsAt = Number.isInteger(options.nextDayStartsAt)
     ? Math.max(0, Math.min(23, Number(options.nextDayStartsAt)))
     : 0
   const todayStartMs = getDayStartMs(nowMs, nextDayStartsAt)
-  const tomorrowStartMs = todayStartMs + 86_400_000
+  const tomorrowStartMs = todayStartMs + DAY_MS
 
-  function resolveDueAt(card: Card): number {
-    if (Number.isFinite(card.dueAt)) return Math.round(card.dueAt as number)
-    return Math.max(0, Math.floor(card.due)) * 86_400_000
-  }
+  const resolveDueAt = resolveDueAtMs
 
   const dueCards = cards.filter(card => {
     if (card.type === 'new') return true
@@ -57,31 +45,13 @@ export function sortStudyCards(cards: Card[], options: SortStudyCardsOptions = {
     ? Math.max(1, Math.floor(options.maxCards as number))
     : dueCards.length
 
-  const getPriority = (cardType: Card['type']): number => {
-    // Learning/relearning steps have short intraday intervals (minutes) and are
-    // time-sensitive: delaying them past their window degrades retention.
-    // Review cards have day-scale intervals and tolerate a few hours' delay fine.
-    const priority: Record<Card['type'], number> = {
-      learning: 0,
-      relearning: 1,
-      review: 2,
-      new: 3,
-    }
-    return priority[cardType]
-  }
-
   const useFreshRunOrder = options.runSeed !== undefined
 
   const compareCards = (a: Card, b: Card): number => {
-    const aIsTimeBound = a.type !== 'new'
-    const bIsTimeBound = b.type !== 'new'
-    if (aIsTimeBound || bIsTimeBound) {
-      const aDueRank = aIsTimeBound && resolveDueAt(a) <= nowMs ? 0 : 1
-      const bDueRank = bIsTimeBound && resolveDueAt(b) <= nowMs ? 0 : 1
-      if (aDueRank !== bDueRank) return aDueRank - bDueRank
-    }
+    const dueRankDiff = compareByDueRank(a, b, nowMs)
+    if (dueRankDiff !== 0) return dueRankDiff
 
-    const typeDiff = getPriority(a.type) - getPriority(b.type)
+    const typeDiff = getCardTypePriority(a.type) - getCardTypePriority(b.type)
     if (typeDiff !== 0) return typeDiff
 
     // Earlier due cards first inside same type. For fresh runs, keep exact

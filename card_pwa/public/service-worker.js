@@ -45,9 +45,24 @@ const OFFLINE_HTML = `<!doctype html>
       <p>Card_PWA couldn't load. <a href="/">Tap here to retry</a>, or wait — this page reconnects automatically.</p>
     </div>
     <script>
-      // Auto-reload as soon as the device is back online so users are never
-      // permanently trapped on this page (Issue #5).
-      window.addEventListener('online', function () { window.location.href = '/' })
+      // Recover by itself. On iOS the app shell can fail on the *first* launch
+      // of the installed (standalone) PWA — the navigation fetch loses a race
+      // with the service worker before anything is cached. The device is not
+      // actually offline, so the 'online' event never fires and the user would
+      // be trapped here forever. Therefore: reload on 'online' AND retry on a
+      // short timer until the app shell loads (capped, so a truly-down server
+      // doesn't cause an endless reload loop).
+      (function () {
+        function go() { window.location.replace('/') }
+        window.addEventListener('online', go)
+        var KEY = 'cardpwa-offline-retries'
+        var n = 0
+        try { n = parseInt(sessionStorage.getItem(KEY) || '0', 10) || 0 } catch (e) {}
+        if (n < 15) { // ~15 * 3s ≈ 45s of auto-retries, then stop hammering
+          try { sessionStorage.setItem(KEY, String(n + 1)) } catch (e) {}
+          setTimeout(go, 3000)
+        }
+      })()
     </script>
   </body>
 </html>`
@@ -157,19 +172,6 @@ async function findCachedAcrossVersions(pathname) {
     if (match) return match
   }
   return null
-}
-
-async function refreshNavigationCache(request) {
-  try {
-    const response = await fetch(request)
-    if (!response.ok) return
-
-    const cache = await caches.open(CACHE_NAME)
-    await cache.put('/', response.clone())
-    await cache.put('/index.html', response.clone())
-  } catch {
-    // best effort refresh while returning cached navigation
-  }
 }
 
 async function precacheChunkGraph(cache, initialAssets) {
@@ -338,36 +340,51 @@ async function staleWhileRevalidate(request) {
   })
 }
 
-async function navigationNetworkFirst(request) {
-  const cachedNavigation =
+const NAV_NETWORK_TIMEOUT_MS = 3000
+
+function fetchNavigationWithTimeout(request, timeoutMs) {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  return fetch(request, { signal: controller.signal }).finally(() => clearTimeout(timer))
+}
+
+async function readCachedNavigation(request) {
+  return (
     (await caches.match(request, { ignoreSearch: true })) ||
     (await caches.match('/')) ||
     (await caches.match('/index.html')) ||
     (await findCachedAcrossVersions('/')) ||
     (await findCachedAcrossVersions('/index.html'))
+  )
+}
 
-  if (cachedNavigation) {
-    // Always serve app shell immediately for navigations. This avoids
-    // browser-level offline failures during reload on some engines.
-    void refreshNavigationCache(request)
-    return cachedNavigation
-  }
-
+async function navigationNetworkFirst(request) {
+  // Network-FIRST for navigations: we must serve an index.html whose hashed-asset
+  // references match what the server currently serves. Serving a *stale* cached
+  // shell (older build) makes the browser request chunks that 404 on the server →
+  // white screen in normal Safari / "offline" page in the installed PWA. So try
+  // the network first (with a short timeout so a dead server doesn't hang launch),
+  // refresh the cache, and fall back to cache → offline only when truly offline.
   try {
-    const response = await fetch(request)
-    if (response.ok) {
+    const response = await fetchNavigationWithTimeout(request, NAV_NETWORK_TIMEOUT_MS)
+    if (response && response.ok) {
       const cache = await caches.open(CACHE_NAME)
       await cache.put('/', response.clone())
       await cache.put('/index.html', response.clone())
+      return response
     }
-    return response
   } catch {
-    return new Response(OFFLINE_HTML, {
-      status: 503,
-      statusText: 'Offline',
-      headers: { 'Content-Type': 'text/html; charset=utf-8' },
-    })
+    // network failed/timed out → fall back to cache below
   }
+
+  const cachedNavigation = await readCachedNavigation(request)
+  if (cachedNavigation) return cachedNavigation
+
+  return new Response(OFFLINE_HTML, {
+    status: 503,
+    statusText: 'Offline',
+    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+  })
 }
 
 self.addEventListener('fetch', event => {
@@ -376,6 +393,11 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(request.url)
   if (url.origin !== self.location.origin) return
+
+  // Selbst gehostete Lernvideos NICHT abfangen: der Browser muss Range-Requests
+  // (Seeking, iOS) nativ behandeln, und 206-/GB-Antworten gehören nicht in den
+  // SW-Cache. Offline-Kopien werden separat in IndexedDB gehalten.
+  if (url.pathname.startsWith('/media/') || request.destination === 'video') return
 
   const accepts = request.headers.get('accept') || ''
   const isDocumentRequest =

@@ -1,11 +1,10 @@
 import type { ShuffleCollectionRecord } from '../db'
 import { fetchDeckStudyCandidates } from '../db/queries'
-import { getDayStartMs } from '../utils/time'
+import { DAY_MS, getDayStartMs, resolveDueAtMs } from '../utils/time'
 import type { Card } from '../types'
+import { compareByDueRank, getCardTypePriority, seededRank } from './cardOrdering'
 import { getCardWeight, sortStudyCards } from './StudySessionManager'
 import { getSyncedDeckIds } from './syncedDeckScope'
-
-const DAY_MS = 86_400_000
 
 export interface ShuffleStudyCard extends Card {
   deckId: string
@@ -20,9 +19,7 @@ interface ShuffleSelectionOptions {
 
 export function getShuffleWeight(card: Card, nowMs = Date.now()): number {
   const baseWeight = getCardWeight(card)
-  const dueAtMs = Number.isFinite(card.dueAt)
-    ? Math.round(card.dueAt as number)
-    : Math.max(0, Math.floor(card.due)) * DAY_MS
+  const dueAtMs = resolveDueAtMs(card)
   const overdueDays = Math.max(0, (nowMs - dueAtMs) / DAY_MS)
   const overdueBoost = 1 + Math.min(overdueDays / 14, 1)
 
@@ -77,44 +74,14 @@ function interleaveDecks(cards: ShuffleStudyCard[]): ShuffleStudyCard[] {
   return result
 }
 
-function resolveDueAt(card: Card): number {
-  if (Number.isFinite(card.dueAt)) return Math.round(card.dueAt as number)
-  return Math.max(0, Math.floor(card.due)) * DAY_MS
-}
-
-function seededRank(seed: string | number, card: Card): number {
-  const input = `${seed}:${card.id}`
-  let hash = 2166136261
-  for (let i = 0; i < input.length; i += 1) {
-    hash ^= input.charCodeAt(i)
-    hash = Math.imul(hash, 16777619)
-  }
-  return hash >>> 0
-}
-
-function getTypePriority(cardType: Card['type']): number {
-  const priority: Record<Card['type'], number> = {
-    learning: 0,
-    relearning: 1,
-    review: 2,
-    new: 3,
-  }
-  return priority[cardType]
-}
-
 function compareShuffleCards(a: Card, b: Card, nowMs: number, runSeed?: string | number): number {
-  const aIsTimeBound = a.type !== 'new'
-  const bIsTimeBound = b.type !== 'new'
-  if (aIsTimeBound || bIsTimeBound) {
-    const aDueRank = aIsTimeBound && resolveDueAt(a) <= nowMs ? 0 : 1
-    const bDueRank = bIsTimeBound && resolveDueAt(b) <= nowMs ? 0 : 1
-    if (aDueRank !== bDueRank) return aDueRank - bDueRank
-  }
+  const dueRankDiff = compareByDueRank(a, b, nowMs)
+  if (dueRankDiff !== 0) return dueRankDiff
 
-  const typeDiff = getTypePriority(a.type) - getTypePriority(b.type)
+  const typeDiff = getCardTypePriority(a.type) - getCardTypePriority(b.type)
   if (typeDiff !== 0) return typeDiff
 
-  const dueDiff = resolveDueAt(a) - resolveDueAt(b)
+  const dueDiff = resolveDueAtMs(a) - resolveDueAtMs(b)
   if (dueDiff !== 0) return dueDiff
 
   const weightDiff = getShuffleWeight(b, nowMs) - getShuffleWeight(a, nowMs)
@@ -174,9 +141,7 @@ export async function buildSelectedShuffleCards(
 
 export function isShuffleCardDueToday(card: Card, nowMs = Date.now(), nextDayStartsAt = 0): boolean {
   const tomorrowStartMs = getDayStartMs(nowMs, nextDayStartsAt) + DAY_MS
-  const dueAtMs = Number.isFinite(card.dueAt)
-    ? Math.round(card.dueAt as number)
-    : Math.max(0, Math.floor(card.due)) * DAY_MS
+  const dueAtMs = resolveDueAtMs(card)
 
   if (card.type === 'new') return true
   return dueAtMs < tomorrowStartMs

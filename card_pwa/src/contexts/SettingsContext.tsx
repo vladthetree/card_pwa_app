@@ -52,6 +52,9 @@ interface Settings {
   /** Focus mode: hides the study session header (deck stats, progress) while
    *  reserving its space, so the card does not jump. Back button stays visible. */
   focusMode: boolean
+  /** When on, the app re-enters the Fullscreen API on the first interaction
+   *  after load (gesture-less auto-entry is blocked by browsers). */
+  fullscreenEnabled: boolean
 }
 
 interface SettingsContextType {
@@ -76,6 +79,7 @@ interface SettingsContextType {
   setNextDayStartsAt: (hour: number) => void
   setDailyGoal: (goal: number) => void
   setFocusMode: (enabled: boolean) => void
+  setFullscreenEnabled: (enabled: boolean) => void
   setSm2Params: (params: Partial<SM2Params>) => void
   setFsrsParams: (params: Partial<FSRSParams>) => void
   resetAlgorithmParams: () => void
@@ -171,6 +175,7 @@ const DEFAULT_SETTINGS: Settings = {
   nextDayStartsAt: 4,
   dailyGoal: 20,
   focusMode: false,
+  fullscreenEnabled: false,
 }
 
 function normalizeDailyGoal(value: unknown): number {
@@ -210,6 +215,7 @@ export function normalizeSettings(input: Partial<Settings> | undefined): Setting
     nextDayStartsAt: Number.isInteger(rawNextDayStartsAt) && rawNextDayStartsAt >= 0 && rawNextDayStartsAt <= 23 ? rawNextDayStartsAt : 4,
     dailyGoal: normalizeDailyGoal(input?.dailyGoal),
     focusMode: input?.focusMode === true,
+    fullscreenEnabled: input?.fullscreenEnabled === true,
   }
 }
 
@@ -386,6 +392,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     saveSettings({ ...settings, focusMode })
   }
 
+  const setFullscreenEnabled = (fullscreenEnabled: boolean) => {
+    saveSettings({ ...settings, fullscreenEnabled })
+  }
+
   const setSm2Params = (params: Partial<SM2Params>) => {
     saveSettings({
       ...settings,
@@ -452,6 +462,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setNextDayStartsAt,
         setDailyGoal,
         setFocusMode,
+        setFullscreenEnabled,
         setSm2Params,
         setFsrsParams,
         resetAlgorithmParams,

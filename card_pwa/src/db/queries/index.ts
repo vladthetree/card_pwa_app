@@ -8,6 +8,8 @@ export {
   fetchDecks,
   fetchDeckCards,
   fetchAllCards,
+  listCardsByTag,
+  getDeckNameMap,
   fetchDailyQuestCards,
   getDeckHomeMetadata,
   getDeckTagIndex,
@@ -50,3 +52,23 @@ export {
   updateShuffleCollection,
   deleteShuffleCollection,
 } from './shuffleCollections'
+
+export {
+  normalizeTags,
+  getVideoNote,
+  listVideoNotes,
+  listObjectivesWithNotes,
+  listAllVideoNoteTags,
+  listRelatedVideoNoteTags,
+  saveVideoNote,
+  deleteVideoNote,
+} from './videoNotes'
+
+export {
+  saveVideoBlob,
+  getVideoBlob,
+  deleteVideoDownload,
+  listVideoDownloads,
+  getDownloadsTotalSize,
+  type SaveVideoBlobInput,
+} from './videoDownloads'

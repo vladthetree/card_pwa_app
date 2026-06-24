@@ -89,6 +89,19 @@ export async function clearProfile(): Promise<void> {
   }
 }
 
+/**
+ * Stabiler Scope-Schlüssel des aktiven Profils — partitioniert gerätelokale,
+ * NICHT synchronisierte Daten (z. B. Video-Notizen/Tags) pro Profil. Verlinkte
+ * Profile nutzen die `userId` (z. B. „Vlad"), der lokale Modus die Konstante
+ * `'local'`. So bleiben Notizen beim Profilwechsel sauber getrennt.
+ */
+export const LOCAL_PROFILE_SCOPE = 'local'
+
+export function profileScopeId(profile: ProfileRecord | null): string {
+  if (profile?.mode === 'linked' && profile.userId) return profile.userId
+  return LOCAL_PROFILE_SCOPE
+}
+
 /** Return a local-only profile record (no server link). */
 export function makeLocalProfile(): ProfileRecord {
   const now = Date.now()

@@ -1,5 +1,4 @@
 import { lazy, Suspense, useMemo, useState } from 'react'
-import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import { useDecks, useGamificationProfile, useShuffleCollections, useStats } from '../hooks/useCardDb'
@@ -8,7 +7,6 @@ import { useServerHeartbeat } from '../hooks/useServerHeartbeat'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import type { Card, Deck, ShuffleCollection } from '../types'
 import { UI_TOKENS } from '../constants/ui'
-import { formatBuildVersionTitle, formatServiceWorkerVersionLabel } from '../utils/buildInfo'
 import { HomeHeaderBar } from './home/HomeHeaderBar'
 import { HomeStatsSection } from './home/HomeStatsSection'
 import { HomeDeckToolbar } from './home/HomeDeckToolbar'
@@ -82,10 +80,7 @@ export default function HomeView({
   const { canInstall, isInstalled, hasNativePrompt, isIos, isInstalling, install } = usePwaInstall()
   const { isConnected } = useServerHeartbeat(settings.language)
   const { storageUsedBytes, storageQuotaBytes, storageEstimateUnavailable } = useHomeStorageEstimate()
-  const buildVersionLabel = useMemo(() => formatServiceWorkerVersionLabel(), [])
-  const buildVersionTitle = useMemo(() => formatBuildVersionTitle(), [])
   const isShuffleManageMode = mode === 'shuffle-manage'
-  const bottomBarPortalTarget = typeof document !== 'undefined' ? document.body : null
   const homeDecks = useMemo(
     () => settings.showReviewDecks ? decks : decks.filter(deck => !isReviewDeck(deck)),
     [decks, settings.showReviewDecks],
@@ -185,6 +180,38 @@ export default function HomeView({
       {/* pb-3 mobil: Luft zwischen Dashboard-Kachel/KPIs und der Deckliste —
           ohne Abstand überlappten sich die Kartenschatten leicht. */}
       <div className="relative z-20 flex-shrink-0 pt-safe-2 pb-3 sm:pt-safe-4 sm:pb-0">
+        {/* Mobile: Navigation als Top-Header (ersetzt die frühere fixe
+            Bottom-Bar). Inhalt scrollt darunter edge-to-edge. */}
+        {!isShuffleManageMode && (
+          <div className="mb-2 sm:hidden">
+            <HomeBottomBar
+              t={t}
+              language={settings.language}
+              shuffleModeEnabled={settings.shuffleModeEnabled}
+              showShuffleOnly={controller.showShuffleOnly}
+              deckSortMode={deckSortMode}
+              dashboardMode={controller.dashboardMode}
+              homeTab={homeTab}
+              canInstall={canInstall}
+              isInstalled={isInstalled}
+              isInstalling={isInstalling}
+              onHomeTabChange={setHomeTab}
+              onDeckSortModeChange={setDeckSortMode}
+              onToggleShuffleOnly={controller.toggleShuffleOnly}
+              onDashboardModeChange={controller.setDashboardMode}
+              onReload={reload}
+              onCreateDeck={controller.openCreateDeckModal}
+              onCreateVirtualDeck={controller.openCreateShuffleCollection}
+              onCreateCard={controller.openCreateCard}
+              onImport={controller.openImport}
+              onExport={controller.openExport}
+              onShowSettings={controller.openSettings}
+              onInstall={() => { void controller.handleInstall() }}
+              onOpenLabs={onOpenLabs}
+              onOpenVideos={onOpenVideos}
+            />
+          </div>
+        )}
         <div className="grid gap-2 sm:gap-3 md:min-h-[140px]">
           <div className="w-full min-w-0 flex flex-col gap-3">
             <motion.div
@@ -234,6 +261,8 @@ export default function HomeView({
               onCreateCard={controller.openCreateCard}
               onImport={controller.openImport}
               onExport={controller.openExport}
+              onOpenLabs={onOpenLabs}
+              onOpenVideos={onOpenVideos}
             />
           </div>
         )}
@@ -346,47 +375,6 @@ export default function HomeView({
           </>
         )}
       </div>
-
-      {!isShuffleManageMode && bottomBarPortalTarget && createPortal(
-        <HomeBottomBar
-          t={t}
-          language={settings.language}
-          shuffleModeEnabled={settings.shuffleModeEnabled}
-          showShuffleOnly={controller.showShuffleOnly}
-          deckSortMode={deckSortMode}
-          dashboardMode={controller.dashboardMode}
-          homeTab={homeTab}
-          canInstall={canInstall}
-          isInstalled={isInstalled}
-          isInstalling={isInstalling}
-          onHomeTabChange={setHomeTab}
-          onDeckSortModeChange={setDeckSortMode}
-          onToggleShuffleOnly={controller.toggleShuffleOnly}
-          onDashboardModeChange={controller.setDashboardMode}
-          onReload={reload}
-          onCreateDeck={controller.openCreateDeckModal}
-          onCreateVirtualDeck={controller.openCreateShuffleCollection}
-          onCreateCard={controller.openCreateCard}
-          onImport={controller.openImport}
-          onExport={controller.openExport}
-          onShowSettings={controller.openSettings}
-          onInstall={() => { void controller.handleInstall() }}
-          onOpenLabs={onOpenLabs}
-          onOpenVideos={onOpenVideos}
-        />,
-        bottomBarPortalTarget
-      )}
-
-      {settings.showBuildVersion && (
-        <div className="pointer-events-none mt-2 mb-1 flex justify-end pr-1">
-          <span
-            title={buildVersionTitle}
-            className="text-[10px] font-mono tracking-[0.12em] text-white/18 select-none"
-          >
-            {buildVersionLabel}
-          </span>
-        </div>
-      )}
 
       <Suspense fallback={null}>
         <AnimatePresence initial={false}>
