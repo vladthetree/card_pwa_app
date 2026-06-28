@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for free Recall Card; contributes to the card-learning UI and shared app interactions.
+ */
 import { memo, useCallback, useMemo, useState } from 'react'
 import { Check, Edit, X } from 'lucide-react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Import utility for mc Normalizer; parses or normalizes external Anki/CSV/APKG data into app card structures.
+ */
 interface ParsedOptions {
   question: string
   options: Array<{ label: string; text: string }>

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for settings focus mode; protects utils behavior from regressions in the learning PWA.
+ */
 import { describe, it, expect } from 'vitest'
 import { normalizeSettings } from '../../contexts/SettingsContext'
 

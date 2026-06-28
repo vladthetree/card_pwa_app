@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Pure queue-selection and progress-summary logic for offline chapter/video downloads.
+ * Used by: useLocalMesserVideos and VideosView chapter controls.
+ * Important: Keep this browser-free; fetch, AbortController, IndexedDB writes, and quota handling belong in the hook/query layer.
+ */
 import type { LocalVideoMeta } from './localVideoManifest'
 
 /**

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Home-screen React component for gamification Panel; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
+ */
 import { motion } from 'framer-motion'
 import { Award, Flame, ShieldCheck, Sparkles, Target, Trophy, Zap } from 'lucide-react'
 import type { GamificationAchievement, GamificationProfile } from '../../types'

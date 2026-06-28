@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for csv importer; protects runtime behavior from regressions in the learning PWA.
+ */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { CSV_WORKER_THRESHOLD_BYTES, parseCsv, parseCsvText } from '../../utils/import/csvImporter'
 import type { CardRecord } from '../../db'

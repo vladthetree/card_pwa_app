@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for profile service; protects services behavior from regressions in the learning PWA.
+ */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { STORAGE_KEYS } from '../../constants/appIdentity'
 

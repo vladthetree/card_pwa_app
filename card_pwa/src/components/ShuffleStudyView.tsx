@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for shuffle Study View; contributes to the card-learning UI and shared app interactions.
+ */
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ArrowLeft, RefreshCw, Shuffle } from 'lucide-react'

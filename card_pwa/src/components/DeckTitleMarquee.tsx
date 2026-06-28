@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for deck Title Marquee; contributes to the card-learning UI and shared app interactions.
+ */
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
 export function DeckTitleMarquee({ title }: { title: string }) {

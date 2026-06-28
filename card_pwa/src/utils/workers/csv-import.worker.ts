@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Web-worker utility for csv import; moves heavy parsing, import, sync, or stats work off the UI thread.
+ */
 import { parseCsvText } from '../import/csvImporter'
 import type { Algorithm, Language } from '../../contexts/SettingsContext'
 

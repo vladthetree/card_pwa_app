@@ -1,9 +1,16 @@
+/**
+ * AI_CONTEXT:
+ * Role: Builds the home tag index from all flashcards, including an untagged bucket, and refreshes after DB/review changes.
+ * Used by: HomeView tag tab and tag-study launch path.
+ * Important: Bucket keys use normalizeTagId, so UI may show canonical IDs rather than original display spelling.
+ */
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { liveQuery } from 'dexie'
 import { db } from '../../db'
 import { fetchAllCards } from '../../db/queries'
 import type { Card } from '../../types'
 import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
+import { normalizeTagId } from '../../utils/tagIdentity'
 
 const DEBOUNCE_MS = 250
 
@@ -30,7 +37,7 @@ export function useTagCardIndex(): TagCardIndex {
       const buckets: Record<string, Card[]> = {}
       for (const card of cards) {
         const rawTags = card.tags.length > 0
-          ? card.tags.map(t => t.trim().toLowerCase()).filter(Boolean)
+          ? card.tags.map(normalizeTagId).filter(Boolean)
           : ['(untagged)']
         for (const tag of rawTags) {
           if (!buckets[tag]) buckets[tag] = []

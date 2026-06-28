@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Import utility for types; parses or normalizes external Anki/CSV/APKG data into app card structures.
+ */
 import type { CardRecord, DeckRecord } from '../../db'
 
 // ─── Import Result Types ─────────────────────────────────────────────────────

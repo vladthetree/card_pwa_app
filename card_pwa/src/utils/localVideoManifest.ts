@@ -1,4 +1,10 @@
 /**
+ * AI_CONTEXT:
+ * Role: Parser and grouper for self-hosted Professor Messer MP4 filenames into objective/domain/title metadata.
+ * Used by: useLocalMesserVideos to turn /media/messer/index.json into the in-app video catalog.
+ * Important: Objective codes parsed here connect video files to Security+ decks, notes, recall checks, and progress.
+ */
+/**
  * Lokale Professor-Messer-Videos (selbst gehostet auf dem Pi statt YouTube-Embed).
  *
  * Die heruntergeladenen Dateien folgen dem Schema

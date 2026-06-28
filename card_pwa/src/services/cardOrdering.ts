@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Application service for card Ordering; owns business logic outside React components for learning, sync, profile, update, or session flows.
+ */
 import type { Card } from '../types'
 import { fnv1a32 } from '../utils/hash'
 import { resolveDueAtMs } from '../utils/time'

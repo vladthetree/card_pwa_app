@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for app Error Boundary; contributes to the card-learning UI and shared app interactions.
+ */
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { logError } from '../services/errorLog'
 

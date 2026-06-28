@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Encapsulated HTML video player for self-hosted Professor Messer MP4s with resume, playback-rate persistence, fullscreen, time reporting, and seek requests.
+ * Used by: VideosView as the media surface for online and IndexedDB offline sources.
+ * Important: Resume state is per file, while learning progress is per objective in useMesserVideoProgress; keep those models separate.
+ */
 import { useEffect, useRef, useState } from 'react'
 import { Maximize, Minimize } from 'lucide-react'
 import { isFullscreenActive, toggleVideoFullscreen } from '../../hooks/useFullscreen'
@@ -37,10 +43,21 @@ interface Props {
   variant: 'compact' | 'full'
   keyboardOpen?: boolean
   onEnded?: () => void
+  onTimeChange?: (seconds: number) => void
+  seekRequest?: { id: number; seconds: number } | null
   labels: PlayerLabels
 }
 
-export default function MesserVideoPlayer({ file, src, variant, keyboardOpen = false, onEnded, labels }: Props) {
+export default function MesserVideoPlayer({
+  file,
+  src,
+  variant,
+  keyboardOpen = false,
+  onEnded,
+  onTimeChange,
+  seekRequest,
+  labels,
+}: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const lastSavedRef = useRef(0)
   // Laufend mitgeschriebene Position/Dauer — der Cleanup darf NICHT videoRef
@@ -66,6 +83,13 @@ export default function MesserVideoPlayer({ file, src, variant, keyboardOpen = f
   useEffect(() => {
     if (videoRef.current) videoRef.current.playbackRate = rate
   }, [rate, src])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || !seekRequest) return
+    video.currentTime = Math.max(0, seekRequest.seconds)
+    onTimeChange?.(video.currentTime)
+  }, [seekRequest?.id])
 
   // Beim Verlassen / Dateiwechsel die zuletzt mitgeschriebene Position sichern.
   // Reset im Setup gilt dem NEUEN Video; der Cleanup läuft davor mit den Werten
@@ -103,6 +127,7 @@ export default function MesserVideoPlayer({ file, src, variant, keyboardOpen = f
     video.playbackRate = rate
     const resume = computeResume(getResumePosition(file), video.duration)
     if (resume > 0) video.currentTime = resume
+    onTimeChange?.(video.currentTime)
   }
 
   const handleTimeUpdate = () => {
@@ -111,6 +136,7 @@ export default function MesserVideoPlayer({ file, src, variant, keyboardOpen = f
     const now = video.currentTime
     lastPositionRef.current = now
     lastDurationRef.current = video.duration
+    onTimeChange?.(now)
     if (Math.abs(now - lastSavedRef.current) < SAVE_INTERVAL_SEC) return
     lastSavedRef.current = now
     saveResumePosition(file, now, video.duration)
@@ -123,12 +149,14 @@ export default function MesserVideoPlayer({ file, src, variant, keyboardOpen = f
     lastPositionRef.current = video.currentTime
     lastDurationRef.current = video.duration
     lastSavedRef.current = video.currentTime
+    onTimeChange?.(video.currentTime)
     saveResumePosition(file, video.currentTime, video.duration)
   }
 
   const handleEnded = () => {
     clearResumePosition(file)
     lastPositionRef.current = 0
+    onTimeChange?.(0)
     onEnded?.()
   }
 

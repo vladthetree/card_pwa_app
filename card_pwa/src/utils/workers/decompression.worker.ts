@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Web-worker utility for decompression; moves heavy parsing, import, sync, or stats work off the UI thread.
+ */
 import { decompress as zstdDecompress } from '../../vendor/fzstd'
 
 const ctx = self as any

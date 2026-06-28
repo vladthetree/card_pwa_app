@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Web-worker utility for snapshot normalizer; moves heavy parsing, import, sync, or stats work off the UI thread.
+ */
 import {
   normalizeSnapshotPayload,
   type SnapshotNormalizeRequest,

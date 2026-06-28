@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for install Hint Modal; contributes to the card-learning UI and shared app interactions.
+ */
 import { motion, useReducedMotion } from 'framer-motion'
 import { X } from 'lucide-react'
 import { UI_TOKENS } from '../constants/ui'

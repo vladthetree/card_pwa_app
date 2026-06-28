@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for streak Badge; contributes to the card-learning UI and shared app interactions.
+ */
 import { Flame } from 'lucide-react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import { useStreak } from '../hooks/useStreak'

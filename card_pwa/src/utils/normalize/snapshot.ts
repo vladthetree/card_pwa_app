@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Normalizes full server snapshot payloads into safe Deck/Card/Review/Shuffle records before local bootstrap writes.
+ * Used by: syncPull bootstrap flow and snapshot-normalizer worker.
+ * Important: Invalid records are filtered here; review rows must reference cards present in the normalized snapshot.
+ */
 import type { CardRecord, DeckRecord, ReviewRecord, ShuffleCollectionRecord } from '../../db'
 import { normalizeDeck } from './deck'
 import { normalizeCard } from './card'

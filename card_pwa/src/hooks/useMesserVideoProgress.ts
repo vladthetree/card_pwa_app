@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: LocalStorage-backed progress model for Professor Messer objectives: watched plus self-rated confidence gaps/ok/solid.
+ * Used by: VideosView status chips and VideoRecallCheck confidence suggestions.
+ * Important: This fights passive-watching fluency illusion; opening a video only marks watched, solid requires active confidence input.
+ */
 import { useCallback, useState } from 'react'
 
 /**

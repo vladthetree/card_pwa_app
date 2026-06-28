@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for matching Card; contributes to the card-learning UI and shared app interactions.
+ */
 import { memo, useMemo, useReducer, useCallback, useEffect, useRef } from 'react'
 import { Edit } from 'lucide-react'
 import { useReducedMotion } from 'framer-motion'

@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Controller hook for HomeView UI state: modals, deck creation/deletion, export, notifications, dashboard mode, shuffle state, and confirmations.
+ * Used by: HomeView as the imperative action/state hub.
+ * Important: Keep business side effects here when they are home-specific; shared data loading belongs in useHomeDerivedData or db/queries.
+ */
 import { useCallback, useEffect, useState } from 'react'
 import type { HomeDashboardMode } from '../../components/home/HomeStatsSection'
 import { STORAGE_KEYS } from '../../constants/appIdentity'

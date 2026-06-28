@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for deck Metrics Modal; contributes to the card-learning UI and shared app interactions.
+ */
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { TrendingUp, TrendingDown, Minus, X } from 'lucide-react'

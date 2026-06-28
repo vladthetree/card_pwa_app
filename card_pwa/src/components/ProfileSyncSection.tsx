@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for profile Sync Section; contributes to the card-learning UI and shared app interactions.
+ */
 import { useEffect, useState } from 'react'
 import {
   User,

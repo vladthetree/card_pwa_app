@@ -1,19 +1,29 @@
+/**
+ * AI_CONTEXT: Home-screen React component for home Deck Toolbar; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
+ */
 import { useCallback, useState, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
-import { BarChart3, CalendarDays, Check, ChevronDown, Download, EyeOff, FlaskConical, FolderPlus, Plus, RefreshCw, Search, Shuffle, Target, Upload, Video, X } from 'lucide-react'
+import { Check, ChevronDown, Download, FlaskConical, FolderPlus, Loader2, Plus, RefreshCw, Search, Shuffle, Upload, Video, X } from 'lucide-react'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 import { useFloatingMenu } from '../../hooks/useFloatingMenu'
 import type { HomeDashboardMode } from './HomeStatsSection'
+
+type HomeTab = 'decks' | 'tags'
 
 interface Props {
   t: Record<string, string>
   language: 'de' | 'en'
   shuffleModeEnabled: boolean
   showShuffleOnly: boolean
+  homeTab: HomeTab
   deckSearchQuery: string
   deckSortMode: DeckSortMode
   dashboardMode: HomeDashboardMode
+  canInstall: boolean
+  isInstalled: boolean
+  isInstalling: boolean
+  onHomeTabChange: (tab: HomeTab) => void
   onDeckSearchQueryChange: (value: string) => void
   onDeckSortModeChange: (value: DeckSortMode) => void
   onToggleShuffleOnly: () => void
@@ -24,6 +34,7 @@ interface Props {
   onCreateCard: () => void
   onImport: () => void
   onExport: () => void
+  onInstall: () => void
   /** Labs-Ansicht (Professor Messer / Übungen) — im Aktionsmenü. */
   onOpenLabs?: () => void
   /** Lernvideos-Ansicht — im Aktionsmenü. */
@@ -35,9 +46,14 @@ export function HomeDeckToolbar({
   language,
   shuffleModeEnabled,
   showShuffleOnly,
+  homeTab,
   deckSearchQuery,
   deckSortMode,
   dashboardMode,
+  canInstall,
+  isInstalled,
+  isInstalling,
+  onHomeTabChange,
   onDeckSearchQueryChange,
   onDeckSortModeChange,
   onToggleShuffleOnly,
@@ -48,12 +64,12 @@ export function HomeDeckToolbar({
   onCreateCard,
   onImport,
   onExport,
+  onInstall,
   onOpenLabs,
   onOpenVideos,
 }: Props) {
   const [showActionsMenu, setShowActionsMenu] = useState(false)
   const [showFilterMenu, setShowFilterMenu] = useState(false)
-  const [showFeatureMenu, setShowFeatureMenu] = useState(false)
 
   const closeActionsMenu = useCallback(() => {
     setShowActionsMenu(false)
@@ -61,10 +77,6 @@ export function HomeDeckToolbar({
 
   const closeFilterMenu = useCallback(() => {
     setShowFilterMenu(false)
-  }, [])
-
-  const closeFeatureMenu = useCallback(() => {
-    setShowFeatureMenu(false)
   }, [])
 
   const { anchorRef, menuRef, floatingStyle, updatePosition } = useFloatingMenu<HTMLDivElement, HTMLDivElement>({
@@ -82,20 +94,8 @@ export function HomeDeckToolbar({
   } = useFloatingMenu<HTMLDivElement, HTMLDivElement>({
     isOpen: showFilterMenu,
     onClose: closeFilterMenu,
-    width: 236,
-    maxHeight: 260,
-  })
-
-  const {
-    anchorRef: featureAnchorRef,
-    menuRef: featureMenuRef,
-    floatingStyle: featureFloatingStyle,
-    updatePosition: updateFeaturePosition,
-  } = useFloatingMenu<HTMLDivElement, HTMLDivElement>({
-    isOpen: showFeatureMenu,
-    onClose: closeFeatureMenu,
-    width: 220,
-    maxHeight: 260,
+    width: 268,
+    maxHeight: 520,
   })
 
   const handleToggleActionsMenu = useCallback((event: MouseEvent<HTMLButtonElement>) => {
@@ -105,14 +105,13 @@ export function HomeDeckToolbar({
     setShowActionsMenu(willOpen)
     if (willOpen) {
       closeFilterMenu()
-      closeFeatureMenu()
     }
 
     if (willOpen) {
       updatePosition()
       window.requestAnimationFrame(updatePosition)
     }
-  }, [showActionsMenu, updatePosition, closeFeatureMenu, closeFilterMenu])
+  }, [showActionsMenu, updatePosition, closeFilterMenu])
 
   const handleToggleFilterMenu = useCallback((event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
@@ -121,48 +120,29 @@ export function HomeDeckToolbar({
     setShowFilterMenu(willOpen)
     if (willOpen) {
       closeActionsMenu()
-      closeFeatureMenu()
     }
 
     if (willOpen) {
       updateFilterPosition()
       window.requestAnimationFrame(updateFilterPosition)
     }
-  }, [showFilterMenu, updateFilterPosition, closeActionsMenu, closeFeatureMenu])
-
-  const handleToggleFeatureMenu = useCallback((event: MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation()
-    const willOpen = !showFeatureMenu
-
-    setShowFeatureMenu(willOpen)
-    if (willOpen) {
-      closeActionsMenu()
-      closeFilterMenu()
-    }
-
-    if (willOpen) {
-      updateFeaturePosition()
-      window.requestAnimationFrame(updateFeaturePosition)
-    }
-  }, [showFeatureMenu, updateFeaturePosition, closeActionsMenu, closeFilterMenu])
+  }, [showFilterMenu, updateFilterPosition, closeActionsMenu])
 
   const dashboardOptions: Array<{
     key: HomeDashboardMode
     label: string
-    icon: typeof BarChart3
   }> = [
-    { key: 'pilot', label: language === 'de' ? 'Pilot' : 'Pilot', icon: Target },
-    { key: 'kpi', label: 'KPI', icon: BarChart3 },
-    { key: 'heatmap', label: language === 'de' ? 'Heatmap' : 'Heatmap', icon: CalendarDays },
-    { key: 'clean', label: 'Clean', icon: EyeOff },
+    { key: 'pilot', label: 'Pilot' },
+    { key: 'kpi', label: 'KPI' },
+    { key: 'heatmap', label: 'Heatmap' },
+    { key: 'clean', label: 'Clean' },
   ]
 
-  const filterLabel = language === 'de' ? 'Filter' : 'Filter'
-  const featureLabel = language === 'de' ? 'Feature' : 'Feature'
-  const activeFeatureLabel = dashboardOptions.find(option => option.key === dashboardMode)?.label ?? 'Pilot'
+  const filterLabel = language === 'de' ? 'Ansicht' : 'View'
   const decksLabel = language === 'de' ? 'Decks' : 'Decks'
+  const tagsLabel = language === 'de' ? 'Nach Tags' : 'By tags'
   const shuffleDecksLabel = language === 'de' ? 'Shuffle-Decks' : 'Shuffle decks'
-  const activeFilterValue = showShuffleOnly ? shuffleDecksLabel : decksLabel
+  const activeFilterValue = showShuffleOnly ? shuffleDecksLabel : homeTab === 'tags' ? tagsLabel : decksLabel
 
   return (
     <div className="sticky top-0 z-[90] mb-2 mt-2 flex-shrink-0 sm:mb-3 sm:mt-4">
@@ -227,19 +207,34 @@ export function HomeDeckToolbar({
                   type="button"
                   onClick={() => {
                     if (showShuffleOnly) onToggleShuffleOnly()
+                    onHomeTabChange('decks')
                     closeFilterMenu()
                   }}
                   className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
                   role="menuitem"
                 >
                   <span>{decksLabel}</span>
-                  {!showShuffleOnly && <Check size={14} strokeWidth={1.5} />}
+                  {!showShuffleOnly && homeTab === 'decks' && <Check size={14} strokeWidth={1.5} />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (showShuffleOnly) onToggleShuffleOnly()
+                    onHomeTabChange('tags')
+                    closeFilterMenu()
+                  }}
+                  className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                  role="menuitem"
+                >
+                  <span>{tagsLabel}</span>
+                  {!showShuffleOnly && homeTab === 'tags' && <Check size={14} strokeWidth={1.5} />}
                 </button>
                 {shuffleModeEnabled && (
                   <button
                     type="button"
                     onClick={() => {
-                      onToggleShuffleOnly()
+                      if (!showShuffleOnly) onToggleShuffleOnly()
+                      onHomeTabChange('decks')
                       closeFilterMenu()
                     }}
                     className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
@@ -249,10 +244,38 @@ export function HomeDeckToolbar({
                     {showShuffleOnly && <Check size={14} strokeWidth={1.5} />}
                   </button>
                 )}
+                {onOpenLabs && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      closeFilterMenu()
+                      onOpenLabs()
+                    }}
+                    className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                    role="menuitem"
+                  >
+                    <span className="inline-flex items-center gap-2"><FlaskConical size={13} strokeWidth={1.5} /> Labs</span>
+                  </button>
+                )}
+                {onOpenVideos && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      closeFilterMenu()
+                      onOpenVideos()
+                    }}
+                    className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                    role="menuitem"
+                  >
+                    <span className="inline-flex items-center gap-2"><Video size={13} strokeWidth={1.5} /> {language === 'de' ? 'Lernvideos' : 'Videos'}</span>
+                  </button>
+                )}
 
                 {!showShuffleOnly && (
                   <>
-                    <div className="border-t border-[#18181b] my-1" />
+                    <div className="border-t border-[#18181b] px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
+                      {language === 'de' ? 'Sortierung' : 'Sort'}
+                    </div>
                     <button
                       type="button"
                       onClick={() => {
@@ -279,41 +302,11 @@ export function HomeDeckToolbar({
                     </button>
                   </>
                 )}
-              </motion.div>,
-              document.body,
-            )}
-          </div>
 
-          <div className="relative shrink-0" ref={featureAnchorRef}>
-            <button
-              type="button"
-              onClick={handleToggleFeatureMenu}
-              className="inline-flex h-9 items-center gap-1.5 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-2.5 text-[10px] font-mono uppercase tracking-[0.08em] text-white/85 transition-all duration-200 hover:border-[#3f3f46] hover:bg-[#111]"
-              aria-haspopup="menu"
-              aria-expanded={showFeatureMenu}
-              title={featureLabel}
-            >
-              <span className="text-white/55">{featureLabel}</span>
-              <span className="text-white">{activeFeatureLabel}</span>
-              <ChevronDown size={12} strokeWidth={1.5} className={`transition-transform duration-150 ${showFeatureMenu ? 'rotate-180' : ''}`} />
-            </button>
-
-            {showFeatureMenu && featureFloatingStyle && createPortal(
-              <motion.div
-                ref={featureMenuRef}
-                initial={{ opacity: 0, y: -4, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -4, scale: 0.97 }}
-                transition={{ duration: 0.12 }}
-                className="fixed z-[1300] ds-menu overflow-y-auto py-1"
-                style={featureFloatingStyle}
-                role="menu"
-              >
-                <div className="px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
-                  {featureLabel}
+                <div className="border-t border-[#18181b] px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
+                  Dashboard
                 </div>
                 {dashboardOptions.map(option => {
-                  const Icon = option.icon
                   const isActive = dashboardMode === option.key
                   return (
                     <button
@@ -321,15 +314,12 @@ export function HomeDeckToolbar({
                       type="button"
                       onClick={() => {
                         onDashboardModeChange(option.key)
-                        closeFeatureMenu()
+                        closeFilterMenu()
                       }}
                       className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
                       role="menuitem"
                     >
-                      <span className="inline-flex items-center gap-2">
-                        <Icon size={13} strokeWidth={1.5} />
-                        {option.label}
-                      </span>
+                      <span>{option.label}</span>
                       {isActive && <Check size={14} strokeWidth={1.5} />}
                     </button>
                   )
@@ -361,120 +351,109 @@ export function HomeDeckToolbar({
               <ChevronDown size={12} strokeWidth={1.5} className={`transition-transform duration-150 ${showActionsMenu ? 'rotate-180' : ''}`} />
             </button>
             {showActionsMenu && floatingStyle && createPortal(
-                <motion.div
-                  ref={menuRef}
-                  initial={{ opacity: 0, y: -4, scale: 0.97 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -4, scale: 0.97 }}
-                  transition={{ duration: 0.12 }}
-                  className="fixed z-[1300] ds-menu overflow-y-auto py-1"
-                  style={floatingStyle}
-                  role="menu"
+              <motion.div
+                ref={menuRef}
+                initial={{ opacity: 0, y: -4, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -4, scale: 0.97 }}
+                transition={{ duration: 0.12 }}
+                className="fixed z-[1300] ds-menu overflow-y-auto py-1"
+                style={floatingStyle}
+                role="menu"
+              >
+                <div className="px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
+                  {language === 'de' ? 'Erstellen' : 'Create'}
+                </div>
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    closeActionsMenu()
+                    onCreateDeck()
+                  }}
+                  className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                  role="menuitem"
                 >
-                  <div className="px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
-                    {language === 'de' ? 'Erstellen' : 'Create'}
-                  </div>
+                  <FolderPlus size={13} strokeWidth={1.5} /> {t.create_deck}
+                </button>
+                {shuffleModeEnabled && onCreateVirtualDeck && (
                   <button
                     type="button"
                     onClick={(event) => {
                       event.stopPropagation()
                       closeActionsMenu()
-                      onCreateDeck()
+                      onCreateVirtualDeck()
                     }}
                     className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
                     role="menuitem"
                   >
-                    <FolderPlus size={13} strokeWidth={1.5} /> {t.create_deck}
+                    <Shuffle size={13} strokeWidth={1.5} /> {language === 'de' ? 'Virtuelles Deck erstellen' : 'Create virtual deck'}
                   </button>
-                  {shuffleModeEnabled && onCreateVirtualDeck && (
+                )}
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    closeActionsMenu()
+                    onCreateCard()
+                  }}
+                  className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                  role="menuitem"
+                >
+                  <Plus size={13} strokeWidth={1.5} /> {t.create_card}
+                </button>
+                <div className="border-t border-[#18181b] px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
+                  {language === 'de' ? 'Daten' : 'Data'}
+                </div>
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    closeActionsMenu()
+                    onImport()
+                  }}
+                  className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/90 hover:text-white hover:bg-[#111] transition text-left"
+                  role="menuitem"
+                >
+                  <Upload size={13} strokeWidth={1.5} className="text-[color:var(--brand-primary)]" /> {t.import_action} {language === 'de' ? 'Karten/Decks' : 'cards/decks'}
+                </button>
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    closeActionsMenu()
+                    onExport()
+                  }}
+                  className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                  role="menuitem"
+                >
+                  <Download size={13} strokeWidth={1.5} /> {t.backup_export_title}
+                </button>
+                {canInstall && !isInstalled && (
+                  <>
+                    <div className="border-t border-[#18181b] my-1" />
                     <button
                       type="button"
                       onClick={(event) => {
                         event.stopPropagation()
                         closeActionsMenu()
-                        onCreateVirtualDeck()
+                        onInstall()
                       }}
-                      className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                      disabled={isInstalling}
+                      className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left disabled:opacity-60"
                       role="menuitem"
                     >
-                      <Shuffle size={13} strokeWidth={1.5} /> {language === 'de' ? 'Virtuelles Deck erstellen' : 'Create virtual deck'}
+                      {isInstalling
+                        ? <Loader2 size={13} className="animate-spin" />
+                        : <Download size={13} strokeWidth={1.5} />
+                      }
+                      {t.install}
                     </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      closeActionsMenu()
-                      onCreateCard()
-                    }}
-                    className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
-                    role="menuitem"
-                  >
-                    <Plus size={13} strokeWidth={1.5} /> {t.create_card}
-                  </button>
-                  <div className="border-t border-[#18181b] px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
-                    {language === 'de' ? 'Daten' : 'Data'}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      closeActionsMenu()
-                      onImport()
-                    }}
-                    className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/90 hover:text-white hover:bg-[#111] transition text-left"
-                    role="menuitem"
-                  >
-                    <Upload size={13} strokeWidth={1.5} className="text-[color:var(--brand-primary)]" /> {t.import_action} {language === 'de' ? 'Karten/Decks' : 'cards/decks'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      closeActionsMenu()
-                      onExport()
-                    }}
-                    className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
-                    role="menuitem"
-                  >
-                    <Download size={13} strokeWidth={1.5} /> {t.backup_export_title}
-                  </button>
-                  {(onOpenVideos || onOpenLabs) && (
-                    <div className="border-t border-[#18181b] px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
-                      {language === 'de' ? 'Ansichten' : 'Views'}
-                    </div>
-                  )}
-                  {onOpenVideos && (
-                    <button
-                      type="button"
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        closeActionsMenu()
-                        onOpenVideos()
-                      }}
-                      className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
-                      role="menuitem"
-                    >
-                      <Video size={13} strokeWidth={1.5} /> {language === 'de' ? 'Lernvideos' : 'Videos'}
-                    </button>
-                  )}
-                  {onOpenLabs && (
-                    <button
-                      type="button"
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        closeActionsMenu()
-                        onOpenLabs()
-                      }}
-                      className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
-                      role="menuitem"
-                    >
-                      <FlaskConical size={13} strokeWidth={1.5} /> Labs
-                    </button>
-                  )}
-                </motion.div>,
-                document.body,
-              )}
+                  </>
+                )}
+              </motion.div>,
+              document.body,
+            )}
           </div>
         </div>
       </div>

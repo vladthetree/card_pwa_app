@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Thin edit-mode adapter around CardFormModal; passes the selected card and save/delete callbacks.
+ * Used by: StudyView and card-list management surfaces.
+ * Important: Put create/edit form behavior in CardFormModal so both wrappers stay equivalent.
+ */
 import CardFormModal from './CardFormModal'
 import type { Card } from '../types'
 

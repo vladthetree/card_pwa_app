@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for operation Resolver; protects services behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it } from 'vitest'
 import { resolveOperations, supportsWorkerResolution } from '../../../utils/sync/operationResolver'
 

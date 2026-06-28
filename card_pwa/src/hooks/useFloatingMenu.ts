@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: React hook for use Floating Menu; encapsulates browser, persistence, sync, layout, or learning state for UI components.
+ */
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 
 interface UseFloatingMenuOptions {

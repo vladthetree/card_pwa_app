@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for drag match scoring; protects utils behavior from regressions in the learning PWA.
+ */
 import { describe, it, expect } from 'vitest'
 import { parseQuestionText, parseAnswerText } from '../../utils/cardTextParser'
 import { correctDragMatchKey, scoreDragMatchChoice } from '../../utils/dragMatchScoring'

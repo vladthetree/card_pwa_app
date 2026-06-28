@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for study session persistence; protects services behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it, vi } from 'vitest'
 import {
   DEFAULT_STUDY_CARD_LIMIT,

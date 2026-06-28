@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Utility module for deck Content Scope; provides pure helpers for scheduling, parsing, scoring, tags, video notes, backup, or app data transformations.
+ */
 export interface DeckContentScopeDeck {
   id: string
   parentDeckId?: string | null

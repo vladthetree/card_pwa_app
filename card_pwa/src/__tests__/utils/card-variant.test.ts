@@ -1,4 +1,7 @@
 /**
+ * AI_CONTEXT: Vitest coverage for card variant; protects utils behavior from regressions in the learning PWA.
+ */
+/**
  * UC-3  Card type detection and routing
  *
  * The app renders three fundamentally different card UIs:

@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Async derived-data loaders for HomeView: deck options, schedule overview, tag index, forecasts, sync scope, and shuffle summaries.
+ * Used by: HomeView to keep expensive dashboard derivations out of render logic.
+ * Important: This layer composes query/services results; avoid adding UI state or modal actions here.
+ */
 import { useEffect, useState } from 'react'
 import {
   getDeckHomeMetadata,

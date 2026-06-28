@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Database module for gamification; provides IndexedDB schema/query access for persistent learning data.
+ */
 import { db } from '../../db'
 import { buildGamificationProfile, buildCardSuccessStats, type CardSuccessStats } from '../../utils/gamification'
 import type { GamificationProfile, Rating } from '../../types'

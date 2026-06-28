@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Pure resolver that turns remote sync operations plus local records into concrete deck/card/review/shuffle upsert/delete diffs.
+ * Used by: syncPull directly and via worker for large operation batches.
+ * Important: Conflict resolution favors newer/higher-progress card state; keep payload normalization centralized here before applying DB writes.
+ */
 import type { CardRecord, DeckRecord, ReviewRecord, ShuffleCollectionRecord } from '../../db'
 import type { SyncOperationType } from '../../services/syncQueue'
 import { normalizeCard, normalizeCardUpdates } from '../normalize/card'

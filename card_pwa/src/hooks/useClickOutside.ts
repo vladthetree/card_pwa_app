@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: React hook for use Click Outside; encapsulates browser, persistence, sync, layout, or learning state for UI components.
+ */
 import { useEffect, useRef, type RefObject } from 'react'
 
 export function useClickOutside<T extends HTMLElement>(

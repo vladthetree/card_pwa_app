@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for aggregate; protects utils behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it } from 'vitest'
 import { buildHeatmap, calculateStreak, forecastDue } from '../../../utils/stats/aggregate'
 

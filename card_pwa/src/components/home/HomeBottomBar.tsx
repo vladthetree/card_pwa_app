@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Home-screen React component for home Bottom Bar; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
+ */
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {

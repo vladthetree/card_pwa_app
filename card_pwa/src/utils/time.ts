@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Utility module for time; provides pure helpers for scheduling, parsing, scoring, tags, video notes, backup, or app data transformations.
+ */
 /** One calendar day in milliseconds. */
 export const DAY_MS = 86_400_000
 

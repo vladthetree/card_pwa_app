@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for sw registration; protects runtime behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it } from 'vitest'
 import { initServiceWorkerRegistration } from '../../runtime/swRegistration'
 

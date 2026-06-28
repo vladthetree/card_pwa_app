@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for faq Modal; contributes to the card-learning UI and shared app interactions.
+ */
 import { useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import {

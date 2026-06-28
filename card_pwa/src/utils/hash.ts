@@ -1,4 +1,7 @@
 /**
+ * AI_CONTEXT: Utility module for hash; provides pure helpers for scheduling, parsing, scoring, tags, video notes, backup, or app data transformations.
+ */
+/**
  * FNV-1a 32-bit hash. Deterministic and dependency-free — used to derive
  * stable per-run orderings from a seed without pulling in a PRNG library.
  * Returns an unsigned 32-bit integer.

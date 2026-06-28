@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Application service for session Recovery; owns business logic outside React components for learning, sync, profile, update, or session flows.
+ */
 export interface RecoveryState {
   lowRatingCounts: Record<string, number>
   relearnSuccessCounts: Record<string, number>

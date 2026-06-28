@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for video tags; protects utils behavior from regressions in the learning PWA.
+ */
 import { describe, it, expect } from 'vitest'
 import { collectRelatedTags, extractTags, splitTagSegments } from '../../utils/videoTags'
 
@@ -24,6 +27,10 @@ describe('extractTags', () => {
 
   it('dedupliziert case-insensitiv und behält die erste Schreibweise', () => {
     expect(extractTags('#Crypto #crypto #CRYPTO')).toEqual(['Crypto'])
+  })
+
+  it('dedupliziert separator-varianten ueber die kanonische Tag-ID', () => {
+    expect(extractTags('#Incident_Response #incident-response #Incident-Response')).toEqual(['Incident_Response'])
   })
 
   it('unterstützt Umlaute, Ziffern, Unterstrich und Bindestrich', () => {
@@ -76,6 +83,7 @@ describe('collectRelatedTags', () => {
       [
         { tags: ['crypto', 'pki', 'tls'] },
         { tags: ['Crypto', 'pki', 'iam'] },
+        { tags: ['crypto', 'incident_response'] },
         { tags: ['cloud', 'iam'] },
       ],
       'crypto',
@@ -84,6 +92,7 @@ describe('collectRelatedTags', () => {
     expect(related).toEqual([
       { tag: 'pki', count: 2 },
       { tag: 'iam', count: 1 },
+      { tag: 'incident_response', count: 1 },
       { tag: 'tls', count: 1 },
     ])
   })

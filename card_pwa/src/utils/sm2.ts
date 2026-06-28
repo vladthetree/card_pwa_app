@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Pure SM-2 scheduler implementation using Anki-style card fields: factor, interval, type, queue, due, dueAt, reps, and lapses.
+ * Used by: review writes, new manual card defaults, migration diagnostics, and scheduling tests.
+ * Important: Keep behavior deterministic and compatible with existing stored records; review mutation orchestration lives in db/queries/reviews.ts.
+ */
 import type { CardRecord } from '../db'
 import { DEFAULT_SM2_PARAMS, normalizeSM2Params, type SM2Params } from './algorithmParams'
 

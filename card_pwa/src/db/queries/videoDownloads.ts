@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: IndexedDB persistence for offline video copies; stores large blobs separately from lightweight download metadata.
+ * Used by: useLocalMesserVideos and the VideosView offline download controls.
+ * Important: These records are device-local and intentionally not synced; metadata reads should avoid touching Blob rows unless playback needs them.
+ */
 import { db, type VideoDownloadRecord } from '../../db'
 
 /**

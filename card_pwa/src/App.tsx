@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Root React shell for the PWA; owns top-level view state, app initialization, providers, safe-area CSS vars, service-worker update UI, and global modals.
+ * Used by: main.tsx mounts this component; feature views are lazy-loaded from here.
+ * Important: App-level navigation is local state, not a router; add new primary screens by extending the View type and this switch flow.
+ */
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ThemeProvider } from './contexts/ThemeContext'

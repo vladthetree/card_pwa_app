@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Dexie IndexedDB schema, record interfaces, table declarations, and migrations for the offline-first learning database.
+ * Used by: all db/queries modules, profile/sync services, hooks, backup, imports, and video offline storage.
+ * Important: Data model changes must be expressed as Dexie version migrations and kept compatible with sync, backup, and import normalization.
+ */
 import Dexie, { type Table } from 'dexie'
 import { DATABASE_NAMES } from '../constants/appIdentity'
 import { buildSecurityDeckHierarchyPlan } from '../utils/securityDeckHierarchy'

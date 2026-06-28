@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Card mutation query layer for create/update/delete and due-date normalization; enqueues sync operations for card and deck dependencies.
+ * Used by: CardFormModal, import pipeline, study repair actions, and home/card management flows.
+ * Important: Do not bypass this module for user-facing card writes, or sync and review-updated events can fall out of date.
+ */
 import { db, type CardRecord, type DeckRecord } from '../../db'
 import { SM2 } from '../../utils/sm2'
 import { enqueueSyncOperation } from '../../services/syncQueue'

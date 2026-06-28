@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for offline Status Banner; contributes to the card-learning UI and shared app interactions.
+ */
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { AlertCircle, Wifi, WifiOff, X } from 'lucide-react'

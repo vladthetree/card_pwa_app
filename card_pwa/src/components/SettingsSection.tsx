@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for settings Section; contributes to the card-learning UI and shared app interactions.
+ */
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import { cloneElement, isValidElement } from 'react'

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for env; protects runtime behavior from regressions in the learning PWA.
+ */
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   getRuntimeTarget,

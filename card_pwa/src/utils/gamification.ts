@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Utility module for gamification; provides pure helpers for scheduling, parsing, scoring, tags, video notes, backup, or app data transformations.
+ */
 import type {
   GamificationAchievement,
   GamificationProfile,

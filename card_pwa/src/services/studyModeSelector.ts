@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Application service for study Mode Selector; owns business logic outside React components for learning, sync, profile, update, or session flows.
+ */
 import { isDragMatchCard } from '../utils/cardVariant'
 import { fnv1aUnit } from '../utils/hash'
 import type { Card } from '../types'

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Home-screen React component for home Deck List Section; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
+ */
 import { motion } from 'framer-motion'
 import { RefreshCw, AlertCircle, Upload, Shuffle, Layers3, Pencil, Trash2, BarChart3 } from 'lucide-react'
 import { DeckCard } from '../DeckCard'

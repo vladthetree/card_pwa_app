@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Import utility for apkg Parser Core; parses or normalizes external Anki/CSV/APKG data into app card structures.
+ */
 import JSZip from 'jszip'
 import type { Algorithm, Language } from '../../contexts/SettingsContext'
 import type { ParsedImport } from './types'

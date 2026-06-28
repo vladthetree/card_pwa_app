@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: APKG/COLPKG entrypoint that reads file buffers and delegates heavy Anki parsing to a worker with a main-thread fallback.
+ * Used by: importPipeline/import UI for Anki package imports.
+ * Important: The returned ParsedImport must match import/types.ts and carry the selected language/algorithm defaults for new cards.
+ */
 import type { Algorithm, Language } from '../../contexts/SettingsContext'
 import type { ParsedImport } from './types'
 import { createWorker } from '../workers/workerPool'

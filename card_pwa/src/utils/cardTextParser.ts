@@ -1,4 +1,10 @@
 /**
+ * AI_CONTEXT:
+ * Role: Parser/normalizer for card front/back text, including standard MC, ordering, matching, HTML stripping, answer extraction, and display-safe text.
+ * Used by: StudyView card renderers, VideoRecallCheck, card import, CardFormModal, and variant detection.
+ * Important: This is the compatibility layer for stored card text formats; new card encodings must be parsed here before UI code relies on them.
+ */
+/**
  * TextParser: Zentrale Utilities für Text-Processing
  * Enthält HTML-Stripping und Entity-Normalisierung
  */

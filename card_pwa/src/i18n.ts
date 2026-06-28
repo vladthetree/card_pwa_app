@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Central UI copy dictionary for German/English labels used across the learning app.
+ */
 import { APP_NAME } from './constants/appIdentity'
 
 type Language = 'de' | 'en'

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for edge cases; protects edge-cases.test.ts behavior from regressions in the learning PWA.
+ */
 import { describe, it, expect } from 'vitest'
 import { calculateCardStateAfterReview } from '../utils/sm2'
 import { calculateCardStateAfterReviewFSRS } from '../utils/fsrs'

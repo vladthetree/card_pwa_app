@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for confirm Modal; contributes to the card-learning UI and shared app interactions.
+ */
 import { useEffect, useRef } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { AlertTriangle, X } from 'lucide-react'

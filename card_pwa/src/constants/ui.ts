@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Shared constants for ui; centralizes app identity, animation, or UI values used across modules.
+ */
 const T = 'transition-all duration-150 ease-out'
 
 export const UI_TOKENS = {

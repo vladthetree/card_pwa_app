@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for deck create; protects db behavior from regressions in the learning PWA.
+ */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createDeck } from '../../db/queries'
 import type { DeckRecord } from '../../db'

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vendored dependency shim for fzstd; keeps required third-party logic available inside the app bundle.
+ */
 // Vendored from fzstd v0.1.1 by Arjun Barrett — MIT License
 // https://github.com/101arrowz/fzstd
 // Vendored to avoid external dependency. Do not modify.

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for deck Card; contributes to the card-learning UI and shared app interactions.
+ */
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, useReducedMotion } from 'framer-motion'

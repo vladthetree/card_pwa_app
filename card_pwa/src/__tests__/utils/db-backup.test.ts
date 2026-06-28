@@ -1,12 +1,16 @@
+/**
+ * AI_CONTEXT: Vitest coverage for db backup; protects utils behavior from regressions in the learning PWA.
+ */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { CardRecord, DeckRecord, ReviewRecord } from '../../db'
-import { createDbBackupPayload, listDecksForBackup } from '../../utils/dbBackup'
+import type { CardRecord, DeckRecord, ReviewRecord, VideoNoteRecord } from '../../db'
+import { createDbBackupPayload, listDecksForBackup, restoreVideoNotesFromBackupPayload } from '../../utils/dbBackup'
 
 const mockedDb = vi.hoisted(() => {
   const state = {
     decks: [] as DeckRecord[],
     cards: [] as CardRecord[],
     reviews: [] as ReviewRecord[],
+    videoNotes: [] as VideoNoteRecord[],
   }
 
   return {
@@ -20,6 +24,17 @@ const mockedDb = vi.hoisted(() => {
     reviews: {
       toArray: vi.fn(async () => state.reviews),
     },
+    videoNotes2: {
+      toArray: vi.fn(async () => state.videoNotes),
+      get: vi.fn(async ([profileId, objective]: [string, string]) =>
+        state.videoNotes.find(note => note.profileId === profileId && note.objective === objective),
+      ),
+      put: vi.fn(async (note: VideoNoteRecord) => {
+        const index = state.videoNotes.findIndex(row => row.profileId === note.profileId && row.objective === note.objective)
+        if (index >= 0) state.videoNotes[index] = note
+        else state.videoNotes.push(note)
+      }),
+    },
   }
 })
 
@@ -28,6 +43,7 @@ vi.mock('../../db', () => ({
     decks: mockedDb.decks,
     cards: mockedDb.cards,
     reviews: mockedDb.reviews,
+    videoNotes2: mockedDb.videoNotes2,
   },
 }))
 
@@ -90,9 +106,13 @@ describe('dbBackup', () => {
     mockedDb.state.decks = []
     mockedDb.state.cards = []
     mockedDb.state.reviews = []
+    mockedDb.state.videoNotes = []
     mockedDb.decks.toArray.mockClear()
     mockedDb.cards.toArray.mockClear()
     mockedDb.reviews.toArray.mockClear()
+    mockedDb.videoNotes2.toArray.mockClear()
+    mockedDb.videoNotes2.get.mockClear()
+    mockedDb.videoNotes2.put.mockClear()
     Object.defineProperty(globalThis, 'localStorage', {
       value: localStorageMock,
       configurable: true,
@@ -122,7 +142,104 @@ describe('dbBackup', () => {
     expect(payload.data.decks.map(deck => deck.id)).toEqual(['deck-active'])
     expect(payload.data.cards.map(card => card.id)).toEqual(['card-active'])
     expect(payload.data.reviews.map(review => review.cardId)).toEqual(['card-active'])
-    expect(payload.meta.tableCounts).toEqual({ decks: 1, cards: 1, reviews: 1 })
+    expect(payload.meta.tableCounts).toEqual({ decks: 1, cards: 1, reviews: 1, videoNotes: 0 })
+    expect(payload.data.videoNotes).toEqual([])
+  })
+
+  it('includes profile-scoped video notes in JSON backups', async () => {
+    mockedDb.state.decks = [createDeck({ id: 'deck-active' })]
+    mockedDb.state.videoNotes = [
+      {
+        profileId: 'local',
+        objective: '1.2',
+        videoId: '003 - 1.2 - The CIA Triad.mp4',
+        content: 'Merke: CIA #crypto',
+        tags: ['crypto'],
+        createdAt: 100,
+        updatedAt: 200,
+      },
+    ]
+
+    const payload = await createDbBackupPayload()
+
+    expect(payload.meta.version).toBe(2)
+    expect(payload.meta.tableCounts.videoNotes).toBe(1)
+    expect(payload.data.videoNotes).toEqual(mockedDb.state.videoNotes)
+  })
+
+  it('restores video notes from backups and folds stored tags into content', async () => {
+    const result = await restoreVideoNotesFromBackupPayload({
+      data: {
+        videoNotes: [
+          {
+            profileId: 'local',
+            objective: '1.3',
+            videoId: '004.mp4',
+            content: 'Frage: Was ist PKI?',
+            tags: ['PKI', 'Incident Response'],
+            createdAt: 10,
+            updatedAt: 20,
+          },
+        ],
+      },
+    })
+
+    expect(result).toEqual({ added: 1, updated: 0, skipped: 0 })
+    expect(mockedDb.state.videoNotes).toHaveLength(1)
+    expect(mockedDb.state.videoNotes[0]).toMatchObject({
+      profileId: 'local',
+      objective: '1.3',
+      tags: ['PKI', 'Incident-Response'],
+    })
+    expect(mockedDb.state.videoNotes[0].content).toContain('#Incident-Response')
+  })
+
+  it('keeps newer local video notes unless overwrite is requested', async () => {
+    mockedDb.state.videoNotes = [
+      {
+        profileId: 'local',
+        objective: '1.4',
+        videoId: 'old.mp4',
+        content: 'Neue lokale Notiz #local',
+        tags: ['local'],
+        createdAt: 10,
+        updatedAt: 300,
+      },
+    ]
+
+    const older = {
+      data: {
+        videoNotes: [
+          {
+            profileId: 'local',
+            objective: '1.4',
+            videoId: 'backup.mp4',
+            content: 'Altes Backup #backup',
+            tags: ['backup'],
+            createdAt: 5,
+            updatedAt: 200,
+          },
+        ],
+      },
+    }
+
+    expect(await restoreVideoNotesFromBackupPayload(older)).toEqual({ added: 0, updated: 0, skipped: 1 })
+    expect(mockedDb.state.videoNotes[0].content).toBe('Neue lokale Notiz #local')
+
+    expect(await restoreVideoNotesFromBackupPayload(older, { strategy: 'overwrite' })).toEqual({ added: 0, updated: 1, skipped: 0 })
+    expect(mockedDb.state.videoNotes[0].content).toBe('Altes Backup #backup')
+  })
+
+  it('accepts legacy backups without video notes', async () => {
+    const result = await restoreVideoNotesFromBackupPayload({
+      data: {
+        decks: [],
+        cards: [],
+        reviews: [],
+      },
+    })
+
+    expect(result).toEqual({ added: 0, updated: 0, skipped: 0 })
   })
 
   it('lists only active decks for deck-scoped exports', async () => {

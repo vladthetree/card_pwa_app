@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Utility module for review Decks; provides pure helpers for scheduling, parsing, scoring, tags, video notes, backup, or app data transformations.
+ */
 import { STORAGE_KEYS } from '../constants/appIdentity'
 
 export const REVIEW_ROOT_DECK_ID = 'needs-review-root'

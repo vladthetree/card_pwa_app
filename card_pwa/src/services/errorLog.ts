@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Application service for error Log; owns business logic outside React components for learning, sync, profile, update, or session flows.
+ */
 import { STORAGE_KEYS } from '../constants/appIdentity'
 
 export interface ErrorLogEntry {

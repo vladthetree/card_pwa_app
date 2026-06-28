@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for review Fixtures; protects fixtures behavior from regressions in the learning PWA.
+ */
 import type { ReviewRecord } from '../../db'
 
 /**

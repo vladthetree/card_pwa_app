@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for video recall check; protects components behavior from regressions in the learning PWA.
+ */
 import { describe, it, expect } from 'vitest'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'

@@ -1,4 +1,7 @@
 /**
+ * AI_CONTEXT: Application service for algorithm Migration Service; owns business logic outside React components for learning, sync, profile, update, or session flows.
+ */
+/**
  * AlgorithmMigrationService
  * Migriert Kartendaten wenn der Lernalgorithmus wechselt
  * SM2 ↔ FSRS Konvertierung für bestehende Kartendaten

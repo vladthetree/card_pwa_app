@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Database module for diagnostics; provides IndexedDB schema/query access for persistent learning data.
+ */
 import { db, type CardRecord } from '../../db'
 import { STORAGE_KEYS } from '../../constants/appIdentity'
 

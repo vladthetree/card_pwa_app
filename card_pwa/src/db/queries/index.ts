@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Public database query barrel for decks, cards, reviews, sessions, shuffle collections, gamification, video notes, and video downloads.
+ * Used by: components/hooks that import from ../db/queries.
+ * Important: Keep exports stable; db/queries.ts exists as a compatibility re-export for older import paths.
+ */
 // Re-exports the public query API. Import paths that previously pointed to
 // '../db/queries' continue to work via the re-export in queries.ts.
 

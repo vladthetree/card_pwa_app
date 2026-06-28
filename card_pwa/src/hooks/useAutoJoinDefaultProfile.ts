@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: React hook for use Auto Join Default Profile; encapsulates browser, persistence, sync, layout, or learning state for UI components.
+ */
 import { useEffect, useRef } from 'react'
 import { useSettings } from '../contexts/SettingsContext'
 import {

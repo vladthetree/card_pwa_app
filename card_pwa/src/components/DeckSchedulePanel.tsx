@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for deck Schedule Panel; contributes to the card-learning UI and shared app interactions.
+ */
 import { useEffect, useState } from 'react'
 import { BookOpen, Lightbulb, RotateCcw } from 'lucide-react'
 import { STRINGS } from '../contexts/SettingsContext'

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for no animatepresence wait; protects ui behavior from regressions in the learning PWA.
+ */
 import { describe, it, expect } from 'vitest'
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'

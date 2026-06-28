@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Active flashcard review session UI; coordinates card ordering, persisted session restore, rating submission, undo, coach feedback, and card rendering variants.
+ * Used by: App.tsx when a deck, tag batch, daily quest, or shuffle session starts study.
+ * Important: Scheduling writes happen through db/queries recordReview/undoReview; local UI state belongs in studySessionReducer and studySessionPersistence.
+ */
 import { useState, useEffect, useCallback, useMemo, useReducer, useRef } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { ArrowLeft, RotateCcw, CheckCircle, AlertCircle, RefreshCw, Type, Info, Sparkles } from 'lucide-react'

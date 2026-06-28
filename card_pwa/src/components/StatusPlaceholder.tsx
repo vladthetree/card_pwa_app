@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for status Placeholder; contributes to the card-learning UI and shared app interactions.
+ */
 import { AlertCircle, SearchX, Inbox } from 'lucide-react'
 
 interface Props {

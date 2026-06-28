@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for dashboard mode clean; protects hooks behavior from regressions in the learning PWA.
+ */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { readInitialDashboardMode, persistDashboardMode } from '../../hooks/home/useHomeViewController'
 import { STORAGE_KEYS } from '../../constants/appIdentity'

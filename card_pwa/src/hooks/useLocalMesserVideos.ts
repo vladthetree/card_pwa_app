@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: React hook that merges server video manifest, IndexedDB offline downloads, queue progress, and playable online/offline source URLs.
+ * Used by: VideosView for catalog, chapter download, offline playback, and server-unreachable states.
+ * Important: Downloads run sequentially to protect device storage and the Pi server; metadata and Blob access are deliberately separated.
+ */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { liveQuery } from 'dexie'
 import { db, type VideoDownloadRecord } from '../db'

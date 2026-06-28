@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for update Banner; contributes to the card-learning UI and shared app interactions.
+ */
 import { motion, useReducedMotion } from 'framer-motion'
 import { CheckCircle2 } from 'lucide-react'
 import { useSettings } from '../contexts/SettingsContext'

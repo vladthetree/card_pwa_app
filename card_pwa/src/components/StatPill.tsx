@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for stat Pill; contributes to the card-learning UI and shared app interactions.
+ */
 export function StatPill({
   label,
   value,

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Utility module for lab Progress; provides pure helpers for scheduling, parsing, scoring, tags, video notes, backup, or app data transformations.
+ */
 import { STORAGE_KEYS } from '../constants/appIdentity'
 
 /**

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for metrics Card; contributes to the card-learning UI and shared app interactions.
+ */
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import type { Card } from '../types'
 

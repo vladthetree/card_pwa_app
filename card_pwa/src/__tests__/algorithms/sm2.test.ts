@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for sm2; protects algorithms behavior from regressions in the learning PWA.
+ */
 import { describe, it, expect } from 'vitest'
 import { calculateCardStateAfterReview } from '../../utils/sm2'
 import { createNewCard } from '../fixtures/cardFixtures'

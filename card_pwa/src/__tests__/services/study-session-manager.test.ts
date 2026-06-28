@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for study session manager; protects services behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it } from 'vitest'
 import { getCardWeight, sortStudyCards } from '../../services/StudySessionManager'
 import type { Card } from '../../types'

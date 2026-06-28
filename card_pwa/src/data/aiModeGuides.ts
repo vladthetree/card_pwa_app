@@ -1,4 +1,7 @@
 /**
+ * AI_CONTEXT: Static data module for ai Mode Guides; supplies Security+ labs, blueprints, links, or learning-guide content.
+ */
+/**
  * KI-Anleitung pro Lernmodus — maschinenlesbar, quellenpflichtig.
  *
  * Zweck: Jede KI, die Inhalte für diese App erstellt oder Lernverhalten

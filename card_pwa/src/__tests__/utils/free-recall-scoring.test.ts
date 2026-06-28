@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for free recall scoring; protects utils behavior from regressions in the learning PWA.
+ */
 import { describe, it, expect } from 'vitest'
 import { scoreFreeRecallSelfCheck } from '../../utils/freeRecallScoring'
 import { isFreeRecallCard, stripFreeRecallPrefix, getCardVariant } from '../../utils/cardVariant'

@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Active-recall quiz after a video; samples cards from the matching objective deck and suggests a video confidence state.
+ * Used by: VideosView recall-check modal.
+ * Important: It intentionally does not write reviews or alter FSRS/SM2 scheduling; it trains recall and calibrates confidence only.
+ */
 import { useEffect, useMemo, useState } from 'react'
 import { Brain, Check, Eye, Loader2, RotateCcw, X } from 'lucide-react'
 import { fetchDeckCards } from '../../db/queries'

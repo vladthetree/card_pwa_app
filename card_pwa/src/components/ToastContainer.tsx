@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for toast Container; contributes to the card-learning UI and shared app interactions.
+ */
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { X, CheckCircle, AlertCircle, AlertTriangle, Info, type LucideProps } from 'lucide-react'

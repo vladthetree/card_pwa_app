@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for global stats; protects db behavior from regressions in the learning PWA.
+ */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fetchGlobalStats } from '../../db/queries'
 import type { CardRecord, DeckRecord, ReviewRecord } from '../../db'

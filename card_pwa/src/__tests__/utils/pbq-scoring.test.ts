@@ -1,4 +1,7 @@
 /**
+ * AI_CONTEXT: Vitest coverage for pbq scoring; protects utils behavior from regressions in the learning PWA.
+ */
+/**
  * UC-1  Ordering card scoring
  * UC-2  Matching card scoring
  *

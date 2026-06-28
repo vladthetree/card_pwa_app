@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Statistics utility for aggregate; aggregates review/card metrics for dashboards and analysis.
+ */
 import type { CardRecord, ReviewRecord } from '../../db'
 import { resolveDueAtMs } from '../time'
 

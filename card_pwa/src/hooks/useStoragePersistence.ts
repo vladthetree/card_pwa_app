@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: React hook for use Storage Persistence; encapsulates browser, persistence, sync, layout, or learning state for UI components.
+ */
 import { useEffect } from 'react'
 
 export function useStoragePersistence() {

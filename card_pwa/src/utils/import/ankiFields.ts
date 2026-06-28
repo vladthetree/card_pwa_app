@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Import utility for anki Fields; parses or normalizes external Anki/CSV/APKG data into app card structures.
+ */
 import { stripHtml } from './htmlStrip'
 
 export function extractExtra(fieldMap: Record<string, string>) {

@@ -1,4 +1,7 @@
 /**
+ * AI_CONTEXT: Static data module for lab Blueprints; supplies Security+ labs, blueprints, links, or learning-guide content.
+ */
+/**
  * Lab-Blueprints — Trainings-Generator fuer "Interaktive Sicherheits-Szenarien".
  *
  * Ergaenzt das kuratierte 100er-Inventar (`labScenarios.ts`) um praktisch

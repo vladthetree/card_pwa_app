@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Primary video learning workspace; combines local Messer manifest, offline download state, player, objective list, recall check, notes, tags, and tag collections.
+ * Used by: App.tsx video view.
+ * Important: Objective code is the bridge between videos, decks, recall cards, progress, and video notes; preserve that 1:1 mapping.
+ */
 import { useEffect, useMemo, useState } from 'react'
 import {
   ArrowLeft,
@@ -8,6 +14,7 @@ import {
   Download,
   ExternalLink,
   HardDriveDownload,
+  Hash,
   Loader2,
   NotebookPen,
   Play,
@@ -19,7 +26,7 @@ import { MESSER_DOMAINS, PROF_MESSER_COURSE_URL } from '../../data/professorMess
 import { getSecurityObjectiveDeckId, SY0_701_OBJECTIVES } from '../../utils/securityDeckHierarchy'
 import { useHandsetLayout } from '../../hooks/useHandsetLayout'
 import { useVisualViewport } from '../../hooks/useVisualViewport'
-import { useObjectivesWithNotes } from '../../hooks/useVideoNotes'
+import { useVideoNoteIndex } from '../../hooks/useVideoNotes'
 import { useSettings } from '../../contexts/SettingsContext'
 import { profileScopeId } from '../../services/profileService'
 import { useMesserVideoProgress, resolveVideoStatus, type MesserVideoProgress, type VideoConfidence } from '../../hooks/useMesserVideoProgress'
@@ -82,6 +89,7 @@ const COPY = {
     fullscreen: 'Vollbild',
     exitFullscreen: 'Vollbild verlassen',
     speed: 'Geschwindigkeit',
+    noteStats: '{notes} Zettel · {tags} Tags',
   },
   en: {
     title: 'Videos',
@@ -123,6 +131,7 @@ const COPY = {
     fullscreen: 'Fullscreen',
     exitFullscreen: 'Exit fullscreen',
     speed: 'Playback speed',
+    noteStats: '{notes} notes · {tags} tags',
   },
 } as const
 
@@ -389,7 +398,7 @@ export default function VideosView({ language, onExit }: Props) {
   const isDesktop = !isHandsetLayout
   const { profile } = useSettings()
   const profileId = profileScopeId(profile)
-  const objectivesWithNotes = useObjectivesWithNotes(profileId)
+  const { withNotes: objectivesWithNotes, allTags } = useVideoNoteIndex(profileId)
   const { progress, markWatched, setConfidence } = useMesserVideoProgress()
   const { status, groups, totalBytes, downloadedCount, downloadVideo, enqueueDownloads, cancelDownloads, removeVideo, downloadError } = useLocalMesserVideos()
 
@@ -397,6 +406,8 @@ export default function VideosView({ language, onExit }: Props) {
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set())
   const [recallOpen, setRecallOpen] = useState(false)
   const [activeTag, setActiveTag] = useState<string | null>(null)
+  const [currentVideoTime, setCurrentVideoTime] = useState(0)
+  const [seekRequest, setSeekRequest] = useState<{ id: number; seconds: number } | null>(null)
   const viewport = useVisualViewport()
   const keyboardOpen = viewport?.keyboardOpen ?? false
 
@@ -405,6 +416,9 @@ export default function VideosView({ language, onExit }: Props) {
     [groups, activeFile],
   )
   const { src: videoSrc, resolving } = useVideoSource(activeItem?.file ?? null, activeItem?.downloaded ?? false)
+  const noteStatsLabel = copy.noteStats
+    .replace('{notes}', String(objectivesWithNotes.size))
+    .replace('{tags}', String(allTags.length))
 
   const groupsByDomain = useMemo(() => {
     const map = new Map<number, LocalVideoObjectiveGroup[]>()
@@ -425,7 +439,14 @@ export default function VideosView({ language, onExit }: Props) {
   const openVideo = (item: LocalVideoItem) => {
     markWatched(item.objective)
     setRecallOpen(false)
+    setCurrentVideoTime(0)
+    setSeekRequest(null)
     setActiveFile(item.file)
+  }
+
+  const seekToTime = (seconds: number) => {
+    setSeekRequest({ id: Date.now(), seconds })
+    setCurrentVideoTime(seconds)
   }
 
   // Aus der Tag-Ansicht zu einem verbundenen Video springen.
@@ -453,6 +474,8 @@ export default function VideosView({ language, onExit }: Props) {
           src={videoSrc}
           variant={compact ? 'compact' : 'full'}
           keyboardOpen={keyboardOpen}
+          onTimeChange={setCurrentVideoTime}
+          seekRequest={seekRequest}
           labels={{ fullscreen: copy.fullscreen, exitFullscreen: copy.exitFullscreen, speed: copy.speed }}
         />
       ) : resolving ? (
@@ -645,6 +668,13 @@ export default function VideosView({ language, onExit }: Props) {
             <div className="font-mono text-[22px] font-bold leading-tight text-white">{copy.title}</div>
             <div className="truncate font-mono text-[12px] text-zinc-500">{copy.subtitle}</div>
           </div>
+          {(objectivesWithNotes.size > 0 || allTags.length > 0) && (
+            <span className="hidden shrink-0 items-center gap-1.5 rounded-[10px] border border-sky-500/30 bg-sky-500/10 px-2.5 py-1.5 font-mono text-[11px] font-bold text-sky-300 sm:flex">
+              <NotebookPen size={13} strokeWidth={1.5} />
+              {noteStatsLabel}
+              {allTags.length > 0 && <Hash size={12} strokeWidth={1.5} className="text-sky-300/70" />}
+            </span>
+          )}
           {downloadedCount > 0 && (
             <span className="flex shrink-0 items-center gap-1.5 rounded-[10px] border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1.5 font-mono text-[11px] font-bold text-emerald-300">
               <HardDriveDownload size={13} strokeWidth={1.5} />
@@ -681,6 +711,8 @@ export default function VideosView({ language, onExit }: Props) {
               videoTitle={activeItem?.title ?? null}
               language={language}
               onOpenTag={setActiveTag}
+              currentTimeSec={activeItem ? currentVideoTime : null}
+              onSeekToTime={seekToTime}
             />
           </aside>
         </div>
@@ -735,6 +767,8 @@ export default function VideosView({ language, onExit }: Props) {
               videoTitle={activeItem.title}
               language={language}
               onOpenTag={setActiveTag}
+              currentTimeSec={currentVideoTime}
+              onSeekToTime={seekToTime}
             />
           </div>
         </div>

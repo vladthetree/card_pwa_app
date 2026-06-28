@@ -1,4 +1,7 @@
 /**
+ * AI_CONTEXT: Utility module for lab Generator; provides pure helpers for scheduling, parsing, scoring, tags, video notes, backup, or app data transformations.
+ */
+/**
  * Lab-Generator — erzeugt aus den validierten Pools in `data/labBlueprints.ts`
  * deterministisch (seeded PRNG) konkrete LabScenario-Instanzen fuer das
  * Trainings-Feature der Labs.

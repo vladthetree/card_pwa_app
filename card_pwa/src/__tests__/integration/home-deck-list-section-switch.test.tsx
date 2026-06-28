@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for home deck list section switch; protects integration behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { HomeDeckListSection } from '../../components/home/HomeDeckListSection'

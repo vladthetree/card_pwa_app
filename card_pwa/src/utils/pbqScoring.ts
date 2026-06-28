@@ -1,4 +1,7 @@
 /**
+ * AI_CONTEXT: Utility module for pbq Scoring; provides pure helpers for scheduling, parsing, scoring, tags, video notes, backup, or app data transformations.
+ */
+/**
  * Pure scoring functions for PBQ (Performance-Based Question) card types.
  * Extracted here so they can be unit-tested independently of the React components.
  */

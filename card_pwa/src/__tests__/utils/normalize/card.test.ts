@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for card; protects utils behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it } from 'vitest'
 import { normalizeCard, normalizeCardUpdates } from '../../../utils/normalize/card'
 

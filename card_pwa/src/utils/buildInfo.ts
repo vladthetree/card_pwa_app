@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Utility module for build Info; provides pure helpers for scheduling, parsing, scoring, tags, video notes, backup, or app data transformations.
+ */
 export function getAppBuildVersion(): string {
   if (typeof __APP_BUILD_VERSION__ === 'string' && __APP_BUILD_VERSION__) {
     return __APP_BUILD_VERSION__
