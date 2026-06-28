@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Normalization utility for review; converts external or sync data into safe internal record shapes.
+ */
 import type { ReviewRecord } from '../../db'
 
 export function normalizeReview(raw: unknown): Omit<ReviewRecord, 'id'> | null {

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for snapshot normalizer integration; protects services behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it } from 'vitest'
 import { normalizeSnapshotPayload } from '../../utils/normalize/snapshot'
 

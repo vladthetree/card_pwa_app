@@ -1,4 +1,10 @@
 /**
+ * AI_CONTEXT:
+ * Role: Unified sync scheduler that serializes push and pull cycles behind one async lock and coalesces overlapping sync requests.
+ * Used by: useSyncRuntime, manual sync triggers, service-worker/background sync wakeups.
+ * Important: Push local queue before pull remote deltas; never let flushSyncQueue and pullAndApplySyncDeltas overlap.
+ */
+/**
  * SyncCoordinator – serialises all push/pull sync work through a single
  * async mutex so that flushSyncQueue and pullAndApplySyncDeltas never
  * overlap.  Both the push-runtime and the pull-runtime call into this

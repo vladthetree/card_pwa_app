@@ -1,9 +1,17 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Check, Hash, Loader2, NotebookPen } from 'lucide-react'
+/**
+ * AI_CONTEXT:
+ * Role: Freeform notepad for the selected video objective with autosave, inline #tag extraction, tag suggestions, zettel signal chips, and @time anchors.
+ * Used by: VideosView right-side/compact notes pane.
+ * Important: Notes stay plain text; structure is derived by videoTags, tagSuggestions, videoNoteSignals, and videoTimeAnchors rather than stored as separate rich blocks.
+ */
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Check, CircleHelp, Clock, Hash, Lightbulb, Loader2, NotebookPen, Plus, SquarePen } from 'lucide-react'
 import { saveVideoNote } from '../../db/queries/videoNotes'
 import { useAllVideoNoteTags, useVideoNote } from '../../hooks/useVideoNotes'
 import { filterTagSuggestions, findTagDraftAtCursor, insertSuggestedTag } from '../../utils/tagSuggestions'
+import { countVideoNoteSignals, summarizeVideoNoteSignals } from '../../utils/videoNoteSignals'
 import { extractTags, splitTagSegments } from '../../utils/videoTags'
+import { extractVideoTimeAnchors, formatVideoTime } from '../../utils/videoTimeAnchors'
 
 const COPY = {
   de: {
@@ -19,6 +27,16 @@ const COPY = {
     saved: 'Gespeichert',
     empty: 'Wähle links ein Video, um Notizen zu erfassen.',
     openTag: 'Sammlung zu',
+    zettelTools: 'Zettel',
+    insertQuestion: 'Frage',
+    insertCue: 'Merksatz',
+    insertCard: 'Karte',
+    insertTime: 'Zeit',
+    signals: 'Zettelspuren',
+    timeAnchors: 'Zeitmarken',
+    questions: 'Fragen',
+    cardIdeas: 'Kartenideen',
+    cues: 'Merksätze',
   },
   en: {
     heading: 'Notepad',
@@ -33,6 +51,29 @@ const COPY = {
     saved: 'Saved',
     empty: 'Pick a video on the left to take notes.',
     openTag: 'Collection for',
+    zettelTools: 'Notes',
+    insertQuestion: 'Question',
+    insertCue: 'Cue',
+    insertCard: 'Card',
+    insertTime: 'Time',
+    signals: 'Note traces',
+    timeAnchors: 'Time anchors',
+    questions: 'Questions',
+    cardIdeas: 'Card ideas',
+    cues: 'Cues',
+  },
+} as const
+
+const SNIPPETS = {
+  de: {
+    question: '? ',
+    cue: 'Merke: ',
+    card: 'Karte: ',
+  },
+  en: {
+    question: '? ',
+    cue: 'Remember: ',
+    card: 'Card: ',
   },
 } as const
 
@@ -45,11 +86,52 @@ interface Props {
   language: 'de' | 'en'
   /** Öffnet die Tag-Ansicht (verbundene Videos) für den geklickten Tag. */
   onOpenTag: (tag: string) => void
+  /** Aktuelle Player-Zeit; wird fuer `@MM:SS`-Zeitmarken genutzt. */
+  currentTimeSec?: number | null
+  /** Springt im Player zu einer angeklickten Zeitmarke. */
+  onSeekToTime?: (seconds: number) => void
 }
 
 const SAVE_DEBOUNCE_MS = 600
 
-export default function VideoNotesPanel({ profileId, objective, videoId, videoTitle, language, onOpenTag }: Props) {
+function SignalList({
+  icon,
+  label,
+  items,
+}: {
+  icon: ReactNode
+  label: string
+  items: string[]
+}) {
+  if (items.length === 0) return null
+
+  return (
+    <div className="rounded-[10px] border border-[#1f1f23] bg-[#0c0c0c] p-2">
+      <div className="mb-1.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+        {icon}
+        {label}
+      </div>
+      <div className="space-y-1">
+        {items.map(item => (
+          <div key={item} className="line-clamp-2 font-mono text-[11px] leading-relaxed text-zinc-300">
+            {item}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export default function VideoNotesPanel({
+  profileId,
+  objective,
+  videoId,
+  videoTitle,
+  language,
+  onOpenTag,
+  currentTimeSec = null,
+  onSeekToTime,
+}: Props) {
   const copy = COPY[language]
   const { note, resolvedObjective } = useVideoNote(profileId, objective)
   const allTags = useAllVideoNoteTags(profileId)
@@ -68,6 +150,9 @@ export default function VideoNotesPanel({ profileId, objective, videoId, videoTi
   const tags = useMemo(() => extractTags(content), [content])
   // Segmente für die farbige Hervorhebung der #tags im Notizfeld (Obsidian-Stil).
   const segments = useMemo(() => splitTagSegments(content), [content])
+  const signals = useMemo(() => summarizeVideoNoteSignals(content), [content])
+  const signalCount = useMemo(() => countVideoNoteSignals(signals), [signals])
+  const timeAnchors = useMemo(() => extractVideoTimeAnchors(content), [content])
   const tagDraft = useMemo(() => findTagDraftAtCursor(content, cursorPosition), [content, cursorPosition])
   const suggestedTags = useMemo(
     () => filterTagSuggestions(allTags, tags, tagDraft?.query ?? '', 6),
@@ -159,6 +244,31 @@ export default function VideoNotesPanel({ profileId, objective, videoId, videoTi
     })
   }
 
+  const insertSnippet = (snippet: string) => {
+    const cursor = textareaRef.current?.selectionStart ?? cursorPosition
+    const before = content.slice(0, cursor)
+    const after = content.slice(cursor)
+    const needsLeadingBreak = before.length > 0 && !before.endsWith('\n')
+    const needsTrailingBreak = after.length > 0 && !after.startsWith('\n')
+    const prefix = needsLeadingBreak ? '\n' : ''
+    const suffix = needsTrailingBreak ? '\n' : ''
+    const nextContent = `${before}${prefix}${snippet}${suffix}${after}`
+    const nextCursor = before.length + prefix.length + snippet.length
+
+    setContent(nextContent)
+    setCursorPosition(nextCursor)
+    scheduleSave(nextContent)
+    window.requestAnimationFrame(() => {
+      textareaRef.current?.focus()
+      textareaRef.current?.setSelectionRange(nextCursor, nextCursor)
+      syncScroll()
+    })
+  }
+
+  const insertTimeAnchor = () => {
+    insertSnippet(`@${formatVideoTime(currentTimeSec ?? 0)} `)
+  }
+
   if (!objective) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
@@ -187,6 +297,42 @@ export default function VideoNotesPanel({ profileId, objective, videoId, videoTi
           {saveState === 'saved' && <Check size={11} className="text-emerald-400" />}
           {saveState === 'saved' && <span className="text-emerald-400">{copy.saved}</span>}
         </span>
+      </div>
+
+      <div className="flex shrink-0 items-center gap-1.5 overflow-x-auto border-b border-[#18181b] px-4 py-2">
+        <span className="mr-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600">{copy.zettelTools}</span>
+        <button
+          type="button"
+          onClick={() => insertSnippet(SNIPPETS[language].question)}
+          className="inline-flex h-8 items-center gap-1 rounded-[8px] border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-sky-500/40 hover:text-sky-200"
+        >
+          <CircleHelp size={12} strokeWidth={1.5} />
+          {copy.insertQuestion}
+        </button>
+        <button
+          type="button"
+          onClick={() => insertSnippet(SNIPPETS[language].cue)}
+          className="inline-flex h-8 items-center gap-1 rounded-[8px] border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-amber-500/40 hover:text-amber-200"
+        >
+          <Lightbulb size={12} strokeWidth={1.5} />
+          {copy.insertCue}
+        </button>
+        <button
+          type="button"
+          onClick={() => insertSnippet(SNIPPETS[language].card)}
+          className="inline-flex h-8 items-center gap-1 rounded-[8px] border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-emerald-500/40 hover:text-emerald-200"
+        >
+          <Plus size={12} strokeWidth={1.5} />
+          {copy.insertCard}
+        </button>
+        <button
+          type="button"
+          onClick={insertTimeAnchor}
+          className="inline-flex h-8 items-center gap-1 rounded-[8px] border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-violet-500/40 hover:text-violet-200"
+        >
+          <Clock size={12} strokeWidth={1.5} />
+          {copy.insertTime}
+        </button>
       </div>
 
       {/* Freitext mit Inline-Tag-Hervorhebung: farbiger Backdrop hinter einem
@@ -225,7 +371,44 @@ export default function VideoNotesPanel({ profileId, objective, videoId, videoTi
       </div>
 
       {/* Erkannte Tags — anklickbar → verbundene Videos */}
-      <div className="shrink-0 border-t border-[#18181b] px-4 py-3">
+      <div className="max-h-[46%] shrink-0 overflow-y-auto border-t border-[#18181b] px-4 py-3">
+        {timeAnchors.length > 0 && (
+          <div className="mb-3">
+            <div className="mb-1.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+              <Clock size={11} strokeWidth={1.5} />
+              {copy.timeAnchors}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {timeAnchors.map(anchor => (
+                <button
+                  key={`${anchor.start}-${anchor.token}`}
+                  type="button"
+                  onClick={() => onSeekToTime?.(anchor.seconds)}
+                  data-testid={`video-note-time-${anchor.seconds}`}
+                  className="flex items-center gap-1 rounded-[8px] border border-violet-500/30 bg-violet-500/10 px-2 py-1 font-mono text-[11px] text-violet-200 transition-colors hover:border-violet-400/70 hover:text-violet-100"
+                >
+                  <Clock size={10} strokeWidth={1.5} className="opacity-70" />
+                  {anchor.token}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {signalCount > 0 && (
+          <div className="mb-3">
+            <div className="mb-2 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+              <SquarePen size={11} strokeWidth={1.5} />
+              {copy.signals}
+            </div>
+            <div className="grid grid-cols-1 gap-2">
+              <SignalList icon={<CircleHelp size={11} strokeWidth={1.5} />} label={copy.questions} items={signals.questions} />
+              <SignalList icon={<Plus size={11} strokeWidth={1.5} />} label={copy.cardIdeas} items={signals.cardIdeas} />
+              <SignalList icon={<Lightbulb size={11} strokeWidth={1.5} />} label={copy.cues} items={signals.cues} />
+            </div>
+          </div>
+        )}
+
         <div className="mb-2 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
           <Hash size={11} strokeWidth={1.5} />
           {copy.tags}

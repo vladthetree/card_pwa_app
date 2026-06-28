@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Web-worker utility for sync applier; moves heavy parsing, import, sync, or stats work off the UI thread.
+ */
 import {
   resolveOperations,
   type OperationResolverInput,

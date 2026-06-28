@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for apkg importer; protects runtime behavior from regressions in the learning PWA.
+ */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { parseApkg } from '../../utils/import/apkgImporter'
 

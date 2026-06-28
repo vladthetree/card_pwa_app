@@ -1,4 +1,10 @@
 /**
+ * AI_CONTEXT:
+ * Role: Static Professor Messer SY0-701 course metadata: domains, objective-to-video IDs, deck IDs, playlist/course links.
+ * Used by: legacy/video navigation and objective mapping around the Messer course.
+ * Important: Local self-hosted video playback now relies mainly on localVideoManifest, but these IDs still document the official source mapping.
+ */
+/**
  * Professor Messer — kostenloser CompTIA Security+ (SY0-701) Videokurs.
  *
  * Die Decks der App tragen bereits die Objective-IDs (`sy0-701-objective-D-O`),

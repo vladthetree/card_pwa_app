@@ -1,4 +1,7 @@
 /**
+ * AI_CONTEXT: Application service for offline Status Service; owns business logic outside React components for learning, sync, profile, update, or session flows.
+ */
+/**
  * Offline Detection Service
  * Überwacht Netzwerkstatus und benachrichtigt App
  */

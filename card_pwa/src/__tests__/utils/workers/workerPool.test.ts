@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for worker Pool; protects utils behavior from regressions in the learning PWA.
+ */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createWorker } from '../../../utils/workers/workerPool'
 

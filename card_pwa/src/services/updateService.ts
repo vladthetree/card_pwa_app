@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Application service for update Service; owns business logic outside React components for learning, sync, profile, update, or session flows.
+ */
 import { getRuntimeTarget, supportsServiceWorker, type RuntimeTarget } from '../env'
 
 type ServiceWorkerRegistrationLike = {

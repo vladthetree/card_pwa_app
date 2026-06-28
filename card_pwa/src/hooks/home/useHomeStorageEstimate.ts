@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Home-view React hook for use Home Storage Estimate; derives dashboard, deck, tag, or storage state used by the main screen.
+ */
 import { useEffect, useState } from 'react'
 
 export function useHomeStorageEstimate() {

@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Shared create/edit form for manual cards, including deck selection, tags, mnemonic text, MC options, ordering/matching encoding, and delete flow.
+ * Used by: CreateCardModal and EditCardModal wrappers.
+ * Important: This is the canonical manual-card editor; keep parser-compatible front/back formats aligned with cardTextParser and cardVariant.
+ */
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { X, Plus, Loader2, CheckCircle, Trash2, Info, Minus } from 'lucide-react'

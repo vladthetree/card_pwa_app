@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Labs React component/helper for lab Ui; supports scenario-based Security+ practice flows.
+ */
 import type { LabDifficulty } from '../../data/labScenarios'
 
 /**

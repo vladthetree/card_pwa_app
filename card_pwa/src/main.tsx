@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: React entrypoint; mounts the PWA into the DOM and wires global providers/styles.
+ */
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'

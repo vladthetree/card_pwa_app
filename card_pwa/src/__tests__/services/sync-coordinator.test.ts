@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for sync coordinator; protects services behavior from regressions in the learning PWA.
+ */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const state = vi.hoisted(() => ({

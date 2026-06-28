@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Application service for web Push; owns business logic outside React components for learning, sync, profile, update, or session flows.
+ */
 import { fetchWithTimeout } from './syncConfig'
 
 type Language = 'de' | 'en'

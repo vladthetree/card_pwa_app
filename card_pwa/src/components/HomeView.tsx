@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Main dashboard/controller view for decks, tags, shuffle collections, stats, exports, imports, settings, daily quest, labs, and videos entry points.
+ * Used by: App.tsx for the home and shuffle-management modes.
+ * Important: Most state is delegated to hooks/home/*; keep this file as orchestration/glue, not raw data-query logic.
+ */
 import { lazy, Suspense, useMemo, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
@@ -248,9 +254,14 @@ export default function HomeView({
               language={settings.language}
               shuffleModeEnabled={settings.shuffleModeEnabled}
               showShuffleOnly={controller.showShuffleOnly}
+              homeTab={homeTab}
               deckSearchQuery={deckSearchQuery}
               deckSortMode={deckSortMode}
               dashboardMode={controller.dashboardMode}
+              canInstall={canInstall}
+              isInstalled={isInstalled}
+              isInstalling={isInstalling}
+              onHomeTabChange={setHomeTab}
               onDeckSearchQueryChange={setDeckSearchQuery}
               onDeckSortModeChange={setDeckSortMode}
               onToggleShuffleOnly={controller.toggleShuffleOnly}
@@ -261,6 +272,7 @@ export default function HomeView({
               onCreateCard={controller.openCreateCard}
               onImport={controller.openImport}
               onExport={controller.openExport}
+              onInstall={() => { void controller.handleInstall() }}
               onOpenLabs={onOpenLabs}
               onOpenVideos={onOpenVideos}
             />

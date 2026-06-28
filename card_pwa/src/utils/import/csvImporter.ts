@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: CSV/TXT importer for Anki-style tab/comma/semicolon exports, including metadata headers, MC normalization, stable IDs, and optional worker parsing.
+ * Used by: importPipeline/import UI for text-based imports and backup-like TXT input.
+ * Important: CSV noteIds are derived to make re-imports idempotent; avoid changing that scheme without a migration story.
+ */
 import Papa from 'papaparse'
 import type { Algorithm, Language } from '../../contexts/SettingsContext'
 import type { ParsedImport, ImportedCard, ImportedDeck } from './types'

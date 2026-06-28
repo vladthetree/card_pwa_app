@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: React hook for use Heatmap; encapsulates browser, persistence, sync, layout, or learning state for UI components.
+ */
 import { useEffect, useState } from 'react'
 import { db } from '../db'
 import { REVIEW_UPDATED_EVENT } from '../constants/appIdentity'

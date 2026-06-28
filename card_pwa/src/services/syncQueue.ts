@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Durable outgoing sync queue stored in its own Dexie DB with retry/backoff and optional Background Sync delivery.
+ * Used by: card/deck/review/shuffle mutation queries and syncCoordinator push phase.
+ * Important: This is operation-log sync, not table mirroring; enqueue every user-facing mutation that should reach the server.
+ */
 import Dexie, { type Table } from 'dexie'
 import { BACKUP_METADATA, DATABASE_NAMES } from '../constants/appIdentity'
 import { supportsServiceWorker } from '../env'

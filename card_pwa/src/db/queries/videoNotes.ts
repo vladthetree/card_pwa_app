@@ -1,5 +1,12 @@
+/**
+ * AI_CONTEXT:
+ * Role: Profile-scoped persistence for video notepads; derives tags from inline #tags, lists notes by tag, all tags, objectives with notes, and related tags.
+ * Used by: useVideoNotes hooks, VideoNotesPanel, TagCollectionPanel, TagBrowserSection, backup/restore.
+ * Important: Notes are local/offline and partitioned by profileId; content is plain text and tags are derived, deduped by normalizeTagId.
+ */
 import { db, type VideoNoteRecord } from '../../db'
 import { collectRelatedTags, extractTags, type RelatedTagStats } from '../../utils/videoTags'
+import { normalizeTagId } from '../../utils/tagIdentity'
 
 /**
  * Notizzettel zu Lernvideos. Tags werden direkt im Notiztext als `#tag` gesetzt
@@ -20,7 +27,7 @@ export function normalizeTags(tags: string[]): string[] {
   for (const raw of tags) {
     const tag = normalizeTag(raw)
     if (!tag) continue
-    const key = tag.toLowerCase()
+    const key = normalizeTagId(tag)
     if (seen.has(key)) continue
     seen.add(key)
     result.push(tag)
@@ -41,13 +48,10 @@ export async function listVideoNotes(profileId: string): Promise<VideoNoteRecord
 /** Alle Notizen des Profils, die einen bestimmten Tag tragen (case-insensitiv).
  *  Nutzt den Multi-Entry-Index `*tags`; Grundlage der Video-Verknüpfung. */
 export async function listNotesByTag(profileId: string, tag: string): Promise<VideoNoteRecord[]> {
-  const value = tag.trim()
-  if (!value) return []
-  return db.videoNotes2
-    .where('tags')
-    .equalsIgnoreCase(value)
-    .and(row => row.profileId === profileId)
-    .toArray()
+  const tagId = normalizeTagId(tag)
+  if (!tagId) return []
+  const rows = await db.videoNotes2.where('profileId').equals(profileId).toArray()
+  return rows.filter(row => row.tags.some(rowTag => normalizeTagId(rowTag) === tagId))
 }
 
 /** Objectives des Profils mit einer nicht-leeren Notiz oder mindestens einem Tag. */
@@ -66,7 +70,7 @@ export async function listAllVideoNoteTags(profileId: string): Promise<string[]>
   const tags = new Map<string, string>()
   for (const row of rows) {
     for (const tag of row.tags) {
-      const key = tag.toLowerCase()
+      const key = normalizeTagId(tag)
       if (!tags.has(key)) tags.set(key, tag)
     }
   }
@@ -80,10 +84,10 @@ export async function listRelatedVideoNoteTags(
   tag: string,
   limit = 8,
 ): Promise<RelatedTagStats[]> {
-  const value = tag.trim()
-  if (!value) return []
-  const rows = await listNotesByTag(profileId, value)
-  return collectRelatedTags(rows, value, limit)
+  const tagId = normalizeTagId(tag)
+  if (!tagId) return []
+  const rows = await listNotesByTag(profileId, tag)
+  return collectRelatedTags(rows, tag, limit)
 }
 
 /**

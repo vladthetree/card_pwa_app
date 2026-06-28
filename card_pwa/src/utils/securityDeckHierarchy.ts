@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Static Security+ SY0-701 domain/objective hierarchy and helpers for deriving system deck IDs and hierarchy migration plans.
+ * Used by: db migrations, VideosView, deck hierarchy display, and Professor Messer objective mapping.
+ * Important: Objective/deck IDs are a central join key for cards, videos, notes, recall checks, and Second-Brain navigation.
+ */
 export interface SecurityDeckLike {
   id: string
   name: string

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: React hook for use Server Heartbeat; encapsulates browser, persistence, sync, layout, or learning state for UI components.
+ */
 import { useEffect, useRef, useState } from 'react'
 import { STRINGS } from '../i18n'
 import {

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Web-worker utility for worker Pool; moves heavy parsing, import, sync, or stats work off the UI thread.
+ */
 type WorkerFactory = () => Worker
 
 type WorkerResponse<TOut> = {

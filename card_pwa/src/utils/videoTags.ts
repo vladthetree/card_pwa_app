@@ -1,4 +1,12 @@
 /**
+ * AI_CONTEXT:
+ * Role: Pure parser for inline #tags in video notes and related-tag co-occurrence statistics.
+ * Used by: VideoNotesPanel highlighting, videoNotes persistence, TagCollectionPanel, tag suggestions, and backup restore.
+ * Important: This file defines the plain-text tag syntax; keep it DB/React-free and compatible with tagIdentity normalization.
+ */
+import { normalizeTagId } from './tagIdentity'
+
+/**
  * Inline-Tags für Video-Notizen. Tags werden direkt im Notiztext als `#tag`
  * gesetzt und beim Tippen erkannt — sie sind die Quelle der Verknüpfung zwischen
  * Videos und Lernkarten (Obsidian-artige Tag-Links). Diese Datei ist bewusst
@@ -20,7 +28,7 @@ export function extractTags(content: string): string[] {
   const result: string[] = []
   for (const match of content.matchAll(TAG_PATTERN)) {
     const tag = match[2]
-    const key = tag.toLowerCase()
+    const key = normalizeTagId(tag)
     if (seen.has(key)) continue
     seen.add(key)
     result.push(tag)
@@ -69,18 +77,18 @@ export function collectRelatedTags(
   activeTag: string,
   limit = 8,
 ): RelatedTagStats[] {
-  const activeKey = activeTag.trim().toLowerCase()
+  const activeKey = normalizeTagId(activeTag)
   if (!activeKey) return []
 
   const counts = new Map<string, RelatedTagStats>()
   for (const row of rows) {
-    const hasActiveTag = row.tags.some(tag => tag.trim().toLowerCase() === activeKey)
+    const hasActiveTag = row.tags.some(tag => normalizeTagId(tag) === activeKey)
     if (!hasActiveTag) continue
 
     const seenInRow = new Set<string>()
     for (const rawTag of row.tags) {
       const tag = rawTag.trim()
-      const key = tag.toLowerCase()
+      const key = normalizeTagId(tag)
       if (!tag || key === activeKey || seenInRow.has(key)) continue
       seenInRow.add(key)
 

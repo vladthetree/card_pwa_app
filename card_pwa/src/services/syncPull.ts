@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Pull/bootstrap engine for linked profiles; downloads server deltas/snapshots, normalizes payloads, resolves operations, and applies local DB changes.
+ * Used by: syncCoordinator after pending local operations are flushed.
+ * Important: Pull must respect selected deck scope, applied op IDs, local sync meta, and worker fallbacks for heavy normalization/resolution.
+ */
 import { db, type CardRecord, type DeckRecord, type ReviewRecord, type ShuffleCollectionRecord } from '../db'
 import type { SyncOperationType } from './syncQueue'
 import { flushSyncQueue, getSyncQueuePendingCount } from './syncQueue'

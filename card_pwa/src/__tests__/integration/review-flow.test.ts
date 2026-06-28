@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for review flow; protects integration behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it, vi } from 'vitest'
 import { calculateCardStateAfterReview } from '../../utils/sm2'
 import { calculateCardStateAfterReviewFSRS } from '../../utils/fsrs'

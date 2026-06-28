@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for fsrs cycles; protects algorithms behavior from regressions in the learning PWA.
+ */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { calculateCardStateAfterReviewFSRS } from '../../utils/fsrs'
 import { createNewCard } from '../fixtures/cardFixtures'

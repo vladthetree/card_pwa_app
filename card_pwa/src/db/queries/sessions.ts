@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: IndexedDB persistence helpers for active deck/shuffle study sessions so interrupted sessions survive reloads.
+ * Used by: StudyView, ShuffleStudyView, and useSessionPersistence.
+ * Important: Session payload shape is versioned in studySessionPersistence; keep this layer storage-focused.
+ */
 import { db } from '../../db'
 import { STORAGE_KEYS } from '../../constants/appIdentity'
 import { buildShuffleSessionId } from '../../services/studySessionPersistence'

@@ -1,4 +1,7 @@
 /**
+ * AI_CONTEXT: Vitest coverage for review decks; protects utils behavior from regressions in the learning PWA.
+ */
+/**
  * UC-4  Review deck classification
  *
  * Review decks (id prefix "needs-review-") are auto-generated and excluded from

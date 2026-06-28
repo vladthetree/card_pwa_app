@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for use home derived data; protects hooks behavior from regressions in the learning PWA.
+ */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const runtime = vi.hoisted(() => ({

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for daily Goal Ring; contributes to the card-learning UI and shared app interactions.
+ */
 import { useMemo } from 'react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import { useStreak } from '../hooks/useStreak'

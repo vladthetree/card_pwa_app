@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for deck content scope; protects utils behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it } from 'vitest'
 import {
   collectDeckIdsWithActiveCardsOrDescendants,

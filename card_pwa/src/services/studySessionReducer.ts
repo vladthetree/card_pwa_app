@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Reducer for in-session UI state: current card queue, flip state, submit/undo lifecycle, low-rating counters, repair markers, and review events.
+ * Used by: StudyView via useReducer.
+ * Important: Reducer state is UI/session state only; persistent scheduling mutations happen after successful db/queries review calls.
+ */
 import { applyRating } from './sessionRecovery'
 import type { PersistedStudySession } from './studySessionPersistence'
 import type { Card, Rating, ReviewUndoToken, SessionReviewEvent } from '../types'

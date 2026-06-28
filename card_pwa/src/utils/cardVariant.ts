@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Detects special card variants such as ordering, matching, drag-match, and free-recall from front text and tags.
+ * Used by: StudyView, CardFormModal, specialized card components, and tests for generated card formats.
+ * Important: Keep variant detection aligned with docs/M2-drag-match.md and docs/M3-free-recall.md while preserving standard-card fallback.
+ */
 import { parseAnswerText, parseQuestionText, type Answer, type Question } from './cardTextParser'
 
 export type CardVariant = 'standard' | 'mc' | 'ordering' | 'matching'

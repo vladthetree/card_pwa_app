@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for record review flow; protects integration behavior from regressions in the learning PWA.
+ */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { CardRecord, ReviewRecord } from '../../db'
 import { createNewCard } from '../fixtures/cardFixtures'

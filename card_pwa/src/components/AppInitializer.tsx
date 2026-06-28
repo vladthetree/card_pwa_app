@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for app Initializer; contributes to the card-learning UI and shared app interactions.
+ */
 import { useEffect } from 'react'
 import { db } from '../db'
 import { getRuntimeTarget } from '../env'

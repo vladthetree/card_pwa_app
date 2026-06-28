@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for tag suggestions; protects utils behavior from regressions in the learning PWA.
+ */
 import { describe, it, expect } from 'vitest'
 import { filterTagSuggestions, findTagDraftAtCursor, insertSuggestedTag } from '../../utils/tagSuggestions'
 
@@ -21,10 +24,15 @@ describe('filterTagSuggestions', () => {
     ])
   })
 
+  it('schließt bereits gesetzte Tags auch bei Separator-Varianten aus', () => {
+    expect(filterTagSuggestions(['Incident Response', 'Cloud'], ['incident_response'], '', 100)).toEqual(['Cloud'])
+  })
+
   it('filtert per Teilstring, Groß-/Kleinschreibung egal', () => {
     expect(filterTagSuggestions(ALL, [], 'co', 100)).toEqual(['Compliance'])
     // "Incident Response" enthält ebenfalls ein "c".
     expect(filterTagSuggestions(ALL, [], 'c', 100)).toEqual(['Crypto', 'Cloud', 'Incident Response', 'Compliance'])
+    expect(filterTagSuggestions(['Incident Response'], [], 'incident_response', 100)).toEqual(['Incident Response'])
   })
 
   it('begrenzt die Anzahl der Empfehlungen', () => {

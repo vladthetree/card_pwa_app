@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for skeleton; contributes to the card-learning UI and shared app interactions.
+ */
 interface Props {
   className?: string
   rounded?: 'sm' | 'md' | 'lg' | 'full'

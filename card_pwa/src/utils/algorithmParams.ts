@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Utility module for algorithm Params; provides pure helpers for scheduling, parsing, scoring, tags, video notes, backup, or app data transformations.
+ */
 export interface SM2Params {
   minEase: number
   defaultEase: number

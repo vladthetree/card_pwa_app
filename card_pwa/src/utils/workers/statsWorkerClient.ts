@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Web-worker utility for stats Worker Client; moves heavy parsing, import, sync, or stats work off the UI thread.
+ */
 import type { CardRecord, ReviewRecord } from '../../db'
 import { createWorker } from './workerPool'
 import { buildHeatmap, calculateStreak, forecastDue, type HeatmapBucket, type StreakStats } from '../stats/aggregate'

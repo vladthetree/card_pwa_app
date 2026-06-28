@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for ai mode guides; protects utils behavior from regressions in the learning PWA.
+ */
 import { describe, it, expect } from 'vitest'
 import { AI_MODE_GUIDES, SOURCES, getSource, getModeGuide } from '../../data/aiModeGuides'
 

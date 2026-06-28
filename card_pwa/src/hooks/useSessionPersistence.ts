@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: React hook for use Session Persistence; encapsulates browser, persistence, sync, layout, or learning state for UI components.
+ */
 import { useEffect, type RefObject } from 'react'
 import { buildPersistedStudySession } from '../services/studySessionPersistence'
 import { writeActiveSession } from '../db/queries'

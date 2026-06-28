@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Application service for sync Config; owns business logic outside React components for learning, sync, profile, update, or session flows.
+ */
 import { STORAGE_KEYS } from '../constants/appIdentity'
 import { generateUuidV7 } from '../utils/id'
 

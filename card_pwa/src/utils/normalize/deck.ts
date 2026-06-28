@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Normalization utility for deck; converts external or sync data into safe internal record shapes.
+ */
 import type { DeckRecord } from '../../db'
 
 export function normalizeDeck(raw: unknown): DeckRecord | null {

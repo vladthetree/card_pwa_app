@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: React hook for use Handset Layout; encapsulates browser, persistence, sync, layout, or learning state for UI components.
+ */
 import { useEffect, useState } from 'react'
 
 export function useHandsetLayout(): { isHandsetLayout: boolean; isHandsetLandscape: boolean } {

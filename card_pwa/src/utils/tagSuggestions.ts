@@ -1,4 +1,12 @@
 /**
+ * AI_CONTEXT:
+ * Role: Pure cursor-aware helper for suggesting and inserting existing #tags while editing a video note.
+ * Used by: VideoNotesPanel autocomplete UI.
+ * Important: It replaces only the draft token at the cursor when possible and formats inserted tags through toInlineTag.
+ */
+import { normalizeTagId, toInlineTag } from './tagIdentity'
+
+/**
  * Empfehlungen aus bestehenden Tags bei der Tag-Vergabe (Notizzettel).
  * Reine Funktion: schließt bereits gesetzte Tags aus, filtert nach Eingabe
  * (Teilstring, Groß-/Kleinschreibung egal) und begrenzt die Anzahl.
@@ -19,12 +27,13 @@ export function filterTagSuggestions(
   input: string,
   limit = 8,
 ): string[] {
-  const taken = new Set(currentTags.map(tag => tag.toLowerCase()))
-  const query = input.trim().toLowerCase()
+  const taken = new Set(currentTags.map(normalizeTagId).filter(Boolean))
+  const query = normalizeTagId(input)
   const result: string[] = []
   for (const tag of allTags) {
-    if (taken.has(tag.toLowerCase())) continue
-    if (query !== '' && !tag.toLowerCase().includes(query)) continue
+    const tagId = normalizeTagId(tag)
+    if (!tagId || taken.has(tagId)) continue
+    if (query !== '' && !tagId.includes(query)) continue
     result.push(tag)
     if (result.length >= limit) break
   }
@@ -44,10 +53,6 @@ export function findTagDraftAtCursor(content: string, cursor: number): TagDraft 
     end: safeCursor,
     query: match[2] ?? '',
   }
-}
-
-function toInlineTag(tag: string): string {
-  return tag.trim().replace(/\s+/g, '-')
 }
 
 /**

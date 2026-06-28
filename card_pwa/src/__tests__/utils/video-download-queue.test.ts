@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for video download queue; protects utils behavior from regressions in the learning PWA.
+ */
 import { describe, it, expect } from 'vitest'
 import { selectDownloadsToEnqueue, summarizeDownloads } from '../../utils/videoDownloadQueue'
 import type { LocalVideoMeta } from '../../utils/localVideoManifest'

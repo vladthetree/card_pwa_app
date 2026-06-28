@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Pure session summary/coach logic that identifies success rate, slow reviews, problem cards, and next focus after study activity.
+ * Used by: StudyView SessionCoachPanel.
+ * Important: This is advisory only; it must not mutate scheduling or persistence state.
+ */
 import type { Card, Rating, SessionReviewEvent } from '../types'
 
 export type LearningCoachFocus = 'continue' | 'repair' | 'slow_down' | 'short_break'

@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Query layer for saved shuffle-study collections that combine multiple decks into reusable study scopes.
+ * Used by: Home shuffle management, ShuffleStudyView, sync queue/pull, and backup/export flows.
+ * Important: Mutations should enqueue sync operations so linked profiles converge across devices.
+ */
 import { db, type ShuffleCollectionRecord } from '../../db'
 import { enqueueSyncOperation } from '../../services/syncQueue'
 import { generateUuidV7 } from '../../utils/id'

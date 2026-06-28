@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Versioned serialization helpers for resumable deck and shuffle study sessions.
+ * Used by: StudyView, useSessionPersistence, active-session DB queries, and tests.
+ * Important: Increment STUDY_SESSION_VERSION when persisted shape changes and keep parse tolerant of older optional fields where possible.
+ */
 import type { Card, Rating, SessionReviewEvent } from '../types'
 
 export type StudySessionKind = 'deck' | 'shuffle'

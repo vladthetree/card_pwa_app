@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for card save local; protects db behavior from regressions in the learning PWA.
+ */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { CardRecord } from '../../db'
 import { SM2 } from '../../utils/sm2'

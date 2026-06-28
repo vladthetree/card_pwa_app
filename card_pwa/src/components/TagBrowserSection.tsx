@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Settings-side tag browser for video-note tags; searches profile-scoped tags and opens the same collection overlay used in video mode.
+ * Used by: SettingsModal/profile tools where the user wants a Second-Brain tag index outside the video screen.
+ * Important: It currently reads video-note tags only; cross-card links are surfaced after opening TagCollectionPanel.
+ */
 import { useMemo, useState } from 'react'
 import { Hash, Search } from 'lucide-react'
 import { useAllVideoNoteTags } from '../hooks/useVideoNotes'

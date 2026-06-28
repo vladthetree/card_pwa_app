@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for use card db revision; protects runtime behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it, vi } from 'vitest'
 
 const mockedCounts = vi.hoisted(() => ({

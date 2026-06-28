@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Deck/card read model layer; maps storage records to UI Deck/Card objects, resolves deck hierarchies, tag indexes, due counts, and study candidates.
+ * Used by: Home dashboard, StudyView loaders, VideoRecallCheck, tag collections, backup selection, and shuffle flows.
+ * Important: Tag matching here participates in the Second-Brain graph; use normalizeTagId for comparisons while preserving display tags.
+ */
 import { db, type CardRecord, type DeckRecord } from '../../db'
 import { SM2 } from '../../utils/sm2'
 import { factorToDifficulty } from '../../utils/algorithmParams'
@@ -5,6 +11,7 @@ import { getDayStartMs } from '../../utils/time'
 import { generateUuidV7 } from '../../utils/id'
 import { enqueueSyncOperation } from '../../services/syncQueue'
 import { sortStudyCards } from '../../services/StudySessionManager'
+import { normalizeTagId } from '../../utils/tagIdentity'
 import type { Deck, Card, DeckScheduleOverview } from '../../types'
 
 function mapCard(r: CardRecord): Card {
@@ -205,10 +212,10 @@ export async function fetchAllCards(): Promise<Card[]> {
  *  tagbasierte Sammlung (Obsidian-artige Quelle „Lernkarten"). Liefert die
  *  Karte samt `deckId` zur Quellenangabe. */
 export async function listCardsByTag(tag: string): Promise<Array<{ deckId: string; card: Card }>> {
-  const needle = tag.trim().toLowerCase()
+  const needle = normalizeTagId(tag)
   if (!needle) return []
   const rows = (await db.cards.toArray()).filter(
-    r => !r.isDeleted && r.tags.some(t => t.trim().toLowerCase() === needle),
+    r => !r.isDeleted && r.tags.some(t => normalizeTagId(t) === needle),
   )
   return rows.map(r => ({ deckId: r.deckId, card: mapCard(r) }))
 }
@@ -243,7 +250,7 @@ export async function getDeckTagIndex(deckIds: string[]): Promise<Record<string,
     const bucket = tagsByDeck.get(row.deckId)
     if (!bucket) continue
     for (const tag of row.tags) {
-      const normalized = tag.trim().toLowerCase()
+      const normalized = normalizeTagId(tag)
       if (normalized) {
         bucket.add(normalized)
       }
@@ -321,7 +328,7 @@ export async function getDeckHomeMetadata(
       const tagBucket = tagsByDeck.get(ownerDeckId)
       if (tagBucket) {
         for (const tag of row.tags) {
-          const normalized = tag.trim().toLowerCase()
+          const normalized = normalizeTagId(tag)
           if (normalized) tagBucket.add(normalized)
         }
       }

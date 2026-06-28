@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Normalization utility for shuffle Collection; converts external or sync data into safe internal record shapes.
+ */
 import type { ShuffleCollectionRecord } from '../../db'
 
 export function normalizeShuffleCollection(raw: unknown): ShuffleCollectionRecord | null {

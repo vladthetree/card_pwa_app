@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for study session reducer; protects services behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it } from 'vitest'
 import { initialSessionState, sessionReducer } from '../../services/studySessionReducer'
 import type { Card, ReviewUndoToken } from '../../types'

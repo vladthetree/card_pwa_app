@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Modal workflow for importing APKG/COLPKG/TXT/CSV files: validation, parsing, duplicate review, execution, and progress feedback.
+ * Used by: HomeView import action.
+ * Important: Heavy parsing is lazy-loaded through utils/import/importPipeline; keep this component focused on user flow and status states.
+ */
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Upload, AlertCircle, CheckCircle, Loader2, X } from 'lucide-react'

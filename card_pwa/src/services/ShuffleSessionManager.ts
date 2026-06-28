@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Application service for shuffle Session Manager; owns business logic outside React components for learning, sync, profile, update, or session flows.
+ */
 import type { ShuffleCollectionRecord } from '../db'
 import { fetchDeckStudyCandidates } from '../db/queries'
 import { DAY_MS, getDayStartMs, resolveDueAtMs } from '../utils/time'

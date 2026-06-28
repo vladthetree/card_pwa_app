@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for learning coach; protects services behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it } from 'vitest'
 import { buildLearningCoachSummary } from '../../services/learningCoach'
 import type { Card, Rating, SessionReviewEvent } from '../../types'

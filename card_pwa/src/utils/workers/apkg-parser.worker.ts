@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Web-worker utility for apkg parser; moves heavy parsing, import, sync, or stats work off the UI thread.
+ */
 import { parseApkgBuffer, type ApkgParserPayload } from '../import/apkgParserCore'
 
 interface WorkerRequest {

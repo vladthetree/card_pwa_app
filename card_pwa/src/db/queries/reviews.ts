@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Review write/read layer; records ratings, updates SM2/FSRS scheduling, supports undo/force-tomorrow, computes stats, forecasts, and backlog smoothing.
+ * Used by: StudyView, home stats, metrics modals, heatmaps, and gamification.
+ * Important: This is the scheduling source of truth; every review mutation must update card state, reviews, sync queue, diagnostics, and REVIEW_UPDATED_EVENT consistently.
+ */
 import { db, type CardRecord } from '../../db'
 import { calculateCardStateAfterReview, SM2 } from '../../utils/sm2'
 import { calculateCardStateAfterReviewFSRS } from '../../utils/fsrs'

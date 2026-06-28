@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for assertions; protects fixtures behavior from regressions in the learning PWA.
+ */
 import { expect } from 'vitest'
 
 /**

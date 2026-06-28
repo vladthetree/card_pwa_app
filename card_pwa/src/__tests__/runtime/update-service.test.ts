@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for update service; protects runtime behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it, vi } from 'vitest'
 
 import { checkForAppUpdates } from '../../services/updateService'

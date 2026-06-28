@@ -1,4 +1,7 @@
 /**
+ * AI_CONTEXT: Utility module for free Recall Scoring; provides pure helpers for scheduling, parsing, scoring, tags, video notes, backup, or app data transformations.
+ */
+/**
  * M3 Free Recall — Auswertung der Selbstbewertung (neu generiert, ohne
  * Originalquelle; siehe docs/M3-free-recall.md). Bewusst als reine Funktion
  * ausgelagert (gleiches Muster wie utils/dragMatchScoring.ts), damit der

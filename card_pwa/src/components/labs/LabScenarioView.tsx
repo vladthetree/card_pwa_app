@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Labs React component/helper for lab Scenario View; supports scenario-based Security+ practice flows.
+ */
 import { useMemo, useState } from 'react'
 import { ArrowLeft, Check, GripVertical, Shield, X } from 'lucide-react'
 import { Reorder } from 'framer-motion'

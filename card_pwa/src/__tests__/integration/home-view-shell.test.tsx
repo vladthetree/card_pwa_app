@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for home view shell; protects integration behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it, vi } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
 import type { Deck, ShuffleCollection } from '../../types'

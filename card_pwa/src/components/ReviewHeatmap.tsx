@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for review Heatmap; contributes to the card-learning UI and shared app interactions.
+ */
 import { useMemo, useState } from 'react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import { useTheme } from '../contexts/ThemeContext'

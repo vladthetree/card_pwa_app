@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for use home view controller; protects hooks behavior from regressions in the learning PWA.
+ */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('useHomeViewController helpers', () => {

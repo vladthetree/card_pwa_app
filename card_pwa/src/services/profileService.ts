@@ -1,4 +1,10 @@
 /**
+ * AI_CONTEXT:
+ * Role: Profile identity and server-linking service; manages local/linked profile records, device IDs, profile tokens, selected deck scope, and profile bootstrap helpers.
+ * Used by: SettingsContext, sync services, App initialization, and video-note profile scoping.
+ * Important: profileScopeId partitions local-only data such as video notes; linked profile userId is the stable cross-device scope.
+ */
+/**
  * profileService – manages local Profile state (IndexedDB `profile` store)
  * and communicates with the server auth endpoints.
  *

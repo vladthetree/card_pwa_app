@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Home-screen React component for home Shuffle Section; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
+ */
 import { motion } from 'framer-motion'
 import { Pencil, Plus, Shuffle, Trash2, Layers3, BarChart3 } from 'lucide-react'
 import type { ShuffleCollection } from '../../types'

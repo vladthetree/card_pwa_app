@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for error log; protects services behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it, vi } from 'vitest'
 import { clearErrorLogs, logError } from '../../services/errorLog'
 

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for card Fixtures; protects fixtures behavior from regressions in the learning PWA.
+ */
 import type { CardRecord } from '../../db'
 import type { Card } from '../../types'
 

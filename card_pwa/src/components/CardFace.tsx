@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for card Face; contributes to the card-learning UI and shared app interactions.
+ */
 import { lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { memo, useState, useEffect, useMemo, useRef } from 'react'

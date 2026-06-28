@@ -1,18 +1,28 @@
+/**
+ * AI_CONTEXT:
+ * Role: Local export/backup and restore helpers for decks, cards, reviews, settings, and video notes.
+ * Used by: Home export modal/controller and tests for backup compatibility.
+ * Important: Backup payload version 2 includes videoNotes; restore must tolerate old payloads and preserve inline-tag identity across display variants.
+ */
 import { db } from '../db'
-import type { CardRecord, DeckRecord, ReviewRecord } from '../db'
+import type { CardRecord, DeckRecord, ReviewRecord, VideoNoteRecord } from '../db'
 import { BACKUP_METADATA, STORAGE_KEYS } from '../constants/appIdentity'
+import { extractTags } from './videoTags'
+import { normalizeTagId } from './tagIdentity'
+import { normalizeTags } from '../db/queries/videoNotes'
 
 const SETTINGS_STORAGE_KEY = STORAGE_KEYS.settings
 const META_PREFIX = BACKUP_METADATA.prefix
 
 interface BackupMeta {
   app: 'card-pwa'
-  version: 1
+  version: 1 | 2
   exportedAt: number
   tableCounts: {
     decks: number
     cards: number
     reviews: number
+    videoNotes?: number
   }
 }
 
@@ -23,11 +33,22 @@ export interface DbBackupPayload {
     decks: DeckRecord[]
     cards: CardRecord[]
     reviews: ReviewRecord[]
+    videoNotes: VideoNoteRecord[]
   }
 }
 
 interface ExportOptions {
   deckIds?: string[]
+}
+
+export interface RestoreVideoNotesResult {
+  added: number
+  updated: number
+  skipped: number
+}
+
+export interface RestoreVideoNotesOptions {
+  strategy?: 'newer' | 'overwrite'
 }
 
 function toCsvValue(value: unknown): string {
@@ -65,6 +86,7 @@ export async function createDbBackupPayload(options: ExportOptions = {}): Promis
   const cardIdSet = new Set(cards.map(card => card.id))
   const reviewsAll = await db.reviews.toArray()
   const reviews = reviewsAll.filter(review => cardIdSet.has(review.cardId))
+  const videoNotes = await db.videoNotes2.toArray()
 
   const settingsRaw = localStorage.getItem(SETTINGS_STORAGE_KEY)
   const parsedSettings = settingsRaw ? JSON.parse(settingsRaw) as Record<string, unknown> : null
@@ -78,12 +100,13 @@ export async function createDbBackupPayload(options: ExportOptions = {}): Promis
   return {
     meta: {
       app: BACKUP_METADATA.app,
-      version: 1,
+      version: 2,
       exportedAt: Date.now(),
       tableCounts: {
         decks: decks.length,
         cards: cards.length,
         reviews: reviews.length,
+        videoNotes: videoNotes.length,
       },
     },
     settings,
@@ -91,8 +114,99 @@ export async function createDbBackupPayload(options: ExportOptions = {}): Promis
       decks,
       cards,
       reviews,
+      videoNotes,
     },
   }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object'
+}
+
+function numericOr(value: unknown, fallback: number): number {
+  return typeof value === 'number' && Number.isFinite(value) ? value : fallback
+}
+
+function inlineTag(tag: string): string {
+  return tag.trim().replace(/^#+/, '').replace(/\s+/g, '-')
+}
+
+function normalizeVideoNoteForRestore(value: unknown, now = Date.now()): VideoNoteRecord | null {
+  if (!isRecord(value)) return null
+
+  const profileId = typeof value.profileId === 'string' ? value.profileId.trim() : ''
+  const objective = typeof value.objective === 'string' ? value.objective.trim() : ''
+  if (!profileId || !objective) return null
+
+  const videoId = typeof value.videoId === 'string' ? value.videoId : ''
+  let content = typeof value.content === 'string' ? value.content : ''
+  const rawTags = Array.isArray(value.tags) ? value.tags.map(tag => String(tag)) : []
+  const contentTagIds = new Set(extractTags(content).map(normalizeTagId).filter(Boolean))
+  const missingTags = normalizeTags(rawTags).filter(tag => !contentTagIds.has(normalizeTagId(tag)))
+
+  if (missingTags.length > 0) {
+    const appended = missingTags
+      .map(tag => inlineTag(tag))
+      .filter(Boolean)
+      .map(tag => `#${tag}`)
+      .join(' ')
+    if (appended) content = content ? `${content}\n\n${appended}` : appended
+  }
+
+  const tags = extractTags(content)
+  if (!content.trim() && tags.length === 0) return null
+
+  const updatedAt = numericOr(value.updatedAt, now)
+  return {
+    profileId,
+    objective,
+    videoId,
+    content,
+    tags,
+    createdAt: numericOr(value.createdAt, updatedAt),
+    updatedAt,
+  }
+}
+
+export async function restoreVideoNotesFromBackupPayload(
+  payload: Pick<DbBackupPayload, 'data'> | { data?: { videoNotes?: unknown; [key: string]: unknown } },
+  options: RestoreVideoNotesOptions = {},
+): Promise<RestoreVideoNotesResult> {
+  const strategy = options.strategy ?? 'newer'
+  const rawRows = isRecord(payload.data) && Array.isArray(payload.data.videoNotes)
+    ? payload.data.videoNotes
+    : []
+
+  const result: RestoreVideoNotesResult = { added: 0, updated: 0, skipped: 0 }
+  if (rawRows.length === 0) return result
+
+  for (const raw of rawRows) {
+    const note = normalizeVideoNoteForRestore(raw)
+    if (!note) {
+      result.skipped += 1
+      continue
+    }
+
+    const existing = await db.videoNotes2.get([note.profileId, note.objective])
+    if (!existing) {
+      await db.videoNotes2.put(note)
+      result.added += 1
+      continue
+    }
+
+    if (strategy === 'newer' && existing.updatedAt > note.updatedAt) {
+      result.skipped += 1
+      continue
+    }
+
+    await db.videoNotes2.put({
+      ...note,
+      createdAt: Math.min(existing.createdAt, note.createdAt),
+    })
+    result.updated += 1
+  }
+
+  return result
 }
 
 export function downloadDbBackup(payload: DbBackupPayload) {

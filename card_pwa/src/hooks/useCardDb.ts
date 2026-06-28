@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: React data hooks for decks, cards, stats, shuffle collections, and gamification backed by Dexie liveQuery plus explicit refresh events.
+ * Used by: HomeView, StudyView, ShuffleStudyView, metrics panels, and dashboard sections.
+ * Important: Use debounced DB-change subscriptions to avoid noisy rerenders; mutations still belong in db/queries modules.
+ */
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { liveQuery } from 'dexie'
 import { db } from '../db'

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for shuffle flow; protects integration behavior from regressions in the learning PWA.
+ */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { CardRecord, DeckRecord, ReviewRecord } from '../../db'
 import { SM2 } from '../../utils/sm2'

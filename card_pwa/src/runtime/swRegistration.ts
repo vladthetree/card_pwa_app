@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Runtime integration for sw Registration; handles browser/PWA lifecycle behavior outside ordinary React state.
+ */
 import { SW_CHANNELS } from '../constants/appIdentity'
 
 type WaitingWorkerLike = {

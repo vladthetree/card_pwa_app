@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for shuffle schema migration; protects db behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it } from 'vitest'
 import { CardPwaDB } from '../../db'
 

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for duplicate Review Modal; contributes to the card-learning UI and shared app interactions.
+ */
 import { useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { AlertTriangle, ChevronRight, ChevronLeft, SkipForward, RefreshCw } from 'lucide-react'

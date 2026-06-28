@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for shuffle Metrics Modal; contributes to the card-learning UI and shared app interactions.
+ */
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { BarChart3, TrendingDown, TrendingUp, Minus, X } from 'lucide-react'

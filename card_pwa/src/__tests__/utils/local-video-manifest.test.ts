@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for local video manifest; protects utils behavior from regressions in the learning PWA.
+ */
 import { describe, it, expect } from 'vitest'
 import {
   parseLocalVideoFilename,

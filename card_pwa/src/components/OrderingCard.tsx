@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for ordering Card; contributes to the card-learning UI and shared app interactions.
+ */
 import { memo, useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import {
   DndContext,

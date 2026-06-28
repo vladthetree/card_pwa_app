@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Normalization utility for card; converts external or sync data into safe internal record shapes.
+ */
 import type { CardRecord } from '../../db'
 
 function parseMaybeNumber(input: unknown): number {

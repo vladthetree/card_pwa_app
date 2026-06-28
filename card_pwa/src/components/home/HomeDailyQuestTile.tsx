@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Home-screen React component for home Daily Quest Tile; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
+ */
 import { motion } from 'framer-motion'
 import { ListTree, Play, Terminal } from 'lucide-react'
 

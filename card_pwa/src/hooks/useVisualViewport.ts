@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: React hook for use Visual Viewport; encapsulates browser, persistence, sync, layout, or learning state for UI components.
+ */
 import { useEffect, useState } from 'react'
 
 /**

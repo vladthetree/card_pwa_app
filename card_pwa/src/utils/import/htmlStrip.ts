@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Import utility for html Strip; parses or normalizes external Anki/CSV/APKG data into app card structures.
+ */
 export function stripHtml(str: string): string {
   if (!str) return ''
   try {

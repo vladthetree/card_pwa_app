@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: React hook for use Algorithm Migration; encapsulates browser, persistence, sync, layout, or learning state for UI components.
+ */
 import { useEffect } from 'react'
 import { useSettings } from '../contexts/SettingsContext'
 import { initializeAlgorithmMigration } from '../services/AlgorithmMigrationService'

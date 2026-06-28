@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Global settings/profile context for language, algorithm choice/params, study limits, notification settings, focus/fullscreen modes, and hydration state.
+ * Used by: App providers and most UI/components needing localized strings or settings.
+ * Important: Settings are persisted to localStorage while profile identity lives in IndexedDB; keep hydration flags accurate before dependent effects run.
+ */
 import { createContext, useContext, useState, useEffect } from 'react'
 import { STORAGE_KEYS } from '../constants/appIdentity'
 import {

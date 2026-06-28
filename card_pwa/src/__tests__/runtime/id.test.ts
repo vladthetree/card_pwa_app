@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for id; protects runtime behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it } from 'vitest'
 import { generateUuidV7 } from '../../utils/id'
 

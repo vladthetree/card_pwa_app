@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Central identity constants for app name, localStorage keys, IndexedDB names, service-worker channels, review event names, and backup metadata.
+ * Used by: nearly every persistence, sync, settings, backup, and runtime module.
+ * Important: Changing these values can orphan existing user data; add migrations/legacy fallbacks for renamed keys or DBs.
+ */
 export const APP_NAME = 'Card_PWA'
 
 export const STORAGE_KEYS = {

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Home-screen React component for home Shuffle Collection Modal; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
+ */
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Check, Layers3, Save, X } from 'lucide-react'

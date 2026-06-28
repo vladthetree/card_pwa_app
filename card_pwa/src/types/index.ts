@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Public UI/domain TypeScript contracts for cards, decks, stats, gamification, scheduling summaries, views, ratings, and session events.
+ * Used by: components, hooks, services, and query mappers across the app.
+ * Important: DB record types live in db/index.ts; this file represents app-facing shapes after query mapping.
+ */
 export interface CardExtra {
   acronym: string
   examples: string

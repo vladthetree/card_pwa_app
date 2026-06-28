@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Reusable React component for drag Match Card; contributes to the card-learning UI and shared app interactions.
+ */
 import { memo, useMemo, useRef, useState, useCallback, useEffect } from 'react'
 import { Edit, X } from 'lucide-react'
 import { motion, useReducedMotion } from 'framer-motion'

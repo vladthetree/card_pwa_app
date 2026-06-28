@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for synced deck scope; protects services behavior from regressions in the learning PWA.
+ */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { DeckRecord } from '../../db'
 

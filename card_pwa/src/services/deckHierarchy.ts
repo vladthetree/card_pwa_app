@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Application service for deck Hierarchy; owns business logic outside React components for learning, sync, profile, update, or session flows.
+ */
 import { db, type DeckRecord } from '../db'
 import { enqueueSyncOperation } from './syncQueue'
 import { buildSecurityDeckHierarchyPlan } from '../utils/securityDeckHierarchy'

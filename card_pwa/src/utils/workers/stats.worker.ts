@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Web-worker utility for stats; moves heavy parsing, import, sync, or stats work off the UI thread.
+ */
 import type { CardRecord, ReviewRecord } from '../../db'
 import { buildHeatmap, calculateStreak, forecastDue } from '../stats/aggregate'
 

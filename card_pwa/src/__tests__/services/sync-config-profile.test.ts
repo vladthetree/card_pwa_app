@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for sync config profile; protects services behavior from regressions in the learning PWA.
+ */
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   getSyncBaseEndpoint,

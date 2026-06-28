@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Pure card selection and ordering logic for study sessions, including due filtering, learning-step exemption, failure weighting, and seeded ordering.
+ * Used by: StudyView, shuffle selection, deck queries, and session tests.
+ * Important: This decides what the learner sees next; keep scheduling writes elsewhere and keep ordering deterministic under the same seed.
+ */
 import type { Card } from '../types'
 import { DAY_MS, getDayStartMs, resolveDueAtMs } from '../utils/time'
 import { compareByDueRank, getCardTypePriority, seededRank } from './cardOrdering'

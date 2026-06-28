@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: React context for theme Context; provides global settings/theme state to the application tree.
+ */
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { STORAGE_KEYS } from '../constants/appIdentity'
 

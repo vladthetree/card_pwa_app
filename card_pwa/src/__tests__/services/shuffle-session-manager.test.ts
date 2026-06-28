@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for shuffle session manager; protects services behavior from regressions in the learning PWA.
+ */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Card } from '../../types'
 

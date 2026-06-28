@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Application service for brand Migration; owns business logic outside React components for learning, sync, profile, update, or session flows.
+ */
 import Dexie, { type Table } from 'dexie'
 import { BACKUP_METADATA, DATABASE_NAMES, STORAGE_KEYS } from '../constants/appIdentity'
 

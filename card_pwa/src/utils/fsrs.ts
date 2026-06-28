@@ -1,4 +1,10 @@
 /**
+ * AI_CONTEXT:
+ * Role: Adapter around ts-fsrs that maps app CardRecord scheduling fields to FSRS stability/difficulty updates.
+ * Used by: review writes and algorithm migration paths when settings.algorithm is fsrs.
+ * Important: Preserve the app-level scheduling API so SM2/FSRS can be switched without changing Review query callers.
+ */
+/**
  * FSRS (Free Spaced Repetition Scheduler)
  * Adapter over ts-fsrs that keeps the app's existing scheduling API.
  */

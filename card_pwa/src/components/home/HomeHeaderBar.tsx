@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Home-screen React component for home Header Bar; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
+ */
 import { Bell, Download, HardDrive, HelpCircle, Settings as SettingsIcon } from 'lucide-react'
 import PWA_Logo from '../../assets/Logo.svg'
 import { APP_NAME } from '../../constants/appIdentity'

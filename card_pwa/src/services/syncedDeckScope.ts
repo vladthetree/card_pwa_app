@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Computes which deck IDs are currently in scope for sync/study based on linked-profile selection, descendants, and review-deck visibility.
+ * Used by: Home derived data, shuffle summaries, sync pull, and deck filtering.
+ * Important: A null selection means default scope, an empty array means explicitly no decks; do not conflate those states.
+ */
 import { db } from '../db'
 import { isSyncActive } from './syncConfig'
 import { readSelectedDeckIds } from './profileService'

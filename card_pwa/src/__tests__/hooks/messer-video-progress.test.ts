@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for messer video progress; protects hooks behavior from regressions in the learning PWA.
+ */
 import { describe, it, expect } from 'vitest'
 import {
   parseVideoProgress,

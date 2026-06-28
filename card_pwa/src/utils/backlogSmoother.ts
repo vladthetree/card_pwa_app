@@ -1,4 +1,7 @@
 /**
+ * AI_CONTEXT: Utility module for backlog Smoother; provides pure helpers for scheduling, parsing, scoring, tags, video notes, backup, or app data transformations.
+ */
+/**
  * Pure helper functions for the Backlog Smoother (README §5).
  *
  * Trigger condition: overdueCount > BACKLOG_TRIGGER_MULTIPLIER × sessionLimit

@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Home-view React hook for use Home Deck Filters; derives dashboard, deck, tag, or storage state used by the main screen.
+ */
 import { useEffect, useMemo, useState } from 'react'
 import { STORAGE_KEYS } from '../../constants/appIdentity'
 import type { Deck, DeckScheduleOverview } from '../../types'

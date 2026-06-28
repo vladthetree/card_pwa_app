@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Import utility for anki Database; parses or normalizes external Anki/CSV/APKG data into app card structures.
+ */
 import { decompress as zstdDecompress } from '../../vendor/fzstd'
 import type { Algorithm, Language } from '../../contexts/SettingsContext'
 import type { ImportedCard, ImportedDeck } from './types'

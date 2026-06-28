@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Home-screen React component for home Tag Browse Section; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
+ */
 import { useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { BookOpen, ChevronDown, ChevronRight, Loader2, Tag } from 'lucide-react'

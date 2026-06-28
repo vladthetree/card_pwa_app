@@ -1,4 +1,10 @@
 /**
+ * AI_CONTEXT:
+ * Role: Device-local playback state helpers for Messer videos: per-file resume position and global playback rate.
+ * Used by: MesserVideoPlayer.
+ * Important: This is separate from objective learning progress; keep pure parse/compute helpers testable without browser storage.
+ */
+/**
  * Gerätelokaler Wiedergabe-Zustand der Professor-Messer-Videos:
  *  - `positions` : zuletzt gesehene Sekunde **pro Datei** (Resume-Punkt)
  *  - `rate`      : zuletzt gewählte Abspielgeschwindigkeit (global)

@@ -1,3 +1,9 @@
+/**
+ * AI_CONTEXT:
+ * Role: Obsidian-like tag collection overlay; shows all video notes and flashcards connected to one tag plus related co-occurring tags.
+ * Used by: VideoNotesPanel tag clicks and TagBrowserSection.
+ * Important: This is the current backlinks surface; matching must use canonical tag identity, not raw display spelling.
+ */
 import { useEffect, useMemo, useState } from 'react'
 import { BookOpen, ChevronRight, Hash, Loader2, Play, X } from 'lucide-react'
 import { SY0_701_OBJECTIVES } from '../../utils/securityDeckHierarchy'

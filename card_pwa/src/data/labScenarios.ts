@@ -1,4 +1,7 @@
 /**
+ * AI_CONTEXT: Static data module for lab Scenarios; supplies Security+ labs, blueprints, links, or learning-guide content.
+ */
+/**
  * Labs — "Interaktive Sicherheits-Szenarien" (SY0-701).
  *
  * Provenance (RECOVERY_LOG §4, Git-Historie bis f72ffd6): Struktur, Kategorien-Layout und die mit

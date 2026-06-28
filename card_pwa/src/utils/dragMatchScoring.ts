@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Utility module for drag Match Scoring; provides pure helpers for scheduling, parsing, scoring, tags, video notes, backup, or app data transformations.
+ */
 import type { Answer } from './cardTextParser'
 
 /**

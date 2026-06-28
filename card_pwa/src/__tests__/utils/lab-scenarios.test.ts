@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for lab scenarios; protects utils behavior from regressions in the learning PWA.
+ */
 import { describe, it, expect, afterEach, vi } from 'vitest'
 import {
   LAB_CATEGORIES,

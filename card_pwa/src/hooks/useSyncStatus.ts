@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: React hook for use Sync Status; encapsulates browser, persistence, sync, layout, or learning state for UI components.
+ */
 import { useEffect, useState } from 'react'
 import { db } from '../db'
 import { getSyncQueuePendingCount } from '../services/syncQueue'

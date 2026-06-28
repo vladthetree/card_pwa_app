@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Vitest coverage for gamification; protects services behavior from regressions in the learning PWA.
+ */
 import { describe, expect, it } from 'vitest'
 import { buildGamificationProfile, getLevelProgress, getReviewXp } from '../../utils/gamification'
 

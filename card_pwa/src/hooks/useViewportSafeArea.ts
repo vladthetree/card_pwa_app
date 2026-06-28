@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: React hook for use Viewport Safe Area; encapsulates browser, persistence, sync, layout, or learning state for UI components.
+ */
 import { useEffect } from 'react'
 
 /**

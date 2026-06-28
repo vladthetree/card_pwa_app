@@ -1,3 +1,6 @@
+/**
+ * AI_CONTEXT: Shared constants for animations; centralizes app identity, animation, or UI values used across modules.
+ */
 // Selbstständige Enter-Animation pro Listenkarte. Bewusst KEINE Parent→Child-
 // Varianten-Orchestrierung (variants + initial="hidden"/animate="show" mit
 // staggerChildren): remounten Kinder, nachdem der Parent sein "show" bereits
