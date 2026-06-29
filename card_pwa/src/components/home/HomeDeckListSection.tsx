@@ -147,20 +147,20 @@ export function HomeDeckListSection({
       {loading ? (
         <div className="flex flex-col gap-2.5 sm:gap-3">{[...Array(4)].map((_, i) => <div key={i} className="h-20 ds-card animate-pulse" />)}</div>
       ) : !showShuffleOnly && decks.length === 0 ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex min-h-full flex-col items-center justify-start pt-10 pb-12 text-center sm:justify-center sm:py-16">
           <p className="text-white/30 text-sm mb-4">{t.no_decks}</p>
           <button onClick={onShowImport} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[12px] text-sm font-black text-white transition-all duration-200 ease-out active:scale-[0.98]" style={{ background: 'linear-gradient(135deg, var(--brand-primary-80), var(--brand-primary))' }}>
             <Upload size={16} strokeWidth={1.5} /> {t.import_now}
           </button>
         </motion.div>
       ) : !showShuffleOnly && filteredDecks.length === 0 ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex min-h-full flex-col items-center justify-start pt-10 pb-12 text-center sm:justify-center sm:py-16">
           <p className="text-white/40 text-sm">
             {language === 'de' ? 'Keine Decks zu deiner Suche gefunden.' : 'No decks match your search.'}
           </p>
         </motion.div>
       ) : showShuffleOnly && shuffleCollections.length === 0 ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex min-h-full flex-col items-center justify-start pt-10 pb-12 text-center sm:justify-center sm:py-16">
           <p className="text-white/40 text-sm">
             {language === 'de' ? 'Keine Shuffle-Decks vorhanden.' : 'No shuffle decks yet.'}
           </p>

@@ -38,6 +38,8 @@ export type SyncOperationType =
   | 'deck.delete'
   | 'shuffleCollection.upsert'
   | 'shuffleCollection.delete'
+  | 'videoNote.upsert'
+  | 'videoNote.delete'
 
 export interface SyncQueueRecord {
   id?: number
@@ -166,6 +168,7 @@ async function shouldSyncOperation(type: SyncOperationType, payload: unknown): P
   }
   if (!selectedDecks) return true
   if (type === 'shuffleCollection.upsert' || type === 'shuffleCollection.delete') return true
+  if (type === 'videoNote.upsert' || type === 'videoNote.delete') return true
   if (!payload || typeof payload !== 'object') return true
 
   const value = payload as Record<string, unknown>

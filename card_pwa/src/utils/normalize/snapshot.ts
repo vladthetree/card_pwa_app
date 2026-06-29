@@ -4,17 +4,19 @@
  * Used by: syncPull bootstrap flow and snapshot-normalizer worker.
  * Important: Invalid records are filtered here; review rows must reference cards present in the normalized snapshot.
  */
-import type { CardRecord, DeckRecord, ReviewRecord, ShuffleCollectionRecord } from '../../db'
+import type { CardRecord, DeckRecord, ReviewRecord, ShuffleCollectionRecord, VideoNoteRecord } from '../../db'
 import { normalizeDeck } from './deck'
 import { normalizeCard } from './card'
 import { normalizeReview } from './review'
 import { normalizeShuffleCollection } from './shuffleCollection'
+import { normalizeVideoNote } from './videoNote'
 
 export interface SnapshotNormalizeRequest {
   rawDecks: unknown[]
   rawCards: unknown[]
   rawReviews: unknown[]
   rawShuffleCollections: unknown[]
+  rawVideoNotes: unknown[]
 }
 
 export interface SnapshotNormalizeResult {
@@ -22,6 +24,7 @@ export interface SnapshotNormalizeResult {
   cards: CardRecord[]
   reviews: Array<Omit<ReviewRecord, 'id'>>
   shuffleCollections: ShuffleCollectionRecord[]
+  videoNotes: VideoNoteRecord[]
 }
 
 export function normalizeSnapshotPayload(payload: SnapshotNormalizeRequest): SnapshotNormalizeResult {
@@ -42,5 +45,9 @@ export function normalizeSnapshotPayload(payload: SnapshotNormalizeRequest): Sna
     .map(normalizeShuffleCollection)
     .filter((entry): entry is ShuffleCollectionRecord => entry !== null)
 
-  return { decks, cards, reviews, shuffleCollections }
+  const videoNotes = payload.rawVideoNotes
+    .map(entry => normalizeVideoNote(entry))
+    .filter((entry): entry is VideoNoteRecord => entry !== null)
+
+  return { decks, cards, reviews, shuffleCollections, videoNotes }
 }

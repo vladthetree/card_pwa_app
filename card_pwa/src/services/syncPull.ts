@@ -11,6 +11,7 @@ import { createWorker } from '../utils/workers/workerPool'
 import { normalizeDeck } from '../utils/normalize/deck'
 import { normalizeCard, normalizeCardUpdates } from '../utils/normalize/card'
 import { normalizeShuffleCollection } from '../utils/normalize/shuffleCollection'
+import { normalizeVideoNote } from '../utils/normalize/videoNote'
 import {
   normalizeSnapshotPayload,
   type SnapshotNormalizeRequest,
@@ -30,7 +31,7 @@ import {
   getOrCreateSyncClientId,
   fetchWithTimeout,
 } from './syncConfig'
-import { readSelectedDeckIds } from './profileService'
+import { profileScopeId, readSelectedDeckIds } from './profileService'
 import {
   isReviewDeck,
   isReviewDeckId,
@@ -128,11 +129,13 @@ interface HandshakeResponse {
   serverCursor?: number
   bootstrapUploadCapabilities?: {
     reviews?: boolean
+    videoNotes?: boolean
   }
   serverCounts?: {
     decks?: number
     cards?: number
     reviews?: number
+    videoNotes?: number
   }
 }
 
@@ -143,6 +146,7 @@ interface SnapshotResponse {
   cards?: unknown[]
   reviews?: unknown[]
   shuffleCollections?: unknown[]
+  videoNotes?: unknown[]
 }
 
 interface BootstrapUploadResponse {
@@ -281,6 +285,7 @@ async function shouldApplyOperationForSelectedDecks(op: PulledOperation, selecte
     return typeof id !== 'string' || !id || selectedDecks.has(id)
   }
   if (op.type === 'shuffleCollection.upsert' || op.type === 'shuffleCollection.delete') return true
+  if (op.type === 'videoNote.upsert' || op.type === 'videoNote.delete') return true
   if (!op.payload || typeof op.payload !== 'object') return true
 
   const payload = op.payload as Record<string, unknown>
@@ -632,6 +637,45 @@ async function applyShuffleCollectionDelete(payload: unknown) {
   })
 }
 
+function readPayloadString(payload: unknown, key: string): string {
+  if (!payload || typeof payload !== 'object') return ''
+  const value = (payload as Record<string, unknown>)[key]
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+function readPayloadTimestamp(payload: unknown, keys: string[], fallbackTs = 0): number {
+  if (payload && typeof payload === 'object') {
+    const value = payload as Record<string, unknown>
+    for (const key of keys) {
+      const parsed = Number(value[key])
+      if (Number.isFinite(parsed) && parsed >= 0) return parsed
+    }
+  }
+  return Number.isFinite(fallbackTs) && fallbackTs >= 0 ? fallbackTs : 0
+}
+
+async function applyVideoNoteUpsert(payload: unknown) {
+  const note = normalizeVideoNote(payload)
+  if (!note) return
+
+  const existing = await db.videoNotes2.get([note.profileId, note.objective])
+  if (existing && existing.updatedAt > note.updatedAt) return
+
+  await db.videoNotes2.put(note)
+}
+
+async function applyVideoNoteDelete(payload: unknown, fallbackTs = 0) {
+  const profileId = readPayloadString(payload, 'profileId') || readPayloadString(payload, 'profile_id')
+  const objective = readPayloadString(payload, 'objective')
+  if (!profileId || !objective) return
+
+  const deleteTs = readPayloadTimestamp(payload, ['deletedAt', 'deleted_at', 'updatedAt', 'updated_at', 'timestamp'], fallbackTs)
+  const existing = await db.videoNotes2.get([profileId, objective])
+  if (existing && deleteTs > 0 && existing.updatedAt > deleteTs) return
+
+  await db.videoNotes2.delete([profileId, objective])
+}
+
 async function applyOperation(op: PulledOperation) {
   const fallbackTs = Number(op.clientTimestamp ?? 0)
 
@@ -665,6 +709,12 @@ async function applyOperation(op: PulledOperation) {
       return
     case 'shuffleCollection.delete':
       await applyShuffleCollectionDelete(op.payload)
+      return
+    case 'videoNote.upsert':
+      await applyVideoNoteUpsert(op.payload)
+      return
+    case 'videoNote.delete':
+      await applyVideoNoteDelete(op.payload, fallbackTs)
       return
   }
 }
@@ -800,12 +850,14 @@ async function applyOperationsWithWorker(operations: PulledOperation[], fallback
 // ─── Bootstrap / Handshake ─────────────────────────────────────────────
 
 async function getLocalCounts() {
-  const [cards, decks, reviews] = await Promise.all([
+  const activeProfileId = profileScopeId((await db.profile.get('current')) ?? null)
+  const [cards, decks, reviews, videoNotes] = await Promise.all([
     db.cards.filter(card => !card.isDeleted).count(),
     db.decks.filter(deck => !deck.isDeleted).count(),
     db.reviews.count(),
+    db.videoNotes2.where('profileId').equals(activeProfileId).count(),
   ])
-  return { cards, decks, reviews }
+  return { cards, decks, reviews, videoNotes }
 }
 
 async function runHandshake(clientId: string): Promise<HandshakeResponse | null> {
@@ -871,12 +923,14 @@ async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
     const rawCards = Array.isArray(data.cards) ? data.cards : []
     const rawReviews = Array.isArray(data.reviews) ? data.reviews : []
     const rawShuffleCollections = Array.isArray(data.shuffleCollections) ? data.shuffleCollections : []
+    const rawVideoNotes = Array.isArray(data.videoNotes) ? data.videoNotes : []
 
-    const { decks, cards, reviews, shuffleCollections } = await snapshotNormalizer.run({
+    const { decks, cards, reviews, shuffleCollections, videoNotes } = await snapshotNormalizer.run({
       rawDecks,
       rawCards,
       rawReviews,
       rawShuffleCollections,
+      rawVideoNotes,
     })
 
     const selectedDecks = await readSelectedDeckFilter()
@@ -893,7 +947,10 @@ async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
       return false
     }
 
-    await db.transaction('rw', db.decks, db.cards, db.reviews, db.shuffleCollections, async () => {
+    const activeProfileId = profileScopeId((await db.profile.get('current')) ?? null)
+    const noteProfileIds = Array.from(new Set([activeProfileId, ...videoNotes.map(note => note.profileId)]))
+
+    await db.transaction('rw', [db.decks, db.cards, db.reviews, db.shuffleCollections, db.videoNotes2], async () => {
       if (selectedDecks) {
         const selectedDeckIds = Array.from(selectedDecks)
         const existingSelectedCards = await db.cards.where('deckId').anyOf(selectedDeckIds).toArray()
@@ -934,6 +991,13 @@ async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
       if (shuffleCollections.length > 0) {
         await db.shuffleCollections.bulkPut(shuffleCollections)
       }
+
+      for (const profileId of noteProfileIds) {
+        if (profileId) await db.videoNotes2.where('profileId').equals(profileId).delete()
+      }
+      if (videoNotes.length > 0) {
+        await db.videoNotes2.bulkPut(videoNotes)
+      }
     })
 
     if (typeof data.cursor === 'number' && Number.isFinite(data.cursor)) {
@@ -958,13 +1022,15 @@ async function runBootstrapUpload(
   if (!endpoint) return null
 
   try {
-    const [rawDecks, rawCards, rawReviews, shuffleCollections] = await Promise.all([
+    const activeProfileId = profileScopeId((await db.profile.get('current')) ?? null)
+    const [rawDecks, rawCards, rawReviews, shuffleCollections, videoNotes] = await Promise.all([
       db.decks.toArray(),
       db.cards.toArray(),
       options?.includeReviews ? db.reviews.toArray() : Promise.resolve([] as ReviewRecord[]),
       hasShuffleCollectionsTable()
         ? db.shuffleCollections.toArray()
         : Promise.resolve([] as ShuffleCollectionRecord[]),
+      db.videoNotes2.where('profileId').equals(activeProfileId).toArray(),
     ])
     const selectedDecks = await readSelectedDeckFilter()
     const {
@@ -1038,6 +1104,15 @@ async function runBootstrapUpload(
           updatedAt: collection.updatedAt,
           isDeleted: Boolean(collection.isDeleted),
           deletedAt: collection.deletedAt,
+        })),
+        videoNotes: videoNotes.map(note => ({
+          profileId: note.profileId,
+          objective: note.objective,
+          videoId: note.videoId,
+          content: note.content,
+          tags: note.tags,
+          createdAt: note.createdAt,
+          updatedAt: note.updatedAt,
         })),
       }),
     })

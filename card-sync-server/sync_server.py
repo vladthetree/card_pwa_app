@@ -398,12 +398,16 @@ def _push_detail(op_type, payload):
     return f"collection={p.get('id','')}  decks={len(deck_ids)}  name={p.get('name','')!r}"
   if op_type == "shuffleCollection.delete":
     return f"collection={p.get('id','')}"
+  if op_type == "videoNote.upsert":
+    return f"profile={p.get('profileId') or p.get('profile_id') or ''}  objective={p.get('objective','')}"
+  if op_type == "videoNote.delete":
+    return f"profile={p.get('profileId') or p.get('profile_id') or ''}  objective={p.get('objective','')}"
   return ""
 
 def _prepare_payload_for_storage(op_type, payload, client_timestamp):
   """Normalize payload before persisting to sync_operations."""
   p = dict(payload) if isinstance(payload, dict) else {}
-  if op_type in ("deck.delete", "card.delete") and p.get("deletedAt") is None:
+  if op_type in ("deck.delete", "card.delete", "videoNote.delete") and p.get("deletedAt") is None:
     p["deletedAt"] = client_timestamp or now_ms()
   return p
 
@@ -648,6 +652,30 @@ def init_db():
   conn.execute("CREATE INDEX IF NOT EXISTS idx_shuffle_snapshot_active ON server_shuffle_collections(id) WHERE deleted_at IS NULL")
   conn.commit()
 
+  # ─────────────────────────────────────────────────────────────
+  # Server State: Video Notes
+  # ─────────────────────────────────────────────────────────────
+  conn.execute("""
+    CREATE TABLE IF NOT EXISTS server_video_notes (
+      profile_id TEXT NOT NULL,
+      objective TEXT NOT NULL,
+      video_id TEXT,
+      content TEXT,
+      tags_json TEXT,
+      created_at INTEGER,
+      updated_at INTEGER NOT NULL,
+      deleted_at INTEGER NULL,
+      last_source_client TEXT,
+      user_id TEXT NOT NULL DEFAULT '',
+      PRIMARY KEY (user_id, profile_id, objective)
+    )
+  """)
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_video_notes_user_id ON server_video_notes(user_id)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_video_notes_updated_at ON server_video_notes(updated_at)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_video_notes_deleted_at ON server_video_notes(deleted_at)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_video_notes_snapshot_active ON server_video_notes(user_id, profile_id, objective) WHERE deleted_at IS NULL")
+  conn.commit()
+
   card_cols = [r[1] for r in conn.execute("PRAGMA table_info(server_cards)").fetchall()]
   if "metadata_json" not in card_cols:
     conn.execute("ALTER TABLE server_cards ADD COLUMN metadata_json TEXT")
@@ -705,6 +733,18 @@ def init_db():
   conn.execute("CREATE INDEX IF NOT EXISTS idx_shuffle_snapshot_active ON server_shuffle_collections(id) WHERE deleted_at IS NULL")
   conn.commit()
 
+  video_note_cols = [r[1] for r in conn.execute("PRAGMA table_info(server_video_notes)").fetchall()]
+  if "user_id" not in video_note_cols:
+    conn.execute("ALTER TABLE server_video_notes ADD COLUMN user_id TEXT")
+    conn.commit()
+  conn.execute("UPDATE server_video_notes SET user_id='' WHERE user_id IS NULL")
+  conn.commit()
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_video_notes_user_id ON server_video_notes(user_id)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_video_notes_updated_at ON server_video_notes(updated_at)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_video_notes_deleted_at ON server_video_notes(deleted_at)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_video_notes_snapshot_active ON server_video_notes(user_id, profile_id, objective) WHERE deleted_at IS NULL")
+  conn.commit()
+
   ensure_profile_scoped_state_tables(conn)
   conn.execute("CREATE INDEX IF NOT EXISTS idx_deck_updated_at ON server_decks(updated_at)")
   conn.execute("CREATE INDEX IF NOT EXISTS idx_deck_deleted_at ON server_decks(deleted_at)")
@@ -716,6 +756,10 @@ def init_db():
   conn.execute("CREATE INDEX IF NOT EXISTS idx_card_deck_id ON server_cards(deck_id)")
   conn.execute("CREATE INDEX IF NOT EXISTS idx_card_snapshot_active ON server_cards(id) WHERE deleted_at IS NULL AND is_deleted = 0")
   conn.execute("CREATE INDEX IF NOT EXISTS idx_card_user_id ON server_cards(user_id)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_video_notes_user_id ON server_video_notes(user_id)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_video_notes_updated_at ON server_video_notes(updated_at)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_video_notes_deleted_at ON server_video_notes(deleted_at)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_video_notes_snapshot_active ON server_video_notes(user_id, profile_id, objective) WHERE deleted_at IS NULL")
   conn.commit()
 
   # ─────────────────────────────────────────────────────────────
@@ -846,6 +890,44 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       or client_timestamp
       or now
     )
+
+  def _video_note_candidate_ts():
+    return (
+      payload.get("updatedAt")
+      or payload.get("deletedAt")
+      or payload.get("createdAt")
+      or payload.get("timestamp")
+      or client_timestamp
+      or now
+    )
+
+  def _normalize_video_note_profile_id():
+    raw_profile_id = payload.get("profileId", payload.get("profile_id"))
+    if isinstance(raw_profile_id, str) and raw_profile_id.strip():
+      return raw_profile_id.strip()
+    return state_user_id or "local"
+
+  def _normalize_video_note_tags():
+    raw_tags = payload.get("tags")
+    if raw_tags is None:
+      raw_tags = payload.get("tags_json")
+    if isinstance(raw_tags, str):
+      try:
+        raw_tags = json.loads(raw_tags)
+      except Exception:
+        raw_tags = []
+    if not isinstance(raw_tags, list):
+      return []
+    result = []
+    seen = set()
+    for entry in raw_tags:
+      tag = str(entry or "").strip()
+      key = tag.lower()
+      if not tag or key in seen:
+        continue
+      seen.add(key)
+      result.append(tag)
+    return result
 
   def _normalize_parent_deck_id(value):
     if isinstance(value, str):
@@ -1222,6 +1304,85 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       state_user_id,
     ))
 
+  elif op_type == "videoNote.upsert":
+    profile_id = _normalize_video_note_profile_id()
+    objective = str(payload.get("objective") or "").strip()
+    if not profile_id or not objective:
+      LOGGER.warning(
+        "VIDEO_NOTE_REJECTED op_id=%s reason=invalid_payload profile_id=%s objective=%s",
+        op_id,
+        profile_id,
+        objective,
+      )
+      return
+
+    candidate_ts = _video_note_candidate_ts()
+    existing = conn.execute(
+      "SELECT updated_at, last_source_client FROM server_video_notes WHERE profile_id=? AND objective=? AND user_id=?",
+      (profile_id, objective, state_user_id)
+    ).fetchone()
+    if existing and not lww_should_apply(existing[0], existing[1], candidate_ts, source_client):
+      return
+
+    deleted_at = payload.get("deletedAt")
+    if deleted_at is None and payload.get("isDeleted"):
+      deleted_at = candidate_ts
+
+    conn.execute("""
+      INSERT OR REPLACE INTO server_video_notes
+      (profile_id, objective, video_id, content, tags_json, created_at, updated_at, deleted_at, last_source_client, user_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+      profile_id,
+      objective,
+      str(payload.get("videoId", payload.get("video_id")) or ""),
+      payload.get("content") if isinstance(payload.get("content"), str) else "",
+      json.dumps(_normalize_video_note_tags(), ensure_ascii=False),
+      payload.get("createdAt") or payload.get("created_at") or candidate_ts,
+      candidate_ts,
+      deleted_at,
+      source_client,
+      state_user_id,
+    ))
+
+  elif op_type == "videoNote.delete":
+    profile_id = _normalize_video_note_profile_id()
+    objective = str(payload.get("objective") or "").strip()
+    if not profile_id or not objective:
+      return
+
+    candidate_ts = _video_note_candidate_ts()
+    existing = conn.execute(
+      """SELECT updated_at, last_source_client, video_id, content, tags_json, created_at
+         FROM server_video_notes WHERE profile_id=? AND objective=? AND user_id=?""",
+      (profile_id, objective, state_user_id)
+    ).fetchone()
+    if existing and not lww_should_apply(existing[0], existing[1], candidate_ts, source_client):
+      return
+
+    deleted_at = payload.get("deletedAt") or payload.get("deleted_at") or candidate_ts
+    existing_video_id = existing[2] if existing else str(payload.get("videoId", payload.get("video_id")) or "")
+    existing_content = existing[3] if existing else ""
+    existing_tags = existing[4] if existing else json.dumps([], ensure_ascii=False)
+    existing_created_at = existing[5] if existing else (payload.get("createdAt") or payload.get("created_at") or candidate_ts)
+
+    conn.execute("""
+      INSERT OR REPLACE INTO server_video_notes
+      (profile_id, objective, video_id, content, tags_json, created_at, updated_at, deleted_at, last_source_client, user_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+      profile_id,
+      objective,
+      existing_video_id,
+      existing_content,
+      existing_tags,
+      existing_created_at,
+      candidate_ts,
+      deleted_at,
+      source_client,
+      state_user_id,
+    ))
+
 def rebuild_server_state(conn):
   """
   Rebuild server_cards and server_decks by replaying all events from sync_operations.
@@ -1232,6 +1393,7 @@ def rebuild_server_state(conn):
   conn.execute("DELETE FROM server_decks")
   conn.execute("DELETE FROM server_reviews")
   conn.execute("DELETE FROM server_shuffle_collections")
+  conn.execute("DELETE FROM server_video_notes")
   conn.commit()
 
   # Fetch all operations in order
@@ -2061,12 +2223,13 @@ class Handler(BaseHTTPRequestHandler):
     cards = data.get("cards") or []
     reviews = data.get("reviews") or []
     shuffle_collections = data.get("shuffleCollections") or []
+    video_notes = data.get("videoNotes") or []
     client_ip = self.client_address[0] if self.client_address else "?"
 
     if not client_id or not batch_id:
       self._send_json(400, {"ok": False, "error": "missing_bootstrap_fields"})
       return
-    if not isinstance(decks, list) or not isinstance(cards, list) or not isinstance(reviews, list) or not isinstance(shuffle_collections, list):
+    if not isinstance(decks, list) or not isinstance(cards, list) or not isinstance(reviews, list) or not isinstance(shuffle_collections, list) or not isinstance(video_notes, list):
       self._send_json(400, {"ok": False, "error": "invalid_bootstrap_payload"})
       return
 
@@ -2094,6 +2257,10 @@ class Handler(BaseHTTPRequestHandler):
             "shuffleCollectionsUpdated": 0,
             "shuffleCollectionsSkippedOlder": 0,
             "shuffleCollectionsRejected": 0,
+            "videoNotesInserted": 0,
+            "videoNotesUpdated": 0,
+            "videoNotesSkippedOlder": 0,
+            "videoNotesRejected": 0,
           }
         log(
           f"BOOTSTRAP  ip={client_ip}  client={_client_short(client_id)}  "
@@ -2120,6 +2287,10 @@ class Handler(BaseHTTPRequestHandler):
         "shuffleCollectionsUpdated": 0,
         "shuffleCollectionsSkippedOlder": 0,
         "shuffleCollectionsRejected": 0,
+        "videoNotesInserted": 0,
+        "videoNotesUpdated": 0,
+        "videoNotesSkippedOlder": 0,
+        "videoNotesRejected": 0,
       }
 
       syncable_deck_ids = active_deck_ids_from_bootstrap_payload(decks, cards)
@@ -2362,6 +2533,73 @@ class Handler(BaseHTTPRequestHandler):
         else:
           summary["shuffleCollectionsInserted"] += 1
 
+      for note in video_notes:
+        if not isinstance(note, dict):
+          summary["videoNotesRejected"] += 1
+          continue
+
+        profile_id = str(note.get("profileId") or note.get("profile_id") or state_user_id or "local").strip()
+        objective = str(note.get("objective") or "").strip()
+        if not profile_id or not objective:
+          summary["videoNotesRejected"] += 1
+          continue
+
+        raw_tags = note.get("tags")
+        if isinstance(raw_tags, str):
+          try:
+            raw_tags = json.loads(raw_tags)
+          except Exception:
+            raw_tags = []
+        if not isinstance(raw_tags, list):
+          raw_tags = []
+        tags = []
+        seen_tags = set()
+        for entry in raw_tags:
+          tag = str(entry or "").strip()
+          key = tag.lower()
+          if not tag or key in seen_tags:
+            continue
+          seen_tags.add(key)
+          tags.append(tag)
+
+        candidate_ts = parse_int(note.get("updatedAt") or note.get("updated_at") or note.get("createdAt") or note.get("created_at") or sent_at, sent_at, min_value=0)
+        existing = conn.execute(
+          "SELECT updated_at, last_source_client FROM server_video_notes WHERE profile_id=? AND objective=? AND user_id=?",
+          (profile_id, objective, state_user_id)
+        ).fetchone()
+        if existing and not lww_should_apply(existing["updated_at"], existing["last_source_client"], candidate_ts, client_id):
+          summary["videoNotesSkippedOlder"] += 1
+          continue
+
+        created_at = parse_int(note.get("createdAt") or note.get("created_at") or candidate_ts, candidate_ts, min_value=0)
+        deleted_at = note.get("deletedAt", note.get("deleted_at"))
+        if deleted_at is None and note.get("isDeleted"):
+          deleted_at = candidate_ts
+
+        conn.execute(
+          """
+          INSERT OR REPLACE INTO server_video_notes
+          (profile_id, objective, video_id, content, tags_json, created_at, updated_at, deleted_at, last_source_client, user_id)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          """,
+          (
+            profile_id,
+            objective,
+            str(note.get("videoId", note.get("video_id")) or ""),
+            note.get("content") if isinstance(note.get("content"), str) else "",
+            json.dumps(tags, ensure_ascii=False),
+            created_at,
+            candidate_ts,
+            deleted_at,
+            client_id,
+            state_user_id,
+          )
+        )
+        if existing:
+          summary["videoNotesUpdated"] += 1
+        else:
+          summary["videoNotesInserted"] += 1
+
       # Log a single operation marker to advance server cursor for post-bootstrap pull.
       marker_payload = {
         "batchId": batch_id,
@@ -2369,6 +2607,7 @@ class Handler(BaseHTTPRequestHandler):
         "cards": len(cards),
         "reviews": len(reviews),
         "shuffleCollections": len(shuffle_collections),
+        "videoNotes": len(video_notes),
       }
       conn.execute(
         """INSERT INTO sync_operations
@@ -2403,7 +2642,8 @@ class Handler(BaseHTTPRequestHandler):
         f"decks=+{summary['decksInserted']}/={summary['decksUpdated']}/skip={summary['decksSkippedOlder']}  "
         f"cards=+{summary['cardsInserted']}/={summary['cardsUpdated']}/skip={summary['cardsSkippedOlder']}  "
         f"reviews=+{summary['reviewsInserted']}/skip={summary['reviewsSkipped']}  "
-        f"shuffle=+{summary['shuffleCollectionsInserted']}/={summary['shuffleCollectionsUpdated']}/skip={summary['shuffleCollectionsSkippedOlder']}/rej={summary['shuffleCollectionsRejected']}"
+        f"shuffle=+{summary['shuffleCollectionsInserted']}/={summary['shuffleCollectionsUpdated']}/skip={summary['shuffleCollectionsSkippedOlder']}/rej={summary['shuffleCollectionsRejected']}  "
+        f"videoNotes=+{summary['videoNotesInserted']}/={summary['videoNotesUpdated']}/skip={summary['videoNotesSkippedOlder']}/rej={summary['videoNotesRejected']}"
       )
       self._send_json(200, {
         "ok": True,
@@ -2444,6 +2684,7 @@ class Handler(BaseHTTPRequestHandler):
     local_cards = parse_int(local_counts.get("cards", 0) or 0, 0, min_value=0)
     local_decks = parse_int(local_counts.get("decks", 0) or 0, 0, min_value=0)
     local_reviews = parse_int(local_counts.get("reviews", 0) or 0, 0, min_value=0)
+    local_video_notes = parse_int(local_counts.get("videoNotes", 0) or 0, 0, min_value=0)
     client_ip = self.client_address[0] if self.client_address else "?"
 
     if not client_id:
@@ -2474,11 +2715,15 @@ class Handler(BaseHTTPRequestHandler):
               )""",
         user_params
       ).fetchone()[0] or 0
+      active_video_notes = conn.execute(
+        f"SELECT COUNT(*) FROM server_video_notes WHERE deleted_at IS NULL {user_filter}",
+        user_params
+      ).fetchone()[0] or 0
       needs_snapshot = False
       needs_client_bootstrap_upload = False
       reason = "ok"
 
-      if active_cards == 0 and active_decks == 0 and (local_cards > 0 or local_decks > 0):
+      if active_cards == 0 and active_decks == 0 and active_video_notes == 0 and (local_cards > 0 or local_decks > 0 or local_video_notes > 0):
         needs_client_bootstrap_upload = True
         reason = "server-empty-client-has-data"
       elif local_reviews > active_reviews:
@@ -2489,10 +2734,10 @@ class Handler(BaseHTTPRequestHandler):
         # delta replay is sufficient. Force a snapshot to re-anchor the client.
         needs_snapshot = True
         reason = "server-cursor-regressed"
-      elif active_cards > local_cards or active_decks > local_decks:
+      elif active_cards > local_cards or active_decks > local_decks or active_video_notes > local_video_notes:
         needs_snapshot = True
         reason = "client-missing-server-data"
-      elif wants_snapshot and active_cards > 0:
+      elif wants_snapshot and (active_cards > 0 or active_video_notes > 0):
         needs_snapshot = True
         reason = "explicit-request"
 
@@ -2507,18 +2752,20 @@ class Handler(BaseHTTPRequestHandler):
         "needsClientBootstrapUpload": needs_client_bootstrap_upload,
         "bootstrapUploadCapabilities": {
           "reviews": True,
+          "videoNotes": True,
         },
         "reason": reason,
         "serverCounts": {
           "decks": active_decks,
           "cards": active_cards,
           "reviews": active_reviews,
+          "videoNotes": active_video_notes,
         }
       })
       log(
         f"HANDSHAKE  ip={client_ip}  client={_client_short(client_id)}  "
-        f"lastCursor={last_cursor}  localCards={local_cards}  localDecks={local_decks}  localReviews={local_reviews}  "
-        f"serverCards={active_cards}  serverDecks={active_decks}  serverReviews={active_reviews}  "
+        f"lastCursor={last_cursor}  localCards={local_cards}  localDecks={local_decks}  localReviews={local_reviews}  localVideoNotes={local_video_notes}  "
+        f"serverCards={active_cards}  serverDecks={active_decks}  serverReviews={active_reviews}  serverVideoNotes={active_video_notes}  "
         f"needsSnapshot={needs_snapshot}  needsUpload={needs_client_bootstrap_upload}  reason={reason}"
       )
     finally:
@@ -2740,6 +2987,37 @@ class Handler(BaseHTTPRequestHandler):
           "lastSourceClient": r["last_source_client"],
         })
 
+      if include_deleted:
+        where_video_note = f"WHERE 1=1 {user_filter}"
+      else:
+        where_video_note = f"WHERE deleted_at IS NULL {user_filter}"
+      video_note_rows = conn.execute(
+        f"""SELECT profile_id, objective, video_id, content, tags_json, created_at, updated_at, deleted_at, last_source_client
+            FROM server_video_notes {where_video_note} ORDER BY profile_id ASC, objective ASC""",
+        user_params
+      ).fetchall()
+      video_notes = []
+      for r in video_note_rows:
+        try:
+          tags = json.loads(r["tags_json"]) if r["tags_json"] else []
+          if not isinstance(tags, list):
+            tags = []
+        except Exception:
+          tags = []
+
+        video_notes.append({
+          "profileId": r["profile_id"],
+          "objective": r["objective"],
+          "videoId": r["video_id"] or "",
+          "content": r["content"] or "",
+          "tags": tags,
+          "createdAt": r["created_at"],
+          "updatedAt": r["updated_at"],
+          "isDeleted": r["deleted_at"] is not None,
+          "deletedAt": r["deleted_at"],
+          "lastSourceClient": r["last_source_client"],
+        })
+
       where_review = f"WHERE undone_at IS NULL {user_filter}"
       if not include_deleted:
         where_review += """
@@ -2775,11 +3053,12 @@ class Handler(BaseHTTPRequestHandler):
         "decks": decks,
         "cards": cards,
         "shuffleCollections": shuffle_collections,
+        "videoNotes": video_notes,
         "reviews": reviews
       })
       log(
         f"SNAPSHOT  ip={client_ip}  client={_client_short(client_id)}  "
-        f"includeDeleted={include_deleted}  decks={len(decks)}  cards={len(cards)}  shuffle={len(shuffle_collections)}  reviews={len(reviews)}  cursor={cursor}"
+        f"includeDeleted={include_deleted}  decks={len(decks)}  cards={len(cards)}  shuffle={len(shuffle_collections)}  videoNotes={len(video_notes)}  reviews={len(reviews)}  cursor={cursor}"
       )
     finally:
       conn.close()

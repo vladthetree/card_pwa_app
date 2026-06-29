@@ -51,7 +51,7 @@ function CompactStatTile({
     blue: 'text-[--brand-secondary]',
     emerald: 'text-emerald-300',
   }[tone]
-  const className = `min-h-[4.25rem] rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-3 py-2.5 text-left ${
+  const className = `min-h-[4.25rem] min-w-0 rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-3 py-2.5 text-left ${
     interactive ? 'cursor-pointer hover:border-[#3f3f46] hover:bg-[#111] active:scale-[0.98]' : ''
   }`
   const content = (
@@ -102,7 +102,7 @@ export function HomeStatsSection({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.14 }}
-      className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3"
+      className="grid w-full min-w-0 grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3"
     >
       <CompactStatTile label={t.stats_now_due} value={stats.nowDue} tone="orange" />
       <CompactStatTile label={t.stats_new} value={stats.new} tone="blue" />
@@ -127,7 +127,7 @@ export function HomeStatsSection({
           mehrere Decks. Das frühere GamificationPanel bleibt als Komponente
           erhalten, der 8.-Juni-Stand zeigt im Pilot-Modus aber die Quest-Kachel. */}
       {mode === 'pilot' && (
-        <div className="relative z-20 grid w-full gap-2 pb-1 sm:gap-3">
+        <div className="relative z-20 grid w-full min-w-0 gap-2 pb-1 sm:gap-3">
           <HomeDailyQuestTile
             language={language}
             questSize={questSize}

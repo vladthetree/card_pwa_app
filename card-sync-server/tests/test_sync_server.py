@@ -236,7 +236,7 @@ def api(server):
             r = requests.get(f"http://localhost:{port}/sync/decks", headers=self._headers(auth_token))
             return r.json() if r.text else {}
 
-        def bootstrap_upload(self, client_id, batch_id, decks=None, cards=None, reviews=None, shuffle_collections=None, sent_at=None, auth_token=None):
+        def bootstrap_upload(self, client_id, batch_id, decks=None, cards=None, reviews=None, shuffle_collections=None, video_notes=None, sent_at=None, auth_token=None):
             """POST /sync/bootstrap/upload"""
             body = {
                 "clientId": client_id,
@@ -245,6 +245,7 @@ def api(server):
                 "cards": cards or [],
                 "reviews": reviews or [],
                 "shuffleCollections": shuffle_collections or [],
+                "videoNotes": video_notes or [],
             }
             if sent_at is not None:
                 body["sentAt"] = sent_at
@@ -1960,6 +1961,84 @@ class TestBootstrapUpload:
             "lastSourceClient": "client-a",
         }]
 
+    def test_video_note_push_roundtrip_appears_in_snapshot(self, api, db_helper):
+        result = api.push(
+            op_id="video-note-upsert-1",
+            op_type="videoNote.upsert",
+            payload={
+                "profileId": "user-video",
+                "objective": "1.1",
+                "videoId": "video-1.mp4",
+                "content": "Meine Notiz #tag",
+                "tags": ["tag"],
+                "createdAt": 1000,
+                "updatedAt": 2000,
+            },
+            client_id="client-video",
+            client_timestamp=2000,
+        )
+
+        assert result["ok"] is True
+        rows = db_helper.query("SELECT content, tags_json FROM server_video_notes WHERE profile_id='user-video' AND objective='1.1'")
+        assert len(rows) == 1
+        assert rows[0][0] == "Meine Notiz #tag"
+        assert json.loads(rows[0][1]) == ["tag"]
+
+        snap = api.snapshot("reader")
+        assert snap["ok"] is True
+        assert snap["videoNotes"] == [{
+            "profileId": "user-video",
+            "objective": "1.1",
+            "videoId": "video-1.mp4",
+            "content": "Meine Notiz #tag",
+            "tags": ["tag"],
+            "createdAt": 1000,
+            "updatedAt": 2000,
+            "isDeleted": False,
+            "deletedAt": None,
+            "lastSourceClient": "client-video",
+        }]
+
+    def test_video_note_delete_removes_note_from_active_snapshot(self, api, db_helper):
+        api.push(
+            op_id="video-note-upsert-delete-source",
+            op_type="videoNote.upsert",
+            payload={
+                "profileId": "user-video",
+                "objective": "1.2",
+                "videoId": "video-2.mp4",
+                "content": "Wird gelöscht",
+                "tags": [],
+                "createdAt": 1000,
+                "updatedAt": 2000,
+            },
+            client_id="client-video",
+            client_timestamp=2000,
+        )
+        result = api.push(
+            op_id="video-note-delete-1",
+            op_type="videoNote.delete",
+            payload={
+                "profileId": "user-video",
+                "objective": "1.2",
+                "deletedAt": 3000,
+                "updatedAt": 3000,
+            },
+            client_id="client-video",
+            client_timestamp=3000,
+        )
+
+        assert result["ok"] is True
+        rows = db_helper.query("SELECT deleted_at FROM server_video_notes WHERE profile_id='user-video' AND objective='1.2'")
+        assert rows == [(3000,)]
+
+        snap = api.snapshot("reader")
+        assert snap["videoNotes"] == []
+
+        deleted_snap = api.snapshot("reader", include_deleted=True)
+        assert deleted_snap["videoNotes"][0]["isDeleted"] is True
+        assert deleted_snap["videoNotes"][0]["deletedAt"] == 3000
+
     def test_bootstrap_upload_inserts_state_and_returns_summary(self, api, db_helper):
         result = api.bootstrap_upload(
             client_id="boot-client",
@@ -2005,6 +2084,29 @@ class TestBootstrapUpload:
 
         snap = api.snapshot("reader")
         assert [entry["id"] for entry in snap["shuffleCollections"]] == ["shuffle_boot"]
+
+    def test_bootstrap_upload_includes_video_notes(self, api, db_helper):
+        result = api.bootstrap_upload(
+            client_id="boot-client",
+            batch_id="batch-video-notes",
+            sent_at=6000,
+            video_notes=[{
+                "profileId": "boot-user",
+                "objective": "2.1",
+                "videoId": "video-boot.mp4",
+                "content": "Boot Note #boot",
+                "tags": ["boot"],
+                "createdAt": 5000,
+                "updatedAt": 6000,
+            }],
+        )
+
+        assert result["ok"] is True
+        assert result["summary"]["videoNotesInserted"] == 1
+        assert db_helper.count("server_video_notes") == 1
+
+        snap = api.snapshot("reader")
+        assert [entry["objective"] for entry in snap["videoNotes"]] == ["2.1"]
 
     def test_bootstrap_upload_includes_review_history(self, api, db_helper):
         result = api.bootstrap_upload(

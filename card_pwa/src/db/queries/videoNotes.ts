@@ -2,17 +2,19 @@
  * AI_CONTEXT:
  * Role: Profile-scoped persistence for video notepads; derives tags from inline #tags, lists notes by tag, all tags, objectives with notes, and related tags.
  * Used by: useVideoNotes hooks, VideoNotesPanel, TagCollectionPanel, TagBrowserSection, backup/restore.
- * Important: Notes are local/offline and partitioned by profileId; content is plain text and tags are derived, deduped by normalizeTagId.
+ * Important: Notes are partitioned by profileId; content is plain text and tags are derived, deduped by normalizeTagId, and mutations enqueue server sync.
  */
 import { db, type VideoNoteRecord } from '../../db'
+import { enqueueSyncOperation } from '../../services/syncQueue'
 import { collectRelatedTags, extractTags, type RelatedTagStats } from '../../utils/videoTags'
+import { extractLinks, normalizeLinkTarget } from '../../utils/videoLinks'
 import { normalizeTagId } from '../../utils/tagIdentity'
 
 /**
  * Notizzettel zu Lernvideos. Tags werden direkt im Notiztext als `#tag` gesetzt
  * und beim Speichern aus dem Inhalt abgeleitet; über sie werden Notizen
- * verknüpft. Notizen sind gerätelokal (kein Server-Sync), aber PRO PROFIL
- * getrennt: jede Funktion nimmt den Profil-Scope `profileId` entgegen
+ * verknüpft. Notizen werden PRO PROFIL getrennt: jede Funktion nimmt den
+ * Profil-Scope `profileId` entgegen
  * (Compound-Primary-Key `[profileId+objective]`), damit z. B. „Vlad" eigene
  * Notizen führt, ohne dass andere Profile sie sehen.
  */
@@ -90,6 +92,22 @@ export async function listRelatedVideoNoteTags(
   return collectRelatedTags(rows, tag, limit)
 }
 
+/** Notizen des Profils, deren Text per `[[Ziel]]` auf `target` verweist
+ *  (Backlinks, Obsidian-artig „Erwähnt in"). Die eigene Notiz von `target`
+ *  zählt nicht als Backlink. Ziel-Vergleich kanonisch über normalizeLinkTarget. */
+export async function listNotesLinkingTo(profileId: string, target: string): Promise<VideoNoteRecord[]> {
+  const wanted = normalizeLinkTarget(target)
+  if (!wanted) return []
+  const rows = await db.videoNotes2.where('profileId').equals(profileId).toArray()
+  return rows
+    .filter(
+      row =>
+        normalizeLinkTarget(row.objective) !== wanted &&
+        extractLinks(row.content).some(link => normalizeLinkTarget(link) === wanted),
+    )
+    .sort((a, b) => b.updatedAt - a.updatedAt)
+}
+
 /**
  * Notiz speichern (Upsert) im Profil-Scope. Tags werden aus den Inline-`#tags`
  * des Inhalts abgeleitet. Wenn Inhalt UND Tags leer sind, wird ein bestehender
@@ -111,6 +129,13 @@ export async function saveVideoNote(input: {
 
   if (!content.trim() && tags.length === 0) {
     await db.videoNotes2.delete([profileId, objective])
+    await enqueueSyncOperation('videoNote.delete', {
+      profileId,
+      objective,
+      videoId: input.videoId,
+      deletedAt: now,
+      updatedAt: now,
+    })
     return null
   }
 
@@ -125,9 +150,31 @@ export async function saveVideoNote(input: {
     updatedAt: now,
   }
   await db.videoNotes2.put(record)
+  await enqueueSyncOperation('videoNote.upsert', {
+    profileId: record.profileId,
+    objective: record.objective,
+    videoId: record.videoId,
+    content: record.content,
+    tags: record.tags,
+    createdAt: record.createdAt,
+    updatedAt: record.updatedAt,
+  })
   return record
 }
 
 export async function deleteVideoNote(profileId: string, objective: string): Promise<void> {
-  await db.videoNotes2.delete([profileId, objective])
+  const normalizedProfileId = profileId.trim()
+  const normalizedObjective = objective.trim()
+  if (!normalizedProfileId || !normalizedObjective) return
+
+  const existing = await db.videoNotes2.get([normalizedProfileId, normalizedObjective])
+  const now = Date.now()
+  await db.videoNotes2.delete([normalizedProfileId, normalizedObjective])
+  await enqueueSyncOperation('videoNote.delete', {
+    profileId: normalizedProfileId,
+    objective: normalizedObjective,
+    videoId: existing?.videoId ?? '',
+    deletedAt: now,
+    updatedAt: now,
+  })
 }
