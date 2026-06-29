@@ -1618,14 +1618,15 @@ class TestProfileSwitch:
         assert [card["front"] for card in snap_first["cards"]] == ["Front A"]
         assert [card["front"] for card in snap_second["cards"]] == ["Front B"]
 
-        old_db_path = sync_server.DB_PATH
-        sync_server.DB_PATH = server["db"]
+        from server import config as server_config
+        old_db_path = server_config.DB_PATH
+        server_config.DB_PATH = server["db"]
         conn = sync_server.open_db()
         try:
             sync_server.rebuild_server_state(conn)
         finally:
             conn.close()
-            sync_server.DB_PATH = old_db_path
+            server_config.DB_PATH = old_db_path
 
         rebuilt_first = api.snapshot("reader-a2", auth_token=first["profileToken"])
         rebuilt_second = api.snapshot("reader-b2", auth_token=second["profileToken"])
@@ -1895,9 +1896,10 @@ class TestStartupFlags:
             conn.close()
 
         import sync_server
-        original_db_path = sync_server.DB_PATH
+        from server import config as server_config
+        original_db_path = server_config.DB_PATH
         try:
-            sync_server.DB_PATH = db_path
+            server_config.DB_PATH = db_path
             sync_server.init_db()
 
             conn = sqlite3.connect(db_path)
@@ -1916,7 +1918,7 @@ class TestStartupFlags:
             assert "idx_card_snapshot_active" in card_indexes
             assert review_table is not None
         finally:
-            sync_server.DB_PATH = original_db_path
+            server_config.DB_PATH = original_db_path
             if os.path.exists(db_path):
                 os.remove(db_path)
 
