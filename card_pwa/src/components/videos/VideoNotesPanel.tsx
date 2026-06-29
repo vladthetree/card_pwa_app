@@ -5,13 +5,40 @@
  * Important: Notes stay plain text; structure is derived by videoTags, tagSuggestions, videoNoteSignals, and videoTimeAnchors rather than stored as separate rich blocks.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { Check, CircleHelp, Clock, Hash, Lightbulb, Loader2, NotebookPen, Plus, SquarePen } from 'lucide-react'
+import { ArrowUpRight, Check, CircleHelp, Clock, Hash, Lightbulb, Link2, Loader2, NotebookPen, Plus, SquarePen } from 'lucide-react'
 import { saveVideoNote } from '../../db/queries/videoNotes'
-import { useAllVideoNoteTags, useVideoNote } from '../../hooks/useVideoNotes'
+import { useAllVideoNoteTags, useBacklinks, useVideoNote } from '../../hooks/useVideoNotes'
+import { SY0_701_OBJECTIVES } from '../../utils/securityDeckHierarchy'
 import { filterTagSuggestions, findTagDraftAtCursor, insertSuggestedTag } from '../../utils/tagSuggestions'
 import { countVideoNoteSignals, summarizeVideoNoteSignals } from '../../utils/videoNoteSignals'
 import { extractTags, splitTagSegments } from '../../utils/videoTags'
+import { extractLinks, splitLinkSegments } from '../../utils/videoLinks'
 import { extractVideoTimeAnchors, formatVideoTime } from '../../utils/videoTimeAnchors'
+
+const OBJECTIVE_TITLE = new Map(SY0_701_OBJECTIVES.map(o => [o.code, o.title]))
+
+/** Titel zu einem `[[Ziel]]` — leer, wenn das Ziel kein bekanntes Objective ist. */
+function linkTitle(target: string): string {
+  return OBJECTIVE_TITLE.get(target.trim()) ?? ''
+}
+
+type RenderSegment = { text: string; kind: 'text' | 'tag' | 'link' }
+
+/** Vereint Tag- und Wiki-Link-Hervorhebung zu einer Segmentliste für das
+ *  Backdrop-Overlay: erst nach `#tags` trennen, Resttext nach `[[links]]`. */
+function buildRenderSegments(content: string): RenderSegment[] {
+  const out: RenderSegment[] = []
+  for (const seg of splitTagSegments(content)) {
+    if (seg.isTag) {
+      out.push({ text: seg.text, kind: 'tag' })
+      continue
+    }
+    for (const piece of splitLinkSegments(seg.text)) {
+      out.push({ text: piece.text, kind: piece.isLink ? 'link' : 'text' })
+    }
+  }
+  return out
+}
 
 const COPY = {
   de: {
@@ -32,11 +59,16 @@ const COPY = {
     insertCue: 'Merksatz',
     insertCard: 'Karte',
     insertTime: 'Zeit',
+    insertLink: 'Wiki',
     signals: 'Zettelspuren',
     timeAnchors: 'Zeitmarken',
     questions: 'Fragen',
     cardIdeas: 'Kartenideen',
     cues: 'Merksätze',
+    links: 'Verlinkt',
+    linkHint: 'Verweise mit [[1.2]] auf ein anderes Objective — Klick öffnet es.',
+    backlinks: 'Erwähnt in',
+    openLink: 'Öffnen',
   },
   en: {
     heading: 'Notepad',
@@ -56,11 +88,16 @@ const COPY = {
     insertCue: 'Cue',
     insertCard: 'Card',
     insertTime: 'Time',
+    insertLink: 'Wiki',
     signals: 'Note traces',
     timeAnchors: 'Time anchors',
     questions: 'Questions',
     cardIdeas: 'Card ideas',
     cues: 'Cues',
+    links: 'Linked',
+    linkHint: 'Reference another objective with [[1.2]] — click to open it.',
+    backlinks: 'Mentioned in',
+    openLink: 'Open',
   },
 } as const
 
@@ -86,6 +123,8 @@ interface Props {
   language: 'de' | 'en'
   /** Öffnet die Tag-Ansicht (verbundene Videos) für den geklickten Tag. */
   onOpenTag: (tag: string) => void
+  /** Öffnet ein per `[[Ziel]]` verlinktes oder rückverweisendes Objective. */
+  onOpenObjective?: (objective: string) => void
   /** Aktuelle Player-Zeit; wird fuer `@MM:SS`-Zeitmarken genutzt. */
   currentTimeSec?: number | null
   /** Springt im Player zu einer angeklickten Zeitmarke. */
@@ -129,12 +168,14 @@ export default function VideoNotesPanel({
   videoTitle,
   language,
   onOpenTag,
+  onOpenObjective,
   currentTimeSec = null,
   onSeekToTime,
 }: Props) {
   const copy = COPY[language]
   const { note, resolvedObjective } = useVideoNote(profileId, objective)
   const allTags = useAllVideoNoteTags(profileId)
+  const backlinks = useBacklinks(profileId, objective)
 
   const [content, setContent] = useState('')
   const [cursorPosition, setCursorPosition] = useState(0)
@@ -148,8 +189,10 @@ export default function VideoNotesPanel({
 
   // Tags werden live aus dem Inhalt erkannt („sofort erkennen").
   const tags = useMemo(() => extractTags(content), [content])
-  // Segmente für die farbige Hervorhebung der #tags im Notizfeld (Obsidian-Stil).
-  const segments = useMemo(() => splitTagSegments(content), [content])
+  // Ausgehende `[[Ziel]]`-Wiki-Links, live aus dem Inhalt.
+  const links = useMemo(() => extractLinks(content), [content])
+  // Segmente für die farbige Hervorhebung von #tags UND [[links]] (Obsidian-Stil).
+  const segments = useMemo(() => buildRenderSegments(content), [content])
   const signals = useMemo(() => summarizeVideoNoteSignals(content), [content])
   const signalCount = useMemo(() => countVideoNoteSignals(signals), [signals])
   const timeAnchors = useMemo(() => extractVideoTimeAnchors(content), [content])
@@ -269,6 +312,23 @@ export default function VideoNotesPanel({
     insertSnippet(`@${formatVideoTime(currentTimeSec ?? 0)} `)
   }
 
+  // `[[]]` einfügen und den Cursor zwischen die Klammern setzen (Obsidian-artig).
+  const insertWikiLink = () => {
+    const cursor = textareaRef.current?.selectionStart ?? cursorPosition
+    const before = content.slice(0, cursor)
+    const after = content.slice(cursor)
+    const nextContent = `${before}[[]]${after}`
+    const nextCursor = before.length + 2
+    setContent(nextContent)
+    setCursorPosition(nextCursor)
+    scheduleSave(nextContent)
+    window.requestAnimationFrame(() => {
+      textareaRef.current?.focus()
+      textareaRef.current?.setSelectionRange(nextCursor, nextCursor)
+      syncScroll()
+    })
+  }
+
   if (!objective) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
@@ -333,6 +393,15 @@ export default function VideoNotesPanel({
           <Clock size={12} strokeWidth={1.5} />
           {copy.insertTime}
         </button>
+        <button
+          type="button"
+          onClick={insertWikiLink}
+          data-testid="video-note-insert-link"
+          className="inline-flex h-8 items-center gap-1 rounded-[8px] border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-fuchsia-500/40 hover:text-fuchsia-200"
+        >
+          <Link2 size={12} strokeWidth={1.5} />
+          {copy.insertLink}
+        </button>
       </div>
 
       {/* Freitext mit Inline-Tag-Hervorhebung: farbiger Backdrop hinter einem
@@ -343,15 +412,23 @@ export default function VideoNotesPanel({
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words px-4 py-3 font-mono text-[13px] leading-relaxed text-zinc-100"
         >
-          {segments.map((seg, i) =>
-            seg.isTag ? (
-              <span key={i} className="rounded-[4px] bg-sky-500/15 font-semibold text-sky-300">
-                {seg.text}
-              </span>
-            ) : (
-              <span key={i}>{seg.text}</span>
-            ),
-          )}
+          {segments.map((seg, i) => {
+            if (seg.kind === 'tag') {
+              return (
+                <span key={i} className="rounded-[4px] bg-sky-500/15 font-semibold text-sky-300">
+                  {seg.text}
+                </span>
+              )
+            }
+            if (seg.kind === 'link') {
+              return (
+                <span key={i} className="rounded-[4px] bg-fuchsia-500/15 font-semibold text-fuchsia-300">
+                  {seg.text}
+                </span>
+              )
+            }
+            return <span key={i}>{seg.text}</span>
+          })}
           {/* Letzte Zeile sichtbar halten, wenn der Inhalt mit \n endet. */}
           {'​'}
         </div>
@@ -391,6 +468,65 @@ export default function VideoNotesPanel({
                   {anchor.token}
                 </button>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Ausgehende [[Wiki-Links]] — anklickbar → verlinktes Objective */}
+        {links.length > 0 && (
+          <div className="mb-3">
+            <div className="mb-1.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+              <Link2 size={11} strokeWidth={1.5} />
+              {copy.links}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {links.map(target => {
+                const title = linkTitle(target)
+                return (
+                  <button
+                    key={target}
+                    type="button"
+                    onClick={() => onOpenObjective?.(target)}
+                    title={`${copy.openLink} [[${target}]]`}
+                    aria-label={`${copy.openLink} [[${target}]]`}
+                    data-testid={`video-note-link-${target}`}
+                    className="flex items-center gap-1 rounded-[8px] border border-fuchsia-500/30 bg-fuchsia-500/10 px-2 py-1 font-mono text-[11px] text-fuchsia-200 transition-colors hover:border-fuchsia-400/70 hover:text-fuchsia-100"
+                  >
+                    <span className="font-bold">{target}</span>
+                    {title && <span className="max-w-[160px] truncate text-fuchsia-300/70">{title}</span>}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Backlinks — andere Notizen, die per [[…]] hierher verweisen */}
+        {backlinks.length > 0 && (
+          <div className="mb-3">
+            <div className="mb-1.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+              <ArrowUpRight size={11} strokeWidth={1.5} />
+              {copy.backlinks}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {backlinks.map(back => {
+                const title = linkTitle(back.objective)
+                return (
+                  <button
+                    key={back.objective}
+                    type="button"
+                    onClick={() => onOpenObjective?.(back.objective)}
+                    title={`${copy.openLink} ${back.objective}`}
+                    aria-label={`${copy.openLink} ${back.objective}`}
+                    data-testid={`video-note-backlink-${back.objective}`}
+                    className="flex items-center gap-1 rounded-[8px] border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 font-mono text-[11px] text-zinc-300 transition-colors hover:border-fuchsia-500/40 hover:text-fuchsia-200"
+                  >
+                    <ArrowUpRight size={10} strokeWidth={1.5} className="text-zinc-600" />
+                    <span className="font-bold">{back.objective}</span>
+                    {title && <span className="max-w-[160px] truncate text-zinc-500">{title}</span>}
+                  </button>
+                )
+              })}
             </div>
           </div>
         )}
@@ -456,6 +592,7 @@ export default function VideoNotesPanel({
           </div>
         )}
         <div className="mt-1.5 font-mono text-[10px] text-zinc-600">{copy.tagHint}</div>
+        <div className="mt-1 font-mono text-[10px] text-zinc-600">{copy.linkHint}</div>
       </div>
     </div>
   )

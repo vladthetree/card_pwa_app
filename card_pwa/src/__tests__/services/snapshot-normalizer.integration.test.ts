@@ -25,6 +25,7 @@ describe('snapshot normalization integration', () => {
         { cardId: 'missing-card', rating: 3, timestamp: 20 },
       ],
       rawShuffleCollections: [{ id: 'sc-1', name: 'SC', deckIds: ['deck-1', 'deck-1'] }],
+      rawVideoNotes: [{ profileId: 'user-1', objective: '1.1', videoId: 'v-1', content: 'Note #tag', updatedAt: 10 }],
     })
 
     expect(result.decks).toHaveLength(1)
@@ -33,6 +34,8 @@ describe('snapshot normalization integration', () => {
     expect(result.reviews[0].cardId).toBe('card-1')
     expect(result.shuffleCollections).toHaveLength(1)
     expect(result.shuffleCollections[0].deckIds).toEqual(['deck-1'])
+    expect(result.videoNotes).toHaveLength(1)
+    expect(result.videoNotes[0].tags).toEqual(['tag'])
   })
 
   // Regression: manually seeded cards with note_id = NULL in the DB are sent by
@@ -49,6 +52,7 @@ describe('snapshot normalization integration', () => {
       ],
       rawReviews: [{ cardId: 'c1', rating: 4, timestamp: 1 }],
       rawShuffleCollections: [],
+      rawVideoNotes: [],
     })
 
     expect(result.cards).toHaveLength(0)
@@ -66,6 +70,7 @@ describe('snapshot normalization integration', () => {
       ],
       rawReviews: [],
       rawShuffleCollections: [],
+      rawVideoNotes: [],
     })
 
     expect(result.cards).toHaveLength(1)

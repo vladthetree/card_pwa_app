@@ -632,15 +632,15 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
             transition={{ duration: prefersReducedMotion ? 0.12 : 0.2, ease: 'easeOut' }}
-            className="relative w-full max-w-3xl ds-modal"
+            className="relative flex min-h-0 w-full max-w-3xl flex-col ds-modal"
             style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - 2rem)' }}
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-4 border-b border-[#18181b] bg-[#050505]/95 backdrop-blur-xl">
-              <div className="flex items-center gap-2">
+            <div className="sticky top-0 z-10 flex shrink-0 items-center justify-between gap-3 px-5 py-4 border-b border-[#18181b] bg-[#050505]/95 backdrop-blur-xl">
+              <div className="flex min-w-0 items-center gap-2">
                 <SettingsIcon size={18} strokeWidth={1.5} className="text-zinc-400" />
-                <div>
+                <div className="min-w-0">
                   <h2 className="text-zinc-100 font-black text-lg tracking-tight">{t.settings}</h2>
                   <p className="text-xs text-zinc-500 mt-0.5">
                     {t.settings_expand_sections}
@@ -656,11 +656,9 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
             </div>
 
             <div
-              className="overflow-y-auto px-4 py-4 sm:px-5 sm:py-5 space-y-3"
+              className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5 space-y-3"
               style={{
-                maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - 9.25rem)',
-                paddingBottom: '5.5rem',
-                scrollPaddingBottom: '5.5rem',
+                scrollPaddingBottom: '1rem',
               }}
             >
               <SettingsSection
@@ -1586,7 +1584,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 px-5 py-4 border-t border-[#18181b] flex gap-3 bg-[#050505]/95 backdrop-blur-xl">
+            <div className="sticky bottom-0 flex shrink-0 gap-3 px-5 py-4 border-t border-[#18181b] bg-[#050505]/95 backdrop-blur-xl">
               <button
                 onClick={onClose}
                 className={`${UI_TOKENS.button.footerSecondary} text-sm font-medium hover:bg-white/5`}

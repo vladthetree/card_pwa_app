@@ -11,6 +11,7 @@ import {
   getVideoNote,
   listAllVideoNoteTags,
   listNotesByTag,
+  listNotesLinkingTo,
   listObjectivesWithNotes,
   listRelatedVideoNoteTags,
 } from '../db/queries/videoNotes'
@@ -102,6 +103,26 @@ export function useAllVideoNoteTags(profileId: string): string[] {
   }, [profileId])
 
   return tags
+}
+
+/** Backlinks: Notizen des Profils, die per `[[target]]` auf ein Ziel
+ *  (i. d. R. Objective-Code) verweisen, reaktiv. Leerer/`null`-Ziel ⇒ leer. */
+export function useBacklinks(profileId: string, target: string | null): VideoNoteRecord[] {
+  const [notes, setNotes] = useState<VideoNoteRecord[]>([])
+
+  useEffect(() => {
+    if (!target) {
+      setNotes([])
+      return
+    }
+    const subscription = liveQuery(() => listNotesLinkingTo(profileId, target)).subscribe({
+      next: rows => setNotes(rows),
+      error: () => setNotes([]),
+    })
+    return () => subscription.unsubscribe()
+  }, [profileId, target])
+
+  return notes
 }
 
 /** Verwandte Video-Notiz-Tags zu einem aktiven Tag, reaktiv aktualisiert. */

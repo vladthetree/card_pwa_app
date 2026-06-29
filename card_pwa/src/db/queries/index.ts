@@ -66,6 +66,7 @@ export {
   listObjectivesWithNotes,
   listAllVideoNoteTags,
   listRelatedVideoNoteTags,
+  listNotesLinkingTo,
   saveVideoNote,
   deleteVideoNote,
 } from './videoNotes'

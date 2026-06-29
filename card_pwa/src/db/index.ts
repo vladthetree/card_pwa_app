@@ -159,9 +159,9 @@ export interface ShuffleCollectionRecord {
  * /`videoId` mit dem jeweiligen Professor-Messer-Video verbunden; `tags` werden
  * aus den Inline-`#tags` des Inhalts abgeleitet und verknüpfen Notizen.
  *
- * Notizen sind gerätelokal (kein Server-Sync), aber PRO PROFIL getrennt: der
- * Primary Key ist das Paar `[profileId+objective]`, damit z. B. das Profil
- * „Vlad" eigene Notizen pro Objective führt, ohne dass andere Profile sie sehen.
+ * Notizen sind PRO PROFIL getrennt: der Primary Key ist das Paar
+ * `[profileId+objective]`, damit z. B. das Profil „Vlad" eigene Notizen pro
+ * Objective führt, ohne dass andere Profile sie sehen.
  * `profileId` ist der Profil-Scope (verlinkt: userId, sonst 'local').
  */
 export interface VideoNoteRecord {

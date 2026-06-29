@@ -5,7 +5,7 @@ const T = 'transition-all duration-150 ease-out'
 
 export const UI_TOKENS = {
   layout: {
-    homeMaxWidth: 'max-w-5xl',
+    homeMaxWidth: 'max-w-7xl',
     contentPadding: 'px-4 py-10',
   },
 
@@ -69,13 +69,13 @@ export const UI_TOKENS = {
   modal: {
     overlay:     'fixed inset-0 z-[1000] flex items-center justify-center px-safe pt-safe-4 pb-4 sm:px-4',
     backdrop:    'absolute inset-0 bg-black/[0.82] backdrop-blur-md',
-    shell:       `relative w-full max-h-[calc(100dvh-env(safe-area-inset-top,0px)-2rem)] ds-modal ${T}`,
-    header:      'sticky top-0 z-10 flex items-center justify-between px-5 py-4 border-b border-ds-border bg-[#050505]/95 backdrop-blur-xl',
-    title:       'text-white font-black text-lg uppercase tracking-[0.12em]',
-    subtitle:    'text-xs text-white/50 mt-0.5',
+    shell:       `relative flex min-h-0 w-full max-h-[calc(100dvh-env(safe-area-inset-top,0px)-2rem)] flex-col ds-modal ${T}`,
+    header:      'sticky top-0 z-10 flex shrink-0 items-center justify-between gap-3 px-5 py-4 border-b border-ds-border bg-[#050505]/95 backdrop-blur-xl',
+    title:       'text-white font-black text-lg uppercase tracking-[0.12em] leading-tight break-words',
+    subtitle:    'text-xs text-white/50 mt-0.5 break-words',
     closeButton: `ds-icon-button min-w-[44px] min-h-[44px] sm:min-w-[36px] sm:min-h-[36px] ${T}`,
-    body:        'overflow-y-auto px-4 py-4 sm:px-5 sm:py-5',
-    footer:      'sticky bottom-0 px-5 py-4 border-t border-ds-border flex gap-3 bg-[#050505]/95 backdrop-blur-xl',
+    body:        'min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5',
+    footer:      'sticky bottom-0 flex shrink-0 gap-3 px-5 py-4 border-t border-ds-border bg-[#050505]/95 backdrop-blur-xl',
   },
 
   input: {

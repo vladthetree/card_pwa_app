@@ -3,7 +3,7 @@
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { STORAGE_KEYS } from '../../constants/appIdentity'
-import type { CardRecord, DeckRecord, ProfileRecord, ReviewRecord } from '../../db'
+import type { CardRecord, DeckRecord, ProfileRecord, ReviewRecord, VideoNoteRecord } from '../../db'
 
 type CardGetterMock = ReturnType<typeof vi.fn<() => Promise<CardRecord | undefined>>>
 
@@ -11,6 +11,7 @@ const state = vi.hoisted(() => ({
   savedCards: [] as CardRecord[],
   savedDecks: [] as DeckRecord[],
   savedReviews: [] as Omit<ReviewRecord, 'id'>[],
+  savedVideoNotes: [] as VideoNoteRecord[],
   responses: [] as unknown[],
   authToken: '',
   profileRecord: null as ProfileRecord | null,
@@ -77,6 +78,23 @@ const mockDb = vi.hoisted(() => ({
     delete: vi.fn(async () => 1),
     add: vi.fn(async () => 1),
     clear: vi.fn(async () => {}),
+  },
+  videoNotes2: {
+    where: vi.fn(() => ({
+      equals: vi.fn(() => ({
+        delete: vi.fn(async () => 0),
+        toArray: vi.fn(async (): Promise<VideoNoteRecord[]> => []),
+        count: vi.fn(async () => 0),
+      })),
+    })),
+    bulkPut: vi.fn(async (notes: VideoNoteRecord[]) => {
+      state.savedVideoNotes = notes
+    }),
+    get: vi.fn(async () => undefined),
+    put: vi.fn(async (note: VideoNoteRecord) => {
+      state.savedVideoNotes = [note]
+    }),
+    delete: vi.fn(async () => 1),
   },
   profile: {
     get: vi.fn(async () => state.profileRecord),
@@ -164,6 +182,7 @@ describe('syncPull normalization', () => {
     state.savedCards = []
     state.savedDecks = []
     state.savedReviews = []
+    state.savedVideoNotes = []
     state.responses = []
     state.authToken = ''
     state.profileRecord = null
@@ -180,6 +199,11 @@ describe('syncPull normalization', () => {
     mockDb.reviews.toArray.mockResolvedValue([])
     mockDb.reviews.delete.mockClear()
     mockDb.reviews.clear.mockClear()
+    mockDb.videoNotes2.bulkPut.mockClear()
+    mockDb.videoNotes2.get.mockClear()
+    mockDb.videoNotes2.get.mockResolvedValue(undefined)
+    mockDb.videoNotes2.put.mockClear()
+    mockDb.videoNotes2.delete.mockClear()
     mockDb.cardStats.bulkDelete.mockClear()
     mockDb.deckProgress.bulkDelete.mockClear()
     mockDb.activeSessions.bulkDelete.mockClear()

@@ -711,6 +711,7 @@ export default function VideosView({ language, onExit }: Props) {
               videoTitle={activeItem?.title ?? null}
               language={language}
               onOpenTag={setActiveTag}
+              onOpenObjective={openObjectiveFromTag}
               currentTimeSec={activeItem ? currentVideoTime : null}
               onSeekToTime={seekToTime}
             />
@@ -767,6 +768,7 @@ export default function VideosView({ language, onExit }: Props) {
               videoTitle={activeItem.title}
               language={language}
               onOpenTag={setActiveTag}
+              onOpenObjective={openObjectiveFromTag}
               currentTimeSec={currentVideoTime}
               onSeekToTime={seekToTime}
             />
