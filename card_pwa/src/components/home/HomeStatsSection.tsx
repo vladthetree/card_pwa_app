@@ -51,13 +51,13 @@ function CompactStatTile({
     blue: 'text-[--brand-secondary]',
     emerald: 'text-emerald-300',
   }[tone]
-  const className = `min-h-[4.25rem] min-w-0 rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-3 py-2.5 text-left ${
-    interactive ? 'cursor-pointer hover:border-[#3f3f46] hover:bg-[#111] active:scale-[0.98]' : ''
+  const className = `relative min-h-[4.25rem] min-w-0 overflow-hidden rounded-[8px] border border-ds-border bg-ds-floor px-3 py-2.5 text-left shadow-card before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-white/[0.06] ${
+    interactive ? 'cursor-pointer hover:border-ds-border-hover hover:bg-ds-panel active:scale-[0.98]' : ''
   }`
   const content = (
     <>
-      <div className={`font-mono text-2xl font-bold tabular-nums leading-none ${toneClass}`}>{value}</div>
-      <div className="mt-2 truncate font-mono text-[9px] uppercase tracking-[0.14em] text-zinc-500">{label}</div>
+      <div className={`font-mono text-2xl font-semibold tabular-nums leading-none ${toneClass}`}>{value}</div>
+      <div className="mt-2 truncate font-mono text-[9px] uppercase tracking-[0.08em] text-ds-muted">{label}</div>
     </>
   )
 

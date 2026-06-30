@@ -61,8 +61,8 @@ const FreeRecallCard = memo(function FreeRecallCard({
   ) : null
 
   const cardShellCls = `border ${
-    selfCheck === null ? 'border-[#18181b]' : selfCheck ? 'border-emerald-500/45' : 'border-rose-500/45'
-  } flex flex-col overflow-hidden rounded-[12px] bg-[#0c0c0c] shadow-card ${
+    selfCheck === null ? 'border-ds-border' : selfCheck ? 'border-emerald-500/45' : 'border-rose-500/45'
+  } flex flex-col overflow-hidden rounded-[8px] bg-ds-card shadow-card ${
     compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[420px] md:min-h-[500px]'
   }`
 
@@ -81,10 +81,10 @@ const FreeRecallCard = memo(function FreeRecallCard({
     return (
       <div className={`w-full ${compact ? 'h-full' : ''}`}>
         <div className={cardShellCls}>
-          <div className="shrink-0 border-b border-[#18181b] px-[14px] py-[8px]">
+          <div className="shrink-0 border-b border-ds-border px-[14px] py-[8px]">
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2">
-                <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-zinc-600">
+                <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted">
                   {t.answer}
                 </span>
                 {typeBadge}
@@ -124,11 +124,11 @@ const FreeRecallCard = memo(function FreeRecallCard({
                   data-testid="freerecall-not-known"
                   onClick={(e) => { e.stopPropagation(); handleSelfCheck(false) }}
                   disabled={selfCheck !== null}
-                  className={`flex min-h-[44px] items-center justify-center gap-2 rounded-[12px] border px-3 py-2.5 font-mono text-[13px] transition-all duration-200 ${
+                  className={`flex min-h-[44px] items-center justify-center gap-2 rounded-[8px] border px-3 py-2.5 font-mono text-[13px] transition-all duration-200 ${
                     selfCheck === false
                       ? 'border-rose-500 bg-rose-500/15 text-rose-300'
                       : selfCheck === null
-                      ? 'border-[#27272a] bg-[#0a0a0a] text-zinc-300 hover:border-rose-500/40 hover:text-rose-300 active:scale-[0.99]'
+                      ? 'border-ds-border bg-ds-floor text-zinc-300 hover:border-rose-500/40 hover:text-rose-300 active:scale-[0.99]'
                       : 'border-transparent bg-transparent text-zinc-700 opacity-35'
                   }`}
                 >
@@ -139,11 +139,11 @@ const FreeRecallCard = memo(function FreeRecallCard({
                   data-testid="freerecall-known"
                   onClick={(e) => { e.stopPropagation(); handleSelfCheck(true) }}
                   disabled={selfCheck !== null}
-                  className={`flex min-h-[44px] items-center justify-center gap-2 rounded-[12px] border px-3 py-2.5 font-mono text-[13px] transition-all duration-200 ${
+                  className={`flex min-h-[44px] items-center justify-center gap-2 rounded-[8px] border px-3 py-2.5 font-mono text-[13px] transition-all duration-200 ${
                     selfCheck === true
                       ? 'border-emerald-500 bg-emerald-500/15 text-emerald-300'
                       : selfCheck === null
-                      ? 'border-[#27272a] bg-[#0a0a0a] text-zinc-300 hover:border-emerald-500/40 hover:text-emerald-300 active:scale-[0.99]'
+                      ? 'border-ds-border bg-ds-floor text-zinc-300 hover:border-emerald-500/40 hover:text-emerald-300 active:scale-[0.99]'
                       : 'border-transparent bg-transparent text-zinc-700 opacity-35'
                   }`}
                 >
@@ -161,17 +161,17 @@ const FreeRecallCard = memo(function FreeRecallCard({
   return (
     <div className={`w-full ${compact ? 'h-full' : ''}`}>
       <div className={cardShellCls}>
-        <div className="shrink-0 border-b border-[#18181b] px-[14px] py-[8px]">
+        <div className="shrink-0 border-b border-ds-border px-[14px] py-[8px]">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2">
-              <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-zinc-600">
+              <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted">
                 {t.question}
               </span>
               {typeBadge}
               {renderOriginBadge()}
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              <span className="rounded-[3px] border border-zinc-700 px-[5px] py-px font-mono text-[9px] font-bold text-zinc-400">A</span>
+              <span className="rounded-[3px] border border-ds-border px-[5px] py-px font-mono text-[9px] font-bold text-zinc-400">A</span>
               {onEdit && (
                 <button onClick={(e) => { e.stopPropagation(); onEdit() }} className="ds-icon-button h-7 w-7" title={t.edit_card}>
                   <Edit size={14} strokeWidth={1.5} />
@@ -194,7 +194,7 @@ const FreeRecallCard = memo(function FreeRecallCard({
               type="button"
               data-testid="freerecall-reveal"
               onClick={(e) => { e.stopPropagation(); onFlip() }}
-              className="w-full min-h-[44px] rounded-[12px] border border-[#27272a] bg-[#0a0a0a] px-3 py-2.5 font-mono text-sm text-zinc-300 transition-all duration-200 hover:border-[#3f3f46] hover:bg-[#111] hover:text-zinc-50 active:scale-[0.99]"
+              className="min-h-[44px] w-full rounded-[8px] border border-ds-border bg-ds-floor px-3 py-2.5 font-sans text-sm text-zinc-300 transition-all duration-200 hover:border-ds-border-hover hover:bg-ds-panel hover:text-zinc-50 active:scale-[0.99]"
             >
               {t.freerecall_reveal}
             </button>

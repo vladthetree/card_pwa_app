@@ -19,6 +19,13 @@ const CRITICAL_ASSETS = [
   '/index.html',
   '/manifest.json',
   '/pwa-icons/icon-192.png',
+  // Selbst gehostete Fonts: vorab cachen, damit die App auch beim allerersten
+  // Start ohne Netz korrekt aussieht (cross-origin Google Fonts entfielen).
+  '/fonts.css',
+  '/fonts/share-tech-mono-latin.woff2',
+  '/fonts/space-grotesk-latin.woff2',
+  '/fonts/space-grotesk-latin-ext.woff2',
+  '/fonts/space-grotesk-vietnamese.woff2',
 ]
 
 const APP_SHELL_ASSET_REGEX = /(?:src|href)=["']([^"']+)["']/g
@@ -32,11 +39,11 @@ const OFFLINE_HTML = `<!doctype html>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Offline</title>
     <style>
-      body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #09090f; color: #f4f4f5; display: grid; min-height: 100vh; place-items: center; }
-      .card { width: min(92vw, 560px); border: 1px solid rgba(255,255,255,.15); border-radius: 18px; padding: 1.25rem; background: rgba(15, 15, 24, 0.9); }
+      body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0b0b09; color: #f2eee5; display: grid; min-height: 100vh; place-items: center; }
+      .card { width: min(92vw, 560px); border: 1px solid #2b271f; border-radius: 10px; padding: 1.25rem; background: #15130f; box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 18px 42px -30px rgba(0,0,0,.9); }
       h1 { margin: 0 0 .5rem; font-size: 1.1rem; }
-      p { margin: 0 0 .75rem; color: rgba(244, 244, 245, 0.75); line-height: 1.45; }
-      a { color: #60a5fa; text-decoration: none; } a:hover { text-decoration: underline; }
+      p { margin: 0 0 .75rem; color: rgba(242,238,229,.72); line-height: 1.45; }
+      a { color: #79b7aa; text-decoration: none; } a:hover { text-decoration: underline; }
     </style>
   </head>
   <body>

@@ -404,7 +404,7 @@ function AppShell() {
         <div
           className="flex h-[100dvh] min-h-0 flex-col overflow-hidden"
           style={{
-            background: 'var(--theme-background)',
+            background: 'var(--app-background)',
             height: 'var(--app-viewport-height, 100dvh)',
             minHeight: 'var(--app-viewport-height, 100dvh)',
           }}

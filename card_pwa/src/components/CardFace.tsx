@@ -319,16 +319,16 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
 
   const answerTone = hasAnswered
     ? (isAnswerCorrect ? 'border-emerald-500/45' : 'border-rose-500/45')
-    : 'border-[#18181b]'
-  const cardShellClass = `border ${flipped ? answerTone : 'border-[#18181b]'} flex flex-col overflow-hidden rounded-[12px] bg-[#0c0c0c] shadow-card transition-all duration-150 ease-out ${
+    : 'border-ds-border'
+  const cardShellClass = `border ${flipped ? answerTone : 'border-ds-border'} flex flex-col overflow-hidden rounded-[8px] bg-ds-card shadow-card transition-all duration-150 ease-out ${
     compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[420px] md:min-h-[500px]'
   }${flipped && correctGlowActive ? ' study-glow-success' : ''}`
   const bodyClass = compact
     ? 'min-h-0 flex-1 overflow-y-auto px-[14px] py-[16px] no-scrollbar'
     : 'flex-1 overflow-y-auto no-scrollbar px-6 py-6 md:px-8 md:py-8'
   const optionBaseClass = compact
-    ? 'grid min-h-[3.25rem] w-full grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-2 rounded-[12px] border px-3 py-2.5 text-left font-medium leading-snug transition-all duration-200'
-    : 'grid w-full grid-cols-[1.5rem_minmax(0,1fr)] items-center gap-4 rounded-[12px] border px-5 py-4 text-left font-medium transition-all duration-200'
+    ? 'grid min-h-[3.25rem] w-full grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-2 rounded-[8px] border px-3 py-2.5 text-left font-medium leading-snug transition-all duration-200'
+    : 'grid w-full grid-cols-[1.5rem_minmax(0,1fr)] items-center gap-4 rounded-[8px] border px-5 py-4 text-left font-medium transition-all duration-200'
 
   return (
     <div className={compact ? 'h-full' : ''}>
@@ -347,10 +347,10 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
           {!flipped && (
             <div className={`w-full ${compact ? 'h-full min-h-0' : ''}`}>
               <div className={cardShellClass}>
-                <div className="shrink-0 border-b border-[#18181b] px-[14px] py-[8px]">
+                <div className="shrink-0 border-b border-ds-border px-[14px] py-[8px]">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-2">
-                      <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-zinc-600">
+                      <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted">
                         {t.question}
                       </span>
                       <span className={`rounded-[3px] border px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.14em] ${badge.cls}`}>
@@ -358,13 +358,13 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                       </span>
                       {renderOriginDeckBadge()}
                       {card.tags.length > 0 && !compact && (
-                        <span className="hidden truncate font-mono text-[9px] uppercase tracking-[0.12em] text-zinc-600 md:block">
+                        <span className="hidden truncate font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted md:block">
                           {card.tags.slice(0, 2).join(' · ')}
                         </span>
                       )}
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
-                      <span className="rounded-[3px] border border-zinc-700 px-[5px] py-px font-mono text-[9px] font-bold text-zinc-400">
+                      <span className="rounded-[3px] border border-ds-border px-[5px] py-px font-mono text-[9px] font-bold text-zinc-400">
                         A
                       </span>
                       {onEdit && (
@@ -394,7 +394,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                         if (!question.options[letter]) return null
                         const isSelected = selectedAnswer === letter
                         const isImpact = impactPhase !== 'idle'
-                        let optionCls = 'border-[#18181b] bg-[#0a0a0a] text-zinc-200 hover:border-[#3f3f46] hover:bg-[#111]'
+                        let optionCls = 'border-ds-border bg-ds-floor text-zinc-200 hover:border-ds-border-hover hover:bg-ds-panel'
                         if (isImpact) {
                           if (isSelected) {
                             optionCls = correctKeys.includes(letter)
@@ -422,7 +422,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                         )
                       })}
                       {impactPhase !== 'idle' && (
-                        <p className="pt-1 text-center font-mono text-[9px] uppercase tracking-[0.14em] text-zinc-600" aria-live="polite">
+                        <p className="pt-1 text-center font-mono text-[9px] uppercase tracking-[0.12em] text-ds-muted" aria-live="polite">
                           {revealPendingLabel}
                         </p>
                       )}
@@ -437,11 +437,11 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                           e.stopPropagation()
                           onFlip()
                         }}
-                        className="w-full min-h-[44px] rounded-[12px] border border-[#27272a] bg-[#0a0a0a] px-3 py-2.5 text-sm text-zinc-300 transition-all duration-200 hover:border-[#3f3f46] hover:bg-[#111] hover:text-zinc-50 active:scale-[0.99]"
+                        className="min-h-[44px] w-full rounded-[8px] border border-ds-border bg-ds-floor px-3 py-2.5 text-sm text-zinc-300 transition-all duration-200 hover:border-ds-border-hover hover:bg-ds-panel hover:text-zinc-50 active:scale-[0.99]"
                       >
                         {t.answer}
                       </button>
-                      <p className="mt-3 text-center font-mono text-[8px] uppercase tracking-[0.2em] text-zinc-600">
+                      <p className="mt-3 text-center font-mono text-[8px] uppercase tracking-[0.14em] text-ds-muted">
                         {t.tap_or_space_to_reveal}
                       </p>
                     </div>
@@ -455,10 +455,10 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
           {flipped && (
             <div className={`w-full relative ${compact ? 'h-full min-h-0' : ''}`}>
               <div className={cardShellClass}>
-                <div className="shrink-0 border-b border-[#18181b] px-[14px] py-[8px]">
+                <div className="shrink-0 border-b border-ds-border px-[14px] py-[8px]">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-2">
-                      <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-zinc-600">
+                      <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted">
                         {hasAnswered ? (isAnswerCorrect ? t.answer : t.wrong_answer) : t.answer}
                       </span>
                       {renderOriginDeckBadge()}
@@ -488,7 +488,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                   className={`${bodyClass} flex flex-col overscroll-y-contain`}
                 >
                   {correctKeys.length > 0 && hasAnswered && (
-                    <div className={`mb-3 flex items-center gap-2 rounded-[12px] border px-3 py-2 ${
+                    <div className={`mb-3 flex items-center gap-2 rounded-[8px] border px-3 py-2 ${
                       isAnswerCorrect ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' : 'border-rose-500/40 bg-rose-500/10 text-rose-300'
                     }`}>
                       {isAnswerCorrect ? <Check size={16} strokeWidth={1.5} /> : <X size={16} strokeWidth={1.5} />}
@@ -521,27 +521,27 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                   )}
 
                   {hasExtra && (
-                    <div className={`${answered.merkhilfe || answered.nicht ? 'mt-3' : 'mt-auto pt-4'} grid grid-cols-1 gap-2 border-t border-[#18181b] pt-3 text-xs sm:grid-cols-2`}>
+                    <div className={`${answered.merkhilfe || answered.nicht ? 'mt-3' : 'mt-auto pt-4'} grid grid-cols-1 gap-2 border-t border-ds-border pt-3 text-xs sm:grid-cols-2`}>
                       {card.extra.acronym && (
-                        <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-3 py-2">
+                        <div className="rounded-[8px] border border-ds-border bg-ds-floor px-3 py-2">
                           <span className="mb-0.5 block text-white/55">{t.acronym}</span>
                           <span className="font-mono text-zinc-200">{card.extra.acronym}</span>
                         </div>
                       )}
                       {card.extra.port && (
-                        <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-3 py-2">
+                        <div className="rounded-[8px] border border-ds-border bg-ds-floor px-3 py-2">
                           <span className="mb-0.5 block text-white/55">{t.port}</span>
                           <span className="font-mono text-[--brand-secondary]">{card.extra.port}</span>
                         </div>
                       )}
                       {card.extra.protocol && (
-                        <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-3 py-2">
+                        <div className="rounded-[8px] border border-ds-border bg-ds-floor px-3 py-2">
                           <span className="mb-0.5 block text-white/55">{t.protocol}</span>
                           <span className="text-[--brand-secondary]">{card.extra.protocol}</span>
                         </div>
                       )}
                       {card.extra.examples && (
-                        <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-3 py-2 sm:col-span-2">
+                        <div className="rounded-[8px] border border-ds-border bg-ds-floor px-3 py-2 sm:col-span-2">
                           <span className="mb-0.5 block text-white/55">{t.examples}</span>
                           <span className="text-[--brand-primary]">{card.extra.examples.slice(0, 120)}</span>
                         </div>

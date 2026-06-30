@@ -11,11 +11,11 @@ export const UI_TOKENS = {
 
   // ─── Radius scale ──────────────────────────────────────────────────────────
   radius: {
-    sm: 'rounded-[6px]',
-    md: 'rounded-[12px]',
-    lg: 'rounded-[14px]',
-    xl: 'rounded-[14px]',
-    modal: 'rounded-[1.5rem] sm:rounded-[2rem]',
+    sm: 'rounded-[4px]',
+    md: 'rounded-[8px]',
+    lg: 'rounded-[10px]',
+    xl: 'rounded-[10px]',
+    modal: 'rounded-[10px] sm:rounded-[12px]',
   },
 
   // ─── Icon size scale ───────────────────────────────────────────────────────
@@ -42,12 +42,12 @@ export const UI_TOKENS = {
   rating: {
     again: 'border-red-500/30 bg-red-500/10 text-red-200 hover:border-red-400/45',
     hard:  'border-amber-500/30 bg-amber-500/10 text-amber-200 hover:border-amber-400/45',
-    good:  'border-blue-500/30 bg-blue-500/10 text-blue-200 hover:border-blue-400/45',
+    good:  'border-[--brand-secondary-25] bg-[--brand-secondary-08] text-[--brand-secondary] hover:border-[--brand-secondary-50]',
     easy:  'border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:border-emerald-400/45',
   },
 
   header: {
-    row: 'flex items-center justify-between gap-2 rounded-[14px] border border-ds-border bg-[#050505]/85 px-2.5 py-2 backdrop-blur-sm sm:mb-2 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none',
+    row: 'flex items-center justify-between gap-2 rounded-[8px] border border-ds-border bg-ds-bg/86 px-2.5 py-2 backdrop-blur-sm sm:mb-2 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none',
     brand: 'flex min-w-0 items-center gap-2 sm:gap-3',
     title: 'text-2xl font-bold text-theme-text tracking-tight',
     subtitle: 'text-theme-text-secondary text-sm',
@@ -62,35 +62,35 @@ export const UI_TOKENS = {
   },
 
   surface: {
-    panel:    `rounded-[14px] border border-ds-border bg-ds-card p-4 shadow-card ${T}`,
-    panelSoft: 'rounded-[12px] border border-ds-border bg-ds-floor p-3 shadow-card',
+    panel:    `rounded-[8px] border border-ds-border bg-ds-card p-4 shadow-card ${T}`,
+    panelSoft: 'rounded-[8px] border border-ds-border bg-ds-floor p-3 shadow-card',
   },
 
   modal: {
     overlay:     'fixed inset-0 z-[1000] flex items-center justify-center px-safe pt-safe-4 pb-4 sm:px-4',
     backdrop:    'absolute inset-0 bg-black/[0.82] backdrop-blur-md',
     shell:       `relative flex min-h-0 w-full max-h-[calc(100dvh-env(safe-area-inset-top,0px)-2rem)] flex-col ds-modal ${T}`,
-    header:      'sticky top-0 z-10 flex shrink-0 items-center justify-between gap-3 px-5 py-4 border-b border-ds-border bg-[#050505]/95 backdrop-blur-xl',
-    title:       'text-white font-black text-lg uppercase tracking-[0.12em] leading-tight break-words',
+    header:      'sticky top-0 z-10 flex shrink-0 items-center justify-between gap-3 px-5 py-4 border-b border-ds-border bg-ds-bg/95 backdrop-blur-xl',
+    title:       'text-white font-semibold text-lg leading-tight break-words',
     subtitle:    'text-xs text-white/50 mt-0.5 break-words',
     closeButton: `ds-icon-button min-w-[44px] min-h-[44px] sm:min-w-[36px] sm:min-h-[36px] ${T}`,
     body:        'min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5',
-    footer:      'sticky bottom-0 flex shrink-0 gap-3 px-5 py-4 border-t border-ds-border bg-[#050505]/95 backdrop-blur-xl',
+    footer:      'sticky bottom-0 flex shrink-0 gap-3 px-5 py-4 border-t border-ds-border bg-ds-bg/95 backdrop-blur-xl',
   },
 
   input: {
-    base:     `w-full bg-ds-card border border-ds-border rounded-[12px] px-3 py-2.5 text-white text-sm outline-none focus-visible:border-ds-border-hover focus-visible:ring-2 focus-visible:ring-orange-500/25 ${T}`,
-    textarea: `w-full rounded-[12px] bg-ds-card border border-ds-border px-3 py-2 text-sm text-white outline-none focus-visible:border-ds-border-hover focus-visible:ring-2 focus-visible:ring-orange-500/25 resize-y ${T}`,
+    base:     `w-full bg-ds-card border border-ds-border rounded-[8px] px-3 py-2.5 text-white text-sm outline-none focus-visible:border-ds-border-hover focus-visible:ring-2 focus-visible:ring-[--brand-primary-25] ${T}`,
+    textarea: `w-full rounded-[8px] bg-ds-card border border-ds-border px-3 py-2 text-sm text-white outline-none focus-visible:border-ds-border-hover focus-visible:ring-2 focus-visible:ring-[--brand-primary-25] resize-y ${T}`,
   },
 
   button: {
     // Mobile-first: keep interactive targets close to iOS's 44x44pt guidance.
-    ghost:         `px-3 py-1.5 rounded-[12px] border border-ds-border bg-ds-card text-white/80 hover:text-white hover:border-ds-border-hover hover:bg-[#111] ${T} active:scale-[0.98] text-xs`,
+    ghost:         `px-3 py-1.5 rounded-[8px] border border-ds-border bg-ds-card text-white/80 hover:text-white hover:border-ds-border-hover hover:bg-ds-panel-hover ${T} active:scale-[0.98] text-xs`,
     iconGhost:     `flex min-h-11 min-w-11 items-center gap-2 px-3 py-2 ds-icon-button ${T} active:scale-[0.98] sm:min-h-0 sm:min-w-0 sm:py-1.5`,
-    secondary:     `py-2 px-3 rounded-[12px] text-xs border ${T} active:scale-[0.98] border-ds-border bg-ds-card text-white/70 hover:text-white hover:border-ds-border-hover`,
-    secondaryActive: `py-2 px-3 rounded-[12px] text-xs border ${T} active:scale-[0.98] border-ds-border-hover bg-ds-panel text-white`,
-    footerSecondary: `flex-1 py-3 rounded-[12px] border border-ds-border bg-ds-card text-white/80 hover:text-white hover:border-ds-border-hover ${T} active:scale-[0.98]`,
-    footerPrimary:   `flex-1 py-3 rounded-[12px] bg-[--brand-primary] text-black hover:brightness-110 font-semibold ${T} active:scale-[0.98] disabled:opacity-60`,
+    secondary:     `py-2 px-3 rounded-[8px] text-xs border ${T} active:scale-[0.98] border-ds-border bg-ds-card text-white/70 hover:text-white hover:border-ds-border-hover`,
+    secondaryActive: `py-2 px-3 rounded-[8px] text-xs border ${T} active:scale-[0.98] border-ds-border-hover bg-ds-panel text-white`,
+    footerSecondary: `flex-1 py-3 rounded-[8px] border border-ds-border bg-ds-card text-white/80 hover:text-white hover:border-ds-border-hover ${T} active:scale-[0.98]`,
+    footerPrimary:   `flex-1 py-3 rounded-[8px] bg-[--brand-primary] text-black hover:brightness-110 font-semibold ${T} active:scale-[0.98] disabled:opacity-60`,
     // Min 44×44px icon button for iOS touch targets
     iconAction:    `ds-icon-button flex w-11 h-11 ${T} active:scale-[0.98]`,
     // Compact 36px icon button for dense UI (desktop / secondary controls)

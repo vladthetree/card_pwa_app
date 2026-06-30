@@ -146,13 +146,13 @@ export function HomeDeckToolbar({
 
   return (
     <div className="sticky top-0 z-[90] mb-2 mt-2 flex-shrink-0 sm:mb-3 sm:mt-4">
-      <div className="rounded-[14px] border border-[#18181b] bg-[#050505]/92 p-2 shadow-card backdrop-blur-md sm:border-0 sm:bg-[#050505]/80 sm:p-0 sm:shadow-none sm:backdrop-blur-sm">
+      <div className="rounded-[8px] border border-ds-border bg-ds-bg/92 p-2 shadow-card backdrop-blur-md sm:border-0 sm:bg-ds-bg/70 sm:p-0 sm:shadow-none sm:backdrop-blur-sm">
       <div className="flex min-w-0 flex-wrap items-center gap-2 overflow-x-hidden overflow-y-visible sm:flex-nowrap sm:gap-1 sm:pb-1">
-        <h2 className="hidden sm:block text-lg font-black font-mono uppercase tracking-[0.2em] text-theme-text shrink-0 mr-1">
+        <h2 className="mr-2 hidden shrink-0 font-sans text-lg font-semibold text-theme-text sm:block">
           {t.decks_title}
         </h2>
 
-        <label className="relative flex h-8 min-w-0 flex-[0_1_16rem] items-center rounded-[12px] border border-[#18181b] bg-[#0c0c0c] pl-2 pr-2 text-xs text-white/85 transition-colors focus-within:border-[rgba(249,115,22,0.5)]">
+        <label className="relative flex h-8 min-w-0 flex-[0_1_16rem] items-center rounded-[8px] border border-ds-border bg-ds-card pl-2 pr-2 text-xs text-white/85 transition-colors focus-within:border-[--brand-primary-50]">
           <Search size={13} strokeWidth={1.5} className="pointer-events-none mr-1.5 text-white/45" />
           <input
             type="search"
@@ -179,7 +179,7 @@ export function HomeDeckToolbar({
             <button
               type="button"
               onClick={handleToggleFilterMenu}
-              className="inline-flex h-9 items-center gap-1.5 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-2.5 text-[10px] font-mono uppercase tracking-[0.08em] text-white/85 transition-all duration-200 hover:border-[#3f3f46] hover:bg-[#111]"
+              className="inline-flex h-9 items-center gap-1.5 rounded-[8px] border border-ds-border bg-ds-card px-2.5 font-mono text-[10px] uppercase tracking-[0.08em] text-white/85 transition-all duration-200 hover:border-ds-border-hover hover:bg-ds-panel"
               aria-haspopup="menu"
               aria-expanded={showFilterMenu}
               title={filterLabel}
@@ -200,7 +200,7 @@ export function HomeDeckToolbar({
                 style={filterFloatingStyle}
                 role="menu"
               >
-                <div className="px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
+                <div className="px-4 pb-1 pt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
                   {filterLabel}
                 </div>
                 <button
@@ -210,7 +210,7 @@ export function HomeDeckToolbar({
                     onHomeTabChange('decks')
                     closeFilterMenu()
                   }}
-                  className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                  className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
                   role="menuitem"
                 >
                   <span>{decksLabel}</span>
@@ -223,7 +223,7 @@ export function HomeDeckToolbar({
                     onHomeTabChange('tags')
                     closeFilterMenu()
                   }}
-                  className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                  className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
                   role="menuitem"
                 >
                   <span>{tagsLabel}</span>
@@ -237,7 +237,7 @@ export function HomeDeckToolbar({
                       onHomeTabChange('decks')
                       closeFilterMenu()
                     }}
-                    className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                    className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
                     role="menuitem"
                   >
                     <span>{shuffleDecksLabel}</span>
@@ -251,7 +251,7 @@ export function HomeDeckToolbar({
                       closeFilterMenu()
                       onOpenLabs()
                     }}
-                    className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                    className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
                     role="menuitem"
                   >
                     <span className="inline-flex items-center gap-2"><FlaskConical size={13} strokeWidth={1.5} /> Labs</span>
@@ -264,7 +264,7 @@ export function HomeDeckToolbar({
                       closeFilterMenu()
                       onOpenVideos()
                     }}
-                    className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                    className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
                     role="menuitem"
                   >
                     <span className="inline-flex items-center gap-2"><Video size={13} strokeWidth={1.5} /> {language === 'de' ? 'Lernvideos' : 'Videos'}</span>
@@ -273,7 +273,7 @@ export function HomeDeckToolbar({
 
                 {!showShuffleOnly && (
                   <>
-                    <div className="border-t border-[#18181b] px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
+                    <div className="border-t border-ds-border px-4 pb-1 pt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
                       {language === 'de' ? 'Sortierung' : 'Sort'}
                     </div>
                     <button
@@ -282,7 +282,7 @@ export function HomeDeckToolbar({
                         onDeckSortModeChange('name')
                         closeFilterMenu()
                       }}
-                      className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                      className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
                       role="menuitem"
                     >
                       <span>{t.sort_name}</span>
@@ -294,7 +294,7 @@ export function HomeDeckToolbar({
                         onDeckSortModeChange('due_today')
                         closeFilterMenu()
                       }}
-                      className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                      className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
                       role="menuitem"
                     >
                       <span>{t.sort_due_today}</span>
@@ -303,7 +303,7 @@ export function HomeDeckToolbar({
                   </>
                 )}
 
-                <div className="border-t border-[#18181b] px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
+                <div className="border-t border-ds-border px-4 pb-1 pt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
                   Dashboard
                 </div>
                 {dashboardOptions.map(option => {
@@ -316,7 +316,7 @@ export function HomeDeckToolbar({
                         onDashboardModeChange(option.key)
                         closeFilterMenu()
                       }}
-                      className="w-full flex items-center justify-between gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                      className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
                       role="menuitem"
                     >
                       <span>{option.label}</span>
@@ -331,7 +331,7 @@ export function HomeDeckToolbar({
 
           <button
             onClick={onReload}
-            className="inline-flex h-auto w-auto shrink-0 items-center justify-center rounded-[12px] p-1 text-theme-text-secondary transition-all duration-300 ease-out active:scale-95 hover:bg-[#111] hover:text-theme-text"
+            className="inline-flex h-auto w-auto shrink-0 items-center justify-center rounded-[8px] p-1 text-theme-text-secondary transition-all duration-300 ease-out hover:bg-ds-panel active:scale-95 hover:text-theme-text"
             title={t.reload}
             aria-label={t.reload}
           >
@@ -342,7 +342,7 @@ export function HomeDeckToolbar({
             <button
               type="button"
               onClick={handleToggleActionsMenu}
-              className="group flex h-auto min-h-8 min-w-0 items-center justify-center gap-1 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-2.5 py-1 text-xs font-mono uppercase tracking-[0.12em] text-white/82 shadow-card transition-all duration-300 ease-out active:scale-95 hover:border-[#3f3f46] hover:bg-[#111] hover:text-white"
+              className="group flex h-auto min-h-8 min-w-0 items-center justify-center gap-1 rounded-[8px] border border-ds-border bg-ds-card px-2.5 py-1 font-mono text-xs uppercase tracking-[0.1em] text-white/82 shadow-card transition-all duration-300 ease-out hover:border-ds-border-hover hover:bg-ds-panel active:scale-95 hover:text-white"
               aria-haspopup="menu"
               aria-expanded={showActionsMenu}
               aria-label={language === 'de' ? 'Aktionen oeffnen' : 'Open actions'}
@@ -361,7 +361,7 @@ export function HomeDeckToolbar({
                 style={floatingStyle}
                 role="menu"
               >
-                <div className="px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
+                <div className="px-4 pb-1 pt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
                   {language === 'de' ? 'Erstellen' : 'Create'}
                 </div>
                 <button
@@ -371,7 +371,7 @@ export function HomeDeckToolbar({
                     closeActionsMenu()
                     onCreateDeck()
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                  className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
                   role="menuitem"
                 >
                   <FolderPlus size={13} strokeWidth={1.5} /> {t.create_deck}
@@ -384,7 +384,7 @@ export function HomeDeckToolbar({
                       closeActionsMenu()
                       onCreateVirtualDeck()
                     }}
-                    className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                    className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
                     role="menuitem"
                   >
                     <Shuffle size={13} strokeWidth={1.5} /> {language === 'de' ? 'Virtuelles Deck erstellen' : 'Create virtual deck'}
@@ -397,12 +397,12 @@ export function HomeDeckToolbar({
                     closeActionsMenu()
                     onCreateCard()
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                  className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
                   role="menuitem"
                 >
                   <Plus size={13} strokeWidth={1.5} /> {t.create_card}
                 </button>
-                <div className="border-t border-[#18181b] px-4 pb-1 pt-2 text-[10px] font-mono uppercase tracking-[0.16em] text-white/35">
+                <div className="border-t border-ds-border px-4 pb-1 pt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
                   {language === 'de' ? 'Daten' : 'Data'}
                 </div>
                 <button
@@ -412,7 +412,7 @@ export function HomeDeckToolbar({
                     closeActionsMenu()
                     onImport()
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/90 hover:text-white hover:bg-[#111] transition text-left"
+                  className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-white/90 transition hover:bg-ds-panel hover:text-white"
                   role="menuitem"
                 >
                   <Upload size={13} strokeWidth={1.5} className="text-[color:var(--brand-primary)]" /> {t.import_action} {language === 'de' ? 'Karten/Decks' : 'cards/decks'}
@@ -424,14 +424,14 @@ export function HomeDeckToolbar({
                     closeActionsMenu()
                     onExport()
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left"
+                  className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
                   role="menuitem"
                 >
                   <Download size={13} strokeWidth={1.5} /> {t.backup_export_title}
                 </button>
                 {canInstall && !isInstalled && (
                   <>
-                    <div className="border-t border-[#18181b] my-1" />
+                    <div className="my-1 border-t border-ds-border" />
                     <button
                       type="button"
                       onClick={(event) => {
@@ -440,7 +440,7 @@ export function HomeDeckToolbar({
                         onInstall()
                       }}
                       disabled={isInstalling}
-                      className="w-full flex items-center gap-2 px-4 py-3 text-sm text-white/78 hover:text-white hover:bg-[#111] transition text-left disabled:opacity-60"
+                      className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white disabled:opacity-60"
                       role="menuitem"
                     >
                       {isInstalling

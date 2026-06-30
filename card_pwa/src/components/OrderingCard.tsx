@@ -87,8 +87,8 @@ function ItemRow({ id, label, position, feedback, correctPosition, submitted, is
     transition: isDragOverlay ? undefined : transition,
   }
 
-  let borderCls = 'border-[#2e2e32]'
-  let bgCls     = 'bg-[#111113]'
+  let borderCls = 'border-ds-border'
+  let bgCls     = 'bg-ds-floor'
   let numCls    = 'text-zinc-600'
   let textCls   = 'text-zinc-200'
 
@@ -98,7 +98,7 @@ function ItemRow({ id, label, position, feedback, correctPosition, submitted, is
   }
 
   const elevationCls = isDragOverlay
-    ? 'shadow-[0_8px_24px_rgba(0,0,0,0.6)] scale-[1.02] border-violet-500/50 bg-[#1a1a1f] rotate-[0.5deg]'
+    ? 'scale-[1.02] rotate-[0.5deg] border-[--brand-secondary-50] bg-ds-panel shadow-[0_8px_24px_rgba(0,0,0,0.55)]'
     : isDragging
     ? 'opacity-30'
     : ''
@@ -107,10 +107,10 @@ function ItemRow({ id, label, position, feedback, correctPosition, submitted, is
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-stretch rounded-[12px] border ${borderCls} ${bgCls} ${elevationCls} min-h-[52px] transition-colors duration-150`}
+      className={`flex min-h-[52px] items-stretch rounded-[8px] border ${borderCls} ${bgCls} ${elevationCls} transition-colors duration-150`}
     >
       {/* Position badge */}
-      <div className="flex w-9 shrink-0 items-center justify-center border-r border-[#1f1f22]">
+      <div className="flex w-9 shrink-0 items-center justify-center border-r border-ds-border">
         <span className={`font-mono text-[11px] font-bold ${numCls}`}>{position}</span>
       </div>
 
@@ -233,7 +233,7 @@ const OrderingCard = memo(function OrderingCard({
   // Compact landscape: slightly smaller items
   void isHandsetLandscape
 
-  const cardShellCls = `border border-[#18181b] flex flex-col overflow-hidden rounded-[12px] bg-[#0c0c0c] shadow-card ${
+  const cardShellCls = `flex flex-col overflow-hidden rounded-[8px] border border-ds-border bg-ds-card shadow-card ${
     compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[420px] md:min-h-[500px]'
   }`
 
@@ -249,22 +249,22 @@ const OrderingCard = memo(function OrderingCard({
       <div className={`w-full ${compact ? 'h-full' : ''}`}>
         <div className={cardShellCls}>
           {/* Header */}
-          <div className="shrink-0 border-b border-[#18181b] px-[14px] py-[8px]">
+          <div className="shrink-0 border-b border-ds-border px-[14px] py-[8px]">
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2">
-                <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-zinc-600">
+                <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted">
                   {t.question}
                 </span>
                 <span className={`rounded-[3px] border px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.14em] ${badge.cls}`}>
                   {t[badge.labelKey]}
                 </span>
-                <span className="rounded-[3px] border border-violet-500/30 bg-violet-500/10 px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-violet-400">
+                <span className="rounded-[3px] border border-[--brand-secondary-25] bg-[--brand-secondary-08] px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.12em] text-[--brand-secondary]">
                   {t.ordering_type_badge}
                 </span>
                 {renderOriginBadge()}
               </div>
               <div className="flex shrink-0 items-center gap-2">
-                <span className="rounded-[3px] border border-zinc-700 px-[5px] py-px font-mono text-[9px] font-bold text-zinc-400">A</span>
+                <span className="rounded-[3px] border border-ds-border px-[5px] py-px font-mono text-[9px] font-bold text-zinc-400">A</span>
                 {onEdit && (
                   <button onClick={(e) => { e.stopPropagation(); onEdit() }} className="ds-icon-button h-7 w-7" title={t.edit_card}>
                     <Edit size={14} strokeWidth={1.5} />
@@ -321,15 +321,15 @@ const OrderingCard = memo(function OrderingCard({
           </div>
 
           {/* Sticky confirm */}
-          <div className="shrink-0 border-t border-[#18181b] px-[14px] py-[10px]">
+          <div className="shrink-0 border-t border-ds-border px-[14px] py-[10px]">
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); handleSubmit() }}
               disabled={submitted}
-              className={`w-full min-h-[44px] rounded-[12px] border font-medium text-sm transition-all duration-200 ${
+              className={`min-h-[44px] w-full rounded-[8px] border text-sm font-medium transition-all duration-200 ${
                 submitted
                   ? 'border-zinc-700 bg-transparent text-zinc-600 cursor-default'
-                  : 'border-violet-500/40 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 active:scale-[0.99]'
+                  : 'border-[--brand-secondary-50] bg-[--brand-secondary-08] text-[--brand-secondary] hover:bg-[--brand-secondary-12] active:scale-[0.99]'
               }`}
             >
               {t.ordering_confirm_button}
@@ -348,10 +348,10 @@ const OrderingCard = memo(function OrderingCard({
   return (
     <div className={`w-full ${compact ? 'h-full' : ''}`}>
       <div className={cardShellCls}>
-        <div className="shrink-0 border-b border-[#18181b] px-[14px] py-[8px]">
+        <div className="shrink-0 border-b border-ds-border px-[14px] py-[8px]">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2">
-              <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-zinc-600">{t.answer}</span>
+              <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted">{t.answer}</span>
               {renderOriginBadge()}
             </div>
             <div className="flex shrink-0 items-center gap-2">
@@ -367,7 +367,7 @@ const OrderingCard = memo(function OrderingCard({
 
         <div data-study-scroll="allow" className={`${bodyClass} flex flex-col overscroll-y-contain`}>
           {score !== null && (
-            <div className={`mb-3 flex items-center gap-2 rounded-[12px] border px-3 py-2 ${
+            <div className={`mb-3 flex items-center gap-2 rounded-[8px] border px-3 py-2 ${
               score === 1.0
                 ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
                 : score >= 0.5

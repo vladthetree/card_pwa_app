@@ -1,0 +1,885 @@
+EXAKTE ANLEITUNG: VIDEO-TAGS WIE OBSIDIAN AUSBAUEN
+Stand: 2026-06-30
+Projekt: /home/_vb/card_pwa_app/card_pwa
+
+Ziel
+====
+
+Die Videoansicht soll sich mehr wie ein kleiner Obsidian-Vault anfuehlen:
+Tags sind nicht nur Textmarker in Notizen, sondern Einstiegspunkte zum Lernen,
+Filtern, Verknuepfen und Wiederholen.
+
+Wichtig: Die App bleibt eine Lern-App. Sie soll kein allgemeiner Markdown-Editor
+werden. Alles muss offline funktionieren und zu Karten, Objectives und Videos
+passen.
+
+
+Bestehender Stand
+=================
+
+Vorhanden:
+
+- Videoansicht: src/components/videos/VideosView.tsx
+- Video-Notizen: src/components/videos/VideoNotesPanel.tsx
+- Tag-Sammlung/Overlay: src/components/videos/TagCollectionPanel.tsx
+- Inline-Tags in Notizen: #tag
+- Objective-Links in Notizen: [[1.2]]
+- Zeitmarken: @03:42
+- Backlinks fuer Objectives
+- Related Tags fuer Video-Notizen
+- Verbindung zu Lernkarten ueber listCardsByTag(tag)
+- Video-Notizen in IndexedDB: videoNotes2
+- aktuelle Dexie-Version: 19
+
+Offen:
+
+- Keine echten Tag-Metadaten
+- Kein Tag umbenennen/mergen/aliasen
+- Keine permanente Tag-Sidebar in VideosView
+- Keine kombinierten Tag-Filter
+- Kein Tag-basierter Lernhub
+- Kein sauberer Workflow "aus Tag lernen"
+- Keine gespeicherten Video-Views
+
+
+Endzustand
+==========
+
+Die Videoansicht soll am Ende folgende Dinge koennen:
+
+1. Permanente Tag-Sidebar
+   - alle Tags sichtbar
+   - Suche
+   - gepinnte Tags
+   - ungetaggte Notizen/Videos
+   - verwandte Tags zum aktiven Kontext
+   - Counts fuer Notizen, Karten, Zeitmarken und offene Fragen
+
+2. Echte Tag-Seite
+   - Header mit #tag, Beschreibung, Farbe, Aliases, Pin
+   - Video-Notizen zu diesem Tag
+   - Lernkarten zu diesem Tag
+   - Zeitmarken zu diesem Tag
+   - offene Fragen zu diesem Tag
+   - Kartenideen zu diesem Tag
+   - verwandte Tags
+   - Aktionen: bearbeiten, mergen, lernen, filtern
+
+3. Tag-Management
+   - Tag umbenennen
+   - Tags mergen
+   - Aliases verwalten
+   - Tag pinnen
+   - Farbe setzen
+   - Beschreibung setzen
+   - ungenutzte Tags erkennen
+
+4. Kombinierte Filter
+   - #iam UND #ports
+   - #crypto ODER #pki
+   - #network OHNE #known
+   - status:gaps
+   - has:note
+   - has:timestamp
+   - has:card-idea
+   - offline:true
+
+5. Lernworkflows
+   - alle Karten zu einem Tag lernen
+   - alle Videos zu einem Tag wiederholen
+   - alle unsicheren Videos zu einem Tag anzeigen
+   - Kartenideen aus Notizen sammeln
+   - aus Tag-Seite direkt Lernsession starten
+
+
+Umsetzung in Phasen
+===================
+
+Nicht alles gleichzeitig bauen. Die richtige Reihenfolge ist:
+
+Phase 1: Tag-Metadatenmodell
+Phase 2: Tag-Queries und Hooks
+Phase 3: Permanente Tag-Sidebar
+Phase 4: Tag-Seite ausbauen
+Phase 5: Tag bearbeiten, pinnen, Farbe, Beschreibung
+Phase 6: Kombinierte Filter
+Phase 7: Tag-basierte Lernworkflows
+Phase 8: Merge/Alias-Tools
+Phase 9: Tests, Backup, Sync, Polishing
+
+
+PHASE 1: TAG-METADATENMODELL
+============================
+
+Ziel:
+Tags bekommen eigene Datensaetze. Der Notiztext bleibt trotzdem die Quelle fuer
+Inline-Tags.
+
+Neue Datei:
+
+card_pwa/src/db/queries/videoTagMeta.ts
+
+Anpassen:
+
+card_pwa/src/db/index.ts
+
+Neuer Record-Typ:
+
+export interface VideoTagMetaRecord {
+  profileId: string
+  tagId: string
+  label: string
+  aliases: string[]
+  description: string
+  color: string | null
+  icon: string | null
+  pinned: boolean
+  archived: boolean
+  createdAt: number
+  updatedAt: number
+}
+
+Dexie-Tabelle:
+
+videoTagMeta!: Table<VideoTagMetaRecord, [string, string]>
+
+Dexie-Version:
+
+Aktuell ist Version 19. Neue Migration als Version 20 einfuegen:
+
+this.version(20).stores({
+  videoTagMeta:
+    '[profileId+tagId], profileId, tagId, label, pinned, archived, updatedAt, *aliases'
+})
+
+Wichtig:
+
+- Primary Key ist [profileId+tagId]
+- tagId kommt immer aus normalizeTagId(...)
+- aliases sind ebenfalls normalisierte Tag-IDs
+- label ist nur Anzeige, z. B. "Zero Trust"
+- archived bedeutet: nicht mehr aktiv anzeigen, aber alte Inhalte nicht kaputt machen
+- Tags werden nicht hart aus Notiztexten geloescht, nur Metadaten werden verwaltet
+
+Migration in Version 20:
+
+1. Alle videoNotes2 lesen.
+2. Pro Profil alle Tags sammeln.
+3. Fuer jeden Tag einen VideoTagMetaRecord anlegen, falls nicht vorhanden.
+4. label = erste gefundene Schreibweise.
+5. aliases = []
+6. description = ''
+7. color = null
+8. icon = null
+9. pinned = false
+10. archived = false
+11. createdAt/updatedAt = Date.now()
+
+Abnahmekriterien:
+
+[ ] Neue Tabelle existiert.
+[ ] Bestehende Video-Notiz-Tags erzeugen automatisch Tag-Metadaten.
+[ ] Alte Notizen bleiben unveraendert.
+[ ] npm run build ist gruen.
+
+
+PHASE 2: TAG-QUERIES UND HOOKS
+==============================
+
+Ziel:
+UI-Komponenten sollen Tags mit Metadaten, Counts und Beziehungen laden koennen.
+
+Neue Query-Datei:
+
+card_pwa/src/db/queries/videoTagMeta.ts
+
+Funktionen:
+
+ensureVideoTagMeta(profileId, rawTag)
+  - normalisiert rawTag zu tagId
+  - legt Meta-Datensatz an, falls fehlend
+  - gibt VideoTagMetaRecord zurueck
+
+ensureVideoTagMetaForNote(profileId, tags)
+  - ruft ensureVideoTagMeta fuer alle Tags aus einer Notiz auf
+  - wird nach saveVideoNote verwendet
+
+listVideoTagMeta(profileId)
+  - liefert alle nicht archivierten Tags sortiert:
+    pinned zuerst, dann label alphabetisch
+
+getVideoTagMeta(profileId, tag)
+  - findet Meta per tagId oder Alias
+
+updateVideoTagMeta(profileId, tagId, patch)
+  - erlaubt label, description, color, icon, pinned, archived
+  - updatedAt aktualisieren
+
+archiveVideoTag(profileId, tagId)
+  - setzt archived=true
+  - loescht keine Notizen
+
+resolveVideoTagId(profileId, rawTag)
+  - normalisiert rawTag
+  - wenn rawTag in aliases vorkommt, gibt Haupt-tagId zurueck
+  - sonst raw tagId
+
+listVideoTagStats(profileId)
+  - liefert pro Tag:
+    tagId
+    label
+    pinned
+    color
+    noteCount
+    cardCount
+    timestampCount
+    questionCount
+    cardIdeaCount
+    relatedCount
+
+Anpassen:
+
+card_pwa/src/db/queries/videoNotes.ts
+
+In saveVideoNote:
+
+1. Tags aus content extrahieren.
+2. Notiz speichern.
+3. ensureVideoTagMetaForNote(profileId, tags) aufrufen.
+4. Sync payload spaeter um Tag-Meta erweitern, aber nicht in diesem Schritt.
+
+Neue Hooks:
+
+card_pwa/src/hooks/useVideoTags.ts
+
+Hooks:
+
+useVideoTagMeta(profileId)
+useVideoTagStats(profileId)
+useVideoTag(profileId, tag)
+useResolvedVideoTag(profileId, rawTag)
+
+Abnahmekriterien:
+
+[ ] Neue Tags im Notiztext erscheinen automatisch in Tag-Metadaten.
+[ ] Tag-Liste bleibt live aktualisiert.
+[ ] Aliases koennen vorbereitet werden, auch wenn Merge-UI spaeter kommt.
+[ ] Tests fuer ensure/list/update sind gruen.
+
+
+PHASE 3: PERMANENTE TAG-SIDEBAR
+===============================
+
+Ziel:
+Tags sollen in der Videoansicht staendig sichtbar sein, nicht nur nach Klick.
+
+Neue Komponente:
+
+card_pwa/src/components/videos/VideoTagSidebar.tsx
+
+Props:
+
+interface VideoTagSidebarProps {
+  profileId: string
+  language: 'de' | 'en'
+  activeTag: string | null
+  selectedTags: string[]
+  excludedTags: string[]
+  onOpenTag: (tag: string) => void
+  onToggleTagFilter: (tag: string) => void
+  onToggleExcludedTag: (tag: string) => void
+  onClearFilters: () => void
+}
+
+UI Desktop:
+
+- rechte oder linke schmale Spalte in VideosView
+- oben Suchfeld
+- darunter gepinnte Tags
+- darunter alle Tags
+- jeder Tag zeigt:
+  - #label
+  - Count Notizen
+  - Count Karten
+  - kleiner Punkt/Farbe
+  - Pin-Indikator
+- Klick auf Tag:
+  - normaler Klick: Tag-Seite oeffnen
+  - optional ctrl/meta oder kleines Filter-Icon: Filter aktivieren
+
+UI Mobile:
+
+- kein permanentes Panel
+- Button mit Hash-Icon in Header
+- oeffnet Bottom-Sheet / Drawer
+
+Anpassen:
+
+card_pwa/src/components/videos/VideosView.tsx
+
+Neuer State:
+
+const [activeTag, setActiveTag] = useState<string | null>(null)
+const [selectedTags, setSelectedTags] = useState<string[]>([])
+const [excludedTags, setExcludedTags] = useState<string[]>([])
+const [tagSidebarOpen, setTagSidebarOpen] = useState(false)
+
+Layout:
+
+Desktop:
+
+main grid:
+  - video/objective list
+  - player/notes
+  - tag sidebar
+
+Mobile:
+
+Header -> Hash button -> VideoTagSidebar als Sheet.
+
+Abnahmekriterien:
+
+[ ] Alle Video-Tags sind ohne Modal erreichbar.
+[ ] Gepinnte Tags stehen oben.
+[ ] Suche filtert Tags.
+[ ] Mobile hat keine ueberladene Dauer-Spalte.
+[ ] Bestehende Video-/Notiz-Funktion bleibt unveraendert.
+
+
+PHASE 4: TAG-SEITE AUSBAUEN
+===========================
+
+Ziel:
+TagCollectionPanel wird zur Obsidian-artigen Tag-Seite.
+
+Bestehende Datei:
+
+card_pwa/src/components/videos/TagCollectionPanel.tsx
+
+Empfohlene Aufteilung:
+
+card_pwa/src/components/videos/tags/TagPage.tsx
+card_pwa/src/components/videos/tags/TagPageHeader.tsx
+card_pwa/src/components/videos/tags/TagPageSources.tsx
+card_pwa/src/components/videos/tags/TagRelatedTags.tsx
+card_pwa/src/components/videos/tags/TagActionsMenu.tsx
+
+Wenn schnelle Umsetzung gewuenscht:
+Zuerst TagCollectionPanel.tsx erweitern, spaeter splitten.
+
+Tag-Seite soll zeigen:
+
+Header:
+
+- #label
+- Beschreibung
+- Farbe
+- Pin
+- Aliases
+- Actions-Menue
+
+Tabs oder Segmente:
+
+1. Alles
+2. Videos
+3. Karten
+4. Zeitmarken
+5. Fragen
+6. Kartenideen
+7. Verwandt
+
+Inhalt "Videos":
+
+- Objective-Code
+- Objective-Titel
+- Notizausschnitt
+- Tags
+- Confidence Status, falls vorhanden
+- Button: Video oeffnen
+
+Inhalt "Karten":
+
+- Deckname
+- Kartenfrage
+- Antwortauszug
+- Button: Karten verwalten oder Deck lernen
+
+Inhalt "Zeitmarken":
+
+- Objective
+- @MM:SS
+- Text nach Zeitmarke
+- Klick springt zum Video und Zeitpunkt
+
+Inhalt "Fragen":
+
+- Zeilen aus Notizen, die mit "?", "Frage:" oder "Q:" beginnen
+- Quelle anzeigen
+- Button: als Kartenidee markieren
+
+Inhalt "Kartenideen":
+
+- Zeilen aus Notizen, die mit "Karte:" oder "Card:" beginnen
+- Quelle anzeigen
+- Button: Karte daraus erstellen
+
+Abnahmekriterien:
+
+[ ] Klick auf #tag oeffnet Tag-Seite.
+[ ] Tag-Seite zeigt Videos und Karten gemeinsam.
+[ ] Zeitmarken sind klickbar.
+[ ] Fragen und Kartenideen werden extrahiert.
+[ ] Related Tags bleiben sichtbar.
+
+
+PHASE 5: TAG BEARBEITEN
+=======================
+
+Ziel:
+Der Nutzer kann Tags sinnvoll pflegen.
+
+Neue Komponente:
+
+card_pwa/src/components/videos/tags/EditVideoTagModal.tsx
+
+Felder:
+
+- Label
+- Beschreibung
+- Farbe
+- Icon optional
+- Pinned ja/nein
+- Aliases
+- Archived ja/nein
+
+Validierung:
+
+- Label darf nicht leer sein.
+- tagId wird aus Label abgeleitet, aber nicht automatisch geaendert.
+- Aliases muessen normalisiert eindeutig sein.
+- Alias darf nicht gleich tagId sein.
+- Alias darf nicht schon Haupt-tagId eines anderen Tags sein, ausser Merge wird genutzt.
+
+Aktionen:
+
+- Speichern
+- Archivieren
+- Alias hinzufuegen
+- Alias entfernen
+
+Noch NICHT in Phase 5:
+
+- Notiztext automatisch ersetzen
+- Karten-Tags automatisch ersetzen
+- Merge
+
+Abnahmekriterien:
+
+[ ] Tag-Beschreibung wird gespeichert.
+[ ] Pinned sortiert Tag nach oben.
+[ ] Farbe erscheint in Sidebar und Tag-Seite.
+[ ] Alias wird beim Aufloesen erkannt.
+
+
+PHASE 6: KOMBINIERTE FILTER
+===========================
+
+Ziel:
+Videos und Notizen koennen ueber mehrere Tags und Eigenschaften gefiltert werden.
+
+Neue Utility:
+
+card_pwa/src/utils/videoFilterQuery.ts
+
+Typ:
+
+export interface VideoFilterState {
+  includeTags: string[]
+  excludeTags: string[]
+  mode: 'all' | 'any'
+  hasNote: boolean
+  hasTimestamp: boolean
+  hasQuestion: boolean
+  hasCardIdea: boolean
+  confidence: Array<'gaps' | 'ok' | 'solid' | 'watched'>
+  offlineOnly: boolean
+  search: string
+}
+
+Funktionen:
+
+normalizeVideoFilterState(state)
+matchesVideoFilter(item, context, state)
+filterVideoObjectiveGroups(groups, context, state)
+serializeVideoFilterState(state)
+parseVideoFilterState(raw)
+
+Neue Komponente:
+
+card_pwa/src/components/videos/VideoFilterBar.tsx
+
+UI:
+
+- Include-Tags als Chips
+- Exclude-Tags als Chips
+- AND/OR Umschalter
+- Buttons:
+  - Notiz
+  - Zeitmarke
+  - Frage
+  - Kartenidee
+  - Offline
+  - Unsicher
+- Clear button
+
+Integration:
+
+VideosView filtert objectiveGroups vor Anzeige.
+
+Abnahmekriterien:
+
+[ ] #tag + #tag funktioniert.
+[ ] Exclude-Tag funktioniert.
+[ ] "nur unsicher" funktioniert.
+[ ] "hat Kartenidee" funktioniert.
+[ ] Filter sind auf Desktop und Mobile bedienbar.
+
+
+PHASE 7: TAG-BASIERTE LERNWORKFLOWS
+===================================
+
+Ziel:
+Tags fuehren direkt in Lernen und Wiederholen.
+
+Neue Query-Datei:
+
+card_pwa/src/db/queries/videoTagLearning.ts
+
+Typ:
+
+export interface TagLearningScope {
+  profileId: string
+  tagId: string
+  noteObjectives: string[]
+  cardIds: string[]
+  weakObjectives: string[]
+  openQuestions: Array<{
+    objective: string
+    text: string
+  }>
+  cardIdeas: Array<{
+    objective: string
+    text: string
+  }>
+  timestamps: Array<{
+    objective: string
+    seconds: number
+    label: string
+  }>
+}
+
+Funktionen:
+
+buildTagLearningScope(profileId, tag)
+listCardsForResolvedVideoTag(profileId, tag)
+listWeakObjectivesByTag(profileId, tag)
+listCardIdeasByTag(profileId, tag)
+listOpenQuestionsByTag(profileId, tag)
+
+UI-Aktionen auf Tag-Seite:
+
+- Karten zu #tag lernen
+- Videos zu #tag ansehen
+- Unsichere Videos wiederholen
+- Kartenideen pruefen
+- Fragen durchgehen
+
+Wichtig:
+
+- Bestehende StudyView kann Karten lernen, wenn eine Card-Liste uebergeben wird.
+- Fuer "Karten zu #tag lernen" entweder:
+  1. synthetisches Deck wie Tag-Study nutzen, oder
+  2. bestehenden Home-Tag-Study-Flow wiederverwenden.
+
+Abnahmekriterien:
+
+[ ] Von Tag-Seite kann eine Lernsitzung mit Karten gestartet werden.
+[ ] Videos mit diesem Tag lassen sich direkt als Liste filtern.
+[ ] Unsichere Objectives mit diesem Tag sind sichtbar.
+[ ] Kartenideen werden nicht automatisch ungefragt in echte Karten verwandelt.
+
+
+PHASE 8: MERGE UND ALIASES
+==========================
+
+Ziel:
+Tag-Chaos kontrollieren.
+
+Neue Komponente:
+
+card_pwa/src/components/videos/tags/MergeVideoTagsModal.tsx
+
+Flow:
+
+1. Nutzer oeffnet Tag-Aktionen.
+2. Klick "Mit anderem Tag zusammenfuehren".
+3. Zieltag suchen.
+4. Vorschau:
+   - Notizen betroffen
+   - Karten betroffen
+   - Aliases betroffen
+5. Optionen:
+   - Nur Alias anlegen
+   - Notiztexte ersetzen
+   - Karten-Tags ersetzen
+6. Bestaetigen.
+
+Query:
+
+mergeVideoTags(profileId, sourceTagId, targetTagId, options)
+
+Optionen:
+
+interface MergeVideoTagsOptions {
+  addAlias: boolean
+  rewriteVideoNotes: boolean
+  rewriteCardTags: boolean
+  archiveSource: boolean
+}
+
+Regeln:
+
+- Standard sicher:
+  addAlias=true
+  rewriteVideoNotes=false
+  rewriteCardTags=false
+  archiveSource=true
+
+- Erst spaeter kann aggressives Ersetzen optional sein.
+
+Abnahmekriterien:
+
+[ ] Merge kann als Alias-only laufen.
+[ ] Alter Tag verschwindet aus aktiver Sidebar, bleibt aber auffindbar.
+[ ] Inhalte bleiben erreichbar.
+[ ] Keine Notiz wird ohne explizite Option umgeschrieben.
+
+
+PHASE 9: BACKUP, SYNC, TESTS
+============================
+
+Backup:
+
+Anpassen:
+
+card_pwa/src/utils/dbBackup.ts
+
+Backup-Payload erweitern:
+
+videoTagMeta: VideoTagMetaRecord[]
+
+Restore-Regeln:
+
+- Bei gleichem [profileId+tagId] gewinnt neueres updatedAt.
+- aliases defensiv normalisieren.
+- archived beibehalten.
+- Notiztext nicht automatisch ersetzen.
+
+Sync:
+
+Sync-Operationen spaeter:
+
+videoTagMeta.upsert
+videoTagMeta.delete oder videoTagMeta.archive
+
+Nicht syncen:
+
+- Video-Blobs
+
+Tests:
+
+Neue Tests:
+
+card_pwa/src/__tests__/utils/video-tag-meta.test.ts
+card_pwa/src/__tests__/utils/video-filter-query.test.ts
+card_pwa/src/__tests__/components/video-tag-sidebar.test.tsx
+card_pwa/src/__tests__/components/tag-page.test.tsx
+
+Mindestfaelle:
+
+[ ] normalize/resolve Alias
+[ ] ensure Meta nach saveVideoNote
+[ ] list stats mit Note/Card/Time/Question/CardIdea
+[ ] Filter include all
+[ ] Filter include any
+[ ] Filter exclude
+[ ] Tag-Seite rendert Videos + Karten
+[ ] Merge Alias-only verliert keine Inhalte
+
+Bei jeder Phase ausfuehren:
+
+npm run build
+
+Wenn Tests vorhanden:
+
+TZ=UTC npm test -- --run <betroffene-tests>
+
+
+UI-RICHTLINIEN
+==============
+
+Die neue UI soll zur aktuellen, un-generischen Ledger-Optik passen:
+
+- matte Flaechen
+- kleine Radien
+- keine Neon-Gradienten
+- Tags als ruhige Chips
+- klare Sidebar statt riesiger Marketing-Karten
+- auf Mobile Bottom-Sheets statt gequetschter Desktop-Spalten
+- Aktionen in Menues, nicht ueberall grosse Buttons
+
+Keine sichtbaren Erklaertexte wie:
+
+- "So benutzt du Tags"
+- "Dies ist ein Obsidian-Feature"
+
+Stattdessen:
+
+- direkte Controls
+- gute Empty States
+- kurze Labels
+
+
+EMPFOHLENER MVP
+===============
+
+Wenn nur eine erste sinnvolle Version gebaut werden soll, dann genau diese
+Reihenfolge:
+
+1. VideoTagMetaRecord + Dexie Version 20
+2. ensureVideoTagMetaForNote in saveVideoNote
+3. useVideoTagStats Hook
+4. VideoTagSidebar in VideosView
+5. TagCollectionPanel zu TagPage erweitern:
+   - Beschreibung
+   - Pin
+   - Videos
+   - Karten
+   - Zeitmarken
+   - Fragen
+   - Kartenideen
+6. EditVideoTagModal:
+   - Label
+   - Beschreibung
+   - Farbe
+   - pinned
+7. Kombinierter Filter:
+   - includeTags
+   - excludeTags
+   - AND/OR
+8. "Karten zu Tag lernen" Button
+
+Alles andere danach.
+
+
+DATEIENLISTE
+============
+
+Neue Dateien:
+
+card_pwa/src/db/queries/videoTagMeta.ts
+card_pwa/src/db/queries/videoTagLearning.ts
+card_pwa/src/hooks/useVideoTags.ts
+card_pwa/src/utils/videoFilterQuery.ts
+card_pwa/src/components/videos/VideoTagSidebar.tsx
+card_pwa/src/components/videos/VideoFilterBar.tsx
+card_pwa/src/components/videos/tags/TagPage.tsx
+card_pwa/src/components/videos/tags/TagPageHeader.tsx
+card_pwa/src/components/videos/tags/TagActionsMenu.tsx
+card_pwa/src/components/videos/tags/EditVideoTagModal.tsx
+card_pwa/src/components/videos/tags/MergeVideoTagsModal.tsx
+
+Zu aendern:
+
+card_pwa/src/db/index.ts
+card_pwa/src/db/queries/videoNotes.ts
+card_pwa/src/hooks/useVideoNotes.ts
+card_pwa/src/components/videos/VideosView.tsx
+card_pwa/src/components/videos/VideoNotesPanel.tsx
+card_pwa/src/components/videos/TagCollectionPanel.tsx
+card_pwa/src/utils/dbBackup.ts
+
+Tests:
+
+card_pwa/src/__tests__/utils/video-tag-meta.test.ts
+card_pwa/src/__tests__/utils/video-filter-query.test.ts
+card_pwa/src/__tests__/components/video-tag-sidebar.test.tsx
+card_pwa/src/__tests__/components/tag-page.test.tsx
+
+
+AKZEPTANZKRITERIEN FUER DAS GESAMTPROJEKT
+=========================================
+
+Das Projekt gilt als erledigt, wenn:
+
+[ ] Nutzer kann in einer Video-Notiz #tag schreiben.
+[ ] Tag erscheint automatisch in der Sidebar.
+[ ] Tag hat eine eigene Seite.
+[ ] Tag-Seite zeigt Video-Notizen, Lernkarten, Zeitmarken, Fragen und Kartenideen.
+[ ] Tags koennen beschrieben, gepinnt und farblich markiert werden.
+[ ] Mehrere Tags koennen kombiniert und ausgeschlossen werden.
+[ ] Von einem Tag kann eine Lernsession gestartet werden.
+[ ] Aliases funktionieren.
+[ ] Merge verliert keine Inhalte.
+[ ] Backup enthaelt Tag-Metadaten.
+[ ] Build ist gruen.
+[ ] Mobile bleibt bedienbar.
+
+
+WICHTIGE ENTSCHEIDUNGEN
+=======================
+
+1. Notiztext bleibt plain text.
+   Keine Rich-Text-Datenstruktur erzwingen.
+
+2. Tags werden aus dem Text extrahiert.
+   Tag-Metadaten ergaenzen nur Bedeutung, Farbe, Pin, Alias.
+
+3. Merge ist zuerst sicher.
+   Alias-only als Standard, kein automatisches Umschreiben ohne Bestaetigung.
+
+4. Graph ist spaeter.
+   Erst Listen, Filter und Lernworkflow gut machen.
+
+5. Lernen ist wichtiger als Optik.
+   Obsidian-Gefuehl entsteht durch Verknuepfung, Backlinks und schnelle
+   Navigation, nicht durch einen grossen Graphen.
+
+
+KURZER UMSETZUNGSAUFTRAG FUER CODEX
+===================================
+
+Baue zuerst den MVP:
+
+1. Fuege VideoTagMetaRecord in src/db/index.ts hinzu.
+2. Erhoehe Dexie auf Version 20 und lege videoTagMeta an.
+3. Implementiere src/db/queries/videoTagMeta.ts.
+4. Rufe ensureVideoTagMetaForNote nach saveVideoNote auf.
+5. Implementiere useVideoTagStats in src/hooks/useVideoTags.ts.
+6. Erstelle VideoTagSidebar und integriere sie in VideosView.
+7. Erweitere TagCollectionPanel zur Tag-Seite mit Header, Beschreibung, Pin,
+   Videos, Karten, Zeitmarken, Fragen und Kartenideen.
+8. Baue EditVideoTagModal fuer Beschreibung, Farbe und Pin.
+9. Fuege einfache include/exclude Tag-Filter hinzu.
+10. Fuege Button "Karten zu Tag lernen" hinzu.
+11. Ergaenze Tests fuer Tag-Meta und Filter.
+12. Fuehre npm run build aus.
+
+Nicht im ersten Schritt bauen:
+
+- Graph
+- Voller Markdown-Editor
+- Automatische Kartenerstellung ohne Review
+- Vollautomatisches Umschreiben aller Tags
+- Video-Blob-Sync
+

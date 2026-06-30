@@ -136,7 +136,7 @@ const MatchingCard = memo(function MatchingCard({
     .replace('{count}', String(scoreCount))
     .replace('{total}', String(question.pairs.length))
 
-  const cardShellCls = `border border-[#18181b] flex flex-col overflow-hidden rounded-[12px] bg-[#0c0c0c] shadow-card ${
+  const cardShellCls = `flex flex-col overflow-hidden rounded-[8px] border border-ds-border bg-ds-card shadow-card ${
     compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[420px] md:min-h-[500px]'
   }`
 
@@ -152,20 +152,20 @@ const MatchingCard = memo(function MatchingCard({
       <div className={`w-full ${compact ? 'h-full' : ''}`}>
         <div className={cardShellCls}>
           {/* Header */}
-          <div className="shrink-0 border-b border-[#18181b] px-[14px] py-[8px]">
+          <div className="shrink-0 border-b border-ds-border px-[14px] py-[8px]">
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2">
-                <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-zinc-600">{t.question}</span>
+                <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted">{t.question}</span>
                 <span className={`rounded-[3px] border px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.14em] ${badge.cls}`}>
                   {t[badge.labelKey]}
                 </span>
-                <span className="rounded-[3px] border border-cyan-500/30 bg-cyan-500/10 px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-cyan-400">
+                <span className="rounded-[3px] border border-[--brand-secondary-25] bg-[--brand-secondary-08] px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.12em] text-[--brand-secondary]">
                   {t.matching_type_badge}
                 </span>
                 {renderOriginBadge()}
               </div>
               <div className="flex shrink-0 items-center gap-2">
-                <span className="rounded-[3px] border border-zinc-700 px-[5px] py-px font-mono text-[9px] font-bold text-zinc-400">A</span>
+                <span className="rounded-[3px] border border-ds-border px-[5px] py-px font-mono text-[9px] font-bold text-zinc-400">A</span>
                 {onEdit && (
                   <button onClick={(e) => { e.stopPropagation(); onEdit() }} className="ds-icon-button h-7 w-7" title={t.edit_card}>
                     <Edit size={14} strokeWidth={1.5} />
@@ -197,25 +197,25 @@ const MatchingCard = memo(function MatchingCard({
                     type="button"
                     disabled={state.submitted}
                     onClick={(e) => { e.stopPropagation(); handleLeftTap(left) }}
-                    className={`grid grid-cols-[1fr_auto] items-center gap-2 rounded-[10px] border min-h-[44px] px-3 text-left transition-all duration-150 ${
+                    className={`grid min-h-[44px] grid-cols-[1fr_auto] items-center gap-2 rounded-[8px] border px-3 text-left transition-all duration-150 ${
                       state.submitted
                         ? feedback === 'correct'
                           ? 'border-emerald-500/60 bg-emerald-500/8 cursor-default'
                           : 'border-rose-500/60 bg-rose-500/8 cursor-default'
                         : isSelected
-                        ? 'border-cyan-500/60 bg-cyan-500/12'
-                        : 'border-[#27272a] bg-[#0a0a0a] hover:border-[#3f3f46]'
+                        ? 'border-[--brand-secondary-50] bg-[--brand-secondary-12]'
+                        : 'border-ds-border bg-ds-floor hover:border-ds-border-hover'
                     }`}
                   >
                     <span className={`font-mono text-[14px] leading-snug ${
                       state.submitted && feedback === 'correct' ? 'text-emerald-300' :
                       state.submitted && feedback === 'incorrect' ? 'text-rose-300' :
-                      isSelected ? 'text-cyan-300' : 'text-zinc-200'
+                      isSelected ? 'text-[--brand-secondary]' : 'text-zinc-200'
                     }`}>
                       {left}
                     </span>
                     {connected && !state.submitted && (
-                      <span className="rounded-[6px] border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 font-mono text-[11px] text-cyan-400 shrink-0 max-w-[120px] truncate">
+                      <span className="max-w-[120px] shrink-0 truncate rounded-[5px] border border-[--brand-secondary-25] bg-[--brand-secondary-08] px-2 py-0.5 font-mono text-[11px] text-[--brand-secondary]">
                         {connected}
                       </span>
                     )}
@@ -245,7 +245,7 @@ const MatchingCard = memo(function MatchingCard({
                       key={right}
                       type="button"
                       onClick={(e) => { e.stopPropagation(); handleRightTap(right) }}
-                      className="min-h-[40px] rounded-[10px] border border-[#27272a] bg-[#0a0a0a] px-4 font-mono text-[13px] text-zinc-200 transition-all duration-150 hover:border-cyan-500/40 hover:bg-cyan-500/8 hover:text-cyan-300 active:scale-[0.98]"
+                      className="min-h-[40px] rounded-[8px] border border-ds-border bg-ds-floor px-4 font-mono text-[13px] text-zinc-200 transition-all duration-150 hover:border-[--brand-secondary-50] hover:bg-[--brand-secondary-08] hover:text-[--brand-secondary] active:scale-[0.98]"
                     >
                       {right}
                     </button>
@@ -256,15 +256,15 @@ const MatchingCard = memo(function MatchingCard({
           </div>
 
           {/* Sticky confirm button */}
-          <div className="shrink-0 border-t border-[#18181b] px-[14px] py-[10px]">
+          <div className="shrink-0 border-t border-ds-border px-[14px] py-[10px]">
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); handleSubmit() }}
               disabled={state.submitted || !allConnected}
-              className={`w-full min-h-[44px] rounded-[12px] border font-medium text-sm transition-all duration-200 ${
+              className={`min-h-[44px] w-full rounded-[8px] border text-sm font-medium transition-all duration-200 ${
                 state.submitted || !allConnected
                   ? 'border-zinc-700 bg-transparent text-zinc-600 cursor-default'
-                  : 'border-cyan-500/40 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 active:scale-[0.99]'
+                  : 'border-[--brand-secondary-50] bg-[--brand-secondary-08] text-[--brand-secondary] hover:bg-[--brand-secondary-12] active:scale-[0.99]'
               }`}
             >
               {t.matching_confirm_button}
@@ -283,10 +283,10 @@ const MatchingCard = memo(function MatchingCard({
   return (
     <div className={`w-full ${compact ? 'h-full' : ''}`}>
       <div className={cardShellCls}>
-        <div className="shrink-0 border-b border-[#18181b] px-[14px] py-[8px]">
+        <div className="shrink-0 border-b border-ds-border px-[14px] py-[8px]">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2">
-              <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-zinc-600">{t.answer}</span>
+              <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted">{t.answer}</span>
               {renderOriginBadge()}
             </div>
             <div className="flex shrink-0 items-center gap-2">
@@ -302,7 +302,7 @@ const MatchingCard = memo(function MatchingCard({
 
         <div data-study-scroll="allow" className={`${bodyClass} flex flex-col overscroll-y-contain`}>
           {state.score !== null && (
-            <div className={`mb-3 flex items-center gap-2 rounded-[12px] border px-3 py-2 ${
+            <div className={`mb-3 flex items-center gap-2 rounded-[8px] border px-3 py-2 ${
               state.score === 1.0
                 ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
                 : state.score >= 0.5

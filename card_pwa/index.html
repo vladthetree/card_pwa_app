@@ -13,12 +13,10 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/pwa-icons/apple-touch-icon-180.png" />
     <meta name="description" content="Card_PWA - lernkartenoptimierte PWA mit lokalen Metriken" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Space+Grotesk:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Selbst gehostete Fonts: keine externe Abhaengigkeit, damit die App auch
+         ohne Internet (WAN aus, nur LAN) sofort rendert statt auf einen
+         render-blockierenden externen Font-Request zu warten. -->
+    <link rel="stylesheet" href="/fonts.css" />
     <title>Card_PWA</title>
   </head>
   <body>
