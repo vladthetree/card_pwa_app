@@ -129,8 +129,8 @@ const DragMatchCard = memo(function DragMatchCard({
   ) : null
 
   const cardShellCls = `border ${
-    submitted ? (isCorrect ? 'border-emerald-500/45' : 'border-rose-500/45') : 'border-[#18181b]'
-  } flex flex-col overflow-hidden rounded-[12px] bg-[#0c0c0c] shadow-card ${
+    submitted ? (isCorrect ? 'border-emerald-500/45' : 'border-rose-500/45') : 'border-ds-border'
+  } flex flex-col overflow-hidden rounded-[8px] bg-ds-card shadow-card ${
     compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[420px] md:min-h-[500px]'
   }`
 
@@ -143,10 +143,10 @@ const DragMatchCard = memo(function DragMatchCard({
     return (
       <div className={`w-full ${compact ? 'h-full' : ''}`}>
         <div className={cardShellCls}>
-          <div className="shrink-0 border-b border-[#18181b] px-[14px] py-[8px]">
+          <div className="shrink-0 border-b border-ds-border px-[14px] py-[8px]">
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2">
-                <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-zinc-600">
+                <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted">
                   {isCorrect ? t.answer : t.wrong_answer}
                 </span>
                 {renderOriginBadge()}
@@ -164,7 +164,7 @@ const DragMatchCard = memo(function DragMatchCard({
 
           <div data-study-scroll="allow" className={`${bodyClass} flex flex-col overscroll-y-contain`}>
             {submitted && (
-              <div className={`mb-3 flex items-center gap-2 rounded-[12px] border px-3 py-2 ${
+              <div className={`mb-3 flex items-center gap-2 rounded-[8px] border px-3 py-2 ${
                 isCorrect ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' : 'border-rose-500/40 bg-rose-500/10 text-rose-300'
               }`}>
                 <span className="font-mono font-bold text-sm">
@@ -194,10 +194,10 @@ const DragMatchCard = memo(function DragMatchCard({
     <div className={`w-full ${compact ? 'h-full' : ''}`}>
       <div className={cardShellCls}>
         {/* Header: "FRAGE *" links, DRAG-MATCH-Badge rechts (exakt wie Screenshot) */}
-        <div className="shrink-0 border-b border-[#18181b] px-[14px] py-[8px]">
+        <div className="shrink-0 border-b border-ds-border px-[14px] py-[8px]">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2">
-              <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-zinc-600">
+              <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted">
                 {t.question} <span className="text-zinc-500">*</span>
               </span>
               {renderOriginBadge()}
@@ -224,7 +224,7 @@ const DragMatchCard = memo(function DragMatchCard({
           <div
             ref={dropZoneRef}
             data-testid="dragmatch-dropzone"
-            className={`mt-5 flex min-h-[120px] flex-col items-center justify-center rounded-[14px] border-2 border-dashed px-4 py-5 text-center transition-colors duration-200 ${
+            className={`mt-5 flex min-h-[120px] flex-col items-center justify-center rounded-[8px] border-2 border-dashed px-4 py-5 text-center transition-colors duration-200 ${
               !submitted
                 ? 'border-zinc-700 text-zinc-500'
                 : isCorrect
@@ -246,7 +246,7 @@ const DragMatchCard = memo(function DragMatchCard({
           {/* Falsch-Feedback: Deine/Richtige Antwort + Erklärung aus der Karte */}
           {submitted && !isCorrect && (
             <div className="mt-3 flex flex-col gap-3">
-              <div className="rounded-[12px] border border-rose-500/40 bg-rose-500/5 px-3 py-3">
+              <div className="rounded-[8px] border border-rose-500/40 bg-rose-500/5 px-3 py-3">
                 <div className="flex items-center gap-2">
                   <X size={14} strokeWidth={2} className="shrink-0 text-rose-400" />
                   <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-rose-300">{t.dragmatch_your_answer}</span>
@@ -258,7 +258,7 @@ const DragMatchCard = memo(function DragMatchCard({
               </div>
 
               {answer.answer && (
-                <div className="rounded-[12px] border border-[#27272a] bg-[#0a0a0a] px-3 py-3">
+                <div className="rounded-[8px] border border-ds-border bg-ds-floor px-3 py-3">
                   <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-zinc-500">{t.dragmatch_explanation}</span>
                   <p className="mt-1.5 font-sans text-[14px] leading-[1.5] text-zinc-300">{answer.answer}</p>
                 </div>
@@ -276,8 +276,8 @@ const DragMatchCard = memo(function DragMatchCard({
                   ? (isCorrect ? 'border-emerald-500/60 bg-emerald-500/10' : 'border-rose-500/60 bg-rose-500/10')
                   : key === correctKey
                   ? 'border-emerald-500/40 bg-emerald-500/5'
-                  : 'border-[#27272a] bg-[#0a0a0a]')
-                : 'border-[#27272a] bg-[#0a0a0a]'
+                  : 'border-ds-border bg-ds-floor')
+                : 'border-ds-border bg-ds-floor'
               return (
                 <motion.button
                   key={key}
@@ -292,7 +292,7 @@ const DragMatchCard = memo(function DragMatchCard({
                   onDragEnd={(_e, info) => handleDragEnd(key, info.point)}
                   style={{ touchAction: submitted ? 'auto' : 'none' }}
                   disabled={submitted}
-                  className={`block transform-gpu select-none rounded-[12px] border px-3 py-3 text-left font-mono leading-snug transition-colors duration-150 ease-out will-change-transform ${cls} ${
+                  className={`block transform-gpu select-none rounded-[8px] border px-3 py-3 text-left font-mono leading-snug transition-colors duration-150 ease-out will-change-transform ${cls} ${
                     submitted ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'
                   }`}
                 >

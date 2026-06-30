@@ -2,7 +2,7 @@
  * AI_CONTEXT: Home-screen React component for home Daily Quest Tile; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
 import { motion } from 'framer-motion'
-import { ListTree, Play, Terminal } from 'lucide-react'
+import { ListChecks, ListTree, Play } from 'lucide-react'
 
 /**
  * HomeDailyQuestTile — Dashboard-Modus "Pilot" (rekonstruiert aus dem
@@ -60,20 +60,20 @@ export function HomeDailyQuestTile({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22, ease: 'easeOut' }}
       data-testid="daily-quest-tile"
-      className="min-w-0 overflow-hidden rounded-[14px] border border-emerald-500/25 bg-[#090d0b] p-3 shadow-card sm:p-4"
+      className="min-w-0 overflow-hidden rounded-[8px] border border-[--brand-secondary-25] bg-ds-card p-3 shadow-card sm:p-4"
     >
       <div className="flex min-w-0 items-start gap-3">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px] border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
-          <Terminal size={20} strokeWidth={1.5} />
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[7px] border border-[--brand-secondary-25] bg-[--brand-secondary-08] text-[--brand-secondary]">
+          <ListChecks size={20} strokeWidth={1.5} />
         </div>
         <div className="min-w-0 flex-1">
-          <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-300/80">
+          <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[--brand-secondary]">
             {copy.label}
           </div>
-          <div className="mt-0.5 truncate font-mono text-base font-bold text-[#f0ede8] min-[420px]:text-lg sm:text-xl">
+          <div className="mt-0.5 break-words font-sans text-base font-semibold leading-tight text-ds-fg min-[420px]:text-lg sm:text-xl">
             {hasWork ? copy.now(questSize) : copy.allDone}
           </div>
-          <div className="mt-0.5 truncate font-mono text-[12px] text-white/45">
+          <div className="mt-0.5 truncate font-mono text-[12px] text-ds-muted">
             {subtitleParts.join(' · ')}
           </div>
         </div>
@@ -85,7 +85,7 @@ export function HomeDailyQuestTile({
           data-testid="daily-quest-start"
           onClick={onStart}
           disabled={!hasWork || starting}
-          className="flex min-h-[48px] min-w-0 items-center justify-center gap-2 rounded-[12px] border border-emerald-400/30 bg-emerald-400/85 px-3 font-mono text-[14px] font-semibold text-[#04140b] transition-all duration-150 hover:bg-emerald-300 active:scale-[0.98] disabled:cursor-default disabled:opacity-40 sm:px-4"
+          className="flex min-h-[48px] min-w-0 items-center justify-center gap-2 rounded-[8px] border border-[--brand-secondary-50] bg-[--brand-secondary] px-3 font-sans text-[14px] font-semibold text-[#07100e] transition-all duration-150 hover:brightness-110 active:scale-[0.98] disabled:cursor-default disabled:border-ds-border disabled:bg-ds-floor disabled:text-ds-muted disabled:opacity-100 sm:px-4"
         >
           {starting
             ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#04140b]/30 border-t-[#04140b]" />
@@ -95,7 +95,7 @@ export function HomeDailyQuestTile({
         <button
           type="button"
           onClick={onShowDecks}
-          className="flex min-h-[48px] min-w-0 items-center justify-center gap-2 rounded-[12px] border border-[#1f1f23] bg-[#0c0c0c] px-3 font-mono text-[13px] text-white/75 transition-colors hover:border-[#3f3f46] hover:text-white active:scale-[0.98] sm:px-4"
+          className="flex min-h-[48px] min-w-0 items-center justify-center gap-2 rounded-[8px] border border-ds-border bg-ds-floor px-3 font-sans text-[13px] text-ds-text transition-colors hover:border-ds-border-hover hover:text-white active:scale-[0.98] sm:px-4"
         >
           <ListTree size={15} strokeWidth={1.5} />
           <span className="min-[420px]:hidden">{language === 'de' ? 'Decks' : 'Decks'}</span>

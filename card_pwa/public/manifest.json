@@ -1,7 +1,7 @@
 {
-  "name": "Card_PWA - Intelligentes Lernen",
+  "name": "Card_PWA - Lernkarten",
   "short_name": "Card_PWA",
-  "description": "High-End Lernplattform mit SM2 & FSRS Algorithmen. Vollständig offline mit Indexierter Datenbank.",
+  "description": "Offline-Lernkarten mit SM2/FSRS, Decks, Metriken und lokaler Datenhaltung.",
   "start_url": "/",
   "scope": "/",
   "id": "/",

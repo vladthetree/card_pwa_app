@@ -69,7 +69,7 @@ export function HomeDeckListSection({
         return (
           <motion.div
             key={collection.id}
-            className="group rounded-[14px] border border-[#18181b] bg-[#0c0c0c] px-4 py-4 shadow-card transition hover:border-[--brand-primary-50] hover:bg-[#111]"
+            className="group rounded-[8px] border border-ds-border bg-ds-card px-4 py-4 shadow-card transition hover:border-[--brand-primary-50] hover:bg-ds-panel"
           >
             <div className="flex items-start justify-between gap-3">
               <button
@@ -77,19 +77,19 @@ export function HomeDeckListSection({
                 onClick={() => onStartShuffleStudy(collection)}
                 className="min-w-0 flex-1 text-left"
               >
-                <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-amber-100/80">
+                <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[--brand-primary]">
                   <Shuffle size={12} />
                   <span>{language === 'de' ? 'Virtuelles Deck' : 'Virtual deck'}</span>
                 </div>
                 <div className="mt-1 truncate text-base font-semibold text-white">{collection.name}</div>
-                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-white/55">
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-ds-muted">
                   <span className="inline-flex items-center gap-1.5">
                     <Layers3 size={12} />
                     <span>
                       {collection.deckIds.length} {language === 'de' ? 'Quell-Decks' : 'source decks'}
                     </span>
                   </span>
-                  <span className="rounded-full border border-amber-200/25 bg-amber-200/10 px-2 py-0.5 text-amber-100/90">
+                  <span className="rounded-[5px] border border-[--brand-primary-25] bg-[--brand-primary-08] px-2 py-0.5 text-[--brand-primary]">
                     {summary?.selectedCount ?? 0} {language === 'de' ? 'heute auswählbar' : 'available today'}
                   </span>
                 </div>
@@ -117,7 +117,7 @@ export function HomeDeckListSection({
                 <button
                   type="button"
                   onClick={() => onDeleteShuffleCollection(collection)}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-rose-400/20 bg-[#0c0c0c] text-rose-200/75 transition hover:border-rose-300/35 hover:bg-[#111] hover:text-rose-100 sm:h-9 sm:w-9"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-[8px] border border-rose-400/20 bg-ds-card text-rose-200/75 transition hover:border-rose-300/35 hover:bg-ds-panel hover:text-rose-100 sm:h-9 sm:w-9"
                   aria-label={language === 'de' ? 'Löschen' : 'Delete'}
                   title={language === 'de' ? 'Löschen' : 'Delete'}
                 >
@@ -138,7 +138,7 @@ export function HomeDeckListSection({
       data-testid="home-deck-list-scroll"
     >
       {error && (
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-4 flex items-center justify-between rounded-[12px] border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300 shadow-card">
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-4 flex items-center justify-between rounded-[8px] border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300 shadow-card">
           <div className="flex items-center gap-2"><AlertCircle size={16} strokeWidth={1.5} /><span>{error}</span></div>
           <button onClick={onReload} className="ml-3 px-3 py-1 bg-rose-500/30 hover:bg-rose-500/50 rounded-lg text-xs font-medium transition"><RefreshCw size={12} strokeWidth={1.5} className="inline mr-1" /> {t.retry}</button>
         </motion.div>
@@ -149,7 +149,7 @@ export function HomeDeckListSection({
       ) : !showShuffleOnly && decks.length === 0 ? (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex min-h-full flex-col items-center justify-start pt-10 pb-12 text-center sm:justify-center sm:py-16">
           <p className="text-white/30 text-sm mb-4">{t.no_decks}</p>
-          <button onClick={onShowImport} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[12px] text-sm font-black text-white transition-all duration-200 ease-out active:scale-[0.98]" style={{ background: 'linear-gradient(135deg, var(--brand-primary-80), var(--brand-primary))' }}>
+          <button onClick={onShowImport} className="inline-flex items-center gap-2 rounded-[8px] bg-[--brand-primary] px-5 py-2.5 text-sm font-semibold text-[#150b08] transition-all duration-200 ease-out hover:brightness-110 active:scale-[0.98]">
             <Upload size={16} strokeWidth={1.5} /> {t.import_now}
           </button>
         </motion.div>

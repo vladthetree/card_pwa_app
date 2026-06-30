@@ -44,17 +44,17 @@ export function HomeHeaderBar({
   return (
     <div className={UI_TOKENS.header.row}>
       <div className={UI_TOKENS.header.brand}>
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-1.5 shadow-card sm:h-10 sm:w-10">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] border border-ds-border bg-ds-card p-1.5 shadow-card sm:h-10 sm:w-10">
           <img src={PWA_Logo} alt={APP_NAME} className="h-full w-full object-contain" />
         </div>
         <div className="min-w-0">
-          <h1 className="truncate text-base font-black font-mono uppercase tracking-[0.16em] text-white sm:text-2xl sm:tracking-[0.22em]">{APP_NAME}</h1>
+          <h1 className="truncate font-sans text-base font-semibold text-white sm:text-2xl">{APP_NAME}</h1>
           <div className="mt-0.5 flex items-center gap-1.5 sm:hidden">
             <span
               className={`server-status-lamp ${isConnected ? 'server-status-lamp--connected' : 'server-status-lamp--disconnected'}`}
               aria-hidden="true"
             />
-            <span className="text-[10px] uppercase tracking-[0.12em] text-white/45">
+            <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/45">
               {isConnected ? 'Online' : 'Offline'}
             </span>
           </div>

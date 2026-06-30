@@ -29,7 +29,7 @@ export function DeckSchedulePanel({
   }, [activeInfoKey])
   if (!schedule) {
     return (
-      <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-2 animate-pulse h-[84px]" />
+      <div className="h-[84px] animate-pulse rounded-[8px] border border-ds-border bg-ds-card p-2" />
     )
   }
 
@@ -88,7 +88,7 @@ export function DeckSchedulePanel({
                 onBlur={() => {
                   setActiveInfoKey(prev => (prev === item.key ? null : prev))
                 }}
-                className="hidden sm:inline-flex h-4 w-4 items-center justify-center rounded-full border border-[#18181b] bg-[#0c0c0c] text-[10px] font-semibold text-zinc-400 hover:text-zinc-50 hover:border-[#3f3f46] transition"
+                className="hidden h-4 w-4 items-center justify-center rounded-[4px] border border-ds-border bg-ds-card text-[10px] font-semibold text-zinc-400 transition hover:border-ds-border-hover hover:text-zinc-50 sm:inline-flex"
                 title={item.info}
                 aria-label={`${item.label}: ${item.info}`}
                 aria-expanded={isInfoOpen}
@@ -97,7 +97,7 @@ export function DeckSchedulePanel({
               </button>
               {isInfoOpen && (
                 <div
-                  className="absolute left-1/2 top-[calc(100%+0.35rem)] z-20 w-44 -translate-x-1/2 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-2.5 py-2 text-[10px] leading-relaxed text-zinc-300 shadow-menu"
+                  className="absolute left-1/2 top-[calc(100%+0.35rem)] z-20 w-44 -translate-x-1/2 rounded-[8px] border border-ds-border bg-ds-card px-2.5 py-2 text-[10px] leading-relaxed text-zinc-300 shadow-menu"
                   role="tooltip"
                 >
                   {item.info}
@@ -110,24 +110,24 @@ export function DeckSchedulePanel({
 
       {rows.map(row => (
         <div key={row.key} className="grid grid-cols-[3.9rem_repeat(3,minmax(1.5rem,1fr))] gap-1.5 sm:grid-cols-[4.5rem_repeat(3,minmax(0,1fr))] sm:gap-2">
-          <div className="flex items-center justify-center rounded-[10px] border border-[#18181b] bg-[#0a0a0a] px-2 py-1.5 sm:px-3 sm:py-2">
-            <span className="text-[10px] font-mono uppercase tracking-[0.1em] text-zinc-500 text-center leading-tight sm:tracking-widest">
+          <div className="flex items-center justify-center rounded-[7px] border border-ds-border bg-ds-floor px-2 py-1.5 sm:px-3 sm:py-2">
+            <span className="text-center font-mono text-[10px] uppercase leading-tight tracking-[0.08em] text-ds-muted">
               {row.label}
             </span>
           </div>
           <div
-            className="flex min-h-[2.15rem] items-center justify-center rounded-[10px] border bg-[#0a0a0a] px-1.5 sm:min-h-[2.55rem] sm:px-2"
+            className="flex min-h-[2.15rem] items-center justify-center rounded-[7px] border bg-ds-floor px-1.5 sm:min-h-[2.55rem] sm:px-2"
             style={{ borderColor: 'var(--brand-primary-25)' }}
           >
             <p className="text-xl sm:text-3xl font-mono tabular-nums leading-none" style={{ color: 'var(--brand-primary)' }}>{row.data.total}</p>
           </div>
           <div
-            className="flex min-h-[2.15rem] items-center justify-center rounded-[10px] border bg-[#0a0a0a] px-1.5 sm:min-h-[2.55rem] sm:px-2"
+            className="flex min-h-[2.15rem] items-center justify-center rounded-[7px] border bg-ds-floor px-1.5 sm:min-h-[2.55rem] sm:px-2"
             style={{ borderColor: 'var(--brand-secondary-25)' }}
           >
             <p className="text-xl sm:text-3xl font-mono tabular-nums leading-none" style={{ color: 'var(--brand-secondary)' }}>{row.data.new}</p>
           </div>
-          <div className="flex min-h-[2.15rem] items-center justify-center rounded-[10px] border border-zinc-800 bg-[#0a0a0a] px-1.5 sm:min-h-[2.55rem] sm:px-2">
+          <div className="flex min-h-[2.15rem] items-center justify-center rounded-[7px] border border-ds-border bg-ds-floor px-1.5 sm:min-h-[2.55rem] sm:px-2">
             <p className="text-xl sm:text-3xl font-mono text-zinc-300 tabular-nums leading-none">{row.data.review}</p>
           </div>
         </div>

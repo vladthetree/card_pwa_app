@@ -93,8 +93,8 @@ export function DeckCard({ deck, language, onStartStudy, onDelete, schedule, dec
         transition={nested ? undefined : cardEnter.transition}
         className={`group relative w-full transition-all duration-150 ease-out hover:border-[#3f3f46] ${
           nested
-            ? 'rounded-[12px] border border-[#242428] bg-[#080808] p-3 shadow-none'
-            : 'ds-card p-3 sm:p-5'
+            ? 'rounded-[8px] border border-ds-border bg-ds-floor p-3 shadow-none'
+            : 'ds-card p-3 sm:p-4'
         }`}
         whileHover={prefersReducedMotion ? {} : { y: -1, transition: { duration: 0.14 } }}
         whileTap={prefersReducedMotion ? {} : { scale: 0.98, transition: { duration: 0.1 } }}
@@ -110,7 +110,7 @@ export function DeckCard({ deck, language, onStartStudy, onDelete, schedule, dec
                 return next
               })
             }}
-            className="ds-icon-button absolute right-14 top-3 z-10 h-9 w-9 border-[#2f2f35] bg-[#101010] text-zinc-200 opacity-100 hover:border-[--brand-primary-50]"
+            className="ds-icon-button absolute right-14 top-3 z-10 h-9 w-9 border-ds-border bg-ds-panel text-zinc-200 opacity-100 hover:border-[--brand-primary-50]"
             aria-expanded={subDecksOpen}
             aria-label={language === 'de' ? 'Subdecks anzeigen' : 'Show subdecks'}
             title={language === 'de' ? 'Subdecks anzeigen' : 'Show subdecks'}
@@ -181,7 +181,7 @@ export function DeckCard({ deck, language, onStartStudy, onDelete, schedule, dec
         >
           <div className="flex items-center gap-2.5 min-w-0">
             <span
-              className={`shrink-0 ${nested ? 'h-1.5 w-1.5 rounded-[2px]' : 'h-2 w-2 rounded-full'} ${dueNow > 0 ? 'bg-[--brand-primary]' : 'bg-white/20'}`}
+              className={`shrink-0 ${nested ? 'h-1.5 w-1.5 rounded-[2px]' : 'h-2.5 w-2.5 rounded-[3px]'} ${dueNow > 0 ? 'bg-[--brand-primary]' : 'border border-white/20'}`}
               aria-hidden="true"
             />
             <div className="flex items-center gap-2 min-w-0 overflow-hidden">
@@ -189,13 +189,13 @@ export function DeckCard({ deck, language, onStartStudy, onDelete, schedule, dec
             </div>
           </div>
           {nested && (
-            <div className="mt-1 inline-flex items-center gap-1.5 rounded-[5px] border border-[#242428] bg-[#050505] px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.12em] text-white/40">
+            <div className="mt-1 inline-flex items-center gap-1.5 rounded-[5px] border border-ds-border bg-ds-bg px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-white/40">
               <Layers3 size={10} strokeWidth={1.5} />
               <span>{language === 'de' ? 'Subdeck' : 'Subdeck'}</span>
             </div>
           )}
           {hasSubDecks && (
-            <div className="mt-1 inline-flex items-center gap-1.5 rounded-[6px] border border-[--brand-primary-25] bg-[--brand-primary-12] px-2 py-0.5 text-[10px] font-medium text-zinc-200">
+            <div className="mt-1 inline-flex items-center gap-1.5 rounded-[5px] border border-[--brand-primary-25] bg-[--brand-primary-08] px-2 py-0.5 text-[10px] font-medium text-zinc-200">
               <Layers3 size={11} strokeWidth={1.5} />
               <span>{subDecks.length} {language === 'de' ? 'Subdecks' : 'subdecks'}</span>
             </div>
@@ -213,9 +213,9 @@ export function DeckCard({ deck, language, onStartStudy, onDelete, schedule, dec
           >
             <DeckSchedulePanel language={language} schedule={resolvedSchedule} />
           </div>
-          <div className="flex w-16 shrink-0 flex-col items-center justify-center border-l border-[#18181b] pl-2 sm:w-24 sm:pl-3">
-            <span className="text-4xl font-black font-mono tabular-nums leading-none text-white sm:text-6xl">{deck.total}</span>
-            <span className="mt-1 text-[8px] font-mono text-white/30 uppercase tracking-widest sm:mt-2 sm:text-[10px]">{t.cards}</span>
+          <div className="flex w-16 shrink-0 flex-col items-center justify-center border-l border-ds-border pl-2 sm:w-24 sm:pl-3">
+            <span className="font-mono text-4xl font-semibold tabular-nums leading-none text-white sm:text-6xl">{deck.total}</span>
+            <span className="mt-1 text-[8px] font-mono uppercase tracking-[0.12em] text-ds-muted sm:mt-2 sm:text-[10px]">{t.cards}</span>
           </div>
         </div>
       </motion.div>
@@ -225,14 +225,14 @@ export function DeckCard({ deck, language, onStartStudy, onDelete, schedule, dec
           ref={subDecksRef}
           initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
           animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-          className="mt-2 min-w-0 scroll-mt-3 rounded-[12px] border border-[#242428] bg-[#060606] p-2.5 sm:p-3"
+          className="mt-2 min-w-0 scroll-mt-3 rounded-[8px] border border-ds-border bg-ds-bg p-2.5 sm:p-3"
         >
           <div className="mb-2 flex items-center justify-between gap-2 px-1">
             <div className="flex min-w-0 items-center gap-2 text-xs font-semibold text-zinc-200">
               <Layers3 size={14} strokeWidth={1.5} className="shrink-0 text-[--brand-primary]" />
               <span className="truncate">{language === 'de' ? 'Direkte Subdecks' : 'Direct subdecks'}</span>
             </div>
-            <span className="shrink-0 rounded-[5px] border border-[#2f2f35] bg-[#0d0d0d] px-2 py-0.5 text-[10px] font-mono text-white/55">
+            <span className="shrink-0 rounded-[5px] border border-ds-border bg-ds-card px-2 py-0.5 text-[10px] font-mono text-white/55">
               {subDecks.length}
             </span>
           </div>

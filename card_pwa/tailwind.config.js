@@ -56,9 +56,9 @@ export default {
         modal: 'var(--shadow-modal)',
       },
       borderRadius: {
-        'ds-sm': '6px',
-        'ds': '12px',
-        'ds-lg': '14px',
+        'ds-sm': '4px',
+        'ds': '8px',
+        'ds-lg': '10px',
       },
       animation: {
         'pulse-soft': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',

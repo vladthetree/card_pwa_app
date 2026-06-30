@@ -13,58 +13,64 @@
 
   :root {
     color-scheme: dark;
-    --ds-bg: #050505;
-    --ds-floor: #0a0a0a;
-    --ds-card: #0c0c0c;
-    --ds-panel: #111113;
-    --ds-panel-hover: #111113;
-    --ds-border: #18181b;
-    --ds-border-strong: #3f3f46;
-    --ds-border-hover: #3f3f46;
-    --ds-fg: #f0ede8;
-    --ds-text-normal: #d4d4d8;
-    --ds-muted: #71717a;
-    --ds-subtle: #52525b;
-    --ds-code-bg: #18181b;
-    --ds-accent-primary: #f97316;
-    --ds-accent-secondary: #3b82f6;
-    --ds-accent-emerald: #10b981;
-    --ds-accent-red: #ef4444;
-    --ds-accent-amber: #f59e0b;
+    --ds-bg: #0b0b09;
+    --ds-floor: #100f0c;
+    --ds-card: #15130f;
+    --ds-panel: #1b1812;
+    --ds-panel-hover: #201c15;
+    --ds-border: #2b271f;
+    --ds-border-strong: #574c3f;
+    --ds-border-hover: #6b5e4e;
+    --ds-fg: #f2eee5;
+    --ds-text-normal: #d7d0c3;
+    --ds-muted: #837c6f;
+    --ds-subtle: #625a4d;
+    --ds-code-bg: #211d16;
+    --ds-accent-primary: #e75f3c;
+    --ds-accent-secondary: #79b7aa;
+    --ds-accent-emerald: #6ec58a;
+    --ds-accent-red: #e35d72;
+    --ds-accent-amber: #d8a24c;
     --shadow-card:
       inset 0 1px 0 rgba(255,255,255,.035),
-      0 1px 2px rgba(0,0,0,.32);
+      inset 0 -1px 0 rgba(0,0,0,.35),
+      0 10px 28px -24px rgba(0,0,0,.9);
     --shadow-menu:
-      inset 0 1px 0 rgba(255,255,255,.045),
-      0 18px 42px -24px rgba(0,0,0,.88);
+      inset 0 1px 0 rgba(255,255,255,.05),
+      0 24px 54px -30px rgba(0,0,0,.9);
     --shadow-modal:
-      inset 0 1px 0 rgba(255,255,255,.055),
-      0 26px 70px -36px rgba(0,0,0,.9);
-    --brand-primary: rgb(249, 115, 22);
-    --brand-primary-08: rgba(249, 115, 22, 0.08);
-    --brand-primary-12: rgba(249, 115, 22, 0.12);
-    --brand-primary-15: rgba(249, 115, 22, 0.15);
-    --brand-primary-20: rgba(249, 115, 22, 0.20);
-    --brand-primary-25: rgba(249, 115, 22, 0.25);
-    --brand-primary-50: rgba(249, 115, 22, 0.50);
-    --brand-primary-80: rgba(249, 115, 22, 0.80);
-    --brand-primary-100: rgba(249, 115, 22, 1);
-    --brand-secondary: rgb(59, 130, 246);
-    --brand-secondary-08: rgba(59, 130, 246, 0.08);
-    --brand-secondary-12: rgba(59, 130, 246, 0.12);
-    --brand-secondary-15: rgba(59, 130, 246, 0.15);
-    --brand-secondary-20: rgba(59, 130, 246, 0.20);
-    --brand-secondary-25: rgba(59, 130, 246, 0.25);
-    --brand-secondary-50: rgba(59, 130, 246, 0.50);
-    --brand-secondary-80: rgba(59, 130, 246, 0.80);
-    --brand-secondary-100: rgba(59, 130, 246, 1);
-    --app-font-family: 'Share Tech Mono', 'IBM Plex Mono', monospace;
+      inset 0 1px 0 rgba(255,255,255,.06),
+      0 34px 84px -40px rgba(0,0,0,.92);
+    --brand-primary: rgb(231, 95, 60);
+    --brand-primary-08: rgba(231, 95, 60, 0.08);
+    --brand-primary-12: rgba(231, 95, 60, 0.12);
+    --brand-primary-15: rgba(231, 95, 60, 0.15);
+    --brand-primary-20: rgba(231, 95, 60, 0.20);
+    --brand-primary-25: rgba(231, 95, 60, 0.25);
+    --brand-primary-50: rgba(231, 95, 60, 0.50);
+    --brand-primary-80: rgba(231, 95, 60, 0.80);
+    --brand-primary-100: rgba(231, 95, 60, 1);
+    --brand-secondary: rgb(121, 183, 170);
+    --brand-secondary-08: rgba(121, 183, 170, 0.08);
+    --brand-secondary-12: rgba(121, 183, 170, 0.12);
+    --brand-secondary-15: rgba(121, 183, 170, 0.15);
+    --brand-secondary-20: rgba(121, 183, 170, 0.20);
+    --brand-secondary-25: rgba(121, 183, 170, 0.25);
+    --brand-secondary-50: rgba(121, 183, 170, 0.50);
+    --brand-secondary-80: rgba(121, 183, 170, 0.80);
+    --brand-secondary-100: rgba(121, 183, 170, 1);
+    --app-font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
     --app-font-family-sans: 'Space Grotesk', 'Inter', system-ui, sans-serif;
     --app-font-family-mono: 'Share Tech Mono', 'IBM Plex Mono', monospace;
     --app-viewport-height: 100dvh;
     --app-bottom-viewport-gap: 0px;
     --app-bottom-safe-area: env(safe-area-inset-bottom, 0px);
-    --home-bottom-bar-bg: #080808;
+    --home-bottom-bar-bg: #0b0b09;
+    --app-background:
+      linear-gradient(90deg, rgba(242, 238, 229, 0.028) 1px, transparent 1px) 0 0 / 44px 44px,
+      linear-gradient(rgba(242, 238, 229, 0.018) 1px, transparent 1px) 0 0 / 44px 44px,
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 5px),
+      var(--theme-background, var(--ds-bg));
   }
 
   html, body, #root {
@@ -97,6 +103,15 @@
     overscroll-behavior-y: none;
     touch-action: pan-y;
     scrollbar-width: none;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--app-background);
   }
 
   button, input, select, textarea {
@@ -170,13 +185,13 @@
   }
 
   :is(button, a, [role='button']):focus-visible {
-    outline: 2px solid rgba(249, 115, 22, 0.75);
+    outline: 2px solid rgba(231, 95, 60, 0.78);
     outline-offset: 2px;
     box-shadow: none;
   }
 
   :is(input, select, textarea):focus-visible {
-    outline: 2px solid rgba(249, 115, 22, 0.6);
+    outline: 2px solid rgba(231, 95, 60, 0.62);
     outline-offset: 1px;
     box-shadow: none;
   }
@@ -497,7 +512,8 @@
   }
 
   .ds-card {
-    @apply rounded-ds-lg border border-ds-border bg-ds-card shadow-card;
+    @apply rounded-ds border border-ds-border bg-ds-card shadow-card;
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.018), transparent 42%);
   }
 
   .home-bottom-sheet-panel {
@@ -516,25 +532,25 @@
   }
 
   .ds-panel {
-    @apply rounded-ds-lg border border-ds-border bg-ds-floor shadow-card;
+    @apply rounded-ds border border-ds-border bg-ds-floor shadow-card;
   }
 
   .ds-menu {
     overflow: hidden;
-    border-radius: 14px;
+    border-radius: 8px;
     border: 1px solid var(--ds-border-strong);
-    background: rgba(9, 9, 11, 0.98);
+    background: rgba(21, 19, 15, 0.98);
     box-shadow: var(--shadow-menu);
-    -webkit-backdrop-filter: blur(18px);
-    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
   }
 
   .ds-modal {
-    @apply overflow-hidden rounded-[1.5rem] border border-ds-border bg-ds-bg shadow-modal sm:rounded-[2rem];
+    @apply overflow-hidden rounded-[10px] border border-ds-border bg-ds-bg shadow-modal sm:rounded-[12px];
   }
 
   .ds-icon-button {
-    @apply inline-flex items-center justify-center rounded-ds border border-ds-border bg-ds-card text-zinc-500 transition-all duration-150 ease-out hover:border-ds-border-hover hover:bg-[#111] hover:text-zinc-50 active:scale-[0.98];
+    @apply inline-flex items-center justify-center rounded-[7px] border border-ds-border bg-ds-card text-zinc-500 transition-all duration-150 ease-out hover:border-ds-border-hover hover:bg-ds-panel-hover hover:text-zinc-50 active:scale-[0.98];
   }
 
   .ds-chip {
