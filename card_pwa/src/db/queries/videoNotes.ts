@@ -9,6 +9,7 @@ import { enqueueSyncOperation } from '../../services/syncQueue'
 import { collectRelatedTags, extractTags, type RelatedTagStats } from '../../utils/videoTags'
 import { extractLinks, normalizeLinkTarget } from '../../utils/videoLinks'
 import { normalizeTagId } from '../../utils/tagIdentity'
+import { ensureVideoTagMetaForNote } from './videoTagMeta'
 
 /**
  * Notizzettel zu Lernvideos. Tags werden direkt im Notiztext als `#tag` gesetzt
@@ -150,6 +151,10 @@ export async function saveVideoNote(input: {
     updatedAt: now,
   }
   await db.videoNotes2.put(record)
+  // Tag-Metadaten anlegen, falls neue Inline-Tags hinzukamen (bestehende Metas
+  // mit Farbe/Pin/Beschreibung bleiben unangetastet). Der Notiztext bleibt die
+  // Quelle der Tags; die Meta ergänzt nur deren Bedeutung.
+  await ensureVideoTagMetaForNote(profileId, tags)
   await enqueueSyncOperation('videoNote.upsert', {
     profileId: record.profileId,
     objective: record.objective,

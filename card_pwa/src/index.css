@@ -81,7 +81,7 @@
   }
 
   html {
-    background: var(--home-bottom-bar-bg);
+    background: var(--app-background);
     overscroll-behavior: none;
     overscroll-behavior-x: none;
     overscroll-behavior-y: none;
@@ -96,7 +96,7 @@
     min-height: 100svh;
     min-height: 100dvh;
     overflow: hidden;
-    background: var(--home-bottom-bar-bg);
+    background: var(--app-background);
     color: var(--theme-text);
     font-family: var(--app-font-family);
     -webkit-font-smoothing: antialiased;
@@ -525,10 +525,10 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Untere Scroll-Polsterung: nur Safe-Area + etwas Luft, damit die letzte
-     Karte über dem Home-Indicator bleibt (keine fixe Bottom-Bar mehr). */
+  /* Untere Scroll-Polsterung: nur noch Home-Indicator-Schutz, kein sichtbarer
+     Balken unter der Kartenliste. */
   .home-bottom-scroll-padding {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.5rem);
   }
 
   .ds-panel {
