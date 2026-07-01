@@ -79,3 +79,15 @@ export {
   getDownloadsTotalSize,
   type SaveVideoBlobInput,
 } from './videoDownloads'
+
+export {
+  ensureVideoTagMeta,
+  ensureVideoTagMetaForNote,
+  listVideoTagMeta,
+  getVideoTagMeta,
+  updateVideoTagMeta,
+  archiveVideoTag,
+  resolveVideoTagId,
+  listVideoTagStats,
+  type VideoTagMetaPatch,
+} from './videoTagMeta'

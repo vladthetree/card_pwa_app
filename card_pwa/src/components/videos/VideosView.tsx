@@ -36,6 +36,7 @@ import MesserVideoPlayer from './MesserVideoPlayer'
 import VideoNotesPanel from './VideoNotesPanel'
 import VideoRecallCheck from './VideoRecallCheck'
 import TagCollectionPanel from './TagCollectionPanel'
+import VideoTagSidebar from './VideoTagSidebar'
 
 /**
  * Lernvideos — selbst gehostete Professor-Messer-Videos (kein YouTube-iframe).
@@ -90,6 +91,7 @@ const COPY = {
     exitFullscreen: 'Vollbild verlassen',
     speed: 'Geschwindigkeit',
     noteStats: '{notes} Zettel · {tags} Tags',
+    tags: 'Tags',
   },
   en: {
     title: 'Videos',
@@ -132,6 +134,7 @@ const COPY = {
     exitFullscreen: 'Exit fullscreen',
     speed: 'Playback speed',
     noteStats: '{notes} notes · {tags} tags',
+    tags: 'Tags',
   },
 } as const
 
@@ -406,6 +409,8 @@ export default function VideosView({ language, onExit }: Props) {
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set())
   const [recallOpen, setRecallOpen] = useState(false)
   const [activeTag, setActiveTag] = useState<string | null>(null)
+  const [showTagSidebar, setShowTagSidebar] = useState(true)
+  const [tagSheetOpen, setTagSheetOpen] = useState(false)
   const [currentVideoTime, setCurrentVideoTime] = useState(0)
   const [seekRequest, setSeekRequest] = useState<{ id: number; seconds: number } | null>(null)
   const viewport = useVisualViewport()
@@ -455,6 +460,14 @@ export default function VideosView({ language, onExit }: Props) {
     if (video) openVideo(video)
     setActiveTag(null)
   }
+
+  // Tag aus der Sidebar öffnen → Tag-Seite; auf Handy das Bottom-Sheet schließen.
+  const openTagFromSidebar = (tag: string) => {
+    setActiveTag(tag)
+    setTagSheetOpen(false)
+  }
+
+  const hasTagActivity = objectivesWithNotes.size > 0 || allTags.length > 0
 
   // Body-Scroll nur für den mobilen Vollbild-Player sperren.
   useEffect(() => {
@@ -668,12 +681,22 @@ export default function VideosView({ language, onExit }: Props) {
             <div className="font-mono text-[22px] font-bold leading-tight text-white">{copy.title}</div>
             <div className="truncate font-mono text-[12px] text-zinc-500">{copy.subtitle}</div>
           </div>
-          {(objectivesWithNotes.size > 0 || allTags.length > 0) && (
-            <span className="hidden shrink-0 items-center gap-1.5 rounded-[10px] border border-sky-500/30 bg-sky-500/10 px-2.5 py-1.5 font-mono text-[11px] font-bold text-sky-300 sm:flex">
-              <NotebookPen size={13} strokeWidth={1.5} />
-              {noteStatsLabel}
-              {allTags.length > 0 && <Hash size={12} strokeWidth={1.5} className="text-sky-300/70" />}
-            </span>
+          {hasTagActivity && (
+            <button
+              type="button"
+              onClick={() => (isDesktop ? setShowTagSidebar(prev => !prev) : setTagSheetOpen(true))}
+              aria-label={copy.tags}
+              aria-pressed={isDesktop ? showTagSidebar : undefined}
+              data-testid="video-tags-toggle"
+              className={`flex shrink-0 items-center gap-1.5 rounded-[10px] border px-2.5 py-1.5 font-mono text-[11px] font-bold transition-colors ${
+                isDesktop && showTagSidebar
+                  ? 'border-sky-400/60 bg-sky-500/15 text-sky-100'
+                  : 'border-sky-500/30 bg-sky-500/10 text-sky-300 hover:border-sky-400/60'
+              }`}
+            >
+              <Hash size={13} strokeWidth={1.5} />
+              <span className="hidden sm:inline">{noteStatsLabel}</span>
+            </button>
           )}
           {downloadedCount > 0 && (
             <span className="flex shrink-0 items-center gap-1.5 rounded-[10px] border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1.5 font-mono text-[11px] font-bold text-emerald-300">
@@ -691,8 +714,19 @@ export default function VideosView({ language, onExit }: Props) {
       </div>
 
       {isDesktop ? (
-        /* ── Desktop: links Player + Liste (3/4), rechts Notizzettel (1/4) ── */
+        /* ── Desktop: optionale Tag-Spalte · Player + Liste · Notizzettel ── */
         <div className="flex min-h-0 flex-1">
+          {showTagSidebar && hasTagActivity && (
+            <aside className="flex min-h-0 w-56 shrink-0 flex-col border-r border-[#18181b] bg-[#070707]">
+              <VideoTagSidebar
+                profileId={profileId}
+                language={language}
+                activeTag={activeTag}
+                onOpenTag={openTagFromSidebar}
+                variant="panel"
+              />
+            </aside>
+          )}
           <div className="flex min-h-0 flex-[3] flex-col border-r border-[#18181b]">
             <div className="flex shrink-0 flex-col items-center border-b border-[#18181b] bg-black px-4 py-4">
               {renderPlayer()}
@@ -774,6 +808,18 @@ export default function VideosView({ language, onExit }: Props) {
             />
           </div>
         </div>
+      )}
+
+      {/* Handy: Tag-Liste als Bottom-Sheet (statt Dauer-Spalte) */}
+      {isHandsetLayout && tagSheetOpen && (
+        <VideoTagSidebar
+          profileId={profileId}
+          language={language}
+          activeTag={activeTag}
+          onOpenTag={openTagFromSidebar}
+          variant="sheet"
+          onClose={() => setTagSheetOpen(false)}
+        />
       )}
 
       {/* Tag-Sammlung: alle Inhalte (Videos + Karten) zu diesem Tag */}

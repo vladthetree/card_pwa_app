@@ -8,6 +8,7 @@ import Dexie, { type Table } from 'dexie'
 import { DATABASE_NAMES } from '../constants/appIdentity'
 import { buildSecurityDeckHierarchyPlan } from '../utils/securityDeckHierarchy'
 import { extractTags } from '../utils/videoTags'
+import { normalizeTagId, stripTagPrefix } from '../utils/tagIdentity'
 
 // ─── Record Types (IndexedDB Storage Format) ────────────────────────────────
 
@@ -192,6 +193,27 @@ export interface VideoBlobRecord {
   blob: Blob
 }
 
+/**
+ * Tag-Metadaten für Video-Notiz-Tags (Obsidian-artige Tag-Pflege). Der Notiztext
+ * bleibt die QUELLE der Inline-`#tags`; dieser Record ergänzt nur Bedeutung pro
+ * Tag: Anzeige-Label, Beschreibung, Farbe, Pin, Aliase, Archiv-Status. Pro Profil
+ * getrennt (Compound-Primary-Key `[profileId+tagId]`); `tagId` ist immer eine
+ * kanonische `normalizeTagId(...)`, `aliases` sind ebenfalls normalisierte IDs.
+ */
+export interface VideoTagMetaRecord {
+  profileId: string   // Profil-Scope (Teil des Compound-Primary-Keys)
+  tagId: string       // kanonische Tag-ID (normalizeTagId)
+  label: string       // Anzeigeform, z. B. "Zero Trust"
+  aliases: string[]   // normalisierte Tag-IDs, die auf diesen Tag auflösen
+  description: string
+  color: string | null
+  icon: string | null
+  pinned: boolean
+  archived: boolean   // nicht mehr aktiv anzeigen, Inhalte bleiben erhalten
+  createdAt: number
+  updatedAt: number
+}
+
 // ─── Dexie Database Class ────────────────────────────────────────────────────
 
 export class CardPwaDB extends Dexie {
@@ -207,6 +229,7 @@ export class CardPwaDB extends Dexie {
   videoNotes2!: Table<VideoNoteRecord, [string, string]>
   videoDownloads!: Table<VideoDownloadRecord, string>
   videoBlobs!: Table<VideoBlobRecord, string>
+  videoTagMeta!: Table<VideoTagMetaRecord, [string, string]>
 
   constructor() {
     super(DATABASE_NAMES.app)
@@ -467,6 +490,50 @@ export class CardPwaDB extends Dexie {
     this.version(19).stores({
       videoNotes: null,
     })
+
+    // Version 20: Tag-Metadaten für Video-Notiz-Tags. Bewusst SCHLANKER Index als
+    // ein „alles indexieren"-Schema: Primary Key `[profileId+tagId]`, dazu nur
+    // `profileId` (Profil-Scope-Scans) und der Multi-Entry-Index `*aliases`
+    // (Alias-Auflösung). label/pinned/archived bleiben uneindiziert — sie werden
+    // ohnehin in JS gefiltert/sortiert, und v16 hat genau solche reinen
+    // Schreib-Overhead-Indizes absichtlich entfernt. Migration: bestehende
+    // Inline-Tags aus `videoNotes2` PRO PROFIL als Meta-Datensätze backfillen
+    // (label = erste gefundene Schreibweise); Notiztexte bleiben unverändert.
+    this.version(20)
+      .stores({
+        videoTagMeta: '[profileId+tagId], profileId, *aliases',
+      })
+      .upgrade(async tx => {
+        const notes = await tx.table('videoNotes2').toArray()
+        if (notes.length === 0) return
+        const now = Date.now()
+        const seen = new Set<string>()
+        const records: VideoTagMetaRecord[] = []
+        for (const note of notes) {
+          const profileId: string = note.profileId
+          for (const rawTag of (note.tags ?? []) as string[]) {
+            const tagId = normalizeTagId(rawTag)
+            if (!tagId) continue
+            const key = `${profileId}\u0000${tagId}`
+            if (seen.has(key)) continue
+            seen.add(key)
+            records.push({
+              profileId,
+              tagId,
+              label: stripTagPrefix(rawTag) || tagId,
+              aliases: [],
+              description: '',
+              color: null,
+              icon: null,
+              pinned: false,
+              archived: false,
+              createdAt: now,
+              updatedAt: now,
+            })
+          }
+        }
+        if (records.length > 0) await tx.table('videoTagMeta').bulkPut(records)
+      })
   }
 }
 

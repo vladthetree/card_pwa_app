@@ -29,6 +29,14 @@ vi.mock('../../db', () => ({
         })),
       })),
     },
+    // saveVideoNote backfills tag metadata after a successful upsert.
+    videoTagMeta: {
+      get: vi.fn(async () => undefined),
+      put: vi.fn(async () => undefined),
+    },
+    transaction: vi.fn(async (_mode: string, _table: unknown, callback: () => Promise<void>) => {
+      await callback()
+    }),
   },
 }))
 

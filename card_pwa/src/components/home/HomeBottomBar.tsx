@@ -94,19 +94,16 @@ export function HomeBottomBar({
 
   return (
     <>
-      {/* ── Top-Navigationsleiste (Mobile) ───────────────────────────────────
-          Früher eine fixe Leiste am unteren Rand. Jetzt als Header oben (wie
-          DoHabit): Inhalt scrollt darunter edge-to-edge, kein Balken unten. */}
-      <div className="border-b border-ds-border bg-ds-bg/64 backdrop-blur-sm sm:hidden">
+      {/* Mobile quick controls: icon targets stay, the old visual bar is gone. */}
+      <div className="sm:hidden">
         <div className={`${UI_TOKENS.layout.homeMaxWidth} mx-auto px-2`}>
-          {/* Icons + Streak-Pill, keine Suchleiste. */}
-          <div className="flex items-center justify-around gap-1.5 py-1.5">
+          <div className="flex items-center justify-around gap-1.5 py-1">
 
             {/* Reload */}
             <button
               type="button"
               onClick={onReload}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] text-white/50 transition-colors hover:bg-ds-panel hover:text-white active:scale-[0.98]"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] border border-transparent bg-transparent text-white/48 transition-colors hover:bg-ds-card/55 hover:text-white active:scale-[0.98] active:bg-ds-card/70"
               aria-label={t.reload}
               title={t.reload}
             >
@@ -117,8 +114,8 @@ export function HomeBottomBar({
             <button
               type="button"
               onClick={() => { setActionsOpen(false); setFilterOpen(v => !v) }}
-              className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] transition-colors hover:bg-ds-panel hover:text-white active:scale-[0.98] ${
-                filterOpen ? 'bg-ds-panel text-[--brand-primary]' : 'text-white/50'
+              className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] border transition-colors hover:bg-ds-card/55 hover:text-white active:scale-[0.98] active:bg-ds-card/70 ${
+                filterOpen ? 'border-[--brand-primary-25] bg-[--brand-primary-08] text-[--brand-primary]' : 'border-transparent bg-transparent text-white/48'
               }`}
               aria-label={language === 'de' ? 'Filter & Sortierung' : 'Filter & sort'}
               title={language === 'de' ? 'Filter & Sortierung' : 'Filter & sort'}
@@ -133,7 +130,7 @@ export function HomeBottomBar({
             <button
               type="button"
               onClick={onShowSettings}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] text-white/50 transition-colors hover:bg-ds-panel hover:text-white active:scale-[0.98]"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] border border-transparent bg-transparent text-white/48 transition-colors hover:bg-ds-card/55 hover:text-white active:scale-[0.98] active:bg-ds-card/70"
               aria-label={t.settings}
               title={t.settings}
             >
@@ -149,7 +146,7 @@ export function HomeBottomBar({
               onClick={() => { setFilterOpen(false); setActionsOpen(v => !v) }}
               className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] border transition-colors active:scale-[0.98] ${
                 actionsOpen
-                  ? 'border-[--brand-primary-50] bg-[--brand-primary-20] text-[--brand-primary]'
+                  ? 'border-[--brand-primary-50] bg-[--brand-primary-15] text-[--brand-primary]'
                   : 'border-[--brand-primary-25] bg-[--brand-primary-08] text-[--brand-primary] hover:bg-[--brand-primary-12]'
               }`}
               aria-label={language === 'de' ? 'Erstellen & Aktionen' : 'Create & actions'}

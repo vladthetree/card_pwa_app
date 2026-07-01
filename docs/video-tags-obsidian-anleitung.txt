@@ -91,6 +91,13 @@ Die Videoansicht soll am Ende folgende Dinge koennen:
    - Kartenideen aus Notizen sammeln
    - aus Tag-Seite direkt Lernsession starten
 
+6. Bubble-Graph als Kontextkarte
+   - Tags, Objectives, Karten und Notizen als Bubbles
+   - Nahe Bubbles = starke Beziehung
+   - Bubble-Groesse = Menge/Relevanz
+   - Klick auf Bubble oeffnet Tag, Objective oder Karte
+   - Graph ist Zusatzansicht, nicht die Hauptnavigation
+
 
 Umsetzung in Phasen
 ===================
@@ -103,9 +110,75 @@ Phase 3: Permanente Tag-Sidebar
 Phase 4: Tag-Seite ausbauen
 Phase 5: Tag bearbeiten, pinnen, Farbe, Beschreibung
 Phase 6: Kombinierte Filter
-Phase 7: Tag-basierte Lernworkflows
-Phase 8: Merge/Alias-Tools
-Phase 9: Tests, Backup, Sync, Polishing
+Phase 7: Bubble-Graph / Knowledge Map
+Phase 8: Tag-basierte Lernworkflows
+Phase 9: Merge/Alias-Tools
+Phase 10: Tests, Backup, Sync, Polishing
+
+
+KRITISCHE USABILITY-PRUEFUNG
+============================
+
+Die Anleitung ist technisch ausfuehrlich, aber ohne diese Usability-Regeln
+koennte das Ergebnis schnell zu schwer wirken. Das Ziel ist nicht "mehr
+Features", sondern schnelleres Wiederfinden, besseres Lernen und weniger
+Tag-Chaos.
+
+Hauptprobleme im bisherigen Plan:
+
+1. Zu viele Funktionen koennen die Videoansicht ueberladen.
+   Gegenmassnahme: Sidebar, Tag-Seite, Graph und Filter muessen klar getrennte
+   Aufgaben haben.
+
+2. Klick auf einen Tag muss eindeutig sein.
+   Wenn ein Tag sowohl oeffnen, filtern, ausschliessen und mergen kann, braucht
+   die UI eine klare Prioritaet.
+
+   Vorgabe:
+   - Klick auf Tag-Label: Tag-Seite oeffnen.
+   - Plus/Filter-Icon am Tag: als Include-Filter setzen.
+   - Minus/Exclude-Icon am Tag: als Exclude-Filter setzen.
+   - Drei-Punkte-Menue: bearbeiten, pinnen, mergen.
+   - Kein ctrl/meta als einzige Bedienung, weil Mobile sonst schlechter ist.
+
+3. Tags duerfen nicht nur nach Farbe unterscheidbar sein.
+   Farbe ist Zusatzsignal. Label, Icon/Punkt, Count und aktive Umrandung muessen
+   auch ohne Farberkennung funktionieren.
+
+4. Der Graph darf nicht die Hauptnavigation ersetzen.
+   Graphen sehen gut aus, werden aber bei vielen Nodes schnell unbrauchbar.
+   Deshalb: Listen und Filter bleiben primaer. Graph ist eine Kontextkarte.
+
+5. Mobile braucht eigene Flows.
+   Keine gequetschte Desktop-Sidebar. Mobile nutzt:
+   - Tag-Button im Header
+   - Bottom-Sheet fuer Tags
+   - Tag-Seite als Fullscreen-Sheet
+   - Graph zuerst als vereinfachte Bubble-Map mit Top-N-Knoten
+
+6. Jede leere Ansicht braucht eine direkte Aktion.
+   Beispiele:
+   - Keine Tags: "In Notiz #tag schreiben"
+   - Keine Karten: "Karten zu diesem Tag erstellen"
+   - Keine Zeitmarken: "Zeitmarke an aktueller Position einfuegen"
+   - Keine Beziehungen im Graph: "Mehr Tags in Notizen verwenden"
+
+7. Die wichtigsten Nutzeraufgaben muessen mit maximal zwei Klicks erreichbar
+   sein:
+   - Tag oeffnen
+   - Video zu Tag oeffnen
+   - Karten zu Tag lernen
+   - Unsichere Videos filtern
+   - Zeitmarke anspringen
+
+Usability-Gates pro Phase:
+
+[ ] Kann ein Nutzer sofort erkennen, was klickbar ist?
+[ ] Ist der primaere Weg sichtbarer als Nebenaktionen?
+[ ] Funktioniert derselbe Flow auf Mobile ohne Tastatur-Tricks?
+[ ] Gibt es einen guten Empty State?
+[ ] Bleibt die Videoansicht ruhig und nicht dashboard-artig ueberladen?
+[ ] Fuehrt die Funktion zu Lernen/Wiederfinden, nicht nur zu Dekoration?
 
 
 PHASE 1: TAG-METADATENMODELL
@@ -545,7 +618,344 @@ Abnahmekriterien:
 [ ] Filter sind auf Desktop und Mobile bedienbar.
 
 
-PHASE 7: TAG-BASIERTE LERNWORKFLOWS
+PHASE 7: BUBBLE-GRAPH / KNOWLEDGE MAP
+=====================================
+
+Ziel:
+Eine Obsidian-artige Kontextkarte bauen, in der Tags, Objectives, Karten und
+Notizen als Bubbles erscheinen. Die Bubble-Map hilft beim Erkennen von
+Zusammenhaengen, ersetzt aber nicht Sidebar, Suche oder Tag-Seite.
+
+Usability-Regel:
+
+Der Graph ist eine "Orientierungsansicht". Er darf niemals der einzige Weg zu
+einer Information sein. Jede Graph-Information muss auch als Liste erreichbar
+sein.
+
+Neue Dateien:
+
+card_pwa/src/utils/videoKnowledgeGraph.ts
+card_pwa/src/components/videos/VideoKnowledgeGraph.tsx
+card_pwa/src/components/videos/VideoGraphPanel.tsx
+
+Optional, wenn externe Dependency erlaubt ist:
+
+npm install d3-force
+npm install -D @types/d3-force
+
+Wenn keine neue Dependency gewuenscht ist:
+
+- zuerst einfache radiale Layout-Variante bauen
+- spaeter auf d3-force umstellen
+
+Empfehlung:
+
+Fuer die Bubble-Positionierung d3-force nutzen. Force-Layouts sind schwer
+sauber selbst zu bauen; d3-force ist fuer genau diese Art von Graph bewaehrt.
+
+Graph-Datenmodell:
+
+export type KnowledgeNodeType =
+  | 'tag'
+  | 'objective'
+  | 'card'
+  | 'note'
+  | 'timestamp'
+
+export interface VideoKnowledgeGraphNode {
+  id: string
+  type: KnowledgeNodeType
+  label: string
+  tagId?: string
+  objective?: string
+  cardId?: string
+  count: number
+  radius: number
+  color: string
+  pinned?: boolean
+  active?: boolean
+}
+
+export type KnowledgeEdgeKind =
+  | 'tag-cooccurrence'
+  | 'tag-objective'
+  | 'tag-card'
+  | 'objective-link'
+  | 'timestamp'
+
+export interface VideoKnowledgeGraphEdge {
+  id: string
+  source: string
+  target: string
+  weight: number
+  kind: KnowledgeEdgeKind
+}
+
+export interface VideoKnowledgeGraph {
+  nodes: VideoKnowledgeGraphNode[]
+  edges: VideoKnowledgeGraphEdge[]
+}
+
+Graph-Builder:
+
+buildVideoKnowledgeGraph(input)
+
+Input:
+
+interface BuildVideoKnowledgeGraphInput {
+  profileId: string
+  activeTag?: string | null
+  includeTags?: string[]
+  excludeTags?: string[]
+  maxNodes?: number
+  includeCards?: boolean
+  includeTimestamps?: boolean
+}
+
+Regeln fuer Nodes:
+
+- Tag-Node:
+  id = "tag:" + tagId
+  radius = 10 bis 34
+  Groesse basiert auf noteCount + cardCount + timestampCount
+
+- Objective-Node:
+  id = "objective:" + objective
+  radius = 8 bis 24
+  Groesse basiert auf Notizlaenge, Tag-Anzahl und Confidence-Relevanz
+
+- Card-Node:
+  id = "card:" + cardId
+  radius = 6 bis 16
+  nur anzeigen, wenn ein aktiver Tag oder Filter gesetzt ist
+
+- Timestamp-Node:
+  id = "time:" + objective + ":" + seconds
+  radius = 5 bis 10
+  nur anzeigen, wenn includeTimestamps aktiv ist
+
+Regeln fuer Edges:
+
+- tag-cooccurrence:
+  Zwei Tags kommen in derselben Notiz vor.
+  weight = Anzahl gemeinsamer Notizen.
+
+- tag-objective:
+  Tag kommt in Notiz zu Objective vor.
+  weight = 1 + Anzahl Tag-Vorkommen im Content.
+
+- tag-card:
+  Karte traegt denselben Tag.
+  weight = 1.
+
+- objective-link:
+  Notiz enthaelt [[Objective]].
+  weight = 2.
+
+- timestamp:
+  Notiz enthaelt @MM:SS.
+  weight = 1.
+
+Positionierung / Bubble-Layout:
+
+Variante A: d3-force
+
+- aktive Tag-Bubble in die Mitte ziehen
+- gepinnte Tags leicht nach links/oben ziehen
+- Objectives nach rechts/unten ziehen
+- Karten kleiner und naeher an ihren Tags platzieren
+- Zeitmarken klein an Objectives anheften
+
+Force-Parameter als Startpunkt:
+
+- forceCenter(width / 2, height / 2)
+- forceManyBody:
+  - tag: -90
+  - objective: -55
+  - card: -28
+  - timestamp: -12
+- forceCollide(radius + 8)
+- forceLink:
+  - distance = clamp(170 - weight * 18, 58, 180)
+  - strength = clamp(weight / 8, 0.08, 0.45)
+- forceX/forceY:
+  - active tag: starke Mitte
+  - pinned tags: linke obere Zone
+  - objectives: rechte Zone
+  - cards: untere Zone
+
+Variante B: einfache radiale Positionierung
+
+Wenn d3-force nicht verwendet wird:
+
+1. Aktiver Tag in die Mitte.
+2. Related Tags im inneren Kreis.
+3. Objectives im zweiten Kreis.
+4. Karten im dritten Kreis.
+5. Zeitmarken als kleine Punkte nahe ihrem Objective.
+6. Winkel nach Beziehungsscore sortieren.
+
+Interaktionen:
+
+- Klick auf Tag-Bubble: Tag-Seite oeffnen.
+- Klick auf Objective-Bubble: Video/Objective oeffnen.
+- Klick auf Card-Bubble: Karte oder Deck-Kontext oeffnen.
+- Klick auf Timestamp-Bubble: Video oeffnen und zu Zeit springen.
+- Drag auf Bubble: Node temporaer verschieben.
+- Pin-Button im Tooltip: Position fuer diesen Nutzer merken.
+- Reset-Button: Layout zuruecksetzen.
+- Zoom:
+  - Buttons +/-
+  - Fit to screen
+  - auf Mobile nur Pinch, falls stabil; sonst kein freies Zoomen erzwingen.
+
+Tooltip-Inhalt:
+
+Tag:
+
+- #label
+- Notizen: n
+- Karten: n
+- Zeitmarken: n
+- Verwandte Tags: n
+- Aktionen: Oeffnen, Filtern, Lernen
+
+Objective:
+
+- Objective-Code
+- Titel
+- Confidence
+- Notizauszug
+- Aktionen: Video oeffnen, Notiz oeffnen
+
+Card:
+
+- Deckname
+- Front-Auszug
+- Aktionen: Karte ansehen, Deck lernen
+
+Graph-Modi:
+
+1. Tag-Fokus
+   - aktiver Tag im Zentrum
+   - related tags, objectives, cards um ihn herum
+
+2. Objective-Fokus
+   - aktives Objective im Zentrum
+   - Tags, Backlinks und Karten darum herum
+
+3. Filter-Fokus
+   - alle Knoten passend zum aktuellen Filter
+   - stark begrenzen, damit es nutzbar bleibt
+
+4. Globaler Ueberblick
+   - nur Top 40 Knoten
+   - keine Karten-Details
+   - nur Tags + Objectives
+
+Knotenbegrenzung:
+
+Damit der Graph nicht unbrauchbar wird:
+
+- Standard maxNodes = 40
+- Tag-Fokus maxNodes = 60
+- Global maxNodes = 40
+- Karten nur zeigen, wenn:
+  - aktiver Tag gesetzt ist, oder
+  - Nutzer "Karten einblenden" aktiviert
+- Bei zu vielen Knoten:
+  - "Weitere 23 ausblenden" anzeigen
+  - Button "Mehr laden"
+
+Mobile-Verhalten:
+
+- Graph nicht standardmaessig anzeigen.
+- Tab/Segment auf Tag-Seite: "Graph".
+- Hoehe ca. 45dvh.
+- Unter dem Graph immer eine Listenansicht der sichtbaren Nodes.
+- Kein Hover-only Tooltip.
+- Tap auf Bubble oeffnet Bottom-Sheet mit Aktionen.
+- Wenn weniger als 2 Beziehungen vorhanden sind, Graph durch leeren Zustand
+  ersetzen: "Noch zu wenig Verknuepfungen".
+
+Visuelles Design:
+
+- Bubbles rund, aber nicht bonbonhaft.
+- Matte Flaechen passend zur Ledger-Optik.
+- Tags: Akzentfarbe des Tags oder Standard-Teal.
+- Objectives: dezentes warmes Grau.
+- Karten: kleiner Orange-Akzent.
+- Zeitmarken: kleine Punkt-Nodes.
+- Edges sehr duenn und zurueckhaltend.
+- Aktiver Node mit klarer, nicht leuchtender Umrandung.
+
+Accessibility / Fallback:
+
+- Unter dem Graph immer eine sortierte Liste:
+  - Tags
+  - Objectives
+  - Karten
+  - Zeitmarken
+- Graph darf nicht die einzige Bedienmoeglichkeit sein.
+- Keyboard:
+  - Tab fokussiert Bubbles in Relevanzreihenfolge.
+  - Enter oeffnet.
+  - Escape schliesst Tooltip/Sheet.
+- Screenreader:
+  - SVG/Canvas bekommt aria-label.
+  - Node-Liste ist die zugaengliche Hauptstruktur.
+
+Integration:
+
+VideosView:
+
+- Neuer Button/Tab "Graph" neben Tags/Notizen.
+- Wenn activeTag gesetzt ist, Graph im Tag-Fokus starten.
+- Wenn kein activeTag gesetzt ist, globalen Ueberblick mit Top-Tags anzeigen.
+
+TagPage:
+
+- Segment "Graph" ergaenzen.
+- Standard bleibt "Alles", nicht Graph.
+- Graph bekommt denselben aktiven Tag.
+
+VideoTagSidebar:
+
+- Kleiner Button "Graph" im Header.
+- Oeffnet GraphPanel mit aktuellem Filter.
+
+Speichern manueller Positionen:
+
+Erst lokal, nicht syncen:
+
+localStorage key:
+
+video-graph-layout:${profileId}
+
+Wert:
+
+{
+  "tag:iam": { "x": 120, "y": 80, "fixed": true },
+  "objective:1.2": { "x": 260, "y": 130, "fixed": true }
+}
+
+Nicht in Dexie speichern, bis klar ist, dass Nutzer manuelle Graph-Layouts
+wirklich brauchen.
+
+Abnahmekriterien:
+
+[ ] Graph zeigt bei aktivem Tag eine Bubble in der Mitte.
+[ ] Related Tags liegen sichtbar in der Naehe.
+[ ] Objectives/Karten sind kleiner und logisch angeschlossen.
+[ ] Klick auf Tag-Bubble oeffnet Tag-Seite.
+[ ] Klick auf Objective-Bubble oeffnet Video.
+[ ] Graph ist auf Mobile nicht ueberfordernd.
+[ ] Bei vielen Knoten wird begrenzt statt unlesbar zu werden.
+[ ] Es gibt immer eine Listen-Fallback-Ansicht.
+[ ] Build bleibt gruen.
+
+
+PHASE 8: TAG-BASIERTE LERNWORKFLOWS
 ===================================
 
 Ziel:
@@ -609,7 +1019,7 @@ Abnahmekriterien:
 [ ] Kartenideen werden nicht automatisch ungefragt in echte Karten verwandelt.
 
 
-PHASE 8: MERGE UND ALIASES
+PHASE 9: MERGE UND ALIASES
 ==========================
 
 Ziel:
@@ -665,7 +1075,7 @@ Abnahmekriterien:
 [ ] Keine Notiz wird ohne explizite Option umgeschrieben.
 
 
-PHASE 9: BACKUP, SYNC, TESTS
+PHASE 10: BACKUP, SYNC, TESTS
 ============================
 
 Backup:
@@ -696,12 +1106,301 @@ Nicht syncen:
 
 - Video-Blobs
 
+
+VIDEO-BLOB-SYNC: KRITISCHE PRUEFUNG
+===================================
+
+Ist-Zustand im Code:
+
+- card_pwa/src/db/queries/videoDownloads.ts trennt bewusst:
+  - videoDownloads = kleine Metadaten fuer Listen/Status
+  - videoBlobs = grosse lokale MP4-Blobs fuer Playback
+- Der Kommentar dort sagt explizit: device-local und absichtlich nicht
+  synchronisiert.
+- card_pwa/src/hooks/useLocalMesserVideos.ts laedt Videos sequenziell, fragt
+  best-effort persistent storage an und holt Blobs erst fuer Playback.
+- card_pwa/src/services/syncQueue.ts kennt aktuell videoNote.upsert und
+  videoNote.delete, aber keine videoBlob-Operation.
+
+Bewertung:
+
+Echter Video-Blob-Sync ist fuer diese App nicht die richtige erste Loesung.
+Das Problem ist nicht nur technisch, sondern auch UX-seitig:
+
+- MP4-Dateien sind gross und fuellen Browser-Quota schnell.
+- Background Sync ist fuer grosse Dateien unzuverlaessig.
+- JSON-Backups oder Profil-Sync mit Base64-MP4 wuerden Backups unbrauchbar
+  machen.
+- Ein Nutzer versteht "Sync" oft als "meine Notizen sind ueberall", nicht als
+  "mein Handy laedt gigabyteweise Videos".
+- Bei mehreren Geraeten entstehen doppelte Downloads und unklare Loeschregeln.
+- Wenn der Pi oder Medienserver offline ist, darf die App nicht so tun, als
+  koenne sie fehlende Videos aus dem Profil-Sync reparieren.
+
+Entscheidung:
+
+Video-Blobs bleiben geraetelokal. Der normale Sync transportiert nur:
+
+- Video-Notizen
+- Tags und Tag-Metadaten
+- Karten, Reviews und Lernbezug
+- optional Download-Wuensche/Offline-Intent
+- optional schlanke Manifest-/Verfuegbarkeitsdaten
+
+Der Medienserver/Pi bleibt die Quelle fuer Videodateien. Ein Geraet kann
+Videos von dort offline speichern, aber es schiebt die MP4-Datei nicht in den
+Profil-Sync.
+
+
+Sinnvolles Modell statt Blob-Sync
+---------------------------------
+
+1. Server/Pi als Source of Truth
+
+Das Manifest sollte, wenn moeglich, mehr Integritaetsdaten liefern:
+
+interface VideoManifestItem {
+  file: string
+  objective: string
+  title: string
+  size?: number
+  hash?: string
+  updatedAt?: number
+  durationSeconds?: number
+}
+
+Wichtig:
+
+- file bleibt der stabile Schluessel.
+- hash ist optional, aber sehr wertvoll fuer "Download ist defekt/veraltet".
+- size erlaubt gute Speicherwarnungen vor dem Download.
+
+2. Lokaler Download-Status bleibt lokal
+
+videoDownloads und videoBlobs bleiben wie bisher geraetelokal.
+
+Ergaenzen, falls gebraucht:
+
+interface VideoDownloadHealth {
+  file: string
+  status:
+    | 'ok'
+    | 'metadata_without_blob'
+    | 'blob_without_metadata'
+    | 'hash_mismatch'
+    | 'source_missing'
+    | 'outdated'
+  checkedAt: number
+}
+
+Diese Health-Daten muessen nicht zwingend als Tabelle gespeichert werden. Fuer
+den Anfang reicht ein Utility, das Manifest + videoDownloads + videoBlobs
+prueft.
+
+3. Optionaler Sync: Download-Intent statt Blob
+
+Wenn Nutzer auf Geraet A markiert "dieses Video will ich offline haben", kann
+Geraet B diesen Wunsch sehen. Geraet B laedt das Video aber selbst vom Pi,
+nach Rueckfrage und mit Speicherwarnung.
+
+Moegliche Tabelle spaeter:
+
+interface VideoOfflineIntentRecord {
+  profileId: string
+  file: string
+  objective: string
+  wanted: boolean
+  createdAt: number
+  updatedAt: number
+}
+
+Sync-Operationen dafuer:
+
+videoOfflineIntent.upsert
+videoOfflineIntent.delete
+
+Explizit nicht bauen:
+
+videoBlob.upsert
+videoBlob.delete im Profil-Sync
+MP4 in JSON-Backup
+Base64-Blob in Sync-Payload
+
+
+UX fuer Offline-Video-Status
+----------------------------
+
+Die Video-Liste braucht klare, knappe Zustaende. Keine langen Erklaertexte,
+sondern Badges/Icons/Tooltips:
+
+1. "Server"
+   Video ist im aktuellen Manifest vorhanden, aber nicht lokal gespeichert.
+
+2. "Offline"
+   videoDownloads und videoBlobs sind vorhanden. Playback funktioniert ohne
+   Netzwerk.
+
+3. "Geplant"
+   Optionaler Download-Intent ist gesetzt, aber dieses Geraet hat noch nicht
+   geladen.
+
+4. "Quelle fehlt"
+   Notizen/Tags referenzieren ein Video, aber das Manifest kennt es nicht mehr.
+
+5. "Veraltet"
+   Lokaler Download existiert, aber Manifest-hash oder updatedAt ist neuer.
+   Aktion: "Neu laden".
+
+6. "Defekt"
+   Metadaten und Blob passen nicht zusammen oder Hash-Pruefung schlaegt fehl.
+   Aktion: "Reparieren" oder "Download entfernen".
+
+Kontrollen:
+
+- Download-Button nur zeigen, wenn Serverquelle erreichbar ist.
+- Vor grossen Downloads Speicherbedarf anzeigen.
+- Auf Mobile keine automatischen grossen Downloads starten.
+- Optionaler Schalter: "Nur ueber WLAN laden".
+- Download-Queue bleibt sequenziell.
+- Loeschen heisst: von diesem Geraet entfernen, nicht aus dem Profil loeschen.
+
+Graph-Bezug:
+
+Der Bubble-Graph darf Offline-Status sichtbar machen, aber nicht zur
+Download-Zentrale werden.
+
+Gute Darstellung:
+
+- Video-/Objective-Bubbles mit kleinem Ring:
+  - volle Linie = offline auf diesem Geraet
+  - gestrichelte Linie = nur Server
+  - Warnfarbe = Quelle fehlt oder veraltet
+- Klick auf Bubble oeffnet weiterhin die normale Video-/Tag-Ansicht.
+- Download-Aktionen bleiben in der Detailansicht oder im Kontextmenue.
+
+
+Implementierungsanleitung fuer Video-Blob-Sync-Ersatz
+-----------------------------------------------------
+
+Schritt 1: Nichts am Blob-Sync aendern
+
+- videoBlobs bleibt device-local.
+- Kein neuer SyncOperationType fuer videoBlob.
+- dbBackup exportiert keine Blob-Daten.
+
+Schritt 2: Manifest anreichern
+
+Wenn die Pi-/Media-Index-Datei kontrolliert werden kann:
+
+- size in /media/messer/index.json aufnehmen
+- hash oder updatedAt aufnehmen
+- durationSeconds optional aufnehmen
+
+Falls das Manifest nicht angepasst werden kann:
+
+- lokal nur mit size aus Blob und createdAt arbeiten
+- Status "Veraltet" erst spaeter aktivieren
+
+Schritt 3: Health-Utility bauen
+
+Neue Datei:
+
+card_pwa/src/utils/videoDownloadHealth.ts
+
+Funktion:
+
+evaluateVideoDownloadHealth(input)
+
+Inputs:
+
+- manifestItems
+- videoDownloads
+- optional lazy blob lookup fuer einzelne Dateien
+
+Regeln:
+
+- download metadata vorhanden, blob fehlt => metadata_without_blob
+- blob vorhanden, metadata fehlt => blob_without_metadata
+- manifest fehlt, lokale Kopie vorhanden => source_missing, aber Playback darf
+  weiter moeglich bleiben
+- hash vorhanden und passt nicht => hash_mismatch
+- manifest updatedAt neuer als createdAt => outdated
+
+Wichtig:
+
+- Blob nie in Listen-liveQuery laden.
+- Blob nur pruefen, wenn Nutzer "Pruefen/Reparieren" ausloest oder Playback
+  startet.
+
+Schritt 4: UI-Status einfuehren
+
+Neue kleine Komponente:
+
+card_pwa/src/components/videos/VideoDownloadStatusBadge.tsx
+
+Sie zeigt nur kurze Labels:
+
+- Server
+- Offline
+- Geplant
+- Veraltet
+- Defekt
+- Quelle fehlt
+
+Schritt 5: Optional Download-Intent
+
+Erst bauen, wenn Nutzer wirklich Cross-Device-Offline-Planung braucht.
+
+Neue Tabelle spaeter, zum Beispiel Dexie Version 21:
+
+videoOfflineIntents: '[profileId+file], profileId, file, updatedAt'
+
+Neue Query-Datei:
+
+card_pwa/src/db/queries/videoOfflineIntent.ts
+
+Sync:
+
+- Operation videoOfflineIntent.upsert/delete hinzufuegen.
+- Snapshot/Pull nur diese kleinen Records uebertragen.
+- Beim Pull nicht automatisch downloaden.
+- UI zeigt "Geplant" und bietet Download an.
+
+Schritt 6: Backup
+
+Backup darf enthalten:
+
+- videoTagMeta
+- videoNotes
+- optional videoOfflineIntents
+- optional Manifest-Snapshot ohne Blob
+
+Backup darf nicht enthalten:
+
+- videoBlobs
+- MP4
+- Blob als Base64
+
+
+Abnahmekriterien fuer diesen Teil
+---------------------------------
+
+[ ] Normale Sync-Payloads enthalten keine Blob-/MP4-Daten.
+[ ] JSON-Backup enthaelt keine Blob-/MP4-Daten.
+[ ] Offline geladene Videos funktionieren weiter, wenn der Pi offline ist.
+[ ] Nicht geladene Videos zeigen bei Pi-Ausfall einen klaren Status.
+[ ] Loeschen eines Downloads entfernt nur lokale Kopie dieses Geraets.
+[ ] "Geplant" startet keinen automatischen grossen Download ohne Rueckfrage.
+[ ] Defekte Download-Zustaende sind reparierbar oder loeschbar.
+[ ] Blob-Daten werden nicht fuer Listen/Sidebar/Graph liveQuery-gelesen.
+
 Tests:
 
 Neue Tests:
 
 card_pwa/src/__tests__/utils/video-tag-meta.test.ts
 card_pwa/src/__tests__/utils/video-filter-query.test.ts
+card_pwa/src/__tests__/utils/video-download-health.test.ts
 card_pwa/src/__tests__/components/video-tag-sidebar.test.tsx
 card_pwa/src/__tests__/components/tag-page.test.tsx
 
@@ -715,6 +1414,8 @@ Mindestfaelle:
 [ ] Filter exclude
 [ ] Tag-Seite rendert Videos + Karten
 [ ] Merge Alias-only verliert keine Inhalte
+[ ] videoDownloadHealth erkennt fehlende Blobs, Quelle-fehlt und veraltete Downloads
+[ ] Listen/Sidebar/Graph laden keine Blob-Daten fuer Statusanzeigen
 
 Bei jeder Phase ausfuehren:
 
@@ -778,6 +1479,12 @@ Reihenfolge:
    - excludeTags
    - AND/OR
 8. "Karten zu Tag lernen" Button
+9. Bubble-Graph als MVP-Plus:
+   - read-only Graph
+   - aktiver Tag in der Mitte
+   - Related Tags + Objectives
+   - max. 40 Knoten
+   - Klick auf Bubble oeffnet bestehende Detailansicht
 
 Alles andere danach.
 
@@ -791,13 +1498,22 @@ card_pwa/src/db/queries/videoTagMeta.ts
 card_pwa/src/db/queries/videoTagLearning.ts
 card_pwa/src/hooks/useVideoTags.ts
 card_pwa/src/utils/videoFilterQuery.ts
+card_pwa/src/utils/videoKnowledgeGraph.ts
 card_pwa/src/components/videos/VideoTagSidebar.tsx
 card_pwa/src/components/videos/VideoFilterBar.tsx
+card_pwa/src/components/videos/VideoKnowledgeGraph.tsx
+card_pwa/src/components/videos/VideoGraphPanel.tsx
 card_pwa/src/components/videos/tags/TagPage.tsx
 card_pwa/src/components/videos/tags/TagPageHeader.tsx
 card_pwa/src/components/videos/tags/TagActionsMenu.tsx
 card_pwa/src/components/videos/tags/EditVideoTagModal.tsx
 card_pwa/src/components/videos/tags/MergeVideoTagsModal.tsx
+
+Optional spaeter fuer Offline-Video-Status:
+
+card_pwa/src/utils/videoDownloadHealth.ts
+card_pwa/src/components/videos/VideoDownloadStatusBadge.tsx
+card_pwa/src/db/queries/videoOfflineIntent.ts
 
 Zu aendern:
 
@@ -813,8 +1529,11 @@ Tests:
 
 card_pwa/src/__tests__/utils/video-tag-meta.test.ts
 card_pwa/src/__tests__/utils/video-filter-query.test.ts
+card_pwa/src/__tests__/utils/video-knowledge-graph.test.ts
 card_pwa/src/__tests__/components/video-tag-sidebar.test.tsx
 card_pwa/src/__tests__/components/tag-page.test.tsx
+card_pwa/src/__tests__/components/video-knowledge-graph.test.tsx
+card_pwa/src/__tests__/utils/video-download-health.test.ts
 
 
 AKZEPTANZKRITERIEN FUER DAS GESAMTPROJEKT
@@ -829,9 +1548,13 @@ Das Projekt gilt als erledigt, wenn:
 [ ] Tags koennen beschrieben, gepinnt und farblich markiert werden.
 [ ] Mehrere Tags koennen kombiniert und ausgeschlossen werden.
 [ ] Von einem Tag kann eine Lernsession gestartet werden.
+[ ] Bubble-Graph zeigt Tags/Objectives/Karten als begrenzte, klickbare Kontextkarte.
+[ ] Graph hat Listen-Fallback und ueberfordert Mobile nicht.
 [ ] Aliases funktionieren.
 [ ] Merge verliert keine Inhalte.
 [ ] Backup enthaelt Tag-Metadaten.
+[ ] Normaler Sync/Backup enthaelt keine Video-Blob-/MP4-Daten.
+[ ] Offline-Status unterscheidet Server, Offline, Geplant, Veraltet, Defekt und Quelle fehlt.
 [ ] Build ist gruen.
 [ ] Mobile bleibt bedienbar.
 
@@ -848,12 +1571,17 @@ WICHTIGE ENTSCHEIDUNGEN
 3. Merge ist zuerst sicher.
    Alias-only als Standard, kein automatisches Umschreiben ohne Bestaetigung.
 
-4. Graph ist spaeter.
-   Erst Listen, Filter und Lernworkflow gut machen.
+4. Graph ist Kontext, nicht Hauptnavigation.
+   Erst Listen, Filter und Lernworkflow gut machen. Danach den Graphen als
+   begrenzte Bubble-Map ergaenzen. Kein grosser globaler Graph als Startscreen.
 
 5. Lernen ist wichtiger als Optik.
    Obsidian-Gefuehl entsteht durch Verknuepfung, Backlinks und schnelle
-   Navigation, nicht durch einen grossen Graphen.
+   Navigation. Der Bubble-Graph darf das sichtbar machen, aber nicht ersetzen.
+
+6. Video-Blobs bleiben geraetelokal.
+   Sync transportiert Notizen, Tags, Metadaten und optional Download-Wuensche,
+   aber keine MP4-Dateien. Der Pi/Medienserver bleibt die Video-Quelle.
 
 
 KURZER UMSETZUNGSAUFTRAG FUER CODEX
@@ -872,14 +1600,21 @@ Baue zuerst den MVP:
 8. Baue EditVideoTagModal fuer Beschreibung, Farbe und Pin.
 9. Fuege einfache include/exclude Tag-Filter hinzu.
 10. Fuege Button "Karten zu Tag lernen" hinzu.
-11. Ergaenze Tests fuer Tag-Meta und Filter.
-12. Fuehre npm run build aus.
+11. Erstelle videoKnowledgeGraph.ts und baue eine read-only Bubble-Map:
+    aktiver Tag in der Mitte, Related Tags und Objectives darum herum,
+    max. 40 Knoten, Klickaktionen auf bestehende Ansichten.
+12. Stelle sicher, dass videoBlobs device-local bleiben und nicht in Backup,
+    Snapshot oder Sync-Payload auftauchen.
+13. Ergaenze Tests fuer Tag-Meta, Filter und Graph-Builder.
+14. Fuehre npm run build aus.
 
 Nicht im ersten Schritt bauen:
 
-- Graph
+- grosser globaler Graph ohne Knotenbegrenzung
+- gespeicherte manuelle Graph-Layouts
 - Voller Markdown-Editor
 - Automatische Kartenerstellung ohne Review
 - Vollautomatisches Umschreiben aller Tags
-- Video-Blob-Sync
-
+- echter Video-Blob-Sync ueber Profil-Sync
+- MP4/Base64 im JSON-Backup
+- automatische Cross-Device-Downloads ohne Rueckfrage
