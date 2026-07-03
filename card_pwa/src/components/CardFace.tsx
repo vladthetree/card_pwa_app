@@ -321,7 +321,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
     ? (isAnswerCorrect ? 'border-emerald-500/45' : 'border-rose-500/45')
     : 'border-ds-border'
   const cardShellClass = `border ${flipped ? answerTone : 'border-ds-border'} flex flex-col overflow-hidden rounded-ds bg-ds-card shadow-card transition-all duration-150 ease-out ${
-    compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[420px] md:min-h-[500px]'
+    compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[380px] md:min-h-[440px]'
   }${flipped && correctGlowActive ? ' study-glow-success' : ''}`
   const bodyClass = compact
     ? 'min-h-0 flex-1 overflow-y-auto px-[14px] py-[16px] no-scrollbar'

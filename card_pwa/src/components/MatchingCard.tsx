@@ -137,7 +137,7 @@ const MatchingCard = memo(function MatchingCard({
     .replace('{total}', String(question.pairs.length))
 
   const cardShellCls = `flex flex-col overflow-hidden rounded-ds border border-ds-border bg-ds-card shadow-card ${
-    compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[420px] md:min-h-[500px]'
+    compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[380px] md:min-h-[440px]'
   }`
 
   const renderOriginBadge = () => originDeckName ? (
