@@ -63,7 +63,7 @@ const FreeRecallCard = memo(function FreeRecallCard({
   const cardShellCls = `border ${
     selfCheck === null ? 'border-ds-border' : selfCheck ? 'border-emerald-500/45' : 'border-rose-500/45'
   } flex flex-col overflow-hidden rounded-ds bg-ds-card shadow-card ${
-    compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[420px] md:min-h-[500px]'
+    compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[380px] md:min-h-[440px]'
   }`
 
   const bodyClass = compact
