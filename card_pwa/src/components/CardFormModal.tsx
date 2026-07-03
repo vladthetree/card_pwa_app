@@ -371,7 +371,7 @@ export default function CardFormModal(props: Props) {
           animate={{ opacity: 1, y: 0 }}
           exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
           transition={{ duration: prefersReducedMotion ? 0.12 : 0.2, ease: 'easeOut' }}
-          className={`${UI_TOKENS.modal.shell} max-w-none self-end rounded-b-none sm:max-w-lg sm:self-auto sm:rounded-b-[2rem]`}
+          className={`${UI_TOKENS.modal.shell} max-w-none self-end rounded-b-none sm:max-w-lg md:max-w-3xl sm:self-auto sm:rounded-b-[2rem]`}
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
@@ -587,24 +587,26 @@ export default function CardFormModal(props: Props) {
               </>
             ) : (
               <>
-                <Field label={t.front_required}>
-                  <textarea
-                    value={form.front}
-                    onChange={set('front')}
-                    placeholder={t.front_placeholder}
-                    rows={3}
-                    className={`${inputCls} resize-none`}
-                  />
-                </Field>
-                <Field label={t.back_required}>
-                  <textarea
-                    value={form.back}
-                    onChange={set('back')}
-                    placeholder={t.back_placeholder}
-                    rows={3}
-                    className={`${inputCls} resize-none`}
-                  />
-                </Field>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Field label={t.front_required}>
+                    <textarea
+                      value={form.front}
+                      onChange={set('front')}
+                      placeholder={t.front_placeholder}
+                      rows={3}
+                      className={`${inputCls} resize-none`}
+                    />
+                  </Field>
+                  <Field label={t.back_required}>
+                    <textarea
+                      value={form.back}
+                      onChange={set('back')}
+                      placeholder={t.back_placeholder}
+                      rows={3}
+                      className={`${inputCls} resize-none`}
+                    />
+                  </Field>
+                </div>
                 <Field label={t.extra_explanation_optional}>
                   <textarea
                     value={form.mnemonic}
