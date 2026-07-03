@@ -594,7 +594,7 @@ export default function CardFormModal(props: Props) {
                       onChange={set('front')}
                       placeholder={t.front_placeholder}
                       rows={3}
-                      className={`${inputCls} resize-none`}
+                      className={`${inputCls} resize-none md:min-h-[10rem]`}
                     />
                   </Field>
                   <Field label={t.back_required}>
@@ -603,7 +603,7 @@ export default function CardFormModal(props: Props) {
                       onChange={set('back')}
                       placeholder={t.back_placeholder}
                       rows={3}
-                      className={`${inputCls} resize-none`}
+                      className={`${inputCls} resize-none md:min-h-[10rem]`}
                     />
                   </Field>
                 </div>
