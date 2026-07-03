@@ -658,7 +658,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-            className={`w-full max-w-lg rounded-ds border bg-ds-card p-8 text-center shadow-card sm:p-10 ${
+            className={`w-full max-w-lg md:max-w-2xl rounded-ds border bg-ds-card p-8 text-center shadow-card sm:p-10 ${
               isPerfectSession ? 'border-emerald-500/40' : 'border-[#18181b]'
             }`}
           >
