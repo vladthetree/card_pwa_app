@@ -20,7 +20,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Edit } from 'lucide-react'
-import { useReducedMotion } from 'framer-motion'
+import { useReducedMotion } from '../ui/motion'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import { useHandsetLayout } from '../hooks/useHandsetLayout'
 import type { Card } from '../types'
@@ -107,7 +107,7 @@ function ItemRow({ id, label, position, feedback, correctPosition, submitted, is
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex min-h-[52px] items-stretch rounded-[8px] border ${borderCls} ${bgCls} ${elevationCls} transition-colors duration-150`}
+      className={`flex min-h-[52px] items-stretch rounded-ds border ${borderCls} ${bgCls} ${elevationCls} transition-colors duration-150`}
     >
       {/* Position badge */}
       <div className="flex w-9 shrink-0 items-center justify-center border-r border-ds-border">
@@ -233,7 +233,7 @@ const OrderingCard = memo(function OrderingCard({
   // Compact landscape: slightly smaller items
   void isHandsetLandscape
 
-  const cardShellCls = `flex flex-col overflow-hidden rounded-[8px] border border-ds-border bg-ds-card shadow-card ${
+  const cardShellCls = `flex flex-col overflow-hidden rounded-ds border border-ds-border bg-ds-card shadow-card ${
     compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[420px] md:min-h-[500px]'
   }`
 
@@ -326,7 +326,7 @@ const OrderingCard = memo(function OrderingCard({
               type="button"
               onClick={(e) => { e.stopPropagation(); handleSubmit() }}
               disabled={submitted}
-              className={`min-h-[44px] w-full rounded-[8px] border text-sm font-medium transition-all duration-200 ${
+              className={`min-h-[44px] w-full rounded-ds border text-sm font-medium transition-all duration-200 ${
                 submitted
                   ? 'border-zinc-700 bg-transparent text-zinc-600 cursor-default'
                   : 'border-[--brand-secondary-50] bg-[--brand-secondary-08] text-[--brand-secondary] hover:bg-[--brand-secondary-12] active:scale-[0.99]'
@@ -367,7 +367,7 @@ const OrderingCard = memo(function OrderingCard({
 
         <div data-study-scroll="allow" className={`${bodyClass} flex flex-col overscroll-y-contain`}>
           {score !== null && (
-            <div className={`mb-3 flex items-center gap-2 rounded-[8px] border px-3 py-2 ${
+            <div className={`mb-3 flex items-center gap-2 rounded-ds border px-3 py-2 ${
               score === 1.0
                 ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
                 : score >= 0.5

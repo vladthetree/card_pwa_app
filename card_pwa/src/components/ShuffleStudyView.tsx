@@ -2,7 +2,7 @@
  * AI_CONTEXT: Reusable React component for shuffle Study View; contributes to the card-learning UI and shared app interactions.
  */
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from '../ui/motion'
 import { ArrowLeft, RefreshCw, Shuffle } from 'lucide-react'
 import {
   clearShuffleSession,
@@ -53,7 +53,7 @@ function ErrorAlert({ message, onRetry }: { message: string; onRetry: () => void
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className="mx-auto mb-4 flex w-full max-w-3xl items-center justify-between rounded-xl border border-rose-500/30 bg-black p-4 text-sm text-rose-300"
+      className="mx-auto mb-4 flex w-full max-w-3xl items-center justify-between rounded-ds-xl border border-rose-500/30 bg-black p-4 text-sm text-rose-300"
     >
       <div className="flex items-center gap-2">
         <RefreshCw size={14} />
@@ -61,7 +61,7 @@ function ErrorAlert({ message, onRetry }: { message: string; onRetry: () => void
       </div>
       <button
         onClick={onRetry}
-        className="ml-3 rounded-lg bg-rose-500/30 px-3 py-1 text-xs font-medium transition hover:bg-rose-500/50"
+        className="ml-3 rounded-ds bg-rose-500/30 px-3 py-1 text-xs font-medium transition hover:bg-rose-500/50"
       >
         Retry
       </button>
@@ -438,7 +438,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       <>
         <div className="min-h-screen bg-[#050505] px-4 py-10 text-white">
           <div className="mx-auto max-w-2xl ds-card p-8 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[12px] border border-emerald-300/25 bg-emerald-400/10 text-emerald-200">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-ds-xl border border-emerald-300/25 bg-emerald-400/10 text-emerald-200">
               <Shuffle size={22} />
             </div>
             <h1 className="text-2xl font-semibold">{collection.name}</h1>
@@ -451,7 +451,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
               onEditCard={card => setEditingCard(card)}
             />
             {sessionDeckSummary.length > 0 && (
-              <div className="mt-6 rounded-[14px] border border-[#18181b] bg-[#0a0a0a] p-4 text-left shadow-card">
+              <div className="mt-6 rounded-ds-2xl border border-[#18181b] bg-[#0a0a0a] p-4 text-left shadow-card">
                 <div className="text-[11px] uppercase tracking-[0.18em] text-white/40">
                   {settings.language === 'de' ? 'Verteilung nach Ursprungsdeck' : 'Source deck distribution'}
                 </div>
@@ -459,7 +459,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
                   {sessionDeckSummary.map(entry => (
                     <div
                       key={entry.deckId}
-                      className="flex items-center justify-between rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-sm"
+                      className="flex items-center justify-between rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-sm"
                     >
                       <span className="truncate pr-3 text-white/80">{entry.name}</span>
                       <span className="shrink-0 rounded-full border border-amber-300/20 bg-amber-400/10 px-2 py-0.5 text-xs text-amber-100/85">
@@ -479,14 +479,14 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
               <button
                 type="button"
                 onClick={handleRestart}
-                className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-4 py-2 text-sm text-white/80 transition hover:border-[#3f3f46] hover:text-white"
+                className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] px-4 py-2 text-sm text-white/80 transition hover:border-[#3f3f46] hover:text-white"
               >
                 {settings.language === 'de' ? 'Neu mischen' : 'Reshuffle'}
               </button>
               <button
                 type="button"
                 onClick={handleExit}
-                className="rounded-[12px] bg-white px-4 py-2 text-sm font-semibold text-black transition hover:bg-white/90"
+                className="rounded-ds-xl bg-white px-4 py-2 text-sm font-semibold text-black transition hover:bg-white/90"
               >
                 {settings.language === 'de' ? 'Zur Startseite' : 'Back home'}
               </button>
@@ -531,7 +531,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
             </div>
             <div className="truncate text-lg font-semibold">{collection.name}</div>
           </div>
-          <div className={`rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-xs font-mono text-white/60 ${focusHidden}`}>
+          <div className={`rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-xs font-mono text-white/60 ${focusHidden}`}>
             {collection.deckIds.length} {settings.language === 'de' ? 'Decks' : 'decks'}
           </div>
         </div>
@@ -597,7 +597,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
             <button
               type="button"
               onClick={handleUndoLastRating}
-            className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-3 py-1.5 text-xs text-white/70 transition hover:border-[#3f3f46] hover:text-white"
+            className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] px-3 py-1.5 text-xs text-white/70 transition hover:border-[#3f3f46] hover:text-white"
             >
               {t.undo_last_rating}
             </button>

@@ -2,7 +2,7 @@
  * AI_CONTEXT: Home-screen React component for home Bottom Bar; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
 import { useState, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from '../../ui/motion'
 import {
   Check, Download, FolderPlus, Plus,
   RefreshCw, Settings, SlidersHorizontal, Upload,
@@ -45,10 +45,10 @@ interface Props {
 }
 
 const SHEET_BACKDROP = 'fixed inset-0 z-[190] bg-black/70 backdrop-blur-[2px]'
-const SHEET_PANEL    = 'home-bottom-sheet-panel fixed left-0 right-0 z-[200] rounded-t-[16px] border-t border-ds-border bg-ds-bg px-4 pt-3 shadow-menu'
+const SHEET_PANEL    = 'home-bottom-sheet-panel fixed left-0 right-0 z-[200] rounded-t-ds-sheet border-t border-ds-border bg-ds-bg px-4 pt-3 shadow-menu'
 const DRAG_HANDLE    = 'mx-auto mb-4 h-1 w-10 rounded-full bg-ds-border-hover'
 const SHEET_LABEL    = 'px-1 pb-2 pt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/35'
-const SHEET_ITEM     = 'flex w-full items-center justify-between gap-3 rounded-[8px] px-3 py-3.5 text-left text-[15px] text-white/80 transition-colors hover:bg-ds-panel active:bg-ds-panel hover:text-white active:text-white'
+const SHEET_ITEM     = 'flex w-full items-center justify-between gap-3 rounded-ds px-3 py-3.5 text-left text-[15px] text-white/80 transition-colors hover:bg-ds-panel active:bg-ds-panel hover:text-white active:text-white'
 
 export function HomeBottomBar({
   t,
@@ -103,7 +103,7 @@ export function HomeBottomBar({
             <button
               type="button"
               onClick={onReload}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] border border-transparent bg-transparent text-white/48 transition-colors hover:bg-ds-card/55 hover:text-white active:scale-[0.98] active:bg-ds-card/70"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-ds border border-transparent bg-transparent text-white/48 transition-colors hover:bg-ds-card/55 hover:text-white active:scale-[0.98] active:bg-ds-card/70"
               aria-label={t.reload}
               title={t.reload}
             >
@@ -114,7 +114,7 @@ export function HomeBottomBar({
             <button
               type="button"
               onClick={() => { setActionsOpen(false); setFilterOpen(v => !v) }}
-              className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] border transition-colors hover:bg-ds-card/55 hover:text-white active:scale-[0.98] active:bg-ds-card/70 ${
+              className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-ds border transition-colors hover:bg-ds-card/55 hover:text-white active:scale-[0.98] active:bg-ds-card/70 ${
                 filterOpen ? 'border-[--brand-primary-25] bg-[--brand-primary-08] text-[--brand-primary]' : 'border-transparent bg-transparent text-white/48'
               }`}
               aria-label={language === 'de' ? 'Filter & Sortierung' : 'Filter & sort'}
@@ -130,7 +130,7 @@ export function HomeBottomBar({
             <button
               type="button"
               onClick={onShowSettings}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] border border-transparent bg-transparent text-white/48 transition-colors hover:bg-ds-card/55 hover:text-white active:scale-[0.98] active:bg-ds-card/70"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-ds border border-transparent bg-transparent text-white/48 transition-colors hover:bg-ds-card/55 hover:text-white active:scale-[0.98] active:bg-ds-card/70"
               aria-label={t.settings}
               title={t.settings}
             >
@@ -144,7 +144,7 @@ export function HomeBottomBar({
             <button
               type="button"
               onClick={() => { setFilterOpen(false); setActionsOpen(v => !v) }}
-              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] border transition-colors active:scale-[0.98] ${
+              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-ds border transition-colors active:scale-[0.98] ${
                 actionsOpen
                   ? 'border-[--brand-primary-50] bg-[--brand-primary-15] text-[--brand-primary]'
                   : 'border-[--brand-primary-25] bg-[--brand-primary-08] text-[--brand-primary] hover:bg-[--brand-primary-12]'

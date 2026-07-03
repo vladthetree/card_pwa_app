@@ -109,7 +109,7 @@ export default function LabsView({ language, onExit }: Props) {
           {trainingSolved.size > 0 && (
             <span
               data-testid="labs-training-progress"
-              className="flex shrink-0 items-center gap-1.5 rounded-[10px] border border-blue-500/30 bg-blue-500/10 px-2.5 py-1.5 font-mono text-[12px] font-bold text-blue-300"
+              className="flex shrink-0 items-center gap-1.5 rounded-ds-lg border border-blue-500/30 bg-blue-500/10 px-2.5 py-1.5 font-mono text-[12px] font-bold text-blue-300"
             >
               <Dices size={13} strokeWidth={1.5} />
               {trainingSolved.size}
@@ -117,7 +117,7 @@ export default function LabsView({ language, onExit }: Props) {
           )}
           <span
             data-testid="labs-progress"
-            className="flex shrink-0 items-center gap-1.5 rounded-[10px] border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1.5 font-mono text-[12px] font-bold text-emerald-300"
+            className="flex shrink-0 items-center gap-1.5 rounded-ds-lg border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1.5 font-mono text-[12px] font-bold text-emerald-300"
           >
             <Target size={13} strokeWidth={1.5} />
             {completed.size} / {totalInventory}
@@ -134,14 +134,14 @@ export default function LabsView({ language, onExit }: Props) {
             const doneCount = scenarios.filter(s => completed.has(s.id)).length
             const isCollapsed = collapsed.has(category.id)
             return (
-              <section key={category.id} className="rounded-[14px] border border-[#18181b] bg-[#0a0a0a] p-3">
+              <section key={category.id} className="rounded-ds-2xl border border-[#18181b] bg-[#0a0a0a] p-3">
                 <button
                   type="button"
                   onClick={() => toggleCategory(category.id)}
                   className="flex w-full items-center gap-3 text-left"
                   aria-expanded={!isCollapsed}
                 >
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-[#1f1f23] bg-[#0c0c0c] text-zinc-400">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-ds-xl border border-[#1f1f23] bg-[#0c0c0c] text-zinc-400">
                     <Compass size={18} strokeWidth={1.5} />
                   </span>
                   <span className="min-w-0 flex-1">
@@ -165,9 +165,9 @@ export default function LabsView({ language, onExit }: Props) {
                       type="button"
                       data-testid={`lab-training-${category.id}`}
                       onClick={() => startTraining(category.id)}
-                      className="flex w-full items-center gap-3 rounded-[12px] border border-dashed border-[--brand-primary-50] bg-[--brand-primary-08] px-3 py-3 text-left transition-colors hover:border-[--brand-primary]"
+                      className="flex w-full items-center gap-3 rounded-ds-xl border border-dashed border-[--brand-primary-50] bg-[--brand-primary-08] px-3 py-3 text-left transition-colors hover:border-[--brand-primary]"
                     >
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] border border-[--brand-primary-25] bg-[#0c0c0c] text-[--brand-primary]">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-ds-lg border border-[--brand-primary-25] bg-[#0c0c0c] text-[--brand-primary]">
                         <Dices size={15} strokeWidth={1.5} />
                       </span>
                       <span className="min-w-0 flex-1">
@@ -185,7 +185,7 @@ export default function LabsView({ language, onExit }: Props) {
                           type="button"
                           data-testid={`lab-scenario-${scenario.id}`}
                           onClick={() => setActiveScenario(scenario)}
-                          className="flex w-full items-center gap-3 rounded-[12px] border border-[#1f1f23] bg-[#0c0c0c] px-3 py-3 text-left transition-colors hover:border-[#3f3f46]"
+                          className="flex w-full items-center gap-3 rounded-ds-xl border border-[#1f1f23] bg-[#0c0c0c] px-3 py-3 text-left transition-colors hover:border-[#3f3f46]"
                         >
                           <span className={`shrink-0 rounded-[6px] border px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.14em] ${badge.cls}`}>
                             {badge.label}
@@ -197,7 +197,7 @@ export default function LabsView({ language, onExit }: Props) {
                             </span>
                           </span>
                           {isDone && (
-                            <span className="flex shrink-0 items-center gap-1 rounded-[8px] border border-emerald-500/40 bg-emerald-500/10 px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-emerald-300">
+                            <span className="flex shrink-0 items-center gap-1 rounded-ds border border-emerald-500/40 bg-emerald-500/10 px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-emerald-300">
                               <Check size={11} strokeWidth={2} /> {copy.done}
                             </span>
                           )}

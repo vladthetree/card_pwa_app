@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Home-screen React component for home Deck List Section; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
-import { motion } from 'framer-motion'
+import { motion } from '../../ui/motion'
 import { RefreshCw, AlertCircle, Upload, Shuffle, Layers3, Pencil, Trash2, BarChart3 } from 'lucide-react'
 import { DeckCard } from '../DeckCard'
 import type { Deck, DeckScheduleOverview, ShuffleCollection } from '../../types'
@@ -69,7 +69,7 @@ export function HomeDeckListSection({
         return (
           <motion.div
             key={collection.id}
-            className="group rounded-[8px] border border-ds-border bg-ds-card px-4 py-4 shadow-card transition hover:border-[--brand-primary-50] hover:bg-ds-panel"
+            className="group rounded-ds border border-ds-border bg-ds-card px-4 py-4 shadow-card transition hover:border-[--brand-primary-50] hover:bg-ds-panel"
           >
             <div className="flex items-start justify-between gap-3">
               <button
@@ -117,7 +117,7 @@ export function HomeDeckListSection({
                 <button
                   type="button"
                   onClick={() => onDeleteShuffleCollection(collection)}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-[8px] border border-rose-400/20 bg-ds-card text-rose-200/75 transition hover:border-rose-300/35 hover:bg-ds-panel hover:text-rose-100 sm:h-9 sm:w-9"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-ds border border-rose-400/20 bg-ds-card text-rose-200/75 transition hover:border-rose-300/35 hover:bg-ds-panel hover:text-rose-100 sm:h-9 sm:w-9"
                   aria-label={language === 'de' ? 'Löschen' : 'Delete'}
                   title={language === 'de' ? 'Löschen' : 'Delete'}
                 >
@@ -138,9 +138,9 @@ export function HomeDeckListSection({
       data-testid="home-deck-list-scroll"
     >
       {error && (
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-4 flex items-center justify-between rounded-[8px] border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300 shadow-card">
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-4 flex items-center justify-between rounded-ds border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300 shadow-card">
           <div className="flex items-center gap-2"><AlertCircle size={16} strokeWidth={1.5} /><span>{error}</span></div>
-          <button onClick={onReload} className="ml-3 px-3 py-1 bg-rose-500/30 hover:bg-rose-500/50 rounded-lg text-xs font-medium transition"><RefreshCw size={12} strokeWidth={1.5} className="inline mr-1" /> {t.retry}</button>
+          <button onClick={onReload} className="ml-3 px-3 py-1 bg-rose-500/30 hover:bg-rose-500/50 rounded-ds text-xs font-medium transition"><RefreshCw size={12} strokeWidth={1.5} className="inline mr-1" /> {t.retry}</button>
         </motion.div>
       )}
 
@@ -149,7 +149,7 @@ export function HomeDeckListSection({
       ) : !showShuffleOnly && decks.length === 0 ? (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex min-h-full flex-col items-center justify-start pt-10 pb-12 text-center sm:justify-center sm:py-16">
           <p className="text-white/30 text-sm mb-4">{t.no_decks}</p>
-          <button onClick={onShowImport} className="inline-flex items-center gap-2 rounded-[8px] bg-[--brand-primary] px-5 py-2.5 text-sm font-semibold text-[#150b08] transition-all duration-200 ease-out hover:brightness-110 active:scale-[0.98]">
+          <button onClick={onShowImport} className="inline-flex items-center gap-2 rounded-ds bg-[--brand-primary] px-5 py-2.5 text-sm font-semibold text-[#150b08] transition-all duration-200 ease-out hover:brightness-110 active:scale-[0.98]">
             <Upload size={16} strokeWidth={1.5} /> {t.import_now}
           </button>
         </motion.div>

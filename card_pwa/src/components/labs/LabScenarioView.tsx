@@ -52,7 +52,7 @@ interface Props {
 }
 
 const SECTION_LABEL = 'mb-2 font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500'
-const MONO_BOX = 'whitespace-pre-wrap rounded-[12px] border border-[#1f1f23] bg-[#0c0c0c] px-3.5 py-3 font-mono text-[13px] leading-[1.6] text-zinc-200'
+const MONO_BOX = 'whitespace-pre-wrap rounded-ds-xl border border-[#1f1f23] bg-[#0c0c0c] px-3.5 py-3 font-mono text-[13px] leading-[1.6] text-zinc-200'
 
 export default function LabScenarioView({ language, scenario, onBack, onSolved }: Props) {
   const copy = COPY[language]
@@ -148,7 +148,7 @@ export default function LabScenarioView({ language, scenario, onBack, onSolved }
         )}
 
         {scenario.goal && (
-          <div className="mt-4 rounded-[10px] border-l-2 border-amber-400/80 bg-amber-500/8 px-3.5 py-3 font-mono text-[13px] leading-[1.6] text-amber-100/90">
+          <div className="mt-4 rounded-ds-lg border-l-2 border-amber-400/80 bg-amber-500/8 px-3.5 py-3 font-mono text-[13px] leading-[1.6] text-amber-100/90">
             {scenario.goal}
           </div>
         )}
@@ -168,7 +168,7 @@ export default function LabScenarioView({ language, scenario, onBack, onSolved }
                 ? 'border-rose-500/60'
                 : 'border-[#1f1f23]'
               return (
-                <div key={item.left} className={`rounded-[14px] border ${borderCls} bg-[#0c0c0c] px-3.5 py-3`}>
+                <div key={item.left} className={`rounded-ds-2xl border ${borderCls} bg-[#0c0c0c] px-3.5 py-3`}>
                   <div className="flex items-start justify-between gap-2">
                     <p className="font-mono text-[14px] leading-snug text-zinc-100">{item.left}</p>
                     {feedback === 'ok' && <Check size={15} className="mt-0.5 shrink-0 text-emerald-400" strokeWidth={2} />}
@@ -181,7 +181,7 @@ export default function LabScenarioView({ language, scenario, onBack, onSolved }
                       setSelections(prev => ({ ...prev, [item.left]: e.target.value }))
                       if (result === 'failed') setResult('idle')
                     }}
-                    className="mt-2.5 w-full appearance-none rounded-[10px] border border-[#27272a] bg-[#0a0a0a] px-3 py-2.5 font-mono text-[14px] text-zinc-200 outline-none focus:border-[#3f3f46]"
+                    className="mt-2.5 w-full appearance-none rounded-ds-lg border border-[#27272a] bg-[#0a0a0a] px-3 py-2.5 font-mono text-[14px] text-zinc-200 outline-none focus:border-[#3f3f46]"
                   >
                     <option value="">{copy.select}</option>
                     {shuffledOptions.map(option => (
@@ -209,7 +209,7 @@ export default function LabScenarioView({ language, scenario, onBack, onSolved }
                   key={step}
                   value={step}
                   drag={result === 'solved' ? false : 'y'}
-                  className={`flex items-stretch rounded-[14px] border ${borderCls} bg-[#0c0c0c]`}
+                  className={`flex items-stretch rounded-ds-2xl border ${borderCls} bg-[#0c0c0c]`}
                 >
                   <div className="flex w-10 shrink-0 items-center justify-center border-r border-[#1f1f23]">
                     <span className="font-mono text-[13px] text-zinc-500">{index + 1}</span>
@@ -228,17 +228,17 @@ export default function LabScenarioView({ language, scenario, onBack, onSolved }
 
         {/* Ergebnis-Feedback (⚠️ neu generiert, kein Screenshot des gelösten Zustands) */}
         {result === 'solved' && (
-          <div className="mt-4 flex items-center gap-2 rounded-[12px] border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-3 font-mono text-[13px] text-emerald-300">
+          <div className="mt-4 flex items-center gap-2 rounded-ds-xl border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-3 font-mono text-[13px] text-emerald-300">
             <Check size={15} strokeWidth={2} /> {copy.solved}
           </div>
         )}
         {result === 'failed' && (
-          <div className="mt-4 rounded-[12px] border border-rose-500/40 bg-rose-500/8 px-3.5 py-3">
+          <div className="mt-4 rounded-ds-xl border border-rose-500/40 bg-rose-500/8 px-3.5 py-3">
             <p className="font-mono text-[13px] text-rose-300">{copy.failed}</p>
             <button
               type="button"
               onClick={handleRetry}
-              className="mt-2 rounded-[10px] border border-[#27272a] bg-[#0a0a0a] px-3 py-2 font-mono text-[12px] text-zinc-300 transition-colors hover:border-[#3f3f46] hover:text-white"
+              className="mt-2 rounded-ds-lg border border-[#27272a] bg-[#0a0a0a] px-3 py-2 font-mono text-[12px] text-zinc-300 transition-colors hover:border-[#3f3f46] hover:text-white"
             >
               {copy.retry}
             </button>
@@ -253,7 +253,7 @@ export default function LabScenarioView({ language, scenario, onBack, onSolved }
           data-testid="lab-check-answer"
           onClick={handleCheck}
           disabled={!allSelected || result === 'solved'}
-          className={`w-full min-h-[52px] rounded-[14px] border px-4 font-mono text-[15px] transition-all duration-150 ${
+          className={`w-full min-h-[52px] rounded-ds-2xl border px-4 font-mono text-[15px] transition-all duration-150 ${
             result === 'solved'
               ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-300'
               : allSelected

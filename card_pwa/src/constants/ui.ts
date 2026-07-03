@@ -12,10 +12,10 @@ export const UI_TOKENS = {
   // ─── Radius scale ──────────────────────────────────────────────────────────
   radius: {
     sm: 'rounded-[4px]',
-    md: 'rounded-[8px]',
-    lg: 'rounded-[10px]',
-    xl: 'rounded-[10px]',
-    modal: 'rounded-[10px] sm:rounded-[12px]',
+    md: 'rounded-ds',
+    lg: 'rounded-ds-lg',
+    xl: 'rounded-ds-lg',
+    modal: 'rounded-ds-lg sm:rounded-ds-xl',
   },
 
   // ─── Icon size scale ───────────────────────────────────────────────────────
@@ -47,7 +47,7 @@ export const UI_TOKENS = {
   },
 
   header: {
-    row: 'flex items-center justify-between gap-2 rounded-[8px] border border-ds-border bg-ds-bg/86 px-2.5 py-2 backdrop-blur-sm sm:mb-2 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none',
+    row: 'flex items-center justify-between gap-2 rounded-ds border border-ds-border bg-ds-bg/86 px-2.5 py-2 backdrop-blur-sm sm:mb-2 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none',
     brand: 'flex min-w-0 items-center gap-2 sm:gap-3',
     title: 'text-2xl font-bold text-theme-text tracking-tight',
     subtitle: 'text-theme-text-secondary text-sm',
@@ -62,8 +62,8 @@ export const UI_TOKENS = {
   },
 
   surface: {
-    panel:    `rounded-[8px] border border-ds-border bg-ds-card p-4 shadow-card ${T}`,
-    panelSoft: 'rounded-[8px] border border-ds-border bg-ds-floor p-3 shadow-card',
+    panel:    `rounded-ds border border-ds-border bg-ds-card p-4 shadow-card ${T}`,
+    panelSoft: 'rounded-ds border border-ds-border bg-ds-floor p-3 shadow-card',
   },
 
   modal: {
@@ -79,18 +79,18 @@ export const UI_TOKENS = {
   },
 
   input: {
-    base:     `w-full bg-ds-card border border-ds-border rounded-[8px] px-3 py-2.5 text-white text-sm outline-none focus-visible:border-ds-border-hover focus-visible:ring-2 focus-visible:ring-[--brand-primary-25] ${T}`,
-    textarea: `w-full rounded-[8px] bg-ds-card border border-ds-border px-3 py-2 text-sm text-white outline-none focus-visible:border-ds-border-hover focus-visible:ring-2 focus-visible:ring-[--brand-primary-25] resize-y ${T}`,
+    base:     `w-full bg-ds-card border border-ds-border rounded-ds px-3 py-2.5 text-white text-sm outline-none focus-visible:border-ds-border-hover focus-visible:ring-2 focus-visible:ring-[--brand-primary-25] ${T}`,
+    textarea: `w-full rounded-ds bg-ds-card border border-ds-border px-3 py-2 text-sm text-white outline-none focus-visible:border-ds-border-hover focus-visible:ring-2 focus-visible:ring-[--brand-primary-25] resize-y ${T}`,
   },
 
   button: {
     // Mobile-first: keep interactive targets close to iOS's 44x44pt guidance.
-    ghost:         `px-3 py-1.5 rounded-[8px] border border-ds-border bg-ds-card text-white/80 hover:text-white hover:border-ds-border-hover hover:bg-ds-panel-hover ${T} active:scale-[0.98] text-xs`,
+    ghost:         `px-3 py-1.5 rounded-ds border border-ds-border bg-ds-card text-white/80 hover:text-white hover:border-ds-border-hover hover:bg-ds-panel-hover ${T} active:scale-[0.98] text-xs`,
     iconGhost:     `flex min-h-11 min-w-11 items-center gap-2 px-3 py-2 ds-icon-button ${T} active:scale-[0.98] sm:min-h-0 sm:min-w-0 sm:py-1.5`,
-    secondary:     `py-2 px-3 rounded-[8px] text-xs border ${T} active:scale-[0.98] border-ds-border bg-ds-card text-white/70 hover:text-white hover:border-ds-border-hover`,
-    secondaryActive: `py-2 px-3 rounded-[8px] text-xs border ${T} active:scale-[0.98] border-ds-border-hover bg-ds-panel text-white`,
-    footerSecondary: `flex-1 py-3 rounded-[8px] border border-ds-border bg-ds-card text-white/80 hover:text-white hover:border-ds-border-hover ${T} active:scale-[0.98]`,
-    footerPrimary:   `flex-1 py-3 rounded-[8px] bg-[--brand-primary] text-black hover:brightness-110 font-semibold ${T} active:scale-[0.98] disabled:opacity-60`,
+    secondary:     `py-2 px-3 rounded-ds text-xs border ${T} active:scale-[0.98] border-ds-border bg-ds-card text-white/70 hover:text-white hover:border-ds-border-hover`,
+    secondaryActive: `py-2 px-3 rounded-ds text-xs border ${T} active:scale-[0.98] border-ds-border-hover bg-ds-panel text-white`,
+    footerSecondary: `flex-1 py-3 rounded-ds border border-ds-border bg-ds-card text-white/80 hover:text-white hover:border-ds-border-hover ${T} active:scale-[0.98]`,
+    footerPrimary:   `flex-1 py-3 rounded-ds bg-[--brand-primary] text-black hover:brightness-110 font-semibold ${T} active:scale-[0.98] disabled:opacity-60`,
     // Min 44×44px icon button for iOS touch targets
     iconAction:    `ds-icon-button flex w-11 h-11 ${T} active:scale-[0.98]`,
     // Compact 36px icon button for dense UI (desktop / secondary controls)

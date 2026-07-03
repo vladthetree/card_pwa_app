@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Home-screen React component for home Daily Quest Tile; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
-import { motion } from 'framer-motion'
+import { motion } from '../../ui/motion'
 import { ListChecks, ListTree, Play } from 'lucide-react'
 
 /**
@@ -60,7 +60,7 @@ export function HomeDailyQuestTile({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22, ease: 'easeOut' }}
       data-testid="daily-quest-tile"
-      className="min-w-0 overflow-hidden rounded-[8px] border border-[--brand-secondary-25] bg-ds-card p-3 shadow-card sm:p-4"
+      className="min-w-0 overflow-hidden rounded-ds border border-[--brand-secondary-25] bg-ds-card p-3 shadow-card sm:p-4"
     >
       <div className="flex min-w-0 items-start gap-3">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[7px] border border-[--brand-secondary-25] bg-[--brand-secondary-08] text-[--brand-secondary]">
@@ -85,7 +85,7 @@ export function HomeDailyQuestTile({
           data-testid="daily-quest-start"
           onClick={onStart}
           disabled={!hasWork || starting}
-          className="flex min-h-[48px] min-w-0 items-center justify-center gap-2 rounded-[8px] border border-[--brand-secondary-50] bg-[--brand-secondary] px-3 font-sans text-[14px] font-semibold text-[#07100e] transition-all duration-150 hover:brightness-110 active:scale-[0.98] disabled:cursor-default disabled:border-ds-border disabled:bg-ds-floor disabled:text-ds-muted disabled:opacity-100 sm:px-4"
+          className="flex min-h-[48px] min-w-0 items-center justify-center gap-2 rounded-ds border border-[--brand-secondary-50] bg-[--brand-secondary] px-3 font-sans text-[14px] font-semibold text-[#07100e] transition-all duration-150 hover:brightness-110 active:scale-[0.98] disabled:cursor-default disabled:border-ds-border disabled:bg-ds-floor disabled:text-ds-muted disabled:opacity-100 sm:px-4"
         >
           {starting
             ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#04140b]/30 border-t-[#04140b]" />
@@ -95,7 +95,7 @@ export function HomeDailyQuestTile({
         <button
           type="button"
           onClick={onShowDecks}
-          className="flex min-h-[48px] min-w-0 items-center justify-center gap-2 rounded-[8px] border border-ds-border bg-ds-floor px-3 font-sans text-[13px] text-ds-text transition-colors hover:border-ds-border-hover hover:text-white active:scale-[0.98] sm:px-4"
+          className="flex min-h-[48px] min-w-0 items-center justify-center gap-2 rounded-ds border border-ds-border bg-ds-floor px-3 font-sans text-[13px] text-ds-text transition-colors hover:border-ds-border-hover hover:text-white active:scale-[0.98] sm:px-4"
         >
           <ListTree size={15} strokeWidth={1.5} />
           <span className="min-[420px]:hidden">{language === 'de' ? 'Decks' : 'Decks'}</span>

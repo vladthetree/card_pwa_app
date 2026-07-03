@@ -2,7 +2,7 @@
  * AI_CONTEXT: Reusable React component for shuffle Metrics Modal; contributes to the card-learning UI and shared app interactions.
  */
 import { useEffect, useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from '../ui/motion'
 import { BarChart3, TrendingDown, TrendingUp, Minus, X } from 'lucide-react'
 import { getShuffleCollectionMetricsSnapshot } from '../db/queries'
 import { STRINGS } from '../contexts/SettingsContext'
@@ -86,7 +86,7 @@ export function ShuffleMetricsModal({ collection, decks, language, onClose }: Pr
         </div>
 
         <div className={UI_TOKENS.modal.body}>
-        <div className="mt-1 inline-flex w-full overflow-hidden rounded-[12px] border border-[#18181b] bg-[#0c0c0c] transition-all duration-300 ease-out sm:w-auto">
+        <div className="mt-1 inline-flex w-full overflow-hidden rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] transition-all duration-300 ease-out sm:w-auto">
           <button
             type="button"
             onClick={() => setPeriod('all')}
@@ -104,10 +104,10 @@ export function ShuffleMetricsModal({ collection, decks, language, onClose }: Pr
         </div>
 
         {loading || !metrics ? (
-          <div className="mt-5 h-44 animate-pulse rounded-[12px] border border-[#18181b] bg-[#0c0c0c]" />
+          <div className="mt-5 h-44 animate-pulse rounded-ds-xl border border-[#18181b] bg-[#0c0c0c]" />
         ) : (
           <>
-            <div className="mt-5 rounded-[14px] border border-[#18181b] bg-[#0c0c0c] p-5 shadow-card transition-all duration-300 ease-out sm:p-6">
+            <div className="mt-5 rounded-ds-2xl border border-[#18181b] bg-[#0c0c0c] p-5 shadow-card transition-all duration-300 ease-out sm:p-6">
               <p className="text-xs uppercase tracking-wide text-amber-100/70">{t.metrics_success_rate}</p>
               <div className="mt-2 flex flex-wrap items-end gap-2">
                 <p className="text-6xl leading-none font-black text-amber-300 sm:text-8xl">{metrics.successRate}%</p>
@@ -125,19 +125,19 @@ export function ShuffleMetricsModal({ collection, decks, language, onClose }: Pr
             </div>
 
             <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
-              <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
+              <div className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-3">
                 <p className="text-xs font-light text-white/55">{language === 'de' ? 'Decks' : 'Decks'}</p>
                 <p className="text-lg font-black text-white sm:text-xl">{metrics.deckCount}</p>
               </div>
-              <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
+              <div className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-3">
                 <p className="text-xs font-light text-white/55">{t.metrics_cards_total}</p>
                 <p className="text-lg font-black text-white sm:text-xl">{metrics.cardCount}</p>
               </div>
-              <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
+              <div className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-3">
                 <p className="text-xs font-light text-white/55">{t.metrics_reviewed_cards}</p>
                 <p className="text-lg font-black text-white sm:text-xl">{metrics.reviewedCardCount}</p>
               </div>
-              <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
+              <div className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-3">
                 <p className="text-xs font-light text-white/55">{t.metrics_trend}</p>
                 <p className="mt-1 inline-flex items-center gap-1.5 text-sm font-black text-emerald-500 sm:text-base">
                   {trendIcon}
@@ -146,7 +146,7 @@ export function ShuffleMetricsModal({ collection, decks, language, onClose }: Pr
               </div>
             </div>
 
-            <div className="mt-4 rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
+            <div className="mt-4 rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-3">
               <p className="mb-2 text-xs font-light text-white/55">{t.metrics_rating_distribution}</p>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {[1, 2, 3, 4].map(rating => (
@@ -158,7 +158,7 @@ export function ShuffleMetricsModal({ collection, decks, language, onClose }: Pr
               </div>
             </div>
 
-            <div className="mt-4 rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
+            <div className="mt-4 rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-3">
               <p className="mb-3 text-xs font-light text-white/55">
                 {language === 'de' ? 'Beitrag pro Ursprungsdeck' : 'Contribution by source deck'}
               </p>
@@ -167,7 +167,7 @@ export function ShuffleMetricsModal({ collection, decks, language, onClose }: Pr
                   .slice()
                   .sort((a, b) => b.totalReviews - a.totalReviews || a.deckId.localeCompare(b.deckId))
                   .map(entry => (
-                    <div key={entry.deckId} className="flex items-center justify-between rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-2">
+                    <div key={entry.deckId} className="flex items-center justify-between rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] px-3 py-2">
                       <div className="min-w-0 pr-3">
                         <p className="truncate text-sm font-semibold text-white">
                           {deckNameById.get(entry.deckId) ?? entry.deckId}

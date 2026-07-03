@@ -5,6 +5,7 @@
  * Important: This is the scheduling source of truth; every review mutation must update card state, reviews, sync queue, diagnostics, and REVIEW_UPDATED_EVENT consistently.
  */
 import { db, type CardRecord } from '../../db'
+import { readAllCardsShared, readAllDecksShared } from './sharedReads'
 import { calculateCardStateAfterReview, SM2 } from '../../utils/sm2'
 import { calculateCardStateAfterReviewFSRS } from '../../utils/fsrs'
 import { type AlgorithmParams } from '../../utils/algorithmParams'
@@ -94,26 +95,49 @@ export async function fetchGlobalStats(nextDayStartsAt = 0): Promise<GlobalStats
     return Math.max(0, Math.floor(card.due))
   }
 
-  const [total, newCount, learningCount, reviewCount, overdueGt2DaysCount, deckCount, reviewsToday] = await Promise.all([
-    db.cards.filter(c => !c.isDeleted).count(),
-    db.cards.where('type').equals(SM2.CARD_TYPE_NEW).and(c => !c.isDeleted).count(),
-    db.cards.where('type').anyOf(SM2.CARD_TYPE_LEARNING, SM2.CARD_TYPE_RELEARNING).and(c => !c.isDeleted).count(),
-    db.cards.where('type').equals(SM2.CARD_TYPE_REVIEW).and(c => !c.isDeleted).count(),
-    db.cards
-      .where('type')
-      .anyOf(SM2.CARD_TYPE_LEARNING, SM2.CARD_TYPE_RELEARNING, SM2.CARD_TYPE_REVIEW)
-      .and(c => !c.isDeleted && resolveDueEpoch(c) > daysSinceEpoch)
-      .count(),
-    db.decks.filter(d => !d.isDeleted).count(),
+  // Ein geteilter Karten-Scan statt sechs Einzel-Queries (davon zwei
+  // JS-Full-Scans über .filter().count()); alle Zähler in einem Durchgang.
+  const [cards, decks, reviewsToday] = await Promise.all([
+    readAllCardsShared(),
+    readAllDecksShared(),
     db.reviews.where('timestamp').aboveOrEqual(todayStartMs).toArray(),
   ])
 
+  let total = 0
+  let newCount = 0
+  let learningCount = 0
+  let reviewCount = 0
+  let overdueGt2DaysCount = 0
+  let nowDue = 0
+
+  for (const card of cards) {
+    if (card.isDeleted) continue
+    total += 1
+
+    const isLearningType = card.type === SM2.CARD_TYPE_LEARNING || card.type === SM2.CARD_TYPE_RELEARNING
+    const isReviewType = card.type === SM2.CARD_TYPE_REVIEW
+
+    if (card.type === SM2.CARD_TYPE_NEW) {
+      newCount += 1
+    } else if (isLearningType) {
+      learningCount += 1
+    } else if (isReviewType) {
+      reviewCount += 1
+    }
+
+    if ((isLearningType || isReviewType) && resolveDueEpoch(card) > daysSinceEpoch) {
+      overdueGt2DaysCount += 1
+    }
+
+    if (resolveDueEpoch(card) <= daysSinceEpoch || resolveDueAtMs(card) <= nowMs) {
+      nowDue += 1
+    }
+  }
+
+  const deckCount = decks.filter(d => !d.isDeleted).length
   const reviewedToday = reviewsToday.length
   const successfulToday = reviewsToday.filter(review => review.rating >= 3).length
   const successToday = reviewedToday === 0 ? 0 : Math.round((successfulToday / reviewedToday) * 100)
-  const nowDue = await db.cards
-    .filter(c => !c.isDeleted && (resolveDueEpoch(c) <= daysSinceEpoch || resolveDueAtMs(c) <= nowMs))
-    .count()
 
   return {
     total,
@@ -141,9 +165,8 @@ export async function getFutureDueForecast(days = 15, nextDayStartsAt = 0): Prom
     count: 0,
   }))
 
-  const rows = await db.cards
+  const rows = (await readAllCardsShared())
     .filter(c => !c.isDeleted && (c.type === SM2.CARD_TYPE_LEARNING || c.type === SM2.CARD_TYPE_RELEARNING || c.type === SM2.CARD_TYPE_REVIEW))
-    .toArray()
 
   const counts = await runStatsForecast({
     type: 'forecast',

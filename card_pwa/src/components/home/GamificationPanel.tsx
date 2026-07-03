@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Home-screen React component for gamification Panel; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
-import { motion } from 'framer-motion'
+import { motion } from '../../ui/motion'
 import { Award, Flame, ShieldCheck, Sparkles, Target, Trophy, Zap } from 'lucide-react'
 import type { GamificationAchievement, GamificationProfile } from '../../types'
 
@@ -94,8 +94,8 @@ export function GamificationPanel({ language, profile }: Props) {
 
   if (!profile) {
     return (
-      <div className="rounded-[14px] border border-[#18181b] bg-[#0c0c0c] p-4 shadow-card">
-        <div className="h-28 rounded-[12px] bg-[#111] animate-pulse" />
+      <div className="rounded-ds-2xl border border-[#18181b] bg-[#0c0c0c] p-4 shadow-card">
+        <div className="h-28 rounded-ds-xl bg-[#111] animate-pulse" />
       </div>
     )
   }
@@ -112,7 +112,7 @@ export function GamificationPanel({ language, profile }: Props) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22, ease: 'easeOut' }}
-      className="relative overflow-hidden rounded-[14px] border border-[#18181b] bg-[#0c0c0c] p-3 shadow-card sm:p-4"
+      className="relative overflow-hidden rounded-ds-2xl border border-[#18181b] bg-[#0c0c0c] p-3 shadow-card sm:p-4"
     >
       <div
         aria-hidden
@@ -132,7 +132,7 @@ export function GamificationPanel({ language, profile }: Props) {
             </div>
             <div className="mt-0.5 truncate text-base font-black text-white sm:mt-1 sm:text-xl">{rankTitle}</div>
           </div>
-          <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-3 py-2 text-right">
+          <div className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] px-3 py-2 text-right">
             <div className="text-sm font-black text-[color:var(--brand-primary)] sm:text-base">{formatCompact(profile.todayXp, language)}</div>
             <div className="text-[9px] uppercase tracking-[0.16em] text-white/35">{copy.xpToday}</div>
           </div>
@@ -147,13 +147,13 @@ export function GamificationPanel({ language, profile }: Props) {
         </div>
 
         {!hasProgress && (
-          <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3 text-xs leading-relaxed text-white/52">
+          <div className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-3 text-xs leading-relaxed text-white/52">
             {copy.noData}
           </div>
         )}
 
         <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-          <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-2">
+          <div className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-2">
             <div className={`flex items-center gap-1.5 text-sm font-black ${profile.streakAtRisk ? 'text-amber-200' : 'text-orange-200'}`}>
               <Flame size={14} strokeWidth={1.5} />
               {profile.currentStreak}
@@ -162,14 +162,14 @@ export function GamificationPanel({ language, profile }: Props) {
               {copy.streak}{profile.streakAtRisk ? ` ${copy.streakRisk}` : ''}
             </div>
           </div>
-          <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-2">
+          <div className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-2">
             <div className="flex items-center gap-1.5 text-sm font-black text-sky-100">
               <Trophy size={14} strokeWidth={1.5} />
               {profile.longestStreak}
             </div>
             <div className="mt-1 text-[9px] uppercase tracking-[0.14em] text-white/35">{copy.best} {copy.days}</div>
           </div>
-          <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-2">
+          <div className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-2">
             <div className="flex items-center gap-1.5 text-sm font-black text-emerald-100">
               <ShieldCheck size={14} strokeWidth={1.5} />
               {profile.successRate}%
@@ -179,7 +179,7 @@ export function GamificationPanel({ language, profile }: Props) {
         </div>
 
         {primaryQuest && (
-          <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-2.5 sm:hidden">
+          <div className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-2.5 sm:hidden">
             <div className="mb-1.5 flex items-center justify-between gap-2 text-[10px] uppercase tracking-[0.14em]">
               <span className="flex min-w-0 items-center gap-1.5 text-white/50">
                 <Target size={12} strokeWidth={1.5} className="text-[color:var(--brand-secondary)]" />
@@ -198,7 +198,7 @@ export function GamificationPanel({ language, profile }: Props) {
         )}
 
         <div className="hidden gap-2 sm:grid sm:grid-cols-2">
-          <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
+          <div className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-3">
             <div className="mb-2 flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-white/45">
               <Target size={13} strokeWidth={1.5} className="text-[color:var(--brand-secondary)]" />
               {copy.dailyQuests}
@@ -222,7 +222,7 @@ export function GamificationPanel({ language, profile }: Props) {
             </div>
           </div>
 
-          <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
+          <div className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-3">
             <div className="mb-2 flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-white/45">
               <Award size={13} strokeWidth={1.5} className="text-amber-200" />
               {copy.achievements}

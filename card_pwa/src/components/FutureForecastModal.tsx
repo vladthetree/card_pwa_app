@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Reusable React component for future Forecast Modal; contributes to the card-learning UI and shared app interactions.
  */
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from '../ui/motion'
 import { X } from 'lucide-react'
 import { UI_TOKENS } from '../constants/ui'
 
@@ -62,7 +62,7 @@ export default function FutureForecastModal({
 
         {loading ? (
           <div
-            className="h-56 rounded-xl border animate-pulse"
+            className="h-56 rounded-ds-xl border animate-pulse"
             style={{
               borderColor: 'var(--brand-primary-25)',
               background: 'linear-gradient(180deg, var(--brand-primary-12), rgba(0,0,0,0.28))',
@@ -70,7 +70,7 @@ export default function FutureForecastModal({
           />
         ) : (
           <div
-            className="rounded-xl border p-4"
+            className="rounded-ds-xl border p-4"
             style={{
               borderColor: 'var(--brand-primary-25)',
               background: 'linear-gradient(180deg, var(--brand-primary-12), rgba(0,0,0,0.32))',

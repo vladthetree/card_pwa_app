@@ -44,7 +44,7 @@ export function HomeHeaderBar({
   return (
     <div className={UI_TOKENS.header.row}>
       <div className={UI_TOKENS.header.brand}>
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] border border-ds-border bg-ds-card p-1.5 shadow-card sm:h-10 sm:w-10">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-ds border border-ds-border bg-ds-card p-1.5 shadow-card sm:h-10 sm:w-10">
           <img src={PWA_Logo} alt={APP_NAME} className="h-full w-full object-contain" />
         </div>
         <div className="min-w-0">

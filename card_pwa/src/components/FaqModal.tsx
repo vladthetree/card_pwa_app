@@ -2,7 +2,7 @@
  * AI_CONTEXT: Reusable React component for faq Modal; contributes to the card-learning UI and shared app interactions.
  */
 import { useState } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import {
   HelpCircle,
   ChevronDown,
@@ -35,7 +35,7 @@ interface FaqSectionProps {
 
 function FaqSection({ title, description, icon, isOpen, onToggle, children }: FaqSectionProps) {
   return (
-    <div className={`overflow-hidden rounded-[12px] transition-all duration-300 ease-out ${isOpen ? 'border border-[#3f3f46] bg-[#0c0c0c] shadow-card' : 'border border-[#18181b] bg-[#0c0c0c]'}`}>
+    <div className={`overflow-hidden rounded-ds-xl transition-all duration-300 ease-out ${isOpen ? 'border border-[#3f3f46] bg-[#0c0c0c] shadow-card' : 'border border-[#18181b] bg-[#0c0c0c]'}`}>
       <button
         type="button"
         onClick={onToggle}
@@ -179,13 +179,13 @@ export default function FaqModal({ isOpen, onClose }: Props) {
                 <div className="pt-3 space-y-3">
                   <div>
                     <p className="text-xs text-white/60 font-semibold uppercase mb-2">Struktur / Structure</p>
-	                    <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3 text-xs font-mono text-white/70">
+	                    <div className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-3 text-xs font-mono text-white/70">
                       {t.faq_csv_structure}
                     </div>
                   </div>
                   <div>
                     <p className="text-xs text-white/60 font-semibold uppercase mb-2">Beispiel / Example</p>
-	                    <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3 text-xs font-mono text-white/70">
+	                    <div className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-3 text-xs font-mono text-white/70">
                       {t.faq_csv_example}
                     </div>
                   </div>
@@ -214,7 +214,7 @@ export default function FaqModal({ isOpen, onClose }: Props) {
               >
                 <div className="pt-3 space-y-3">
                   <p className="text-xs text-white/60 font-semibold uppercase mb-2">Format</p>
-	                  <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3 text-xs font-mono text-white/70 whitespace-pre-wrap">
+	                  <div className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-3 text-xs font-mono text-white/70 whitespace-pre-wrap">
                     {t.faq_txt_structure}
                   </div>
                 </div>

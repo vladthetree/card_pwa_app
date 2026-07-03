@@ -2,7 +2,7 @@
  * AI_CONTEXT: Home-screen React component for home Tag Browse Section; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
 import { useState } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from '../../ui/motion'
 import { BookOpen, ChevronDown, ChevronRight, Loader2, Tag } from 'lucide-react'
 import { cardEnter } from '../../constants/animations'
 import type { Card } from '../../types'
@@ -126,7 +126,7 @@ function cardTypeDot(card: Card): { color: string; label: string } {
 function CardPreviewRow({ card }: { card: Card }) {
   const dot = cardTypeDot(card)
   return (
-    <div className="flex min-w-0 items-start gap-2 rounded-[10px] border border-[#1f1f23] bg-[#070707] px-3 py-2.5">
+    <div className="flex min-w-0 items-start gap-2 rounded-ds-lg border border-[#1f1f23] bg-[#070707] px-3 py-2.5">
       <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${dot.color}`} aria-label={dot.label} />
       <p className="min-w-0 flex-1 truncate text-xs leading-5 text-white/68">
         {card.front || '—'}
@@ -171,7 +171,7 @@ function TagSection({
           className="flex min-w-0 flex-1 items-start gap-3 text-left"
           aria-expanded={expanded}
         >
-          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] border border-[--brand-primary-25] bg-[--brand-primary-12] text-[--brand-primary]">
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-ds-xl border border-[--brand-primary-25] bg-[--brand-primary-12] text-[--brand-primary]">
             <Tag size={16} strokeWidth={1.5} />
           </span>
 
@@ -237,7 +237,7 @@ function TagSection({
             ))}
           </div>
           {hiddenPreviewCount > 0 && (
-            <div className="mt-2 rounded-[10px] border border-[#1f1f23] bg-[#070707] px-3 py-2 text-xs text-white/40">
+            <div className="mt-2 rounded-ds-lg border border-[#1f1f23] bg-[#070707] px-3 py-2 text-xs text-white/40">
               +{hiddenPreviewCount} {language === 'de' ? 'weitere Karten' : 'more cards'}
             </div>
           )}

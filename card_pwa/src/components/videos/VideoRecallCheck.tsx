@@ -214,7 +214,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
       aria-modal="true"
       aria-label={copy.title}
     >
-      <div className="flex w-full max-w-xl flex-col overflow-hidden rounded-[16px] border border-[#1f1f23] bg-[#0a0a0a] shadow-2xl">
+      <div className="flex w-full max-w-xl flex-col overflow-hidden rounded-ds-sheet border border-[#1f1f23] bg-[#0a0a0a] shadow-2xl">
         {/* Kopf */}
         <div className="flex items-center gap-2 border-b border-[#18181b] px-4 py-3">
           <Brain size={16} strokeWidth={1.5} className="shrink-0 text-sky-300" />
@@ -258,7 +258,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
                 <span>{copy.intro}</span>
               </div>
 
-              <div className="min-h-[140px] rounded-[14px] border border-[#1f1f23] bg-[#0c0c0c] p-4">
+              <div className="min-h-[140px] rounded-ds-2xl border border-[#1f1f23] bg-[#0c0c0c] p-4">
                 <div className="whitespace-pre-line font-mono text-[15px] leading-relaxed text-zinc-100">
                   {view.prompt}
                 </div>
@@ -279,7 +279,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
                   type="button"
                   onClick={() => setRevealed(true)}
                   data-testid="recall-check-reveal"
-                  className="flex items-center justify-center gap-2 rounded-[12px] border border-[#3f3f46] bg-[#111] py-3 font-mono text-[13px] font-bold text-zinc-100 transition-colors hover:border-sky-500/50"
+                  className="flex items-center justify-center gap-2 rounded-ds-xl border border-[#3f3f46] bg-[#111] py-3 font-mono text-[13px] font-bold text-zinc-100 transition-colors hover:border-sky-500/50"
                 >
                   <Eye size={15} strokeWidth={1.5} />
                   {copy.reveal}
@@ -290,7 +290,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
                     type="button"
                     onClick={() => grade(false)}
                     data-testid="recall-check-missed"
-                    className="flex items-center justify-center gap-2 rounded-[12px] border border-rose-500/40 bg-rose-500/10 py-3 font-mono text-[13px] font-bold text-rose-200 transition-colors hover:border-rose-400/70"
+                    className="flex items-center justify-center gap-2 rounded-ds-xl border border-rose-500/40 bg-rose-500/10 py-3 font-mono text-[13px] font-bold text-rose-200 transition-colors hover:border-rose-400/70"
                   >
                     <X size={15} strokeWidth={1.5} />
                     {copy.missed}
@@ -299,7 +299,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
                     type="button"
                     onClick={() => grade(true)}
                     data-testid="recall-check-knew"
-                    className="flex items-center justify-center gap-2 rounded-[12px] border border-emerald-500/40 bg-emerald-500/10 py-3 font-mono text-[13px] font-bold text-emerald-200 transition-colors hover:border-emerald-400/70"
+                    className="flex items-center justify-center gap-2 rounded-ds-xl border border-emerald-500/40 bg-emerald-500/10 py-3 font-mono text-[13px] font-bold text-emerald-200 transition-colors hover:border-emerald-400/70"
                   >
                     <Check size={15} strokeWidth={1.5} />
                     {copy.knew}
@@ -330,7 +330,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
                         type="button"
                         onClick={() => onConfidence(level)}
                         data-testid={`recall-check-confidence-${level}`}
-                        className={`flex flex-col items-center gap-1 rounded-[12px] border py-3 font-mono text-[12px] font-bold transition-colors ${
+                        className={`flex flex-col items-center gap-1 rounded-ds-xl border py-3 font-mono text-[12px] font-bold transition-colors ${
                           isSuggested ? meta.activeCls : meta.cls
                         }`}
                       >
@@ -349,7 +349,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
               <button
                 type="button"
                 onClick={restart}
-                className="flex items-center justify-center gap-2 rounded-[12px] border border-[#1f1f23] py-2.5 font-mono text-[12px] text-zinc-400 transition-colors hover:border-[#3f3f46] hover:text-zinc-200"
+                className="flex items-center justify-center gap-2 rounded-ds-xl border border-[#1f1f23] py-2.5 font-mono text-[12px] text-zinc-400 transition-colors hover:border-[#3f3f46] hover:text-zinc-200"
               >
                 <RotateCcw size={14} strokeWidth={1.5} />
                 {copy.again}

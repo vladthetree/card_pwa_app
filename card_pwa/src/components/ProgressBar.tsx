@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Reusable React component for progress Bar; contributes to the card-learning UI and shared app interactions.
  */
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from '../ui/motion'
 
 interface Props {
   current: number

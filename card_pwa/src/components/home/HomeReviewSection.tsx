@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Home-screen React component for home Review Section; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
-import { motion } from 'framer-motion'
+import { motion } from '../../ui/motion'
 import { BookOpen } from 'lucide-react'
 import { DeckCard } from '../DeckCard'
 import type { Deck, DeckScheduleOverview } from '../../types'

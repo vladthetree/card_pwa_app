@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Reusable React component for rating Bar; contributes to the card-learning UI and shared app interactions.
  */
-import { useReducedMotion } from 'framer-motion'
+import { useReducedMotion } from '../ui/motion'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import { UI_TOKENS } from '../constants/ui'
 import type { Rating } from '../types'

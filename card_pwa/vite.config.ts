@@ -72,9 +72,9 @@ export default defineConfig({
             return 'react-vendor'
           }
 
-          if (id.includes('framer-motion') || id.includes('lucide-react')) {
-            return 'ui-vendor'
-          }
+          // framer-motion bewusst NICHT manuell bündeln: der m/LazyMotion-Kern
+          // bleibt im Start-Bundle klein, das domMax-Featurepaket und die
+          // Reorder-Abhängigkeiten (LabsView) splitten als async Chunks.
 
           if (id.includes('sql.js') || id.includes('jszip') || id.includes('papaparse')) {
             return 'data-vendor'

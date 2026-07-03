@@ -2,7 +2,7 @@
  * AI_CONTEXT: Reusable React component for toast Container; contributes to the card-learning UI and shared app interactions.
  */
 import { useEffect, useState } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { X, CheckCircle, AlertCircle, AlertTriangle, Info, type LucideProps } from 'lucide-react'
 import { useToastStore, toast, type ToastItem, type ToastVariant } from '../hooks/useToast'
 import { UI_TOKENS } from '../constants/ui'
@@ -28,7 +28,7 @@ function ToastCard({ item }: { item: ToastItem }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.97 }}
       transition={{ duration: prefersReducedMotion ? 0.1 : 0.22, ease: [0.22, 1, 0.36, 1] }}
-      className={`flex items-start gap-3 w-full max-w-sm rounded-[14px] border ${cfg.border} bg-[#0c0c0c] px-4 py-3 shadow-menu`}
+      className={`flex items-start gap-3 w-full max-w-sm rounded-ds-2xl border ${cfg.border} bg-[#0c0c0c] px-4 py-3 shadow-menu`}
       role="alert"
       aria-live="polite"
     >

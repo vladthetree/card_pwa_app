@@ -88,6 +88,7 @@ const DAILY_REMINDER_STATE_CACHE = 'card-pwa-runtime-state'
 const DAILY_REMINDER_STATE_URL = '/__daily-reminder-state'
 const KPI_ALERT_STATE_URL = '/__kpi-alert-state'
 const ACTIVE_SESSION_SNAPSHOT_URL = '/__active-session-snapshot'
+const SERVER_REACHABILITY_STATE_URL = '/__server-reachability-state'
 
 let dailyReminderEnabled = false
 let dailyReminderTime = '20:00'
@@ -347,7 +348,9 @@ async function staleWhileRevalidate(request) {
   })
 }
 
-const NAV_NETWORK_TIMEOUT_MS = 3000
+// 1.5 s statt 3 s: im LAN antwortet der Pi in Millisekunden; das Timeout greift
+// nur, wenn der Server nicht erreichbar ist — dann soll der Start nicht hängen.
+const NAV_NETWORK_TIMEOUT_MS = 1500
 
 function fetchNavigationWithTimeout(request, timeoutMs) {
   const controller = new AbortController()
@@ -365,6 +368,47 @@ async function readCachedNavigation(request) {
   )
 }
 
+// Persistierter Erreichbarkeits-Zustand: überlebt SW-Restarts, damit ein
+// Kaltstart unterwegs (Pi nicht erreichbar) sofort aus dem Cache starten kann,
+// statt erst in ein Netzwerk-Timeout zu laufen.
+async function readPersistedReachability() {
+  try {
+    const cache = await caches.open(DAILY_REMINDER_STATE_CACHE)
+    const response = await cache.match(SERVER_REACHABILITY_STATE_URL)
+    if (!response) return null
+    const data = await response.json()
+    return data?.state === 'connected' || data?.state === 'disconnected' ? data.state : null
+  } catch {
+    return null
+  }
+}
+
+async function persistReachability(state) {
+  try {
+    const cache = await caches.open(DAILY_REMINDER_STATE_CACHE)
+    await cache.put(
+      SERVER_REACHABILITY_STATE_URL,
+      new Response(JSON.stringify({ state, updatedAt: Date.now() }), {
+        headers: { 'Content-Type': 'application/json' },
+      })
+    )
+  } catch {
+    // best effort persistence
+  }
+}
+
+async function fetchAndCacheNavigation(request, timeoutMs) {
+  const response = await fetchNavigationWithTimeout(request, timeoutMs)
+  if (response && response.ok) {
+    const cache = await caches.open(CACHE_NAME)
+    await cache.put('/', response.clone())
+    await cache.put('/index.html', response.clone())
+    void persistReachability('connected')
+    return response
+  }
+  return null
+}
+
 async function navigationNetworkFirst(request) {
   // Network-FIRST for navigations: we must serve an index.html whose hashed-asset
   // references match what the server currently serves. Serving a *stale* cached
@@ -372,16 +416,27 @@ async function navigationNetworkFirst(request) {
   // white screen in normal Safari / "offline" page in the installed PWA. So try
   // the network first (with a short timeout so a dead server doesn't hang launch),
   // refresh the cache, and fall back to cache → offline only when truly offline.
-  try {
-    const response = await fetchNavigationWithTimeout(request, NAV_NETWORK_TIMEOUT_MS)
-    if (response && response.ok) {
-      const cache = await caches.open(CACHE_NAME)
-      await cache.put('/', response.clone())
-      await cache.put('/index.html', response.clone())
-      return response
+  //
+  // Fastpath: war der Server beim letzten Kontakt nicht erreichbar (persistiert,
+  // überlebt SW-Restarts), sofort die gecachte Shell liefern und nur im
+  // Hintergrund revalidieren — sonst hängt jeder Start unterwegs im TCP-Timeout.
+  const knownDisconnected = (await readPersistedReachability()) === 'disconnected'
+  if (knownDisconnected) {
+    const cachedNavigation = await readCachedNavigation(request)
+    if (cachedNavigation) {
+      // Hintergrund-Revalidierung: kommt der Server zurück, wird Cache +
+      // Zustand aktualisiert; der controllerchange/SW-Update-Fluss übernimmt.
+      void fetchAndCacheNavigation(request, NAV_NETWORK_TIMEOUT_MS).catch(() => {})
+      return cachedNavigation
     }
+  }
+
+  try {
+    const response = await fetchAndCacheNavigation(request, NAV_NETWORK_TIMEOUT_MS)
+    if (response) return response
   } catch {
     // network failed/timed out → fall back to cache below
+    void persistReachability('disconnected')
   }
 
   const cachedNavigation = await readCachedNavigation(request)
@@ -414,6 +469,14 @@ self.addEventListener('fetch', event => {
 
   if (isDocumentRequest) {
     event.respondWith(navigationNetworkFirst(request))
+    return
+  }
+
+  // Vite-Assets sind content-gehasht und damit unveränderlich: Cache-Treffer
+  // brauchen keine Hintergrund-Revalidierung (spart pro Start Dutzende Requests
+  // an den Pi). Updates kommen über die index.html (Network-first) + SW-Version.
+  if (url.pathname.startsWith('/assets/')) {
+    event.respondWith(cacheFirst(request))
     return
   }
 
@@ -633,24 +696,55 @@ function fetchWithTimeout(url, timeoutMs) {
     .finally(() => clearTimeout(timer))
 }
 
+// Dedup: Heartbeat-Checks können von mehreren Triggern (Timer, APP_VISIBLE,
+// FORCE_HEARTBEAT_CHECK) fast gleichzeitig kommen — innerhalb des Fensters
+// wird der laufende bzw. letzte Check wiederverwendet statt erneut zu pingen.
+const HEARTBEAT_DEDUP_WINDOW_MS = 3000
+let heartbeatCheckInflight = null
+let lastHeartbeatCheckAt = 0
+let lastHeartbeatCheckResult = 'disconnected'
+
 async function runHeartbeatCheck() {
   if (!cachedSyncEndpoint) return 'disconnected'
   const healthEndpoint = getHealthEndpoint(cachedSyncEndpoint)
   if (!healthEndpoint) return 'disconnected'
 
-  try {
-    const response = await fetchWithTimeout(healthEndpoint, HEARTBEAT_TIMEOUT_MS)
-    return response.ok ? 'connected' : 'disconnected'
-  } catch {
-    return 'disconnected'
+  if (heartbeatCheckInflight) return heartbeatCheckInflight
+  if (Date.now() - lastHeartbeatCheckAt < HEARTBEAT_DEDUP_WINDOW_MS) {
+    return lastHeartbeatCheckResult
   }
+
+  heartbeatCheckInflight = (async () => {
+    try {
+      const response = await fetchWithTimeout(healthEndpoint, HEARTBEAT_TIMEOUT_MS)
+      lastHeartbeatCheckResult = response.ok ? 'connected' : 'disconnected'
+    } catch {
+      lastHeartbeatCheckResult = 'disconnected'
+    }
+    lastHeartbeatCheckAt = Date.now()
+    return lastHeartbeatCheckResult
+  })().finally(() => {
+    heartbeatCheckInflight = null
+  })
+
+  return heartbeatCheckInflight
 }
 
 async function checkHeartbeatAndBroadcast(forceBroadcast = false) {
   const state = await runHeartbeatCheck()
+  void persistReachability(state)
   if (forceBroadcast || state !== lastHeartbeatState) {
     lastHeartbeatState = state
     await broadcastHeartbeatState(state)
+  }
+}
+
+async function hasVisibleWindowClient() {
+  try {
+    const clients = await self.clients.matchAll({ includeUncontrolled: true, type: 'window' })
+    return clients.some(client => client.visibilityState === 'visible')
+  } catch {
+    return true
   }
 }
 
@@ -664,7 +758,11 @@ function ensureHeartbeatTimer() {
   if (typeof setInterval !== 'function') return
 
   heartbeatTimerId = setInterval(() => {
-    void checkHeartbeatAndBroadcast(false)
+    // Kein sichtbares Fenster → kein Ping. Spart Akku/Pi-Last, wenn die App im
+    // Hintergrund liegt; beim Sichtbarwerden erzwingt APP_VISIBLE eh einen Check.
+    void hasVisibleWindowClient().then(visible => {
+      if (visible) void checkHeartbeatAndBroadcast(false)
+    })
   }, HEARTBEAT_INTERVAL_MS)
 
   void checkHeartbeatAndBroadcast(true)

@@ -62,7 +62,7 @@ export default function TagBrowserSection({ language, profileId }: Props) {
               placeholder={copy.search}
               aria-label={copy.search}
               data-testid="tag-browser-search"
-              className="w-full rounded-[8px] border border-[#1f1f23] bg-[#0c0c0c] py-2 pl-8 pr-2.5 font-mono text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-[#3f3f46] focus:outline-none"
+              className="w-full rounded-ds border border-[#1f1f23] bg-[#0c0c0c] py-2 pl-8 pr-2.5 font-mono text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-[#3f3f46] focus:outline-none"
             />
           </div>
 
@@ -76,7 +76,7 @@ export default function TagBrowserSection({ language, profileId }: Props) {
                   type="button"
                   onClick={() => setActiveTag(tag)}
                   data-testid={`tag-browser-tag-${tag}`}
-                  className="flex items-center gap-1 rounded-[8px] border border-sky-500/30 bg-sky-500/10 px-2 py-1 font-mono text-[11px] text-sky-200 transition-colors hover:border-sky-400/70 hover:text-sky-100"
+                  className="flex items-center gap-1 rounded-ds border border-sky-500/30 bg-sky-500/10 px-2 py-1 font-mono text-[11px] text-sky-200 transition-colors hover:border-sky-400/70 hover:text-sky-100"
                 >
                   <Hash size={10} strokeWidth={2} className="opacity-60" />
                   {tag}

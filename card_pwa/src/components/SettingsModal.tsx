@@ -2,7 +2,7 @@
  * AI_CONTEXT: Reusable React component for settings Modal; contributes to the card-learning UI and shared app interactions.
  */
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import {
   Brain,
   Bell,
@@ -693,7 +693,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                             key={option.key}
                             type="button"
                             onClick={() => setFontFamily(option.key)}
-                            className={`rounded-[14px] border p-3 text-left transition-all duration-300 ease-out active:scale-95 ${
+                            className={`rounded-ds-2xl border p-3 text-left transition-all duration-300 ease-out active:scale-95 ${
                               selected
                                 ? 'border-[#3f3f46] bg-[#111] shadow-card'
                                 : 'border-[#18181b] bg-[#0c0c0c] hover:border-[#3f3f46] hover:bg-[#111]'
@@ -709,7 +709,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                               </span>
                             </div>
                             <div
-                              className="mt-3 rounded-[12px] border border-[#18181b] bg-[#0a0a0a] px-3 py-3 text-sm text-white/85"
+                              className="mt-3 rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] px-3 py-3 text-sm text-white/85"
                               style={{
                                 fontFamily: FONT_FAMILY_OPTIONS[option.key],
                               }}
@@ -736,7 +736,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                             key={key}
                             type="button"
                             onClick={() => setTheme(key as ThemeKey)}
-                            className={`rounded-[14px] border p-3 text-left transition-all duration-300 ease-out active:scale-95 ${
+                            className={`rounded-ds-2xl border p-3 text-left transition-all duration-300 ease-out active:scale-95 ${
                               selected
                                 ? 'border-[#3f3f46] bg-[#111] shadow-card'
                                 : 'border-[#18181b] bg-[#0c0c0c] hover:border-[#3f3f46] hover:bg-[#111]'
@@ -760,7 +760,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                               </div>
                             </div>
                             <div
-                              className="mt-3 h-16 overflow-hidden rounded-[12px] border"
+                              className="mt-3 h-16 overflow-hidden rounded-ds-xl border"
                               style={{
                                 background: theme.background,
                                 borderColor: theme.border,
@@ -782,7 +782,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
 
                   <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
                     <p className="text-xs text-white/50 font-medium uppercase tracking-wide">{t.build_version_visibility_title}</p>
-                    <div className="flex items-center justify-between gap-3 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3">
+                    <div className="flex items-center justify-between gap-3 rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-3">
                       <div>
                         <p className="text-xs text-white/70">{t.build_version_visibility_toggle}</p>
                         <p className="text-[11px] text-white/45 mt-1" title={buildVersionTitle}>{buildVersionLabel}</p>
@@ -862,7 +862,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                         <button
                           key={lang}
                           onClick={() => setLanguage(lang)}
-                          className={`py-2.5 px-3 rounded-xl font-medium transition-all ${
+                          className={`py-2.5 px-3 rounded-ds-xl font-medium transition-all ${
                             settings.language === lang
                               ? 'border border-[--brand-primary-50] bg-[--brand-primary-08] text-white'
                               : 'bg-[#0c0c0c] text-zinc-400 hover:text-zinc-200 border border-[#18181b]'
@@ -1022,7 +1022,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                           key={algo}
                           onClick={() => setAlgorithm(algo)}
                           disabled={isAlgorithmMigrating}
-                          className={`w-full text-left py-3 px-4 rounded-xl border transition-all ${
+                          className={`w-full text-left py-3 px-4 rounded-ds-xl border transition-all ${
                             settings.algorithm === algo
                               ? 'border-[--brand-primary-50] bg-[--brand-primary-08]'
                               : 'bg-[#0c0c0c] border-[#18181b] hover:bg-[#111]'
@@ -1069,7 +1069,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                               step="0.05"
                               value={settings.algorithmParams.sm2.hardMultiplier}
                               onChange={e => updateNumber(e.target.value, value => setSm2Params({ hardMultiplier: value }))}
-                              className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                              className="mt-1 w-full rounded-ds bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                             />
                           </label>
                           <label className="text-xs text-white/65">
@@ -1079,7 +1079,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                               step="0.05"
                               value={settings.algorithmParams.sm2.easyMultiplier}
                               onChange={e => updateNumber(e.target.value, value => setSm2Params({ easyMultiplier: value }))}
-                              className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                              className="mt-1 w-full rounded-ds bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                             />
                           </label>
                           <label className="text-xs text-white/65">
@@ -1089,7 +1089,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                               step="10"
                               value={settings.algorithmParams.sm2.easeAgain}
                               onChange={e => updateNumber(e.target.value, value => setSm2Params({ easeAgain: value }))}
-                              className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                              className="mt-1 w-full rounded-ds bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                             />
                           </label>
                           <label className="text-xs text-white/65">
@@ -1099,7 +1099,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                               step="10"
                               value={settings.algorithmParams.sm2.easeEasy}
                               onChange={e => updateNumber(e.target.value, value => setSm2Params({ easeEasy: value }))}
-                              className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                              className="mt-1 w-full rounded-ds bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                             />
                           </label>
                         </div>
@@ -1112,7 +1112,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                               step="0.01"
                               value={settings.algorithmParams.fsrs.requestRetention}
                               onChange={e => updateNumber(e.target.value, value => setFsrsParams({ requestRetention: value }))}
-                              className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                              className="mt-1 w-full rounded-ds bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                             />
                           </label>
                           <label className="text-xs text-white/65">
@@ -1122,7 +1122,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                               step="0.05"
                               value={settings.algorithmParams.fsrs.hardPen}
                               onChange={e => updateNumber(e.target.value, value => setFsrsParams({ hardPen: value }))}
-                              className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                              className="mt-1 w-full rounded-ds bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                             />
                           </label>
                           <label className="text-xs text-white/65">
@@ -1132,7 +1132,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                               step="0.05"
                               value={settings.algorithmParams.fsrs.easyBonus}
                               onChange={e => updateNumber(e.target.value, value => setFsrsParams({ easyBonus: value }))}
-                              className="mt-1 w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                              className="mt-1 w-full rounded-ds bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                             />
                           </label>
                         </div>
@@ -1174,7 +1174,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                   <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
                     <p className="text-xs text-white/50 font-medium uppercase tracking-wide">{t.sw_notifications_title}</p>
                     <p className="text-xs text-white/40 leading-relaxed">{t.sw_notifications_description}</p>
-                    <div className="flex items-center justify-between gap-3 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3">
+                    <div className="flex items-center justify-between gap-3 rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-3">
                       <span className="text-xs text-white/70">{t.sw_notifications_toggle_label}</span>
                       <button
                         type="button"
@@ -1196,7 +1196,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                   </div>
 
                   <details className="group/channels">
-                    <summary className="flex cursor-pointer list-none items-center justify-between rounded-[12px] border border-[#18181b] bg-[#080808] px-3 py-3 text-left transition hover:bg-white/[0.035]">
+                    <summary className="flex cursor-pointer list-none items-center justify-between rounded-ds-xl border border-[#18181b] bg-[#080808] px-3 py-3 text-left transition hover:bg-white/[0.035]">
                       <span>
                         <span className="block text-xs font-semibold uppercase tracking-wide text-white/60">
                           {settings.language === 'de' ? 'Kanäle & Vorlagen' : 'Channels & templates'}
@@ -1222,12 +1222,12 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                             <p className="text-xs text-white/40 leading-relaxed">{channel.description}</p>
 
                             {channel.key === 'dailyReminder' && isIosRuntime && (
-                              <p className="text-[11px] text-amber-200/90 leading-relaxed rounded-lg border border-amber-300/20 bg-amber-500/10 p-2.5">
+                              <p className="text-[11px] text-amber-200/90 leading-relaxed rounded-ds border border-amber-300/20 bg-amber-500/10 p-2.5">
                                 {t.daily_reminder_ios_install_hint}
                               </p>
                             )}
 
-                            <div className="flex items-center justify-between gap-3 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3">
+                            <div className="flex items-center justify-between gap-3 rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-3">
                               <span className="text-xs text-white/70">{t.notification_channel_toggle_label}</span>
                               <button
                                 type="button"
@@ -1248,19 +1248,19 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                             </div>
 
                             {channel.key === 'dailyReminder' && (
-                              <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3 space-y-2">
+                              <div className="rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-3 space-y-2">
                                 <label className="block text-xs text-white/70 uppercase tracking-wide">{t.daily_reminder_time_label}</label>
                                 <input
                                   type="time"
                                   value={settings.dailyReminderTime}
                                   onChange={e => { void applyDailyReminderTime(e.target.value) }}
-                                  className="w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                                  className="w-full rounded-ds bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                                   disabled={!channelEnabled}
                                 />
                               </div>
                             )}
 
-                            <details className="group/template rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-3">
+                            <details className="group/template rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-3">
                               <summary className="cursor-pointer list-none text-xs font-medium uppercase tracking-wide text-white/55 transition hover:text-white/80">
                                 {settings.language === 'de' ? 'Vorlage bearbeiten' : 'Edit template'}
                                 <span className="ml-2 text-white/30 group-open/template:hidden">+</span>
@@ -1275,7 +1275,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                                     value={channelConfig.title}
                                     onChange={e => applyNotificationTemplate(channel.key, e.target.value, channelConfig.body)}
                                     placeholder={channel.defaultTitle}
-                                    className="w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                                    className="w-full rounded-ds bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                                   />
                                 </div>
 
@@ -1287,7 +1287,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                                     value={channelConfig.body}
                                     onChange={e => applyNotificationTemplate(channel.key, channelConfig.title, e.target.value)}
                                     placeholder={channel.defaultBody}
-                                    className="w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white resize-y"
+                                    className="w-full rounded-ds bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white resize-y"
                                   />
                                 </div>
 
@@ -1388,7 +1388,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                       value={syncAuthToken}
                       onChange={event => handleSyncAuthTokenChange(event.target.value)}
                       placeholder="Leer = kein Token"
-                      className="w-full rounded-lg bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
+                      className="w-full rounded-ds bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                     />
                   </div>
 
@@ -1427,7 +1427,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     <p className="text-xs text-white/40 leading-relaxed">
                       {t.notification_test_description}
                     </p>
-                    <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3 space-y-3">
+                    <div className="rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-3 space-y-3">
                       <div className="flex items-center justify-between gap-3">
                         <p className="text-xs text-white/60 uppercase tracking-wide">{t.notification_test_permission_label}</p>
                         <span className={`rounded-full px-2.5 py-1 text-[11px] font-medium border ${
@@ -1507,7 +1507,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     </p>
 
                     {errorLogs.length > 0 && (
-                      <div className="max-h-36 overflow-y-auto rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-2 space-y-2">
+                      <div className="max-h-36 overflow-y-auto rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-2 space-y-2">
                         {errorLogs.slice(0, 5).map(entry => (
                           <div key={entry.id} className="text-[11px] text-white/70 leading-relaxed">
                             <p className="text-white/90">{new Date(entry.timestamp).toLocaleString()} · {entry.source}</p>
@@ -1543,7 +1543,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                   <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
                     <p className="text-xs text-white/50 font-medium uppercase tracking-wide">{t.indexeddb_reset_title}</p>
                     <p className="text-xs text-white/40 leading-relaxed">{t.indexeddb_reset_description}</p>
-                    <div className="rounded-xl border border-rose-400/20 bg-rose-500/10 p-3 space-y-2">
+                    <div className="rounded-ds-xl border border-rose-400/20 bg-rose-500/10 p-3 space-y-2">
                       <p className="text-xs font-semibold text-rose-100">{t.pwa_full_reset_title}</p>
                       <p className="text-xs text-rose-100/70 leading-relaxed">{t.pwa_full_reset_description}</p>
                       <button

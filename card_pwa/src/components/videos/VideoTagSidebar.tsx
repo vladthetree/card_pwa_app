@@ -5,7 +5,7 @@
  * Important: Tag identity is canonical (normalizeTagId) and counts come from the pure useVideoTagStats aggregation — never ad-hoc per-tag queries. Label/dot/count/active-outline all work without relying on colour alone.
  */
 import { useMemo, useState } from 'react'
-import { BookOpen, Hash, NotebookPen, Pin, Search, X } from 'lucide-react'
+import { BookOpen, Hash, NotebookPen, PanelLeftClose, Pin, Search, X } from 'lucide-react'
 import { useVideoTagStats } from '../../hooks/useVideoTags'
 import { normalizeTagId } from '../../utils/tagIdentity'
 import { filterVideoTagStats, type VideoTagStat } from '../../utils/videoTagStats'
@@ -23,6 +23,7 @@ const COPY = {
     cardsTitle: 'Karten',
     clear: 'Suche leeren',
     close: 'Schließen',
+    collapse: 'Tags einklappen',
   },
   en: {
     title: 'Tags',
@@ -36,6 +37,7 @@ const COPY = {
     cardsTitle: 'Cards',
     clear: 'Clear search',
     close: 'Close',
+    collapse: 'Collapse tags',
   },
 } as const
 
@@ -52,6 +54,8 @@ interface Props {
   variant?: 'panel' | 'sheet'
   /** Nur im `sheet`-Modus: schließt das Sheet. */
   onClose?: () => void
+  /** Nur im `panel`-Modus: klappt die Desktop-Spalte ein. */
+  onCollapse?: () => void
 }
 
 /** Eine Tag-Zeile: Farbpunkt/Hash, Label, Pin, Notiz-/Karten-Count. */
@@ -72,7 +76,7 @@ function TagRow({
       onClick={onOpen}
       data-testid={`video-tag-row-${stat.tagId}`}
       aria-current={active ? 'true' : undefined}
-      className={`group flex w-full items-center gap-2 rounded-[10px] border px-2.5 py-2 text-left transition-colors ${
+      className={`group flex w-full items-center gap-2 rounded-ds-lg border px-2.5 py-2 text-left transition-colors ${
         active ? 'border-sky-500/60 bg-sky-500/10' : 'border-transparent hover:border-[#1f1f23] hover:bg-[#0c0c0c]'
       }`}
     >
@@ -110,7 +114,7 @@ function TagRow({
  * nach Klick), gepinnte zuerst, mit Live-Counts und Suche. Klick öffnet die
  * Tag-Seite; kombinierte Filter kommen in einer späteren Phase.
  */
-export default function VideoTagSidebar({ profileId, language, activeTag, onOpenTag, variant = 'panel', onClose }: Props) {
+export default function VideoTagSidebar({ profileId, language, activeTag, onOpenTag, variant = 'panel', onClose, onCollapse }: Props) {
   const copy = COPY[language]
   const stats = useVideoTagStats(profileId)
   const [query, setQuery] = useState('')
@@ -147,12 +151,24 @@ export default function VideoTagSidebar({ profileId, language, activeTag, onOpen
           <X size={15} />
         </button>
       )}
+      {variant === 'panel' && onCollapse && (
+        <button
+          type="button"
+          onClick={onCollapse}
+          className="ds-icon-button flex h-8 w-8"
+          aria-label={copy.collapse}
+          title={copy.collapse}
+          data-testid="video-tag-sidebar-collapse"
+        >
+          <PanelLeftClose size={15} />
+        </button>
+      )}
     </div>
   )
 
   const search = (
     <div className="shrink-0 px-2.5 py-2">
-      <div className="flex items-center gap-2 rounded-[10px] border border-[#1f1f23] bg-[#0c0c0c] px-2.5 py-1.5">
+      <div className="flex items-center gap-2 rounded-ds-lg border border-[#1f1f23] bg-[#0c0c0c] px-2.5 py-1.5">
         <Search size={13} strokeWidth={1.5} className="shrink-0 text-zinc-500" />
         <input
           type="text"
@@ -228,7 +244,7 @@ export default function VideoTagSidebar({ profileId, language, activeTag, onOpen
         onClick={onClose}
       >
         <div
-          className="flex max-h-[75dvh] flex-col overflow-hidden rounded-t-[18px] border-t border-[#1f1f23] bg-[#0a0a0a] pb-safe-2"
+          className="flex max-h-[75dvh] flex-col overflow-hidden rounded-t-ds-sheet border-t border-[#1f1f23] bg-[#0a0a0a] pb-safe-2"
           onClick={event => event.stopPropagation()}
         >
           {inner}

@@ -5,7 +5,7 @@
  * Important: Heavy parsing is lazy-loaded through utils/import/importPipeline; keep this component focused on user flow and status states.
  */
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { Upload, AlertCircle, CheckCircle, Loader2, X } from 'lucide-react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import DuplicateReviewModal from './DuplicateReviewModal'
@@ -213,7 +213,7 @@ export default function ImportView({ isOpen, onClose }: Props) {
                 onDrop={handleDrop}
                 onClick={() => { if (!isProcessing) inputRef.current?.click() }}
                 className={`
-                  relative rounded-[14px] border-2 border-dashed transition-all duration-200 ease-out min-h-[200px]
+                  relative rounded-ds-2xl border-2 border-dashed transition-all duration-200 ease-out min-h-[200px]
                   flex flex-col items-center justify-center gap-3 text-center px-6 py-10
                   ${isProcessing ? 'cursor-default' : 'cursor-pointer'}
                   ${isDragOver
@@ -300,7 +300,7 @@ export default function ImportView({ isOpen, onClose }: Props) {
                       </div>
                       <button
                         onClick={e => { e.stopPropagation(); onClose() }}
-                        className="mt-2 px-5 py-2 rounded-[12px] border border-white/20 bg-white text-black text-sm font-black transition-all duration-200 ease-out active:scale-[0.98] hover:bg-white/90"
+                        className="mt-2 px-5 py-2 rounded-ds-xl border border-white/20 bg-white text-black text-sm font-black transition-all duration-200 ease-out active:scale-[0.98] hover:bg-white/90"
                       >
                         {t.import_done}
                       </button>
@@ -321,7 +321,7 @@ export default function ImportView({ isOpen, onClose }: Props) {
                       <p className="text-white/45 text-xs max-w-[260px]">{status.message}</p>
                       <button
                         onClick={e => { e.stopPropagation(); setStatus({ phase: 'idle' }) }}
-                        className="mt-2 px-4 py-1.5 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] text-sm text-zinc-400 hover:text-zinc-50 hover:border-[#3f3f46] transition-all duration-200 ease-out active:scale-[0.98]"
+                        className="mt-2 px-4 py-1.5 rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] text-sm text-zinc-400 hover:text-zinc-50 hover:border-[#3f3f46] transition-all duration-200 ease-out active:scale-[0.98]"
                       >
                         {t.retry}
                       </button>

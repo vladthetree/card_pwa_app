@@ -24,7 +24,7 @@ export default function StreakBadge({ compact = false }: Props) {
 
   return (
     <div
-      className={`inline-flex items-center gap-1.5 rounded-[12px] border px-2 py-1 font-mono text-xs tracking-wide ${colorClass}`}
+      className={`inline-flex items-center gap-1.5 rounded-ds-xl border px-2 py-1 font-mono text-xs tracking-wide ${colorClass}`}
       title={title}
       aria-label={title}
     >

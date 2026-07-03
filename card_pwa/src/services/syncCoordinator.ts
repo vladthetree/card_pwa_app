@@ -137,13 +137,17 @@ export function setupUnifiedSyncRuntime(): () => void {
   navigator.serviceWorker?.addEventListener('message', handleSwMessage)
 
   const interval = window.setInterval(() => {
-    if (navigator.onLine) {
-      void checkSyncServerReachable(true).then(reachable => {
-        if (reachable) {
-          requestSyncCycle()
-        }
-      })
-    }
+    // Hidden → kein Polling (iOS suspendiert eh; Desktop-Tabs sparen Requests).
+    // Kein force: der Reachability-Cache wird vom SW-Heartbeat gespeist; ein
+    // erzwungener Extra-/health-Ping pro Tick entfällt.
+    if (document.visibilityState === 'hidden') return
+    if (!navigator.onLine) return
+
+    void checkSyncServerReachable(false).then(reachable => {
+      if (reachable) {
+        requestSyncCycle()
+      }
+    })
   }, 30_000)
 
   // Kick off an initial sync immediately

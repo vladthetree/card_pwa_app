@@ -29,7 +29,7 @@ export function DeckSchedulePanel({
   }, [activeInfoKey])
   if (!schedule) {
     return (
-      <div className="h-[84px] animate-pulse rounded-[8px] border border-ds-border bg-ds-card p-2" />
+      <div className="h-[84px] animate-pulse rounded-ds border border-ds-border bg-ds-card p-2" />
     )
   }
 
@@ -97,7 +97,7 @@ export function DeckSchedulePanel({
               </button>
               {isInfoOpen && (
                 <div
-                  className="absolute left-1/2 top-[calc(100%+0.35rem)] z-20 w-44 -translate-x-1/2 rounded-[8px] border border-ds-border bg-ds-card px-2.5 py-2 text-[10px] leading-relaxed text-zinc-300 shadow-menu"
+                  className="absolute left-1/2 top-[calc(100%+0.35rem)] z-20 w-44 -translate-x-1/2 rounded-ds border border-ds-border bg-ds-card px-2.5 py-2 text-[10px] leading-relaxed text-zinc-300 shadow-menu"
                   role="tooltip"
                 >
                   {item.info}
