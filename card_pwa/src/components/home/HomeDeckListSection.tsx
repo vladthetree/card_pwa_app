@@ -145,7 +145,7 @@ export function HomeDeckListSection({
       )}
 
       {loading ? (
-        <div className="flex flex-col gap-2.5 sm:gap-3">{[...Array(4)].map((_, i) => <div key={i} className="h-20 ds-card animate-pulse" />)}</div>
+        <div className="grid grid-cols-1 items-start gap-2.5 sm:gap-3 lg:grid-cols-2">{[...Array(4)].map((_, i) => <div key={i} className="h-20 ds-card animate-pulse" />)}</div>
       ) : !showShuffleOnly && decks.length === 0 ? (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex min-h-full flex-col items-center justify-start pt-10 pb-12 text-center sm:justify-center sm:py-16">
           <p className="text-white/30 text-sm mb-4">{t.no_decks}</p>
@@ -166,7 +166,7 @@ export function HomeDeckListSection({
           </p>
         </motion.div>
       ) : (
-        <div className="flex flex-col gap-2.5 sm:gap-3">
+        <div className="grid grid-cols-1 items-start gap-2.5 sm:gap-3 lg:grid-cols-2">
           {!showShuffleOnly && visibleDecks.map((deck) => (
             <DeckCard
               key={deck.id}
