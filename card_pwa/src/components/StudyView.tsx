@@ -938,7 +938,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
       {/* Main card area */}
       <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-ds-bg/90">
         <div
-          className={`flex-1 min-h-0 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-2' : 'overflow-y-auto px-3 sm:px-4 py-4 sm:py-6'}`}
+          className={`flex-1 min-h-0 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-2' : 'flex flex-col overflow-y-auto px-3 sm:px-4 py-4 sm:py-6'}`}
         >
           {/* Error alert */}
           <AnimatePresence>
@@ -958,7 +958,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
                 initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 22, scale: 0.96 }}
                 animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: prefersReducedMotion ? 0.12 : 0.22, ease: [0.22, 1, 0.36, 1] }}
-                className={`w-full ${isHandsetLayout ? 'flex h-full min-h-0 flex-col' : ''}`}
+                className={`w-full ${isHandsetLayout ? 'flex h-full min-h-0 flex-col' : 'mx-auto my-auto max-w-5xl'}`}
                 style={isHandsetLayout ? { maxHeight: '100%' } : undefined}
               >
                 <div className={`flex flex-col lg:flex-row items-start gap-6 w-full ${isHandsetLayout ? 'h-full min-h-0 flex-1' : ''}`}>
@@ -992,7 +992,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
                   animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
                   exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
                   transition={{ duration: prefersReducedMotion ? 0.12 : 0.15, ease: 'easeOut' }}
-                  className="w-full mt-5 sm:mt-6"
+                  className="mx-auto w-full max-w-5xl mt-5 sm:mt-6"
                 >
                   <RatingBar onRate={handleRate} maxRating={maxSelectableRating} disabled={session.isSubmitting || !!session.error} layout="row" />
                 </motion.div>
