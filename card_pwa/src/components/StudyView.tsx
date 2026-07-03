@@ -962,7 +962,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
                 style={isHandsetLayout ? { maxHeight: '100%' } : undefined}
               >
                 <div className={`flex flex-col lg:flex-row items-start gap-6 w-full ${isHandsetLayout ? 'h-full min-h-0 flex-1' : ''}`}>
-                  <div className={`flex-1 ${isHandsetLayout ? 'h-full min-h-0' : ''}`}>
+                  <div className={`w-full min-w-0 flex-1 ${isHandsetLayout ? 'h-full min-h-0' : ''}`}>
                     <div
                       className="h-full card-no-select"
                       onTouchStart={handleTouchStart}
