@@ -65,7 +65,7 @@ export function DeckMetricsModal({ deck, language, onClose }: { deck: Deck; lang
         initial={{ opacity: 0, y: 10, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 10, scale: 0.98 }}
-        className={`${UI_TOKENS.modal.shell} max-w-xl`}
+        className={`${UI_TOKENS.modal.shell} max-w-3xl`}
       >
         <div className={UI_TOKENS.modal.header}>
           <div>
