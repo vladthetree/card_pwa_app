@@ -93,6 +93,9 @@ const COPY = {
     speed: 'Geschwindigkeit',
     noteStats: '{notes} Zettel · {tags} Tags',
     tags: 'Tags',
+    course: 'Kurs',
+    showCourse: 'Kurs öffnen',
+    hideCourse: 'Kurs schließen',
     collapseRecall: 'Abruf-Check einklappen',
     done: 'Fertig',
     backToVideo: 'Video',
@@ -139,6 +142,9 @@ const COPY = {
     speed: 'Playback speed',
     noteStats: '{notes} notes · {tags} tags',
     tags: 'Tags',
+    course: 'Course',
+    showCourse: 'Open course',
+    hideCourse: 'Close course',
     collapseRecall: 'Collapse recall',
     done: 'Done',
     backToVideo: 'Video',
@@ -478,8 +484,9 @@ export default function VideosView({ language, onExit }: Props) {
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set())
   const [recallOpen, setRecallOpen] = useState(false)
   const [activeTag, setActiveTag] = useState<string | null>(null)
-  const [showTagSidebar, setShowTagSidebar] = usePersistentBool('card-pwa-video-tags-open', true)
-  const [studyBarOpen, setStudyBarOpen] = usePersistentBool('card-pwa-video-studybar-open', true)
+  const [showTagSidebar, setShowTagSidebar] = usePersistentBool('card-pwa-video-tags-open-v2', false)
+  const [studyBarOpen, setStudyBarOpen] = usePersistentBool('card-pwa-video-studybar-open-v2', false)
+  const [coursePanelOpen, setCoursePanelOpen] = usePersistentBool('card-pwa-video-course-panel-open', false)
   const [tagSheetOpen, setTagSheetOpen] = useState(false)
   const [noteFocused, setNoteFocused] = useState(false)
   const noteBlurTimer = useRef<number | undefined>(undefined)
@@ -518,6 +525,7 @@ export default function VideosView({ language, onExit }: Props) {
     setRecallOpen(false)
     setCurrentVideoTime(0)
     setSeekRequest(null)
+    if (isDesktop) setCoursePanelOpen(false)
     setActiveFile(item.file)
   }
 
@@ -597,18 +605,18 @@ export default function VideosView({ language, onExit }: Props) {
           labels={{ fullscreen: copy.fullscreen, exitFullscreen: copy.exitFullscreen, speed: copy.speed }}
         />
       ) : resolving ? (
-        <div className="flex aspect-video w-full max-w-5xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-[#1f1f23] bg-black text-center">
+        <div className="flex aspect-video w-full max-w-6xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-[#1f1f23] bg-black text-center">
           <Loader2 size={26} className="animate-spin text-zinc-500" />
           <div className="font-mono text-[12px] text-zinc-500">{copy.resolving}</div>
         </div>
       ) : (
-        <div className="flex aspect-video w-full max-w-5xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-amber-500/30 bg-amber-500/5 text-center">
+        <div className="flex aspect-video w-full max-w-6xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-amber-500/30 bg-amber-500/5 text-center">
           <WifiOff size={26} strokeWidth={1.5} className="text-amber-300" />
           <div className="px-6 font-mono text-[12px] text-amber-200">{copy.streamOnly}</div>
         </div>
       )
     ) : (
-      <div className="flex aspect-video w-full max-w-5xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-dashed border-[#1f1f23] bg-[#070707] text-center">
+      <div className="flex aspect-video w-full max-w-6xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-dashed border-[#1f1f23] bg-[#070707] text-center">
         <Play size={28} strokeWidth={1.5} className="text-zinc-600" />
         <div className="px-6 font-mono text-[12px] text-zinc-500">{copy.pickVideo}</div>
       </div>
@@ -776,6 +784,9 @@ export default function VideosView({ language, onExit }: Props) {
       />
     ) : null
 
+  const coursePanelExpanded = !activeItem || coursePanelOpen
+  const coursePanelLabel = coursePanelOpen ? copy.hideCourse : copy.showCourse
+
   return (
     <div className="flex h-full min-h-0 flex-col">
       {/* Header */}
@@ -821,7 +832,7 @@ export default function VideosView({ language, onExit }: Props) {
       </div>
 
       {isDesktop ? (
-        /* ── Desktop: optionale Tag-Spalte · Player + Liste · Notizzettel ── */
+        /* ── Desktop: Fokus auf Player + Notizzettel; Kursliste als Ablage ── */
         <div className="flex min-h-0 flex-1">
           {showTagSidebar && hasTagActivity && (
             <aside className="flex min-h-0 w-56 shrink-0 flex-col border-r border-[#18181b] bg-[#070707]">
@@ -835,17 +846,55 @@ export default function VideosView({ language, onExit }: Props) {
               />
             </aside>
           )}
-          <div className="flex min-h-0 flex-[3] flex-col border-r border-[#18181b]">
-            <div className="flex shrink-0 flex-col items-center border-b border-[#18181b] bg-black px-4 py-4">
+          <div className="flex min-h-0 flex-[5] flex-col border-r border-[#18181b]">
+            <div
+              className={`flex flex-col items-center overflow-y-auto bg-black ${
+                activeItem
+                  ? 'min-h-0 flex-1 justify-center px-5 py-5'
+                  : 'shrink-0 border-b border-[#18181b] px-4 py-4'
+              }`}
+              data-study-scroll="allow"
+            >
               {renderPlayer()}
               {renderStudyBar()}
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3" data-study-scroll="allow">
-              {domainList}
+            <div className={`${activeItem ? 'shrink-0' : 'min-h-0 flex-1'} flex flex-col border-t border-[#18181b] bg-[#060606]`}>
+              {activeItem ? (
+                <button
+                  type="button"
+                  onClick={() => setCoursePanelOpen(prev => !prev)}
+                  aria-expanded={coursePanelOpen}
+                  aria-label={coursePanelLabel}
+                  title={coursePanelLabel}
+                  className="flex min-h-[48px] w-full items-center gap-3 px-4 text-left transition-colors hover:bg-[#0a0a0a]"
+                >
+                  <span className="shrink-0 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-500">{copy.course}</span>
+                  <span className="min-w-0 flex-1 truncate font-mono text-[12px] text-zinc-300">
+                    {activeItem.objective} · {activeItem.title}
+                  </span>
+                  {coursePanelOpen ? (
+                    <ChevronDown size={15} strokeWidth={1.5} className="shrink-0 text-zinc-500" />
+                  ) : (
+                    <ChevronUp size={15} strokeWidth={1.5} className="shrink-0 text-zinc-500" />
+                  )}
+                </button>
+              ) : (
+                <div className="flex min-h-[44px] items-center px-3">
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-500">{copy.course}</span>
+                </div>
+              )}
+              {coursePanelExpanded && (
+                <div
+                  className={`${activeItem ? 'max-h-[28vh]' : 'min-h-0 flex-1'} overflow-y-auto px-3 py-3`}
+                  data-study-scroll="allow"
+                >
+                  {domainList}
+                </div>
+              )}
             </div>
           </div>
 
-          <aside className="flex min-h-0 w-1/4 min-w-[300px] flex-col bg-[#070707]">
+          <aside className="flex min-h-0 w-[34%] min-w-[340px] max-w-[560px] flex-col bg-[#070707]">
             <VideoNotesPanel
               profileId={profileId}
               objective={activeItem?.objective ?? null}
