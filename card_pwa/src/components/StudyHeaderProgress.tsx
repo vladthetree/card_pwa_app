@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Reusable React component for study Header Progress; contributes to the card-learning UI and shared app interactions.
  */
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion } from '../ui/motion'
 import ProgressBar from './ProgressBar'
 
 export interface RewardHint {

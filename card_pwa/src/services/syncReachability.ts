@@ -13,10 +13,16 @@ export type SyncReachabilityState = 'connected' | 'disconnected'
 const REACHABILITY_INTERVAL_MS = 20_000
 const REACHABILITY_CACHE_MS = 20_000
 const REACHABILITY_TIMEOUT_MS = 4_000
+// Backoff bei nicht erreichbarem Server: verdoppelt das Cache-Fenster pro
+// Fehlschlag (20 s → 40 s → … → 5 min), damit die App unterwegs nicht alle
+// 20 s in ein TCP-Timeout läuft. Erzwungene Checks (online/visibility) und
+// ein Erfolg setzen den Streak zurück.
+const REACHABILITY_BACKOFF_MAX_MS = 5 * 60_000
 
 let currentState: SyncReachabilityState = 'disconnected'
 let lastReachabilityCheckAt = 0
 let lastReachabilityResult = false
+let reachabilityFailureStreak = 0
 let runtimeRefCount = 0
 let disposeRuntime: (() => void) | null = null
 
@@ -38,6 +44,15 @@ function setReachabilityState(nextState: SyncReachabilityState): void {
 function resetReachabilityCache(): void {
   lastReachabilityCheckAt = 0
   lastReachabilityResult = false
+  reachabilityFailureStreak = 0
+}
+
+function effectiveReachabilityCacheMs(): number {
+  if (reachabilityFailureStreak === 0) return REACHABILITY_CACHE_MS
+  return Math.min(
+    REACHABILITY_CACHE_MS * 2 ** reachabilityFailureStreak,
+    REACHABILITY_BACKOFF_MAX_MS,
+  )
 }
 
 export function getSyncHealthUrl(): string | null {
@@ -82,7 +97,7 @@ export async function checkSyncServerReachable(force = false): Promise<boolean> 
   }
 
   const now = Date.now()
-  if (!force && now - lastReachabilityCheckAt < REACHABILITY_CACHE_MS) {
+  if (!force && now - lastReachabilityCheckAt < effectiveReachabilityCacheMs()) {
     return lastReachabilityResult
   }
 
@@ -102,10 +117,12 @@ export async function checkSyncServerReachable(force = false): Promise<boolean> 
       REACHABILITY_TIMEOUT_MS,
     )
     lastReachabilityResult = response.ok
+    reachabilityFailureStreak = response.ok ? 0 : reachabilityFailureStreak + 1
     setReachabilityState(response.ok ? 'connected' : 'disconnected')
     return response.ok
   } catch {
     lastReachabilityResult = false
+    reachabilityFailureStreak += 1
     setReachabilityState('disconnected')
     return false
   }
@@ -153,6 +170,7 @@ function handleServiceWorkerHeartbeatMessage(event: MessageEvent): void {
 
   lastReachabilityCheckAt = Date.now()
   lastReachabilityResult = nextState === 'connected'
+  reachabilityFailureStreak = nextState === 'connected' ? 0 : Math.max(1, reachabilityFailureStreak)
   setReachabilityState(nextState)
 }
 
@@ -199,9 +217,23 @@ export function startSyncReachabilityRuntime(): () => void {
     navigator.serviceWorker?.addEventListener('message', handleServiceWorkerHeartbeatMessage)
 
     const interval = window.setInterval(() => {
-      if (navigator.onLine && isSyncActive()) {
-        refreshReachability(false)
+      // Hidden → kein Polling; beim Sichtbarwerden erzwingt onVisibilityChange
+      // ohnehin einen frischen Check.
+      if (document.visibilityState === 'hidden') return
+      if (!navigator.onLine || !isSyncActive()) return
+
+      // Mit aktivem SW ist dessen sichtbarkeits-gegateter Heartbeat (20 s) die
+      // Quelle: der Broadcast füllt unseren Cache. Nur wenn der Cache auffällig
+      // alt ist (SW eingeschlafen), wird ein Check angestoßen; ohne SW prüft
+      // die App selbst (mit Backoff über effectiveReachabilityCacheMs).
+      if (navigator.serviceWorker?.controller) {
+        if (Date.now() - lastReachabilityCheckAt > REACHABILITY_INTERVAL_MS * 2) {
+          requestServiceWorkerHeartbeatCheck()
+        }
+        return
       }
+
+      void checkSyncServerReachable(false)
     }, REACHABILITY_INTERVAL_MS)
 
     if (navigator.onLine && isSyncActive()) {

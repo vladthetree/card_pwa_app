@@ -3,7 +3,7 @@
  */
 import { memo, useMemo, useRef, useState, useCallback, useEffect } from 'react'
 import { Edit, X } from 'lucide-react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from '../ui/motion'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import type { Card } from '../types'
 import type { Question, Answer } from '../utils/cardTextParser'
@@ -130,7 +130,7 @@ const DragMatchCard = memo(function DragMatchCard({
 
   const cardShellCls = `border ${
     submitted ? (isCorrect ? 'border-emerald-500/45' : 'border-rose-500/45') : 'border-ds-border'
-  } flex flex-col overflow-hidden rounded-[8px] bg-ds-card shadow-card ${
+  } flex flex-col overflow-hidden rounded-ds bg-ds-card shadow-card ${
     compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[420px] md:min-h-[500px]'
   }`
 
@@ -164,7 +164,7 @@ const DragMatchCard = memo(function DragMatchCard({
 
           <div data-study-scroll="allow" className={`${bodyClass} flex flex-col overscroll-y-contain`}>
             {submitted && (
-              <div className={`mb-3 flex items-center gap-2 rounded-[8px] border px-3 py-2 ${
+              <div className={`mb-3 flex items-center gap-2 rounded-ds border px-3 py-2 ${
                 isCorrect ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' : 'border-rose-500/40 bg-rose-500/10 text-rose-300'
               }`}>
                 <span className="font-mono font-bold text-sm">
@@ -224,7 +224,7 @@ const DragMatchCard = memo(function DragMatchCard({
           <div
             ref={dropZoneRef}
             data-testid="dragmatch-dropzone"
-            className={`mt-5 flex min-h-[120px] flex-col items-center justify-center rounded-[8px] border-2 border-dashed px-4 py-5 text-center transition-colors duration-200 ${
+            className={`mt-5 flex min-h-[120px] flex-col items-center justify-center rounded-ds border-2 border-dashed px-4 py-5 text-center transition-colors duration-200 ${
               !submitted
                 ? 'border-zinc-700 text-zinc-500'
                 : isCorrect
@@ -246,7 +246,7 @@ const DragMatchCard = memo(function DragMatchCard({
           {/* Falsch-Feedback: Deine/Richtige Antwort + Erklärung aus der Karte */}
           {submitted && !isCorrect && (
             <div className="mt-3 flex flex-col gap-3">
-              <div className="rounded-[8px] border border-rose-500/40 bg-rose-500/5 px-3 py-3">
+              <div className="rounded-ds border border-rose-500/40 bg-rose-500/5 px-3 py-3">
                 <div className="flex items-center gap-2">
                   <X size={14} strokeWidth={2} className="shrink-0 text-rose-400" />
                   <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-rose-300">{t.dragmatch_your_answer}</span>
@@ -258,7 +258,7 @@ const DragMatchCard = memo(function DragMatchCard({
               </div>
 
               {answer.answer && (
-                <div className="rounded-[8px] border border-ds-border bg-ds-floor px-3 py-3">
+                <div className="rounded-ds border border-ds-border bg-ds-floor px-3 py-3">
                   <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-zinc-500">{t.dragmatch_explanation}</span>
                   <p className="mt-1.5 font-sans text-[14px] leading-[1.5] text-zinc-300">{answer.answer}</p>
                 </div>
@@ -292,7 +292,7 @@ const DragMatchCard = memo(function DragMatchCard({
                   onDragEnd={(_e, info) => handleDragEnd(key, info.point)}
                   style={{ touchAction: submitted ? 'auto' : 'none' }}
                   disabled={submitted}
-                  className={`block transform-gpu select-none rounded-[8px] border px-3 py-3 text-left font-mono leading-snug transition-colors duration-150 ease-out will-change-transform ${cls} ${
+                  className={`block transform-gpu select-none rounded-ds border px-3 py-3 text-left font-mono leading-snug transition-colors duration-150 ease-out will-change-transform ${cls} ${
                     submitted ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'
                   }`}
                 >

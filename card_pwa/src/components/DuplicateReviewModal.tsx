@@ -2,7 +2,7 @@
  * AI_CONTEXT: Reusable React component for duplicate Review Modal; contributes to the card-learning UI and shared app interactions.
  */
 import { useState } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from '../ui/motion'
 import { AlertTriangle, ChevronRight, ChevronLeft, SkipForward, RefreshCw } from 'lucide-react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import type { ImportPlan, ImportedCard } from '../utils/import/types'
@@ -87,7 +87,7 @@ export default function DuplicateReviewModal({ plan, onResolved, onCancel }: Pro
       >
         <div className={UI_TOKENS.modal.header}>
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-[12px] bg-amber-500/15 flex items-center justify-center border border-amber-500/30">
+            <div className="w-8 h-8 rounded-ds-xl bg-amber-500/15 flex items-center justify-center border border-amber-500/30">
               <AlertTriangle size={16} strokeWidth={1.5} className="text-amber-300" />
             </div>
             <div>
@@ -107,7 +107,7 @@ export default function DuplicateReviewModal({ plan, onResolved, onCancel }: Pro
           </button>
           <button
             onClick={() => applyAll('update')}
-            className="flex-1 py-2.5 rounded-[12px] border border-amber-500/40 bg-amber-500/10 text-sm font-medium text-amber-300 hover:bg-amber-500/15 transition-all duration-200 ease-out active:scale-[0.98]"
+            className="flex-1 py-2.5 rounded-ds-xl border border-amber-500/40 bg-amber-500/10 text-sm font-medium text-amber-300 hover:bg-amber-500/15 transition-all duration-200 ease-out active:scale-[0.98]"
           >
             {t.update_all}
           </button>
@@ -115,7 +115,7 @@ export default function DuplicateReviewModal({ plan, onResolved, onCancel }: Pro
 
         {/* Conflict Card */}
           {conflict && (
-            <div className="rounded-[14px] border border-[#18181b] bg-[#0c0c0c] overflow-hidden shadow-card transition-colors duration-200 ease-out">
+            <div className="rounded-ds-2xl border border-[#18181b] bg-[#0c0c0c] overflow-hidden shadow-card transition-colors duration-200 ease-out">
             {/* Navigations-Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-[#18181b] bg-[#0a0a0a]">
               <span className="text-xs text-zinc-500 font-mono">
@@ -128,14 +128,14 @@ export default function DuplicateReviewModal({ plan, onResolved, onCancel }: Pro
                 <button
                   onClick={() => setIndex(i => Math.max(0, i - 1))}
                   disabled={index === 0}
-                  className="p-1 rounded-[10px] text-zinc-500 hover:text-zinc-50 disabled:opacity-20 transition-all duration-200 ease-out active:scale-[0.98]"
+                  className="p-1 rounded-ds-lg text-zinc-500 hover:text-zinc-50 disabled:opacity-20 transition-all duration-200 ease-out active:scale-[0.98]"
                 >
                   <ChevronLeft size={16} strokeWidth={1.5} />
                 </button>
                 <button
                   onClick={() => setIndex(i => Math.min(total - 1, i + 1))}
                   disabled={index === total - 1}
-                  className="p-1 rounded-[10px] text-zinc-500 hover:text-zinc-50 disabled:opacity-20 transition-all duration-200 ease-out active:scale-[0.98]"
+                  className="p-1 rounded-ds-lg text-zinc-500 hover:text-zinc-50 disabled:opacity-20 transition-all duration-200 ease-out active:scale-[0.98]"
                 >
                   <ChevronRight size={16} strokeWidth={1.5} />
                 </button>
@@ -159,7 +159,7 @@ export default function DuplicateReviewModal({ plan, onResolved, onCancel }: Pro
             <div className="flex gap-2 p-4 bg-[#0a0a0a] border-t border-[#18181b]">
               <button
                 onClick={() => { decide('skip'); if (index < total - 1) setIndex(i => i + 1) }}
-                className={`flex-1 py-2.5 rounded-[12px] text-sm font-medium flex items-center justify-center gap-1.5 transition-all duration-200 ease-out active:scale-[0.98]
+                className={`flex-1 py-2.5 rounded-ds-xl text-sm font-medium flex items-center justify-center gap-1.5 transition-all duration-200 ease-out active:scale-[0.98]
                   ${current === 'skip'
                     ? 'bg-[#18181b] text-zinc-50 border border-[#3f3f46]'
                     : 'border border-[#18181b] text-zinc-500 hover:text-zinc-50 hover:border-[#3f3f46]'
@@ -169,7 +169,7 @@ export default function DuplicateReviewModal({ plan, onResolved, onCancel }: Pro
               </button>
               <button
                 onClick={() => { decide('update'); if (index < total - 1) setIndex(i => i + 1) }}
-                className={`flex-1 py-2.5 rounded-[12px] text-sm font-medium flex items-center justify-center gap-1.5 transition-all duration-200 ease-out active:scale-[0.98]
+                className={`flex-1 py-2.5 rounded-ds-xl text-sm font-medium flex items-center justify-center gap-1.5 transition-all duration-200 ease-out active:scale-[0.98]
                   ${current === 'update'
                     ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
                     : 'border border-[#18181b] text-zinc-500 hover:text-amber-300 hover:border-amber-500/30'
@@ -206,7 +206,7 @@ export default function DuplicateReviewModal({ plan, onResolved, onCancel }: Pro
           <button
             onClick={handleConfirm}
             disabled={!allDecided}
-            className={`flex-1 py-2.5 rounded-[12px] text-sm font-black text-white transition-all duration-200 ease-out active:scale-[0.98]
+            className={`flex-1 py-2.5 rounded-ds-xl text-sm font-black text-white transition-all duration-200 ease-out active:scale-[0.98]
               ${allDecided
                 ? 'cursor-pointer border border-white/20 bg-white text-black hover:bg-white/90'
                 : 'opacity-40 cursor-not-allowed border border-[#18181b] bg-[#0c0c0c] text-zinc-400'

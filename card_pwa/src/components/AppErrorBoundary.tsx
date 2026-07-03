@@ -39,7 +39,7 @@ export default class AppErrorBoundary extends Component<Props, State> {
             </p>
             <button
               onClick={this.handleReload}
-              className="px-5 py-2.5 rounded-[12px] font-black text-white transition-all duration-200 ease-out active:scale-[0.98]"
+              className="px-5 py-2.5 rounded-ds-xl font-black text-white transition-all duration-200 ease-out active:scale-[0.98]"
               style={{ background: 'linear-gradient(135deg, var(--brand-primary-80), var(--brand-primary))' }}
             >
               Reload app

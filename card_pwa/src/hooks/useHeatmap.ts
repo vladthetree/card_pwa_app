@@ -35,6 +35,16 @@ export function useHeatmap(profileId: string, year: number): HeatmapState {
 
   useEffect(() => {
     let cancelled = false
+    // Signatur der zuletzt geladenen Reviews (Anzahl + jüngster Timestamp):
+    // erlaubt beim Sichtbarwerden eine billige indizierte Probe statt jedes Mal
+    // alle Jahres-Reviews zu laden und beide Worker-Läufe neu zu starten.
+    let lastLoadedSignature: string | null = null
+
+    const computeSignature = async (fromMs: number): Promise<string> => {
+      const range = db.reviews.where('timestamp').aboveOrEqual(fromMs)
+      const [count, latest] = await Promise.all([range.count(), range.last()])
+      return `${count}:${latest?.timestamp ?? 0}`
+    }
 
     const load = async () => {
       try {
@@ -51,6 +61,7 @@ export function useHeatmap(profileId: string, year: number): HeatmapState {
         }
 
         const rows = await db.reviews.where('timestamp').aboveOrEqual(fromMs).toArray()
+        lastLoadedSignature = `${rows.length}:${rows.reduce((max, row) => Math.max(max, row.timestamp), 0)}`
         const [heatmapBuckets, streakStats] = await Promise.all([
           runStatsHeatmap({
             type: 'heatmap',
@@ -91,7 +102,20 @@ export function useHeatmap(profileId: string, year: number): HeatmapState {
 
     const onReviewUpdated = () => void load()
     const onVisible = () => {
-      if (document.visibilityState === 'visible') void load()
+      if (document.visibilityState !== 'visible') return
+      // Nur neu laden, wenn seit dem letzten Load Reviews dazukamen/wegfielen
+      // (z. B. via Sync im Hintergrund) — sonst ist der Reload reine Doppelarbeit.
+      void (async () => {
+        try {
+          const fromMs = startOfDayMs(new Date(year, 0, 1))
+          const signature = await computeSignature(fromMs)
+          if (!cancelled && signature !== lastLoadedSignature) {
+            void load()
+          }
+        } catch {
+          if (!cancelled) void load()
+        }
+      })()
     }
 
     window.addEventListener(REVIEW_UPDATED_EVENT, onReviewUpdated)

@@ -5,7 +5,7 @@
  * Important: Scheduling writes happen through db/queries recordReview/undoReview; local UI state belongs in studySessionReducer and studySessionPersistence.
  */
 import { useState, useEffect, useCallback, useMemo, useReducer, useRef } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { ArrowLeft, RotateCcw, CheckCircle, AlertCircle, RefreshCw, Type, Info, Sparkles } from 'lucide-react'
 import { useDeckCards } from '../hooks/useCardDb'
 import { recordReview, undoReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession } from '../db/queries'
@@ -61,7 +61,7 @@ function ErrorAlert({ message, onRetry }: { message: string; onRetry: () => void
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className="border border-rose-500/30 bg-black p-4 rounded-xl text-rose-300 text-sm mb-4 flex items-center justify-between"
+      className="border border-rose-500/30 bg-black p-4 rounded-ds-xl text-rose-300 text-sm mb-4 flex items-center justify-between"
     >
       <div className="flex items-center gap-2">
         <AlertCircle size={16} />
@@ -69,7 +69,7 @@ function ErrorAlert({ message, onRetry }: { message: string; onRetry: () => void
       </div>
       <button
         onClick={onRetry}
-        className="ml-3 px-3 py-1 bg-rose-500/30 hover:bg-rose-500/50 rounded-lg text-xs font-medium transition"
+        className="ml-3 px-3 py-1 bg-rose-500/30 hover:bg-rose-500/50 rounded-ds text-xs font-medium transition"
       >
         <RefreshCw size={12} className="inline mr-1" /> {t.retry}
       </button>
@@ -580,7 +580,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
           <ErrorAlert message={error} onRetry={reload} />
           <div className="ds-card p-8 text-center text-white/80">
             <p className="mb-4">{t.loading_cards_failed}</p>
-            <button onClick={reload} className="inline-flex items-center gap-2 rounded-[8px] bg-[--brand-primary] px-4 py-2 font-semibold text-[#150b08] transition hover:brightness-110 active:scale-[0.98]">
+            <button onClick={reload} className="inline-flex items-center gap-2 rounded-ds bg-[--brand-primary] px-4 py-2 font-semibold text-[#150b08] transition hover:brightness-110 active:scale-[0.98]">
               <RefreshCw size={16} /> {t.retry}
             </button>
           </div>
@@ -597,7 +597,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
           <p className="text-sm">{t.no_cards_to_study}</p>
           <button
             onClick={handleExit}
-            className="mt-5 inline-flex items-center gap-2 rounded-[8px] bg-[--brand-primary] px-4 py-2 font-semibold text-[#150b08] transition hover:brightness-110 active:scale-[0.98]"
+            className="mt-5 inline-flex items-center gap-2 rounded-ds bg-[--brand-primary] px-4 py-2 font-semibold text-[#150b08] transition hover:brightness-110 active:scale-[0.98]"
           >
             <ArrowLeft size={16} /> {t.home}
           </button>
@@ -623,7 +623,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
           <p className="text-sm mb-4">{t.please_wait}</p>
           <button
             onClick={handleExit}
-            className="inline-flex items-center gap-2 rounded-[8px] bg-[--brand-primary] px-4 py-2 font-semibold text-[#150b08] transition hover:brightness-110 active:scale-[0.98]"
+            className="inline-flex items-center gap-2 rounded-ds bg-[--brand-primary] px-4 py-2 font-semibold text-[#150b08] transition hover:brightness-110 active:scale-[0.98]"
           >
             <ArrowLeft size={16} /> {t.home}
           </button>
@@ -658,7 +658,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-            className={`w-full max-w-lg rounded-[8px] border bg-ds-card p-8 text-center shadow-card sm:p-10 ${
+            className={`w-full max-w-lg rounded-ds border bg-ds-card p-8 text-center shadow-card sm:p-10 ${
               isPerfectSession ? 'border-emerald-500/40' : 'border-[#18181b]'
             }`}
           >
@@ -684,15 +684,15 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
             <p className="text-white/55 text-sm mb-5">{t.deck}: {formatDeckName(deck.name)}</p>
 
             <div className="grid grid-cols-3 gap-2 mb-6">
-              <div className="rounded-[8px] border border-ds-border bg-ds-floor p-3">
+              <div className="rounded-ds border border-ds-border bg-ds-floor p-3">
                 <p className="text-lg font-bold font-mono text-white">{session.sessionCount}</p>
                 <p className="text-[10px] uppercase tracking-wide text-white/45 mt-0.5">{t.cards_reviewed.replace('{count}', '').trim() || t.completion_cards_label}</p>
               </div>
-              <div className="rounded-[8px] border border-ds-border bg-ds-floor p-3">
+              <div className="rounded-ds border border-ds-border bg-ds-floor p-3">
                 <p className={`text-lg font-bold font-mono ${difficultCards > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>{difficultCards}</p>
                 <p className="text-[10px] uppercase tracking-wide text-white/45 mt-0.5">{t.completion_difficult_label}</p>
               </div>
-              <div className="rounded-[8px] border border-ds-border bg-ds-floor p-3">
+              <div className="rounded-ds border border-ds-border bg-ds-floor p-3">
                 <p className="text-lg font-bold font-mono text-white/70">{elapsedMs > 0 ? elapsedLabel : '—'}</p>
                 <p className="text-[10px] uppercase tracking-wide text-white/45 mt-0.5">{t.completion_time_label}</p>
               </div>
@@ -714,7 +714,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
               <button
                 type="button"
                 onClick={handleUndoLastRating}
-                className="mt-4 mb-3 w-full rounded-[8px] border border-ds-border bg-ds-floor py-2 text-sm text-white/80 transition hover:border-ds-border-hover hover:text-white"
+                className="mt-4 mb-3 w-full rounded-ds border border-ds-border bg-ds-floor py-2 text-sm text-white/80 transition hover:border-ds-border-hover hover:text-white"
               >
                 {t.undo_last_rating}
               </button>
@@ -722,13 +722,13 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
             <div className="mt-4 flex gap-3">
               <button
                 onClick={handleExit}
-                className="flex-1 rounded-[8px] bg-[--brand-primary] py-3 font-semibold text-[#150b08] transition-all hover:brightness-110 active:scale-[0.98]"
+                className="flex-1 rounded-ds bg-[--brand-primary] py-3 font-semibold text-[#150b08] transition-all hover:brightness-110 active:scale-[0.98]"
               >
                 {t.home}
               </button>
               <button
                 onClick={handleRestart}
-                className="flex-1 rounded-[8px] border border-ds-border bg-ds-floor py-3 font-medium text-white transition-all hover:border-ds-border-hover"
+                className="flex-1 rounded-ds border border-ds-border bg-ds-floor py-3 font-medium text-white transition-all hover:border-ds-border-hover"
               >
                 <RotateCcw size={14} className="inline mr-1.5" />
                 {t.restart}
@@ -793,7 +793,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
               <button
                 type="button"
                 onClick={() => setShowHeaderLegend(prev => !prev)}
-                className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[8px] border transition-colors ${
+                className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-ds border transition-colors ${
                   showHeaderLegend
                     ? 'border-ds-border-hover bg-ds-panel text-zinc-100'
                     : 'border-ds-border bg-ds-card text-zinc-500 hover:border-ds-border-hover hover:text-zinc-50'
@@ -868,7 +868,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
                 <button
                   type="button"
                   onClick={() => setShowHeaderLegend(prev => !prev)}
-                  className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[8px] border transition-colors ${
+                  className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-ds border transition-colors ${
                     showHeaderLegend
                       ? 'border-ds-border-hover bg-ds-panel text-zinc-100'
                       : 'border-ds-border bg-ds-card text-zinc-500 hover:border-ds-border-hover hover:text-zinc-50'
@@ -1005,7 +1005,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
               <button
                 type="button"
                 onClick={handleUndoLastRating}
-                className="rounded-[8px] border border-ds-border bg-ds-floor px-3 py-1.5 text-xs text-white/70 transition hover:border-ds-border-hover hover:text-white"
+                className="rounded-ds border border-ds-border bg-ds-floor px-3 py-1.5 text-xs text-white/70 transition hover:border-ds-border-hover hover:text-white"
               >
                 {t.undo_last_rating}
               </button>

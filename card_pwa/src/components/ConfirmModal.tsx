@@ -2,7 +2,7 @@
  * AI_CONTEXT: Reusable React component for confirm Modal; contributes to the card-learning UI and shared app interactions.
  */
 import { useEffect, useRef } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { AlertTriangle, X } from 'lucide-react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import { UI_TOKENS } from '../constants/ui'
@@ -49,8 +49,8 @@ export default function ConfirmModal({
   }, [isOpen, onCancel])
 
   const confirmClass = variant === 'danger'
-    ? 'flex-1 py-2.5 rounded-[12px] bg-rose-600 hover:bg-rose-500 text-white font-semibold transition-all duration-200 active:scale-[0.98]'
-    : 'flex-1 py-2.5 rounded-[12px] bg-white text-black hover:bg-white/90 font-semibold transition-all duration-200 active:scale-[0.98]'
+    ? 'flex-1 py-2.5 rounded-ds-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold transition-all duration-200 active:scale-[0.98]'
+    : 'flex-1 py-2.5 rounded-ds-xl bg-white text-black hover:bg-white/90 font-semibold transition-all duration-200 active:scale-[0.98]'
 
   return (
     <AnimatePresence>
@@ -83,7 +83,7 @@ export default function ConfirmModal({
 
             <div className="flex items-start gap-3 mb-4">
               {variant === 'danger' && (
-                <div className="shrink-0 flex items-center justify-center w-9 h-9 rounded-xl bg-rose-500/15 text-rose-400">
+                <div className="shrink-0 flex items-center justify-center w-9 h-9 rounded-ds-xl bg-rose-500/15 text-rose-400">
                   <AlertTriangle size={18} strokeWidth={1.5} />
                 </div>
               )}

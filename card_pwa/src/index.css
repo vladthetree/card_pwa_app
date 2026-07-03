@@ -66,6 +66,17 @@
     --app-bottom-viewport-gap: 0px;
     --app-bottom-safe-area: env(safe-area-inset-bottom, 0px);
     --home-bottom-bar-bg: #0b0b09;
+    /* Radius-Skala — EINZIGER Tuning-Punkt für die Eckenrundung der ganzen App.
+       Konzentrisch zur iPhone-Gehäuserundung (~55px Display-Radius beim 15 Pro):
+       außenliegende große Flächen runder, kleine Controls proportional weicher.
+       Konsumiert über die Tailwind-Klassen rounded-ds / -ds-lg / -ds-xl /
+       -ds-2xl / -ds-sheet (tailwind.config.js). */
+    --radius-ds-sm: 4px;
+    --radius-ds-md: 12px;
+    --radius-ds-lg: 14px;
+    --radius-ds-xl: 16px;
+    --radius-ds-2xl: 20px;
+    --radius-ds-sheet: 24px;
     --app-background:
       linear-gradient(90deg, rgba(242, 238, 229, 0.028) 1px, transparent 1px) 0 0 / 44px 44px,
       linear-gradient(rgba(242, 238, 229, 0.018) 1px, transparent 1px) 0 0 / 44px 44px,
@@ -82,6 +93,10 @@
 
   html {
     background: var(--app-background);
+    /* Expliziter Farbwert zusätzlich zum Shorthand: iOS 26 Liquid Glass tönt
+       Status-/Home-Indicator-Zone aus dem html/body-background-color-Fallback
+       (theme-color wird ignoriert) — transparente Roots ergäben weiße Balken. */
+    background-color: var(--theme-background, var(--ds-bg));
     overscroll-behavior: none;
     overscroll-behavior-x: none;
     overscroll-behavior-y: none;
@@ -97,6 +112,7 @@
     min-height: 100dvh;
     overflow: hidden;
     background: var(--app-background);
+    background-color: var(--theme-background, var(--ds-bg));
     color: var(--theme-text);
     font-family: var(--app-font-family);
     -webkit-font-smoothing: antialiased;
@@ -537,7 +553,7 @@
 
   .ds-menu {
     overflow: hidden;
-    border-radius: 8px;
+    border-radius: var(--radius-ds-md, 12px);
     border: 1px solid var(--ds-border-strong);
     background: rgba(21, 19, 15, 0.98);
     box-shadow: var(--shadow-menu);
@@ -546,7 +562,7 @@
   }
 
   .ds-modal {
-    @apply overflow-hidden rounded-[10px] border border-ds-border bg-ds-bg shadow-modal sm:rounded-[12px];
+    @apply overflow-hidden rounded-ds-lg border border-ds-border bg-ds-bg shadow-modal sm:rounded-ds-xl;
   }
 
   .ds-icon-button {

@@ -3,7 +3,7 @@
  */
 import { memo, useMemo, useReducer, useCallback, useEffect, useRef } from 'react'
 import { Edit } from 'lucide-react'
-import { useReducedMotion } from 'framer-motion'
+import { useReducedMotion } from '../ui/motion'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import type { Card } from '../types'
 import type { MatchingQuestion, MatchingAnswer } from '../utils/cardTextParser'
@@ -136,7 +136,7 @@ const MatchingCard = memo(function MatchingCard({
     .replace('{count}', String(scoreCount))
     .replace('{total}', String(question.pairs.length))
 
-  const cardShellCls = `flex flex-col overflow-hidden rounded-[8px] border border-ds-border bg-ds-card shadow-card ${
+  const cardShellCls = `flex flex-col overflow-hidden rounded-ds border border-ds-border bg-ds-card shadow-card ${
     compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[420px] md:min-h-[500px]'
   }`
 
@@ -197,7 +197,7 @@ const MatchingCard = memo(function MatchingCard({
                     type="button"
                     disabled={state.submitted}
                     onClick={(e) => { e.stopPropagation(); handleLeftTap(left) }}
-                    className={`grid min-h-[44px] grid-cols-[1fr_auto] items-center gap-2 rounded-[8px] border px-3 text-left transition-all duration-150 ${
+                    className={`grid min-h-[44px] grid-cols-[1fr_auto] items-center gap-2 rounded-ds border px-3 text-left transition-all duration-150 ${
                       state.submitted
                         ? feedback === 'correct'
                           ? 'border-emerald-500/60 bg-emerald-500/8 cursor-default'
@@ -245,7 +245,7 @@ const MatchingCard = memo(function MatchingCard({
                       key={right}
                       type="button"
                       onClick={(e) => { e.stopPropagation(); handleRightTap(right) }}
-                      className="min-h-[40px] rounded-[8px] border border-ds-border bg-ds-floor px-4 font-mono text-[13px] text-zinc-200 transition-all duration-150 hover:border-[--brand-secondary-50] hover:bg-[--brand-secondary-08] hover:text-[--brand-secondary] active:scale-[0.98]"
+                      className="min-h-[40px] rounded-ds border border-ds-border bg-ds-floor px-4 font-mono text-[13px] text-zinc-200 transition-all duration-150 hover:border-[--brand-secondary-50] hover:bg-[--brand-secondary-08] hover:text-[--brand-secondary] active:scale-[0.98]"
                     >
                       {right}
                     </button>
@@ -261,7 +261,7 @@ const MatchingCard = memo(function MatchingCard({
               type="button"
               onClick={(e) => { e.stopPropagation(); handleSubmit() }}
               disabled={state.submitted || !allConnected}
-              className={`min-h-[44px] w-full rounded-[8px] border text-sm font-medium transition-all duration-200 ${
+              className={`min-h-[44px] w-full rounded-ds border text-sm font-medium transition-all duration-200 ${
                 state.submitted || !allConnected
                   ? 'border-zinc-700 bg-transparent text-zinc-600 cursor-default'
                   : 'border-[--brand-secondary-50] bg-[--brand-secondary-08] text-[--brand-secondary] hover:bg-[--brand-secondary-12] active:scale-[0.99]'
@@ -302,7 +302,7 @@ const MatchingCard = memo(function MatchingCard({
 
         <div data-study-scroll="allow" className={`${bodyClass} flex flex-col overscroll-y-contain`}>
           {state.score !== null && (
-            <div className={`mb-3 flex items-center gap-2 rounded-[8px] border px-3 py-2 ${
+            <div className={`mb-3 flex items-center gap-2 rounded-ds border px-3 py-2 ${
               state.score === 1.0
                 ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
                 : state.score >= 0.5

@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Reusable React component for update Banner; contributes to the card-learning UI and shared app interactions.
  */
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from '../ui/motion'
 import { CheckCircle2 } from 'lucide-react'
 import { useSettings } from '../contexts/SettingsContext'
 
@@ -20,7 +20,7 @@ export default function UpdateBanner({ deferredReload = false }: Props) {
       animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
       exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
       transition={{ duration: prefersReducedMotion ? 0.18 : 0.24, ease: 'easeOut' }}
-      className="fixed bottom-[88px] left-safe-4 right-safe-4 z-[110] mx-auto w-auto max-w-md rounded-[14px] border border-[#18181b] bg-[#0c0c0c]/95 px-4 py-3 shadow-menu backdrop-blur-md sm:bottom-3 sm:left-auto sm:right-safe-4 sm:mx-0"
+      className="fixed bottom-[88px] left-safe-4 right-safe-4 z-[110] mx-auto w-auto max-w-md rounded-ds-2xl border border-[#18181b] bg-[#0c0c0c]/95 px-4 py-3 shadow-menu backdrop-blur-md sm:bottom-3 sm:left-auto sm:right-safe-4 sm:mx-0"
       role="status"
       aria-live="polite"
     >

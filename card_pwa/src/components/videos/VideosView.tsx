@@ -4,12 +4,13 @@
  * Used by: App.tsx video view.
  * Important: Objective code is the bridge between videos, decks, recall cards, progress, and video notes; preserve that 1:1 mapping.
  */
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowLeft,
   Brain,
   Check,
   ChevronDown,
+  ChevronUp,
   Clock,
   Download,
   ExternalLink,
@@ -92,6 +93,9 @@ const COPY = {
     speed: 'Geschwindigkeit',
     noteStats: '{notes} Zettel · {tags} Tags',
     tags: 'Tags',
+    collapseRecall: 'Abruf-Check einklappen',
+    done: 'Fertig',
+    backToVideo: 'Video',
   },
   en: {
     title: 'Videos',
@@ -135,12 +139,35 @@ const COPY = {
     speed: 'Playback speed',
     noteStats: '{notes} notes · {tags} tags',
     tags: 'Tags',
+    collapseRecall: 'Collapse recall',
+    done: 'Done',
+    backToVideo: 'Video',
   },
 } as const
 
 type Copy = (typeof COPY)[keyof typeof COPY]
 
 const OBJECTIVE_TITLE = new Map(SY0_701_OBJECTIVES.map(o => [o.code, o.title]))
+
+/** Gerätelokal gemerkter Boolean (Panel auf/zu) — überlebt Reloads. */
+function usePersistentBool(key: string, fallback: boolean): [boolean, (next: boolean | ((prev: boolean) => boolean)) => void] {
+  const [value, setValue] = useState(() => {
+    try {
+      const raw = localStorage.getItem(key)
+      return raw === null ? fallback : raw === '1'
+    } catch {
+      return fallback
+    }
+  })
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, value ? '1' : '0')
+    } catch {
+      /* privater Modus o. Ä. — Zustand bleibt für die Session erhalten */
+    }
+  }, [key, value])
+  return [value, setValue]
+}
 
 interface Props {
   language: 'de' | 'en'
@@ -190,13 +217,36 @@ function VideoStudyBar({
   onSetConfidence,
   copy,
   compact = false,
+  open,
+  onToggle,
 }: {
   confidence: VideoConfidence | null
   onStartRecall: () => void
   onSetConfidence: (next: VideoConfidence | null) => void
   copy: Copy
   compact?: boolean
+  open: boolean
+  onToggle: () => void
 }) {
+  // Eingeklappt: schlanke Leiste zum Ausklappen → mehr Platz fürs Video.
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={onToggle}
+        data-testid="video-studybar-toggle"
+        aria-expanded={false}
+        className={`mt-2 flex w-full max-w-3xl items-center justify-center gap-2 rounded-ds-lg border border-[#18181b] bg-[#080808] font-mono font-bold text-zinc-400 transition-colors hover:border-sky-500/40 hover:text-sky-200 ${
+          compact ? 'py-1.5 text-[11px]' : 'py-2 text-[12px]'
+        }`}
+      >
+        <Brain size={14} strokeWidth={1.5} />
+        {copy.recall}
+        <ChevronDown size={13} strokeWidth={1.5} />
+      </button>
+    )
+  }
+
   const chips = (
     <div className="flex gap-1.5">
       {CONFIDENCE_CHIPS.map(chip => {
@@ -208,7 +258,7 @@ function VideoStudyBar({
             onClick={() => onSetConfidence(active ? null : chip.level)}
             data-testid={`video-confidence-${chip.level}`}
             aria-pressed={active}
-            className={`rounded-[8px] border font-mono font-bold transition-colors ${compact ? 'px-2 py-1 text-[10px]' : 'px-2.5 py-1 text-[11px]'} ${
+            className={`rounded-ds border font-mono font-bold transition-colors ${compact ? 'px-2 py-1 text-[10px]' : 'px-2.5 py-1 text-[11px]'} ${
               active ? chip.activeCls : 'border-[#1f1f23] bg-[#0c0c0c] text-zinc-400 hover:border-[#3f3f46]'
             }`}
           >
@@ -219,7 +269,21 @@ function VideoStudyBar({
     </div>
   )
 
-  // Kompakt (Handy): eine Zeile, kein Hinweistext → mehr Platz fürs Video.
+  const collapseBtn = (
+    <button
+      type="button"
+      onClick={onToggle}
+      data-testid="video-studybar-toggle"
+      aria-expanded={true}
+      aria-label={copy.collapseRecall}
+      title={copy.collapseRecall}
+      className="ds-icon-button flex h-7 w-7 shrink-0"
+    >
+      <ChevronUp size={14} strokeWidth={1.5} />
+    </button>
+  )
+
+  // Kompakt (Handy): eine Zeile + Einklapp-Pfeil.
   if (compact) {
     return (
       <div className="mt-2 flex w-full max-w-3xl items-center gap-2">
@@ -227,23 +291,28 @@ function VideoStudyBar({
           type="button"
           onClick={onStartRecall}
           data-testid="video-recall-start"
-          className="flex shrink-0 items-center gap-1.5 rounded-[10px] border border-sky-500/40 bg-sky-500/10 px-3 py-1.5 font-mono text-[12px] font-bold text-sky-200 transition-colors hover:border-sky-400/70"
+          className="flex shrink-0 items-center gap-1.5 rounded-ds-lg border border-sky-500/40 bg-sky-500/10 px-3 py-1.5 font-mono text-[12px] font-bold text-sky-200 transition-colors hover:border-sky-400/70"
         >
           <Brain size={14} strokeWidth={1.5} />
           {copy.recall}
         </button>
         <div className="flex flex-1 justify-end">{chips}</div>
+        {collapseBtn}
       </div>
     )
   }
 
   return (
-    <div className="mt-3 w-full max-w-3xl rounded-[14px] border border-[#18181b] bg-[#080808] p-3">
+    <div className="mt-3 w-full max-w-3xl rounded-ds-2xl border border-[#18181b] bg-[#080808] p-3">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">{copy.recall}</span>
+        {collapseBtn}
+      </div>
       <button
         type="button"
         onClick={onStartRecall}
         data-testid="video-recall-start"
-        className="flex w-full items-center justify-center gap-2 rounded-[12px] border border-sky-500/40 bg-sky-500/10 py-3 font-mono text-[13px] font-bold text-sky-200 transition-colors hover:border-sky-400/70"
+        className="flex w-full items-center justify-center gap-2 rounded-ds-xl border border-sky-500/40 bg-sky-500/10 py-3 font-mono text-[13px] font-bold text-sky-200 transition-colors hover:border-sky-400/70"
       >
         <Brain size={16} strokeWidth={1.5} />
         {copy.recall}
@@ -352,7 +421,7 @@ function ChapterDownloadButton({
 
   if (stats.active) {
     return (
-      <span className="flex shrink-0 items-center gap-1.5 rounded-[8px] border border-sky-500/40 bg-sky-500/10 px-2 py-1 font-mono text-[10px] font-bold text-sky-200">
+      <span className="flex shrink-0 items-center gap-1.5 rounded-ds border border-sky-500/40 bg-sky-500/10 px-2 py-1 font-mono text-[10px] font-bold text-sky-200">
         <Loader2 size={12} className="animate-spin" />
         {stats.done}/{stats.total}
         <button
@@ -376,7 +445,7 @@ function ChapterDownloadButton({
         onClick={onDownload}
         data-testid="chapter-download"
         title={copy.chapterDownload}
-        className="flex shrink-0 items-center gap-1.5 rounded-[8px] border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 font-mono text-[10px] font-bold text-zinc-300 transition-colors hover:border-sky-500/40 hover:text-sky-300"
+        className="flex shrink-0 items-center gap-1.5 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 font-mono text-[10px] font-bold text-zinc-300 transition-colors hover:border-sky-500/40 hover:text-sky-300"
       >
         <HardDriveDownload size={12} strokeWidth={1.5} />
         {copy.chapterDownload}
@@ -386,7 +455,7 @@ function ChapterDownloadButton({
 
   return (
     <span
-      className="flex shrink-0 items-center gap-1 rounded-[8px] border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 font-mono text-[10px] font-bold text-emerald-300"
+      className="flex shrink-0 items-center gap-1 rounded-ds border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 font-mono text-[10px] font-bold text-emerald-300"
       title={copy.chapterOffline}
     >
       <Check size={12} strokeWidth={2} />
@@ -409,8 +478,11 @@ export default function VideosView({ language, onExit }: Props) {
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set())
   const [recallOpen, setRecallOpen] = useState(false)
   const [activeTag, setActiveTag] = useState<string | null>(null)
-  const [showTagSidebar, setShowTagSidebar] = useState(true)
+  const [showTagSidebar, setShowTagSidebar] = usePersistentBool('card-pwa-video-tags-open', true)
+  const [studyBarOpen, setStudyBarOpen] = usePersistentBool('card-pwa-video-studybar-open', true)
   const [tagSheetOpen, setTagSheetOpen] = useState(false)
+  const [noteFocused, setNoteFocused] = useState(false)
+  const noteBlurTimer = useRef<number | undefined>(undefined)
   const [currentVideoTime, setCurrentVideoTime] = useState(0)
   const [seekRequest, setSeekRequest] = useState<{ id: number; seconds: number } | null>(null)
   const viewport = useVisualViewport()
@@ -467,6 +539,39 @@ export default function VideosView({ language, onExit }: Props) {
     setTagSheetOpen(false)
   }
 
+  // Von einer Zeitmarke der Tag-Seite ins Video springen (evtl. anderes Video):
+  // Video öffnen und Seek anfordern; der Player holt den Seek nach dem Laden nach.
+  const openObjectiveAtTime = (objective: string, seconds: number) => {
+    const video = groups.find(group => group.objective === objective)?.videos[0]
+    if (video) {
+      openVideo(video)
+      seekToTime(seconds)
+    }
+    setActiveTag(null)
+  }
+
+  // Handy-Schreibmodus: Textfeld fokussiert ODER Tastatur sichtbar → Notizzettel
+  // groß/oben, Video ausgeblendet, damit die Tastatur nichts verdeckt. Blur wird
+  // kurz entprellt, damit Zettel-Tool-Taps (die neu fokussieren) nicht flackern.
+  const handleNoteFocusChange = (focused: boolean) => {
+    if (focused) {
+      if (noteBlurTimer.current) window.clearTimeout(noteBlurTimer.current)
+      setNoteFocused(true)
+    } else {
+      noteBlurTimer.current = window.setTimeout(() => setNoteFocused(false), 250)
+    }
+  }
+  useEffect(() => () => { if (noteBlurTimer.current) window.clearTimeout(noteBlurTimer.current) }, [])
+
+  // Zurück zur normalen Videoansicht: Tastatur schließen (Textfeld blur).
+  const exitWriting = () => {
+    ;(document.activeElement as HTMLElement | null)?.blur()
+    if (noteBlurTimer.current) window.clearTimeout(noteBlurTimer.current)
+    setNoteFocused(false)
+  }
+
+  const writingMode = isHandsetLayout && (noteFocused || keyboardOpen)
+
   const hasTagActivity = objectivesWithNotes.size > 0 || allTags.length > 0
 
   // Body-Scroll nur für den mobilen Vollbild-Player sperren.
@@ -492,18 +597,18 @@ export default function VideosView({ language, onExit }: Props) {
           labels={{ fullscreen: copy.fullscreen, exitFullscreen: copy.exitFullscreen, speed: copy.speed }}
         />
       ) : resolving ? (
-        <div className="flex aspect-video w-full max-w-4xl flex-col items-center justify-center gap-3 rounded-[14px] border border-[#1f1f23] bg-black text-center">
+        <div className="flex aspect-video w-full max-w-4xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-[#1f1f23] bg-black text-center">
           <Loader2 size={26} className="animate-spin text-zinc-500" />
           <div className="font-mono text-[12px] text-zinc-500">{copy.resolving}</div>
         </div>
       ) : (
-        <div className="flex aspect-video w-full max-w-4xl flex-col items-center justify-center gap-3 rounded-[14px] border border-amber-500/30 bg-amber-500/5 text-center">
+        <div className="flex aspect-video w-full max-w-4xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-amber-500/30 bg-amber-500/5 text-center">
           <WifiOff size={26} strokeWidth={1.5} className="text-amber-300" />
           <div className="px-6 font-mono text-[12px] text-amber-200">{copy.streamOnly}</div>
         </div>
       )
     ) : (
-      <div className="flex aspect-video w-full max-w-4xl flex-col items-center justify-center gap-3 rounded-[14px] border border-dashed border-[#1f1f23] bg-[#070707] text-center">
+      <div className="flex aspect-video w-full max-w-4xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-dashed border-[#1f1f23] bg-[#070707] text-center">
         <Play size={28} strokeWidth={1.5} className="text-zinc-600" />
         <div className="px-6 font-mono text-[12px] text-zinc-500">{copy.pickVideo}</div>
       </div>
@@ -515,7 +620,7 @@ export default function VideosView({ language, onExit }: Props) {
     const hasNote = objectivesWithNotes.has(group.objective)
     const pending = group.videos.filter(video => !video.downloaded && video.progress === undefined && !video.queued)
     return (
-      <div key={group.objective} className="rounded-[12px] border border-[#1f1f23] bg-[#0a0a0a] p-2">
+      <div key={group.objective} className="rounded-ds-xl border border-[#1f1f23] bg-[#0a0a0a] p-2">
         <div className="flex items-center gap-2 px-1 py-1">
           <span className="font-mono text-[12px] font-bold text-zinc-200">{group.objective}</span>
           <span className="min-w-0 flex-1 truncate font-mono text-[12px] text-zinc-400">{title}</span>
@@ -548,7 +653,7 @@ export default function VideosView({ language, onExit }: Props) {
             return (
               <div
                 key={video.file}
-                className={`flex items-center gap-2 rounded-[10px] border px-2 py-2 transition-colors ${
+                className={`flex items-center gap-2 rounded-ds-lg border px-2 py-2 transition-colors ${
                   isActive ? 'border-sky-500/60 bg-sky-500/10' : 'border-transparent hover:border-[#1f1f23] hover:bg-[#0c0c0c]'
                 }`}
               >
@@ -558,7 +663,7 @@ export default function VideosView({ language, onExit }: Props) {
                   data-testid={`local-video-${video.file}`}
                   className="flex min-w-0 flex-1 items-center gap-2 text-left"
                 >
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] border border-sky-500/30 bg-sky-500/10 text-sky-300">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-ds border border-sky-500/30 bg-sky-500/10 text-sky-300">
                     <Play size={13} strokeWidth={1.5} />
                   </span>
                   <span className="min-w-0 flex-1 truncate font-mono text-[13px] text-zinc-100">{video.title}</span>
@@ -587,7 +692,7 @@ export default function VideosView({ language, onExit }: Props) {
       )}
 
       {status === 'unreachable' && (
-        <div className="flex w-full flex-col items-center gap-2 rounded-[14px] border border-amber-500/30 bg-amber-500/5 px-4 py-5 text-center">
+        <div className="flex w-full flex-col items-center gap-2 rounded-ds-2xl border border-amber-500/30 bg-amber-500/5 px-4 py-5 text-center">
           <WifiOff size={24} strokeWidth={1.5} className="text-amber-300" />
           <div className="font-mono text-[13px] font-bold text-amber-200">{copy.unreachableTitle}</div>
           <div className="font-mono text-[11px] text-zinc-400">{copy.unreachableHint}</div>
@@ -599,7 +704,7 @@ export default function VideosView({ language, onExit }: Props) {
       )}
 
       {downloadError === 'quota' && (
-        <div className="rounded-[12px] border border-rose-500/30 bg-rose-500/5 px-3 py-2.5 font-mono text-[11px] text-rose-200">
+        <div className="rounded-ds-xl border border-rose-500/30 bg-rose-500/5 px-3 py-2.5 font-mono text-[11px] text-rose-200">
           {copy.quotaError}
         </div>
       )}
@@ -611,7 +716,7 @@ export default function VideosView({ language, onExit }: Props) {
         const videoCount = domainGroups.reduce((sum, group) => sum + group.videos.length, 0)
         const chapterStats = domainDownloadStats(domainGroups)
         return (
-          <section key={domain.domain} className="rounded-[14px] border border-[#18181b] bg-[#0a0a0a] p-3">
+          <section key={domain.domain} className="rounded-ds-2xl border border-[#18181b] bg-[#0a0a0a] p-3">
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -619,7 +724,7 @@ export default function VideosView({ language, onExit }: Props) {
                 className="flex min-w-0 flex-1 items-center gap-3 text-left"
                 aria-expanded={!isCollapsed}
               >
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-[#1f1f23] bg-[#0c0c0c] font-mono text-[15px] font-bold text-zinc-300">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-ds-xl border border-[#1f1f23] bg-[#0c0c0c] font-mono text-[15px] font-bold text-zinc-300">
                   {domain.domain}
                 </span>
                 <span className="min-w-0 flex-1">
@@ -650,7 +755,7 @@ export default function VideosView({ language, onExit }: Props) {
         href={PROF_MESSER_COURSE_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center justify-center gap-2 rounded-[14px] border border-dashed border-[#1f1f23] px-3 py-3 font-mono text-[12px] text-zinc-500 transition-colors hover:border-[#3f3f46] hover:text-zinc-300"
+        className="flex items-center justify-center gap-2 rounded-ds-2xl border border-dashed border-[#1f1f23] px-3 py-3 font-mono text-[12px] text-zinc-500 transition-colors hover:border-[#3f3f46] hover:text-zinc-300"
       >
         <ExternalLink size={13} strokeWidth={1.5} />
         {copy.courseIndex}
@@ -666,6 +771,8 @@ export default function VideosView({ language, onExit }: Props) {
         onSetConfidence={next => setConfidence(activeItem.objective, next)}
         copy={copy}
         compact={compact}
+        open={studyBarOpen}
+        onToggle={() => setStudyBarOpen(prev => !prev)}
       />
     ) : null
 
@@ -688,7 +795,7 @@ export default function VideosView({ language, onExit }: Props) {
               aria-label={copy.tags}
               aria-pressed={isDesktop ? showTagSidebar : undefined}
               data-testid="video-tags-toggle"
-              className={`flex shrink-0 items-center gap-1.5 rounded-[10px] border px-2.5 py-1.5 font-mono text-[11px] font-bold transition-colors ${
+              className={`flex shrink-0 items-center gap-1.5 rounded-ds-lg border px-2.5 py-1.5 font-mono text-[11px] font-bold transition-colors ${
                 isDesktop && showTagSidebar
                   ? 'border-sky-400/60 bg-sky-500/15 text-sky-100'
                   : 'border-sky-500/30 bg-sky-500/10 text-sky-300 hover:border-sky-400/60'
@@ -699,13 +806,13 @@ export default function VideosView({ language, onExit }: Props) {
             </button>
           )}
           {downloadedCount > 0 && (
-            <span className="flex shrink-0 items-center gap-1.5 rounded-[10px] border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1.5 font-mono text-[11px] font-bold text-emerald-300">
+            <span className="flex shrink-0 items-center gap-1.5 rounded-ds-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1.5 font-mono text-[11px] font-bold text-emerald-300">
               <HardDriveDownload size={13} strokeWidth={1.5} />
               {copy.storage.replace('{count}', String(downloadedCount)).replace('{size}', formatBytes(totalBytes))}
             </span>
           )}
           {status === 'unreachable' && (
-            <span className="flex shrink-0 items-center gap-1.5 rounded-[10px] border border-amber-500/40 bg-amber-500/10 px-2.5 py-1.5 font-mono text-[11px] font-bold text-amber-300">
+            <span className="flex shrink-0 items-center gap-1.5 rounded-ds-lg border border-amber-500/40 bg-amber-500/10 px-2.5 py-1.5 font-mono text-[11px] font-bold text-amber-300">
               <WifiOff size={13} strokeWidth={1.5} />
               {copy.unreachableTitle}
             </span>
@@ -724,6 +831,7 @@ export default function VideosView({ language, onExit }: Props) {
                 activeTag={activeTag}
                 onOpenTag={openTagFromSidebar}
                 variant="panel"
+                onCollapse={() => setShowTagSidebar(false)}
               />
             </aside>
           )}
@@ -769,32 +877,49 @@ export default function VideosView({ language, onExit }: Props) {
           aria-modal="true"
           aria-label={activeItem.title}
         >
-          <div className={`flex shrink-0 items-center gap-3 px-4 pb-2 ${keyboardOpen ? 'pt-2' : 'pt-safe-2'}`}>
+          <div className={`flex shrink-0 items-center gap-3 px-4 pb-2 ${keyboardOpen || writingMode ? 'pt-2' : 'pt-safe-2'}`}>
             <div className="min-w-0 flex-1">
               <div className="truncate font-mono text-[15px] font-bold text-white">{activeItem.title}</div>
               <div className="truncate font-mono text-[11px] text-zinc-500">
                 {copy.objective} {activeItem.objective} · {activeItem.downloaded ? copy.offline : 'Stream'}
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setActiveFile(null)}
-              className="ds-icon-button flex h-11 w-11 shrink-0"
-              aria-label={copy.close}
-              data-testid="messer-player-close"
-            >
-              <X size={18} />
-            </button>
+            {writingMode ? (
+              /* Schreibmodus: zurück zur normalen Videoansicht (schließt Tastatur). */
+              <button
+                type="button"
+                onClick={exitWriting}
+                className="flex h-11 shrink-0 items-center gap-1.5 rounded-ds-lg border border-sky-500/40 bg-sky-500/10 px-3 font-mono text-[13px] font-bold text-sky-200 transition-colors hover:border-sky-400/70"
+                data-testid="messer-writing-done"
+              >
+                <ArrowLeft size={16} strokeWidth={1.5} />
+                {copy.backToVideo}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setActiveFile(null)}
+                className="ds-icon-button flex h-11 w-11 shrink-0"
+                aria-label={copy.close}
+                data-testid="messer-player-close"
+              >
+                <X size={18} />
+              </button>
+            )}
           </div>
 
-          {/* Video: oben, schrumpft bei offener Tastatur */}
-          <div className="flex shrink-0 justify-center px-3">{renderPlayer(true)}</div>
+          {/* Video + Lernleiste: im Schreibmodus ausgeblendet → Notizzettel bekommt
+              den ganzen Platz über der Tastatur. */}
+          {!writingMode && (
+            <>
+              <div className="flex shrink-0 justify-center px-3">{renderPlayer(true)}</div>
+              {!keyboardOpen && <div className="flex shrink-0 justify-center px-3">{renderStudyBar(true)}</div>}
+            </>
+          )}
 
-          {/* Lernleiste nur ohne Tastatur (spart Platz fürs Tippen) */}
-          {!keyboardOpen && <div className="flex shrink-0 justify-center px-3">{renderStudyBar(true)}</div>}
-
-          {/* Notizzettel: füllt den Rest, scrollt, Tastatur schiebt das Feld nach oben */}
-          <div className="mt-2 min-h-0 flex-1 border-t border-[#18181b] bg-[#070707]">
+          {/* Notizzettel: EINE Instanz (kein Remount beim Moduswechsel → Fokus bleibt).
+              Im Schreibmodus füllt er den ganzen sichtbaren Bereich über der Tastatur. */}
+          <div className={`min-h-0 flex-1 border-t border-[#18181b] bg-[#070707] ${writingMode ? '' : 'mt-2'}`}>
             <VideoNotesPanel
               profileId={profileId}
               objective={activeItem.objective}
@@ -805,6 +930,8 @@ export default function VideosView({ language, onExit }: Props) {
               onOpenObjective={openObjectiveFromTag}
               currentTimeSec={currentVideoTime}
               onSeekToTime={seekToTime}
+              writing={writingMode}
+              onFocusChange={handleNoteFocusChange}
             />
           </div>
         </div>
@@ -830,6 +957,7 @@ export default function VideosView({ language, onExit }: Props) {
           language={language}
           onClose={() => setActiveTag(null)}
           onOpenObjective={openObjectiveFromTag}
+          onOpenObjectiveAtTime={openObjectiveAtTime}
           onOpenTag={setActiveTag}
         />
       )}

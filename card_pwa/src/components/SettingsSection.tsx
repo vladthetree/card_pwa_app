@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Reusable React component for settings Section; contributes to the card-learning UI and shared app interactions.
  */
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from '../ui/motion'
 import { ChevronDown } from 'lucide-react'
 import { cloneElement, isValidElement } from 'react'
 
@@ -20,7 +20,7 @@ export function SettingsSection({ title, description, icon, isOpen, onToggle, ch
     : icon
 
   return (
-    <div className={`overflow-hidden rounded-[14px] transition-all duration-150 ease-out ${
+    <div className={`overflow-hidden rounded-ds-2xl transition-all duration-150 ease-out ${
       isOpen
         ? 'border border-[#3f3f46] bg-[#0c0c0c] shadow-card'
         : 'border border-[#18181b] bg-[#080808]'

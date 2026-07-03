@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Reusable React component for install Hint Modal; contributes to the card-learning UI and shared app interactions.
  */
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from '../ui/motion'
 import { X } from 'lucide-react'
 import { UI_TOKENS } from '../constants/ui'
 
@@ -51,7 +51,7 @@ export default function InstallHintModal({
           </button>
         </div>
 
-        <p className="text-sm text-zinc-300 leading-relaxed rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3 shadow-card">
+        <p className="text-sm text-zinc-300 leading-relaxed rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-3 shadow-card">
           {hintText}
         </p>
 
@@ -59,7 +59,7 @@ export default function InstallHintModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-3 py-2 rounded-[12px] text-xs border border-[#18181b] bg-[#0c0c0c] text-zinc-400 hover:text-zinc-50 hover:border-[#3f3f46] transition"
+            className="px-3 py-2 rounded-ds-xl text-xs border border-[#18181b] bg-[#0c0c0c] text-zinc-400 hover:text-zinc-50 hover:border-[#3f3f46] transition"
           >
             {closeLabel}
           </button>

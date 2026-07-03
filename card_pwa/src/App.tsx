@@ -5,7 +5,8 @@
  * Important: App-level navigation is local state, not a router; add new primary screens by extending the View type and this switch flow.
  */
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { LazyMotion } from 'framer-motion'
+import { motion, useReducedMotion } from './ui/motion'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { SettingsProvider, useSettings } from './contexts/SettingsContext'
 import AppInitializer from './components/AppInitializer'
@@ -18,6 +19,11 @@ import { useAutoJoinDefaultProfile } from './hooks/useAutoJoinDefaultProfile'
 import { useFullscreenPreference } from './hooks/useFullscreen'
 
 const SAFE_AREA_DEBUG_STORAGE_KEY = 'card-pwa-safe-area-debug'
+
+// Animations-Features (domMax) laden async als eigener Chunk: die m-Komponenten
+// aus ui/motion rendern sofort und animieren, sobald das Paket da ist (nach dem
+// ersten Start aus dem SW-Cache praktisch verzögerungsfrei).
+const loadMotionFeatures = () => import('./ui/motionFeatures').then(mod => mod.default)
 
 /**
  * Resolves the initial view from URL params so PWA shortcuts (e.g. `/?view=study`
@@ -180,7 +186,7 @@ function SafeAreaDebugOverlay() {
   if (!enabled) return null
 
   return (
-    <div className="fixed left-2 top-2 z-[9999] max-w-[calc(100vw-1rem)] rounded-[8px] border border-white/20 bg-black/90 p-2 font-mono text-[10px] leading-tight text-white shadow-2xl">
+    <div className="fixed left-2 top-2 z-[9999] max-w-[calc(100vw-1rem)] rounded-ds border border-white/20 bg-black/90 p-2 font-mono text-[10px] leading-tight text-white shadow-2xl">
       <div className="mb-1 flex items-center justify-between gap-3 text-[11px] font-bold">
         <span>safe-area debug</span>
         <button
@@ -518,10 +524,12 @@ function AppShell() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <SettingsProvider>
-        <AppShell />
-      </SettingsProvider>
-    </ThemeProvider>
+    <LazyMotion features={loadMotionFeatures}>
+      <ThemeProvider>
+        <SettingsProvider>
+          <AppShell />
+        </SettingsProvider>
+      </ThemeProvider>
+    </LazyMotion>
   )
 }

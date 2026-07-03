@@ -690,11 +690,11 @@ export default function ProfileSyncSection({ language }: Props) {
         </div>
 
         {/* Status banner */}
-        <div className={`rounded-[14px] border px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] ${
+        <div className={`rounded-ds-2xl border px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] ${
           isLinked ? 'border-zinc-800 bg-[#0a0a0a]' : 'border-zinc-900 bg-[#080808]'
         }`}>
           <div className="flex items-start gap-3">
-            <div className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${
+            <div className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-ds-xl border ${
               isLinked ? 'border-[--brand-primary]/30 text-[--brand-primary]' : 'border-zinc-800 text-zinc-600'
             }`}>
               <User size={15} />
@@ -734,7 +734,7 @@ export default function ProfileSyncSection({ language }: Props) {
 
         {/* Linked profile info */}
         {isLinked && profile && (
-          <details className="rounded-lg border border-zinc-900 bg-black/25 px-3 py-2">
+          <details className="rounded-ds border border-zinc-900 bg-black/25 px-3 py-2">
             <summary className="cursor-pointer list-none text-xs font-medium uppercase tracking-[0.12em] text-zinc-500 transition hover:text-zinc-300">
               {language === 'de' ? 'Technische Profil-IDs' : 'Technical profile IDs'}
             </summary>
@@ -755,7 +755,7 @@ export default function ProfileSyncSection({ language }: Props) {
         <div className="space-y-2">
           {/* Public profile list — visible whenever endpoint is configured */}
           {!!effectiveEndpoint && (
-            <div className="space-y-3 rounded-[14px] border border-zinc-900 bg-[#080808] p-3">
+            <div className="space-y-3 rounded-ds-2xl border border-zinc-900 bg-[#080808] p-3">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-400">{t.list_profiles}</p>
@@ -767,7 +767,7 @@ export default function ProfileSyncSection({ language }: Props) {
                   type="button"
                   onClick={() => void loadProfiles()}
                   disabled={busy || loadingProfiles || !isOnline}
-                  className="rounded-lg border border-zinc-800 px-2.5 py-1.5 text-xs text-zinc-400 transition-colors hover:border-zinc-600 hover:text-white disabled:opacity-40"
+                  className="rounded-ds border border-zinc-800 px-2.5 py-1.5 text-xs text-zinc-400 transition-colors hover:border-zinc-600 hover:text-white disabled:opacity-40"
                 >
                   {loadingProfiles ? t.linking : t.list_profiles_refresh}
                 </button>
@@ -777,7 +777,7 @@ export default function ProfileSyncSection({ language }: Props) {
                 <button
                   type="button"
                   onClick={() => setShowProfileList(v => !v)}
-                  className="flex w-full items-center justify-between rounded-lg border border-zinc-900 bg-black/25 px-3 py-2 text-left text-xs text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-200"
+                  className="flex w-full items-center justify-between rounded-ds border border-zinc-900 bg-black/25 px-3 py-2 text-left text-xs text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-200"
                 >
                   <span>
                     {language === 'de'
@@ -789,7 +789,7 @@ export default function ProfileSyncSection({ language }: Props) {
               )}
 
               {showProfileList && otherProfiles.length === 0 && !loadingProfiles && (
-                <p className="rounded-lg border border-zinc-900 bg-black/20 px-3 py-2 text-xs text-zinc-600">
+                <p className="rounded-ds border border-zinc-900 bg-black/20 px-3 py-2 text-xs text-zinc-600">
                   {language === 'de' ? 'Kein weiteres Profil vorhanden.' : 'No other profile available.'}
                 </p>
               )}
@@ -797,7 +797,7 @@ export default function ProfileSyncSection({ language }: Props) {
               {showProfileList && otherProfiles.map(item => {
                 const isSwitchingThis = switchingUserId === item.userId
                 return (
-                  <div key={item.userId} className="rounded-lg border border-zinc-900 bg-black/20 px-3 py-2">
+                  <div key={item.userId} className="rounded-ds border border-zinc-900 bg-black/20 px-3 py-2">
                     <div className="flex items-center gap-2">
                       <p className="text-sm text-white font-medium">{item.profileName}</p>
                       {item.isDefault && (
@@ -827,7 +827,7 @@ export default function ProfileSyncSection({ language }: Props) {
 
           {/* Create own profile — collapsible, available when linked */}
           {isLinked && !!effectiveEndpoint && (
-            <div className="rounded-[14px] border border-zinc-900 bg-[#080808]">
+            <div className="rounded-ds-2xl border border-zinc-900 bg-[#080808]">
               <button
                 type="button"
                 onClick={() => setShowCreateProfile(v => !v)}
@@ -846,19 +846,19 @@ export default function ProfileSyncSection({ language }: Props) {
                     onChange={event => setProfileNameInput(event.target.value)}
                     maxLength={80}
                     placeholder={t.profile_name_label}
-                    className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-zinc-500"
+                    className="w-full rounded-ds border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-zinc-500"
                   />
                   <button
                     type="button"
                     onClick={() => void handleCreateProfile()}
                     disabled={busy || !profileNameInput.trim()}
-                    className="w-full flex items-center justify-center gap-2 bg-white text-black text-sm font-semibold rounded-lg py-2.5 hover:bg-zinc-200 disabled:opacity-40 transition-colors"
+                    className="w-full flex items-center justify-center gap-2 bg-white text-black text-sm font-semibold rounded-ds py-2.5 hover:bg-zinc-200 disabled:opacity-40 transition-colors"
                   >
                     {busy ? <RefreshCw size={14} className="animate-spin" /> : <User size={14} />}
                     {busy ? t.creating : t.create_profile}
                   </button>
                   {createdRecoveryCode && (
-                    <div className="rounded-lg border border-amber-800/40 bg-amber-950/40 px-3 py-3">
+                    <div className="rounded-ds border border-amber-800/40 bg-amber-950/40 px-3 py-3">
                       <div className="text-xs font-semibold text-amber-200">{t.recovery_code_label}</div>
                       <div className="mt-2 font-mono text-sm tracking-[0.24em] break-all text-white">{createdRecoveryCode}</div>
                       <p className="mt-2 text-xs text-amber-200/80">{t.create_recovery_hint}</p>
@@ -870,7 +870,7 @@ export default function ProfileSyncSection({ language }: Props) {
           )}
 
           {isLinked && !!effectiveEndpoint && (
-            <div className="space-y-3 rounded-[14px] border border-zinc-900 bg-[#080808] p-3">
+            <div className="space-y-3 rounded-ds-2xl border border-zinc-900 bg-[#080808] p-3">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-400">{t.list_decks}</p>
@@ -884,7 +884,7 @@ export default function ProfileSyncSection({ language }: Props) {
                   type="button"
                   onClick={() => void loadDecks()}
                   disabled={busy || loadingDecks || !isOnline}
-                  className="rounded-lg border border-zinc-800 px-2.5 py-1.5 text-xs text-zinc-400 transition-colors hover:border-zinc-600 hover:text-white disabled:opacity-40"
+                  className="rounded-ds border border-zinc-800 px-2.5 py-1.5 text-xs text-zinc-400 transition-colors hover:border-zinc-600 hover:text-white disabled:opacity-40"
                 >
                   {loadingDecks ? t.linking : t.list_decks_refresh}
                 </button>
@@ -896,7 +896,7 @@ export default function ProfileSyncSection({ language }: Props) {
 
             {visibleServerDecks.length > 0 && (
               <div className="space-y-2">
-                <div className="flex items-center justify-between gap-3 rounded-lg border border-zinc-900 bg-black/25 px-3 py-2 text-xs text-zinc-500">
+                <div className="flex items-center justify-between gap-3 rounded-ds border border-zinc-900 bg-black/25 px-3 py-2 text-xs text-zinc-500">
                   <span>
                     {selectedDeckIds === null
                       ? t.selected_all_decks
@@ -926,13 +926,13 @@ export default function ProfileSyncSection({ language }: Props) {
                 <button
                   type="button"
                   onClick={() => setShowDeckList(value => !value)}
-                  className="flex w-full items-center justify-between rounded-lg border border-zinc-900 bg-black/25 px-3 py-2 text-left text-xs text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-200"
+                  className="flex w-full items-center justify-between rounded-ds border border-zinc-900 bg-black/25 px-3 py-2 text-left text-xs text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-200"
                 >
                   <span>{language === 'de' ? 'Deck-Auswahl anzeigen' : 'Show deck selection'}</span>
                   <span className="font-mono">{showDeckList ? '-' : '+'}</span>
                 </button>
                 {showDeckList && (
-                  <div className="max-h-56 overflow-y-auto rounded-lg border border-zinc-900">
+                  <div className="max-h-56 overflow-y-auto rounded-ds border border-zinc-900">
                     <ul>
                       {visibleServerDecks.map(deck => (
                         <li
@@ -962,7 +962,7 @@ export default function ProfileSyncSection({ language }: Props) {
         {/* Fallback recovery — only when not yet linked (e.g. offline on first launch) */}
         {!isLinked && !!effectiveEndpoint && (
           <>
-            <div className="space-y-2 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3">
+            <div className="space-y-2 rounded-ds border border-zinc-800 bg-zinc-900/60 p-3">
               <p className="text-xs font-semibold text-zinc-300">{t.recover_profile}</p>
               <p className="text-xs text-zinc-500">{t.recover_profile_desc}</p>
               <input
@@ -971,13 +971,13 @@ export default function ProfileSyncSection({ language }: Props) {
                 onChange={event => setRecoveryCodeInput(event.target.value)}
                 maxLength={128}
                 placeholder={t.recovery_code_placeholder}
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-zinc-500"
+                className="w-full rounded-ds border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-zinc-500"
               />
               <button
                 type="button"
                 onClick={() => void handleRecoverProfile()}
                 disabled={busy || !isOnline}
-                className="w-full rounded-lg border border-zinc-700 px-3 py-2 text-sm font-semibold text-zinc-200 transition-colors hover:border-zinc-500 hover:text-white disabled:opacity-40"
+                className="w-full rounded-ds border border-zinc-700 px-3 py-2 text-sm font-semibold text-zinc-200 transition-colors hover:border-zinc-500 hover:text-white disabled:opacity-40"
               >
                 {busy ? t.linking : t.recover_profile}
               </button>

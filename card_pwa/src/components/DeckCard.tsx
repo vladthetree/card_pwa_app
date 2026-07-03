@@ -3,7 +3,7 @@
  */
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { createPortal } from 'react-dom'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from '../ui/motion'
 import { ChevronDown, ChevronRight, Layers3, MoreHorizontal, List, BarChart3, Trash2 } from 'lucide-react'
 import { STRINGS } from '../contexts/SettingsContext'
 import { STORAGE_KEYS } from '../constants/appIdentity'
@@ -93,7 +93,7 @@ export function DeckCard({ deck, language, onStartStudy, onDelete, schedule, dec
         transition={nested ? undefined : cardEnter.transition}
         className={`group relative w-full transition-all duration-150 ease-out hover:border-[#3f3f46] ${
           nested
-            ? 'rounded-[8px] border border-ds-border bg-ds-floor p-3 shadow-none'
+            ? 'rounded-ds border border-ds-border bg-ds-floor p-3 shadow-none'
             : 'ds-card p-3 sm:p-4'
         }`}
         whileHover={prefersReducedMotion ? {} : { y: -1, transition: { duration: 0.14 } }}
@@ -225,7 +225,7 @@ export function DeckCard({ deck, language, onStartStudy, onDelete, schedule, dec
           ref={subDecksRef}
           initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
           animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-          className="mt-2 min-w-0 scroll-mt-3 rounded-[8px] border border-ds-border bg-ds-bg p-2.5 sm:p-3"
+          className="mt-2 min-w-0 scroll-mt-3 rounded-ds border border-ds-border bg-ds-bg p-2.5 sm:p-3"
         >
           <div className="mb-2 flex items-center justify-between gap-2 px-1">
             <div className="flex min-w-0 items-center gap-2 text-xs font-semibold text-zinc-200">

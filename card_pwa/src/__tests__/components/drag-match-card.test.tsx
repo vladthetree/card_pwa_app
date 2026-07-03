@@ -26,8 +26,11 @@ vi.mock('framer-motion', () => {
     for (const key of Object.keys(props)) if (!FRAMER_ONLY.has(key)) clean[key] = props[key]
     return createElement(tag, clean)
   }
+  const motionProxy = new Proxy({}, { get: (_t, tag: string) => make(tag) })
   return {
-    motion: new Proxy({}, { get: (_t, tag: string) => make(tag) }),
+    motion: motionProxy,
+    // ui/motion re-exportiert `m as motion` — der Mock muss beide Namen liefern.
+    m: motionProxy,
     useReducedMotion: () => false,
   }
 })

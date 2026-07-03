@@ -86,16 +86,11 @@ function hexToRgbTuple(hex: string): [number, number, number] {
 }
 
 function getThemeChromeColor(key: ThemeKey): string {
-  switch (key) {
-    case 'blueSteel':
-      return APP_CHROME_COLOR
-    case 'ghost':
-      return APP_CHROME_COLOR
-    case 'default':
-      return APP_CHROME_COLOR
-    default:
-      return APP_CHROME_COLOR
-  }
+  // Chrome-Farbe (theme-color-Meta + body-Fallback) muss exakt dem
+  // Theme-Hintergrund entsprechen: iOS malt die Home-Indicator-Zone der
+  // Standalone-PWA damit — eine abweichende Farbe (z. B. konstant #0b0b09
+  // bei Ghost/BlueSteel) erzeugt dort einen sichtbaren Streifen.
+  return THEMES[key]?.background ?? APP_CHROME_COLOR
 }
 
 function normalizeSavedThemeKey(value: string | null): ThemeKey {

@@ -62,7 +62,7 @@ const FreeRecallCard = memo(function FreeRecallCard({
 
   const cardShellCls = `border ${
     selfCheck === null ? 'border-ds-border' : selfCheck ? 'border-emerald-500/45' : 'border-rose-500/45'
-  } flex flex-col overflow-hidden rounded-[8px] bg-ds-card shadow-card ${
+  } flex flex-col overflow-hidden rounded-ds bg-ds-card shadow-card ${
     compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[420px] md:min-h-[500px]'
   }`
 
@@ -124,7 +124,7 @@ const FreeRecallCard = memo(function FreeRecallCard({
                   data-testid="freerecall-not-known"
                   onClick={(e) => { e.stopPropagation(); handleSelfCheck(false) }}
                   disabled={selfCheck !== null}
-                  className={`flex min-h-[44px] items-center justify-center gap-2 rounded-[8px] border px-3 py-2.5 font-mono text-[13px] transition-all duration-200 ${
+                  className={`flex min-h-[44px] items-center justify-center gap-2 rounded-ds border px-3 py-2.5 font-mono text-[13px] transition-all duration-200 ${
                     selfCheck === false
                       ? 'border-rose-500 bg-rose-500/15 text-rose-300'
                       : selfCheck === null
@@ -139,7 +139,7 @@ const FreeRecallCard = memo(function FreeRecallCard({
                   data-testid="freerecall-known"
                   onClick={(e) => { e.stopPropagation(); handleSelfCheck(true) }}
                   disabled={selfCheck !== null}
-                  className={`flex min-h-[44px] items-center justify-center gap-2 rounded-[8px] border px-3 py-2.5 font-mono text-[13px] transition-all duration-200 ${
+                  className={`flex min-h-[44px] items-center justify-center gap-2 rounded-ds border px-3 py-2.5 font-mono text-[13px] transition-all duration-200 ${
                     selfCheck === true
                       ? 'border-emerald-500 bg-emerald-500/15 text-emerald-300'
                       : selfCheck === null
@@ -194,7 +194,7 @@ const FreeRecallCard = memo(function FreeRecallCard({
               type="button"
               data-testid="freerecall-reveal"
               onClick={(e) => { e.stopPropagation(); onFlip() }}
-              className="min-h-[44px] w-full rounded-[8px] border border-ds-border bg-ds-floor px-3 py-2.5 font-sans text-sm text-zinc-300 transition-all duration-200 hover:border-ds-border-hover hover:bg-ds-panel hover:text-zinc-50 active:scale-[0.99]"
+              className="min-h-[44px] w-full rounded-ds border border-ds-border bg-ds-floor px-3 py-2.5 font-sans text-sm text-zinc-300 transition-all duration-200 hover:border-ds-border-hover hover:bg-ds-panel hover:text-zinc-50 active:scale-[0.99]"
             >
               {t.freerecall_reveal}
             </button>

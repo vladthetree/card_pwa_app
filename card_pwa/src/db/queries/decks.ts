@@ -5,6 +5,7 @@
  * Important: Tag matching here participates in the Second-Brain graph; use normalizeTagId for comparisons while preserving display tags.
  */
 import { db, type CardRecord, type DeckRecord } from '../../db'
+import { readAllCardsShared, readAllDecksShared } from './sharedReads'
 import { SM2 } from '../../utils/sm2'
 import { factorToDifficulty } from '../../utils/algorithmParams'
 import { getDayStartMs } from '../../utils/time'
@@ -151,9 +152,12 @@ async function computeAllDeckStats(
     deckIds.map(deckId => [deckId, { total: 0, new: 0, learning: 0, due: 0 }])
   )
 
-  const rows = await db.cards.where('deckId').anyOf(deckIds).and(c => !c.isDeleted).toArray()
+  // Geteilter Read statt anyOf-Query: deckIds umfasst hier ohnehin alle aktiven
+  // Decks; das statsByDeck-Lookup filtert fremde/gelöschte Decks unten heraus.
+  const rows = await readAllCardsShared()
 
   for (const row of rows) {
+    if (row.isDeleted) continue
     const stats = statsByDeck[row.deckId]
     if (!stats) continue
 
@@ -183,7 +187,9 @@ async function computeAllDeckStats(
 }
 
 export async function fetchDecks(): Promise<Deck[]> {
-  const deckRecords = (await db.decks.orderBy('name').toArray()).filter(d => !d.isDeleted)
+  // Sortierung übernimmt buildDeckTree (localeCompare auf Wurzeln + Kindern);
+  // der geteilte Read spart den zweiten Deck-Scan im selben Home-Ladefenster.
+  const deckRecords = (await readAllDecksShared()).filter(d => !d.isDeleted)
   if (deckRecords.length === 0) return []
 
   const nowMs = Date.now()
@@ -204,7 +210,7 @@ export async function fetchDeckCards(deckId: string): Promise<Card[]> {
 }
 
 export async function fetchAllCards(): Promise<Card[]> {
-  const rows = (await db.cards.toArray()).filter(r => !r.isDeleted)
+  const rows = (await readAllCardsShared()).filter(r => !r.isDeleted)
   return rows.map(mapCard)
 }
 
@@ -214,7 +220,7 @@ export async function fetchAllCards(): Promise<Card[]> {
 export async function listCardsByTag(tag: string): Promise<Array<{ deckId: string; card: Card }>> {
   const needle = normalizeTagId(tag)
   if (!needle) return []
-  const rows = (await db.cards.toArray()).filter(
+  const rows = (await readAllCardsShared()).filter(
     r => !r.isDeleted && r.tags.some(t => normalizeTagId(t) === needle),
   )
   return rows.map(r => ({ deckId: r.deckId, card: mapCard(r) }))
@@ -222,7 +228,7 @@ export async function listCardsByTag(tag: string): Promise<Array<{ deckId: strin
 
 /** Map deckId → Deckname (aktive Decks) — für Quellenlabels. */
 export async function getDeckNameMap(): Promise<Record<string, string>> {
-  const decks = (await db.decks.toArray()).filter(d => !d.isDeleted)
+  const decks = (await readAllDecksShared()).filter(d => !d.isDeleted)
   return Object.fromEntries(decks.map(d => [d.id, d.name]))
 }
 
@@ -287,7 +293,7 @@ export async function getDeckHomeMetadata(
     ? Math.max(1, Math.floor(dailyCardLimit))
     : 50
 
-  const deckRecords = (await db.decks.toArray()).filter(deck => !deck.isDeleted)
+  const deckRecords = (await readAllDecksShared()).filter(deck => !deck.isDeleted)
   const childrenByParent = buildDeckChildren(deckRecords)
   const scopeByDeckId: Record<string, string[]> = Object.fromEntries(
     deckIds.map(deckId => [deckId, collectDescendantDeckIds(deckId, childrenByParent)])
@@ -300,8 +306,6 @@ export async function getDeckHomeMetadata(
       ownerDeckIdsByCardDeckId.set(scopedDeckId, owners)
     }
   }
-  const allScopedDeckIds = Array.from(new Set(Object.values(scopeByDeckId).flat()))
-
   const deckScheduleOverview: Record<string, DeckScheduleOverview> = Object.fromEntries(
     deckIds.map(deckId => [
       deckId,
@@ -318,9 +322,12 @@ export async function getDeckHomeMetadata(
     tagsByDeck.set(deckId, new Set<string>())
   }
 
-  const rows = (await db.cards.where('deckId').anyOf(allScopedDeckIds).toArray()).filter(r => !r.isDeleted)
+  // Geteilter Read statt anyOf-Query: das Owner-Mapping unten überspringt
+  // Karten außerhalb des Scopes ohnehin.
+  const rows = await readAllCardsShared()
 
   for (const row of rows) {
+    if (row.isDeleted) continue
     const ownerDeckIds = ownerDeckIdsByCardDeckId.get(row.deckId) ?? []
     if (ownerDeckIds.length === 0) continue
 
@@ -438,7 +445,7 @@ export async function fetchTodayDueFromDecks(
   dailyCardLimit: number,
   nextDayStartsAt = 0
 ): Promise<number> {
-  const decks = (await db.decks.toArray()).filter(deck => !deck.isDeleted)
+  const decks = (await readAllDecksShared()).filter(deck => !deck.isDeleted)
   const activeIds = new Set(decks.map(deck => deck.id))
   const deckIds = decks
     .filter(deck => !deck.parentDeckId || !activeIds.has(deck.parentDeckId))

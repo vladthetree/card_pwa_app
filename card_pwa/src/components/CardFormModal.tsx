@@ -5,7 +5,7 @@
  * Important: This is the canonical manual-card editor; keep parser-compatible front/back formats aligned with cardTextParser and cardVariant.
  */
 import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { X, Plus, Loader2, CheckCircle, Trash2, Info, Minus } from 'lucide-react'
 import { db, type DeckRecord } from '../db'
 import { createCard, updateCard, deleteCard } from '../db/queries'
@@ -405,7 +405,7 @@ export default function CardFormModal(props: Props) {
                     </select>
                     <button
                       onClick={() => setCreateNewDeck(true)}
-                      className={`${UI_TOKENS.button.ghost} px-3 py-2 rounded-[12px] text-white/50 hover:text-white`}
+                      className={`${UI_TOKENS.button.ghost} px-3 py-2 rounded-ds-xl text-white/50 hover:text-white`}
                     >
                       <Plus size={14} strokeWidth={1.5} />
                     </button>
@@ -421,7 +421,7 @@ export default function CardFormModal(props: Props) {
                     {decks.length > 0 && (
                       <button
                         onClick={() => setCreateNewDeck(false)}
-                        className={`${UI_TOKENS.button.ghost} px-3 py-2 rounded-[12px] text-white/50 hover:text-white`}
+                        className={`${UI_TOKENS.button.ghost} px-3 py-2 rounded-ds-xl text-white/50 hover:text-white`}
                       >
                         {t.existing_deck}
                       </button>
@@ -454,7 +454,7 @@ export default function CardFormModal(props: Props) {
                       key={v}
                       type="button"
                       onClick={() => handleVariantChange(v)}
-                      className={`rounded-[10px] border px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] transition-all duration-150 ${
+                      className={`rounded-ds-lg border px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] transition-all duration-150 ${
                         isActive
                           ? activeClsMap[v]
                           : 'border-[#27272a] bg-transparent text-zinc-500 hover:border-zinc-600 hover:text-zinc-300'
@@ -506,7 +506,7 @@ export default function CardFormModal(props: Props) {
                             <button
                               type="button"
                               onClick={() => removeMcOption(i)}
-                              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] text-white/30 transition-all duration-200 ease-out active:scale-[0.98] hover:bg-rose-500/10 hover:text-rose-400 sm:h-9 sm:w-9"
+                              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-ds-xl text-white/30 transition-all duration-200 ease-out active:scale-[0.98] hover:bg-rose-500/10 hover:text-rose-400 sm:h-9 sm:w-9"
                               title={t.remove_answer_option}
                             >
                               <Minus size={14} strokeWidth={1.5} />
@@ -684,7 +684,7 @@ export default function CardFormModal(props: Props) {
               <button
                 onClick={() => setShowDeleteConfirm(true)}
                 disabled={isBusy}
-                className="px-3 py-2.5 rounded-[12px] border border-red-500/30 bg-[#0c0c0c] text-sm text-red-400 hover:text-red-300 transition-all duration-200 ease-out active:scale-[0.98] disabled:opacity-40 hover:bg-red-500/10"
+                className="px-3 py-2.5 rounded-ds-xl border border-red-500/30 bg-[#0c0c0c] text-sm text-red-400 hover:text-red-300 transition-all duration-200 ease-out active:scale-[0.98] disabled:opacity-40 hover:bg-red-500/10"
               >
                 <Trash2 size={14} strokeWidth={1.5} />
               </button>
@@ -723,21 +723,21 @@ export default function CardFormModal(props: Props) {
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0.9, opacity: 0 }}
-                  className="bg-rose-950/80 border border-rose-500/30 rounded-[14px] p-6 max-w-sm shadow-modal"
+                  className="bg-rose-950/80 border border-rose-500/30 rounded-ds-2xl p-6 max-w-sm shadow-modal"
                 >
                   <h3 className="text-white font-black text-lg mb-2">{t.delete_card_title}</h3>
                   <p className="text-white/70 text-sm mb-6">{t.delete_card_description}</p>
                   <div className="flex gap-3">
                     <button
                       onClick={() => setShowDeleteConfirm(false)}
-                      className="flex-1 px-4 py-2 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] text-white text-sm hover:bg-[#111] hover:border-[#3f3f46] transition-all duration-200 ease-out active:scale-[0.98]"
+                      className="flex-1 px-4 py-2 rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] text-white text-sm hover:bg-[#111] hover:border-[#3f3f46] transition-all duration-200 ease-out active:scale-[0.98]"
                     >
                       {t.cancel}
                     </button>
                     <button
                       onClick={handleDelete}
                       disabled={status === 'deleting'}
-                      className="flex-1 px-4 py-2 rounded-[12px] bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium transition-all duration-200 ease-out active:scale-[0.98] disabled:opacity-40"
+                      className="flex-1 px-4 py-2 rounded-ds-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium transition-all duration-200 ease-out active:scale-[0.98] disabled:opacity-40"
                     >
                       {status === 'deleting' ? t.deleting : t.yes_delete}
                     </button>

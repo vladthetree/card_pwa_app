@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Home-screen React component for home Shuffle Section; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
-import { motion } from 'framer-motion'
+import { motion } from '../../ui/motion'
 import { Pencil, Plus, Shuffle, Trash2, Layers3, BarChart3 } from 'lucide-react'
 import type { ShuffleCollection } from '../../types'
 
@@ -75,7 +75,7 @@ export function HomeShuffleSection({
           <button
             type="button"
             onClick={onManageCollections}
-            className="inline-flex items-center gap-2 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-xs font-semibold text-white/80 transition hover:border-[#3f3f46] hover:bg-[#111] hover:text-white"
+            className="inline-flex items-center gap-2 rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-xs font-semibold text-white/80 transition hover:border-[#3f3f46] hover:bg-[#111] hover:text-white"
           >
             <Layers3 size={14} />
             {manageLabel}
@@ -84,7 +84,7 @@ export function HomeShuffleSection({
         <button
           type="button"
           onClick={onCreateCollection}
-          className="inline-flex items-center gap-2 rounded-[12px] border border-[--brand-primary-25] bg-[--brand-primary-12] px-3 py-2 text-xs font-semibold text-[--brand-primary] transition hover:border-[--brand-primary-50] hover:bg-[--brand-primary-20]"
+          className="inline-flex items-center gap-2 rounded-ds-xl border border-[--brand-primary-25] bg-[--brand-primary-12] px-3 py-2 text-xs font-semibold text-[--brand-primary] transition hover:border-[--brand-primary-50] hover:bg-[--brand-primary-20]"
         >
           <Plus size={14} />
           {createLabel}
@@ -92,7 +92,7 @@ export function HomeShuffleSection({
       </div>
 
       {collections.length === 0 && (
-        <div className="rounded-[12px] border border-dashed border-[#18181b] bg-[#0a0a0a] px-4 py-6 text-center">
+        <div className="rounded-ds-xl border border-dashed border-[#18181b] bg-[#0a0a0a] px-4 py-6 text-center">
           <p className="text-sm text-white/45">{emptyLabel}</p>
         </div>
       )}
@@ -102,7 +102,7 @@ export function HomeShuffleSection({
           <motion.div
             key={collection.id}
             whileTap={{ scale: 0.99 }}
-            className="group rounded-[14px] border border-[#18181b] bg-[#0a0a0a] px-4 py-4 shadow-card transition hover:border-[--brand-primary-25] hover:bg-[#111]"
+            className="group rounded-ds-2xl border border-[#18181b] bg-[#0a0a0a] px-4 py-4 shadow-card transition hover:border-[--brand-primary-25] hover:bg-[#111]"
           >
             <div className="flex items-start justify-between gap-3">
               <button
@@ -148,7 +148,7 @@ export function HomeShuffleSection({
                 <button
                   type="button"
                   onClick={() => onDeleteCollection(collection)}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-rose-400/20 bg-[#0c0c0c] text-rose-200/70 transition hover:border-rose-300/35 hover:bg-[#111] hover:text-rose-100 sm:h-9 sm:w-9"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-ds-xl border border-rose-400/20 bg-[#0c0c0c] text-rose-200/70 transition hover:border-rose-300/35 hover:bg-[#111] hover:text-rose-100 sm:h-9 sm:w-9"
                   aria-label={deleteLabel}
                   title={deleteLabel}
                 >
@@ -160,7 +160,7 @@ export function HomeShuffleSection({
               <button
                 type="button"
                 onClick={() => onStartShuffleStudy(collection)}
-                className="shrink-0 rounded-[12px] border border-[--brand-primary-25] bg-[--brand-primary-12] px-3 py-2 text-xs font-semibold text-[--brand-primary] transition group-hover:border-[--brand-primary-50] group-hover:bg-[--brand-primary-20]"
+                className="shrink-0 rounded-ds-xl border border-[--brand-primary-25] bg-[--brand-primary-12] px-3 py-2 text-xs font-semibold text-[--brand-primary] transition group-hover:border-[--brand-primary-50] group-hover:bg-[--brand-primary-20]"
               >
                 {startLabel}
               </button>

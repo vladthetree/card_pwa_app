@@ -3,7 +3,7 @@
  */
 import { useCallback, useState, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
-import { motion } from 'framer-motion'
+import { motion } from '../../ui/motion'
 import { Check, ChevronDown, Download, FlaskConical, FolderPlus, Loader2, Plus, RefreshCw, Search, Shuffle, Upload, Video, X } from 'lucide-react'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 import { useFloatingMenu } from '../../hooks/useFloatingMenu'
@@ -146,13 +146,13 @@ export function HomeDeckToolbar({
 
   return (
     <div className="sticky top-0 z-[90] mb-2 mt-2 flex-shrink-0 sm:mb-3 sm:mt-4">
-      <div className="rounded-[8px] border border-ds-border bg-ds-bg/92 p-2 shadow-card backdrop-blur-md sm:border-0 sm:bg-ds-bg/70 sm:p-0 sm:shadow-none sm:backdrop-blur-sm">
+      <div className="rounded-ds border border-ds-border bg-ds-bg/92 p-2 shadow-card backdrop-blur-md sm:border-0 sm:bg-ds-bg/70 sm:p-0 sm:shadow-none sm:backdrop-blur-sm">
       <div className="flex min-w-0 flex-wrap items-center gap-2 overflow-x-hidden overflow-y-visible sm:flex-nowrap sm:gap-1 sm:pb-1">
         <h2 className="mr-2 hidden shrink-0 font-sans text-lg font-semibold text-theme-text sm:block">
           {t.decks_title}
         </h2>
 
-        <label className="relative flex h-8 min-w-0 flex-[0_1_16rem] items-center rounded-[8px] border border-ds-border bg-ds-card pl-2 pr-2 text-xs text-white/85 transition-colors focus-within:border-[--brand-primary-50]">
+        <label className="relative flex h-8 min-w-0 flex-[0_1_16rem] items-center rounded-ds border border-ds-border bg-ds-card pl-2 pr-2 text-xs text-white/85 transition-colors focus-within:border-[--brand-primary-50]">
           <Search size={13} strokeWidth={1.5} className="pointer-events-none mr-1.5 text-white/45" />
           <input
             type="search"
@@ -179,7 +179,7 @@ export function HomeDeckToolbar({
             <button
               type="button"
               onClick={handleToggleFilterMenu}
-              className="inline-flex h-9 items-center gap-1.5 rounded-[8px] border border-ds-border bg-ds-card px-2.5 font-mono text-[10px] uppercase tracking-[0.08em] text-white/85 transition-all duration-200 hover:border-ds-border-hover hover:bg-ds-panel"
+              className="inline-flex h-9 items-center gap-1.5 rounded-ds border border-ds-border bg-ds-card px-2.5 font-mono text-[10px] uppercase tracking-[0.08em] text-white/85 transition-all duration-200 hover:border-ds-border-hover hover:bg-ds-panel"
               aria-haspopup="menu"
               aria-expanded={showFilterMenu}
               title={filterLabel}
@@ -331,7 +331,7 @@ export function HomeDeckToolbar({
 
           <button
             onClick={onReload}
-            className="inline-flex h-auto w-auto shrink-0 items-center justify-center rounded-[8px] p-1 text-theme-text-secondary transition-all duration-300 ease-out hover:bg-ds-panel active:scale-95 hover:text-theme-text"
+            className="inline-flex h-auto w-auto shrink-0 items-center justify-center rounded-ds p-1 text-theme-text-secondary transition-all duration-300 ease-out hover:bg-ds-panel active:scale-95 hover:text-theme-text"
             title={t.reload}
             aria-label={t.reload}
           >
@@ -342,7 +342,7 @@ export function HomeDeckToolbar({
             <button
               type="button"
               onClick={handleToggleActionsMenu}
-              className="group flex h-auto min-h-8 min-w-0 items-center justify-center gap-1 rounded-[8px] border border-ds-border bg-ds-card px-2.5 py-1 font-mono text-xs uppercase tracking-[0.1em] text-white/82 shadow-card transition-all duration-300 ease-out hover:border-ds-border-hover hover:bg-ds-panel active:scale-95 hover:text-white"
+              className="group flex h-auto min-h-8 min-w-0 items-center justify-center gap-1 rounded-ds border border-ds-border bg-ds-card px-2.5 py-1 font-mono text-xs uppercase tracking-[0.1em] text-white/82 shadow-card transition-all duration-300 ease-out hover:border-ds-border-hover hover:bg-ds-panel active:scale-95 hover:text-white"
               aria-haspopup="menu"
               aria-expanded={showActionsMenu}
               aria-label={language === 'de' ? 'Aktionen oeffnen' : 'Open actions'}

@@ -54,6 +54,42 @@ export async function getGlobalDbRevision(): Promise<number> {
   return deckCount + cardCount + reviewCount + shuffleCollectionCount
 }
 
+// Eine geteilte Revision-Subscription für alle globalen Hooks (useDecks,
+// useStats, useGamificationProfile, useShuffleCollections): statt dass jeder
+// Hook eine eigene liveQuery hält, die bei jedem Write vier Tabellen zählt,
+// läuft die Zählung einmal und fächert an alle Listener auf.
+const globalRevisionListeners = new Set<() => void>()
+let globalRevisionSubscription: { unsubscribe: () => void } | null = null
+let globalRevisionHasSeenInitial = false
+
+function subscribeToGlobalDbRevision(listener: () => void): () => void {
+  globalRevisionListeners.add(listener)
+
+  if (!globalRevisionSubscription) {
+    globalRevisionHasSeenInitial = false
+    globalRevisionSubscription = liveQuery(getGlobalDbRevision).subscribe({
+      next: () => {
+        if (!globalRevisionHasSeenInitial) {
+          globalRevisionHasSeenInitial = true
+          return
+        }
+        for (const notify of Array.from(globalRevisionListeners)) {
+          notify()
+        }
+      },
+      error: () => {},
+    })
+  }
+
+  return () => {
+    globalRevisionListeners.delete(listener)
+    if (globalRevisionListeners.size === 0 && globalRevisionSubscription) {
+      globalRevisionSubscription.unsubscribe()
+      globalRevisionSubscription = null
+    }
+  }
+}
+
 function useOnDbChange(callback: () => void, deckId?: string | null) {
   const callbackRef = useRef(callback)
 
@@ -63,36 +99,41 @@ function useOnDbChange(callback: () => void, deckId?: string | null) {
 
   useEffect(() => {
     let cancelled = false
-    let hasSeenInitial = false
     const debounce = makeVisibilityDebounce(() => cancelled, callbackRef)
     const onReviewUpdated = () => debounce.schedule()
 
     // When a deckId is provided, scope the observable to that deck's cards only.
     // This prevents a card edit in deck A from triggering a reload in deck B's view.
     // For global hooks (no deckId) we watch all tables that affect home UI
-    // visibility, including shuffle collections.
-    const observable = deckId
-      ? liveQuery(() => db.cards.where('deckId').equals(deckId).count())
-      : liveQuery(getGlobalDbRevision)
-
-    const subscription = observable.subscribe({
-      next: () => {
+    // visibility, including shuffle collections — via the shared subscription.
+    let unsubscribe: () => void
+    if (deckId) {
+      let hasSeenInitial = false
+      const subscription = liveQuery(() => db.cards.where('deckId').equals(deckId).count()).subscribe({
+        next: () => {
+          if (cancelled) return
+          if (!hasSeenInitial) {
+            hasSeenInitial = true
+            return
+          }
+          debounce.schedule()
+        },
+        error: () => {},
+      })
+      unsubscribe = () => subscription.unsubscribe()
+    } else {
+      unsubscribe = subscribeToGlobalDbRevision(() => {
         if (cancelled) return
-        if (!hasSeenInitial) {
-          hasSeenInitial = true
-          return
-        }
         debounce.schedule()
-      },
-      error: () => {},
-    })
+      })
+    }
 
     window.addEventListener(REVIEW_UPDATED_EVENT, onReviewUpdated)
 
     return () => {
       cancelled = true
       debounce.clear()
-      subscription.unsubscribe()
+      unsubscribe()
       window.removeEventListener(REVIEW_UPDATED_EVENT, onReviewUpdated)
     }
   }, [deckId])

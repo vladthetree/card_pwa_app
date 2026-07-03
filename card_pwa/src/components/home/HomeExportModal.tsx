@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Home-screen React component for home Export Modal; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
-import { motion } from 'framer-motion'
+import { motion } from '../../ui/motion'
 import { Download, X } from 'lucide-react'
 import { UI_TOKENS } from '../../constants/ui'
 
@@ -78,7 +78,7 @@ export function HomeExportModal({
 
         <p className="text-xs text-white/45 mt-3">{t.backup_export_note_txt}</p>
 
-        <div className="mt-3 rounded-[12px] border border-sky-400/25 bg-sky-500/10 p-3">
+        <div className="mt-3 rounded-ds-xl border border-sky-400/25 bg-sky-500/10 p-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-sky-200/90">
             {t.migration_official_path_title}
           </p>

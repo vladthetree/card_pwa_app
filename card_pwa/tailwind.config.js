@@ -56,9 +56,14 @@ export default {
         modal: 'var(--shadow-modal)',
       },
       borderRadius: {
-        'ds-sm': '4px',
-        'ds': '8px',
-        'ds-lg': '10px',
+        // Werte kommen aus den CSS-Variablen in index.css (:root) — dort ist
+        // der einzige Tuning-Punkt für die Rundung der ganzen App.
+        'ds-sm': 'var(--radius-ds-sm, 4px)',
+        'ds': 'var(--radius-ds-md, 12px)',
+        'ds-lg': 'var(--radius-ds-lg, 14px)',
+        'ds-xl': 'var(--radius-ds-xl, 16px)',
+        'ds-2xl': 'var(--radius-ds-2xl, 20px)',
+        'ds-sheet': 'var(--radius-ds-sheet, 24px)',
       },
       animation: {
         'pulse-soft': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',

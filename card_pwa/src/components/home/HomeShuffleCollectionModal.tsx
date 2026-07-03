@@ -2,7 +2,7 @@
  * AI_CONTEXT: Home-screen React component for home Shuffle Collection Modal; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
 import { useEffect, useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from '../../ui/motion'
 import { Check, Layers3, Save, X } from 'lucide-react'
 import { UI_TOKENS } from '../../constants/ui'
 import type { Deck, ShuffleCollection } from '../../types'
@@ -182,19 +182,19 @@ export function HomeShuffleCollectionModal({
           />
 
           <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-3 shadow-card">
+            <div className="rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] px-3 py-3 shadow-card">
               <div className="text-[10px] uppercase tracking-[0.16em] text-white/35">{language === 'de' ? 'Decks' : 'Decks'}</div>
               <div className="mt-1 text-lg font-semibold text-white">{selectedDeckIds.length}</div>
             </div>
-            <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-3 shadow-card">
+            <div className="rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] px-3 py-3 shadow-card">
               <div className="text-[10px] uppercase tracking-[0.16em] text-white/35">{totalCardsLabel}</div>
               <div className="mt-1 text-lg font-semibold text-white">{selectedCardCount}</div>
             </div>
-            <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-3 shadow-card">
+            <div className="rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] px-3 py-3 shadow-card">
               <div className="text-[10px] uppercase tracking-[0.16em] text-white/35">{todayCardsLabel}</div>
               <div className="mt-1 text-lg font-semibold text-amber-100">{selectedTodayCount}</div>
             </div>
-            <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-3 shadow-card">
+            <div className="rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] px-3 py-3 shadow-card">
               <div className="text-[10px] uppercase tracking-[0.16em] text-white/35">{language === 'de' ? 'In Scope' : 'In scope'}</div>
               <div className="mt-1 text-lg font-semibold text-emerald-100">
                 {selectedDeckIds.filter(id => syncedDeckIdSet.has(id)).length}
@@ -220,7 +220,7 @@ export function HomeShuffleCollectionModal({
                     key={deck.id}
                     type="button"
                     onClick={() => toggleDeck(deck.id)}
-                    className={`flex items-center justify-between gap-3 rounded-[12px] border px-4 py-3 text-left transition ${
+                    className={`flex items-center justify-between gap-3 rounded-ds-xl border px-4 py-3 text-left transition ${
                       selected
                         ? 'border-amber-300/30 bg-amber-400/10'
                         : 'border-[#18181b] bg-[#0a0a0a] hover:border-[#3f3f46] hover:bg-[#111]'
@@ -239,7 +239,7 @@ export function HomeShuffleCollectionModal({
                         </span>
                       </div>
                     </div>
-                    <span className={`flex h-8 w-8 items-center justify-center rounded-xl border ${
+                    <span className={`flex h-8 w-8 items-center justify-center rounded-ds-xl border ${
                       selected
                         ? 'border-amber-300/35 bg-amber-300/15 text-amber-50'
                         : 'border-[#18181b] text-zinc-500'

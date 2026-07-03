@@ -4,11 +4,16 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" sizes="192x192" href="/pwa-icons/icon-192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#080808" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <!-- Muss exakt dem App-Hintergrund (--ds-bg) entsprechen: iOS malt die
+         Home-Indicator-Zone der Standalone-PWA mit dieser Farbe — jede
+         Abweichung erzeugt einen sichtbaren Streifen unter der Rundung. -->
+    <meta name="theme-color" content="#0b0b09" />
+    <!-- Bewusst KEIN apple-mobile-web-app-capable/-status-bar-style/-fullscreen:
+         Seit iOS 26.1 rendert black-translucent die Leisten opak schwarz
+         (sichtbarer Balken unter der Rundung). Ohne die Legacy-Metas nutzt iOS
+         den Manifest-Pfad (display: standalone) und tönt Status-/Home-Zone per
+         Liquid-Glass-Sampling aus dem Seitenhintergrund — wie bei DoHabit. -->
     <meta name="apple-mobile-web-app-title" content="Card_PWA" />
-    <meta name="apple-touch-fullscreen" content="yes" />
     <meta name="format-detection" content="telephone=no, date=no, email=no, address=no" />
     <link rel="apple-touch-icon" sizes="180x180" href="/pwa-icons/apple-touch-icon-180.png" />
     <meta name="description" content="Card_PWA - lernkartenoptimierte PWA mit lokalen Metriken" />
@@ -16,6 +21,10 @@
     <!-- Selbst gehostete Fonts: keine externe Abhaengigkeit, damit die App auch
          ohne Internet (WAN aus, nur LAN) sofort rendert statt auf einen
          render-blockierenden externen Font-Request zu warten. -->
+    <!-- Preload der zwei Haupt-Fonts (latin): startet den Download parallel zum
+         CSS statt erst nach dem ersten Text-Layout → kein Font-Swap-Flackern. -->
+    <link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/share-tech-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/fonts.css" />
     <title>Card_PWA</title>
   </head>

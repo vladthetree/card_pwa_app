@@ -2,7 +2,7 @@
  * AI_CONTEXT: Reusable React component for card Face; contributes to the card-learning UI and shared app interactions.
  */
 import { lazy, Suspense } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from '../ui/motion'
 import { memo, useState, useEffect, useMemo, useRef } from 'react'
 import { Edit, Check, X } from 'lucide-react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
@@ -320,15 +320,15 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   const answerTone = hasAnswered
     ? (isAnswerCorrect ? 'border-emerald-500/45' : 'border-rose-500/45')
     : 'border-ds-border'
-  const cardShellClass = `border ${flipped ? answerTone : 'border-ds-border'} flex flex-col overflow-hidden rounded-[8px] bg-ds-card shadow-card transition-all duration-150 ease-out ${
+  const cardShellClass = `border ${flipped ? answerTone : 'border-ds-border'} flex flex-col overflow-hidden rounded-ds bg-ds-card shadow-card transition-all duration-150 ease-out ${
     compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[420px] md:min-h-[500px]'
   }${flipped && correctGlowActive ? ' study-glow-success' : ''}`
   const bodyClass = compact
     ? 'min-h-0 flex-1 overflow-y-auto px-[14px] py-[16px] no-scrollbar'
     : 'flex-1 overflow-y-auto no-scrollbar px-6 py-6 md:px-8 md:py-8'
   const optionBaseClass = compact
-    ? 'grid min-h-[3.25rem] w-full grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-2 rounded-[8px] border px-3 py-2.5 text-left font-medium leading-snug transition-all duration-200'
-    : 'grid w-full grid-cols-[1.5rem_minmax(0,1fr)] items-center gap-4 rounded-[8px] border px-5 py-4 text-left font-medium transition-all duration-200'
+    ? 'grid min-h-[3.25rem] w-full grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-2 rounded-ds border px-3 py-2.5 text-left font-medium leading-snug transition-all duration-200'
+    : 'grid w-full grid-cols-[1.5rem_minmax(0,1fr)] items-center gap-4 rounded-ds border px-5 py-4 text-left font-medium transition-all duration-200'
 
   return (
     <div className={compact ? 'h-full' : ''}>
@@ -437,7 +437,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                           e.stopPropagation()
                           onFlip()
                         }}
-                        className="min-h-[44px] w-full rounded-[8px] border border-ds-border bg-ds-floor px-3 py-2.5 text-sm text-zinc-300 transition-all duration-200 hover:border-ds-border-hover hover:bg-ds-panel hover:text-zinc-50 active:scale-[0.99]"
+                        className="min-h-[44px] w-full rounded-ds border border-ds-border bg-ds-floor px-3 py-2.5 text-sm text-zinc-300 transition-all duration-200 hover:border-ds-border-hover hover:bg-ds-panel hover:text-zinc-50 active:scale-[0.99]"
                       >
                         {t.answer}
                       </button>
@@ -488,7 +488,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                   className={`${bodyClass} flex flex-col overscroll-y-contain`}
                 >
                   {correctKeys.length > 0 && hasAnswered && (
-                    <div className={`mb-3 flex items-center gap-2 rounded-[8px] border px-3 py-2 ${
+                    <div className={`mb-3 flex items-center gap-2 rounded-ds border px-3 py-2 ${
                       isAnswerCorrect ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' : 'border-rose-500/40 bg-rose-500/10 text-rose-300'
                     }`}>
                       {isAnswerCorrect ? <Check size={16} strokeWidth={1.5} /> : <X size={16} strokeWidth={1.5} />}
@@ -523,25 +523,25 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                   {hasExtra && (
                     <div className={`${answered.merkhilfe || answered.nicht ? 'mt-3' : 'mt-auto pt-4'} grid grid-cols-1 gap-2 border-t border-ds-border pt-3 text-xs sm:grid-cols-2`}>
                       {card.extra.acronym && (
-                        <div className="rounded-[8px] border border-ds-border bg-ds-floor px-3 py-2">
+                        <div className="rounded-ds border border-ds-border bg-ds-floor px-3 py-2">
                           <span className="mb-0.5 block text-white/55">{t.acronym}</span>
                           <span className="font-mono text-zinc-200">{card.extra.acronym}</span>
                         </div>
                       )}
                       {card.extra.port && (
-                        <div className="rounded-[8px] border border-ds-border bg-ds-floor px-3 py-2">
+                        <div className="rounded-ds border border-ds-border bg-ds-floor px-3 py-2">
                           <span className="mb-0.5 block text-white/55">{t.port}</span>
                           <span className="font-mono text-[--brand-secondary]">{card.extra.port}</span>
                         </div>
                       )}
                       {card.extra.protocol && (
-                        <div className="rounded-[8px] border border-ds-border bg-ds-floor px-3 py-2">
+                        <div className="rounded-ds border border-ds-border bg-ds-floor px-3 py-2">
                           <span className="mb-0.5 block text-white/55">{t.protocol}</span>
                           <span className="text-[--brand-secondary]">{card.extra.protocol}</span>
                         </div>
                       )}
                       {card.extra.examples && (
-                        <div className="rounded-[8px] border border-ds-border bg-ds-floor px-3 py-2 sm:col-span-2">
+                        <div className="rounded-ds border border-ds-border bg-ds-floor px-3 py-2 sm:col-span-2">
                           <span className="mb-0.5 block text-white/55">{t.examples}</span>
                           <span className="text-[--brand-primary]">{card.extra.examples.slice(0, 120)}</span>
                         </div>

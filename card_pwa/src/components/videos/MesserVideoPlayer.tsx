@@ -59,6 +59,10 @@ export default function MesserVideoPlayer({
   labels,
 }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
+  // Seek, der beim Setzen noch keine Metadaten hatte (z. B. Sprung aus der
+  // Tag-Seite in ein ANDERES Video): wird in handleLoadedMetadata nachgeholt und
+  // hat dort Vorrang vor der Resume-Position.
+  const pendingSeekRef = useRef<{ id: number; seconds: number } | null>(null)
   const lastSavedRef = useRef(0)
   // Laufend mitgeschriebene Position/Dauer — der Cleanup darf NICHT videoRef
   // lesen, weil das `<video key={file}>`-Remount die Ref beim Wechsel schon auf
@@ -87,6 +91,12 @@ export default function MesserVideoPlayer({
   useEffect(() => {
     const video = videoRef.current
     if (!video || !seekRequest) return
+    // Noch keine Metadaten (frisch remountetes Video) → Seek vormerken und in
+    // handleLoadedMetadata anwenden; sofortiges Setzen würde ins Leere laufen.
+    if (video.readyState < 1 /* HAVE_METADATA */) {
+      pendingSeekRef.current = seekRequest
+      return
+    }
     video.currentTime = Math.max(0, seekRequest.seconds)
     onTimeChange?.(video.currentTime)
   }, [seekRequest?.id])
@@ -125,6 +135,14 @@ export default function MesserVideoPlayer({
     const video = videoRef.current
     if (!video) return
     video.playbackRate = rate
+    // Vorgemerkter Seek (Sprung aus der Tag-Seite) gewinnt gegen Resume.
+    const pending = pendingSeekRef.current
+    if (pending) {
+      pendingSeekRef.current = null
+      video.currentTime = Math.max(0, pending.seconds)
+      onTimeChange?.(video.currentTime)
+      return
+    }
     const resume = computeResume(getResumePosition(file), video.duration)
     if (resume > 0) video.currentTime = resume
     onTimeChange?.(video.currentTime)
@@ -175,7 +193,7 @@ export default function MesserVideoPlayer({
 
   return (
     <div className={`flex w-full flex-col ${compact ? 'max-w-3xl shrink-0 gap-1.5' : 'max-w-4xl gap-2'}`}>
-      <div className={`overflow-hidden rounded-[14px] border border-[#1f1f23] bg-black ${compact ? '' : 'aspect-video w-full'}`}>
+      <div className={`overflow-hidden rounded-ds-2xl border border-[#1f1f23] bg-black ${compact ? '' : 'aspect-video w-full'}`}>
         <video
           ref={videoRef}
           key={file}

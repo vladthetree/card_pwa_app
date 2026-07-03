@@ -5,7 +5,7 @@
  * Important: Most state is delegated to hooks/home/*; keep this file as orchestration/glue, not raw data-query logic.
  */
 import { lazy, Suspense, useMemo, useState } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { ArrowLeft } from 'lucide-react'
 import { useDecks, useGamificationProfile, useShuffleCollections, useStats } from '../hooks/useCardDb'
 import { usePwaInstall } from '../hooks/usePwaInstall'
@@ -299,7 +299,7 @@ export default function HomeView({
                 <button
                   type="button"
                   onClick={onBackHome}
-                  className="inline-flex items-center gap-2 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-xs font-semibold text-white/80 transition hover:border-[#3f3f46] hover:bg-[#111] hover:text-white"
+                  className="inline-flex items-center gap-2 rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-xs font-semibold text-white/80 transition hover:border-[#3f3f46] hover:bg-[#111] hover:text-white"
                 >
                   <ArrowLeft size={14} />
                   {settings.language === 'de' ? 'Zur Startseite' : 'Back home'}
@@ -325,7 +325,7 @@ export default function HomeView({
         )}
 
         {!settings.shuffleModeEnabled && isShuffleManageMode && (
-          <div className="rounded-[14px] border border-dashed border-[#18181b] bg-[#0a0a0a] px-4 py-8 text-center shadow-card">
+          <div className="rounded-ds-2xl border border-dashed border-[#18181b] bg-[#0a0a0a] px-4 py-8 text-center shadow-card">
             <p className="text-sm text-white/55">
               {settings.language === 'de'
                 ? 'Der Shuffle-Modus ist aktuell in den Einstellungen deaktiviert.'
@@ -335,7 +335,7 @@ export default function HomeView({
               <button
                 type="button"
                 onClick={onBackHome}
-                className="mt-4 inline-flex items-center gap-2 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-xs font-semibold text-white/80 transition hover:border-[#3f3f46] hover:bg-[#111] hover:text-white"
+                className="mt-4 inline-flex items-center gap-2 rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-xs font-semibold text-white/80 transition hover:border-[#3f3f46] hover:bg-[#111] hover:text-white"
               >
                 <ArrowLeft size={14} />
                 {settings.language === 'de' ? 'Zur Startseite' : 'Back home'}

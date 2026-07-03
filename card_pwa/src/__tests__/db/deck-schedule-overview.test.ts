@@ -8,24 +8,17 @@ import { SM2 } from '../../utils/sm2'
 
 const dayMs = 86_400_000
 
-type DeckWhereResult = {
-  anyOf: (deckIds: string[]) => {
-    toArray: () => Promise<CardRecord[]>
-  }
-}
-
 const mockedDb = vi.hoisted(() => {
   const state = {
     cards: [] as CardRecord[],
     decks: [] as DeckRecord[],
   }
 
+  // getDeckHomeMetadata liest seit dem Shared-Read-Umbau die ganze Karten-
+  // Tabelle (readAllCardsShared) und filtert selbst über das Owner-Mapping;
+  // der Mock liefert daher nur noch toArray.
   const cards = {
-    where: vi.fn((_field: string): DeckWhereResult => ({
-      anyOf: (deckIds: string[]) => ({
-        toArray: async () => state.cards.filter(card => deckIds.includes(card.deckId)).map(card => ({ ...card })),
-      }),
-    })),
+    toArray: vi.fn(async () => state.cards.map(card => ({ ...card }))),
   }
 
   const decks = {
@@ -87,14 +80,14 @@ describe('getDeckScheduleOverview', () => {
     vi.setSystemTime(new Date('2026-04-10T12:00:00.000Z'))
     mockedDb.state.cards = []
     mockedDb.state.decks = []
-    mockedDb.cards.where.mockClear()
+    mockedDb.cards.toArray.mockClear()
     mockedDb.decks.toArray.mockClear()
   })
 
   it('returns empty object for empty deck list', async () => {
     const result = await getDeckScheduleOverview([], 50)
     expect(result).toEqual({})
-    expect(mockedDb.cards.where).not.toHaveBeenCalled()
+    expect(mockedDb.cards.toArray).not.toHaveBeenCalled()
   })
 
   it('caps today total to configured daily limit when review already exceeds limit', async () => {

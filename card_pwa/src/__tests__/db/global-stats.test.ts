@@ -9,19 +9,6 @@ import { getDayStartMs } from '../../utils/time'
 
 const DAY_MS = 86_400_000
 
-type CardWhereResult = {
-  equals: (value: number) => {
-    and: (predicate: (card: CardRecord) => boolean) => {
-      count: () => Promise<number>
-    }
-  }
-  anyOf: (...values: number[]) => {
-    and: (predicate: (card: CardRecord) => boolean) => {
-      count: () => Promise<number>
-    }
-  }
-}
-
 const mockedDb = vi.hoisted(() => {
   const state = {
     cards: [] as CardRecord[],
@@ -29,28 +16,15 @@ const mockedDb = vi.hoisted(() => {
     reviews: [] as Array<ReviewRecord & { id: number }>,
   }
 
+  // fetchGlobalStats zählt seit dem Shared-Read-Umbau alle Kennzahlen in einem
+  // Durchgang über readAllCardsShared/readAllDecksShared; der Mock liefert
+  // daher nur noch toArray statt filter/where-Zählketten.
   const cards = {
-    filter: vi.fn((predicate: (card: CardRecord) => boolean) => ({
-      count: async () => state.cards.filter(predicate).length,
-    })),
-    where: vi.fn((_field: string): CardWhereResult => ({
-      equals: (value: number) => ({
-        and: (predicate: (card: CardRecord) => boolean) => ({
-          count: async () => state.cards.filter(card => card.type === value && predicate(card)).length,
-        }),
-      }),
-      anyOf: (...values: number[]) => ({
-        and: (predicate: (card: CardRecord) => boolean) => ({
-          count: async () => state.cards.filter(card => values.includes(card.type) && predicate(card)).length,
-        }),
-      }),
-    })),
+    toArray: vi.fn(async () => state.cards.map(card => ({ ...card }))),
   }
 
   const decks = {
-    filter: vi.fn((predicate: (deck: DeckRecord) => boolean) => ({
-      count: async () => state.decks.filter(predicate).length,
-    })),
+    toArray: vi.fn(async () => state.decks.map(deck => ({ ...deck }))),
   }
 
   const reviews = {
@@ -131,9 +105,8 @@ describe('fetchGlobalStats', () => {
     mockedDb.state.cards = []
     mockedDb.state.decks = []
     mockedDb.state.reviews = []
-    mockedDb.cards.filter.mockClear()
-    mockedDb.cards.where.mockClear()
-    mockedDb.decks.filter.mockClear()
+    mockedDb.cards.toArray.mockClear()
+    mockedDb.decks.toArray.mockClear()
     mockedDb.reviews.where.mockClear()
   })
 

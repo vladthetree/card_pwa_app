@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Home-screen React component for home Stats Section; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
-import { motion } from 'framer-motion'
+import { motion } from '../../ui/motion'
 import ReviewHeatmap from '../ReviewHeatmap.tsx'
 import { HomeDailyQuestTile } from './HomeDailyQuestTile'
 import type { GamificationProfile } from '../../types'
@@ -51,7 +51,7 @@ function CompactStatTile({
     blue: 'text-[--brand-secondary]',
     emerald: 'text-emerald-300',
   }[tone]
-  const className = `relative min-h-[4.25rem] min-w-0 overflow-hidden rounded-[8px] border border-ds-border bg-ds-floor px-3 py-2.5 text-left shadow-card before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-white/[0.06] ${
+  const className = `relative min-h-[4.25rem] min-w-0 overflow-hidden rounded-ds border border-ds-border bg-ds-floor px-3 py-2.5 text-left shadow-card before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-white/[0.06] ${
     interactive ? 'cursor-pointer hover:border-ds-border-hover hover:bg-ds-panel active:scale-[0.98]' : ''
   }`
   const content = (

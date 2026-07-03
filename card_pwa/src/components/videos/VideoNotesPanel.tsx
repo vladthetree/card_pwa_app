@@ -129,6 +129,10 @@ interface Props {
   currentTimeSec?: number | null
   /** Springt im Player zu einer angeklickten Zeitmarke. */
   onSeekToTime?: (seconds: number) => void
+  /** Schreibmodus (Handy): blendet die unteren Extras aus → mehr Platz fürs Textfeld. */
+  writing?: boolean
+  /** Meldet Fokuswechsel des Textfelds (Handy-Schreibmodus). */
+  onFocusChange?: (focused: boolean) => void
 }
 
 const SAVE_DEBOUNCE_MS = 600
@@ -145,7 +149,7 @@ function SignalList({
   if (items.length === 0) return null
 
   return (
-    <div className="rounded-[10px] border border-[#1f1f23] bg-[#0c0c0c] p-2">
+    <div className="rounded-ds-lg border border-[#1f1f23] bg-[#0c0c0c] p-2">
       <div className="mb-1.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
         {icon}
         {label}
@@ -171,6 +175,8 @@ export default function VideoNotesPanel({
   onOpenObjective,
   currentTimeSec = null,
   onSeekToTime,
+  writing = false,
+  onFocusChange,
 }: Props) {
   const copy = COPY[language]
   const { note, resolvedObjective } = useVideoNote(profileId, objective)
@@ -364,7 +370,7 @@ export default function VideoNotesPanel({
         <button
           type="button"
           onClick={() => insertSnippet(SNIPPETS[language].question)}
-          className="inline-flex h-8 items-center gap-1 rounded-[8px] border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-sky-500/40 hover:text-sky-200"
+          className="inline-flex h-8 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-sky-500/40 hover:text-sky-200"
         >
           <CircleHelp size={12} strokeWidth={1.5} />
           {copy.insertQuestion}
@@ -372,7 +378,7 @@ export default function VideoNotesPanel({
         <button
           type="button"
           onClick={() => insertSnippet(SNIPPETS[language].cue)}
-          className="inline-flex h-8 items-center gap-1 rounded-[8px] border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-amber-500/40 hover:text-amber-200"
+          className="inline-flex h-8 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-amber-500/40 hover:text-amber-200"
         >
           <Lightbulb size={12} strokeWidth={1.5} />
           {copy.insertCue}
@@ -380,7 +386,7 @@ export default function VideoNotesPanel({
         <button
           type="button"
           onClick={() => insertSnippet(SNIPPETS[language].card)}
-          className="inline-flex h-8 items-center gap-1 rounded-[8px] border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-emerald-500/40 hover:text-emerald-200"
+          className="inline-flex h-8 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-emerald-500/40 hover:text-emerald-200"
         >
           <Plus size={12} strokeWidth={1.5} />
           {copy.insertCard}
@@ -388,7 +394,7 @@ export default function VideoNotesPanel({
         <button
           type="button"
           onClick={insertTimeAnchor}
-          className="inline-flex h-8 items-center gap-1 rounded-[8px] border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-violet-500/40 hover:text-violet-200"
+          className="inline-flex h-8 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-violet-500/40 hover:text-violet-200"
         >
           <Clock size={12} strokeWidth={1.5} />
           {copy.insertTime}
@@ -397,7 +403,7 @@ export default function VideoNotesPanel({
           type="button"
           onClick={insertWikiLink}
           data-testid="video-note-insert-link"
-          className="inline-flex h-8 items-center gap-1 rounded-[8px] border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-fuchsia-500/40 hover:text-fuchsia-200"
+          className="inline-flex h-8 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-fuchsia-500/40 hover:text-fuchsia-200"
         >
           <Link2 size={12} strokeWidth={1.5} />
           {copy.insertLink}
@@ -440,15 +446,17 @@ export default function VideoNotesPanel({
           onSelect={updateCursorFromTextarea}
           onClick={updateCursorFromTextarea}
           onKeyUp={updateCursorFromTextarea}
-          onFocus={updateCursorFromTextarea}
+          onFocus={() => { updateCursorFromTextarea(); onFocusChange?.(true) }}
+          onBlur={() => onFocusChange?.(false)}
           placeholder={copy.placeholder}
           data-testid="video-note-content"
           className="absolute inset-0 resize-none whitespace-pre-wrap break-words bg-transparent px-4 py-3 font-mono text-[13px] leading-relaxed text-transparent caret-zinc-100 placeholder:text-zinc-600 focus:outline-none"
         />
       </div>
 
-      {/* Erkannte Tags — anklickbar → verbundene Videos */}
-      <div className="max-h-[46%] shrink-0 overflow-y-auto border-t border-[#18181b] px-4 py-3">
+      {/* Erkannte Tags — anklickbar → verbundene Videos. Im Schreibmodus (Handy,
+          Tastatur offen) ausgeblendet, damit das Textfeld über der Tastatur bleibt. */}
+      <div className={`max-h-[46%] shrink-0 overflow-y-auto border-t border-[#18181b] px-4 py-3 ${writing ? 'hidden' : ''}`}>
         {timeAnchors.length > 0 && (
           <div className="mb-3">
             <div className="mb-1.5 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
@@ -462,7 +470,7 @@ export default function VideoNotesPanel({
                   type="button"
                   onClick={() => onSeekToTime?.(anchor.seconds)}
                   data-testid={`video-note-time-${anchor.seconds}`}
-                  className="flex items-center gap-1 rounded-[8px] border border-violet-500/30 bg-violet-500/10 px-2 py-1 font-mono text-[11px] text-violet-200 transition-colors hover:border-violet-400/70 hover:text-violet-100"
+                  className="flex items-center gap-1 rounded-ds border border-violet-500/30 bg-violet-500/10 px-2 py-1 font-mono text-[11px] text-violet-200 transition-colors hover:border-violet-400/70 hover:text-violet-100"
                 >
                   <Clock size={10} strokeWidth={1.5} className="opacity-70" />
                   {anchor.token}
@@ -490,7 +498,7 @@ export default function VideoNotesPanel({
                     title={`${copy.openLink} [[${target}]]`}
                     aria-label={`${copy.openLink} [[${target}]]`}
                     data-testid={`video-note-link-${target}`}
-                    className="flex items-center gap-1 rounded-[8px] border border-fuchsia-500/30 bg-fuchsia-500/10 px-2 py-1 font-mono text-[11px] text-fuchsia-200 transition-colors hover:border-fuchsia-400/70 hover:text-fuchsia-100"
+                    className="flex items-center gap-1 rounded-ds border border-fuchsia-500/30 bg-fuchsia-500/10 px-2 py-1 font-mono text-[11px] text-fuchsia-200 transition-colors hover:border-fuchsia-400/70 hover:text-fuchsia-100"
                   >
                     <span className="font-bold">{target}</span>
                     {title && <span className="max-w-[160px] truncate text-fuchsia-300/70">{title}</span>}
@@ -519,7 +527,7 @@ export default function VideoNotesPanel({
                     title={`${copy.openLink} ${back.objective}`}
                     aria-label={`${copy.openLink} ${back.objective}`}
                     data-testid={`video-note-backlink-${back.objective}`}
-                    className="flex items-center gap-1 rounded-[8px] border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 font-mono text-[11px] text-zinc-300 transition-colors hover:border-fuchsia-500/40 hover:text-fuchsia-200"
+                    className="flex items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 font-mono text-[11px] text-zinc-300 transition-colors hover:border-fuchsia-500/40 hover:text-fuchsia-200"
                   >
                     <ArrowUpRight size={10} strokeWidth={1.5} className="text-zinc-600" />
                     <span className="font-bold">{back.objective}</span>
@@ -559,7 +567,7 @@ export default function VideoNotesPanel({
                 title={`${copy.openTag} #${tag}`}
                 aria-label={`${copy.openTag} #${tag}`}
                 data-testid={`video-note-tag-${tag}`}
-                className="flex items-center gap-1 rounded-[8px] border border-sky-500/30 bg-sky-500/10 px-2 py-1 font-mono text-[11px] text-sky-200 transition-colors hover:border-sky-400/70 hover:text-sky-100"
+                className="flex items-center gap-1 rounded-ds border border-sky-500/30 bg-sky-500/10 px-2 py-1 font-mono text-[11px] text-sky-200 transition-colors hover:border-sky-400/70 hover:text-sky-100"
               >
                 <Hash size={10} strokeWidth={2} className="opacity-60" />
                 {tag}
@@ -582,7 +590,7 @@ export default function VideoNotesPanel({
                   title={`${copy.addTag} #${tag}`}
                   aria-label={`${copy.addTag} #${tag}`}
                   data-testid={`video-note-suggestion-${tag}`}
-                  className="flex items-center gap-1 rounded-[8px] border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 font-mono text-[11px] text-zinc-300 transition-colors hover:border-sky-500/40 hover:text-sky-200"
+                  className="flex items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 font-mono text-[11px] text-zinc-300 transition-colors hover:border-sky-500/40 hover:text-sky-200"
                 >
                   <Hash size={10} strokeWidth={2} className="text-zinc-600" />
                   {tag}

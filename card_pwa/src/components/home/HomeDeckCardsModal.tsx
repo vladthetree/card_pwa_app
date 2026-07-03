@@ -2,7 +2,7 @@
  * AI_CONTEXT: Home-screen React component for home Deck Cards Modal; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from '../../ui/motion'
 import { X, Plus } from 'lucide-react'
 import { useDeckCards } from '../../hooks/useCardDb'
 import { STRINGS } from '../../contexts/SettingsContext'
@@ -59,7 +59,7 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
             <button
               type="button"
               onClick={() => setShowCreateCard(true)}
-              className="flex items-center gap-1.5 rounded-[10px] border border-[--brand-primary-40] bg-[--brand-primary-08] px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[--brand-primary] transition hover:bg-[--brand-primary-12]"
+              className="flex items-center gap-1.5 rounded-ds-lg border border-[--brand-primary-40] bg-[--brand-primary-08] px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[--brand-primary] transition hover:bg-[--brand-primary-12]"
             >
               <Plus size={11} strokeWidth={2} /> {t.create_card}
             </button>
@@ -75,11 +75,11 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
 
         <div className="overflow-y-auto pr-1 max-h-[65vh]">
           {loading ? (
-            <div className="space-y-2">{[...Array(5)].map((_, i) => <div key={i} className="h-14 rounded-[12px] border border-[#18181b] bg-[#0c0c0c] animate-pulse" />)}</div>
+            <div className="space-y-2">{[...Array(5)].map((_, i) => <div key={i} className="h-14 rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] animate-pulse" />)}</div>
           ) : error ? (
-            <div className="rounded-[12px] border border-rose-500/30 bg-rose-950/30 p-3 text-rose-300 text-sm">{error}</div>
+            <div className="rounded-ds-xl border border-rose-500/30 bg-rose-950/30 p-3 text-rose-300 text-sm">{error}</div>
           ) : cards.length === 0 ? (
-            <div className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-4 text-zinc-400 text-sm shadow-card">{t.no_cards_in_deck}</div>
+            <div className="rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-4 text-zinc-400 text-sm shadow-card">{t.no_cards_in_deck}</div>
           ) : (
             <div className="space-y-2">
               {cards.map(card => {
@@ -106,7 +106,7 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
                   : null
 
                 return (
-                  <div key={card.id} className="rounded-[12px] border border-[#18181b] bg-[#0c0c0c] p-3 space-y-3 shadow-card">
+                  <div key={card.id} className="rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-3 space-y-3 shadow-card">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                         <div className="min-w-0">
@@ -142,7 +142,7 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
                       </button>
                     </div>
 
-                    <div className="rounded-[12px] border border-[#18181b] bg-[#0a0a0a] p-2.5">
+                    <div className="rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-2.5">
                       <p className="text-[10px] uppercase tracking-wide text-zinc-500 mb-1 font-mono">{language === 'de' ? 'Antwort' : 'Answer'}</p>
                       <p className="text-sm text-zinc-300 whitespace-pre-wrap break-words">
                         {parsedAnswer.answer || card.back.replace(/\n+/g, ' ')}
