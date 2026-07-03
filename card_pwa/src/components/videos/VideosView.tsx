@@ -597,18 +597,18 @@ export default function VideosView({ language, onExit }: Props) {
           labels={{ fullscreen: copy.fullscreen, exitFullscreen: copy.exitFullscreen, speed: copy.speed }}
         />
       ) : resolving ? (
-        <div className="flex aspect-video w-full max-w-4xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-[#1f1f23] bg-black text-center">
+        <div className="flex aspect-video w-full max-w-5xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-[#1f1f23] bg-black text-center">
           <Loader2 size={26} className="animate-spin text-zinc-500" />
           <div className="font-mono text-[12px] text-zinc-500">{copy.resolving}</div>
         </div>
       ) : (
-        <div className="flex aspect-video w-full max-w-4xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-amber-500/30 bg-amber-500/5 text-center">
+        <div className="flex aspect-video w-full max-w-5xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-amber-500/30 bg-amber-500/5 text-center">
           <WifiOff size={26} strokeWidth={1.5} className="text-amber-300" />
           <div className="px-6 font-mono text-[12px] text-amber-200">{copy.streamOnly}</div>
         </div>
       )
     ) : (
-      <div className="flex aspect-video w-full max-w-4xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-dashed border-[#1f1f23] bg-[#070707] text-center">
+      <div className="flex aspect-video w-full max-w-5xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-dashed border-[#1f1f23] bg-[#070707] text-center">
         <Play size={28} strokeWidth={1.5} className="text-zinc-600" />
         <div className="px-6 font-mono text-[12px] text-zinc-500">{copy.pickVideo}</div>
       </div>
