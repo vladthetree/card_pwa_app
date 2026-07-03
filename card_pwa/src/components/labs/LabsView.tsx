@@ -127,7 +127,7 @@ export default function LabsView({ language, onExit }: Props) {
 
       {/* Kategorien */}
       <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3" data-study-scroll="allow">
-        <div className="flex flex-col gap-3">
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-3">
           {LAB_CATEGORIES.map(category => {
             const scenarios = byCategory.get(category.id) ?? []
             if (scenarios.length === 0) return null
