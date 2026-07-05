@@ -138,6 +138,39 @@
     accent-color: var(--brand-primary);
   }
 
+  input[type='checkbox'] {
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-grid;
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    place-content: center;
+    margin: 0;
+    border: 1px solid #000;
+    border-radius: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  input[type='checkbox']::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    transform: scale(0);
+    background: #ef4444;
+    transition: transform 120ms ease-out;
+  }
+
+  input[type='checkbox']:checked::before {
+    transform: scale(1);
+  }
+
+  input[type='checkbox']:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
   @supports (-webkit-touch-callout: none) {
     input,
     textarea,

@@ -945,7 +945,6 @@ export default function ProfileSyncSection({ language }: Props) {
                               checked={isDeckChecked(deck.id)}
                               onChange={() => void handleToggleDeckSync(deck.id)}
                               disabled={busy || loadingDecks}
-                              className="h-4 w-4 accent-emerald-500"
                             />
                             <span>{deck.name || deck.id}</span>
                           </label>

@@ -7,7 +7,6 @@ import { motion } from '../../ui/motion'
 import { Check, ChevronDown, Download, FlaskConical, FolderPlus, Loader2, Plus, RefreshCw, Search, Shuffle, Upload, Video, X } from 'lucide-react'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 import { useFloatingMenu } from '../../hooks/useFloatingMenu'
-import type { HomeDashboardMode } from './HomeStatsSection'
 
 type HomeTab = 'decks' | 'tags'
 
@@ -19,7 +18,6 @@ interface Props {
   homeTab: HomeTab
   deckSearchQuery: string
   deckSortMode: DeckSortMode
-  dashboardMode: HomeDashboardMode
   canInstall: boolean
   isInstalled: boolean
   isInstalling: boolean
@@ -27,7 +25,6 @@ interface Props {
   onDeckSearchQueryChange: (value: string) => void
   onDeckSortModeChange: (value: DeckSortMode) => void
   onToggleShuffleOnly: () => void
-  onDashboardModeChange: (mode: HomeDashboardMode) => void
   onReload: () => void
   onCreateDeck: () => void
   onCreateVirtualDeck?: () => void
@@ -49,7 +46,6 @@ export function HomeDeckToolbar({
   homeTab,
   deckSearchQuery,
   deckSortMode,
-  dashboardMode,
   canInstall,
   isInstalled,
   isInstalling,
@@ -57,7 +53,6 @@ export function HomeDeckToolbar({
   onDeckSearchQueryChange,
   onDeckSortModeChange,
   onToggleShuffleOnly,
-  onDashboardModeChange,
   onReload,
   onCreateDeck,
   onCreateVirtualDeck,
@@ -127,16 +122,6 @@ export function HomeDeckToolbar({
       window.requestAnimationFrame(updateFilterPosition)
     }
   }, [showFilterMenu, updateFilterPosition, closeActionsMenu])
-
-  const dashboardOptions: Array<{
-    key: HomeDashboardMode
-    label: string
-  }> = [
-    { key: 'pilot', label: 'Pilot' },
-    { key: 'kpi', label: 'KPI' },
-    { key: 'heatmap', label: 'Heatmap' },
-    { key: 'clean', label: 'Clean' },
-  ]
 
   const filterLabel = language === 'de' ? 'Ansicht' : 'View'
   const decksLabel = language === 'de' ? 'Decks' : 'Decks'
@@ -302,28 +287,6 @@ export function HomeDeckToolbar({
                     </button>
                   </>
                 )}
-
-                <div className="border-t border-ds-border px-4 pb-1 pt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
-                  Dashboard
-                </div>
-                {dashboardOptions.map(option => {
-                  const isActive = dashboardMode === option.key
-                  return (
-                    <button
-                      key={option.key}
-                      type="button"
-                      onClick={() => {
-                        onDashboardModeChange(option.key)
-                        closeFilterMenu()
-                      }}
-                      className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
-                      role="menuitem"
-                    >
-                      <span>{option.label}</span>
-                      {isActive && <Check size={14} strokeWidth={1.5} />}
-                    </button>
-                  )
-                })}
               </motion.div>,
               document.body,
             )}

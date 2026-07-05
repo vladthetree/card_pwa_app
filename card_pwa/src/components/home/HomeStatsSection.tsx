@@ -1,12 +1,14 @@
 /**
  * AI_CONTEXT: Home-screen React component for home Stats Section; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
-import { motion } from '../../ui/motion'
+import { useState, type ReactNode } from 'react'
+import { AnimatePresence, motion } from '../../ui/motion'
 import ReviewHeatmap from '../ReviewHeatmap.tsx'
 import { HomeDailyQuestTile } from './HomeDailyQuestTile'
 import type { GamificationProfile } from '../../types'
 
-// 'clean' (Beleg `…23.40.53.jpeg`): Dashboard-Kachel komplett ausgeblendet.
+// 'clean' (Beleg `…23.40.53.jpeg`): Dashboard-Kachel fast komplett ausgeblendet,
+// bleibt aber als Swipe-Slide erreichbar, damit mobile Nutzer wieder herauskommen.
 export type HomeDashboardMode = 'kpi' | 'heatmap' | 'pilot' | 'clean'
 
 interface Props {
@@ -23,6 +25,7 @@ interface Props {
   } | null
   gamificationProfile: GamificationProfile | null
   onOpenFutureForecast: () => void
+  onModeChange: (mode: HomeDashboardMode) => void
   /** Daily Quest (Pilot-Modus, Beleg `…23.36.20.jpeg`) */
   questSize: number
   questTopDeckName: string | null
@@ -76,6 +79,97 @@ function CompactStatTile({
   )
 }
 
+const DASHBOARD_CAROUSEL_MODES: HomeDashboardMode[] = ['pilot', 'kpi', 'heatmap', 'clean']
+const DASHBOARD_LABELS: Record<HomeDashboardMode, string> = {
+  pilot: 'Pilot',
+  kpi: 'KPI',
+  heatmap: 'Heatmap',
+  clean: 'Minimal',
+}
+
+function DashboardModeCarousel({
+  mode,
+  language,
+  onModeChange,
+  children,
+}: {
+  mode: HomeDashboardMode
+  language: 'de' | 'en'
+  onModeChange: (mode: HomeDashboardMode) => void
+  children: ReactNode
+}) {
+  const [direction, setDirection] = useState(0)
+  const activeIndex = DASHBOARD_CAROUSEL_MODES.indexOf(mode)
+  const isCarouselMode = activeIndex >= 0
+  const isCleanMode = mode === 'clean'
+
+  if (!isCarouselMode) return null
+
+  const goTo = (index: number, directionOverride?: number) => {
+    const total = DASHBOARD_CAROUSEL_MODES.length
+    const nextIndex = ((index % total) + total) % total
+    if (nextIndex === activeIndex) return
+    setDirection(directionOverride ?? (nextIndex > activeIndex ? 1 : -1))
+    onModeChange(DASHBOARD_CAROUSEL_MODES[nextIndex])
+  }
+
+  const handleDragEnd = (
+    _: MouseEvent | TouchEvent | PointerEvent,
+    info: { offset: { x: number }; velocity: { x: number } },
+  ) => {
+    const swipeOffset = info.offset.x
+    const swipeVelocity = info.velocity.x
+    if (swipeOffset < -42 || swipeVelocity < -420) {
+      goTo(activeIndex + 1, 1)
+      return
+    }
+    if (swipeOffset > 42 || swipeVelocity > 420) {
+      goTo(activeIndex - 1, -1)
+    }
+  }
+
+  return (
+    <div className="w-full min-w-0">
+      <div className="overflow-hidden">
+        <AnimatePresence initial={false} mode="wait">
+          <motion.div
+            key={mode}
+            className={isCleanMode ? 'min-h-7 cursor-grab active:cursor-grabbing sm:min-h-0' : 'cursor-grab active:cursor-grabbing'}
+            initial={{ opacity: 0, x: direction >= 0 ? 18 : -18 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: direction >= 0 ? -18 : 18 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.12}
+            dragDirectionLock
+            style={{ touchAction: 'pan-y' }}
+            onDragEnd={handleDragEnd}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      <div className={`flex items-center justify-center gap-2 sm:hidden ${isCleanMode ? 'mt-0' : 'mt-2'}`} aria-label={language === 'de' ? 'Dashboard-Auswahl' : 'Dashboard selection'}>
+        {DASHBOARD_CAROUSEL_MODES.map((option, index) => (
+          <button
+            key={option}
+            type="button"
+            onClick={() => goTo(index)}
+            className={`h-2 rounded-full transition-all ${
+              activeIndex === index ? 'w-6 bg-white' : 'w-2 bg-white/30 hover:bg-white/50'
+            }`}
+            aria-label={language === 'de' ? `${DASHBOARD_LABELS[option]} anzeigen` : `Show ${DASHBOARD_LABELS[option]}`}
+            aria-current={activeIndex === index}
+            title={DASHBOARD_LABELS[option]}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function HomeStatsSection({
   t,
   language,
@@ -83,6 +177,7 @@ export function HomeStatsSection({
   stats,
   gamificationProfile,
   onOpenFutureForecast,
+  onModeChange,
   questSize,
   questTopDeckName,
   questStarting,
@@ -97,6 +192,7 @@ export function HomeStatsSection({
   const streakLabel = gamificationProfile && gamificationProfile.totalReviews > 0
     ? (language === 'de' ? 'Accuracy' : 'Accuracy')
     : (language === 'de' ? 'Streak' : 'Streak')
+  const forecastTitle = language === 'de' ? 'Prognose der Zukunftskarten (15 Tage)' : 'Future cards forecast (15 days)'
   const statGrid = stats ? (
     <motion.div
       initial={{ opacity: 0 }}
@@ -112,43 +208,50 @@ export function HomeStatsSection({
         value={accuracyValue}
         tone={gamificationProfile && gamificationProfile.totalReviews > 0 ? 'emerald' : 'neutral'}
         onClick={onOpenFutureForecast}
-        title={language === 'de' ? 'Prognose der Zukunftskarten (15 Tage)' : 'Future cards forecast (15 days)'}
+        title={forecastTitle}
       />
     </motion.div>
   ) : null
+  let dashboardContent: ReactNode = null
+
+  if (mode === 'kpi') {
+    dashboardContent = statGrid
+  } else if (mode === 'pilot') {
+    dashboardContent = (
+      <div className="relative z-20 grid w-full min-w-0 gap-2 pb-1 sm:gap-3">
+        <HomeDailyQuestTile
+          language={language}
+          questSize={questSize}
+          dueTodayTotal={stats?.nowDue ?? 0}
+          topDeckName={questTopDeckName}
+          starting={questStarting}
+          onStart={onStartDailyQuest}
+          onShowDecks={onShowDecks}
+        />
+        {statGrid}
+      </div>
+    )
+  } else if (mode === 'heatmap') {
+    dashboardContent = (
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <ReviewHeatmap />
+      </motion.div>
+    )
+  } else if (mode === 'clean') {
+    dashboardContent = (
+      <div className="min-h-7 sm:min-h-0" aria-label={DASHBOARD_LABELS.clean} />
+    )
+  }
+
+  if (dashboardContent === null) return null
 
   return (
-    <>
-      {/* Kein delay im Fade: verzögertes Einblenden wirkte bei Re-Renders wie
-          Flackern/Nachladen. */}
-      {mode === 'kpi' && statGrid}
-
-      {/* Pilot = Daily Quest (Beleg `…23.36.20.jpeg`): gemischte Session über
-          mehrere Decks; der 8.-Juni-Stand zeigt im Pilot-Modus die Quest-Kachel. */}
-      {mode === 'pilot' && (
-        <div className="relative z-20 grid w-full min-w-0 gap-2 pb-1 sm:gap-3">
-          <HomeDailyQuestTile
-            language={language}
-            questSize={questSize}
-            dueTodayTotal={stats?.nowDue ?? 0}
-            topDeckName={questTopDeckName}
-            starting={questStarting}
-            onStart={onStartDailyQuest}
-            onShowDecks={onShowDecks}
-          />
-          {statGrid}
-        </div>
-      )}
-
-      {mode === 'heatmap' && (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <ReviewHeatmap />
-        </motion.div>
-      )}
-    </>
+    <DashboardModeCarousel mode={mode} language={language} onModeChange={onModeChange}>
+      {dashboardContent}
+    </DashboardModeCarousel>
   )
 }
