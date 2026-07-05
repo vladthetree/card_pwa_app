@@ -4,7 +4,7 @@
 import { useEffect } from 'react'
 import { useSettings } from '../contexts/SettingsContext'
 import { supportsServiceWorker } from '../env'
-import { countTodayDueFromDecks } from '../db/queries'
+import { countTodayDueFromDecks, getGlobalStats } from '../db/queries'
 import { REVIEW_UPDATED_EVENT } from '../constants/appIdentity'
 
 export function useAppBadge() {
@@ -45,8 +45,18 @@ export function useAppBadge() {
           }
         }
 
-        if (dueToday > 0 && badgeApi.setAppBadge) {
-          await badgeApi.setAppBadge(dueToday)
+        // Badge zeigt den Rest zum Tagesziel statt des Gesamt-Backlogs: ein
+        // dreistelliger Overdue-Berg auf dem Icon erzeugt Stress statt Anstoß.
+        // Ohne Tagesziel (dailyGoal 0) bleibt der volle Due-Zähler.
+        let badgeCount = dueToday
+        if (settings.dailyGoal > 0) {
+          const stats = await getGlobalStats(settings.nextDayStartsAt)
+          if (cancelled) return
+          badgeCount = Math.max(0, Math.min(dueToday, settings.dailyGoal - stats.reviewedToday))
+        }
+
+        if (badgeCount > 0 && badgeApi.setAppBadge) {
+          await badgeApi.setAppBadge(badgeCount)
         } else if (badgeApi.clearAppBadge) {
           await badgeApi.clearAppBadge()
         } else if (badgeApi.setAppBadge) {
@@ -72,5 +82,5 @@ export function useAppBadge() {
       document.removeEventListener('visibilitychange', onVisibilityChange)
       window.removeEventListener(REVIEW_UPDATED_EVENT, onVisibilityChange)
     }
-  }, [settings.language, settings.nextDayStartsAt, settings.studyCardLimit])
+  }, [settings.language, settings.nextDayStartsAt, settings.studyCardLimit, settings.dailyGoal])
 }

@@ -8,6 +8,9 @@ interface Props {
   language: 'de' | 'en'
   summary: LearningCoachSummary
   onEditCard?: (card: Card) => void
+  /** Startet eine Mini-Session mit den Problemkarten — der Rat „starte den
+   *  nächsten Block mit diesen Karten“ wird damit zum Ein-Tap-Schritt. */
+  onStartRepair?: () => void
 }
 
 function formatElapsed(ms: number): string {
@@ -23,7 +26,7 @@ function clampText(value: string, fallback: string): string {
   return normalized || fallback
 }
 
-export default function SessionCoachPanel({ language, summary, onEditCard }: Props) {
+export default function SessionCoachPanel({ language, summary, onEditCard, onStartRepair }: Props) {
   const isDE = language === 'de'
   const focusCopy = {
     repair: {
@@ -113,10 +116,16 @@ export default function SessionCoachPanel({ language, summary, onEditCard }: Pro
                   {clampText(problem.card.front, isDE ? 'Leere Frage' : 'Empty prompt')}
                 </div>
                 <div className="mt-0.5 text-[11px] text-white/40">
-                  {problem.againCount > 0
-                    ? `${problem.againCount}x Again`
-                    : `${problem.lowRatingCount}x Hard`}
-                  {problem.forcedTomorrow ? ` - ${isDE ? 'morgen' : 'tomorrow'}` : ''}
+                  {/* Bei Force-Tomorrow sind die Zähler bereits geleert (sessionRecovery) —
+                      dann nur den Morgen-Marker zeigen, kein irreführendes „0x Hard“. */}
+                  {[
+                    problem.againCount > 0
+                      ? `${problem.againCount}x Again`
+                      : problem.lowRatingCount > 0
+                        ? `${problem.lowRatingCount}x Hard`
+                        : '',
+                    problem.forcedTomorrow ? (isDE ? 'morgen fällig' : 'due tomorrow') : '',
+                  ].filter(Boolean).join(' · ')}
                 </div>
               </div>
               {onEditCard && (
@@ -132,6 +141,19 @@ export default function SessionCoachPanel({ language, summary, onEditCard }: Pro
               )}
             </div>
           ))}
+
+          {onStartRepair && (
+            <button
+              type="button"
+              onClick={onStartRepair}
+              data-testid="coach-start-repair"
+              className="mt-1 flex w-full items-center justify-center gap-2 rounded-ds-xl border border-amber-400/40 bg-amber-400/10 py-3 text-sm font-bold text-amber-100 transition hover:border-amber-300/70"
+            >
+              {isDE
+                ? `Reparatur starten (${Math.min(summary.problemCards.length, 5)} Karten)`
+                : `Start repair (${Math.min(summary.problemCards.length, 5)} cards)`}
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -6,7 +6,7 @@
  */
 import { lazy, Suspense, useMemo, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Play } from 'lucide-react'
 import { useDecks, useGamificationProfile, useShuffleCollections, useStats } from '../hooks/useCardDb'
 import { usePwaInstall } from '../hooks/usePwaInstall'
 import { useServerHeartbeat } from '../hooks/useServerHeartbeat'
@@ -56,6 +56,9 @@ interface Props {
   onOpenLabs?: () => void
   /** Lernvideos (Professor Messer) — eigene Ansicht, im Ansichten-Menü. */
   onOpenVideos?: () => void
+  /** Unterbrochene Session für die „Weiterlernen“-Kachel (null = keine). */
+  resumeSession?: { deckName: string; remaining: number } | null
+  onResumeSession?: () => void
 }
 
 type HomeTab = 'decks' | 'tags'
@@ -70,6 +73,8 @@ export default function HomeView({
   onStartDailyQuest,
   onOpenLabs,
   onOpenVideos,
+  resumeSession,
+  onResumeSession,
 }: Props) {
   const [homeTab, setHomeTab] = useState<HomeTab>('decks')
   const tagCardIndex = useTagCardIndex()
@@ -223,6 +228,31 @@ export default function HomeView({
             >
               {renderHeaderBar()}
             </motion.div>
+
+            {/* Weiterlernen: unterbrochene Session ist sonst von Home aus
+                unsichtbar — ein Tap setzt Queue und Again-Zähler fort. */}
+            {resumeSession && onResumeSession && (
+              <motion.button
+                type="button"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                onClick={onResumeSession}
+                data-testid="home-resume-session"
+                className="flex w-full items-center gap-3 rounded-ds border border-sky-500/30 bg-sky-500/10 px-4 py-3 text-left shadow-card transition hover:border-sky-400/60"
+              >
+                <Play size={16} strokeWidth={2} className="shrink-0 text-sky-300" />
+                <span className="min-w-0 flex-1 truncate text-sm font-semibold text-white">
+                  {settings.language === 'de' ? 'Weiterlernen' : 'Resume session'}
+                  <span className="text-white/50"> · {resumeSession.deckName}</span>
+                </span>
+                <span className="shrink-0 font-mono text-xs text-sky-200">
+                  {settings.language === 'de'
+                    ? `${resumeSession.remaining} Karten übrig`
+                    : `${resumeSession.remaining} cards left`}
+                </span>
+              </motion.button>
+            )}
 
             <HomeStatsSection
               t={t}

@@ -1,9 +1,8 @@
 /**
  * AI_CONTEXT: Home-screen React component for home Create Deck Modal; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
-import { motion } from '../../ui/motion'
-import { X } from 'lucide-react'
 import { UI_TOKENS } from '../../constants/ui'
+import { ModalShell } from '../ModalShell'
 
 interface Props {
   isOpen: boolean
@@ -31,33 +30,13 @@ export function HomeCreateDeckModal({
   if (!isOpen) return null
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className={UI_TOKENS.modal.overlay}
+    <ModalShell
+      title={t.create_deck}
+      subtitle={t.create_deck_empty_hint}
+      onClose={onClose}
+      prefersReducedMotion={prefersReducedMotion}
+      maxWidthClass="max-w-md"
     >
-      <div className={UI_TOKENS.modal.backdrop} onClick={onClose} />
-      <motion.div
-        initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
-        transition={{ duration: prefersReducedMotion ? 0.12 : 0.2, ease: 'easeOut' }}
-        className={`${UI_TOKENS.modal.shell} max-w-md p-5 sm:p-6`}
-      >
-        <div className="flex items-start justify-between gap-3 mb-4">
-          <div>
-            <h3 className={UI_TOKENS.modal.title}>{t.create_deck}</h3>
-            <p className={UI_TOKENS.modal.subtitle}>{t.create_deck_empty_hint}</p>
-          </div>
-          <button
-            onClick={onClose}
-            className={UI_TOKENS.modal.closeButton}
-          >
-            <X size={16} strokeWidth={1.5} />
-          </button>
-        </div>
-
         <label className="block text-xs text-white/50 font-medium mb-2 uppercase tracking-wide">
           {t.deck}
         </label>
@@ -94,7 +73,6 @@ export function HomeCreateDeckModal({
             {isCreatingDeck ? t.saving : t.create_deck}
           </button>
         </div>
-      </motion.div>
-    </motion.div>
+    </ModalShell>
   )
 }

@@ -8,12 +8,13 @@ import { useState, useEffect, useCallback, useMemo, useReducer, useRef } from 'r
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { ArrowLeft, RotateCcw, CheckCircle, AlertCircle, RefreshCw, Type, Info, Sparkles } from 'lucide-react'
 import { useDeckCards } from '../hooks/useCardDb'
-import { recordReview, undoReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession } from '../db/queries'
+import { recordReview, undoReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession, readActiveSession } from '../db/queries'
 import { STRINGS, useSettings, type QuestionTextSize } from '../contexts/SettingsContext'
 import { sortStudyCards } from '../services/studyCardOrdering'
 import { buildDragMatchModePlan } from '../services/studyModeSelector'
 import {
   buildPersistedStudySession,
+  parsePersistedStudySession,
   DEFAULT_STUDY_CARD_LIMIT,
   normalizeStudyCardLimit,
   type PersistedStudySession,
@@ -44,6 +45,11 @@ interface Props {
   /** When provided, these cards are used directly instead of loading by deck ID.
    *  Each card retains its deckId so metrics are recorded against the original deck. */
   preloadedCards?: Card[]
+  /** Wenn true, wird eine persistierte, nicht abgelaufene Session dieses Decks
+   *  wieder aufgenommen (Queue, Again-Zähler, Fortschritt) statt neu zu mischen.
+   *  Explizite Neustarts (frische Quest, Tag-Session, Abruf-Check-Handoff)
+   *  lassen das aus und starten sauber. */
+  allowResume?: boolean
   /** Callback when user exits study session */
   onExit: () => void
 }
@@ -81,7 +87,7 @@ function ErrorAlert({ message, onRetry }: { message: string; onRetry: () => void
  * StudyView: Main study session component
  * Nutzt studyCardOrdering (Sortierung/Gewichtung) und studySessionReducer für State-Management
  */
-export default function StudyView({ deck, preloadedCards, onExit }: Props) {
+export default function StudyView({ deck, preloadedCards, allowResume = false, onExit }: Props) {
   const { cards: deckCards, loading: deckLoading, error: deckError, reload } = useDeckCards(preloadedCards ? null : deck.id)
   const cards = preloadedCards ?? deckCards
   const loading = preloadedCards ? false : deckLoading
@@ -150,7 +156,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
     }
   }, [showHeaderLegend])
 
-  useSessionPersistence({ deckId: deck.id, sessionRef, studyCardLimitRef })
+  useSessionPersistence({ deckId: deck.id, sessionRef, studyCardLimitRef, nextDayStartsAt: settings.nextDayStartsAt })
 
 
   useWakeLock()
@@ -188,16 +194,81 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
     onExit()
   }, [clearPersistedSession, onExit])
 
+  /** Reparatur-Serie: startet vom Completion-Screen aus eine Mini-Session mit
+   *  den schwächsten Karten — der Moment direkt nach dem Scheitern ist der
+   *  wirksamste für den erneuten Abruf. */
+  const handleStartRepair = useCallback((repairCards: Card[]) => {
+    if (repairCards.length === 0) return
+    sessionWallStartRef.current = null
+    dispatch({ type: 'INIT', cards: repairCards })
+  }, [])
+
+  // Einmal pro Session: bestätigt beim ersten Offline-Rating, dass die Bewertung
+  // lokal sicher ist und automatisch synct — nimmt die Unsicherheit im Funkloch.
+  const [offlineSaveHint, setOfflineSaveHint] = useState(false)
+  const offlineHintShownRef = useRef(false)
+  const offlineHintTimerRef = useRef<number | null>(null)
+
+  const noteOfflineSave = useCallback(() => {
+    if (offlineHintShownRef.current) return
+    if (typeof navigator === 'undefined' || navigator.onLine !== false) return
+    offlineHintShownRef.current = true
+    setOfflineSaveHint(true)
+    offlineHintTimerRef.current = window.setTimeout(() => setOfflineSaveHint(false), 5000)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (offlineHintTimerRef.current !== null) {
+        window.clearTimeout(offlineHintTimerRef.current)
+      }
+    }
+  }, [])
+
+  const restoreAttemptedRef = useRef(false)
+
   useEffect(() => {
     if (loading) return
     if (session.isDone) return
     if (session.cards.length > 0) return
 
-    clearPersistedSession()
-    dispatch({ type: 'INIT', cards: buildSessionCards(cards, studyCardLimit) })
+    const startFresh = () => {
+      clearPersistedSession()
+      dispatch({ type: 'INIT', cards: buildSessionCards(cards, studyCardLimit) })
+    }
+
+    // Wiederaufnahme vor Neu-Mischen: eine unterbrochene Session (Queue,
+    // Again-Zähler, Fortschritt) geht sonst trotz Persistenz verloren.
+    if (!allowResume || restoreAttemptedRef.current) {
+      startFresh()
+      return
+    }
+    restoreAttemptedRef.current = true
+
+    let cancelled = false
+    void readActiveSession(deck.id).then(raw => {
+      if (cancelled) return
+      const snapshot = parsePersistedStudySession(raw, deck.id)
+      if (snapshot && !snapshot.isDone) {
+        const byId = new Map(cards.map(card => [card.id, card]))
+        const restoredCards = snapshot.cardIds
+          .map(id => byId.get(id))
+          .filter((card): card is Card => Boolean(card))
+        if (restoredCards.length > 0) {
+          dispatch({ type: 'RESTORE', cards: restoredCards, snapshot })
+          return
+        }
+      }
+      startFresh()
+    })
+    return () => {
+      cancelled = true
+    }
   }, [
     cards,
     loading,
+    allowResume,
+    deck.id,
     clearPersistedSession,
     buildSessionCards,
     studyCardLimit,
@@ -227,6 +298,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
       againCounts: session.againCounts,
       reviewEvents: session.reviewEvents,
       startTime: session.startTime,
+      nextDayStartsAt: settings.nextDayStartsAt,
     })
 
     void writeActiveSession(deck.id, JSON.stringify(payload))
@@ -244,6 +316,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
     session.startTime,
     deck.id,
     studyCardLimit,
+    settings.nextDayStartsAt,
     clearPersistedSession,
   ])
 
@@ -439,6 +512,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
 
         dispatch({ type: 'RATE_SUCCESS', rating: effectiveRating, cardId: currentCard.id, undoToken: result.undoToken, forcedTomorrow })
         registerSessionReward(effectiveRating, elapsedMs)
+        noteOfflineSave()
         setAnswerWasIncorrect(false)
       } catch (err) {
         const message = err instanceof Error ? err.message : t.unknown_error
@@ -489,6 +563,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
 
         dispatch({ type: 'RATE_SUCCESS', rating, cardId: currentCard.id, undoToken: result.undoToken, forcedTomorrow })
         registerSessionReward(rating, elapsedMs)
+        noteOfflineSave()
         setAnswerWasIncorrect(false)
       } else {
         dispatch({ type: 'RATE_ERROR', message: result.error || t.save_failed })
@@ -642,7 +717,9 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
       : `${elapsedSec}s`
     const difficultCards = Object.keys(session.againCounts).length
     const forcedCount = session.forcedTomorrowCardIds.length
-    const isPerfectSession = session.sessionCount >= 3 && difficultCards === 0
+    // forcedCount zählt mit: Force-Tomorrow löscht die Again-Zähler der Karte
+    // (sessionRecovery), sonst gälte eine komplett gescheiterte Session als perfekt.
+    const isPerfectSession = session.sessionCount >= 3 && difficultCards === 0 && forcedCount === 0
     const coachSummary = buildLearningCoachSummary({
       reviewEvents: session.reviewEvents,
       cards,
@@ -702,6 +779,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
               language={settings.language}
               summary={coachSummary}
               onEditCard={card => setEditingCard(card)}
+              onStartRepair={() => handleStartRepair(coachSummary.problemCards.slice(0, 5).map(problem => problem.card))}
             />
 
             {forcedCount > 0 && (
@@ -1011,6 +1089,24 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
               </button>
             </div>
           )}
+
+          <AnimatePresence>
+            {offlineSaveHint && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 6 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+                role="status"
+                aria-live="polite"
+                className="pointer-events-none fixed bottom-safe-4 left-1/2 z-[60] -translate-x-1/2 whitespace-nowrap rounded-ds-xl border border-emerald-500/30 bg-[#0a0a0a]/95 px-3.5 py-2 font-mono text-[11px] text-emerald-200 shadow-2xl"
+              >
+                {settings.language === 'de'
+                  ? 'Offline gespeichert — synct automatisch.'
+                  : 'Saved offline — will sync automatically.'}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Submitting indicator */}
           {session.isSubmitting && (

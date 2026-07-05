@@ -6,7 +6,39 @@
  */
 import { db } from '../../db'
 import { STORAGE_KEYS } from '../../constants/appIdentity'
-import { buildShuffleSessionId } from '../../services/studySessionPersistence'
+import {
+  buildShuffleSessionId,
+  parsePersistedStudySession,
+  type PersistedStudySession,
+} from '../../services/studySessionPersistence'
+
+export interface ResumableStudySession {
+  sessionId: string
+  snapshot: PersistedStudySession
+}
+
+/**
+ * Jüngste wiederaufnehmbare Deck-/Quest-/Tag-Session (nicht abgelaufen, nicht
+ * fertig). Shuffle-Sessions haben ihren eigenen Wiedereinstieg und bleiben außen
+ * vor. Grundlage der „Weiterlernen“-Kachel auf Home und des ?view=study-Starts.
+ */
+export async function getResumableStudySession(nowMs = Date.now()): Promise<ResumableStudySession | null> {
+  try {
+    const records = await db.activeSessions.toArray()
+    const candidates = records
+      .filter(record => !record.id.startsWith('shuffle:'))
+      .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0))
+
+    for (const record of candidates) {
+      const snapshot = parsePersistedStudySession(record.payload, record.id, nowMs)
+      if (!snapshot || snapshot.isDone || snapshot.cardIds.length === 0) continue
+      return { sessionId: record.id, snapshot }
+    }
+    return null
+  } catch {
+    return null
+  }
+}
 
 interface ReadSessionOptions {
   migrateLegacyLocalStorage?: boolean

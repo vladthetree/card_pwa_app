@@ -1,9 +1,11 @@
 /**
  * AI_CONTEXT: Labs React component/helper for labs View; supports scenario-based Security+ practice flows.
  */
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, Check, ChevronDown, ChevronRight, Compass, Dices, Target } from 'lucide-react'
 import { LAB_CATEGORIES, LAB_SCENARIOS, LAB_TARGET_INVENTORY, type LabScenario } from '../../data/labScenarios'
+import { getDeckSuccessRates } from '../../db/queries'
+import { getSecurityObjectiveDeckId, SY0_701_OBJECTIVES } from '../../utils/securityDeckHierarchy'
 import { readCompletedLabs, persistCompletedLab } from '../../utils/labProgress'
 import { generateFreshLab, type GeneratedLab } from '../../utils/labGenerator'
 import { readTrainingSolved, persistTrainingSolved } from '../../utils/labTraining'
@@ -22,10 +24,14 @@ const COPY = {
   de: {
     title: 'Labs', subtitle: 'Interaktive Sicherheits-Szenarien', scenarios: 'Szenarien', done: 'GESCHAFFT', min: 'Min', back: 'Zurück',
     training: 'Übungs-Lab generieren', trainingHint: 'Zufällig aus dem Themen-Pool — zählt extra',
+    recommended: 'Empfohlen für dich',
+    recommendedReason: 'Schwächstes Objective: {objective} · {rate} % Quote im Deck',
   },
   en: {
     title: 'Labs', subtitle: 'Interactive security scenarios', scenarios: 'Scenarios', done: 'DONE', min: 'min', back: 'Back',
     training: 'Generate practice lab', trainingHint: 'Random from the topic pool — counted separately',
+    recommended: 'Recommended for you',
+    recommendedReason: 'Weakest objective: {objective} · {rate}% deck rate',
   },
 } as const
 
@@ -43,6 +49,33 @@ export default function LabsView({ language, onExit }: Props) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
 
   const totalInventory = Math.max(LAB_TARGET_INVENTORY, LAB_SCENARIOS.length)
+
+  // Transfer-Kopplung: Labs zum schwächsten Objective (Deck-Quote) vorschlagen,
+  // statt die Auswahl allein dem Zufall/der Neugier zu überlassen. Nur bei
+  // belastbarer Datenlage (≥ 10 Reviews) und echter Schwäche (< 80 %).
+  const [weakSpot, setWeakSpot] = useState<{ code: string; rate: number; labs: LabScenario[] } | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    const deckIds = SY0_701_OBJECTIVES.map(objective => getSecurityObjectiveDeckId(objective.code))
+    void getDeckSuccessRates(deckIds).then(rates => {
+      if (cancelled) return
+      const ranked = SY0_701_OBJECTIVES
+        .map(objective => ({ code: objective.code, stats: rates[getSecurityObjectiveDeckId(objective.code)] }))
+        .filter(entry => entry.stats && entry.stats.total >= 10 && entry.stats.rate < 80)
+        .sort((a, b) => a.stats.rate - b.stats.rate)
+      for (const entry of ranked) {
+        const labs = LAB_SCENARIOS.filter(scenario => scenario.objective.startsWith(`${entry.code} `))
+        if (labs.length > 0) {
+          setWeakSpot({ code: entry.code, rate: entry.stats.rate, labs })
+          return
+        }
+      }
+      setWeakSpot(null)
+    }).catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
   const byCategory = useMemo(() => {
     const map = new Map<string, LabScenario[]>()
     for (const category of LAB_CATEGORIES) map.set(category.id, [])
@@ -128,6 +161,49 @@ export default function LabsView({ language, onExit }: Props) {
       {/* Kategorien */}
       <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3" data-study-scroll="allow">
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-3">
+          {weakSpot && (() => {
+            const unsolved = weakSpot.labs.filter(lab => !completed.has(lab.id))
+            const picks = (unsolved.length > 0 ? unsolved : weakSpot.labs).slice(0, 2)
+            return (
+              <section data-testid="labs-recommended" className="rounded-ds-2xl border border-amber-400/25 bg-amber-400/[0.04] p-3">
+                <div className="flex items-center gap-2 px-1">
+                  <Compass size={14} strokeWidth={1.5} className="shrink-0 text-amber-300" />
+                  <span className="font-mono text-[12px] font-bold text-amber-200">{copy.recommended}</span>
+                  <span className="min-w-0 flex-1 truncate text-right font-mono text-[10px] text-zinc-500">
+                    {copy.recommendedReason
+                      .replace('{objective}', weakSpot.code)
+                      .replace('{rate}', String(weakSpot.rate))}
+                  </span>
+                </div>
+                <div className="mt-2.5 flex flex-col gap-2">
+                  {picks.map(scenario => {
+                    const badge = LAB_DIFFICULTY_BADGE[scenario.difficulty]
+                    return (
+                      <button
+                        key={scenario.id}
+                        type="button"
+                        data-testid={`lab-recommended-${scenario.id}`}
+                        onClick={() => setActiveScenario(scenario)}
+                        className="flex w-full items-center gap-3 rounded-ds-xl border border-[#1f1f23] bg-[#0c0c0c] px-3 py-3 text-left transition-colors hover:border-amber-400/50"
+                      >
+                        <span className={`shrink-0 rounded-[6px] border px-2 py-1 font-mono text-[8px] font-bold uppercase tracking-[0.14em] ${badge.cls}`}>
+                          {badge.label}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate font-mono text-[14px] text-zinc-100">{scenario.title}</span>
+                          <span className="mt-0.5 block truncate font-mono text-[11px] text-zinc-500">
+                            {scenario.minutes} {copy.min} · {scenario.objective}
+                          </span>
+                        </span>
+                        <ChevronRight size={15} className="shrink-0 text-zinc-600" />
+                      </button>
+                    )
+                  })}
+                </div>
+              </section>
+            )
+          })()}
+
           {LAB_CATEGORIES.map(category => {
             const scenarios = byCategory.get(category.id) ?? []
             if (scenarios.length === 0) return null

@@ -214,6 +214,16 @@ export async function listAllCards(): Promise<Card[]> {
   return rows.map(mapCard)
 }
 
+/** Karten zu einer ID-Liste in deren Reihenfolge; gelöschte/fehlende fallen
+ *  weg. Für die Wiederaufnahme persistierter Sessions (cardIds-Queue). */
+export async function listCardsByIds(ids: string[]): Promise<Card[]> {
+  if (ids.length === 0) return []
+  const rows = await db.cards.bulkGet(ids)
+  return rows
+    .filter((row): row is CardRecord => Boolean(row) && !(row as CardRecord).isDeleted)
+    .map(mapCard)
+}
+
 /** Lernkarten, die einen bestimmten Tag tragen (case-insensitiv) — für die
  *  tagbasierte Sammlung (Obsidian-artige Quelle „Lernkarten"). Liefert die
  *  Karte samt `deckId` zur Quellenangabe. */

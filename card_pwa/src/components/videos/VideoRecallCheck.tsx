@@ -53,6 +53,7 @@ const COPY = {
     mnemonic: 'Merkhilfe',
     resultTitle: 'Ergebnis',
     resultScore: '{known} von {total} aus dem Gedächtnis gewusst',
+    studyMissed: 'Diese {count} Karten regulär lernen',
     suggestion: 'Vorschlag für deine Selbsteinschätzung:',
     setConfidence: 'Status setzen',
     again: 'Nochmal',
@@ -78,6 +79,7 @@ const COPY = {
     mnemonic: 'Mnemonic',
     resultTitle: 'Result',
     resultScore: 'Recalled {known} of {total} from memory',
+    studyMissed: 'Study these {count} cards for real',
     suggestion: 'Suggested self-assessment:',
     setConfidence: 'Set status',
     again: 'Again',
@@ -97,6 +99,9 @@ interface Props {
   maxCards?: number
   onClose: () => void
   onConfidence: (confidence: VideoConfidence) => void
+  /** Handoff: „Nicht gewusst“-Karten als reguläre (planungswirksame) Lernsession
+   *  des Objective-Decks starten. Der Check selbst bleibt non-scheduling. */
+  onStudyMissed?: (cards: Card[]) => void
 }
 
 type Phase = 'loading' | 'empty' | 'quiz' | 'result'
@@ -229,13 +234,14 @@ const CONFIDENCE_META: Record<VideoConfidence, { key: 'gaps' | 'ok' | 'solid'; c
   },
 }
 
-export default function VideoRecallCheck({ deckId, objective, videoTitle, language, maxCards = DEFAULT_MAX_CARDS, onClose, onConfidence }: Props) {
+export default function VideoRecallCheck({ deckId, objective, videoTitle, language, maxCards = DEFAULT_MAX_CARDS, onClose, onConfidence, onStudyMissed }: Props) {
   const copy = COPY[language]
   const [phase, setPhase] = useState<Phase>('loading')
   const [cards, setCards] = useState<Card[]>([])
   const [index, setIndex] = useState(0)
   const [revealed, setRevealed] = useState(false)
   const [knownCount, setKnownCount] = useState(0)
+  const [missedCards, setMissedCards] = useState<Card[]>([])
 
   useEffect(() => {
     let cancelled = false
@@ -251,6 +257,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
       setIndex(0)
       setRevealed(false)
       setKnownCount(0)
+      setMissedCards([])
       setPhase('quiz')
     }).catch(() => {
       if (!cancelled) setPhase('empty')
@@ -266,6 +273,9 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
 
   const grade = (known: boolean) => {
     const nextKnown = knownCount + (known ? 1 : 0)
+    if (!known && current) {
+      setMissedCards(prev => (prev.some(card => card.id === current.id) ? prev : [...prev, current]))
+    }
     if (index + 1 >= total) {
       setKnownCount(nextKnown)
       setPhase('result')
@@ -281,6 +291,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
     setIndex(0)
     setRevealed(false)
     setKnownCount(0)
+    setMissedCards([])
     setPhase('quiz')
   }
 
@@ -438,6 +449,20 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
                   })}
                 </div>
               </div>
+
+              {/* Handoff statt Versickern: die Misses landen in einer regulären,
+                  planungswirksamen Session des Objective-Decks. */}
+              {onStudyMissed && missedCards.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => onStudyMissed(missedCards)}
+                  data-testid="recall-check-study-missed"
+                  className="flex items-center justify-center gap-2 rounded-ds-xl border border-sky-500/40 bg-sky-500/10 py-3 font-mono text-[13px] font-bold text-sky-200 transition-colors hover:border-sky-400/70"
+                >
+                  <Brain size={15} strokeWidth={1.5} />
+                  {copy.studyMissed.replace('{count}', String(missedCards.length))}
+                </button>
+              )}
 
               <button
                 type="button"

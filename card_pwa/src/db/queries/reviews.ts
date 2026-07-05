@@ -85,6 +85,85 @@ function computeSuccessRate(reviews: { rating: number }[]): number {
   return Math.round((reviews.filter(r => r.rating >= 3).length / reviews.length) * 100)
 }
 
+export interface DeckSuccessRate {
+  /** Erfolgsquote in Prozent (Rating ≥ 3). */
+  rate: number
+  /** Anzahl zugrunde liegender Reviews — unter ~10 ist die Quote kaum belastbar. */
+  total: number
+}
+
+/**
+ * Erfolgsquote je Deck über alle Reviews der aktiven Karten. Grundlage der
+ * Kalibrierungs-Anzeige bei den Lernvideos: Selbsteinschätzung („SICHER“) neben
+ * der tatsächlichen Quote des Objective-Decks.
+ */
+export async function getDeckSuccessRates(deckIds: string[]): Promise<Record<string, DeckSuccessRate>> {
+  if (deckIds.length === 0) return {}
+
+  const cards = (await db.cards.where('deckId').anyOf(deckIds).toArray()).filter(c => !c.isDeleted)
+  if (cards.length === 0) {
+    return Object.fromEntries(deckIds.map(id => [id, { rate: 0, total: 0 }]))
+  }
+
+  const cardToDeck = new Map(cards.map(card => [card.id, card.deckId]))
+  const cardIds = cards.map(card => card.id)
+  const reviews = await db.reviews.where('cardId').anyOf(cardIds).toArray()
+
+  const totals = new Map<string, { total: number; success: number }>()
+  for (const id of deckIds) {
+    totals.set(id, { total: 0, success: 0 })
+  }
+
+  for (const review of reviews) {
+    const deckId = cardToDeck.get(review.cardId)
+    if (!deckId) continue
+    const current = totals.get(deckId)
+    if (!current) continue
+    current.total += 1
+    if (review.rating >= 3) current.success += 1
+  }
+
+  const result: Record<string, DeckSuccessRate> = {}
+  for (const [deckId, { total, success }] of totals.entries()) {
+    result[deckId] = { rate: total === 0 ? 0 : Math.round((success / total) * 100), total }
+  }
+
+  return result
+}
+
+export interface YoungCardLapseStats {
+  /** Anteil Again-Ratings in Prozent. */
+  rate: number
+  /** Anzahl betrachteter Reviews (n) — Aussagekraft erst ab ~30. */
+  total: number
+}
+
+/**
+ * Lapse-Rate junger Karten: Anteil Again unter den jeweils ERSTEN `maxReps`
+ * Reviews einer Karte, beschränkt auf die letzten `days` Tage. Entscheidungs-
+ * grundlage für FSRS-Learning-Steps (Audit ⑥): erst messen, dann Parameter
+ * drehen — eine hohe Quote hier spricht für Intraday-Lernschritte.
+ */
+export async function getYoungCardLapseRate(days = 30, maxReps = 3): Promise<YoungCardLapseStats> {
+  const cutoff = Date.now() - days * 86_400_000
+  const reviews = await db.reviews.toArray()
+  reviews.sort((a, b) => a.timestamp - b.timestamp)
+
+  const repsByCard = new Map<string, number>()
+  let total = 0
+  let lapses = 0
+  for (const review of reviews) {
+    const reps = repsByCard.get(review.cardId) ?? 0
+    repsByCard.set(review.cardId, reps + 1)
+    if (reps >= maxReps) continue
+    if (review.timestamp < cutoff) continue
+    total += 1
+    if (review.rating === 1) lapses += 1
+  }
+
+  return { rate: total === 0 ? 0 : Math.round((lapses / total) * 100), total }
+}
+
 export async function getGlobalStats(nextDayStartsAt = 0): Promise<GlobalStats> {
   const nowMs = Date.now()
   const dayMs = 86_400_000
