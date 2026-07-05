@@ -474,7 +474,7 @@ export default function VideosView({ language, onExit }: Props) {
   const copy = COPY[language]
   const { isHandsetLayout } = useHandsetLayout()
   const isDesktop = !isHandsetLayout
-  const { profile } = useSettings()
+  const { profile, settings } = useSettings()
   const profileId = profileScopeId(profile)
   const { withNotes: objectivesWithNotes, allTags } = useVideoNoteIndex(profileId)
   const { progress, markWatched, setConfidence } = useMesserVideoProgress()
@@ -1018,6 +1018,7 @@ export default function VideosView({ language, onExit }: Props) {
           objective={activeItem.objective}
           videoTitle={activeItem.title}
           language={language}
+          maxCards={settings.recallCheckSize}
           onClose={() => setRecallOpen(false)}
           onConfidence={next => {
             setConfidence(activeItem.objective, next)

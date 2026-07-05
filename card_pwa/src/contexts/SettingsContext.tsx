@@ -55,6 +55,10 @@ interface Settings {
   nextDayStartsAt: number
   /** Daily review goal used for the progress ring on Home. 0 disables it. */
   dailyGoal: number
+  /** Fragenanzahl pro Video-Abruf-Check (Lernvideos). */
+  recallCheckSize: number
+  /** Kartenanzahl der Daily-Quest-Session (deckübergreifend, Home-Kachel). */
+  dailyQuestSize: number
   /** Focus mode: hides the study session header (deck stats, progress) while
    *  reserving its space, so the card does not jump. Back button stays visible. */
   focusMode: boolean
@@ -84,6 +88,8 @@ interface SettingsContextType {
   setShuffleModeEnabled: (enabled: boolean) => void
   setNextDayStartsAt: (hour: number) => void
   setDailyGoal: (goal: number) => void
+  setRecallCheckSize: (size: number) => void
+  setDailyQuestSize: (size: number) => void
   setFocusMode: (enabled: boolean) => void
   setFullscreenEnabled: (enabled: boolean) => void
   setSm2Params: (params: Partial<SM2Params>) => void
@@ -180,6 +186,8 @@ const DEFAULT_SETTINGS: Settings = {
   showReviewDecks: false,
   nextDayStartsAt: 4,
   dailyGoal: 20,
+  recallCheckSize: 7,
+  dailyQuestSize: 25,
   focusMode: false,
   fullscreenEnabled: false,
 }
@@ -189,6 +197,18 @@ function normalizeDailyGoal(value: unknown): number {
   if (!Number.isFinite(parsed)) return 20
   const rounded = Math.round(parsed)
   return Math.max(0, Math.min(500, rounded))
+}
+
+function normalizeRecallCheckSize(value: unknown): number {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return 7
+  return Math.max(3, Math.min(15, Math.round(parsed)))
+}
+
+function normalizeDailyQuestSize(value: unknown): number {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return 25
+  return Math.max(10, Math.min(100, Math.round(parsed / 5) * 5))
 }
 
 export function normalizeSettings(input: Partial<Settings> | undefined): Settings {
@@ -220,6 +240,8 @@ export function normalizeSettings(input: Partial<Settings> | undefined): Setting
     showReviewDecks: input?.showReviewDecks === true,
     nextDayStartsAt: Number.isInteger(rawNextDayStartsAt) && rawNextDayStartsAt >= 0 && rawNextDayStartsAt <= 23 ? rawNextDayStartsAt : 4,
     dailyGoal: normalizeDailyGoal(input?.dailyGoal),
+    recallCheckSize: normalizeRecallCheckSize(input?.recallCheckSize),
+    dailyQuestSize: normalizeDailyQuestSize(input?.dailyQuestSize),
     focusMode: input?.focusMode === true,
     fullscreenEnabled: input?.fullscreenEnabled === true,
   }
@@ -394,6 +416,14 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     saveSettings({ ...settings, dailyGoal: normalizeDailyGoal(goal) })
   }
 
+  const setRecallCheckSize = (size: number) => {
+    saveSettings({ ...settings, recallCheckSize: normalizeRecallCheckSize(size) })
+  }
+
+  const setDailyQuestSize = (size: number) => {
+    saveSettings({ ...settings, dailyQuestSize: normalizeDailyQuestSize(size) })
+  }
+
   const setFocusMode = (focusMode: boolean) => {
     saveSettings({ ...settings, focusMode })
   }
@@ -467,6 +497,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setShuffleModeEnabled,
         setNextDayStartsAt,
         setDailyGoal,
+        setRecallCheckSize,
+        setDailyQuestSize,
         setFocusMode,
         setFullscreenEnabled,
         setSm2Params,

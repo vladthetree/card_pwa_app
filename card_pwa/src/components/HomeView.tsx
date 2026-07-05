@@ -58,9 +58,6 @@ interface Props {
   onOpenVideos?: () => void
 }
 
-/** Quest-Größe laut Screenshot `…23.36.20.jpeg` („Jetzt: 25 Karten"). */
-const DAILY_QUEST_SIZE = 25
-
 type HomeTab = 'decks' | 'tags'
 
 export default function HomeView({
@@ -145,13 +142,13 @@ export default function HomeView({
     }
     return bestName
   }, [homeDecks, derivedData.deckScheduleOverview])
-  const questSize = Math.min(DAILY_QUEST_SIZE, stats?.nowDue ?? 0)
+  const questSize = Math.min(settings.dailyQuestSize, stats?.nowDue ?? 0)
 
   const handleStartDailyQuest = async () => {
     if (questStarting || !onStartDailyQuest) return
     setQuestStarting(true)
     try {
-      const questCards = await fetchDailyQuestCards(DAILY_QUEST_SIZE, settings.nextDayStartsAt)
+      const questCards = await fetchDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt)
       if (questCards.length > 0) {
         onStartDailyQuest(questCards)
       }

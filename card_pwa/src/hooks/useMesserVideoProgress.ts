@@ -107,6 +107,18 @@ export function suggestConfidence(known: number, total: number): VideoConfidence
   return 'gaps'
 }
 
+/** Setzt Gesehen-Status und Selbsteinschätzung aller Videos zurück (z. B. für
+ *  einen zweiten Kursdurchlauf). Wirkt auf localStorage; offene VideosView-
+ *  Instanzen laden den Stand beim nächsten Mount neu. */
+export function clearVideoProgress(): void {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.removeItem(VIDEO_STATUS_STORAGE_KEY)
+  } catch {
+    // Speicher nicht verfügbar — dann gibt es auch keinen Fortschritt zu löschen.
+  }
+}
+
 function persist(map: MesserVideoProgressMap): void {
   if (typeof window === 'undefined') return
   try {
