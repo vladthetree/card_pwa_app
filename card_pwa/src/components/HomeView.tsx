@@ -193,7 +193,6 @@ export default function HomeView({
               shuffleModeEnabled={settings.shuffleModeEnabled}
               showShuffleOnly={controller.showShuffleOnly}
               deckSortMode={deckSortMode}
-              dashboardMode={controller.dashboardMode}
               homeTab={homeTab}
               canInstall={canInstall}
               isInstalled={isInstalled}
@@ -201,7 +200,6 @@ export default function HomeView({
               onHomeTabChange={setHomeTab}
               onDeckSortModeChange={setDeckSortMode}
               onToggleShuffleOnly={controller.toggleShuffleOnly}
-              onDashboardModeChange={controller.setDashboardMode}
               onReload={reload}
               onCreateDeck={controller.openCreateDeckModal}
               onCreateVirtualDeck={controller.openCreateShuffleCollection}
@@ -233,6 +231,7 @@ export default function HomeView({
               stats={stats}
               gamificationProfile={gamificationProfile}
               onOpenFutureForecast={controller.openFutureForecast}
+              onModeChange={controller.setDashboardMode}
               questSize={questSize}
               questTopDeckName={questTopDeckName}
               questStarting={questStarting}
@@ -254,7 +253,6 @@ export default function HomeView({
               homeTab={homeTab}
               deckSearchQuery={deckSearchQuery}
               deckSortMode={deckSortMode}
-              dashboardMode={controller.dashboardMode}
               canInstall={canInstall}
               isInstalled={isInstalled}
               isInstalling={isInstalling}
@@ -262,7 +260,6 @@ export default function HomeView({
               onDeckSearchQueryChange={setDeckSearchQuery}
               onDeckSortModeChange={setDeckSortMode}
               onToggleShuffleOnly={controller.toggleShuffleOnly}
-              onDashboardModeChange={controller.setDashboardMode}
               onReload={reload}
               onCreateDeck={controller.openCreateDeckModal}
               onCreateVirtualDeck={controller.openCreateShuffleCollection}

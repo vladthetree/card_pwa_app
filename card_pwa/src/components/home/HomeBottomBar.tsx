@@ -10,7 +10,6 @@ import {
 } from 'lucide-react'
 import StreakBadge from '../StreakBadge'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
-import type { HomeDashboardMode } from './HomeStatsSection'
 
 type HomeTab = 'decks' | 'tags'
 import { UI_TOKENS } from '../../constants/ui'
@@ -21,7 +20,6 @@ interface Props {
   shuffleModeEnabled: boolean
   showShuffleOnly: boolean
   deckSortMode: DeckSortMode
-  dashboardMode: HomeDashboardMode
   homeTab: HomeTab
   canInstall: boolean
   isInstalled: boolean
@@ -29,7 +27,6 @@ interface Props {
   onHomeTabChange: (tab: HomeTab) => void
   onDeckSortModeChange: (v: DeckSortMode) => void
   onToggleShuffleOnly: () => void
-  onDashboardModeChange: (mode: HomeDashboardMode) => void
   onReload: () => void
   onCreateDeck: () => void
   onCreateVirtualDeck?: () => void
@@ -56,7 +53,6 @@ export function HomeBottomBar({
   shuffleModeEnabled,
   showShuffleOnly,
   deckSortMode,
-  dashboardMode,
   homeTab,
   canInstall,
   isInstalled,
@@ -64,7 +60,6 @@ export function HomeBottomBar({
   onHomeTabChange,
   onDeckSortModeChange,
   onToggleShuffleOnly,
-  onDashboardModeChange,
   onReload,
   onCreateDeck,
   onCreateVirtualDeck,
@@ -81,14 +76,6 @@ export function HomeBottomBar({
 
   const closeFilter  = useCallback(() => setFilterOpen(false),  [])
   const closeActions = useCallback(() => setActionsOpen(false), [])
-
-  // Nutzer-Vorgabe 2026-06-11: Menüeinträge im Ansichten-Sheet ohne Icons.
-  const dashboardOptions: Array<{ key: HomeDashboardMode; label: string }> = [
-    { key: 'pilot',   label: 'Pilot' },
-    { key: 'kpi',     label: 'KPI' },
-    { key: 'heatmap', label: 'Heatmap' },
-    { key: 'clean',   label: 'Clean' },
-  ]
 
   const isFilterActive = showShuffleOnly || deckSortMode !== 'name' || homeTab === 'tags'
 
@@ -255,20 +242,6 @@ export function HomeBottomBar({
                   </button>
                 </>
               )}
-
-              <div className="my-2 border-t border-[#1f1f23]" />
-              <p className={SHEET_LABEL}>{language === 'de' ? 'Dashboard' : 'Dashboard'}</p>
-              {dashboardOptions.map(opt => (
-                <button
-                  key={opt.key}
-                  type="button"
-                  onClick={() => { onDashboardModeChange(opt.key); closeFilter() }}
-                  className={SHEET_ITEM}
-                >
-                  <span>{opt.label}</span>
-                  {dashboardMode === opt.key && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
-                </button>
-              ))}
             </motion.div>
           </div>
         )}

@@ -1,0 +1,73 @@
+.metaballs-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.metaballs-container canvas {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+.metaballs-fallback {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  width: 46%;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: var(--metaballs-color, #e75f3c);
+  filter: blur(12px) saturate(1.25);
+  opacity: 0.86;
+  mix-blend-mode: screen;
+  transform: translate3d(0, 0, 0);
+  animation: metaballs-drift-a 2.1s ease-in-out infinite alternate;
+}
+
+.metaballs-fallback-b {
+  width: 42%;
+  background: var(--metaballs-alt-color, #79b7aa);
+  opacity: 0.78;
+  animation-name: metaballs-drift-b;
+  animation-duration: 2.45s;
+}
+
+.metaballs-fallback-c {
+  width: 34%;
+  background: var(--metaballs-color, #e75f3c);
+  background: color-mix(in srgb, var(--metaballs-color, #e75f3c) 62%, var(--metaballs-alt-color, #79b7aa));
+  opacity: 0.72;
+  animation-name: metaballs-drift-c;
+  animation-duration: 2.8s;
+}
+
+@keyframes metaballs-drift-a {
+  from { transform: translate3d(12%, 32%, 0) scale(0.88); }
+  to { transform: translate3d(74%, 20%, 0) scale(1.12); }
+}
+
+@keyframes metaballs-drift-b {
+  from { transform: translate3d(62%, 58%, 0) scale(1.04); }
+  to { transform: translate3d(18%, 54%, 0) scale(0.9); }
+}
+
+@keyframes metaballs-drift-c {
+  from { transform: translate3d(38%, 16%, 0) scale(0.86); }
+  to { transform: translate3d(46%, 66%, 0) scale(1.18); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .metaballs-fallback {
+    animation: none;
+  }
+
+  .metaballs-fallback-a { transform: translate3d(18%, 30%, 0); }
+  .metaballs-fallback-b { transform: translate3d(58%, 54%, 0); }
+  .metaballs-fallback-c { transform: translate3d(40%, 20%, 0); }
+}

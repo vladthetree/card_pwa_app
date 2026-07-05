@@ -6,19 +6,25 @@
  */
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { LazyMotion } from 'framer-motion'
-import { motion, useReducedMotion } from './ui/motion'
+import { AnimatePresence, motion, useReducedMotion } from './ui/motion'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { SettingsProvider, useSettings } from './contexts/SettingsContext'
 import AppInitializer from './components/AppInitializer'
 import AppErrorBoundary from './components/AppErrorBoundary'
 import ToastContainer from './components/ToastContainer'
 import type { Card, Deck, ShuffleCollection, View } from './types'
-import { SW_CHANNELS } from './constants/appIdentity'
+import { APP_NAME, SW_CHANNELS } from './constants/appIdentity'
 import { supportsServiceWorker } from './env'
 import { useAutoJoinDefaultProfile } from './hooks/useAutoJoinDefaultProfile'
 import { useFullscreenPreference } from './hooks/useFullscreen'
+import type { ServiceWorkerStartupReadiness } from './runtime/swRegistration'
 
 const SAFE_AREA_DEBUG_STORAGE_KEY = 'card-pwa-safe-area-debug'
+const INITIAL_SPLASH_MIN_MS = 1250
+
+interface AppProps {
+  startupReady?: Promise<ServiceWorkerStartupReadiness>
+}
 
 // Animations-Features (domMax) laden async als eigener Chunk: die m-Komponenten
 // aus ui/motion rendern sofort und animieren, sobald das Paket da ist (nach dem
@@ -213,16 +219,58 @@ const ShuffleStudyView = lazy(() => import('./components/ShuffleStudyView'))
 const LabsView = lazy(() => import('./components/labs/LabsView'))
 const VideosView = lazy(() => import('./components/videos/VideosView'))
 const UpdateBanner = lazy(() => import('./components/UpdateBanner'))
+const MetaBalls = lazy(() => import('./components/MetaBalls'))
 
 function ViewFallback() {
+  const { settings } = useSettings()
+  const prefersReducedMotion = useReducedMotion()
+  const loadingText = settings.language === 'de' ? 'Pruefe App-Version' : 'Checking app version'
+
   return (
-    <div className="flex-1 flex items-center justify-center px-4">
-      <div className="w-full max-w-xl rounded-3xl border border-white/10 bg-black/40 h-52 animate-pulse" />
+    <div
+      className="flex flex-1 items-center justify-center px-4"
+      role="status"
+      aria-busy="true"
+      aria-live="polite"
+    >
+      <div className="flex min-h-[22rem] w-full max-w-xl flex-col items-center justify-center">
+        <div className="relative h-56 w-72 max-w-[78vw] overflow-hidden sm:h-64 sm:w-80">
+          <Suspense fallback={null}>
+            <MetaBalls
+              color="#e75f3c"
+              cursorBallColor="#79b7aa"
+              cursorBallSize={prefersReducedMotion ? 0 : 2.4}
+              ballCount={prefersReducedMotion ? 5 : 12}
+              animationSize={24}
+              enableMouseInteraction={false}
+              enableTransparency
+              hoverSmoothness={0.08}
+              clumpFactor={0.72}
+              speed={prefersReducedMotion ? 0 : 0.9}
+            />
+          </Suspense>
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_38%,rgba(11,11,9,0.58)_100%)]" />
+        </div>
+        <div className="mt-6 text-center">
+          <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-ds-muted">
+            {APP_NAME}
+          </div>
+          <div className="mt-2 font-mono text-sm text-white/75">
+            {loadingText}
+            <span className="ml-1 inline-block animate-pulse text-[--brand-primary]">...</span>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
 
-function AppShell() {
+const defaultStartupReady: Promise<ServiceWorkerStartupReadiness> = Promise.resolve({
+  status: 'unsupported',
+  activatedUpdate: false,
+})
+
+function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartupReadiness> }) {
   const { settings } = useSettings()
   // Setzt --app-bottom-safe-area auf die echte iOS-Safe-Area, damit die
   // Action-Sheets (Filter/Erstellen) über dem Home-Indicator bleiben. Die
@@ -238,7 +286,33 @@ function AppShell() {
   const [activeShuffleCollection, setActiveShuffleCollection] = useState<ShuffleCollection | null>(null)
   const [updateInstalledNotice, setUpdateInstalledNotice] = useState(false)
   const [pendingReloadAfterStudy, setPendingReloadAfterStudy] = useState(false)
+  const [showInitialSplash, setShowInitialSplash] = useState(true)
   const updateNoticeTimerRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    const minSplash = new Promise<void>(resolve => {
+      window.setTimeout(resolve, INITIAL_SPLASH_MIN_MS)
+    })
+
+    void Promise.all([
+      minSplash,
+      startupReady.catch(() => ({ status: 'error', activatedUpdate: false }) satisfies ServiceWorkerStartupReadiness),
+    ]).then(([, readiness]) => {
+      if (cancelled) return
+
+      if (readiness.activatedUpdate) {
+        window.location.reload()
+        return
+      }
+
+      setShowInitialSplash(false)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [startupReady])
 
   useEffect(() => {
     if (!swSupported) return
@@ -424,7 +498,7 @@ function AppShell() {
               />
             )}
           </Suspense>
-          <Suspense fallback={<ViewFallback />}>
+          <Suspense fallback={showInitialSplash ? null : <ViewFallback />}>
             {/* View-Wechsel bewusst OHNE exit-gated AnimatePresence (wait-Modus):
                 dessen Exit→Enter-Handover konnte hängen (z. B. Study → Home nach
                 einer Drag-Match-Antwort) und die Zielansicht nie mounten. Die
@@ -516,18 +590,33 @@ function AppShell() {
               </motion.div>
             )}
           </Suspense>
+          <AnimatePresence>
+            {showInitialSplash && (
+              <motion.div
+                key="initial-splash"
+                initial={{ opacity: 1 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: prefersReducedMotion ? 0.12 : 0.24, ease: 'easeOut' }}
+                className="fixed inset-0 z-[2200] flex bg-[--ds-bg]"
+                style={{ background: 'var(--app-background)' }}
+              >
+                <ViewFallback />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </AppInitializer>
     </AppErrorBoundary>
   )
 }
 
-export default function App() {
+export default function App({ startupReady = defaultStartupReady }: AppProps) {
   return (
     <LazyMotion features={loadMotionFeatures}>
       <ThemeProvider>
         <SettingsProvider>
-          <AppShell />
+          <AppShell startupReady={startupReady} />
         </SettingsProvider>
       </ThemeProvider>
     </LazyMotion>

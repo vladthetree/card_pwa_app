@@ -7,15 +7,22 @@ import App from './App'
 import './index.css'
 import { migrateCardPwaBrandingData } from './services/brandMigration'
 import { supportsServiceWorker } from './env'
-import { initServiceWorkerRegistration } from './runtime/swRegistration'
+import {
+  initServiceWorkerRegistration,
+  type ServiceWorkerStartupReadiness,
+} from './runtime/swRegistration'
 
 let disposeSwRegistration: (() => void) | null = null
+const fallbackStartupReady: Promise<ServiceWorkerStartupReadiness> = Promise.resolve({
+  status: 'unsupported',
+  activatedUpdate: false,
+})
 
 async function bootstrap() {
   await migrateCardPwaBrandingData()
 
   disposeSwRegistration?.()
-  disposeSwRegistration = initServiceWorkerRegistration({
+  const swRuntime = initServiceWorkerRegistration({
     supportsServiceWorker: supportsServiceWorker(),
     navigatorRef: navigator,
     windowRef: window,
@@ -24,10 +31,11 @@ async function bootstrap() {
       console.error('[SW] registration failed:', error)
     },
   })
+  disposeSwRegistration = swRuntime
 
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-      <App />
+      <App startupReady={swRuntime.startupReady ?? fallbackStartupReady} />
     </React.StrictMode>
   )
 }
