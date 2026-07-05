@@ -2,7 +2,7 @@
  * AI_CONTEXT: Vitest coverage for study session manager; protects services behavior from regressions in the learning PWA.
  */
 import { describe, expect, it } from 'vitest'
-import { getCardWeight, sortStudyCards } from '../../services/StudySessionManager'
+import { getCardWeight, sortStudyCards } from '../../services/studyCardOrdering'
 import type { Card } from '../../types'
 
 function createCard(overrides: Partial<Card>): Card {
@@ -27,7 +27,7 @@ function createCard(overrides: Partial<Card>): Card {
   }
 }
 
-describe('StudySessionManager', () => {
+describe('studyCardOrdering', () => {
   it('limits session size via maxCards', () => {
     const cards = Array.from({ length: 10 }, (_, idx) =>
       createCard({ id: `n-${idx}`, type: 'new', due: 100 + idx })

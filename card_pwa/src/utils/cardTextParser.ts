@@ -390,28 +390,29 @@ export class MatchingAnswerParser {
 
 // ─── Dispatch Functions ───────────────────────────────────────────────────
 
-export function parseAnyQuestion(text: string): AnyQuestion {
+export function parseQuestion(text: string): AnyQuestion {
   if (OrderingParser.isOrdering(text)) return OrderingParser.parse(text)
   if (MatchingParser.isMatching(text))  return MatchingParser.parse(text)
   return QuestionParser.parse(text)
 }
 
-export function parseAnyAnswer(text: string, questionType: AnyQuestion['type']): AnyAnswer {
+export function parseAnswer(text: string, questionType: AnyQuestion['type']): AnyAnswer {
   if (questionType === 'ordering') return OrderingAnswerParser.parse(text)
   if (questionType === 'matching') return MatchingAnswerParser.parse(text)
   return AnswerParser.parse(text)
 }
 
 /**
- * Legacy Export-Funktionen für Rückwärts-Kompatibilität
- * (werden bald durch die Klassen ersetzt)
+ * MC-only-Varianten: parsen Multiple-Choice direkt, ohne die Ordering/Matching-
+ * Erkennung von parseQuestion/parseAnswer. Für Aufrufer, die den Kartentyp
+ * bereits kennen (z. B. der MC-Zweig in buildRecallCardView).
  */
 
-export function parseQuestionText(text: string) {
+export function parseMcQuestion(text: string) {
   return QuestionParser.parse(text)
 }
 
-export function parseAnswerText(text: string) {
+export function parseMcAnswer(text: string) {
   return AnswerParser.parse(text)
 }
 

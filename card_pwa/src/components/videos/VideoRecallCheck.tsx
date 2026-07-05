@@ -6,12 +6,12 @@
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Brain, Check, Eye, Loader2, RotateCcw, X } from 'lucide-react'
-import { fetchDeckCards } from '../../db/queries'
+import { listDeckCards } from '../../db/queries'
 import type { Card } from '../../types'
 import {
-  parseAnyQuestion,
-  parseAnyAnswer,
-  parseAnswerText,
+  parseQuestion,
+  parseAnswer,
+  parseMcAnswer,
   stripHtml,
   type MatchingAnswer,
   type OrderingAnswer,
@@ -148,8 +148,8 @@ export interface RecallCardView {
  * (Optionen einzeln, korrekte markiert, Erklärung/Merkhilfe getrennt),
  * alle anderen Typen als schlichte Frage/Antwort-Ansicht.
  */
-export function describeCard(card: Card): RecallCardView {
-  const question = parseAnyQuestion(card.front)
+export function buildRecallCardView(card: Card): RecallCardView {
+  const question = parseQuestion(card.front)
   const prompt = (question.question || stripHtml(card.front))
     .replace(/^M[1-5]-\d{3}:\s*/, '') // interne Fragen-ID, für Lernende nur Rauschen
     .trim()
@@ -159,7 +159,7 @@ export function describeCard(card: Card): RecallCardView {
   let merkhilfe: string | null = null
 
   if (question.type === 'ordering') {
-    const parsed = parseAnyAnswer(card.back, 'ordering') as OrderingAnswer
+    const parsed = parseAnswer(card.back, 'ordering') as OrderingAnswer
     const ordered = parsed.correctOrder
       .map((idx, position) => `${position + 1}. ${question.items[idx] ?? ''}`.trim())
       .filter(Boolean)
@@ -167,11 +167,11 @@ export function describeCard(card: Card): RecallCardView {
     answer = [ordered, parsed.explanation].filter(Boolean).join('\n\n')
     merkhilfe = parsed.merkhilfe
   } else if (question.type === 'matching') {
-    const parsed = parseAnyAnswer(card.back, 'matching') as MatchingAnswer
+    const parsed = parseAnswer(card.back, 'matching') as MatchingAnswer
     answer = parsed.pairs.map(pair => `${pair.left} = ${pair.right}`).join('\n')
     merkhilfe = parsed.merkhilfe
   } else {
-    const parsed = parseAnswerText(card.back)
+    const parsed = parseMcAnswer(card.back)
     options = Object.entries(question.options).map(([label, text]) => ({
       label,
       text: stripHtml(text).trim(),
@@ -240,7 +240,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
   useEffect(() => {
     let cancelled = false
     setPhase('loading')
-    void fetchDeckCards(deckId).then(all => {
+    void listDeckCards(deckId).then(all => {
       if (cancelled) return
       const usable = all.filter(card => card.front?.trim() && isProfessorMesserRecallCard(card, objective, videoTitle))
       if (usable.length === 0) {
@@ -261,7 +261,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
   }, [deckId, objective, videoTitle, maxCards])
 
   const current = cards[index]
-  const view = useMemo(() => (current ? describeCard(current) : null), [current])
+  const view = useMemo(() => (current ? buildRecallCardView(current) : null), [current])
   const total = cards.length
 
   const grade = (known: boolean) => {

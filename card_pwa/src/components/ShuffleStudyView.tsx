@@ -19,7 +19,7 @@ import {
   buildPersistedStudySession,
   buildShuffleSessionId,
   DEFAULT_STUDY_CARD_LIMIT,
-  sanitizeCardLimit,
+  normalizeStudyCardLimit,
 } from '../services/studySessionPersistence'
 import { initialSessionState, sessionReducer } from '../services/studySessionReducer'
 import { buildDragMatchModePlan } from '../services/studyModeSelector'
@@ -74,7 +74,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   const t = STRINGS[settings.language]
   const prefersReducedMotion = useReducedMotion()
   const { isHandsetLayout, isHandsetLandscape } = useHandsetLayout()
-  const studyCardLimit = sanitizeCardLimit(settings.studyCardLimit ?? DEFAULT_STUDY_CARD_LIMIT)
+  const studyCardLimit = normalizeStudyCardLimit(settings.studyCardLimit ?? DEFAULT_STUDY_CARD_LIMIT)
   const dragMatchModeSeedRef = useRef(`${Date.now()}:${Math.random()}`)
   const { cards, loading, error, reload } = useShuffleCards(collection.id, {
     maxCards: studyCardLimit,

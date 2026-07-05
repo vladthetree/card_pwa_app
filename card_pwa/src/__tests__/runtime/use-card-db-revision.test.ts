@@ -30,16 +30,16 @@ vi.mock('dexie', () => ({
 }))
 
 vi.mock('../../db/queries', () => ({
-  fetchDecks: vi.fn(),
-  fetchDeckCards: vi.fn(),
-  fetchGamificationProfile: vi.fn(),
-  fetchGlobalStats: vi.fn(),
-  fetchTodayDueFromDecks: vi.fn(),
+  listDecks: vi.fn(),
+  listDeckCards: vi.fn(),
+  getGamificationProfile: vi.fn(),
+  getGlobalStats: vi.fn(),
+  countTodayDueFromDecks: vi.fn(),
   getShuffleCollection: vi.fn(),
   listShuffleCollections: vi.fn(),
 }))
 
-vi.mock('../../services/ShuffleSessionManager', () => ({
+vi.mock('../../services/shuffleSession', () => ({
   buildSelectedShuffleCards: vi.fn(),
 }))
 

@@ -3,7 +3,7 @@
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { CardRecord, DeckRecord, ReviewRecord, VideoNoteRecord } from '../../db'
-import { createDbBackupPayload, listDecksForBackup, restoreVideoNotesFromBackupPayload } from '../../utils/dbBackup'
+import { buildDbBackupPayload, listDecksForBackup, restoreVideoNotesFromBackupPayload } from '../../utils/dbBackup'
 
 const mockedDb = vi.hoisted(() => {
   const state = {
@@ -137,7 +137,7 @@ describe('dbBackup', () => {
       { id: 3, cardId: 'card-orphaned', rating: 3, timeMs: 1000, timestamp: 30 },
     ]
 
-    const payload = await createDbBackupPayload()
+    const payload = await buildDbBackupPayload()
 
     expect(payload.data.decks.map(deck => deck.id)).toEqual(['deck-active'])
     expect(payload.data.cards.map(card => card.id)).toEqual(['card-active'])
@@ -160,7 +160,7 @@ describe('dbBackup', () => {
       },
     ]
 
-    const payload = await createDbBackupPayload()
+    const payload = await buildDbBackupPayload()
 
     expect(payload.meta.version).toBe(2)
     expect(payload.meta.tableCounts.videoNotes).toBe(1)

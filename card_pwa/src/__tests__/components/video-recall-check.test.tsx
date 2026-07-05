@@ -4,12 +4,12 @@
 import { describe, it, expect } from 'vitest'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import VideoRecallCheck, { describeCard, isProfessorMesserRecallCard } from '../../components/videos/VideoRecallCheck'
+import VideoRecallCheck, { buildRecallCardView, isProfessorMesserRecallCard } from '../../components/videos/VideoRecallCheck'
 import { MESSER_VIDEO_BY_QUESTION_ID, normalizeMesserVideoTitle } from '../../data/messerVideoQuestionMap'
 import type { Card } from '../../types'
 
 /**
- * Abruf-Check: aktives Erinnern direkt nach dem Video. `describeCard` reduziert
+ * Abruf-Check: aktives Erinnern direkt nach dem Video. `buildRecallCardView` reduziert
  * eine Karte beliebigen Typs (MC / Ordering / Matching / Plain) auf eine
  * schlichte, HTML-freie Frage/Antwort-Ansicht. Kein jsdom → SSR-Markup.
  */
@@ -32,13 +32,13 @@ function makeCard(front: string, back: string, overrides: Partial<Card> = {}): C
   }
 }
 
-describe('describeCard — Frage/Antwort-Reduktion', () => {
+describe('buildRecallCardView — Frage/Antwort-Reduktion', () => {
   it('extrahiert bei Multiple-Choice Frage, Optionen und korrekte Option', () => {
     const card = makeCard(
       'Was beschreibt die CIA-Triade?\nA: Confidentiality\nB: Integrity\nC: Availability\nD: Alle drei',
       'RICHTIG: D\nAlle drei Schutzziele zusammen.',
     )
-    const { prompt, options, answer } = describeCard(card)
+    const { prompt, options, answer } = buildRecallCardView(card)
     expect(prompt).toContain('CIA-Triade')
     expect(prompt).not.toContain('A: Confidentiality') // Optionen gehören nicht in den Prompt
     expect(options.map(option => option.label)).toEqual(['A', 'B', 'C', 'D'])
@@ -51,7 +51,7 @@ describe('describeCard — Frage/Antwort-Reduktion', () => {
       'M1-001: Which security control category does anti-virus software belong to?\nA: Managerial\nB: Operational\nC: Technical\nD: Physical',
       '>> CORRECT: C | Technical\n\nTechnische Controls sind softwarebasiert.\n\nMerkhilfe: Technical = Technologie.',
     )
-    const view = describeCard(card)
+    const view = buildRecallCardView(card)
     expect(view.prompt).not.toContain('M1-001')
     expect(view.prompt).toContain('Which security control category')
     expect(view.options.find(option => option.correct)?.label).toBe('C')
@@ -65,7 +65,7 @@ describe('describeCard — Frage/Antwort-Reduktion', () => {
       'Frage mit Optionen ohne Marker\nA: Eins\nB: Zwei',
       'Nur Fließtext ohne CORRECT-Marker.',
     )
-    const view = describeCard(card)
+    const view = buildRecallCardView(card)
     expect(view.options).toEqual([]) // keine stumme Optionsliste, die nichts aufdeckt
     expect(view.answer).toContain('Fließtext')
   })
@@ -75,7 +75,7 @@ describe('describeCard — Frage/Antwort-Reduktion', () => {
       'ORDERING:\nBringe die Incident-Response-Phasen in die richtige Reihenfolge\n1. Preparation\n2. Detection\n3. Containment',
       'CORRECT_ORDER: 1,2,3\nReihenfolge laut NIST.',
     )
-    const { prompt, answer } = describeCard(card)
+    const { prompt, answer } = buildRecallCardView(card)
     expect(prompt).toContain('Reihenfolge')
     expect(answer).toContain('1. Preparation')
     expect(answer).toContain('3. Containment')
@@ -87,7 +87,7 @@ describe('describeCard — Frage/Antwort-Reduktion', () => {
       'MATCHING:\nOrdne Dienst und Port zu\nHTTPS >> 443\nSSH >> 22',
       'HTTPS = 443\nSSH = 22',
     )
-    const { answer } = describeCard(card)
+    const { answer } = buildRecallCardView(card)
     expect(answer).toContain('HTTPS = 443')
     expect(answer).toContain('SSH = 22')
   })
@@ -97,14 +97,14 @@ describe('describeCard — Frage/Antwort-Reduktion', () => {
       'Nenne die drei Schutzziele der Informationssicherheit',
       'Confidentiality, Integrity, Availability',
     )
-    const { prompt, answer } = describeCard(card)
+    const { prompt, answer } = buildRecallCardView(card)
     expect(prompt).toContain('Schutzziele')
     expect(answer).toContain('Confidentiality')
   })
 
   it('entfernt HTML aus Prompt und Antwort', () => {
     const card = makeCard('<b>Was</b> ist <i>AES</i>?', '<p>Ein <b>symmetrisches</b> Verfahren</p>')
-    const { prompt, answer } = describeCard(card)
+    const { prompt, answer } = buildRecallCardView(card)
     expect(prompt).toBe('Was ist AES?')
     expect(prompt).not.toMatch(/<[^>]+>/)
     expect(answer).not.toMatch(/<[^>]+>/)
@@ -112,7 +112,7 @@ describe('describeCard — Frage/Antwort-Reduktion', () => {
   })
 
   it('fällt bei leerem Inhalt auf „—" zurück', () => {
-    const { prompt, answer } = describeCard(makeCard('', ''))
+    const { prompt, answer } = buildRecallCardView(makeCard('', ''))
     expect(prompt).toBe('—')
     expect(answer).toBe('—')
   })

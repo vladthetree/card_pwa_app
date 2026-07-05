@@ -7,7 +7,7 @@
 import { db, type VideoTagMetaRecord } from '../../db'
 import { normalizeTagId, stripTagPrefix } from '../../utils/tagIdentity'
 import { computeVideoTagStats, type VideoTagStat } from '../../utils/videoTagStats'
-import { fetchAllCards } from './decks'
+import { listAllCards } from './decks'
 
 /**
  * Tag-Metadaten zu Video-Notiz-Tags. Die Inline-`#tags` im Notiztext bleiben die
@@ -188,7 +188,7 @@ export async function listVideoTagStats(profileId: string): Promise<VideoTagStat
   const [notes, metas, cards] = await Promise.all([
     db.videoNotes2.where('profileId').equals(pid).toArray(),
     db.videoTagMeta.where('profileId').equals(pid).toArray(),
-    fetchAllCards(),
+    listAllCards(),
   ])
 
   return computeVideoTagStats({

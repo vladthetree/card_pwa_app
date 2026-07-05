@@ -2,7 +2,7 @@
  * AI_CONTEXT: Vitest coverage for algorithm deck; protects db behavior from regressions in the learning PWA.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { fetchDeckCards } from '../../db/queries'
+import { listDeckCards } from '../../db/queries'
 import type { CardRecord } from '../../db'
 import { SM2 } from '../../utils/sm2'
 
@@ -59,7 +59,7 @@ function makeRecord(partial: Partial<CardRecord>): CardRecord {
 
 // ─── Tests ───────────────────────────────────────────────────────────────────
 
-describe('Algorithm per deck — fetchDeckCards mapping', () => {
+describe('Algorithm per deck — listDeckCards mapping', () => {
   beforeEach(() => {
     mockedDb.state.cards = []
     mockedDb.cards.where.mockClear()
@@ -68,21 +68,21 @@ describe('Algorithm per deck — fetchDeckCards mapping', () => {
   describe('algorithm field defaults and mapping', () => {
     it('card without algorithm field defaults to sm2', async () => {
       mockedDb.state.cards = [makeRecord({ deckId: 'deck-1', algorithm: undefined })]
-      const result = await fetchDeckCards('deck-1')
+      const result = await listDeckCards('deck-1')
 
       expect(result[0].algorithm).toBe('sm2')
     })
 
     it('card with algorithm: sm2 preserves sm2', async () => {
       mockedDb.state.cards = [makeRecord({ deckId: 'deck-1', algorithm: 'sm2' })]
-      const result = await fetchDeckCards('deck-1')
+      const result = await listDeckCards('deck-1')
 
       expect(result[0].algorithm).toBe('sm2')
     })
 
     it('card with algorithm: fsrs preserves fsrs', async () => {
       mockedDb.state.cards = [makeRecord({ deckId: 'deck-1', algorithm: 'fsrs' })]
-      const result = await fetchDeckCards('deck-1')
+      const result = await listDeckCards('deck-1')
 
       expect(result[0].algorithm).toBe('fsrs')
     })
@@ -91,7 +91,7 @@ describe('Algorithm per deck — fetchDeckCards mapping', () => {
   describe('algorithm-specific fields: sm2Ease and fsrsDifficulty', () => {
     it('sm2 card sets sm2Ease and leaves fsrsDifficulty undefined', async () => {
       mockedDb.state.cards = [makeRecord({ deckId: 'deck-1', algorithm: 'sm2', factor: 2500 })]
-      const result = await fetchDeckCards('deck-1')
+      const result = await listDeckCards('deck-1')
 
       expect(result[0].sm2Ease).toBe(2.5)             // factor / 1000
       expect(result[0].fsrsDifficulty).toBeUndefined()
@@ -101,7 +101,7 @@ describe('Algorithm per deck — fetchDeckCards mapping', () => {
       mockedDb.state.cards = [
         makeRecord({ deckId: 'deck-1', algorithm: 'fsrs', difficulty: 6.2, factor: 3100 }),
       ]
-      const result = await fetchDeckCards('deck-1')
+      const result = await listDeckCards('deck-1')
 
       expect(result[0].fsrsDifficulty).toBe(6.2)
       expect(result[0].sm2Ease).toBeUndefined()
@@ -111,7 +111,7 @@ describe('Algorithm per deck — fetchDeckCards mapping', () => {
       mockedDb.state.cards = [
         makeRecord({ deckId: 'deck-1', algorithm: 'fsrs', difficulty: undefined, factor: 3000 }),
       ]
-      const result = await fetchDeckCards('deck-1')
+      const result = await listDeckCards('deck-1')
 
       expect(result[0].fsrsDifficulty).toBe(6)  // 3000 / 500
       expect(result[0].sm2Ease).toBeUndefined()
@@ -129,7 +129,7 @@ describe('Algorithm per deck — fetchDeckCards mapping', () => {
     for (const [numericType, stringType] of cases) {
       it(`type ${numericType} maps to '${stringType}'`, async () => {
         mockedDb.state.cards = [makeRecord({ deckId: 'deck-1', type: numericType })]
-        const result = await fetchDeckCards('deck-1')
+        const result = await listDeckCards('deck-1')
 
         expect(result[0].type).toBe(stringType)
       })
@@ -137,7 +137,7 @@ describe('Algorithm per deck — fetchDeckCards mapping', () => {
 
     it('out-of-range type defaults to "new"', async () => {
       mockedDb.state.cards = [makeRecord({ deckId: 'deck-1', type: 99 })]
-      const result = await fetchDeckCards('deck-1')
+      const result = await listDeckCards('deck-1')
 
       expect(result[0].type).toBe('new')
     })
@@ -150,8 +150,8 @@ describe('Algorithm per deck — fetchDeckCards mapping', () => {
         makeRecord({ id: 'c2', deckId: 'deck-B', algorithm: 'fsrs', difficulty: 4.5, factor: 2250 }),
       ]
 
-      const deckA = await fetchDeckCards('deck-A')
-      const deckB = await fetchDeckCards('deck-B')
+      const deckA = await listDeckCards('deck-A')
+      const deckB = await listDeckCards('deck-B')
 
       expect(deckA).toHaveLength(1)
       expect(deckA[0].algorithm).toBe('sm2')
@@ -171,7 +171,7 @@ describe('Algorithm per deck — fetchDeckCards mapping', () => {
         makeRecord({ id: 'b1', deckId: 'deck-B' }),
       ]
 
-      const result = await fetchDeckCards('deck-A')
+      const result = await listDeckCards('deck-A')
       expect(result).toHaveLength(2)
       result.forEach(c => expect(c.id).toMatch(/^a/))
     })
@@ -180,7 +180,7 @@ describe('Algorithm per deck — fetchDeckCards mapping', () => {
   describe('scheduling fields are correctly passed through', () => {
     it('interval, reps, lapses are preserved', async () => {
       mockedDb.state.cards = [makeRecord({ deckId: 'deck-1', interval: 21, reps: 8, lapses: 2 })]
-      const result = await fetchDeckCards('deck-1')
+      const result = await listDeckCards('deck-1')
 
       expect(result[0].interval).toBe(21)
       expect(result[0].reps).toBe(8)
@@ -191,7 +191,7 @@ describe('Algorithm per deck — fetchDeckCards mapping', () => {
       mockedDb.state.cards = [
         makeRecord({ deckId: 'deck-1', algorithm: 'fsrs', stability: 12.5, difficulty: 4.8 }),
       ]
-      const result = await fetchDeckCards('deck-1')
+      const result = await listDeckCards('deck-1')
 
       expect(result[0].stability).toBe(12.5)
       expect(result[0].difficulty).toBe(4.8)
@@ -199,7 +199,7 @@ describe('Algorithm per deck — fetchDeckCards mapping', () => {
 
     it('empty deck returns empty array', async () => {
       mockedDb.state.cards = []
-      const result = await fetchDeckCards('deck-empty')
+      const result = await listDeckCards('deck-empty')
 
       expect(result).toEqual([])
     })

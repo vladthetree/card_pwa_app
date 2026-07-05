@@ -6,8 +6,8 @@ import { motion } from '../../ui/motion'
 import { Check, Layers3, Save, X } from 'lucide-react'
 import { UI_TOKENS } from '../../constants/ui'
 import type { Deck, ShuffleCollection } from '../../types'
-import { createShuffleCollection, fetchDeckCards, updateShuffleCollection } from '../../db/queries'
-import { buildSelectedShuffleCards } from '../../services/ShuffleSessionManager'
+import { createShuffleCollection, listDeckCards, updateShuffleCollection } from '../../db/queries'
+import { buildSelectedShuffleCards } from '../../services/shuffleSession'
 
 interface Props {
   isOpen: boolean
@@ -85,7 +85,7 @@ export function HomeShuffleCollectionModal({
         return
       }
 
-      const cardSets = await Promise.all(selectedDeckIds.map(deckId => fetchDeckCards(deckId)))
+      const cardSets = await Promise.all(selectedDeckIds.map(deckId => listDeckCards(deckId)))
       const uniqueCardIds = new Set(cardSets.flat().map(card => card.id))
       const selectedToday = await buildSelectedShuffleCards(
         { deckIds: selectedDeckIds },

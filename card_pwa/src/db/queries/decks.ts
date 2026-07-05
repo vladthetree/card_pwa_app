@@ -11,7 +11,7 @@ import { factorToDifficulty } from '../../utils/algorithmParams'
 import { getDayStartMs } from '../../utils/time'
 import { generateUuidV7 } from '../../utils/id'
 import { enqueueSyncOperation } from '../../services/syncQueue'
-import { sortStudyCards } from '../../services/StudySessionManager'
+import { sortStudyCards } from '../../services/studyCardOrdering'
 import { normalizeTagId } from '../../utils/tagIdentity'
 import type { Deck, Card, DeckScheduleOverview } from '../../types'
 
@@ -186,7 +186,7 @@ async function computeAllDeckStats(
   return statsByDeck
 }
 
-export async function fetchDecks(): Promise<Deck[]> {
+export async function listDecks(): Promise<Deck[]> {
   // Sortierung übernimmt buildDeckTree (localeCompare auf Wurzeln + Kindern);
   // der geteilte Read spart den zweiten Deck-Scan im selben Home-Ladefenster.
   const deckRecords = (await readAllDecksShared()).filter(d => !d.isDeleted)
@@ -199,7 +199,7 @@ export async function fetchDecks(): Promise<Deck[]> {
   return buildDeckTree(deckRecords, statsByDeck)
 }
 
-export async function fetchDeckCards(deckId: string): Promise<Card[]> {
+export async function listDeckCards(deckId: string): Promise<Card[]> {
   const deckIds = await resolveDeckScopeIds(deckId)
   const rows = (
     deckIds.length === 1
@@ -209,7 +209,7 @@ export async function fetchDeckCards(deckId: string): Promise<Card[]> {
   return rows.map(mapCard)
 }
 
-export async function fetchAllCards(): Promise<Card[]> {
+export async function listAllCards(): Promise<Card[]> {
   const rows = (await readAllCardsShared()).filter(r => !r.isDeleted)
   return rows.map(mapCard)
 }
@@ -237,8 +237,8 @@ export async function getDeckNameMap(): Promise<Record<string, string>> {
  * Session über alle Decks — fällige Karten deckübergreifend, priorisiert wie
  * eine reguläre Session (sortStudyCards), gekappt auf `limit`.
  */
-export async function fetchDailyQuestCards(limit: number, nextDayStartsAt = 0): Promise<Card[]> {
-  const cards = await fetchAllCards()
+export async function pickDailyQuestCards(limit: number, nextDayStartsAt = 0): Promise<Card[]> {
+  const cards = await listAllCards()
   return sortStudyCards(cards, { maxCards: limit, nextDayStartsAt })
 }
 
@@ -377,7 +377,7 @@ export async function getDeckHomeMetadata(
   }
 }
 
-export async function fetchDeckStudyCandidates(deckId: string, nextDayStartsAt = 0): Promise<Card[]> {
+export async function listDeckStudyCandidates(deckId: string, nextDayStartsAt = 0): Promise<Card[]> {
   const todayStartMs = getDayStartMs(Date.now(), nextDayStartsAt)
   const tomorrowStartMs = todayStartMs + 86_400_000
   const deckIds = await resolveDeckScopeIds(deckId)
@@ -415,7 +415,7 @@ export async function getDeckScheduleOverview(
   return (await getDeckHomeMetadata(deckIds, dailyCardLimit, nextDayStartsAt)).deckScheduleOverview
 }
 
-export async function fetchTodayDueFromDecks(
+export async function countTodayDueFromDecks(
   dailyCardLimit: number,
   nextDayStartsAt = 0
 ): Promise<number> {

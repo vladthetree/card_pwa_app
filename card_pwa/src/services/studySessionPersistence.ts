@@ -42,9 +42,10 @@ export function buildShuffleSessionId(collectionId: string): string {
   return `shuffle:${collectionId}`
 }
 
-export function sanitizeCardLimit(value: number): number {
-  if (!Number.isFinite(value)) return DEFAULT_STUDY_CARD_LIMIT
-  const rounded = Math.round(value / STUDY_CARD_LIMIT_STEP) * STUDY_CARD_LIMIT_STEP
+export function normalizeStudyCardLimit(value: unknown): number {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return DEFAULT_STUDY_CARD_LIMIT
+  const rounded = Math.round(parsed / STUDY_CARD_LIMIT_STEP) * STUDY_CARD_LIMIT_STEP
   return Math.max(MIN_STUDY_CARD_LIMIT, Math.min(MAX_STUDY_CARD_LIMIT, rounded))
 }
 

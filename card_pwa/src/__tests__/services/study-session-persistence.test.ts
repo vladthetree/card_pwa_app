@@ -9,7 +9,7 @@ import {
   buildShuffleSessionId,
   parsePersistedStudySession,
   restoreCardsByOrder,
-  sanitizeCardLimit,
+  normalizeStudyCardLimit,
 } from '../../services/studySessionPersistence'
 import type { Card, Rating } from '../../types'
 
@@ -101,10 +101,10 @@ describe('study session persistence helpers', () => {
   })
 
   it('normalizes card limit to step and bounds', () => {
-    expect(sanitizeCardLimit(53)).toBe(50)
-    expect(sanitizeCardLimit(205)).toBe(200)
-    expect(sanitizeCardLimit(2)).toBe(10)
-    expect(sanitizeCardLimit(Number.NaN)).toBe(DEFAULT_STUDY_CARD_LIMIT)
+    expect(normalizeStudyCardLimit(53)).toBe(50)
+    expect(normalizeStudyCardLimit(205)).toBe(200)
+    expect(normalizeStudyCardLimit(2)).toBe(10)
+    expect(normalizeStudyCardLimit(Number.NaN)).toBe(DEFAULT_STUDY_CARD_LIMIT)
   })
 
   it('restores card order from persisted ids and skips missing ids', () => {

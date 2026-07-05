@@ -8,17 +8,17 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { liveQuery } from 'dexie'
 import { db } from '../db'
 import {
-  fetchDecks,
-  fetchDeckCards,
-  fetchGamificationProfile,
-  fetchGlobalStats,
-  fetchTodayDueFromDecks,
+  listDecks,
+  listDeckCards,
+  getGamificationProfile,
+  getGlobalStats,
+  countTodayDueFromDecks,
   getShuffleCollection,
   listShuffleCollections,
 } from '../db/queries'
 import { REVIEW_UPDATED_EVENT } from '../constants/appIdentity'
 import type { Deck, Card, GamificationProfile, GlobalStats, ShuffleCollection } from '../types'
-import { buildSelectedShuffleCards, type ShuffleStudyCard } from '../services/ShuffleSessionManager'
+import { buildSelectedShuffleCards, type ShuffleStudyCard } from '../services/shuffleSession'
 
 const DB_CHANGE_DEBOUNCE_MS = 180
 
@@ -212,7 +212,7 @@ export function useDecks() {
         setLoading(true)
       }
       setError(null)
-      const nextDecks = await fetchDecks()
+      const nextDecks = await listDecks()
       if (loadVersionRef.current !== loadVersion) return
       setDecks(nextDecks)
       hasLoadedRef.current = true
@@ -303,7 +303,7 @@ export function useDeckCards(deckId: string | null) {
         setLoading(true)
       }
       setError(null)
-      const nextCards = await fetchDeckCards(deckId)
+      const nextCards = await listDeckCards(deckId)
       if (loadVersionRef.current !== loadVersion) return
       setCards(nextCards)
       loadedDeckIdRef.current = deckId
@@ -407,10 +407,10 @@ export function useStats(nextDayStartsAt = 0, dailyCardLimit?: number) {
 
   const load = useCallback(async () => {
     try {
-      const baseStats = await fetchGlobalStats(nextDayStartsAt)
+      const baseStats = await getGlobalStats(nextDayStartsAt)
       const nowDue = dailyCardLimit === undefined
         ? baseStats.nowDue
-        : await fetchTodayDueFromDecks(dailyCardLimit, nextDayStartsAt)
+        : await countTodayDueFromDecks(dailyCardLimit, nextDayStartsAt)
 
       setStats({
         ...baseStats,
@@ -436,7 +436,7 @@ export function useGamificationProfile(nextDayStartsAt = 0) {
   const load = useCallback(async () => {
     try {
       setError(null)
-      setProfile(await fetchGamificationProfile(nextDayStartsAt))
+      setProfile(await getGamificationProfile(nextDayStartsAt))
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
     }

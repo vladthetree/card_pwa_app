@@ -14,7 +14,7 @@
  */
 import { describe, expect, it } from 'vitest'
 import { getCardVariant, isDragMatchCard } from '../../utils/cardVariant'
-import { parseQuestionText } from '../../utils/cardTextParser'
+import { parseMcQuestion } from '../../utils/cardTextParser'
 
 describe('UC-3  Card variant detection (getCardVariant)', () => {
   // ── Ordering ────────────────────────────────────────────────────────────────
@@ -95,7 +95,7 @@ describe('M2 Drag-Match source-of-truth detection', () => {
       'D: The trust manager',
     ].join('\n')
 
-    const parsed = parseQuestionText(numberedQuestionFront)
+    const parsed = parseMcQuestion(numberedQuestionFront)
     expect(parsed.question).toBe('64: Valerie receives an authentication prompt while accessing a file server. What zero-trust component is this?')
     expect(Object.keys(parsed.options)).toEqual(['A', 'B', 'C', 'D'])
     expect(isDragMatchCard(numberedQuestionFront, '>> CORRECT: A | Policy enforcement point')).toBe(true)

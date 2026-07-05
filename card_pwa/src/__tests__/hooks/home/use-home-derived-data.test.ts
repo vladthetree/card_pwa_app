@@ -20,7 +20,7 @@ vi.mock('../../../utils/dbBackup', () => ({
   listDecksForBackup: runtime.listDecksForBackup,
 }))
 
-vi.mock('../../../services/ShuffleSessionManager', () => ({
+vi.mock('../../../services/shuffleSession', () => ({
   buildSelectedShuffleCards: runtime.buildSelectedShuffleCards,
 }))
 
@@ -39,27 +39,27 @@ describe('useHomeDerivedData helpers', () => {
 
   it('returns empty structures without touching queries when there is no input data', async () => {
     const {
-      loadHomeDeckOptions,
-      loadHomeFutureForecast,
-      loadHomeSyncedDeckIds,
-      loadHomeShuffleSummaries,
-      loadHomeDeckScheduleOverview,
-      loadHomeDeckTagIndex,
-      loadHomeDeckMetadata,
+      listHomeDeckOptions,
+      getHomeFutureForecast,
+      listHomeSyncedDeckIds,
+      listHomeShuffleSummaries,
+      getHomeDeckScheduleOverview,
+      getHomeDeckTagIndex,
+      getHomeDeckScheduleAndTagIndex,
     } = await import('../../../hooks/home/useHomeDerivedData')
 
-    await expect(loadHomeDeckOptions(false)).resolves.toEqual([])
-    await expect(loadHomeFutureForecast(false, 4)).resolves.toEqual([])
-    await expect(loadHomeSyncedDeckIds('local')).resolves.toEqual([])
-    await expect(loadHomeShuffleSummaries({
+    await expect(listHomeDeckOptions(false)).resolves.toEqual([])
+    await expect(getHomeFutureForecast(false, 4)).resolves.toEqual([])
+    await expect(listHomeSyncedDeckIds('local')).resolves.toEqual([])
+    await expect(listHomeShuffleSummaries({
       shuffleCollections: [],
       profileMode: 'local',
       studyCardLimit: 50,
       nextDayStartsAt: 4,
     })).resolves.toEqual({})
-    await expect(loadHomeDeckScheduleOverview([], 50, 4)).resolves.toEqual({})
-    await expect(loadHomeDeckTagIndex([])).resolves.toEqual({})
-    await expect(loadHomeDeckMetadata([], 50, 4)).resolves.toEqual({
+    await expect(getHomeDeckScheduleOverview([], 50, 4)).resolves.toEqual({})
+    await expect(getHomeDeckTagIndex([])).resolves.toEqual({})
+    await expect(getHomeDeckScheduleAndTagIndex([], 50, 4)).resolves.toEqual({
       deckScheduleOverview: {},
       deckTagIndex: {},
     })
@@ -74,8 +74,8 @@ describe('useHomeDerivedData helpers', () => {
     runtime.getSyncedDeckIds.mockResolvedValue(['deck-1'])
     runtime.buildSelectedShuffleCards.mockResolvedValue([{ id: 'card-1' }, { id: 'card-2' }])
 
-    const { loadHomeShuffleSummaries } = await import('../../../hooks/home/useHomeDerivedData')
-    const result = await loadHomeShuffleSummaries({
+    const { listHomeShuffleSummaries } = await import('../../../hooks/home/useHomeDerivedData')
+    const result = await listHomeShuffleSummaries({
       shuffleCollections: [
         {
           id: 'shuffle-1',

@@ -13,7 +13,7 @@ import { useNotesByTag, useRelatedVideoNoteTags } from '../../hooks/useVideoNote
 import { useVideoTag } from '../../hooks/useVideoTags'
 import { useMesserVideoProgress, resolveVideoStatus, type VideoStatus } from '../../hooks/useMesserVideoProgress'
 import { buildTagPageSections } from '../../utils/videoTagPageData'
-import { describeCard } from './VideoRecallCheck'
+import { buildRecallCardView } from './VideoRecallCheck'
 
 /**
  * Tag-Seite (Obsidian-artig): zeigt ALLES zu einem `#tag` mit Verweis auf die
@@ -324,7 +324,7 @@ export default function TagCollectionPanel({
       ) : (
         <div className="flex flex-col gap-2">
           {cards.map(({ deckId, card }) => (
-            <FlipCardTile key={card.id} deckName={deckNames[deckId] ?? deckId} view={describeCard(card)} copy={copy} />
+            <FlipCardTile key={card.id} deckName={deckNames[deckId] ?? deckId} view={buildRecallCardView(card)} copy={copy} />
           ))}
         </div>
       )}

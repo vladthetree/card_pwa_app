@@ -4,7 +4,7 @@
 import { memo, useCallback, useMemo, useState } from 'react'
 import { Check, Edit, X } from 'lucide-react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
-import { parseAnswerText } from '../utils/cardTextParser'
+import { parseMcAnswer } from '../utils/cardTextParser'
 import { stripFreeRecallPrefix } from '../utils/cardVariant'
 import { scoreFreeRecallSelfCheck } from '../utils/freeRecallScoring'
 import type { Card } from '../types'
@@ -43,7 +43,7 @@ const FreeRecallCard = memo(function FreeRecallCard({
   const t = STRINGS[settings.language]
 
   const questionText = useMemo(() => stripFreeRecallPrefix(card.front), [card.front])
-  const answered = useMemo(() => parseAnswerText(card.back), [card.back])
+  const answered = useMemo(() => parseMcAnswer(card.back), [card.back])
 
   // null = noch nicht selbst bewertet, true = gewusst, false = nicht gewusst
   const [selfCheck, setSelfCheck] = useState<boolean | null>(null)

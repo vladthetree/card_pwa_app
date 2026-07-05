@@ -274,7 +274,7 @@ vi.mock('../../components/FutureForecastModal.tsx', () => ({
   default: ({ isOpen }: { isOpen: boolean }) => isOpen ? <div>future-forecast-modal</div> : null,
 }))
 
-vi.mock('../../components/ImportView.tsx', () => ({
+vi.mock('../../components/ImportModal.tsx', () => ({
   default: ({ isOpen }: { isOpen: boolean }) => isOpen ? <div>import-view</div> : null,
 }))
 

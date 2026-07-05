@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT:
  * Role: Import planning and execution pipeline; compares parsed cards to IndexedDB, builds duplicate/conflict plans, then writes decks/cards in chunks.
- * Used by: ImportView after APKG/CSV/TXT parsing.
+ * Used by: ImportModal after APKG/CSV/TXT parsing.
  * Important: noteId is the stable conflict key; skip/update/add decisions must preserve scheduling history unless the user chooses an overwrite path.
  */
 import { db } from '../../db'

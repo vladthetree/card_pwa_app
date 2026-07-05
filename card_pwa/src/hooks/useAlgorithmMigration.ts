@@ -3,7 +3,7 @@
  */
 import { useEffect } from 'react'
 import { useSettings } from '../contexts/SettingsContext'
-import { initializeAlgorithmMigration } from '../services/AlgorithmMigrationService'
+import { initializeAlgorithmMigration } from '../services/algorithmMigration'
 
 export function useAlgorithmMigration() {
   const { settings, isSettingsHydrated, setAlgorithmMigrating } = useSettings()
