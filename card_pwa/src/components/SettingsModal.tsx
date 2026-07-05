@@ -9,13 +9,11 @@ import {
   Palette,
   Settings as SettingsIcon,
   RefreshCw,
-  SlidersHorizontal,
   Database,
   Download,
   Upload,
   X,
   User,
-  Tags,
 } from 'lucide-react'
 import {
   useSettings,
@@ -40,16 +38,15 @@ import { InfoHint } from './InfoHint'
 import { SettingsSection } from './SettingsSection'
 import ConfirmModal from './ConfirmModal'
 import ProfileSyncSection from './ProfileSyncSection'
-import TagBrowserSection from './TagBrowserSection'
-import { profileScopeId } from '../services/profileService'
 import { exportDbBackupAsCsv, exportDbBackupAsTxt } from '../utils/dbBackup'
+import { clearVideoProgress } from '../hooks/useMesserVideoProgress'
 
 interface Props {
   isOpen: boolean
   onClose: () => void
 }
 
-type SettingsSectionKey = 'profile' | 'appearance' | 'study' | 'algorithm' | 'notifications' | 'tags' | 'data' | 'maintenance'
+type SettingsSectionKey = 'profile' | 'appearance' | 'learning' | 'notifications' | 'data'
 
 const ImportView = lazy(() => import('./ImportView.tsx'))
 
@@ -91,12 +88,14 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     setShowReviewDecks,
     setStudyCardLimit,
     setShuffleModeEnabled,
+    setNextDayStartsAt,
     setDailyGoal,
+    setRecallCheckSize,
+    setDailyQuestSize,
     setFocusMode,
     setSm2Params,
     setFsrsParams,
     resetAlgorithmParams,
-    profile,
   } = useSettings()
   const { themeKey, setTheme } = useTheme()
   const t = STRINGS[settings.language]
@@ -374,6 +373,21 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     })
   }
 
+  const confirmResetVideoProgress = () => {
+    setConfirmModal({
+      title: settings.language === 'de' ? 'Video-Fortschritt zurücksetzen' : 'Reset video progress',
+      message: settings.language === 'de'
+        ? 'Gesehen-Status und Selbsteinschätzung aller Lernvideos werden gelöscht. Lernkarten, Reviews und Notizen bleiben erhalten.'
+        : 'Watched state and self-assessment of all course videos will be cleared. Cards, reviews, and notes are kept.',
+      confirmLabel: settings.language === 'de' ? 'Zurücksetzen' : 'Reset',
+      variant: 'danger',
+      onConfirm: () => {
+        clearVideoProgress()
+        setLocalDataStatus(settings.language === 'de' ? 'Video-Fortschritt zurückgesetzt.' : 'Video progress reset.')
+      },
+    })
+  }
+
   const runNormalizeDueDates = () => {
     setConfirmModal({
       title: t.normalize_due_dates_action,
@@ -612,9 +626,11 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
   }
 
   return (
+    <>
     <AnimatePresence initial={false}>
       {isOpen && (
         <motion.div
+          key="settings-modal"
           className={UI_TOKENS.modal.overlay}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -672,13 +688,34 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
               </SettingsSection>
 
               <SettingsSection
-                title={settings.language === 'de' ? 'Display / Fokus' : 'Display / Focus'}
-                description={settings.language === 'de' ? 'Schrift, Theme, Fokus-Modus und technische Anzeige.' : 'Fonts, theme, focus mode, and technical display.'}
+                title={settings.language === 'de' ? 'Darstellung' : 'Appearance'}
+                description={settings.language === 'de' ? 'Sprache, Schrift, Theme und Fokus-Modus.' : 'Language, font, theme, and focus mode.'}
                 icon={<Palette size={18} />}
                 isOpen={openSection === 'appearance'}
                 onToggle={() => toggleSection('appearance')}
               >
                 <div className="pt-5 space-y-4">
+                  <div>
+                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
+                      {t.language}
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {(['de', 'en'] as const).map(lang => (
+                        <button
+                          key={lang}
+                          onClick={() => setLanguage(lang)}
+                          className={`py-2.5 px-3 rounded-ds-xl font-medium transition-all ${
+                            settings.language === lang
+                              ? 'border border-[--brand-primary-50] bg-[--brand-primary-08] text-white'
+                              : 'bg-[#0c0c0c] text-zinc-400 hover:text-zinc-200 border border-[#18181b]'
+                          }`}
+                        >
+                          {lang === 'de' ? t.german : t.english}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <div>
                     <label className="block text-xs text-white/50 font-medium mb-2 uppercase tracking-wide">
                       {t.font_family}
@@ -846,34 +883,13 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
               </SettingsSection>
 
               <SettingsSection
-                title={settings.language === 'de' ? 'Language / Daily Learning' : 'Language / Daily Learning'}
-                description={settings.language === 'de' ? 'Sprache, Tagesziel und sichtbare Lernmodi.' : 'Language, daily goal, and visible study modes.'}
+                title={settings.language === 'de' ? 'Lernen' : 'Learning'}
+                description={settings.language === 'de' ? 'Tagesziel, Lernmodi und Lern-Algorithmus.' : 'Daily goal, study modes, and scheduling algorithm.'}
                 icon={<Brain size={18} />}
-                isOpen={openSection === 'study'}
-                onToggle={() => toggleSection('study')}
+                isOpen={openSection === 'learning'}
+                onToggle={() => toggleSection('learning')}
               >
                 <div className="pt-5 space-y-5">
-                  <div>
-                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
-                      {t.language}
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {(['de', 'en'] as const).map(lang => (
-                        <button
-                          key={lang}
-                          onClick={() => setLanguage(lang)}
-                          className={`py-2.5 px-3 rounded-ds-xl font-medium transition-all ${
-                            settings.language === lang
-                              ? 'border border-[--brand-primary-50] bg-[--brand-primary-08] text-white'
-                              : 'bg-[#0c0c0c] text-zinc-400 hover:text-zinc-200 border border-[#18181b]'
-                          }`}
-                        >
-                          {lang === 'de' ? t.german : t.english}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
                   <div>
                     <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
                       {t.study_stack_size}
@@ -1001,17 +1017,95 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     </div>
                   </div>
 
-                </div>
-              </SettingsSection>
+                  <div>
+                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
+                      {settings.language === 'de' ? 'Tag-Wechsel' : 'Day rollover'}
+                    </label>
+                    <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs text-white/70">
+                          {settings.language === 'de' ? 'Neuer Lerntag beginnt um' : 'New study day starts at'}
+                        </span>
+                        <span className="text-xs text-white/60 tabular-nums">
+                          {String(settings.nextDayStartsAt).padStart(2, '0')}:00
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min={0}
+                        max={23}
+                        step={1}
+                        value={settings.nextDayStartsAt}
+                        onChange={e => setNextDayStartsAt(Number(e.target.value))}
+                        className="w-full accent-white"
+                        aria-label={settings.language === 'de' ? 'Tag-Wechsel-Uhrzeit' : 'Day rollover hour'}
+                      />
+                      <p className="text-xs text-white/45">
+                        {settings.language === 'de'
+                          ? 'Bis zu dieser Uhrzeit zählen Reviews noch zum Vortag — verhindert Verschiebungen beim Lernen nach Mitternacht.'
+                          : 'Reviews before this hour still count toward the previous day — prevents shifts when studying past midnight.'}
+                      </p>
+                    </div>
+                  </div>
 
-              <SettingsSection
-                title={settings.language === 'de' ? 'Learning Algorithm' : 'Learning Algorithm'}
-                description={settings.language === 'de' ? 'Scheduler wählen und Beta-Parameter nur bei Bedarf anpassen.' : 'Choose the scheduler and adjust beta parameters only when needed.'}
-                icon={<SlidersHorizontal size={18} />}
-                isOpen={openSection === 'algorithm'}
-                onToggle={() => toggleSection('algorithm')}
-              >
-                <div className="pt-5 space-y-5">
+                  <div>
+                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
+                      {settings.language === 'de' ? 'Abruf-Check (Lernvideos)' : 'Recall check (videos)'}
+                    </label>
+                    <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs text-white/70">
+                          {settings.language === 'de' ? 'Fragen pro Check' : 'Questions per check'}
+                        </span>
+                        <span className="text-xs text-white/60 tabular-nums">{settings.recallCheckSize}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={3}
+                        max={15}
+                        step={1}
+                        value={settings.recallCheckSize}
+                        onChange={e => setRecallCheckSize(Number(e.target.value))}
+                        className="w-full accent-white"
+                        aria-label={settings.language === 'de' ? 'Fragen pro Abruf-Check' : 'Questions per recall check'}
+                      />
+                      <p className="text-xs text-white/45">
+                        {settings.language === 'de'
+                          ? 'Wie viele Fragen der Abruf-Check nach einem Video höchstens stellt.'
+                          : 'How many questions a recall check asks after a video at most.'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
+                      {settings.language === 'de' ? 'Daily Quest' : 'Daily quest'}
+                    </label>
+                    <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs text-white/70">
+                          {settings.language === 'de' ? 'Karten pro Quest' : 'Cards per quest'}
+                        </span>
+                        <span className="text-xs text-white/60 tabular-nums">{settings.dailyQuestSize}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={10}
+                        max={100}
+                        step={5}
+                        value={settings.dailyQuestSize}
+                        onChange={e => setDailyQuestSize(Number(e.target.value))}
+                        className="w-full accent-white"
+                        aria-label={settings.language === 'de' ? 'Karten pro Daily Quest' : 'Cards per daily quest'}
+                      />
+                      <p className="text-xs text-white/45">
+                        {settings.language === 'de'
+                          ? 'Obergrenze der deck-übergreifenden Daily-Quest-Session auf dem Homescreen.'
+                          : 'Cap for the cross-deck daily quest session on the home screen.'}
+                      </p>
+                    </div>
+                  </div>
+
                   <div>
                     <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
                       {t.algorithm}
@@ -1164,8 +1258,8 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
               </SettingsSection>
 
               <SettingsSection
-                title={settings.language === 'de' ? 'PWA / Update' : 'PWA / Update'}
-                description={settings.language === 'de' ? 'Benachrichtigungen, Service Worker und lokale PWA-Signale.' : 'Notifications, service worker, and local PWA signals.'}
+                title={settings.language === 'de' ? 'Benachrichtigungen & App' : 'Notifications & app'}
+                description={settings.language === 'de' ? 'Reminder, Kanäle und Service-Worker-Updates.' : 'Reminders, channels, and service worker updates.'}
                 icon={<Bell size={18} />}
                 isOpen={openSection === 'notifications'}
                 onToggle={() => toggleSection('notifications')}
@@ -1309,24 +1403,9 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
               </SettingsSection>
 
               <SettingsSection
-                title={settings.language === 'de' ? 'Tags' : 'Tags'}
-                description={settings.language === 'de'
-                  ? 'Alle Inhalte zu einem Tag abrufen — aus Video-Notizen und Lernkarten.'
-                  : 'Retrieve everything for a tag — from video notes and flashcards.'}
-                icon={<Tags size={18} />}
-                isOpen={openSection === 'tags'}
-                onToggle={() => toggleSection('tags')}
-              >
-                <TagBrowserSection
-                  language={settings.language === 'de' ? 'de' : 'en'}
-                  profileId={profileScopeId(profile)}
-                />
-              </SettingsSection>
-
-              <SettingsSection
-                title={settings.language === 'de' ? 'Import / Export' : 'Import / Export'}
-                description={settings.language === 'de' ? 'Karten importieren und lokale Backups exportieren.' : 'Import cards and export local backups.'}
-                icon={<Download size={18} />}
+                title={settings.language === 'de' ? 'Daten & Wartung' : 'Data & maintenance'}
+                description={settings.language === 'de' ? 'Import, Export, Sync-Details, Fehlerlogs und Zurücksetzen.' : 'Import, export, sync details, error logs, and resets.'}
+                icon={<Database size={18} />}
                 isOpen={openSection === 'data'}
                 onToggle={() => toggleSection('data')}
               >
@@ -1365,17 +1444,6 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                       <p className="text-xs text-emerald-300/90 leading-relaxed">{dataExportStatus}</p>
                     )}
                   </div>
-                </div>
-              </SettingsSection>
-
-              <SettingsSection
-                title={settings.language === 'de' ? 'Diagnostics' : 'Diagnostics'}
-                description={settings.language === 'de' ? 'Sync-Details, Fehlerlogs und gefährliche lokale Aktionen.' : 'Sync details, error logs, and dangerous local actions.'}
-                icon={<Database size={18} />}
-                isOpen={openSection === 'maintenance'}
-                onToggle={() => toggleSection('maintenance')}
-              >
-                <div className="pt-5 space-y-4">
 
                   <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
                     <p className="text-xs text-white/50 font-medium uppercase tracking-wide">Optional Sync Auth Token</p>
@@ -1541,6 +1609,24 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                   </div>
 
                   <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
+                    <p className="text-xs text-white/50 font-medium uppercase tracking-wide">
+                      {settings.language === 'de' ? 'Lernvideo-Fortschritt' : 'Video progress'}
+                    </p>
+                    <p className="text-xs text-white/40 leading-relaxed">
+                      {settings.language === 'de'
+                        ? 'Setzt Gesehen-Status und Selbsteinschätzung aller Professor-Messer-Videos zurück — z. B. für einen zweiten Kursdurchlauf. Lernkarten und Notizen bleiben unberührt.'
+                        : 'Resets watched state and self-assessment for all Professor Messer videos — e.g. for a second course run. Cards and notes stay untouched.'}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={confirmResetVideoProgress}
+                      className={`${UI_TOKENS.button.ghost} py-2 border-amber-400/30 text-amber-200 hover:text-amber-100`}
+                    >
+                      {settings.language === 'de' ? 'Video-Fortschritt zurücksetzen' : 'Reset video progress'}
+                    </button>
+                  </div>
+
+                  <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
                     <p className="text-xs text-white/50 font-medium uppercase tracking-wide">{t.indexeddb_reset_title}</p>
                     <p className="text-xs text-white/40 leading-relaxed">{t.indexeddb_reset_description}</p>
                     <div className="rounded-ds-xl border border-rose-400/20 bg-rose-500/10 p-3 space-y-2">
@@ -1595,28 +1681,32 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
           </motion.div>
         </motion.div>
       )}
-
-      <Suspense fallback={null}>
-        {showImportView && (
-          <ImportView
-            isOpen
-            onClose={() => setShowImportView(false)}
-          />
-        )}
-      </Suspense>
-
-      <ConfirmModal
-        isOpen={confirmModal !== null}
-        title={confirmModal?.title ?? ''}
-        message={confirmModal?.message ?? ''}
-        confirmLabel={confirmModal?.confirmLabel}
-        variant={confirmModal?.variant}
-        onConfirm={() => {
-          confirmModal?.onConfirm()
-          setConfirmModal(null)
-        }}
-        onCancel={() => setConfirmModal(null)}
-      />
     </AnimatePresence>
+
+    {/* Bewusst außerhalb der AnimatePresence: das sind keine animierten
+        Wechselkinder — innerhalb erzeugten sie doppelte Leer-Keys (React-Warnung,
+        riskiert verschluckte Kinder bei Exit-Animationen). */}
+    <Suspense fallback={null}>
+      {showImportView && (
+        <ImportView
+          isOpen
+          onClose={() => setShowImportView(false)}
+        />
+      )}
+    </Suspense>
+
+    <ConfirmModal
+      isOpen={confirmModal !== null}
+      title={confirmModal?.title ?? ''}
+      message={confirmModal?.message ?? ''}
+      confirmLabel={confirmModal?.confirmLabel}
+      variant={confirmModal?.variant}
+      onConfirm={() => {
+        confirmModal?.onConfirm()
+        setConfirmModal(null)
+      }}
+      onCancel={() => setConfirmModal(null)}
+    />
+    </>
   )
 }
