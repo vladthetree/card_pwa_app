@@ -29,6 +29,8 @@ import { useHandsetLayout } from '../../hooks/useHandsetLayout'
 import { useVisualViewport } from '../../hooks/useVisualViewport'
 import { useVideoNoteIndex } from '../../hooks/useVideoNotes'
 import { useSettings } from '../../contexts/SettingsContext'
+import { getDeckSuccessRates, type DeckSuccessRate } from '../../db/queries'
+import type { Card } from '../../types'
 import { profileScopeId } from '../../services/profileService'
 import { useMesserVideoProgress, resolveVideoStatus, type MesserVideoProgress, type VideoConfidence } from '../../hooks/useMesserVideoProgress'
 import { useLocalMesserVideos, useVideoSource, type LocalVideoItem, type LocalVideoObjectiveGroup } from '../../hooks/useLocalMesserVideos'
@@ -65,6 +67,8 @@ const COPY = {
     recall: 'Abruf-Check',
     confidenceLabel: 'Selbsteinschätzung',
     confidenceHint: 'Schau das Video, prüf dich aktiv und setz ehrlich deinen Status — Schauen allein ist noch kein Können.',
+    deckRate: 'Deck-Quote: {rate} % ({total} Reviews)',
+    calibrationWarning: 'Deine Einschätzung liegt über der tatsächlichen Quote — prüf dich noch mal aktiv.',
     gaps: 'LÜCKEN',
     ok: 'OKAY',
     solid: 'SICHER',
@@ -114,6 +118,8 @@ const COPY = {
     recall: 'Recall check',
     confidenceLabel: 'Self-assessment',
     confidenceHint: 'Watch the video, quiz yourself, and set your status honestly — watching alone is not knowing.',
+    deckRate: 'Deck rate: {rate}% ({total} reviews)',
+    calibrationWarning: 'Your self-assessment is above your actual rate — quiz yourself again.',
     gaps: 'GAPS',
     ok: 'OKAY',
     solid: 'SOLID',
@@ -178,6 +184,9 @@ function usePersistentBool(key: string, fallback: boolean): [boolean, (next: boo
 interface Props {
   language: 'de' | 'en'
   onExit: () => void
+  /** Abruf-Check-Handoff: startet eine reguläre Lernsession des Objective-Decks
+   *  mit den „Nicht gewusst"-Karten (verlässt die Video-Ansicht). */
+  onStartObjectiveStudy?: (input: { deckId: string; deckName: string; cards: Card[] }) => void
 }
 
 function formatBytes(n: number): string {
@@ -219,6 +228,7 @@ const CONFIDENCE_CHIPS: Array<{ level: VideoConfidence; labelKey: 'gapsFull' | '
 
 function VideoStudyBar({
   confidence,
+  deckStats,
   onStartRecall,
   onSetConfidence,
   copy,
@@ -227,6 +237,8 @@ function VideoStudyBar({
   onToggle,
 }: {
   confidence: VideoConfidence | null
+  /** Tatsächliche Erfolgsquote des Objective-Decks (Kalibrierungs-Anker). */
+  deckStats?: { rate: number; total: number } | null
   onStartRecall: () => void
   onSetConfidence: (next: VideoConfidence | null) => void
   copy: Copy
@@ -328,6 +340,24 @@ function VideoStudyBar({
         <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">{copy.confidenceLabel}</span>
         {chips}
       </div>
+
+      {/* Metakognitive Kalibrierung: Einschätzung neben der echten Deck-Quote.
+          Erst ab ~10 Reviews — davor ist die Quote kein belastbarer Anker. */}
+      {deckStats && deckStats.total >= 10 && (() => {
+        const overconfident =
+          (confidence === 'solid' && deckStats.rate < 75) ||
+          (confidence === 'ok' && deckStats.rate < 55)
+        return (
+          <p
+            data-testid="video-calibration"
+            className={`mt-2 font-mono text-[10px] leading-relaxed ${overconfident ? 'text-amber-300/90' : 'text-zinc-500'}`}
+          >
+            {copy.deckRate.replace('{rate}', String(deckStats.rate)).replace('{total}', String(deckStats.total))}
+            {overconfident ? ` — ${copy.calibrationWarning}` : ''}
+          </p>
+        )
+      })()}
+
       <p className="mt-2 font-mono text-[10px] leading-relaxed text-zinc-600">{copy.confidenceHint}</p>
     </div>
   )
@@ -470,7 +500,7 @@ function ChapterDownloadButton({
   )
 }
 
-export default function VideosView({ language, onExit }: Props) {
+export default function VideosView({ language, onExit, onStartObjectiveStudy }: Props) {
   const copy = COPY[language]
   const { isHandsetLayout } = useHandsetLayout()
   const isDesktop = !isHandsetLayout
@@ -478,6 +508,20 @@ export default function VideosView({ language, onExit }: Props) {
   const profileId = profileScopeId(profile)
   const { withNotes: objectivesWithNotes, allTags } = useVideoNoteIndex(profileId)
   const { progress, markWatched, setConfidence } = useMesserVideoProgress()
+
+  // Echte Erfolgsquoten der Objective-Decks als Kalibrierungs-Anker neben der
+  // Selbsteinschätzung (einmal pro Mount; ein Batch-Read statt 35 Einzelqueries).
+  const [deckSuccessRates, setDeckSuccessRates] = useState<Record<string, DeckSuccessRate>>({})
+  useEffect(() => {
+    let cancelled = false
+    const deckIds = SY0_701_OBJECTIVES.map(objective => getSecurityObjectiveDeckId(objective.code))
+    void getDeckSuccessRates(deckIds).then(rates => {
+      if (!cancelled) setDeckSuccessRates(rates)
+    }).catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
   const { status, groups, totalBytes, downloadedCount, downloadVideo, enqueueDownloads, cancelDownloads, removeVideo, downloadError } = useLocalMesserVideos()
 
   const [activeFile, setActiveFile] = useState<string | null>(null)
@@ -775,6 +819,7 @@ export default function VideosView({ language, onExit }: Props) {
     activeItem ? (
       <VideoStudyBar
         confidence={progress[activeItem.objective]?.confidence ?? null}
+        deckStats={deckSuccessRates[getSecurityObjectiveDeckId(activeItem.objective)] ?? null}
         onStartRecall={() => setRecallOpen(true)}
         onSetConfidence={next => setConfidence(activeItem.objective, next)}
         copy={copy}
@@ -1024,6 +1069,16 @@ export default function VideosView({ language, onExit }: Props) {
             setConfidence(activeItem.objective, next)
             setRecallOpen(false)
           }}
+          onStudyMissed={onStartObjectiveStudy
+            ? cards => {
+                setRecallOpen(false)
+                onStartObjectiveStudy({
+                  deckId: getSecurityObjectiveDeckId(activeItem.objective),
+                  deckName: `${activeItem.objective} · ${OBJECTIVE_TITLE.get(activeItem.objective) ?? activeItem.title}`,
+                  cards,
+                })
+              }
+            : undefined}
         />
       )}
     </div>

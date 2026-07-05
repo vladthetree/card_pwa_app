@@ -2,7 +2,7 @@
  * AI_CONTEXT: Home-screen React component for home Stats Section; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
 import { useState, type ReactNode } from 'react'
-import { AnimatePresence, motion } from '../../ui/motion'
+import { motion } from '../../ui/motion'
 import ReviewHeatmap from '../ReviewHeatmap.tsx'
 import { HomeDailyQuestTile } from './HomeDailyQuestTile'
 import type { GamificationProfile } from '../../types'
@@ -131,24 +131,24 @@ function DashboardModeCarousel({
   return (
     <div className="w-full min-w-0">
       <div className="overflow-hidden">
-        <AnimatePresence initial={false} mode="wait">
-          <motion.div
-            key={mode}
-            className={isCleanMode ? 'min-h-3.5 cursor-grab active:cursor-grabbing sm:min-h-0' : 'cursor-grab active:cursor-grabbing'}
-            initial={{ opacity: 0, x: direction >= 0 ? 18 : -18 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: direction >= 0 ? -18 : 18 }}
-            transition={{ duration: 0.18, ease: 'easeOut' }}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.12}
-            dragDirectionLock
-            style={{ touchAction: 'pan-y' }}
-            onDragEnd={handleDragEnd}
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+        {/* Kein exit-gated AnimatePresence (Wait-Modus ist repo-weit verboten,
+            Guard: no-animatepresence-wait.test.ts): der Slide remountet über
+            seinen Key nur mit Enter-Animation. */}
+        <motion.div
+          key={mode}
+          className={isCleanMode ? 'min-h-3.5 cursor-grab active:cursor-grabbing sm:min-h-0' : 'cursor-grab active:cursor-grabbing'}
+          initial={{ opacity: 0, x: direction >= 0 ? 18 : -18 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.18, ease: 'easeOut' }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.12}
+          dragDirectionLock
+          style={{ touchAction: 'pan-y' }}
+          onDragEnd={handleDragEnd}
+        >
+          {children}
+        </motion.div>
       </div>
 
       <div className={`flex items-center justify-center gap-2 sm:hidden ${isCleanMode ? 'mt-0' : 'mt-2'}`} aria-label={language === 'de' ? 'Dashboard-Auswahl' : 'Dashboard selection'}>

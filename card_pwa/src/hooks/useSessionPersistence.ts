@@ -11,10 +11,13 @@ export function useSessionPersistence({
   deckId,
   sessionRef,
   studyCardLimitRef,
+  nextDayStartsAt,
 }: {
   deckId: string
   sessionRef: RefObject<SessionState>
   studyCardLimitRef: RefObject<number>
+  /** Verlängert die Snapshot-Gültigkeit bis zur nächsten Tagesgrenze. */
+  nextDayStartsAt?: number
 }): void {
   useEffect(() => {
     const persistSessionSnapshot = () => {
@@ -35,6 +38,7 @@ export function useSessionPersistence({
         againCounts: current.againCounts,
         reviewEvents: current.reviewEvents,
         startTime: current.startTime,
+        nextDayStartsAt,
       })
 
       const serialized = JSON.stringify(payload)
@@ -81,5 +85,5 @@ export function useSessionPersistence({
       window.removeEventListener('beforeunload', onBeforeUnload)
       document.removeEventListener('visibilitychange', onVisibilityChange)
     }
-  }, [deckId, sessionRef, studyCardLimitRef])
+  }, [deckId, sessionRef, studyCardLimitRef, nextDayStartsAt])
 }

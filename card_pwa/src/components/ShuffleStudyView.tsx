@@ -182,6 +182,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       againCounts: session.againCounts,
       reviewEvents: session.reviewEvents,
       startTime: session.startTime,
+      nextDayStartsAt: settings.nextDayStartsAt,
     })
 
     void writeShuffleSession(collection.id, JSON.stringify(payload))
@@ -203,6 +204,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     session.startTime,
     sessionId,
     studyCardLimit,
+    settings.nextDayStartsAt,
   ])
 
   useEffect(() => {

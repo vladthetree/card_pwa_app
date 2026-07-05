@@ -1,9 +1,8 @@
 /**
  * AI_CONTEXT: Reusable React component for future Forecast Modal; contributes to the card-learning UI and shared app interactions.
  */
-import { motion, useReducedMotion } from '../ui/motion'
-import { X } from 'lucide-react'
-import { UI_TOKENS } from '../constants/ui'
+import { useReducedMotion } from '../ui/motion'
+import { ModalShell } from './ModalShell'
 
 interface FutureForecastItem {
   dayStartMs: number
@@ -30,36 +29,15 @@ export default function FutureForecastModal({
   if (!isOpen) return null
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className={UI_TOKENS.modal.overlay}
+    <ModalShell
+      title={language === 'de' ? 'Prognose: Naechste 15 Tage' : 'Forecast: Next 15 Days'}
+      subtitle={language === 'de'
+        ? 'Geplante Zukunftskarten pro Tag'
+        : 'Scheduled future cards per day'}
+      onClose={onClose}
+      prefersReducedMotion={prefersReducedMotion}
+      maxWidthClass="max-w-3xl"
     >
-      <div className={UI_TOKENS.modal.backdrop} onClick={onClose} />
-      <motion.div
-        initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
-        transition={{ duration: prefersReducedMotion ? 0.12 : 0.2, ease: 'easeOut' }}
-        className={`${UI_TOKENS.modal.shell} max-w-3xl p-5 sm:p-6`}
-      >
-        <div className="flex items-start justify-between gap-3 mb-4">
-          <div>
-            <h3 className={UI_TOKENS.modal.title}>
-              {language === 'de' ? 'Prognose: Naechste 15 Tage' : 'Forecast: Next 15 Days'}
-            </h3>
-            <p className={UI_TOKENS.modal.subtitle}>
-              {language === 'de'
-                ? 'Geplante Zukunftskarten pro Tag'
-                : 'Scheduled future cards per day'}
-            </p>
-          </div>
-          <button onClick={onClose} className={UI_TOKENS.modal.closeButton}>
-            <X size={16} />
-          </button>
-        </div>
-
         {loading ? (
           <div
             className="h-56 rounded-ds-xl border animate-pulse"
@@ -145,7 +123,6 @@ export default function FutureForecastModal({
             })()}
           </div>
         )}
-      </motion.div>
-    </motion.div>
+    </ModalShell>
   )
 }

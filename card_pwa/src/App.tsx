@@ -13,6 +13,13 @@ import AppInitializer from './components/AppInitializer'
 import AppErrorBoundary from './components/AppErrorBoundary'
 import ToastContainer from './components/ToastContainer'
 import type { Card, Deck, ShuffleCollection, View } from './types'
+import {
+  clearActiveSession,
+  getDeckNameMap,
+  getResumableStudySession,
+  listCardsByIds,
+  pickDailyQuestCards,
+} from './db/queries'
 import { APP_NAME, SW_CHANNELS } from './constants/appIdentity'
 import { supportsServiceWorker } from './env'
 import { useAutoJoinDefaultProfile } from './hooks/useAutoJoinDefaultProfile'
@@ -41,10 +48,35 @@ function getInitialView(): View {
     const v = new URLSearchParams(window.location.search).get('view')
     if (v === 'import') return 'import'
     if (v === 'shuffle' || v === 'shuffle-manage') return 'shuffle-manage'
-    // 'study' requires an active deck which is set by the user from home.
-    // HomeView will show the study prompt prominently when this param is present.
+    // 'study' startet nach der Initialisierung direkt eine Session (Resume oder
+    // Daily Quest) — siehe den Quick-Study-Effekt in AppShell.
   }
   return 'home'
+}
+
+/** Reminder-Push und Manifest-Shortcut verlinken auf `/?view=study`. */
+function isQuickStudyRequested(): boolean {
+  if (typeof window === 'undefined') return false
+  return new URLSearchParams(window.location.search).get('view') === 'study'
+}
+
+function buildSyntheticDeck(id: string, name: string, cards: Card[]): Deck {
+  return {
+    id,
+    name,
+    total: cards.length,
+    new: cards.filter(c => c.type === 'new').length,
+    learning: cards.filter(c => c.type === 'learning' || c.type === 'relearning').length,
+    due: cards.filter(c => c.type === 'review').length,
+  }
+}
+
+/** Anzeigename einer persistierten Session (echtes Deck, Quest oder Tag-Batch). */
+async function resolveSessionDeckName(sessionId: string): Promise<string> {
+  if (sessionId === 'daily-quest') return 'Daily Quest'
+  if (sessionId.startsWith('tag:')) return `#${sessionId.slice(4)}`
+  const names = await getDeckNameMap()
+  return names[sessionId] ?? 'Deck'
 }
 
 function readSafeAreaInset(edge: 'top' | 'bottom'): number {
@@ -221,10 +253,12 @@ const VideosView = lazy(() => import('./components/videos/VideosView'))
 const UpdateBanner = lazy(() => import('./components/UpdateBanner'))
 const MetaBalls = lazy(() => import('./components/MetaBalls'))
 
-function ViewFallback() {
+function ViewFallback({ reason = 'startup' }: { reason?: 'startup' | 'update' }) {
   const { settings } = useSettings()
   const prefersReducedMotion = useReducedMotion()
-  const loadingText = settings.language === 'de' ? 'Pruefe App-Version' : 'Checking app version'
+  const loadingText = reason === 'update'
+    ? (settings.language === 'de' ? 'Aktualisiere App' : 'Updating app')
+    : (settings.language === 'de' ? 'Pruefe App-Version' : 'Checking app version')
 
   return (
     <div
@@ -284,10 +318,22 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
   const [activeDeck, setActiveDeck] = useState<Deck | null>(null)
   const [activeTagCards, setActiveTagCards] = useState<Card[] | null>(null)
   const [activeShuffleCollection, setActiveShuffleCollection] = useState<ShuffleCollection | null>(null)
+  // true nur für Flüsse, die eine unterbrochene Session fortsetzen sollen
+  // (Deck-Tap, Resume-Kachel, ?view=study) — frische Quest-/Tag-/Handoff-Starts
+  // mischen bewusst neu.
+  const [allowSessionResume, setAllowSessionResume] = useState(false)
+  const [resumeInfo, setResumeInfo] = useState<{ deckName: string; remaining: number } | null>(null)
+  // Beim ersten Render einfangen: der URL-Sync-Effekt unten räumt `?view=…`
+  // gleich nach dem Mount aus der Adresszeile, bevor spätere Effekte sie lesen.
+  const [quickStudyRequested] = useState(isQuickStudyRequested)
+  const quickStudyHandledRef = useRef(false)
   const [updateInstalledNotice, setUpdateInstalledNotice] = useState(false)
   const [pendingReloadAfterStudy, setPendingReloadAfterStudy] = useState(false)
   const [showInitialSplash, setShowInitialSplash] = useState(true)
+  const [showUpdateSplash, setShowUpdateSplash] = useState(false)
   const updateNoticeTimerRef = useRef<number | null>(null)
+  const updateActivationFallbackRef = useRef<number | null>(null)
+  const isStudyView = view === 'study' || view === 'shuffle-study'
 
   useEffect(() => {
     let cancelled = false
@@ -323,12 +369,22 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
       if (!waitingWorker) return
 
       setUpdateInstalledNotice(true)
+      if (!isStudyView) {
+        setShowUpdateSplash(true)
+        if (updateActivationFallbackRef.current !== null) {
+          window.clearTimeout(updateActivationFallbackRef.current)
+        }
+        updateActivationFallbackRef.current = window.setTimeout(() => {
+          setShowUpdateSplash(false)
+          updateActivationFallbackRef.current = null
+        }, 8000)
+      }
       waitingWorker.postMessage({ type: 'SKIP_WAITING' })
     }
 
     window.addEventListener(SW_CHANNELS.updateEvent, onUpdate)
     return () => window.removeEventListener(SW_CHANNELS.updateEvent, onUpdate)
-  }, [swSupported])
+  }, [isStudyView, swSupported])
 
   useEffect(() => {
     if (!updateInstalledNotice) return
@@ -356,16 +412,21 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
     let reloadTimer: number | null = null
 
     const onControllerChange = () => {
+      if (updateActivationFallbackRef.current !== null) {
+        window.clearTimeout(updateActivationFallbackRef.current)
+        updateActivationFallbackRef.current = null
+      }
       setUpdateInstalledNotice(true)
 
-      if (view === 'study' || view === 'shuffle-study') {
+      if (isStudyView) {
         setPendingReloadAfterStudy(true)
         return
       }
 
+      setShowUpdateSplash(true)
       reloadTimer = window.setTimeout(() => {
         window.location.reload()
-      }, 1200)
+      }, 180)
     }
 
     navigator.serviceWorker.addEventListener('controllerchange', onControllerChange)
@@ -375,14 +436,19 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
         window.clearTimeout(reloadTimer)
       }
     }
-  }, [swSupported, view])
+  }, [isStudyView, swSupported])
 
   useEffect(() => {
     if (!pendingReloadAfterStudy) return
-    if (view === 'study' || view === 'shuffle-study') return
+    if (isStudyView) return
 
-    window.location.reload()
-  }, [pendingReloadAfterStudy, view])
+    setShowUpdateSplash(true)
+    const reloadTimer = window.setTimeout(() => {
+      window.location.reload()
+    }, 180)
+
+    return () => window.clearTimeout(reloadTimer)
+  }, [isStudyView, pendingReloadAfterStudy])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -406,6 +472,7 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
   }, [settings.shuffleModeEnabled, view])
 
   const startStudy = (deck: Deck) => {
+    setAllowSessionResume(true)
     setActiveDeck(deck)
     setActiveTagCards(null)
     setActiveShuffleCollection(null)
@@ -413,15 +480,8 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
   }
 
   const startTagStudy = (tag: string, cards: Card[]) => {
-    const syntheticDeck: Deck = {
-      id: `tag:${tag}`,
-      name: `#${tag}`,
-      total: cards.length,
-      new: cards.filter(c => c.type === 'new').length,
-      learning: cards.filter(c => c.type === 'learning' || c.type === 'relearning').length,
-      due: cards.filter(c => c.type === 'review').length,
-    }
-    setActiveDeck(syntheticDeck)
+    setAllowSessionResume(false)
+    setActiveDeck(buildSyntheticDeck(`tag:${tag}`, `#${tag}`, cards))
     setActiveTagCards(cards)
     setActiveShuffleCollection(null)
     setView('study')
@@ -431,19 +491,74 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
   // die Tag-Session ein synthetisches Deck mit vorab geladenen Karten; Reviews
   // fließen über die deckId der Karten weiter in die Ursprungsdecks.
   const startDailyQuest = (cards: Card[]) => {
-    const syntheticDeck: Deck = {
-      id: 'daily-quest',
-      name: settings.language === 'de' ? 'Daily Quest' : 'Daily Quest',
-      total: cards.length,
-      new: cards.filter(c => c.type === 'new').length,
-      learning: cards.filter(c => c.type === 'learning' || c.type === 'relearning').length,
-      due: cards.filter(c => c.type === 'review').length,
-    }
-    setActiveDeck(syntheticDeck)
+    setAllowSessionResume(false)
+    setActiveDeck(buildSyntheticDeck('daily-quest', 'Daily Quest', cards))
     setActiveTagCards(cards)
     setActiveShuffleCollection(null)
     setView('study')
   }
+
+  // Abruf-Check-Handoff: „Nicht gewusst“-Fragen des Videos als reguläre,
+  // planungswirksame Mini-Session des Objective-Decks lernen.
+  const startObjectiveStudy = (input: { deckId: string; deckName: string; cards: Card[] }) => {
+    setAllowSessionResume(false)
+    setActiveDeck(buildSyntheticDeck(input.deckId, input.deckName, input.cards))
+    setActiveTagCards(input.cards)
+    setActiveShuffleCollection(null)
+    setView('study')
+  }
+
+  /** Nimmt die jüngste unterbrochene Session wieder auf (Queue + Zähler). */
+  const resumeStudySession = async (): Promise<boolean> => {
+    const resumable = await getResumableStudySession()
+    if (!resumable) return false
+    const cards = await listCardsByIds(resumable.snapshot.cardIds)
+    if (cards.length === 0) {
+      void clearActiveSession(resumable.sessionId)
+      return false
+    }
+    const deckName = await resolveSessionDeckName(resumable.sessionId)
+    setAllowSessionResume(true)
+    setActiveDeck(buildSyntheticDeck(resumable.sessionId, deckName, cards))
+    setActiveTagCards(cards)
+    setActiveShuffleCollection(null)
+    setView('study')
+    return true
+  }
+
+  // ?view=study (Reminder-Push, Manifest-Shortcut): direkt in eine Session statt
+  // auf Home stranden — erst Resume versuchen, sonst Daily Quest starten.
+  useEffect(() => {
+    if (!quickStudyRequested || quickStudyHandledRef.current) return
+    if (showInitialSplash || view !== 'home') return
+    quickStudyHandledRef.current = true
+    void (async () => {
+      if (await resumeStudySession()) return
+      const cards = await pickDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt)
+      if (cards.length > 0) startDailyQuest(cards)
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quickStudyRequested, showInitialSplash, view])
+
+  // Datengrundlage der „Weiterlernen“-Kachel auf Home.
+  useEffect(() => {
+    if (view !== 'home') return
+    let cancelled = false
+    void (async () => {
+      const resumable = await getResumableStudySession()
+      if (cancelled) return
+      if (!resumable) {
+        setResumeInfo(null)
+        return
+      }
+      const deckName = await resolveSessionDeckName(resumable.sessionId)
+      if (cancelled) return
+      setResumeInfo({ deckName, remaining: resumable.snapshot.cardIds.length })
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [view])
 
   const startShuffleStudy = (collection: ShuffleCollection) => {
     setActiveShuffleCollection(collection)
@@ -478,6 +593,8 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
     setActiveShuffleCollection(null)
   }
 
+  const activeSplashMode = showInitialSplash ? 'startup' : showUpdateSplash ? 'update' : null
+
   return (
     <AppErrorBoundary>
       <AppInitializer>
@@ -492,9 +609,9 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
           <ToastContainer />
           <SafeAreaDebugOverlay />
           <Suspense fallback={null}>
-            {swSupported && updateInstalledNotice && (
+            {swSupported && updateInstalledNotice && !showUpdateSplash && (
               <UpdateBanner
-                deferredReload={view === 'study' || view === 'shuffle-study'}
+                deferredReload={isStudyView}
               />
             )}
           </Suspense>
@@ -520,6 +637,8 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                   onStartDailyQuest={startDailyQuest}
                   onOpenLabs={openLabs}
                   onOpenVideos={openVideos}
+                  resumeSession={resumeInfo}
+                  onResumeSession={() => void resumeStudySession()}
                 />
               </motion.div>
             )}
@@ -550,7 +669,7 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0 h-full study-view"
               >
-                <StudyView deck={activeDeck} preloadedCards={activeTagCards ?? undefined} onExit={goHome} />
+                <StudyView deck={activeDeck} preloadedCards={activeTagCards ?? undefined} allowResume={allowSessionResume} onExit={goHome} />
               </motion.div>
             )}
 
@@ -586,14 +705,14 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0 h-full"
               >
-                <VideosView language={settings.language} onExit={goHome} />
+                <VideosView language={settings.language} onExit={goHome} onStartObjectiveStudy={startObjectiveStudy} />
               </motion.div>
             )}
           </Suspense>
           <AnimatePresence>
-            {showInitialSplash && (
+            {activeSplashMode && (
               <motion.div
-                key="initial-splash"
+                key={`${activeSplashMode}-splash`}
                 initial={{ opacity: 1 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -601,7 +720,7 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                 className="fixed inset-0 z-[2200] flex bg-[--ds-bg]"
                 style={{ background: 'var(--app-background)' }}
               >
-                <ViewFallback />
+                <ViewFallback reason={activeSplashMode === 'update' ? 'update' : 'startup'} />
               </motion.div>
             )}
           </AnimatePresence>

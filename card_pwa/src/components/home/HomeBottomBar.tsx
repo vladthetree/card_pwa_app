@@ -2,13 +2,18 @@
  * AI_CONTEXT: Home-screen React component for home Bottom Bar; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
 import { useState, useCallback } from 'react'
-import { motion, AnimatePresence } from '../../ui/motion'
 import {
   Check, Download, FolderPlus, Plus,
   RefreshCw, Settings, SlidersHorizontal, Upload,
   Shuffle,
 } from 'lucide-react'
 import StreakBadge from '../StreakBadge'
+import {
+  MobileBottomSheet,
+  MobileBottomSheetDivider,
+  MobileBottomSheetItem,
+  MobileBottomSheetLabel,
+} from '../MobileBottomSheet'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 
 type HomeTab = 'decks' | 'tags'
@@ -40,12 +45,6 @@ interface Props {
   /** Lernvideos (Professor Messer) im ANSICHT-Menü. */
   onOpenVideos?: () => void
 }
-
-const SHEET_BACKDROP = 'fixed inset-0 z-[190] bg-black/70 backdrop-blur-[2px]'
-const SHEET_PANEL    = 'home-bottom-sheet-panel fixed left-0 right-0 z-[200] rounded-t-ds-sheet border-t border-ds-border bg-ds-bg px-4 pt-3 shadow-menu'
-const DRAG_HANDLE    = 'mx-auto mb-4 h-1 w-10 rounded-full bg-ds-border-hover'
-const SHEET_LABEL    = 'px-1 pb-2 pt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/35'
-const SHEET_ITEM     = 'flex w-full items-center justify-between gap-3 rounded-ds px-3 py-3.5 text-left text-[15px] text-white/80 transition-colors hover:bg-ds-panel active:bg-ds-panel hover:text-white active:text-white'
 
 export function HomeBottomBar({
   t,
@@ -145,217 +144,114 @@ export function HomeBottomBar({
         </div>
       </div>
 
-      {/* ── Filter Sheet ─────────────────────────────────────────────────── */}
-      <AnimatePresence>
-        {filterOpen && (
-          <div className="sm:hidden">
-            <motion.div
-              className={SHEET_BACKDROP}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
-              onClick={closeFilter}
-              aria-hidden="true"
-            />
-            <motion.div
-              className={SHEET_PANEL}
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', stiffness: 420, damping: 40 }}
-              drag="y"
-              dragConstraints={{ top: 0 }}
-              dragElastic={{ top: 0.05, bottom: 0.5 }}
-              onDragEnd={(_, info) => { if (info.offset.y > 60 || info.velocity.y > 200) closeFilter() }}
-              role="dialog"
-              aria-modal="true"
-              aria-label={language === 'de' ? 'Filter & Sortierung' : 'Filter & sort'}
-            >
-              <div className={DRAG_HANDLE} />
-
-              <p className={SHEET_LABEL}>{language === 'de' ? 'Ansicht' : 'View'}</p>
-              <button
-                type="button"
-                onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('decks'); closeFilter() }}
-                className={SHEET_ITEM}
-              >
-                <span>{language === 'de' ? 'Decks' : 'Decks'}</span>
-                {!showShuffleOnly && homeTab === 'decks' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
-              </button>
-              <button
-                type="button"
-                onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('tags'); closeFilter() }}
-                className={SHEET_ITEM}
-              >
-                <span>{language === 'de' ? 'Nach Tags' : 'By tags'}</span>
-                {!showShuffleOnly && homeTab === 'tags' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
-              </button>
-              {shuffleModeEnabled && (
-                <button
-                  type="button"
-                  onClick={() => { if (!showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('decks'); closeFilter() }}
-                  className={SHEET_ITEM}
-                >
-                  <span>{language === 'de' ? 'Shuffle-Decks' : 'Shuffle decks'}</span>
-                  {showShuffleOnly && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
-                </button>
-              )}
-              {onOpenLabs && (
-                <button
-                  type="button"
-                  onClick={() => { closeFilter(); onOpenLabs() }}
-                  className={SHEET_ITEM}
-                >
-                  <span>Labs</span>
-                </button>
-              )}
-              {onOpenVideos && (
-                <button
-                  type="button"
-                  onClick={() => { closeFilter(); onOpenVideos() }}
-                  className={SHEET_ITEM}
-                >
-                  <span>{language === 'de' ? 'Lernvideos' : 'Videos'}</span>
-                </button>
-              )}
-
-              {!showShuffleOnly && (
-                <>
-                  <div className="my-2 border-t border-[#1f1f23]" />
-                  <p className={SHEET_LABEL}>{language === 'de' ? 'Sortierung' : 'Sort'}</p>
-                  <button
-                    type="button"
-                    onClick={() => { onDeckSortModeChange('name'); closeFilter() }}
-                    className={SHEET_ITEM}
-                  >
-                    <span>{t.sort_name}</span>
-                    {deckSortMode === 'name' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { onDeckSortModeChange('due_today'); closeFilter() }}
-                    className={SHEET_ITEM}
-                  >
-                    <span>{t.sort_due_today}</span>
-                    {deckSortMode === 'due_today' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
-                  </button>
-                </>
-              )}
-            </motion.div>
-          </div>
+      <MobileBottomSheet
+        open={filterOpen}
+        onClose={closeFilter}
+        ariaLabel={language === 'de' ? 'Filter & Sortierung' : 'Filter & sort'}
+      >
+        <MobileBottomSheetLabel>{language === 'de' ? 'Ansicht' : 'View'}</MobileBottomSheetLabel>
+        <MobileBottomSheetItem onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('decks'); closeFilter() }}>
+          <span>{language === 'de' ? 'Decks' : 'Decks'}</span>
+          {!showShuffleOnly && homeTab === 'decks' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
+        </MobileBottomSheetItem>
+        <MobileBottomSheetItem onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('tags'); closeFilter() }}>
+          <span>{language === 'de' ? 'Nach Tags' : 'By tags'}</span>
+          {!showShuffleOnly && homeTab === 'tags' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
+        </MobileBottomSheetItem>
+        {shuffleModeEnabled && (
+          <MobileBottomSheetItem onClick={() => { if (!showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('decks'); closeFilter() }}>
+            <span>{language === 'de' ? 'Shuffle-Decks' : 'Shuffle decks'}</span>
+            {showShuffleOnly && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
+          </MobileBottomSheetItem>
         )}
-      </AnimatePresence>
-
-      {/* ── Actions Sheet ────────────────────────────────────────────────── */}
-      <AnimatePresence>
-        {actionsOpen && (
-          <div className="sm:hidden">
-            <motion.div
-              className={SHEET_BACKDROP}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
-              onClick={closeActions}
-              aria-hidden="true"
-            />
-            <motion.div
-              className={SHEET_PANEL}
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', stiffness: 420, damping: 40 }}
-              drag="y"
-              dragConstraints={{ top: 0 }}
-              dragElastic={{ top: 0.05, bottom: 0.5 }}
-              onDragEnd={(_, info) => { if (info.offset.y > 60 || info.velocity.y > 200) closeActions() }}
-              role="dialog"
-              aria-modal="true"
-              aria-label={language === 'de' ? 'Erstellen & Aktionen' : 'Create & actions'}
-            >
-              <div className={DRAG_HANDLE} />
-
-              <p className={SHEET_LABEL}>{language === 'de' ? 'Erstellen' : 'Create'}</p>
-              <button
-                type="button"
-                onClick={() => { closeActions(); onCreateDeck() }}
-                className={SHEET_ITEM}
-              >
-                <span className="inline-flex items-center gap-2.5">
-                  <FolderPlus size={15} strokeWidth={1.5} className="text-white/50" />
-                  {t.create_deck}
-                </span>
-              </button>
-              {shuffleModeEnabled && onCreateVirtualDeck && (
-                <button
-                  type="button"
-                  onClick={() => { closeActions(); onCreateVirtualDeck() }}
-                  className={SHEET_ITEM}
-                >
-                  <span className="inline-flex items-center gap-2.5">
-                    <Shuffle size={15} strokeWidth={1.5} className="text-white/50" />
-                    {language === 'de' ? 'Virtuelles Deck erstellen' : 'Create virtual deck'}
-                  </span>
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => { closeActions(); onCreateCard() }}
-                className={SHEET_ITEM}
-              >
-                <span className="inline-flex items-center gap-2.5">
-                  <Plus size={15} strokeWidth={1.5} className="text-white/50" />
-                  {t.create_card}
-                </span>
-              </button>
-
-              <div className="my-2 border-t border-[#1f1f23]" />
-              <p className={SHEET_LABEL}>{language === 'de' ? 'Daten' : 'Data'}</p>
-              <button
-                type="button"
-                onClick={() => { closeActions(); onImport() }}
-                className={SHEET_ITEM}
-              >
-                <span className="inline-flex items-center gap-2.5">
-                  <Upload size={15} strokeWidth={1.5} className="text-[--brand-primary]" />
-                  {t.import_action} {language === 'de' ? 'Karten/Decks' : 'cards/decks'}
-                </span>
-              </button>
-              <button
-                type="button"
-                onClick={() => { closeActions(); onExport() }}
-                className={SHEET_ITEM}
-              >
-                <span className="inline-flex items-center gap-2.5">
-                  <Download size={15} strokeWidth={1.5} className="text-white/50" />
-                  {t.backup_export_title}
-                </span>
-              </button>
-
-              {canInstall && !isInstalled && (
-                <>
-                  <div className="my-2 border-t border-[#1f1f23]" />
-                  <button
-                    type="button"
-                    onClick={() => { closeActions(); onInstall() }}
-                    disabled={isInstalling}
-                    className={`${SHEET_ITEM} disabled:opacity-60`}
-                  >
-                    <span className="inline-flex items-center gap-2.5">
-                      {isInstalling
-                        ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                        : <Download size={15} strokeWidth={1.5} className="text-white/50" />
-                      }
-                      {t.install}
-                    </span>
-                  </button>
-                </>
-              )}
-            </motion.div>
-          </div>
+        {onOpenLabs && (
+          <MobileBottomSheetItem onClick={() => { closeFilter(); onOpenLabs() }}>
+            <span>Labs</span>
+          </MobileBottomSheetItem>
         )}
-      </AnimatePresence>
+        {onOpenVideos && (
+          <MobileBottomSheetItem onClick={() => { closeFilter(); onOpenVideos() }}>
+            <span>{language === 'de' ? 'Lernvideos' : 'Videos'}</span>
+          </MobileBottomSheetItem>
+        )}
+
+        {!showShuffleOnly && (
+          <>
+            <MobileBottomSheetDivider />
+            <MobileBottomSheetLabel>{language === 'de' ? 'Sortierung' : 'Sort'}</MobileBottomSheetLabel>
+            <MobileBottomSheetItem onClick={() => { onDeckSortModeChange('name'); closeFilter() }}>
+              <span>{t.sort_name}</span>
+              {deckSortMode === 'name' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
+            </MobileBottomSheetItem>
+            <MobileBottomSheetItem onClick={() => { onDeckSortModeChange('due_today'); closeFilter() }}>
+              <span>{t.sort_due_today}</span>
+              {deckSortMode === 'due_today' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
+            </MobileBottomSheetItem>
+          </>
+        )}
+      </MobileBottomSheet>
+
+      <MobileBottomSheet
+        open={actionsOpen}
+        onClose={closeActions}
+        ariaLabel={language === 'de' ? 'Erstellen & Aktionen' : 'Create & actions'}
+      >
+        <MobileBottomSheetLabel>{language === 'de' ? 'Erstellen' : 'Create'}</MobileBottomSheetLabel>
+        <MobileBottomSheetItem onClick={() => { closeActions(); onCreateDeck() }}>
+          <span className="inline-flex items-center gap-2.5">
+            <FolderPlus size={15} strokeWidth={1.5} className="text-white/50" />
+            {t.create_deck}
+          </span>
+        </MobileBottomSheetItem>
+        {shuffleModeEnabled && onCreateVirtualDeck && (
+          <MobileBottomSheetItem onClick={() => { closeActions(); onCreateVirtualDeck() }}>
+            <span className="inline-flex items-center gap-2.5">
+              <Shuffle size={15} strokeWidth={1.5} className="text-white/50" />
+              {language === 'de' ? 'Virtuelles Deck erstellen' : 'Create virtual deck'}
+            </span>
+          </MobileBottomSheetItem>
+        )}
+        <MobileBottomSheetItem onClick={() => { closeActions(); onCreateCard() }}>
+          <span className="inline-flex items-center gap-2.5">
+            <Plus size={15} strokeWidth={1.5} className="text-white/50" />
+            {t.create_card}
+          </span>
+        </MobileBottomSheetItem>
+
+        <MobileBottomSheetDivider />
+        <MobileBottomSheetLabel>{language === 'de' ? 'Daten' : 'Data'}</MobileBottomSheetLabel>
+        <MobileBottomSheetItem onClick={() => { closeActions(); onImport() }}>
+          <span className="inline-flex items-center gap-2.5">
+            <Upload size={15} strokeWidth={1.5} className="text-[--brand-primary]" />
+            {t.import_action} {language === 'de' ? 'Karten/Decks' : 'cards/decks'}
+          </span>
+        </MobileBottomSheetItem>
+        <MobileBottomSheetItem onClick={() => { closeActions(); onExport() }}>
+          <span className="inline-flex items-center gap-2.5">
+            <Download size={15} strokeWidth={1.5} className="text-white/50" />
+            {t.backup_export_title}
+          </span>
+        </MobileBottomSheetItem>
+
+        {canInstall && !isInstalled && (
+          <>
+            <MobileBottomSheetDivider />
+            <MobileBottomSheetItem
+              onClick={() => { closeActions(); onInstall() }}
+              disabled={isInstalling}
+              className="disabled:opacity-60"
+            >
+              <span className="inline-flex items-center gap-2.5">
+                {isInstalling
+                  ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  : <Download size={15} strokeWidth={1.5} className="text-white/50" />
+                }
+                {t.install}
+              </span>
+            </MobileBottomSheetItem>
+          </>
+        )}
+      </MobileBottomSheet>
     </>
   )
 }

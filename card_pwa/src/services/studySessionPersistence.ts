@@ -5,6 +5,7 @@
  * Important: Increment STUDY_SESSION_VERSION when persisted shape changes and keep parse tolerant of older optional fields where possible.
  */
 import type { Card, Rating, SessionReviewEvent } from '../types'
+import { DAY_MS, getDayStartMs } from '../utils/time'
 
 export type StudySessionKind = 'deck' | 'shuffle'
 
@@ -92,8 +93,15 @@ export function buildPersistedStudySession(input: {
   reviewEvents?: SessionReviewEvent[]
   startTime: number
   nowMs?: number
+  /** Tag-Wechsel-Stunde: verlängert die Gültigkeit bis zur nächsten Tagesgrenze,
+   *  damit mobile Unterbrechungen > 45 min die Session nicht verwerfen. */
+  nextDayStartsAt?: number
 }): PersistedStudySession {
   const now = input.nowMs ?? Date.now()
+  const ttlExpiresAt = now + STUDY_SESSION_TTL_MS
+  const expiresAt = typeof input.nextDayStartsAt === 'number'
+    ? Math.max(ttlExpiresAt, getDayStartMs(now, input.nextDayStartsAt) + DAY_MS)
+    : ttlExpiresAt
 
   return {
     version: STUDY_SESSION_VERSION,
@@ -113,7 +121,7 @@ export function buildPersistedStudySession(input: {
     forcedTomorrowCardIds: input.forcedTomorrowCardIds,
     againCounts: input.againCounts,
     reviewEvents: input.reviewEvents ?? [],
-    expiresAt: now + STUDY_SESSION_TTL_MS,
+    expiresAt,
     startTime: input.startTime,
   }
 }

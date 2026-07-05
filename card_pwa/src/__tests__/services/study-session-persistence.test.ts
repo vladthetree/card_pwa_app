@@ -149,6 +149,57 @@ describe('study session persistence helpers', () => {
     expect(buildShuffleSessionId('collection-1')).toBe('shuffle:collection-1')
   })
 
+  it('extends expiry to the next study-day boundary when nextDayStartsAt is given', () => {
+    // 15:30 lokal, Tagesgrenze 04:00 → Snapshot gilt bis 04:00 am Folgetag,
+    // nicht nur 45 Minuten (mobile Unterbrechungen > 45 min sind der Normalfall).
+    const now = new Date(2026, 3, 10, 15, 30, 0).getTime()
+    const nextRollover = new Date(2026, 3, 11, 4, 0, 0).getTime()
+
+    const payload = buildPersistedStudySession({
+      deckId: 'deck-1',
+      cardIds: ['c1'],
+      cardLimit: 50,
+      sessionCount: 0,
+      isFlipped: false,
+      isDone: false,
+      lastRating: null,
+      lowRatingCounts: {},
+      relearnSuccessCounts: {},
+      forcedTomorrowCardIds: [],
+      againCounts: {},
+      startTime: now,
+      nowMs: now,
+      nextDayStartsAt: 4,
+    })
+
+    expect(payload.expiresAt).toBe(nextRollover)
+  })
+
+  it('keeps at least the 45-minute TTL right before the day boundary', () => {
+    // 03:50, Grenze 04:00: die Tagesgrenze allein würde die Session in 10 min
+    // verwerfen — das TTL-Minimum schützt den gerade aktiven Lerner.
+    const now = new Date(2026, 3, 10, 3, 50, 0).getTime()
+
+    const payload = buildPersistedStudySession({
+      deckId: 'deck-1',
+      cardIds: ['c1'],
+      cardLimit: 50,
+      sessionCount: 0,
+      isFlipped: false,
+      isDone: false,
+      lastRating: null,
+      lowRatingCounts: {},
+      relearnSuccessCounts: {},
+      forcedTomorrowCardIds: [],
+      againCounts: {},
+      startTime: now,
+      nowMs: now,
+      nextDayStartsAt: 4,
+    })
+
+    expect(payload.expiresAt).toBe(now + STUDY_SESSION_TTL_MS)
+  })
+
   it('preserves optional shuffle fields in persisted payloads', () => {
     const payload = buildPersistedStudySession({
       deckId: 'shuffle:collection-1',

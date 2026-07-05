@@ -23,7 +23,7 @@ import {
   FONT_FAMILY_OPTIONS,
 } from '../contexts/SettingsContext'
 import { THEMES, useTheme, type ThemeKey } from '../contexts/ThemeContext'
-import { clearAlgorithmDiagnostics, getAlgorithmDiagnostics, normalizeDueDates, type AlgorithmDiagnosticsEntry } from '../db/queries'
+import { clearAlgorithmDiagnostics, getAlgorithmDiagnostics, getYoungCardLapseRate, normalizeDueDates, type AlgorithmDiagnosticsEntry, type YoungCardLapseStats } from '../db/queries'
 import { clearErrorLogs, downloadErrorLogsAsTxt, getErrorLogs, type ErrorLogEntry } from '../services/errorLog'
 import { UI_TOKENS } from '../constants/ui'
 import { subscribeToWebPushNotificationsWithStatus, type WebPushSubscribeStatus } from '../services/webPush'
@@ -36,6 +36,8 @@ import { resetLocalStudyDataForProfileSwitch } from '../services/profileService'
 import { formatBuildVersionTitle, formatServiceWorkerVersionLabel } from '../utils/buildInfo'
 import { InfoHint } from './InfoHint'
 import { SettingsSection } from './SettingsSection'
+import { SettingsSliderRow } from './SettingsSliderRow'
+import { SettingsSwitchRow } from './SettingsSwitchRow'
 import ConfirmModal from './ConfirmModal'
 import ProfileSyncSection from './ProfileSyncSection'
 import { exportDbBackupAsCsv, exportDbBackupAsTxt } from '../utils/dbBackup'
@@ -103,6 +105,19 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
   const t = STRINGS[settings.language]
   const prefersReducedMotion = useReducedMotion()
   const [openSection, setOpenSection] = useState<SettingsSectionKey | null>(null)
+  // Entscheidungsgrundlage für FSRS-Learning-Steps (Audit ⑥): erst messen.
+  const [youngLapseStats, setYoungLapseStats] = useState<YoungCardLapseStats | null>(null)
+
+  useEffect(() => {
+    if (openSection !== 'learning' || youngLapseStats !== null) return
+    let cancelled = false
+    void getYoungCardLapseRate().then(stats => {
+      if (!cancelled) setYoungLapseStats(stats)
+    }).catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [openSection, youngLapseStats])
   const [diagnostics, setDiagnostics] = useState<AlgorithmDiagnosticsEntry[]>([])
   const [errorLogs, setErrorLogs] = useState<ErrorLogEntry[]>([])
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | 'unsupported'>(() => {
@@ -821,28 +836,13 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
 
                   <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
                     <p className="text-xs text-white/50 font-medium uppercase tracking-wide">{t.build_version_visibility_title}</p>
-                    <div className="flex items-center justify-between gap-3 rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-3">
-                      <div>
-                        <p className="text-xs text-white/70">{t.build_version_visibility_toggle}</p>
-                        <p className="text-[11px] text-white/45 mt-1" title={buildVersionTitle}>{buildVersionLabel}</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setShowBuildVersion(!settings.showBuildVersion)}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full border transition ${
-                          settings.showBuildVersion
-                            ? 'border-emerald-400/40 bg-emerald-500/25'
-                            : 'border-white/20 bg-white/10'
-                        }`}
-                        aria-pressed={settings.showBuildVersion}
-                      >
-                        <span
-                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                            settings.showBuildVersion ? 'translate-x-5' : 'translate-x-1'
-                          }`}
-                        />
-                      </button>
-                    </div>
+                    <SettingsSwitchRow
+                      label={t.build_version_visibility_toggle}
+                      description={buildVersionLabel}
+                      title={buildVersionTitle}
+                      checked={settings.showBuildVersion}
+                      onCheckedChange={setShowBuildVersion}
+                    />
                   </div>
 
                   <div>
@@ -850,34 +850,16 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                       {settings.language === 'de' ? 'Fokus-Modus' : 'Focus mode'}
                     </label>
                     <div className={`${UI_TOKENS.surface.panelSoft} p-4`}>
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="text-sm font-medium text-white">
-                            {settings.language === 'de' ? 'Session-Header beim Lernen ausblenden' : 'Hide session header while studying'}
-                          </p>
-                          <p className="mt-1 text-xs leading-relaxed text-white/45">
-                            {settings.language === 'de'
-                              ? 'Blendet Statistiken und Fortschritt in der Lernansicht aus. Der Platz bleibt reserviert, die Karte springt nicht; der Zurück-Button bleibt sichtbar.'
-                              : 'Hides stats and progress in the study view. The space stays reserved so the card does not jump; the back button remains visible.'}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setFocusMode(!settings.focusMode)}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full border transition ${
-                            settings.focusMode
-                              ? 'border-emerald-400/40 bg-emerald-500/25'
-                              : 'border-white/20 bg-white/10'
-                          }`}
-                          aria-pressed={settings.focusMode}
-                        >
-                          <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                              settings.focusMode ? 'translate-x-5' : 'translate-x-1'
-                            }`}
-                          />
-                        </button>
-                      </div>
+                      <SettingsSwitchRow
+                        label={settings.language === 'de' ? 'Session-Header beim Lernen ausblenden' : 'Hide session header while studying'}
+                        labelClassName="text-sm font-medium text-white"
+                        description={settings.language === 'de'
+                          ? 'Blendet Statistiken und Fortschritt in der Lernansicht aus. Der Platz bleibt reserviert, die Karte springt nicht; der Zurück-Button bleibt sichtbar.'
+                          : 'Hides stats and progress in the study view. The space stays reserved so the card does not jump; the back button remains visible.'}
+                        descriptionClassName="mt-1 text-xs leading-relaxed text-white/45"
+                        checked={settings.focusMode}
+                        onCheckedChange={setFocusMode}
+                      />
                     </div>
                   </div>
 
@@ -892,65 +874,33 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                 onToggle={() => toggleSection('learning')}
               >
                 <div className="pt-5 space-y-5">
-                  <div>
-                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
-                      {t.study_stack_size}
-                    </label>
-                    <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs text-white/70">
-                          <ParameterLabel text={t.study_stack_size} info={t.study_stack_size_info} />
-                        </span>
-                        <span className="text-xs text-white/60 tabular-nums">{settings.studyCardLimit}</span>
-                      </div>
-                      <input
-                        type="range"
-                        min={MIN_STUDY_CARD_LIMIT}
-                        max={MAX_STUDY_CARD_LIMIT}
-                        step={STUDY_CARD_LIMIT_STEP}
-                        value={settings.studyCardLimit}
-                        onChange={e => setStudyCardLimit(Number(e.target.value))}
-                        className="w-full accent-white"
-                      />
-                      <p className="text-xs text-white/45">
-                        {t.study_weight_hint.replace('{count}', '50')}
-                      </p>
-                    </div>
-                  </div>
+                  <SettingsSliderRow
+                    sectionLabel={t.study_stack_size}
+                    label={<ParameterLabel text={t.study_stack_size} info={t.study_stack_size_info} />}
+                    valueLabel={settings.studyCardLimit}
+                    value={settings.studyCardLimit}
+                    min={MIN_STUDY_CARD_LIMIT}
+                    max={MAX_STUDY_CARD_LIMIT}
+                    step={STUDY_CARD_LIMIT_STEP}
+                    onValueChange={setStudyCardLimit}
+                    help={t.study_weight_hint.replace('{count}', '50')}
+                  />
 
                   <div>
                     <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
                       {settings.language === 'de' ? 'Shuffle-Modus' : 'Shuffle mode'}
                     </label>
                     <div className={`${UI_TOKENS.surface.panelSoft} p-4`}>
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="text-sm font-medium text-white">
-                            {settings.language === 'de' ? 'Deck-übergreifendes Lernen anzeigen' : 'Show cross-deck study mode'}
-                          </p>
-                          <p className="mt-1 text-xs leading-relaxed text-white/45">
-                            {settings.language === 'de'
-                              ? 'Blendet Shuffle-Sammlungen, den Verwalten-Shortcut und den Start aus der Home-Ansicht ein oder aus. Laufende Sessions bleiben davon unberührt.'
-                              : 'Show or hide shuffle collections, the manage shortcut, and the home entry point. Active sessions are left untouched.'}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setShuffleModeEnabled(!settings.shuffleModeEnabled)}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full border transition ${
-                            settings.shuffleModeEnabled
-                              ? 'border-emerald-400/40 bg-emerald-500/25'
-                              : 'border-white/20 bg-white/10'
-                          }`}
-                          aria-pressed={settings.shuffleModeEnabled}
-                        >
-                          <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                              settings.shuffleModeEnabled ? 'translate-x-5' : 'translate-x-1'
-                            }`}
-                          />
-                        </button>
-                      </div>
+                      <SettingsSwitchRow
+                        label={settings.language === 'de' ? 'Deck-übergreifendes Lernen anzeigen' : 'Show cross-deck study mode'}
+                        labelClassName="text-sm font-medium text-white"
+                        description={settings.language === 'de'
+                          ? 'Blendet Shuffle-Sammlungen, den Verwalten-Shortcut und den Start aus der Home-Ansicht ein oder aus. Laufende Sessions bleiben davon unberührt.'
+                          : 'Show or hide shuffle collections, the manage shortcut, and the home entry point. Active sessions are left untouched.'}
+                        descriptionClassName="mt-1 text-xs leading-relaxed text-white/45"
+                        checked={settings.shuffleModeEnabled}
+                        onCheckedChange={setShuffleModeEnabled}
+                      />
                     </div>
                   </div>
 
@@ -959,154 +909,79 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                       {settings.language === 'de' ? 'Review-Decks' : 'Review decks'}
                     </label>
                     <div className={`${UI_TOKENS.surface.panelSoft} p-4`}>
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="text-sm font-medium text-white">
-                            {settings.language === 'de' ? 'Review-Decks anzeigen und synchronisieren' : 'Show and sync review decks'}
-                          </p>
-                          <p className="mt-1 text-xs leading-relaxed text-white/45">
-                            {settings.language === 'de'
-                              ? 'Blendet serverseitige Review-Decks in Home und in der Sync-Deckauswahl ein. Standardmäßig bleiben sie ausgeblendet.'
-                              : 'Shows server-side review decks on Home and in sync deck selection. They stay hidden by default.'}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const next = !settings.showReviewDecks
-                            setShowReviewDecks(next)
-                            if (next) void wakeDeferredSyncQueue()
-                          }}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full border transition ${
-                            settings.showReviewDecks
-                              ? 'border-emerald-400/40 bg-emerald-500/25'
-                              : 'border-white/20 bg-white/10'
-                          }`}
-                          aria-pressed={settings.showReviewDecks}
-                        >
-                          <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                              settings.showReviewDecks ? 'translate-x-5' : 'translate-x-1'
-                            }`}
-                          />
-                        </button>
-                      </div>
+                      <SettingsSwitchRow
+                        label={settings.language === 'de' ? 'Review-Decks anzeigen und synchronisieren' : 'Show and sync review decks'}
+                        labelClassName="text-sm font-medium text-white"
+                        description={settings.language === 'de'
+                          ? 'Blendet serverseitige Review-Decks in Home und in der Sync-Deckauswahl ein. Standardmäßig bleiben sie ausgeblendet.'
+                          : 'Shows server-side review decks on Home and in sync deck selection. They stay hidden by default.'}
+                        descriptionClassName="mt-1 text-xs leading-relaxed text-white/45"
+                        checked={settings.showReviewDecks}
+                        onCheckedChange={next => {
+                          setShowReviewDecks(next)
+                          if (next) void wakeDeferredSyncQueue()
+                        }}
+                      />
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
-                      {t.daily_goal_setting}
-                    </label>
-                    <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs text-white/70">{t.daily_goal_label}</span>
-                        <span className="text-xs text-white/60 tabular-nums">
-                          {settings.dailyGoal === 0 ? '—' : settings.dailyGoal}
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min={0}
-                        max={200}
-                        step={5}
-                        value={settings.dailyGoal}
-                        onChange={e => setDailyGoal(Number(e.target.value))}
-                        className="w-full accent-white"
-                        aria-label={t.daily_goal_setting}
-                      />
-                      <p className="text-xs text-white/45">{t.daily_goal_setting_help}</p>
-                    </div>
-                  </div>
+                  <SettingsSliderRow
+                    sectionLabel={t.daily_goal_setting}
+                    label={t.daily_goal_label}
+                    valueLabel={settings.dailyGoal === 0 ? '-' : settings.dailyGoal}
+                    value={settings.dailyGoal}
+                    min={0}
+                    max={200}
+                    step={5}
+                    onValueChange={setDailyGoal}
+                    help={t.daily_goal_setting_help}
+                    ariaLabel={t.daily_goal_setting}
+                  />
 
-                  <div>
-                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
-                      {settings.language === 'de' ? 'Tag-Wechsel' : 'Day rollover'}
-                    </label>
-                    <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs text-white/70">
-                          {settings.language === 'de' ? 'Neuer Lerntag beginnt um' : 'New study day starts at'}
-                        </span>
-                        <span className="text-xs text-white/60 tabular-nums">
-                          {String(settings.nextDayStartsAt).padStart(2, '0')}:00
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min={0}
-                        max={23}
-                        step={1}
-                        value={settings.nextDayStartsAt}
-                        onChange={e => setNextDayStartsAt(Number(e.target.value))}
-                        className="w-full accent-white"
-                        aria-label={settings.language === 'de' ? 'Tag-Wechsel-Uhrzeit' : 'Day rollover hour'}
-                      />
-                      <p className="text-xs text-white/45">
-                        {settings.language === 'de'
-                          ? 'Bis zu dieser Uhrzeit zählen Reviews noch zum Vortag — verhindert Verschiebungen beim Lernen nach Mitternacht.'
-                          : 'Reviews before this hour still count toward the previous day — prevents shifts when studying past midnight.'}
-                      </p>
-                    </div>
-                  </div>
+                  <SettingsSliderRow
+                    sectionLabel={settings.language === 'de' ? 'Tag-Wechsel' : 'Day rollover'}
+                    label={settings.language === 'de' ? 'Neuer Lerntag beginnt um' : 'New study day starts at'}
+                    valueLabel={`${String(settings.nextDayStartsAt).padStart(2, '0')}:00`}
+                    value={settings.nextDayStartsAt}
+                    min={0}
+                    max={23}
+                    step={1}
+                    onValueChange={setNextDayStartsAt}
+                    help={settings.language === 'de'
+                      ? 'Bis zu dieser Uhrzeit zählen Reviews noch zum Vortag — verhindert Verschiebungen beim Lernen nach Mitternacht.'
+                      : 'Reviews before this hour still count toward the previous day — prevents shifts when studying past midnight.'}
+                    ariaLabel={settings.language === 'de' ? 'Tag-Wechsel-Uhrzeit' : 'Day rollover hour'}
+                  />
 
-                  <div>
-                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
-                      {settings.language === 'de' ? 'Abruf-Check (Lernvideos)' : 'Recall check (videos)'}
-                    </label>
-                    <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs text-white/70">
-                          {settings.language === 'de' ? 'Fragen pro Check' : 'Questions per check'}
-                        </span>
-                        <span className="text-xs text-white/60 tabular-nums">{settings.recallCheckSize}</span>
-                      </div>
-                      <input
-                        type="range"
-                        min={3}
-                        max={15}
-                        step={1}
-                        value={settings.recallCheckSize}
-                        onChange={e => setRecallCheckSize(Number(e.target.value))}
-                        className="w-full accent-white"
-                        aria-label={settings.language === 'de' ? 'Fragen pro Abruf-Check' : 'Questions per recall check'}
-                      />
-                      <p className="text-xs text-white/45">
-                        {settings.language === 'de'
-                          ? 'Wie viele Fragen der Abruf-Check nach einem Video höchstens stellt.'
-                          : 'How many questions a recall check asks after a video at most.'}
-                      </p>
-                    </div>
-                  </div>
+                  <SettingsSliderRow
+                    sectionLabel={settings.language === 'de' ? 'Abruf-Check (Lernvideos)' : 'Recall check (videos)'}
+                    label={settings.language === 'de' ? 'Fragen pro Check' : 'Questions per check'}
+                    valueLabel={settings.recallCheckSize}
+                    value={settings.recallCheckSize}
+                    min={3}
+                    max={15}
+                    step={1}
+                    onValueChange={setRecallCheckSize}
+                    help={settings.language === 'de'
+                      ? 'Wie viele Fragen der Abruf-Check nach einem Video höchstens stellt.'
+                      : 'How many questions a recall check asks after a video at most.'}
+                    ariaLabel={settings.language === 'de' ? 'Fragen pro Abruf-Check' : 'Questions per recall check'}
+                  />
 
-                  <div>
-                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
-                      {settings.language === 'de' ? 'Daily Quest' : 'Daily quest'}
-                    </label>
-                    <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs text-white/70">
-                          {settings.language === 'de' ? 'Karten pro Quest' : 'Cards per quest'}
-                        </span>
-                        <span className="text-xs text-white/60 tabular-nums">{settings.dailyQuestSize}</span>
-                      </div>
-                      <input
-                        type="range"
-                        min={10}
-                        max={100}
-                        step={5}
-                        value={settings.dailyQuestSize}
-                        onChange={e => setDailyQuestSize(Number(e.target.value))}
-                        className="w-full accent-white"
-                        aria-label={settings.language === 'de' ? 'Karten pro Daily Quest' : 'Cards per daily quest'}
-                      />
-                      <p className="text-xs text-white/45">
-                        {settings.language === 'de'
-                          ? 'Obergrenze der deck-übergreifenden Daily-Quest-Session auf dem Homescreen.'
-                          : 'Cap for the cross-deck daily quest session on the home screen.'}
-                      </p>
-                    </div>
-                  </div>
+                  <SettingsSliderRow
+                    sectionLabel={settings.language === 'de' ? 'Daily Quest' : 'Daily quest'}
+                    label={settings.language === 'de' ? 'Karten pro Quest' : 'Cards per quest'}
+                    valueLabel={settings.dailyQuestSize}
+                    value={settings.dailyQuestSize}
+                    min={10}
+                    max={100}
+                    step={5}
+                    onValueChange={setDailyQuestSize}
+                    help={settings.language === 'de'
+                      ? 'Obergrenze der deck-übergreifenden Daily-Quest-Session auf dem Homescreen.'
+                      : 'Cap for the cross-deck daily quest session on the home screen.'}
+                    ariaLabel={settings.language === 'de' ? 'Karten pro Daily Quest' : 'Cards per daily quest'}
+                  />
 
                   <div>
                     <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
@@ -1134,6 +1009,27 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                       ))}
                     </div>
                   </div>
+
+                  {/* Lapse-Rate junger Karten: informiert die Learning-Steps-Frage
+                      (Audit ⑥) — hohe Quote ⇒ Intraday-Lernschritte erwägen. */}
+                  {youngLapseStats && youngLapseStats.total >= 30 && (
+                    <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-1.5`} data-testid="young-lapse-stats">
+                      <p className="text-xs text-white/50 font-medium uppercase tracking-wide">
+                        {settings.language === 'de' ? 'Lapse-Rate junger Karten' : 'Young-card lapse rate'}
+                      </p>
+                      <p className={`font-mono text-lg font-bold ${youngLapseStats.rate >= 25 ? 'text-amber-300' : 'text-white'}`}>
+                        {youngLapseStats.rate} %
+                        <span className="ml-2 text-xs font-normal text-white/40">
+                          (n={youngLapseStats.total}, {settings.language === 'de' ? 'erste 3 Reviews, 30 Tage' : 'first 3 reviews, 30 days'})
+                        </span>
+                      </p>
+                      <p className="text-xs text-white/40 leading-relaxed">
+                        {settings.language === 'de'
+                          ? 'Anteil „Nicht gewusst" bei neuen Karten. Bleibt der Wert über ~25 %, lohnt sich das Aktivieren von FSRS-Lernschritten (kurze Intraday-Wiederholungen).'
+                          : 'Share of "Again" on new cards. If this stays above ~25%, enabling FSRS learning steps (short intraday repeats) is worth it.'}
+                      </p>
+                    </div>
+                  )}
 
                   <details className={`${UI_TOKENS.surface.panelSoft} group/algorithm p-4`}>
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-left">
@@ -1270,25 +1166,11 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                   <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
                     <p className="text-xs text-white/50 font-medium uppercase tracking-wide">{t.sw_notifications_title}</p>
                     <p className="text-xs text-white/40 leading-relaxed">{t.sw_notifications_description}</p>
-                    <div className="flex items-center justify-between gap-3 rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-3">
-                      <span className="text-xs text-white/70">{t.sw_notifications_toggle_label}</span>
-                      <button
-                        type="button"
-                        onClick={() => applySwNotificationsEnabled(!settings.notificationsEnabled)}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full border transition ${
-                          settings.notificationsEnabled
-                            ? 'border-emerald-400/40 bg-emerald-500/25'
-                            : 'border-white/20 bg-white/10'
-                        }`}
-                        aria-pressed={settings.notificationsEnabled}
-                      >
-                        <span
-                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                            settings.notificationsEnabled ? 'translate-x-5' : 'translate-x-1'
-                          }`}
-                        />
-                      </button>
-                    </div>
+                    <SettingsSwitchRow
+                      label={t.sw_notifications_toggle_label}
+                      checked={settings.notificationsEnabled}
+                      onCheckedChange={applySwNotificationsEnabled}
+                    />
                   </div>
 
                   <details className="group/channels">
@@ -1323,25 +1205,11 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                               </p>
                             )}
 
-                            <div className="flex items-center justify-between gap-3 rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-3">
-                              <span className="text-xs text-white/70">{t.notification_channel_toggle_label}</span>
-                              <button
-                                type="button"
-                                onClick={() => { void applyNotificationChannelEnabled(channel.key, !channelEnabled) }}
-                                className={`relative inline-flex h-6 w-11 items-center rounded-full border transition ${
-                                  channelEnabled
-                                    ? 'border-emerald-400/40 bg-emerald-500/25'
-                                    : 'border-white/20 bg-white/10'
-                                }`}
-                                aria-pressed={channelEnabled}
-                              >
-                                <span
-                                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                                    channelEnabled ? 'translate-x-5' : 'translate-x-1'
-                                  }`}
-                                />
-                              </button>
-                            </div>
+                            <SettingsSwitchRow
+                              label={t.notification_channel_toggle_label}
+                              checked={channelEnabled}
+                              onCheckedChange={next => applyNotificationChannelEnabled(channel.key, next)}
+                            />
 
                             {channel.key === 'dailyReminder' && (
                               <div className="rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-3 space-y-2">
