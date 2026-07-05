@@ -134,7 +134,7 @@ function DashboardModeCarousel({
         <AnimatePresence initial={false} mode="wait">
           <motion.div
             key={mode}
-            className={isCleanMode ? 'min-h-7 cursor-grab active:cursor-grabbing sm:min-h-0' : 'cursor-grab active:cursor-grabbing'}
+            className={isCleanMode ? 'min-h-3.5 cursor-grab active:cursor-grabbing sm:min-h-0' : 'cursor-grab active:cursor-grabbing'}
             initial={{ opacity: 0, x: direction >= 0 ? 18 : -18 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: direction >= 0 ? -18 : 18 }}
@@ -243,7 +243,7 @@ export function HomeStatsSection({
     )
   } else if (mode === 'clean') {
     dashboardContent = (
-      <div className="min-h-7 sm:min-h-0" aria-label={DASHBOARD_LABELS.clean} />
+      <div className="min-h-3.5 sm:min-h-0" aria-label={DASHBOARD_LABELS.clean} />
     )
   }
 
