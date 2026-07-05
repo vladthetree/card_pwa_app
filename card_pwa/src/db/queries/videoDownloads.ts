@@ -4,7 +4,7 @@
  * Used by: useLocalMesserVideos and the VideosView offline download controls.
  * Important: These records are device-local and intentionally not synced; metadata reads should avoid touching Blob rows unless playback needs them.
  */
-import { db, type VideoDownloadRecord } from '../../db'
+import { db } from '../../db'
 
 /**
  * Offline-Kopien der selbst gehosteten Lernvideos. Der große Blob liegt in
@@ -46,13 +46,4 @@ export async function deleteVideoDownload(file: string): Promise<void> {
     await db.videoBlobs.delete(file)
     await db.videoDownloads.delete(file)
   })
-}
-
-export async function listVideoDownloads(): Promise<VideoDownloadRecord[]> {
-  return db.videoDownloads.toArray()
-}
-
-export async function getDownloadsTotalSize(): Promise<number> {
-  const rows = await db.videoDownloads.toArray()
-  return rows.reduce((sum, row) => sum + (row.size || 0), 0)
 }

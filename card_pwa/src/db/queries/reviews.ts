@@ -185,40 +185,6 @@ export async function getFutureDueForecast(days = 15, nextDayStartsAt = 0): Prom
   return result
 }
 
-export async function getDeckSuccessRates(deckIds: string[]): Promise<Record<string, number>> {
-  if (deckIds.length === 0) return {}
-
-  const cards = (await db.cards.where('deckId').anyOf(deckIds).toArray()).filter(c => !c.isDeleted)
-  if (cards.length === 0) {
-    return Object.fromEntries(deckIds.map(id => [id, 0]))
-  }
-
-  const cardToDeck = new Map(cards.map(card => [card.id, card.deckId]))
-  const cardIds = cards.map(card => card.id)
-  const reviews = await db.reviews.where('cardId').anyOf(cardIds).toArray()
-
-  const totals = new Map<string, { total: number; success: number }>()
-  for (const id of deckIds) {
-    totals.set(id, { total: 0, success: 0 })
-  }
-
-  for (const review of reviews) {
-    const deckId = cardToDeck.get(review.cardId)
-    if (!deckId) continue
-    const current = totals.get(deckId)
-    if (!current) continue
-    current.total += 1
-    if (review.rating >= 3) current.success += 1
-  }
-
-  const result: Record<string, number> = {}
-  for (const [deckId, { total, success }] of totals.entries()) {
-    result[deckId] = total === 0 ? 0 : Math.round((success / total) * 100)
-  }
-
-  return result
-}
-
 export async function getDeckMetricsSnapshot(deckId: string, period: MetricsPeriod): Promise<DeckMetricsSnapshot> {
   const ratingCounts: Record<Rating, number> = { 1: 0, 2: 0, 3: 0, 4: 0 }
   const lastRatingAt: Record<Rating, number | null> = { 1: null, 2: null, 3: null, 4: null }

@@ -8,8 +8,6 @@ import type { Card } from '../types'
 import { DAY_MS, getDayStartMs, resolveDueAtMs } from '../utils/time'
 import { compareByDueRank, getCardTypePriority, seededRank } from './cardOrdering'
 
-export const WEIGHT_PRIORITY_WINDOW = 50
-
 interface SortStudyCardsOptions {
   maxCards?: number
   nowMs?: number

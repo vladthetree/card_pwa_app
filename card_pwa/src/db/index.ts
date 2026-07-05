@@ -167,7 +167,7 @@ export interface ShuffleCollectionRecord {
  */
 export interface VideoNoteRecord {
   profileId: string   // Profil-Scope (Teil des Compound-Primary-Keys)
-  objective: string   // entspricht MesserVideo.objective (z. B. "1.2")
+  objective: string   // SY0-701-Objective-Code (z. B. "1.2"), vgl. LocalVideoMeta.objective
   videoId: string
   content: string
   tags: string[]

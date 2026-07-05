@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT:
  * Role: Profile-scoped persistence for video notepads; derives tags from inline #tags, lists notes by tag, all tags, objectives with notes, and related tags.
- * Used by: useVideoNotes hooks, VideoNotesPanel, TagCollectionPanel, TagBrowserSection, backup/restore.
+ * Used by: useVideoNotes hooks, VideoNotesPanel, TagCollectionPanel, backup/restore.
  * Important: Notes are partitioned by profileId; content is plain text and tags are derived, deduped by normalizeTagId, and mutations enqueue server sync.
  */
 import { db, type VideoNoteRecord } from '../../db'

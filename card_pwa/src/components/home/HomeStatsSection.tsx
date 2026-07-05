@@ -124,8 +124,7 @@ export function HomeStatsSection({
       {mode === 'kpi' && statGrid}
 
       {/* Pilot = Daily Quest (Beleg `…23.36.20.jpeg`): gemischte Session über
-          mehrere Decks. Das frühere GamificationPanel bleibt als Komponente
-          erhalten, der 8.-Juni-Stand zeigt im Pilot-Modus aber die Quest-Kachel. */}
+          mehrere Decks; der 8.-Juni-Stand zeigt im Pilot-Modus die Quest-Kachel. */}
       {mode === 'pilot' && (
         <div className="relative z-20 grid w-full min-w-0 gap-2 pb-1 sm:gap-3">
           <HomeDailyQuestTile

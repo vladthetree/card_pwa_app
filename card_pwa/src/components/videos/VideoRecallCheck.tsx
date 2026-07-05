@@ -21,7 +21,7 @@ import { MESSER_VIDEO_BY_QUESTION_ID, normalizeMesserVideoTitle } from '../../da
 
 /**
  * Abruf-Check: aktives Erinnern direkt nach dem Video. Lädt das zugehörige
- * Objective-Deck (`MesserVideo.deckId`) und behält davon nur die Fragen, die
+ * Objective-Deck (`getSecurityObjectiveDeckId`) und behält davon nur die Fragen, die
  * laut generiertem Mapping (messerVideoQuestionMap) zu GENAU diesem Video
  * gehören — erst erinnern, dann aufdecken, dann ehrlich selbst bewerten.
  *

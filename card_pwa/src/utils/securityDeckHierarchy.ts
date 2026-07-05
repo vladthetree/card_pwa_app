@@ -97,13 +97,6 @@ export function inferSecurityRootDeckName(deckName: string): string | null {
   return rootDeckNameBySection[sectionMatch[1]] ?? null
 }
 
-export function inferSecurityObjectiveCode(deckName: string): string | null {
-  const objectiveMatch = deckName.match(/::\s*([1-5])\.(\d{1,2})(?:\.\d{1,2})?\s*:/)
-  if (!objectiveMatch) return null
-  const code = `${objectiveMatch[1]}.${Number(objectiveMatch[2])}`
-  return objectiveByCode.has(code) ? code : null
-}
-
 export function buildSecurityDeckHierarchyPlan<T extends SecurityDeckLike>(
   decks: T[],
   now = Date.now(),
