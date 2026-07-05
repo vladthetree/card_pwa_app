@@ -10,12 +10,12 @@ import { ArrowLeft, RotateCcw, CheckCircle, AlertCircle, RefreshCw, Type, Info, 
 import { useDeckCards } from '../hooks/useCardDb'
 import { recordReview, undoReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession } from '../db/queries'
 import { STRINGS, useSettings, type QuestionTextSize } from '../contexts/SettingsContext'
-import { sortStudyCards } from '../services/StudySessionManager'
+import { sortStudyCards } from '../services/studyCardOrdering'
 import { buildDragMatchModePlan } from '../services/studyModeSelector'
 import {
   buildPersistedStudySession,
   DEFAULT_STUDY_CARD_LIMIT,
-  sanitizeCardLimit,
+  normalizeStudyCardLimit,
   type PersistedStudySession,
 } from '../services/studySessionPersistence'
 import {
@@ -79,7 +79,7 @@ function ErrorAlert({ message, onRetry }: { message: string; onRetry: () => void
 
 /**
  * StudyView: Main study session component
- * Nutzt StudySessionManager für State-Management
+ * Nutzt studyCardOrdering (Sortierung/Gewichtung) und studySessionReducer für State-Management
  */
 export default function StudyView({ deck, preloadedCards, onExit }: Props) {
   const { cards: deckCards, loading: deckLoading, error: deckError, reload } = useDeckCards(preloadedCards ? null : deck.id)
@@ -99,7 +99,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
   const sessionMomentumRef = useRef(0)
   const rewardToastTimerRef = useRef<number | null>(null)
-  const studyCardLimit = sanitizeCardLimit(settings.studyCardLimit ?? DEFAULT_STUDY_CARD_LIMIT)
+  const studyCardLimit = normalizeStudyCardLimit(settings.studyCardLimit ?? DEFAULT_STUDY_CARD_LIMIT)
   const sessionRef = useRef(session)
   const studyCardLimitRef = useRef(studyCardLimit)
   const dragMatchModePlanRef = useRef<Set<string>>(new Set())
@@ -173,7 +173,7 @@ export default function StudyView({ deck, preloadedCards, onExit }: Props) {
 
   const buildSessionCards = useCallback((inputCards: Card[], limit: number): Card[] => {
     return sortStudyCards(inputCards, {
-      maxCards: sanitizeCardLimit(limit),
+      maxCards: normalizeStudyCardLimit(limit),
       nextDayStartsAt: settings.nextDayStartsAt,
       runSeed: dragMatchModeSeedRef.current,
     })

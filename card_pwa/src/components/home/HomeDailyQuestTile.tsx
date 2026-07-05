@@ -9,7 +9,7 @@ import { ListChecks, ListTree, Play } from 'lucide-react'
  * Handy-Screenshot vom 8. Juni 2026, `WhatsApp …23.36.20.jpeg`):
  * "DAILY QUEST / Jetzt: 25 Karten / <Top-Deck> · <heute fällig> …" mit
  * klarem "25 Karten starten"-Button und sekundärem "Decks anzeigen".
- * Startet eine gemischte Session über mehrere Decks (fetchDailyQuestCards).
+ * Startet eine gemischte Session über mehrere Decks (pickDailyQuestCards).
  */
 
 const COPY = {

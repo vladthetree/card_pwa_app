@@ -2,7 +2,7 @@
  * AI_CONTEXT: Vitest coverage for deck schedule overview; protects db behavior from regressions in the learning PWA.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { fetchTodayDueFromDecks, getDeckScheduleOverview } from '../../db/queries'
+import { countTodayDueFromDecks, getDeckScheduleOverview } from '../../db/queries'
 import type { CardRecord, DeckRecord } from '../../db'
 import { SM2 } from '../../utils/sm2'
 
@@ -318,6 +318,6 @@ describe('getDeckScheduleOverview', () => {
       ),
     ]
 
-    await expect(fetchTodayDueFromDecks(10)).resolves.toBe(20)
+    await expect(countTodayDueFromDecks(10)).resolves.toBe(20)
   })
 })

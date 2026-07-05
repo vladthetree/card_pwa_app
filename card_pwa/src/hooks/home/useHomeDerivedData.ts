@@ -10,7 +10,7 @@ import {
   getFutureDueForecast,
 } from '../../db/queries'
 import type { Deck, DeckScheduleOverview, ShuffleCollection } from '../../types'
-import { buildSelectedShuffleCards } from '../../services/ShuffleSessionManager'
+import { buildSelectedShuffleCards } from '../../services/shuffleSession'
 import { getSyncedDeckIds } from '../../services/syncedDeckScope'
 import { listDecksForBackup } from '../../utils/dbBackup'
 import { flattenDeckTree } from '../../utils/securityDeckHierarchy'
@@ -31,12 +31,12 @@ export interface HomeDerivedData {
   shuffleSummaries: Record<string, HomeShuffleSummary>
 }
 
-export async function loadHomeDeckOptions(showExportModal: boolean): Promise<Array<{ id: string; name: string }>> {
+export async function listHomeDeckOptions(showExportModal: boolean): Promise<Array<{ id: string; name: string }>> {
   if (!showExportModal) return []
   return listDecksForBackup()
 }
 
-export async function loadHomeFutureForecast(
+export async function getHomeFutureForecast(
   showFutureForecast: boolean,
   nextDayStartsAt: number,
 ): Promise<Array<{ dayStartMs: number; count: number }>> {
@@ -44,13 +44,13 @@ export async function loadHomeFutureForecast(
   return getFutureDueForecast(15, nextDayStartsAt)
 }
 
-export async function loadHomeSyncedDeckIds(profileMode: 'local' | 'linked' | undefined, profileUserId?: string): Promise<string[]> {
+export async function listHomeSyncedDeckIds(profileMode: 'local' | 'linked' | undefined, profileUserId?: string): Promise<string[]> {
   const resolveUserId = profileMode === 'linked' ? profileUserId : undefined
   const syncedDeckIds = await getSyncedDeckIds(resolveUserId)
   return Array.isArray(syncedDeckIds) ? syncedDeckIds : []
 }
 
-export async function loadHomeShuffleSummaries(input: {
+export async function listHomeShuffleSummaries(input: {
   shuffleCollections: ShuffleCollection[]
   profileMode: 'local' | 'linked' | undefined
   profileUserId?: string
@@ -61,7 +61,7 @@ export async function loadHomeShuffleSummaries(input: {
   if (shuffleCollections.length === 0) return {}
 
   const resolveUserId = profileMode === 'linked' ? profileUserId : undefined
-  const syncedScope = new Set(await loadHomeSyncedDeckIds(profileMode, profileUserId))
+  const syncedScope = new Set(await listHomeSyncedDeckIds(profileMode, profileUserId))
   const entries = await Promise.all(
     shuffleCollections.map(async collection => {
       const selectedCards = await buildSelectedShuffleCards(collection, {
@@ -84,7 +84,7 @@ export async function loadHomeShuffleSummaries(input: {
   return Object.fromEntries(entries)
 }
 
-export async function loadHomeDeckScheduleOverview(
+export async function getHomeDeckScheduleOverview(
   decks: Deck[],
   studyCardLimit: number,
   nextDayStartsAt: number,
@@ -99,7 +99,7 @@ export async function loadHomeDeckScheduleOverview(
   return metadata.deckScheduleOverview
 }
 
-export async function loadHomeDeckTagIndex(
+export async function getHomeDeckTagIndex(
   decks: Deck[],
   studyCardLimit = 50,
   nextDayStartsAt = 0,
@@ -114,7 +114,7 @@ export async function loadHomeDeckTagIndex(
   return metadata.deckTagIndex
 }
 
-export async function loadHomeDeckMetadata(
+export async function getHomeDeckScheduleAndTagIndex(
   decks: Deck[],
   studyCardLimit: number,
   nextDayStartsAt: number,
@@ -166,7 +166,7 @@ export function useHomeDerivedData(input: {
     let cancelled = false
 
     const loadDeckOptions = async () => {
-      const next = await loadHomeDeckOptions(showExportModal)
+      const next = await listHomeDeckOptions(showExportModal)
       if (!cancelled) {
         setDeckOptions(next)
       }
@@ -190,7 +190,7 @@ export function useHomeDerivedData(input: {
 
     const loadForecast = async () => {
       try {
-        const next = await loadHomeFutureForecast(showFutureForecast, nextDayStartsAt)
+        const next = await getHomeFutureForecast(showFutureForecast, nextDayStartsAt)
         if (!cancelled) {
           setFutureForecast(next)
         }
@@ -211,7 +211,7 @@ export function useHomeDerivedData(input: {
     let cancelled = false
 
     const loadSyncedScope = async () => {
-      const next = await loadHomeSyncedDeckIds(profileMode, profileUserId)
+      const next = await listHomeSyncedDeckIds(profileMode, profileUserId)
       if (!cancelled) {
         setSyncedDeckIds(next)
       }
@@ -227,7 +227,7 @@ export function useHomeDerivedData(input: {
     let cancelled = false
 
     const loadSummaries = async () => {
-      const next = await loadHomeShuffleSummaries({
+      const next = await listHomeShuffleSummaries({
         shuffleCollections,
         profileMode,
         profileUserId,
@@ -249,7 +249,7 @@ export function useHomeDerivedData(input: {
     let cancelled = false
 
     const loadDeckMetadata = async () => {
-      const next = await loadHomeDeckMetadata(decks, studyCardLimit, nextDayStartsAt)
+      const next = await getHomeDeckScheduleAndTagIndex(decks, studyCardLimit, nextDayStartsAt)
       if (!cancelled) {
         setDeckScheduleOverview(next.deckScheduleOverview)
         setDeckTagIndex(next.deckTagIndex)

@@ -320,7 +320,7 @@ export const AI_MODE_GUIDES: AiModeGuide[] = [
     purpose:
       'Karten mehrerer Decks gemischt lernen; Bewertungen fließen ins jeweilige Ursprungsdeck zurück.',
     appLogic: [
-      'Session: src/components/ShuffleStudyView.tsx + src/services/ShuffleSessionManager.ts',
+      'Session: src/components/ShuffleStudyView.tsx + src/services/shuffleSession.ts',
       'Collections (nur deckIds, keine eigenen Karten): src/db/queries/shuffleCollections.ts',
     ],
     researchBasis: [
@@ -398,7 +398,7 @@ export const AI_MODE_GUIDES: AiModeGuide[] = [
     purpose:
       'Niedrigschwelliger Tageseinstieg: eine gemischte Session über alle Decks (max. 25 fällige Karten) direkt von der Startseite.',
     appLogic: [
-      'Kachel: src/components/home/HomeDailyQuestTile.tsx; Kartenwahl: fetchDailyQuestCards (src/db/queries/decks.ts) → sortStudyCards-Priorisierung',
+      'Kachel: src/components/home/HomeDailyQuestTile.tsx; Kartenwahl: pickDailyQuestCards (src/db/queries/decks.ts) → sortStudyCards-Priorisierung',
     ],
     researchBasis: [
       { claim: 'Tägliche, verteilte Übung schlägt seltene Marathon-Sitzungen bei gleicher Gesamtzeit.', sourceIds: ['cepeda-2006', 'dunlosky-2013'] },
@@ -406,7 +406,7 @@ export const AI_MODE_GUIDES: AiModeGuide[] = [
     ],
     dos: [
       { text: 'Die Quest klein und täglich halten (≈ 25 Karten) statt selten und groß — Regelmäßigkeit ist der Hebel.', sourceIds: ['cepeda-2006', 'rawson-dunlosky-2022'] },
-      { text: 'Fällige Karten (Learning/Review) vor neuen priorisieren — die Quest übernimmt die Session-Priorisierung der App.', sourceIds: ['ye-2022-fsrs'], appLogic: 'src/services/StudySessionManager.ts (sortStudyCards: learning → relearning → review → new)' },
+      { text: 'Fällige Karten (Learning/Review) vor neuen priorisieren — die Quest übernimmt die Session-Priorisierung der App.', sourceIds: ['ye-2022-fsrs'], appLogic: 'src/services/studyCardOrdering.ts (sortStudyCards: learning → relearning → review → new)' },
     ],
     donts: [
       { text: 'Die Quest nicht mehrfach täglich „farmen" — zusätzliche massierte Durchgänge am selben Tag bringen kaum Behaltensgewinn.', sourceIds: ['cepeda-2006'] },

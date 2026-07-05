@@ -1,3 +1,20 @@
+# Naming Conventions (Verb-Vertrag)
+
+Aus dem Funktionsnamen muss Quelle und Wirkung ablesbar sein:
+
+- `list*` — Array aus der lokalen DB (Dexie)
+- `get*` — Einzelobjekt/Map/Aggregat aus der lokalen DB
+- `count*` — Zähler; `pick*` — Auswahl/Sampling aus einer Menge
+- `fetch*` — NUR Netzwerk-/Server-Requests
+- `read*` / `write*` / `persist*` — localStorage bzw. synchroner Gerätezustand
+- `build*` / `compute*` — pure Konstruktion/Ableitung ohne I/O
+- `create*` — legt etwas dauerhaft an (DB-Insert, Server); kein `make*`
+- `normalize*` — Werte klemmen/kanonisieren (nicht `sanitize*`)
+- Komponenten-Suffixe: `*View` (Vollbild), `*Modal` (Overlay mit `isOpen`/`onClose`),
+  `*Panel`, `*Section`, `*Tile`, `*Bar`
+- Modul-Dateien camelCase ohne `Service`/`Manager`-Suffix; PascalCase-Dateinamen
+  nur für React-Komponenten (und Module, deren Hauptexport eine Klasse ist)
+
 # Edge-to-Edge Safe-Area Architecture
 
 ## Goal

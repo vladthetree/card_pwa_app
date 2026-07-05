@@ -52,7 +52,7 @@ interface Props {
   onClose: () => void
 }
 
-export default function ImportView({ isOpen, onClose }: Props) {
+export default function ImportModal({ isOpen, onClose }: Props) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
   const prefersReducedMotion = useReducedMotion()

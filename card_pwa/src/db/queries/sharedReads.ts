@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT:
  * Role: Koaleszierte Volltabellen-Reads für den Home-Dashboard-Pfad; parallele Aufrufer teilen sich einen In-Flight-Read.
- * Used by: decks.ts/reviews.ts Query-Layer (fetchDecks, getDeckHomeMetadata, fetchGlobalStats, …).
+ * Used by: decks.ts/reviews.ts Query-Layer (listDecks, getDeckHomeMetadata, getGlobalStats, …).
  * Important: Es wird nur der laufende Read geteilt, nie ein abgeschlossenes Ergebnis gecacht — keine Staleness. Aufrufer dürfen die gelieferten Arrays/Records nicht mutieren.
  */
 import { db, type CardRecord, type DeckRecord } from '../../db'

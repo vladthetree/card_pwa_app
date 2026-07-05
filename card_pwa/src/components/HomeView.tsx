@@ -27,13 +27,13 @@ import { useHomeDerivedData } from '../hooks/home/useHomeDerivedData'
 import { useHomeViewController } from '../hooks/home/useHomeViewController'
 import { flattenDeckTree } from '../utils/securityDeckHierarchy'
 import { isReviewDeck } from '../utils/reviewDecks'
-import { fetchDailyQuestCards } from '../db/queries'
+import { pickDailyQuestCards } from '../db/queries'
 
 const CreateCardModal = lazy(() => import('./CreateCardModal.tsx'))
 const SettingsModal = lazy(() => import('./SettingsModal.tsx'))
 const FaqModal = lazy(() => import('./FaqModal.tsx'))
 const FutureForecastModal = lazy(() => import('./FutureForecastModal.tsx'))
-const ImportView = lazy(() => import('./ImportView.tsx'))
+const ImportModal = lazy(() => import('./ImportModal.tsx'))
 const ConfirmModal = lazy(() => import('./ConfirmModal.tsx'))
 const InstallHintModal = lazy(() => import('./InstallHintModal.tsx'))
 const DeckMetricsModal = lazy(() => import('./DeckMetricsModal').then(module => ({ default: module.DeckMetricsModal })))
@@ -148,7 +148,7 @@ export default function HomeView({
     if (questStarting || !onStartDailyQuest) return
     setQuestStarting(true)
     try {
-      const questCards = await fetchDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt)
+      const questCards = await pickDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt)
       if (questCards.length > 0) {
         onStartDailyQuest(questCards)
       }
@@ -491,7 +491,7 @@ export default function HomeView({
         {controller.showCreateCard && <CreateCardModal onClose={controller.closeCreateCard} />}
         {controller.showSettings && <SettingsModal isOpen onClose={controller.closeSettings} />}
         {controller.showFaq && <FaqModal isOpen onClose={controller.closeFaq} />}
-        {controller.showImport && <ImportView isOpen onClose={controller.closeImport} />}
+        {controller.showImport && <ImportModal isOpen onClose={controller.closeImport} />}
 
         {controller.confirmModal !== null && (
           <ConfirmModal

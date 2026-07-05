@@ -2,7 +2,7 @@
  * AI_CONTEXT: Vitest coverage for drag match scoring; protects utils behavior from regressions in the learning PWA.
  */
 import { describe, it, expect } from 'vitest'
-import { parseQuestionText, parseAnswerText } from '../../utils/cardTextParser'
+import { parseMcQuestion, parseMcAnswer } from '../../utils/cardTextParser'
 import { correctDragMatchKey, scoreDragMatchChoice } from '../../utils/dragMatchScoring'
 
 /**
@@ -25,8 +25,8 @@ Eselsbruecke: ZTNA = wie ein Tuersteher bei jeder Tuer. Kein Generalpass wie bei
 PDF-Bezug: SY0-701 Obj 1.2`
 
 describe('dragMatchScoring (ZTNA, echtes Backup)', () => {
-  const question = parseQuestionText(ZTNA_FRONT)
-  const answer = parseAnswerText(ZTNA_BACK)
+  const question = parseMcQuestion(ZTNA_FRONT)
+  const answer = parseMcAnswer(ZTNA_BACK)
 
   it('parst alle vier Optionen und die kanonische Correct-Markierung', () => {
     expect(Object.keys(question.options)).toEqual(['A', 'B', 'C', 'D'])

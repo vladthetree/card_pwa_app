@@ -7,8 +7,8 @@ import {
   OrderingAnswerParser,
   MatchingParser,
   MatchingAnswerParser,
-  parseAnyQuestion,
-  parseAnyAnswer,
+  parseQuestion,
+  parseAnswer,
 } from '../../utils/cardTextParser'
 
 describe('OrderingParser', () => {
@@ -123,29 +123,29 @@ Merkhilfe: Layers 7 down`
   })
 })
 
-describe('parseAnyQuestion / parseAnyAnswer dispatch', () => {
+describe('parseQuestion / parseAnswer dispatch', () => {
   it('dispatcht korrekt auf ordering', () => {
-    const q = parseAnyQuestion('ORDERING:\nFrage\n1) A\n2) B')
+    const q = parseQuestion('ORDERING:\nFrage\n1) A\n2) B')
     expect(q.type).toBe('ordering')
   })
 
   it('dispatcht korrekt auf matching', () => {
-    const q = parseAnyQuestion('MATCHING:\nFrage\nA >> B')
+    const q = parseQuestion('MATCHING:\nFrage\nA >> B')
     expect(q.type).toBe('matching')
   })
 
   it('fällt auf standard zurück', () => {
-    const q = parseAnyQuestion('Was ist DNS?')
+    const q = parseQuestion('Was ist DNS?')
     expect(q.type).toBe('standard')
   })
 
   it('parst ordering answer korrekt', () => {
-    const a = parseAnyAnswer('CORRECT_ORDER: 1,2\nText', 'ordering')
+    const a = parseAnswer('CORRECT_ORDER: 1,2\nText', 'ordering')
     expect(a.type).toBe('ordering')
   })
 
   it('parst matching answer korrekt', () => {
-    const a = parseAnyAnswer('A = B\nMerkhilfe: hint', 'matching')
+    const a = parseAnswer('A = B\nMerkhilfe: hint', 'matching')
     expect(a.type).toBe('matching')
   })
 })

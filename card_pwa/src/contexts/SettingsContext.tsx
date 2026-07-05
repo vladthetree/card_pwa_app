@@ -13,7 +13,8 @@ import {
   type FSRSParams,
   type SM2Params,
 } from '../utils/algorithmParams'
-import { clearProfile, loadProfile, saveProfile, makeLocalProfile, getOrCreateDeviceId } from '../services/profileService'
+import { clearProfile, loadProfile, saveProfile, buildLocalProfile, getOrCreateDeviceId } from '../services/profileService'
+import { normalizeStudyCardLimit } from '../services/studySessionPersistence'
 import { setCachedProfile } from '../services/syncConfig'
 import type { ProfileRecord } from '../db'
 
@@ -103,9 +104,6 @@ interface SettingsContextType {
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined)
 
 const STORAGE_KEY = STORAGE_KEYS.settings
-const MIN_STUDY_CARD_LIMIT = 10
-const MAX_STUDY_CARD_LIMIT = 200
-const STUDY_CARD_LIMIT_STEP = 10
 
 const DEFAULT_NOTIFICATION_CHANNELS: NotificationChannels = {
   dailyReminder: {
@@ -161,13 +159,6 @@ function normalizeDailyReminderTime(value: unknown): string {
   const trimmed = value.trim()
   if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(trimmed)) return '20:00'
   return trimmed
-}
-
-function normalizeStudyCardLimit(value: unknown): number {
-  const parsed = Number(value)
-  if (!Number.isFinite(parsed)) return 50
-  const rounded = Math.round(parsed / STUDY_CARD_LIMIT_STEP) * STUDY_CARD_LIMIT_STEP
-  return Math.max(MIN_STUDY_CARD_LIMIT, Math.min(MAX_STUDY_CARD_LIMIT, rounded))
 }
 
 const DEFAULT_SETTINGS: Settings = {
@@ -289,7 +280,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         if (!p) {
           // Ensure device ID is seeded even in local mode
           getOrCreateDeviceId()
-          p = makeLocalProfile()
+          p = buildLocalProfile()
           await saveProfile(p)
         }
         setProfileState(p)

@@ -67,7 +67,7 @@ function triggerDownload(blob: Blob, filename: string): void {
   URL.revokeObjectURL(url)
 }
 
-export async function createDbBackupPayload(options: ExportOptions = {}): Promise<DbBackupPayload> {
+export async function buildDbBackupPayload(options: ExportOptions = {}): Promise<DbBackupPayload> {
   const selectedDeckIds = options.deckIds?.length ? new Set(options.deckIds) : null
 
   const decksAll = await db.decks.toArray()
@@ -273,12 +273,12 @@ export function downloadDbBackupAsCsv(payload: DbBackupPayload) {
 }
 
 export async function exportDbBackupAsTxt(options: ExportOptions = {}) {
-  const payload = await createDbBackupPayload(options)
+  const payload = await buildDbBackupPayload(options)
   downloadDbBackupAsTxt(payload)
 }
 
 export async function exportDbBackupAsCsv(options: ExportOptions = {}) {
-  const payload = await createDbBackupPayload(options)
+  const payload = await buildDbBackupPayload(options)
   downloadDbBackupAsCsv(payload)
 }
 

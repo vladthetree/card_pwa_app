@@ -20,11 +20,11 @@ import {
   isSyncActive,
   getSyncConfig,
   getSyncBaseEndpoint,
-  makeOpId,
+  buildOpId,
   getOrCreateSyncClientId,
   fetchWithTimeout,
   SYNC_MAX_RETRIES,
-  makeAuthHeaders,
+  buildAuthHeaders,
 } from './syncConfig'
 
 export type SyncOperationType =
@@ -223,7 +223,7 @@ async function operationTargetsReviewDeck(type: SyncOperationType, payload: unkn
 export async function enqueueSyncOperation(
   type: SyncOperationType,
   payload: unknown,
-  opId = makeOpId(),
+  opId = buildOpId(),
 ): Promise<void> {
   const ts = now()
   await syncDb.queue.add({
@@ -282,7 +282,7 @@ async function sendOperation(record: SyncQueueRecord): Promise<SendResult> {
     headers: {
       'Content-Type': 'application/json',
       'X-Idempotency-Key': record.opId,
-      ...makeAuthHeaders(config),
+      ...buildAuthHeaders(config),
     },
     body: JSON.stringify({
       opId: record.opId,

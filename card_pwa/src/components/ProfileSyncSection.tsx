@@ -16,7 +16,7 @@ import {
   removeDeviceFromServer,
   getOrCreateDeviceId,
   rotateDeviceId,
-  makeLocalProfile,
+  buildLocalProfile,
   listPublicProfiles,
   listServerDecks,
   joinPublicProfile,
@@ -271,7 +271,7 @@ export default function ProfileSyncSection({ language }: Props) {
     setBusy(true)
     setError(null)
     setNotice(null)
-    const previousProfile = profile ?? makeLocalProfile()
+    const previousProfile = profile ?? buildLocalProfile()
     const rollbackSnapshot = await snapshotLocalStudyDataForRollback()
 
     if (profile?.mode === 'linked') {
@@ -525,7 +525,7 @@ export default function ProfileSyncSection({ language }: Props) {
       setPublicProfiles([])
       setServerDecks([])
       setSelectedDeckIds([])
-      const local = makeLocalProfile()
+      const local = buildLocalProfile()
       setProfile(local)
       return
     }
@@ -543,7 +543,7 @@ export default function ProfileSyncSection({ language }: Props) {
     setPublicProfiles([])
     setServerDecks([])
     setSelectedDeckIds([])
-    const local = makeLocalProfile()
+    const local = buildLocalProfile()
     setProfile(local)
     setBusy(false)
   }
@@ -569,7 +569,7 @@ export default function ProfileSyncSection({ language }: Props) {
     setPublicProfiles([])
     setServerDecks([])
     setSelectedDeckIds([])
-    const local = makeLocalProfile()
+    const local = buildLocalProfile()
     setProfile(local)
     setRemovingDevice(false)
   }

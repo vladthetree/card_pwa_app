@@ -26,8 +26,8 @@ import {
 import {
   getSyncBaseEndpoint,
   getSyncConfig,
-  makeAuthHeaders,
-  makeOpId,
+  buildAuthHeaders,
+  buildOpId,
   getOrCreateSyncClientId,
   fetchWithTimeout,
 } from './syncConfig'
@@ -50,7 +50,7 @@ const SYNC_META_LAST_PUSH_KEY = 'sync-last-push-at'
 const SYNC_META_BOOTSTRAP_KEY = 'bootstrap-completed-at'
 
 function getSyncAuthHeaders(): Record<string, string> {
-  return makeAuthHeaders(getSyncConfig())
+  return buildAuthHeaders(getSyncConfig())
 }
 
 function describeSyncApiTarget(target: string): string {
@@ -1048,7 +1048,7 @@ async function runBootstrapUpload(
       },
       body: JSON.stringify({
         clientId,
-        batchId: makeOpId(),
+        batchId: buildOpId(),
         sentAt: Date.now(),
         decks: decks.map(deck => ({
           id: deck.id,

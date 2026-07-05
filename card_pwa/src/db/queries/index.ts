@@ -11,16 +11,16 @@ export type { AlgorithmDiagnosticsEntry } from './diagnostics'
 export { getAlgorithmDiagnostics, clearAlgorithmDiagnostics } from './diagnostics'
 
 export {
-  fetchDecks,
-  fetchDeckCards,
-  fetchAllCards,
+  listDecks,
+  listDeckCards,
+  listAllCards,
   listCardsByTag,
   getDeckNameMap,
-  fetchDailyQuestCards,
+  pickDailyQuestCards,
   getDeckHomeMetadata,
-  fetchDeckStudyCandidates,
+  listDeckStudyCandidates,
   getDeckScheduleOverview,
-  fetchTodayDueFromDecks,
+  countTodayDueFromDecks,
   createDeck,
   deleteDeck,
 } from './decks'
@@ -28,7 +28,7 @@ export {
 export { normalizeDueDates, createCard, updateCard, deleteCard } from './cards'
 
 export {
-  fetchGlobalStats,
+  getGlobalStats,
   getFutureDueForecast,
   getDeckMetricsSnapshot,
   getShuffleCollectionMetricsSnapshot,
@@ -38,7 +38,7 @@ export {
   smoothBacklog,
 } from './reviews'
 
-export { fetchGamificationProfile } from './gamification'
+export { getGamificationProfile } from './gamification'
 
 export {
   readActiveSession,

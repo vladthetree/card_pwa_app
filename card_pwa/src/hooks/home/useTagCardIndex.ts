@@ -7,7 +7,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { liveQuery } from 'dexie'
 import { db } from '../../db'
-import { fetchAllCards } from '../../db/queries'
+import { listAllCards } from '../../db/queries'
 import type { Card } from '../../types'
 import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
 import { normalizeTagId } from '../../utils/tagIdentity'
@@ -31,7 +31,7 @@ export function useTagCardIndex(): TagCardIndex {
   const load = useCallback(async () => {
     const v = ++loadVersionRef.current
     try {
-      const cards = await fetchAllCards()
+      const cards = await listAllCards()
       if (loadVersionRef.current !== v) return
 
       const buckets: Record<string, Card[]> = {}

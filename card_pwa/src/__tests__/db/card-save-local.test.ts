@@ -41,7 +41,7 @@ vi.mock('../../services/syncQueue', () => ({
   enqueueSyncOperation: mockedRuntime.enqueueSyncOperation,
 }))
 
-import { fetchDeckCards, updateCard } from '../../db/queries'
+import { listDeckCards, updateCard } from '../../db/queries'
 
 function makeRecord(partial: Partial<CardRecord>): CardRecord {
   const now = Date.now()
@@ -79,7 +79,7 @@ describe('local card save and edit regression', () => {
     mockedRuntime.enqueueSyncOperation.mockClear()
   })
 
-  it('persists edited card fields locally and returns updated content through fetchDeckCards', async () => {
+  it('persists edited card fields locally and returns updated content through listDeckCards', async () => {
     mockedRuntime.state.cards = [
       makeRecord({
         id: 'card-1',
@@ -102,7 +102,7 @@ describe('local card save and edit regression', () => {
     expect(mockedRuntime.state.cards[0].tags).toEqual(['security', 'sqli'])
     expect(mockedRuntime.state.cards[0].updatedAt).toEqual(expect.any(Number))
 
-    const fetched = await fetchDeckCards('deck-1')
+    const fetched = await listDeckCards('deck-1')
     expect(fetched).toHaveLength(1)
     expect(fetched[0].front).toBe('New question')
     expect(fetched[0].back).toBe('New answer')

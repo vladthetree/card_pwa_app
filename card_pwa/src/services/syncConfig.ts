@@ -126,7 +126,7 @@ export function getSyncBaseEndpoint(): string | null {
   return normalized.endsWith('/sync') ? normalized : `${normalized}/sync`
 }
 
-export function makeOpId(): string {
+export function buildOpId(): string {
   return generateUuidV7()
 }
 
@@ -135,11 +135,11 @@ export function getOrCreateSyncClientId(): string {
     const existing = localStorage.getItem(SYNC_CLIENT_ID_KEY)
     if (existing) return existing
 
-    const next = makeOpId()
+    const next = buildOpId()
     localStorage.setItem(SYNC_CLIENT_ID_KEY, next)
     return next
   } catch {
-    return makeOpId()
+    return buildOpId()
   }
 }
 
@@ -169,7 +169,7 @@ export function fetchWithTimeout(
  * Returns auth headers for sync requests.
  * Uses profile device-token when available, falls back to legacy authToken.
  */
-export function makeAuthHeaders(_config?: SyncConfig): Record<string, string> {
+export function buildAuthHeaders(_config?: SyncConfig): Record<string, string> {
   const token = getActiveAuthToken()
   if (!token) return {}
   return { Authorization: `Bearer ${token}` }

@@ -40,6 +40,11 @@ import ConfirmModal from './ConfirmModal'
 import ProfileSyncSection from './ProfileSyncSection'
 import { exportDbBackupAsCsv, exportDbBackupAsTxt } from '../utils/dbBackup'
 import { clearVideoProgress } from '../hooks/useMesserVideoProgress'
+import {
+  MIN_STUDY_CARD_LIMIT,
+  MAX_STUDY_CARD_LIMIT,
+  STUDY_CARD_LIMIT_STEP,
+} from '../services/studySessionPersistence'
 
 interface Props {
   isOpen: boolean
@@ -48,13 +53,10 @@ interface Props {
 
 type SettingsSectionKey = 'profile' | 'appearance' | 'learning' | 'notifications' | 'data'
 
-const ImportView = lazy(() => import('./ImportView.tsx'))
+const ImportModal = lazy(() => import('./ImportModal.tsx'))
 
 
 
-const MIN_STUDY_CARD_LIMIT = 10
-const MAX_STUDY_CARD_LIMIT = 200
-const STUDY_CARD_LIMIT_STEP = 10
 const APP_STORAGE_PREFIXES = ['card-pwa-', 'anki-pwa-'] as const
 const APP_COOKIE_PREFIXES = ['card_pwa_', 'anki_pwa_', 'card-pwa-', 'anki-pwa-'] as const
 const APP_STORAGE_EXACT_KEYS = [BACKUP_METADATA.marker, BACKUP_METADATA.legacyMarker] as const
@@ -111,7 +113,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
   const [notificationTestStatus, setNotificationTestStatus] = useState<string | null>(null)
   const [localDataStatus, setLocalDataStatus] = useState<string | null>(null)
   const [dataExportStatus, setDataExportStatus] = useState<string | null>(null)
-  const [showImportView, setShowImportView] = useState(false)
+  const [showImportModal, setShowImportModal] = useState(false)
   const [confirmModal, setConfirmModal] = useState<{
     title: string
     message: string
@@ -1417,7 +1419,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                       <button
                         type="button"
-                        onClick={() => setShowImportView(true)}
+                        onClick={() => setShowImportModal(true)}
                         className={`${UI_TOKENS.button.ghost} justify-center py-2.5`}
                       >
                         <Upload size={13} strokeWidth={1.5} />
@@ -1687,10 +1689,10 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
         Wechselkinder — innerhalb erzeugten sie doppelte Leer-Keys (React-Warnung,
         riskiert verschluckte Kinder bei Exit-Animationen). */}
     <Suspense fallback={null}>
-      {showImportView && (
-        <ImportView
+      {showImportModal && (
+        <ImportModal
           isOpen
-          onClose={() => setShowImportView(false)}
+          onClose={() => setShowImportModal(false)}
         />
       )}
     </Suspense>

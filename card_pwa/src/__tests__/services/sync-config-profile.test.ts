@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import {
   getSyncBaseEndpoint,
   isSyncActive,
-  makeAuthHeaders,
+  buildAuthHeaders,
   setCachedProfile,
 } from '../../services/syncConfig'
 
@@ -43,7 +43,7 @@ describe('profile-aware sync config', () => {
 
     expect(isSyncActive()).toBe(true)
     expect(getSyncBaseEndpoint()).toBe('http://sync.example.test/sync')
-    expect(makeAuthHeaders()).toEqual({ Authorization: 'Bearer dt_profile-token' })
+    expect(buildAuthHeaders()).toEqual({ Authorization: 'Bearer dt_profile-token' })
   })
 
   it('does not activate background sync from a preconfigured endpoint without a profile token', () => {
@@ -51,7 +51,7 @@ describe('profile-aware sync config', () => {
     setCachedProfile(null, null)
 
     expect(isSyncActive()).toBe(false)
-    expect(makeAuthHeaders()).toEqual({})
+    expect(buildAuthHeaders()).toEqual({})
   })
 
   it('keeps explicit legacy sync active when an auth token is configured', () => {
@@ -67,6 +67,6 @@ describe('profile-aware sync config', () => {
 
     expect(isSyncActive()).toBe(true)
     expect(getSyncBaseEndpoint()).toBe('http://legacy-sync.test/sync')
-    expect(makeAuthHeaders()).toEqual({ Authorization: 'Bearer legacy-token' })
+    expect(buildAuthHeaders()).toEqual({ Authorization: 'Bearer legacy-token' })
   })
 })

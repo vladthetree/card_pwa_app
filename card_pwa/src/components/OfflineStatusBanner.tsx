@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { AlertCircle, Wifi, WifiOff, X } from 'lucide-react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
-import { offlineStatusService, type OnlineStatus } from '../services/OfflineStatusService'
+import { offlineStatusService, type OnlineStatus } from '../services/offlineStatus'
 import { getSyncQueuePendingCount } from '../services/syncQueue'
 
 /**

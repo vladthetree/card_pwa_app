@@ -2,7 +2,7 @@
  * AI_CONTEXT: Vitest coverage for algorithm switch; protects migration behavior from regressions in the learning PWA.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { migrateCardsForAlgorithm } from '../../services/AlgorithmMigrationService'
+import { migrateCardsForAlgorithm } from '../../services/algorithmMigration'
 import type { CardRecord } from '../../db'
 
 vi.mock('../../services/syncQueue', () => ({

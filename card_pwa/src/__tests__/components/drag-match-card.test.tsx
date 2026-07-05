@@ -42,7 +42,7 @@ vi.mock('../../contexts/SettingsContext', async () => {
 })
 
 import DragMatchCard from '../../components/DragMatchCard'
-import { parseQuestionText, parseAnswerText } from '../../utils/cardTextParser'
+import { parseMcQuestion, parseMcAnswer } from '../../utils/cardTextParser'
 
 const ZTNA_FRONT = `Welche Bedeutung hat das Acronym 'ZTNA' im SY0-701-Kontext (Obj 1.2)?
 A: Zoned Trust Network Architecture
@@ -67,8 +67,8 @@ function render(flipped: boolean) {
   return renderToStaticMarkup(
     createElement(DragMatchCard, {
       card,
-      question: parseQuestionText(ZTNA_FRONT),
-      answer: parseAnswerText(ZTNA_BACK),
+      question: parseMcQuestion(ZTNA_FRONT),
+      answer: parseMcAnswer(ZTNA_BACK),
       flipped,
       onFlip: () => {},
       onAnswerEvaluated: () => {},

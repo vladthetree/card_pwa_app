@@ -6,7 +6,7 @@ import { motion } from '../ui/motion'
 import { memo, useState, useEffect, useMemo, useRef } from 'react'
 import { Edit, Check, X } from 'lucide-react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
-import { parseQuestionText, parseAnswerText, parseAnyQuestion, parseAnyAnswer } from '../utils/cardTextParser'
+import { parseMcQuestion, parseMcAnswer, parseQuestion, parseAnswer } from '../utils/cardTextParser'
 import type { OrderingAnswer, MatchingAnswer } from '../utils/cardTextParser'
 import { isDragMatchShape, isFreeRecallCard } from '../utils/cardVariant'
 import type { Card } from '../types'
@@ -121,10 +121,10 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   const t = STRINGS[settings.language]
 
   // Dispatch to PBQ sub-components when card type requires it
-  const anyQuestion = useMemo(() => parseAnyQuestion(card.front), [card.id, card.front])
+  const anyQuestion = useMemo(() => parseQuestion(card.front), [card.id, card.front])
 
   if (anyQuestion.type === 'ordering') {
-    const anyAnswer = parseAnyAnswer(card.back, 'ordering') as OrderingAnswer
+    const anyAnswer = parseAnswer(card.back, 'ordering') as OrderingAnswer
     return (
       <Suspense fallback={null}>
         <OrderingCard
@@ -138,7 +138,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   }
 
   if (anyQuestion.type === 'matching') {
-    const anyAnswer = parseAnyAnswer(card.back, 'matching') as MatchingAnswer
+    const anyAnswer = parseAnswer(card.back, 'matching') as MatchingAnswer
     return (
       <Suspense fallback={null}>
         <MatchingCard
@@ -170,8 +170,8 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   // M2 Drag-Match: docs/M2-drag-match.md ist die Source of Truth:
   // genau 4 Optionen (A-D) und genau 1 korrekte Antwort. Andere MC-Formen
   // fallen auf die bestehende Inline-Darstellung unten zurück.
-  const mcQuestion = parseQuestionText(card.front)
-  const mcAnswer = parseAnswerText(card.back)
+  const mcQuestion = parseMcQuestion(card.front)
+  const mcAnswer = parseMcAnswer(card.back)
   if (useDragMatchMode && isDragMatchShape(mcQuestion, mcAnswer)) {
     return (
       <Suspense fallback={null}>
@@ -197,8 +197,8 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   const prevFlippedRef = useRef(false)
   const badge = TYPE_BADGE[card.type]
   const hasExtra = card.extra.acronym || card.extra.examples || card.extra.port || card.extra.protocol
-  const answered = useMemo(() => parseAnswerText(card.back), [card.back])
-  const question = useMemo(() => parseQuestionText(card.front), [card.front])
+  const answered = useMemo(() => parseMcAnswer(card.back), [card.back])
+  const question = useMemo(() => parseMcQuestion(card.front), [card.front])
 
   const hasAnswered = selectedAnswer !== null
   const correctKeys = answered.correctOptions.length > 0

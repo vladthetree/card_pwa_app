@@ -4,7 +4,7 @@
  * Used by: StudyView, CardFormModal, specialized card components, and tests for generated card formats.
  * Important: Keep variant detection aligned with docs/M2-drag-match.md and docs/M3-free-recall.md while preserving standard-card fallback.
  */
-import { parseAnswerText, parseQuestionText, type Answer, type Question } from './cardTextParser'
+import { parseMcAnswer, parseMcQuestion, type Answer, type Question } from './cardTextParser'
 
 export type CardVariant = 'standard' | 'mc' | 'ordering' | 'matching'
 
@@ -28,7 +28,7 @@ export function isDragMatchShape(
 }
 
 export function isDragMatchCard(front: string, back: string): boolean {
-  return isDragMatchShape(parseQuestionText(front), parseAnswerText(back))
+  return isDragMatchShape(parseMcQuestion(front), parseMcAnswer(back))
 }
 
 /**

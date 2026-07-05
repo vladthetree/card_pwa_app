@@ -108,7 +108,7 @@ export function profileScopeId(profile: ProfileRecord | null): string {
 }
 
 /** Return a local-only profile record (no server link). */
-export function makeLocalProfile(): ProfileRecord {
+export function buildLocalProfile(): ProfileRecord {
   const now = Date.now()
   return {
     id: 'current',

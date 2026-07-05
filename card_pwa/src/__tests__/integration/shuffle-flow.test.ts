@@ -121,7 +121,7 @@ vi.mock('../../db/queries/diagnostics', () => ({
 
 vi.mock('../../services/syncConfig', () => ({
   isSyncActive: () => mockedRuntime.state.syncActive,
-  makeOpId: () => 'review-op-id',
+  buildOpId: () => 'review-op-id',
 }))
 
 vi.mock('../../services/profileService', () => ({
@@ -137,7 +137,7 @@ import {
   writeShuffleSession,
   recordReview,
 } from '../../db/queries'
-import { buildSelectedShuffleCards } from '../../services/ShuffleSessionManager'
+import { buildSelectedShuffleCards } from '../../services/shuffleSession'
 import {
   buildPersistedStudySession,
   buildShuffleSessionId,

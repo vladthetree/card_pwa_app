@@ -8,7 +8,7 @@ import { useDeckCards } from '../../hooks/useCardDb'
 import { STRINGS } from '../../contexts/SettingsContext'
 import { UI_TOKENS } from '../../constants/ui'
 import type { Deck, Card } from '../../types'
-import { formatDeckName, parseAnswerText, parseAnyQuestion } from '../../utils/cardTextParser'
+import { formatDeckName, parseMcAnswer, parseQuestion } from '../../utils/cardTextParser'
 import { getCardVariant } from '../../utils/cardVariant'
 import EditCardModal from '../EditCardModal.tsx'
 import CreateCardModal from '../CreateCardModal.tsx'
@@ -84,8 +84,8 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
             <div className="space-y-2">
               {cards.map(card => {
                 const variant = getCardVariant(card.front)
-                const anyQuestion = parseAnyQuestion(card.front)
-                const parsedAnswer = parseAnswerText(card.back)
+                const anyQuestion = parseQuestion(card.front)
+                const parsedAnswer = parseMcAnswer(card.back)
 
                 const frontPreview = (() => {
                   if (anyQuestion.type === 'ordering') {

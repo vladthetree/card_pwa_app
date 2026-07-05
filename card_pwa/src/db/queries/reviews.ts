@@ -10,7 +10,7 @@ import { calculateCardStateAfterReview, SM2 } from '../../utils/sm2'
 import { calculateCardStateAfterReviewFSRS } from '../../utils/fsrs'
 import { type AlgorithmParams } from '../../utils/algorithmParams'
 import { enqueueSyncOperation } from '../../services/syncQueue'
-import { makeOpId } from '../../services/syncConfig'
+import { buildOpId } from '../../services/syncConfig'
 import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
 import { getDayStartMs, resolveDueAtMs } from '../../utils/time'
 import {
@@ -85,7 +85,7 @@ function computeSuccessRate(reviews: { rating: number }[]): number {
   return Math.round((reviews.filter(r => r.rating >= 3).length / reviews.length) * 100)
 }
 
-export async function fetchGlobalStats(nextDayStartsAt = 0): Promise<GlobalStats> {
+export async function getGlobalStats(nextDayStartsAt = 0): Promise<GlobalStats> {
   const nowMs = Date.now()
   const dayMs = 86_400_000
   const daysSinceEpoch = Math.floor(nowMs / dayMs)
@@ -367,7 +367,7 @@ export async function recordReview(
     }
 
     const reviewTimestamp = Date.now()
-    const reviewOpId = makeOpId()
+    const reviewOpId = buildOpId()
     const persistedCardUpdate = { ...cardUpdate, updatedAt: reviewTimestamp }
     let reviewId = 0
     await db.transaction('rw', db.cards, db.reviews, async () => {

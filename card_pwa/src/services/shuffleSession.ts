@@ -1,12 +1,12 @@
 /**
- * AI_CONTEXT: Application service for shuffle Session Manager; owns business logic outside React components for learning, sync, profile, update, or session flows.
+ * AI_CONTEXT: Application service for shuffle sessions; owns business logic outside React components for learning, sync, profile, update, or session flows.
  */
 import type { ShuffleCollectionRecord } from '../db'
-import { fetchDeckStudyCandidates } from '../db/queries'
+import { listDeckStudyCandidates } from '../db/queries'
 import { DAY_MS, resolveDueAtMs } from '../utils/time'
 import type { Card } from '../types'
 import { compareByDueRank, getCardTypePriority, seededRank } from './cardOrdering'
-import { getCardWeight, sortStudyCards } from './StudySessionManager'
+import { getCardWeight, sortStudyCards } from './studyCardOrdering'
 import { getSyncedDeckIds } from './syncedDeckScope'
 
 export interface ShuffleStudyCard extends Card {
@@ -113,7 +113,7 @@ export async function buildShufflePool(
 
   const deckCardSets = await Promise.all(
     effectiveDeckIds.map(async deckId => {
-      const cards = await fetchDeckStudyCandidates(deckId, options.nextDayStartsAt)
+      const cards = await listDeckStudyCandidates(deckId, options.nextDayStartsAt)
       return cards.map(card => ({ ...card, deckId }))
     }),
   )

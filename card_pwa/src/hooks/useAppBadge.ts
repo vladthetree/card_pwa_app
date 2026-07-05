@@ -4,7 +4,7 @@
 import { useEffect } from 'react'
 import { useSettings } from '../contexts/SettingsContext'
 import { supportsServiceWorker } from '../env'
-import { fetchTodayDueFromDecks } from '../db/queries'
+import { countTodayDueFromDecks } from '../db/queries'
 import { REVIEW_UPDATED_EVENT } from '../constants/appIdentity'
 
 export function useAppBadge() {
@@ -25,7 +25,7 @@ export function useAppBadge() {
       // most important when the app is closed, so we refresh once when going to
       // background to ensure the count shown on the icon is up to date.
       try {
-        const dueToday = await fetchTodayDueFromDecks(
+        const dueToday = await countTodayDueFromDecks(
           settings.studyCardLimit,
           settings.nextDayStartsAt
         )

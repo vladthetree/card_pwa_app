@@ -2,7 +2,7 @@
  * AI_CONTEXT: Vitest coverage for global stats; protects db behavior from regressions in the learning PWA.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { fetchGlobalStats } from '../../db/queries'
+import { getGlobalStats } from '../../db/queries'
 import type { CardRecord, DeckRecord, ReviewRecord } from '../../db'
 import { SM2 } from '../../utils/sm2'
 import { getDayStartMs } from '../../utils/time'
@@ -16,7 +16,7 @@ const mockedDb = vi.hoisted(() => {
     reviews: [] as Array<ReviewRecord & { id: number }>,
   }
 
-  // fetchGlobalStats zählt seit dem Shared-Read-Umbau alle Kennzahlen in einem
+  // getGlobalStats zählt seit dem Shared-Read-Umbau alle Kennzahlen in einem
   // Durchgang über readAllCardsShared/readAllDecksShared; der Mock liefert
   // daher nur noch toArray statt filter/where-Zählketten.
   const cards = {
@@ -98,7 +98,7 @@ function makeReview(partial: Partial<ReviewRecord> & Pick<ReviewRecord, 'cardId'
   }
 }
 
-describe('fetchGlobalStats', () => {
+describe('getGlobalStats', () => {
   beforeEach(() => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-04-11T10:00:00.000Z'))
@@ -133,7 +133,7 @@ describe('fetchGlobalStats', () => {
       makeReview({ cardId: 'review-due', rating: 3, timestamp: now - 10 * 60_000 }),
     ]
 
-    const stats = await fetchGlobalStats()
+    const stats = await getGlobalStats()
 
     expect(stats.total).toBe(5)
     expect(stats.new).toBe(1)
@@ -165,7 +165,7 @@ describe('fetchGlobalStats', () => {
       makeReview({ cardId: 'active', rating: 3, timestamp: now - 5 * 60_000 }),
     ]
 
-    const stats = await fetchGlobalStats()
+    const stats = await getGlobalStats()
 
     expect(stats.total).toBe(1)
     expect(stats.new).toBe(0)
@@ -193,7 +193,7 @@ describe('fetchGlobalStats', () => {
       makeReview({ cardId: 'card-1', rating: 1, timestamp: dayStart - 60_000 }),
     ]
 
-    const stats = await fetchGlobalStats(4)
+    const stats = await getGlobalStats(4)
 
     expect(stats.reviewedToday).toBe(1)
     expect(stats.successToday).toBe(100)
@@ -204,7 +204,7 @@ describe('fetchGlobalStats', () => {
     mockedDb.state.decks = [makeDeck({ id: 'deck-1' })]
     mockedDb.state.reviews = []
 
-    const stats = await fetchGlobalStats()
+    const stats = await getGlobalStats()
 
     expect(stats.reviewedToday).toBe(0)
     expect(stats.successToday).toBe(0)

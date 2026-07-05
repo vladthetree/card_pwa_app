@@ -144,7 +144,7 @@ const fetchWithTimeoutMock = vi.fn(async () => {
 vi.mock('../../services/syncConfig', () => ({
   getSyncBaseEndpoint: () => 'http://localhost:8787/sync',
   getOrCreateSyncClientId: () => 'test-client',
-  makeOpId: () => 'op-id',
+  buildOpId: () => 'op-id',
   fetchWithTimeout: fetchWithTimeoutMock,
   getSyncConfig: () => ({
     enabled: true,
@@ -152,7 +152,7 @@ vi.mock('../../services/syncConfig', () => ({
     mode: 'local' as const,
     authToken: state.authToken,
   }),
-  makeAuthHeaders: (config: { authToken: string }) => {
+  buildAuthHeaders: (config: { authToken: string }) => {
     if (!config.authToken) return {}
     return { Authorization: `Bearer ${config.authToken}` }
   },
