@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT:
  * Role: React liveQuery hooks for profile-scoped video notes, tag lists, related tags, and objective note indexes.
- * Used by: VideosView, VideoNotesPanel, TagCollectionPanel, and TagBrowserSection.
+ * Used by: VideosView, VideoNotesPanel, and TagCollectionPanel.
  * Important: These hooks intentionally mirror db/queries/videoNotes without owning parsing rules; keep profileId in every query path.
  */
 import { useEffect, useMemo, useState } from 'react'

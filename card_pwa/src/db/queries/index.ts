@@ -18,7 +18,6 @@ export {
   getDeckNameMap,
   fetchDailyQuestCards,
   getDeckHomeMetadata,
-  getDeckTagIndex,
   fetchDeckStudyCandidates,
   getDeckScheduleOverview,
   fetchTodayDueFromDecks,
@@ -31,7 +30,6 @@ export { normalizeDueDates, createCard, updateCard, deleteCard } from './cards'
 export {
   fetchGlobalStats,
   getFutureDueForecast,
-  getDeckSuccessRates,
   getDeckMetricsSnapshot,
   getShuffleCollectionMetricsSnapshot,
   recordReview,
@@ -40,7 +38,7 @@ export {
   smoothBacklog,
 } from './reviews'
 
-export { fetchGamificationProfile, fetchCardSuccessStats } from './gamification'
+export { fetchGamificationProfile } from './gamification'
 
 export {
   readActiveSession,
@@ -75,8 +73,6 @@ export {
   saveVideoBlob,
   getVideoBlob,
   deleteVideoDownload,
-  listVideoDownloads,
-  getDownloadsTotalSize,
   type SaveVideoBlobInput,
 } from './videoDownloads'
 

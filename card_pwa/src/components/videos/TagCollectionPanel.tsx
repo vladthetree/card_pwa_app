@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT:
  * Role: Obsidian-like tag page. Header carries tag meta (label, colour, pin, description, aliases); segmented body shows the tag's video notes, flashcards, timestamps, open questions, card ideas, plus related tags.
- * Used by: VideosView tag clicks / sidebar and the Settings TagBrowserSection (which passes only the base props).
+ * Used by: VideosView tag clicks / sidebar.
  * Important: Matching uses canonical tag identity, not raw spelling. Derived sections (timestamps/questions/card ideas) come from the pure buildTagPageSections; the note text stays the source of truth.
  */
 import { useEffect, useMemo, useState } from 'react'

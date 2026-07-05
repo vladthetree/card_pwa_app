@@ -424,12 +424,3 @@ export async function clearSyncQueue(): Promise<void> {
 export function closeSyncQueueDatabase(): void {
   syncDb.close()
 }
-
-/**
- * @deprecated Use setupUnifiedSyncRuntime() from syncCoordinator instead.
- * Kept temporarily so existing call-sites still compile.
- */
-export function setupSyncRuntime(): () => void {
-  // no-op: the coordinator now owns the runtime loop
-  return () => {}
-}

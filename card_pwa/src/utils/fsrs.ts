@@ -135,14 +135,6 @@ function toFsrsCard(
 
 // ─── Public API ──────────────────────────────────────────────────────────────
 
-export interface FSRSCardState {
-  stability: number // Wie gut man die Karte erinnert
-  difficulty: number // Wie schwer die Karte ist
-  lastReview: number // Letztes Review (Tage seit Epoche)
-  reps: number // Anzahl Wiederholungen
-  lapses: number // Anzahl Fehler
-}
-
 export interface CardStateUpdate {
   factor: number // Ease (kompatibel mit SM2)
   interval: number
@@ -154,18 +146,6 @@ export interface CardStateUpdate {
   queue: number
   due: number
   dueAt: number
-}
-
-// Default-Zustand für neue Karten
-export function initializeFSRS(): FSRSCardState {
-  const card = createEmptyCard(new Date())
-  return {
-    stability: clampStability(card.stability),
-    difficulty: clampDifficulty(card.difficulty),
-    lastReview: Math.floor(Date.now() / 86_400_000),
-    reps: 0,
-    lapses: 0,
-  }
 }
 
 export function calculateCardStateAfterReviewFSRS(

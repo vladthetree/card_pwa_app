@@ -1291,10 +1291,3 @@ export async function pullAndApplySyncDeltas(limit = 200) {
   await writeAppliedOpIds(appliedOpIds)
   await writeSyncMetaTimestamp(SYNC_META_LAST_PULL_KEY)
 }
-
-/**
- * @deprecated Use setupUnifiedSyncRuntime() from syncCoordinator instead.
- */
-export function setupSyncPullRuntime(): () => void {
-  return () => {}
-}

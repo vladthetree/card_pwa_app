@@ -102,8 +102,7 @@ export function requestSyncCycle(): void {
 }
 
 /**
- * Sets up the unified sync runtime (replaces both setupSyncRuntime and
- * setupSyncPullRuntime).  Listens to online, visibility-change, and
+ * Sets up the unified sync runtime. Listens to online, visibility-change, and
  * Service-Worker messages, plus a periodic 30 s interval.
  */
 export function setupUnifiedSyncRuntime(): () => void {

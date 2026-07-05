@@ -237,24 +237,6 @@ export async function initializeAlgorithmMigration(currentAlgorithm: 'sm2' | 'fs
       )
     }
     await migrateCardsForAlgorithm(currentAlgorithm)
-    try {
-      localStorage.setItem('card-pwa-migration-notice-pending', currentAlgorithm)
-    } catch {
-      // best effort
-    }
   }
-}
-
-export function consumeMigrationNotice(): 'sm2' | 'fsrs' | null {
-  try {
-    const value = localStorage.getItem('card-pwa-migration-notice-pending')
-    if (value === 'sm2' || value === 'fsrs') {
-      localStorage.removeItem('card-pwa-migration-notice-pending')
-      return value
-    }
-  } catch {
-    // best effort
-  }
-  return null
 }
 

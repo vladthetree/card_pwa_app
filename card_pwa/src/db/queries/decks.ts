@@ -242,32 +242,6 @@ export async function fetchDailyQuestCards(limit: number, nextDayStartsAt = 0): 
   return sortStudyCards(cards, { maxCards: limit, nextDayStartsAt })
 }
 
-export async function getDeckTagIndex(deckIds: string[]): Promise<Record<string, string[]>> {
-  if (deckIds.length === 0) return {}
-
-  const rows = (await db.cards.where('deckId').anyOf(deckIds).toArray()).filter(row => !row.isDeleted)
-  const tagsByDeck = new Map<string, Set<string>>()
-
-  for (const deckId of deckIds) {
-    tagsByDeck.set(deckId, new Set<string>())
-  }
-
-  for (const row of rows) {
-    const bucket = tagsByDeck.get(row.deckId)
-    if (!bucket) continue
-    for (const tag of row.tags) {
-      const normalized = normalizeTagId(tag)
-      if (normalized) {
-        bucket.add(normalized)
-      }
-    }
-  }
-
-  return Object.fromEntries(
-    deckIds.map(deckId => [deckId, Array.from(tagsByDeck.get(deckId) ?? []).sort()]),
-  )
-}
-
 export interface DeckHomeMetadata {
   deckScheduleOverview: Record<string, DeckScheduleOverview>
   deckTagIndex: Record<string, string[]>

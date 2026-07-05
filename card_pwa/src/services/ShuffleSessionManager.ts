@@ -3,7 +3,7 @@
  */
 import type { ShuffleCollectionRecord } from '../db'
 import { fetchDeckStudyCandidates } from '../db/queries'
-import { DAY_MS, getDayStartMs, resolveDueAtMs } from '../utils/time'
+import { DAY_MS, resolveDueAtMs } from '../utils/time'
 import type { Card } from '../types'
 import { compareByDueRank, getCardTypePriority, seededRank } from './cardOrdering'
 import { getCardWeight, sortStudyCards } from './StudySessionManager'
@@ -140,12 +140,4 @@ export async function buildSelectedShuffleCards(
     nextDayStartsAt: options.nextDayStartsAt,
   })
   return selectShuffleCards(pool, options)
-}
-
-export function isShuffleCardDueToday(card: Card, nowMs = Date.now(), nextDayStartsAt = 0): boolean {
-  const tomorrowStartMs = getDayStartMs(nowMs, nextDayStartsAt) + DAY_MS
-  const dueAtMs = resolveDueAtMs(card)
-
-  if (card.type === 'new') return true
-  return dueAtMs < tomorrowStartMs
 }

@@ -24,10 +24,6 @@ type StatsRequest =
       days: number
       nowMs?: number
     }
-  | {
-      type: 'invalidate'
-      profileId?: string
-    }
 
 interface WorkerRequest {
   id?: string
@@ -65,7 +61,6 @@ function getProfileId(payload: StatsRequest): string {
 }
 
 function getSignature(payload: StatsRequest): string {
-  if (payload.type === 'invalidate') return 'invalidate'
   if (payload.type === 'heatmap') {
     const last = payload.reviews[payload.reviews.length - 1]
     return `${payload.year}:${payload.reviews.length}:${last?.timestamp ?? 0}`
@@ -85,10 +80,7 @@ function compute(payload: StatsRequest): StatsResult {
   if (payload.type === 'streak') {
     return calculateStreak(payload.reviews, payload.nowMs)
   }
-  if (payload.type === 'forecast') {
-    return forecastDue(payload.cards, payload.days, payload.nowMs)
-  }
-  return { ok: true }
+  return forecastDue(payload.cards, payload.days, payload.nowMs)
 }
 
 ctx.onmessage = (event: MessageEvent<WorkerRequest>) => {
@@ -97,12 +89,6 @@ ctx.onmessage = (event: MessageEvent<WorkerRequest>) => {
   const target = messageTarget(port)
 
   try {
-    if (payload.type === 'invalidate') {
-      cache.delete(getProfileId(payload))
-      target.postMessage({ id: requestKey, requestId: requestKey, ok: true, result: { ok: true } })
-      return
-    }
-
     const profileId = getProfileId(payload)
     const signature = getSignature(payload)
     const entry = cache.get(profileId) ?? {

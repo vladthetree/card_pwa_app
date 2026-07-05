@@ -2833,7 +2833,3 @@ export function getLabScenarioSources(scenarioId: string): LabSource[] {
     .map(sourceId => labSourceById.get(sourceId))
     .filter((source): source is LabSource => Boolean(source))
 }
-
-export function getLabScenariosByCategory(categoryId: string): LabScenario[] {
-  return LAB_SCENARIOS.filter(scenario => scenario.categoryId === categoryId)
-}

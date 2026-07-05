@@ -209,13 +209,6 @@ export async function restoreVideoNotesFromBackupPayload(
   return result
 }
 
-export function downloadDbBackup(payload: DbBackupPayload) {
-  const stamp = new Date(payload.meta.exportedAt).toISOString().replace(/[:.]/g, '-')
-  const filename = `card-pwa-backup-${stamp}.json`
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
-  triggerDownload(blob, filename)
-}
-
 export function downloadDbBackupAsTxt(payload: DbBackupPayload) {
   const stamp = new Date(payload.meta.exportedAt).toISOString().replace(/[:.]/g, '-')
   const filename = `card-pwa-backup-${stamp}.txt`
@@ -277,11 +270,6 @@ export function downloadDbBackupAsCsv(payload: DbBackupPayload) {
 
   const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' })
   triggerDownload(blob, filename)
-}
-
-export async function exportDbBackup() {
-  const payload = await createDbBackupPayload()
-  downloadDbBackup(payload)
 }
 
 export async function exportDbBackupAsTxt(options: ExportOptions = {}) {
