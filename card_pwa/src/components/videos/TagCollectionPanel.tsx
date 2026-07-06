@@ -129,7 +129,7 @@ function statusBadge(status: VideoStatus, copy: Copy): { label: string; cls: str
     case 'solid':
       return { label: copy.statusSolid, cls: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' }
     case 'ok':
-      return { label: copy.statusOk, cls: 'border-sky-500/30 bg-sky-500/10 text-sky-300' }
+      return { label: copy.statusOk, cls: 'border-[--brand-secondary-25] bg-[--brand-secondary-12] text-[--brand-secondary]' }
     case 'gaps':
       return { label: copy.statusGaps, cls: 'border-amber-500/30 bg-amber-500/10 text-amber-300' }
     case 'watched':
@@ -166,7 +166,7 @@ function FlipCardTile({ deckName, view, copy }: { deckName: string; view: { prom
         <div className={`${faceBase} border-[#1f1f23] bg-[#0c0c0c]`} style={hidden}>
           <div className="mb-1 flex items-center justify-between gap-2">
             <span className="truncate font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600">{copy.deck}: {deckName}</span>
-            <span className="flex shrink-0 items-center gap-1 font-mono text-[9px] uppercase tracking-[0.12em] text-sky-300/70">
+            <span className="flex shrink-0 items-center gap-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[--brand-secondary-80]">
               <Eye size={11} strokeWidth={1.5} />
               {copy.cardReveal}
             </span>
@@ -268,7 +268,7 @@ export default function TagCollectionPanel({
             const badge = statusBadge(resolveVideoStatus(progress[note.objective]), copy)
             const inner = (
               <>
-                <span className="mt-0.5 shrink-0 font-mono text-[12px] font-bold text-sky-300">{note.objective}</span>
+                <span className="mt-0.5 shrink-0 font-mono text-[12px] font-bold text-[--brand-secondary]">{note.objective}</span>
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-2">
                     <span className="min-w-0 flex-1 truncate font-mono text-[13px] text-zinc-100">{objectiveTitle(note.objective)}</span>
@@ -292,10 +292,10 @@ export default function TagCollectionPanel({
                 type="button"
                 onClick={() => onOpenObjective(note.objective)}
                 data-testid={`tag-panel-objective-${note.objective}`}
-                className="group flex items-start gap-3 rounded-ds-xl border border-[#1f1f23] bg-[#0c0c0c] px-3 py-2.5 text-left transition-colors hover:border-sky-500/40 hover:bg-sky-500/5"
+                className="group flex items-start gap-3 rounded-ds-xl border border-[#1f1f23] bg-[#0c0c0c] px-3 py-2.5 text-left transition-colors hover:border-[--brand-secondary-50] hover:bg-[--brand-secondary-08]"
               >
                 {inner}
-                <ChevronRight size={15} className="mt-0.5 shrink-0 text-zinc-600 transition-colors group-hover:text-sky-300" />
+                <ChevronRight size={15} className="mt-0.5 shrink-0 text-zinc-600 transition-colors group-hover:text-[--brand-secondary]" />
               </button>
             ) : (
               <div key={note.objective} className="flex items-start gap-3 rounded-ds-xl border border-[#1f1f23] bg-[#0c0c0c] px-3 py-2.5">
@@ -344,8 +344,8 @@ export default function TagCollectionPanel({
           {sections.timestamps.map((ts, i) => {
             const inner = (
               <>
-                <span className="shrink-0 font-mono text-[11px] font-bold text-sky-300">{ts.objective}</span>
-                <span className="shrink-0 rounded-[6px] border border-sky-500/30 bg-sky-500/10 px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums text-sky-200">
+                <span className="shrink-0 font-mono text-[11px] font-bold text-[--brand-secondary]">{ts.objective}</span>
+                <span className="shrink-0 rounded-[6px] border border-[--brand-secondary-25] bg-[--brand-secondary-12] px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums text-[--brand-secondary]">
                   {ts.token}
                 </span>
                 <span className="min-w-0 flex-1 truncate font-mono text-[12px] text-zinc-300">{ts.label || objectiveTitle(ts.objective)}</span>
@@ -357,10 +357,10 @@ export default function TagCollectionPanel({
                 type="button"
                 onClick={() => onOpenObjectiveAtTime(ts.objective, ts.seconds)}
                 data-testid={`tag-panel-timestamp-${ts.objective}-${ts.seconds}`}
-                className="group flex items-center gap-2 rounded-ds-lg border border-[#1f1f23] bg-[#0c0c0c] px-3 py-2 text-left transition-colors hover:border-sky-500/40 hover:bg-sky-500/5"
+                className="group flex items-center gap-2 rounded-ds-lg border border-[#1f1f23] bg-[#0c0c0c] px-3 py-2 text-left transition-colors hover:border-[--brand-secondary-50] hover:bg-[--brand-secondary-08]"
               >
                 {inner}
-                <ChevronRight size={14} className="shrink-0 text-zinc-600 transition-colors group-hover:text-sky-300" />
+                <ChevronRight size={14} className="shrink-0 text-zinc-600 transition-colors group-hover:text-[--brand-secondary]" />
               </button>
             ) : (
               <div key={`${ts.objective}-${ts.seconds}-${i}`} className="flex items-center gap-2 rounded-ds-lg border border-[#1f1f23] bg-[#0c0c0c] px-3 py-2">
@@ -395,7 +395,7 @@ export default function TagCollectionPanel({
                 key={`${item.objective}-${i}`}
                 className="flex items-start gap-2 rounded-ds-lg border border-[#1f1f23] bg-[#0c0c0c] px-3 py-2"
               >
-                <span className="mt-0.5 shrink-0 font-mono text-[11px] font-bold text-sky-300">{item.objective}</span>
+                <span className="mt-0.5 shrink-0 font-mono text-[11px] font-bold text-[--brand-secondary]">{item.objective}</span>
                 <span className="min-w-0 flex-1 whitespace-pre-line font-mono text-[12px] leading-relaxed text-zinc-200">{item.text}</span>
               </div>
             ))}
@@ -418,7 +418,7 @@ export default function TagCollectionPanel({
           {meta?.color ? (
             <span className="mt-1 h-3 w-3 shrink-0 rounded-full ring-1 ring-white/10" style={{ backgroundColor: meta.color }} aria-hidden />
           ) : (
-            <Hash size={16} strokeWidth={1.5} className="mt-0.5 shrink-0 text-sky-300" />
+            <Hash size={16} strokeWidth={1.5} className="mt-0.5 shrink-0 text-[--brand-secondary]" />
           )}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
@@ -462,11 +462,11 @@ export default function TagCollectionPanel({
                 data-testid={`tag-segment-${seg.key}`}
                 aria-pressed={active}
                 className={`flex shrink-0 items-center gap-1 rounded-ds border px-2.5 py-1.5 font-mono text-[11px] font-bold transition-colors ${
-                  active ? 'border-sky-400/70 bg-sky-500/20 text-sky-100' : 'border-[#1f1f23] bg-[#0c0c0c] text-zinc-400 hover:border-[#3f3f46]'
+                  active ? 'border-[--brand-secondary-80] bg-[--brand-secondary-20] text-ds-fg' : 'border-[#1f1f23] bg-[#0c0c0c] text-zinc-400 hover:border-[#3f3f46]'
                 }`}
               >
                 {seg.label}
-                {seg.count !== null && <span className={active ? 'text-sky-300/80' : 'text-zinc-600'}>{seg.count}</span>}
+                {seg.count !== null && <span className={active ? 'text-[--brand-secondary-80]' : 'text-zinc-600'}>{seg.count}</span>}
               </button>
             )
           })}
@@ -486,7 +486,7 @@ export default function TagCollectionPanel({
                   type="button"
                   onClick={() => onOpenTag?.(related.tag)}
                   data-testid={`tag-panel-related-${related.tag}`}
-                  className="flex items-center gap-1.5 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 font-mono text-[11px] text-zinc-300 transition-colors hover:border-sky-500/40 hover:text-sky-200"
+                  className="flex items-center gap-1.5 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 font-mono text-[11px] text-zinc-300 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
                 >
                   <Hash size={10} strokeWidth={2} className="text-zinc-600" />
                   {related.tag}

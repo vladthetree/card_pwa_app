@@ -173,7 +173,7 @@ const DragMatchCard = memo(function DragMatchCard({
               </div>
             )}
 
-            <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-[#f0ede8]`}>
+            <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-ds-fg`}>
               {answer.answer}
             </p>
 
@@ -193,12 +193,12 @@ const DragMatchCard = memo(function DragMatchCard({
   return (
     <div className={`w-full ${compact ? 'h-full' : ''}`}>
       <div className={cardShellCls}>
-        {/* Header: "FRAGE *" links, DRAG-MATCH-Badge rechts (exakt wie Screenshot) */}
+        {/* Header: "FRAGE" links, DRAG-MATCH-Badge rechts (exakt wie Screenshot) */}
         <div className="shrink-0 border-b border-ds-border px-[14px] py-[8px]">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2">
               <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted">
-                {t.question} <span className="text-zinc-500">*</span>
+                {t.question}
               </span>
               {renderOriginBadge()}
             </div>
@@ -216,7 +216,7 @@ const DragMatchCard = memo(function DragMatchCard({
         </div>
 
         <div className={`${bodyClass} flex flex-col`}>
-          <p className={`font-sans font-medium leading-[1.55] text-[#f0ede8] ${compact ? 'text-[15px]' : 'text-[16px] md:text-lg'}`}>
+          <p className={`font-sans font-medium leading-[1.55] text-ds-fg ${compact ? 'text-[15px]' : 'text-[16px] md:text-lg'}`}>
             {question.question}
           </p>
 
@@ -254,7 +254,7 @@ const DragMatchCard = memo(function DragMatchCard({
                 <p className="mt-1 font-mono text-[14px] text-rose-200">{selectedText}</p>
                 <div className="my-2 h-px bg-rose-500/20" />
                 <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-zinc-500">{t.dragmatch_correct_answer}</span>
-                <p className="mt-1 font-mono text-[14px] font-medium text-[#f0ede8]">{correctText}</p>
+                <p className="mt-1 font-mono text-[14px] font-medium text-ds-fg">{correctText}</p>
               </div>
 
               {answer.answer && (

@@ -59,7 +59,7 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
             <button
               type="button"
               onClick={() => setShowCreateCard(true)}
-              className="flex items-center gap-1.5 rounded-ds-lg border border-[--brand-primary-40] bg-[--brand-primary-08] px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[--brand-primary] transition hover:bg-[--brand-primary-12]"
+              className="flex items-center gap-1.5 rounded-ds-lg border border-[--brand-primary-25] bg-[--brand-primary-08] px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[--brand-primary] transition hover:bg-[--brand-primary-12]"
             >
               <Plus size={11} strokeWidth={2} /> {t.create_card}
             </button>

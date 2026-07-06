@@ -295,7 +295,7 @@ export default function ImportModal({ isOpen, onClose }: Props) {
                       <p className="text-white font-semibold">{t.import_success}</p>
                       <div className="flex gap-4 text-xs">
                         <span className="text-emerald-400">+{status.added} {t.stats_new.toLowerCase()}</span>
-                        {status.updated > 0 && <span className="text-sky-400">{status.updated} {t.updated}</span>}
+                        {status.updated > 0 && <span className="text-[--brand-secondary]">{status.updated} {t.updated}</span>}
                         {status.skipped > 0 && <span className="text-white/35">{status.skipped} {t.skipped}</span>}
                       </div>
                       <button

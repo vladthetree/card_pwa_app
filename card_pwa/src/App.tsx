@@ -7,7 +7,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { LazyMotion } from 'framer-motion'
 import { AnimatePresence, motion, useReducedMotion } from './ui/motion'
-import { ThemeProvider } from './contexts/ThemeContext'
+import { ThemeProvider, useTheme } from './contexts/ThemeContext'
 import { SettingsProvider, useSettings } from './contexts/SettingsContext'
 import AppInitializer from './components/AppInitializer'
 import AppErrorBoundary from './components/AppErrorBoundary'
@@ -255,6 +255,7 @@ const MetaBalls = lazy(() => import('./components/MetaBalls'))
 
 function ViewFallback({ reason = 'startup' }: { reason?: 'startup' | 'update' }) {
   const { settings } = useSettings()
+  const { theme } = useTheme()
   const prefersReducedMotion = useReducedMotion()
   const loadingText = reason === 'update'
     ? (settings.language === 'de' ? 'Aktualisiere App' : 'Updating app')
@@ -271,8 +272,8 @@ function ViewFallback({ reason = 'startup' }: { reason?: 'startup' | 'update' })
         <div className="relative h-56 w-72 max-w-[78vw] overflow-hidden sm:h-64 sm:w-80">
           <Suspense fallback={null}>
             <MetaBalls
-              color="#e75f3c"
-              cursorBallColor="#79b7aa"
+              color={theme.primary}
+              cursorBallColor={theme.secondary}
               cursorBallSize={prefersReducedMotion ? 0 : 2.4}
               ballCount={prefersReducedMotion ? 5 : 12}
               animationSize={24}

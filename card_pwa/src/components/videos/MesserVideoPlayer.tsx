@@ -272,7 +272,7 @@ export default function MesserVideoPlayer({
                   aria-pressed={active}
                   className={`rounded-[7px] border px-2 py-1 font-mono text-[11px] font-bold tabular-nums transition-colors ${
                     active
-                      ? 'border-sky-400/70 bg-sky-500/20 text-sky-100'
+                      ? 'border-[--brand-secondary-80] bg-[--brand-secondary-20] text-ds-fg'
                       : 'border-[#1f1f23] bg-[#0c0c0c] text-zinc-400 hover:border-[#3f3f46]'
                   }`}
                 >
@@ -287,7 +287,7 @@ export default function MesserVideoPlayer({
             data-testid="video-fullscreen"
             aria-label={isFs ? labels.exitFullscreen : labels.fullscreen}
             title={isFs ? labels.exitFullscreen : labels.fullscreen}
-            className="flex shrink-0 items-center justify-center rounded-[7px] border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 text-zinc-400 transition-colors hover:border-sky-500/40 hover:text-sky-300"
+            className="flex shrink-0 items-center justify-center rounded-[7px] border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 text-zinc-400 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
           >
             {isFs ? <Minimize size={14} strokeWidth={1.5} /> : <Maximize size={14} strokeWidth={1.5} />}
           </button>

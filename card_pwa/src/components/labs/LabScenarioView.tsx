@@ -132,7 +132,7 @@ export default function LabScenarioView({ language, scenario, onBack, onSolved }
       {/* Inhalt */}
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4" data-study-scroll="allow">
         <div className="mx-auto w-full max-w-5xl">
-          <p className="font-mono text-[15px] leading-[1.6] text-[#f0ede8]">{scenario.description}</p>
+          <p className="font-mono text-[15px] leading-[1.6] text-ds-fg">{scenario.description}</p>
 
           {scenario.evidence && (
             <div className="mt-4">

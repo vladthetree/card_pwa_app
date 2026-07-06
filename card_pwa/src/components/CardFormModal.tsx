@@ -442,12 +442,6 @@ export default function CardFormModal(props: Props) {
                     ordering: t.ordering_card,
                     matching: t.matching_card,
                   }
-                  const activeClsMap: Record<CardVariant, string> = {
-                    standard: 'border-[--brand-primary-60] bg-[--brand-primary-12] text-[--brand-primary]',
-                    mc: 'border-[--brand-secondary-60] bg-[--brand-secondary-12] text-[--brand-secondary]',
-                    ordering: 'border-violet-500/60 bg-violet-500/12 text-violet-300',
-                    matching: 'border-cyan-500/60 bg-cyan-500/12 text-cyan-300',
-                  }
                   const isActive = cardVariant === v
                   return (
                     <button
@@ -456,7 +450,7 @@ export default function CardFormModal(props: Props) {
                       onClick={() => handleVariantChange(v)}
                       className={`rounded-ds-lg border px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] transition-all duration-150 ${
                         isActive
-                          ? activeClsMap[v]
+                          ? 'border-[--brand-primary-50] bg-[--brand-primary-12] text-[--brand-primary]'
                           : 'border-[#27272a] bg-transparent text-zinc-500 hover:border-zinc-600 hover:text-zinc-300'
                       }`}
                     >
@@ -470,7 +464,7 @@ export default function CardFormModal(props: Props) {
             {/* Form body */}
             {(cardVariant === 'mc') ? (
               <>
-                <Field label={t.question}>
+                <Field label={t.question_required}>
                   <textarea
                     value={form.questionText}
                     onChange={set('questionText')}

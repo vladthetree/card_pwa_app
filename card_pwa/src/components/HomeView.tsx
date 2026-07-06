@@ -239,14 +239,14 @@ export default function HomeView({
                 transition={{ duration: 0.2, ease: 'easeOut' }}
                 onClick={onResumeSession}
                 data-testid="home-resume-session"
-                className="flex w-full items-center gap-3 rounded-ds border border-sky-500/30 bg-sky-500/10 px-4 py-3 text-left shadow-card transition hover:border-sky-400/60"
+                className="flex w-full items-center gap-3 rounded-ds border border-[--brand-secondary-25] bg-[--brand-secondary-12] px-4 py-3 text-left shadow-card transition hover:border-[--brand-secondary-80]"
               >
-                <Play size={16} strokeWidth={2} className="shrink-0 text-sky-300" />
+                <Play size={16} strokeWidth={2} className="shrink-0 text-[--brand-secondary]" />
                 <span className="min-w-0 flex-1 truncate text-sm font-semibold text-white">
                   {settings.language === 'de' ? 'Weiterlernen' : 'Resume session'}
                   <span className="text-white/50"> · {resumeSession.deckName}</span>
                 </span>
-                <span className="shrink-0 font-mono text-xs text-sky-200">
+                <span className="shrink-0 font-mono text-xs text-[--brand-secondary]">
                   {settings.language === 'de'
                     ? `${resumeSession.remaining} Karten übrig`
                     : `${resumeSession.remaining} cards left`}

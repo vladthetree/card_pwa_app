@@ -88,7 +88,7 @@ function statePills(cards: Card[], language: 'de' | 'en') {
     pills.push({
       key: 'new',
       label: `${counts.new} ${language === 'de' ? 'neu' : 'new'}`,
-      className: 'border-blue-300/15 bg-blue-300/10 text-blue-100/80',
+      className: 'border-[--brand-secondary-25] bg-[--brand-secondary-12] text-[--brand-secondary]',
     })
   }
   if (counts.learning > 0) {
@@ -118,7 +118,7 @@ function statePills(cards: Card[], language: 'de' | 'en') {
 
 function cardTypeDot(card: Card): { color: string; label: string } {
   if (card.queue === -1) return { color: 'bg-zinc-600', label: 'suspended' }
-  if (card.type === 'new') return { color: 'bg-blue-500', label: 'new' }
+  if (card.type === 'new') return { color: 'bg-[--brand-secondary]', label: 'new' }
   if (card.type === 'learning' || card.type === 'relearning') return { color: 'bg-amber-400', label: 'learning' }
   return { color: 'bg-emerald-500', label: 'review' }
 }

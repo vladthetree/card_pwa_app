@@ -77,7 +77,7 @@ function TagRow({
       data-testid={`video-tag-row-${stat.tagId}`}
       aria-current={active ? 'true' : undefined}
       className={`group flex w-full items-center gap-2 rounded-ds-lg border px-2.5 py-2 text-left transition-colors ${
-        active ? 'border-sky-500/60 bg-sky-500/10' : 'border-transparent hover:border-[#1f1f23] hover:bg-[#0c0c0c]'
+        active ? 'border-[--brand-secondary-80] bg-[--brand-secondary-12]' : 'border-transparent hover:border-[#1f1f23] hover:bg-[#0c0c0c]'
       }`}
     >
       {stat.color ? (
@@ -89,7 +89,7 @@ function TagRow({
       ) : (
         <Hash size={12} strokeWidth={2} className="shrink-0 text-zinc-600" aria-hidden />
       )}
-      <span className={`min-w-0 flex-1 truncate font-mono text-[12px] ${active ? 'text-sky-100' : 'text-zinc-200'}`}>
+      <span className={`min-w-0 flex-1 truncate font-mono text-[12px] ${active ? 'text-ds-fg' : 'text-zinc-200'}`}>
         {stat.label}
       </span>
       {stat.pinned && <Pin size={11} strokeWidth={1.5} className="shrink-0 text-amber-300/80" aria-hidden />}
@@ -137,7 +137,7 @@ export default function VideoTagSidebar({ profileId, language, activeTag, onOpen
 
   const header = (
     <div className="flex shrink-0 items-center gap-2 border-b border-[#18181b] px-3 py-2.5">
-      <Hash size={14} strokeWidth={1.5} className="shrink-0 text-sky-300" />
+      <Hash size={14} strokeWidth={1.5} className="shrink-0 text-[--brand-secondary]" />
       <span className="flex-1 font-mono text-[12px] font-bold text-white">{copy.title}</span>
       {stats.length > 0 && <span className="font-mono text-[10px] text-zinc-600">{stats.length}</span>}
       {variant === 'sheet' && onClose && (

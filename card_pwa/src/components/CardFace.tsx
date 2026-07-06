@@ -30,11 +30,13 @@ interface Props {
 /**
  * Card type display configuration
  */
+// Nur Lern-Warnzustände tragen Signalfarbe (amber/rose, wie die Rating-Buttons);
+// "neu" folgt dem Theme-Akzent, "review" bleibt neutral im Schwarz-Weiß-Grundton.
 const TYPE_BADGE: Record<Card['type'], { labelKey: 'type_new' | 'type_learning' | 'type_review' | 'type_relearning'; cls: string }> = {
-  new:        { labelKey: 'type_new',        cls: 'border-blue-500/30 bg-blue-500/10 text-blue-500' },
+  new:        { labelKey: 'type_new',        cls: 'border-[--brand-secondary-25] bg-[--brand-secondary-08] text-[--brand-secondary]' },
   learning:   { labelKey: 'type_learning',   cls: 'border-amber-500/30 bg-amber-500/10 text-amber-300' },
-  review:     { labelKey: 'type_review',     cls: 'border-rose-500/30 bg-rose-500/10 text-rose-300' },
-  relearning: { labelKey: 'type_relearning', cls: 'border-orange-500/30 bg-orange-500/10 text-orange-300' },
+  review:     { labelKey: 'type_review',     cls: 'border-ds-border-strong bg-ds-panel text-ds-muted' },
+  relearning: { labelKey: 'type_relearning', cls: 'border-rose-500/30 bg-rose-500/10 text-rose-300' },
 }
 
 function getQuestionTextClass(compact: boolean, density: number, size: 'default' | 'large' | 'xlarge' | 'xxlarge' | 'xxxlarge'): string {
@@ -101,8 +103,8 @@ function getCorrectAnswerTextClass(size: 'default' | 'large' | 'xlarge' | 'xxlar
   return 'text-[10px] sm:text-xs'
 }
 
-function shuffleKeys(keys: string[]): string[] {
-  const shuffled = [...keys]
+function shuffleEntries<T>(entries: T[]): T[] {
+  const shuffled = [...entries]
   for (let i = shuffled.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1))
     const temp = shuffled[i]
@@ -204,20 +206,33 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   const correctKeys = answered.correctOptions.length > 0
     ? answered.correctOptions
     : (answered.correct ? [answered.correct] : [])
-  const shuffledOptionKeys = useMemo(() => {
-    const optionKeys = Object.keys(question.options)
-    return optionKeys.length < 2 ? optionKeys : shuffleKeys(optionKeys)
+  // Inhalte werden pro Karte gemischt, die Anzeige-Buchstaben laufen aber immer
+  // A, B, C, … nach Position. Logik (Auswahl/Korrektheit) bleibt am kanonischen
+  // Schlüssel der Option hängen.
+  const displayOptions = useMemo(() => {
+    const entries = Object.entries(question.options).filter(([, text]) => text)
+    const ordered = entries.length < 2 ? entries : shuffleEntries(entries)
+    return ordered.map(([key, text], index) => ({
+      key,
+      text,
+      displayLetter: String.fromCharCode(65 + index),
+    }))
   }, [card.id, card.front, question.options])
+  const displayLetterByKey = useMemo(
+    () => Object.fromEntries(displayOptions.map(option => [option.key, option.displayLetter])),
+    [displayOptions]
+  )
   const isAnswerCorrect = hasAnswered && correctKeys.includes(selectedAnswer)
-  const hasOptions = Object.keys(question.options).length > 0
-  const effectiveOptionKeys = shuffledOptionKeys
-  const correctDisplay = correctKeys.join(', ')
+  const hasOptions = displayOptions.length > 0
+  const correctDisplay = correctKeys
+    .map(key => `${displayLetterByKey[key] ?? key}${question.options[key] ? `: ${question.options[key]}` : ''}`)
+    .join(' · ')
   const selectedDisplay = selectedAnswer
-    ? `${selectedAnswer}${question.options[selectedAnswer] ? `: ${question.options[selectedAnswer]}` : ''}`
+    ? `${displayLetterByKey[selectedAnswer] ?? selectedAnswer}${question.options[selectedAnswer] ? `: ${question.options[selectedAnswer]}` : ''}`
     : '—'
   const frontContentDensity = useMemo(
-    () => question.question.length + effectiveOptionKeys.reduce((total, key) => total + (question.options[key]?.length ?? 0), 0),
-    [question.question, question.options, effectiveOptionKeys]
+    () => question.question.length + displayOptions.reduce((total, option) => total + option.text.length, 0),
+    [question.question, displayOptions]
   )
   const compactQuestionClass = getQuestionTextClass(compact, frontContentDensity, settings.questionTextSize)
   const optionTextClass = getOptionTextClass(compact, frontContentDensity, settings.questionTextSize)
@@ -385,20 +400,19 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                 </div>
 
                 <div className={`${bodyClass} flex flex-col`}>
-                  <p className={`font-sans font-medium leading-[1.55] text-[#f0ede8] ${compactQuestionClass}`}>
+                  <p className={`font-sans font-medium leading-[1.55] text-ds-fg ${compactQuestionClass}`}>
                     {question.question}
                   </p>
 
                   {hasOptions && (
                     <div className="mt-5 flex flex-col gap-2.5">
-                      {effectiveOptionKeys.map((letter) => {
-                        if (!question.options[letter]) return null
-                        const isSelected = selectedAnswer === letter
+                      {displayOptions.map(({ key, text, displayLetter }) => {
+                        const isSelected = selectedAnswer === key
                         const isImpact = impactPhase !== 'idle'
                         let optionCls = 'border-ds-border bg-ds-floor text-zinc-200 hover:border-ds-border-hover hover:bg-ds-panel'
                         if (isImpact) {
                           if (isSelected) {
-                            optionCls = correctKeys.includes(letter)
+                            optionCls = correctKeys.includes(key)
                               ? 'border-emerald-500 bg-emerald-500/15 text-emerald-300'
                               : 'border-rose-500 bg-rose-500/15 text-rose-300'
                           } else {
@@ -408,17 +422,17 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
 
                         return (
                           <button
-                            key={letter}
+                            key={key}
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation()
-                              handleAnswerSelect(letter)
+                              handleAnswerSelect(key)
                             }}
                             disabled={impactPhase !== 'idle'}
                             className={`${optionBaseClass} ${optionTextClass} ${optionCls} ${impactPhase === 'idle' ? 'cursor-pointer active:scale-[0.99]' : 'cursor-default'}`}
                           >
-                            <span className="font-mono font-bold text-zinc-500">{letter})</span>
-                            <span className="min-w-0 font-sans">{question.options[letter]}</span>
+                            <span className="font-mono font-bold text-zinc-500">{displayLetter})</span>
+                            <span className="min-w-0 font-sans">{text}</span>
                           </button>
                         )
                       })}
@@ -489,17 +503,25 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                   className={`${bodyClass} flex flex-col overscroll-y-contain`}
                 >
                   {correctKeys.length > 0 && hasAnswered && (
-                    <div className={`mb-3 flex items-center gap-2 rounded-ds border px-3 py-2 ${
-                      isAnswerCorrect ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' : 'border-rose-500/40 bg-rose-500/10 text-rose-300'
-                    }`}>
-                      {isAnswerCorrect ? <Check size={16} strokeWidth={1.5} /> : <X size={16} strokeWidth={1.5} />}
-                      <span className={`${correctAnswerTextClass} font-mono font-bold`}>
-                        {isAnswerCorrect ? `${t.correct_label}: ${correctDisplay}` : `${t.wrong_label}: ${selectedDisplay}`}
-                      </span>
-                    </div>
+                    <>
+                      {!isAnswerCorrect && (
+                        <div className="mb-2 flex items-center gap-2 rounded-ds border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-rose-300">
+                          <X size={16} strokeWidth={1.5} className="shrink-0" />
+                          <span className={`${correctAnswerTextClass} font-mono font-bold`}>
+                            {`${t.wrong_label}: ${selectedDisplay}`}
+                          </span>
+                        </div>
+                      )}
+                      <div className="mb-3 flex items-center gap-2 rounded-ds border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-emerald-300">
+                        <Check size={16} strokeWidth={1.5} className="shrink-0" />
+                        <span className={`${correctAnswerTextClass} font-mono font-bold`}>
+                          {`${t.correct_label}: ${correctDisplay}`}
+                        </span>
+                      </div>
+                    </>
                   )}
 
-                  <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-[#f0ede8]`}>
+                  <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-ds-fg`}>
                     {answered.answer}
                   </p>
 

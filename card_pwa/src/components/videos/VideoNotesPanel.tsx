@@ -348,7 +348,7 @@ export default function VideoNotesPanel({
     <div className="flex h-full min-h-0 flex-col">
       {/* Kopf */}
       <div className="flex items-center gap-2 border-b border-[#18181b] px-4 py-3">
-        <NotebookPen size={15} strokeWidth={1.5} className="shrink-0 text-sky-300" />
+        <NotebookPen size={15} strokeWidth={1.5} className="shrink-0 text-[--brand-secondary]" />
         <div className="min-w-0 flex-1">
           <div className="font-mono text-[13px] font-bold text-white">{copy.heading}</div>
           {videoTitle && (
@@ -370,7 +370,7 @@ export default function VideoNotesPanel({
         <button
           type="button"
           onClick={() => insertSnippet(SNIPPETS[language].question)}
-          className="inline-flex h-8 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-sky-500/40 hover:text-sky-200"
+          className="inline-flex h-8 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
         >
           <CircleHelp size={12} strokeWidth={1.5} />
           {copy.insertQuestion}
@@ -421,7 +421,7 @@ export default function VideoNotesPanel({
           {segments.map((seg, i) => {
             if (seg.kind === 'tag') {
               return (
-                <span key={i} className="rounded-[4px] bg-sky-500/15 font-semibold text-sky-300">
+                <span key={i} className="rounded-[4px] bg-[--brand-secondary-15] font-semibold text-[--brand-secondary]">
                   {seg.text}
                 </span>
               )
@@ -567,7 +567,7 @@ export default function VideoNotesPanel({
                 title={`${copy.openTag} #${tag}`}
                 aria-label={`${copy.openTag} #${tag}`}
                 data-testid={`video-note-tag-${tag}`}
-                className="flex items-center gap-1 rounded-ds border border-sky-500/30 bg-sky-500/10 px-2 py-1 font-mono text-[11px] text-sky-200 transition-colors hover:border-sky-400/70 hover:text-sky-100"
+                className="flex items-center gap-1 rounded-ds border border-[--brand-secondary-25] bg-[--brand-secondary-12] px-2 py-1 font-mono text-[11px] text-[--brand-secondary] transition-colors hover:border-[--brand-secondary-80] hover:text-ds-fg"
               >
                 <Hash size={10} strokeWidth={2} className="opacity-60" />
                 {tag}
@@ -590,7 +590,7 @@ export default function VideoNotesPanel({
                   title={`${copy.addTag} #${tag}`}
                   aria-label={`${copy.addTag} #${tag}`}
                   data-testid={`video-note-suggestion-${tag}`}
-                  className="flex items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 font-mono text-[11px] text-zinc-300 transition-colors hover:border-sky-500/40 hover:text-sky-200"
+                  className="flex items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 font-mono text-[11px] text-zinc-300 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
                 >
                   <Hash size={10} strokeWidth={2} className="text-zinc-600" />
                   {tag}

@@ -58,14 +58,14 @@ export function HomeExportModal({
 
         <p className="text-xs text-white/45 mt-3">{t.backup_export_note_txt}</p>
 
-        <div className="mt-3 rounded-ds-xl border border-sky-400/25 bg-sky-500/10 p-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-sky-200/90">
+        <div className="mt-3 rounded-ds-xl border border-[--brand-secondary-25] bg-[--brand-secondary-12] p-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-[--brand-secondary]">
             {t.migration_official_path_title}
           </p>
-          <p className="mt-1 text-xs text-sky-100/80">{t.migration_export_step_1}</p>
-          <p className="text-xs text-sky-100/80">{t.migration_export_step_2}</p>
-          <p className="text-xs text-sky-100/80">{t.migration_export_step_3}</p>
-          <p className="mt-2 text-[11px] text-sky-100/60">{t.migration_phase1_no_db_extract}</p>
+          <p className="mt-1 text-xs text-[--brand-secondary-80]">{t.migration_export_step_1}</p>
+          <p className="text-xs text-[--brand-secondary-80]">{t.migration_export_step_2}</p>
+          <p className="text-xs text-[--brand-secondary-80]">{t.migration_export_step_3}</p>
+          <p className="mt-2 text-[11px] text-[--brand-secondary-50]">{t.migration_phase1_no_db_extract}</p>
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-2">
