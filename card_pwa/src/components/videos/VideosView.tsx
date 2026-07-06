@@ -534,6 +534,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
   const [tagSheetOpen, setTagSheetOpen] = useState(false)
   const [noteFocused, setNoteFocused] = useState(false)
   const noteBlurTimer = useRef<number | undefined>(undefined)
+  const keyboardWasOpenRef = useRef(false)
   const [currentVideoTime, setCurrentVideoTime] = useState(0)
   const [seekRequest, setSeekRequest] = useState<{ id: number; seconds: number } | null>(null)
   const viewport = useVisualViewport()
@@ -615,9 +616,23 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
   }
   useEffect(() => () => { if (noteBlurTimer.current) window.clearTimeout(noteBlurTimer.current) }, [])
 
+  // Schreibmodus automatisch nur verlassen, wenn die Tastatur in DIESER
+  // Fokus-Session bereits sichtbar war und wieder verschwindet (System-Taste
+  // „Tastatur ausblenden"). Direkt nach dem Fokus ist keyboardOpen noch false
+  // (Einblend-Animation; auf manchen iOS-Ständen schlägt die Erkennung ganz
+  // fehl) — ein Blur in dem Moment würde die frisch geöffnete Tastatur killen.
   useEffect(() => {
-    if (!isHandsetLayout || keyboardOpen || !noteFocused) return
+    if (!isHandsetLayout || !noteFocused) {
+      keyboardWasOpenRef.current = false
+      return
+    }
+    if (keyboardOpen) {
+      keyboardWasOpenRef.current = true
+      return
+    }
+    if (!keyboardWasOpenRef.current) return
     const timer = window.setTimeout(() => {
+      keyboardWasOpenRef.current = false
       const active = document.activeElement
       if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement) {
         active.blur()
