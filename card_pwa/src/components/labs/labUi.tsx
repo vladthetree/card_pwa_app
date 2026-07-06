@@ -9,7 +9,7 @@ import type { LabDifficulty } from '../../data/labScenarios'
  * EXPERTE rot/rose).
  */
 export const LAB_DIFFICULTY_BADGE: Record<LabDifficulty, { label: string; cls: string }> = {
-  einsteiger: { label: 'Einsteiger', cls: 'border-sky-500/40 bg-sky-500/10 text-sky-300' },
+  einsteiger: { label: 'Einsteiger', cls: 'border-[--brand-secondary-50] bg-[--brand-secondary-12] text-[--brand-secondary]' },
   fortgeschritten: { label: 'Fortgeschritten', cls: 'border-amber-500/40 bg-amber-500/10 text-amber-300' },
   experte: { label: 'Experte', cls: 'border-rose-500/40 bg-rose-500/10 text-rose-300' },
 }

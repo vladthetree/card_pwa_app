@@ -142,7 +142,7 @@ export default function LabsView({ language, onExit }: Props) {
           {trainingSolved.size > 0 && (
             <span
               data-testid="labs-training-progress"
-              className="flex shrink-0 items-center gap-1.5 rounded-ds-lg border border-blue-500/30 bg-blue-500/10 px-2.5 py-1.5 font-mono text-[12px] font-bold text-blue-300"
+              className="flex shrink-0 items-center gap-1.5 rounded-ds-lg border border-[--brand-secondary-25] bg-[--brand-secondary-12] px-2.5 py-1.5 font-mono text-[12px] font-bold text-[--brand-secondary]"
             >
               <Dices size={13} strokeWidth={1.5} />
               {trainingSolved.size}

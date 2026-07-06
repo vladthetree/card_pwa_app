@@ -1528,7 +1528,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     <button
                       type="button"
                       onClick={() => { void runNormalizeDueDates() }}
-                      className={`${UI_TOKENS.button.ghost} py-2 border-sky-400/30 text-sky-200 hover:text-sky-100`}
+                      className={`${UI_TOKENS.button.ghost} py-2 border-[--brand-secondary-25] text-[--brand-secondary] hover:text-ds-fg`}
                     >
                       {t.normalize_due_dates_action}
                     </button>

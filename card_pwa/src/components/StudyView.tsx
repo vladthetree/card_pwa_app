@@ -382,7 +382,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
   const globalNewCount = useMemo(() => cards.filter(card => card.type === 'new').length, [cards])
   const headerStats = useMemo(() => ([
     { key: 'due', label: t.stats_due, value: sessionPendingCount, cls: 'text-amber-200 border-amber-500/35' },
-    { key: 'relearning', label: t.type_relearning, value: sessionRequeueCount, cls: 'text-sky-200 border-sky-500/35' },
+    { key: 'relearning', label: t.type_relearning, value: sessionRequeueCount, cls: 'text-[--brand-secondary] border-[--brand-secondary-25]' },
     { key: 'nowDue', label: t.stats_now_due, value: globalReviewDueCount, cls: 'text-rose-200 border-rose-500/35' },
     { key: 'new', label: t.stats_new, value: globalNewCount, cls: 'text-emerald-200 border-emerald-500/35' },
   ]), [

@@ -233,7 +233,7 @@ function ConflictSide({
 }) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
-  const cls = color === 'blue' ? 'text-blue-400' : 'text-amber-400'
+  const cls = color === 'blue' ? 'text-[--brand-secondary]' : 'text-amber-400'
   return (
     <div className="p-4 space-y-3">
       <p className={`text-xs font-black uppercase tracking-wider ${cls}`}>{label}</p>

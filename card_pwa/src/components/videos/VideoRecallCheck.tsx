@@ -224,8 +224,8 @@ const CONFIDENCE_META: Record<VideoConfidence, { key: 'gaps' | 'ok' | 'solid'; c
   },
   ok: {
     key: 'ok',
-    cls: 'border-sky-500/30 bg-sky-500/5 text-sky-200 hover:border-sky-400/60',
-    activeCls: 'border-sky-400/70 bg-sky-500/20 text-sky-100',
+    cls: 'border-[--brand-secondary-25] bg-[--brand-secondary-08] text-[--brand-secondary] hover:border-[--brand-secondary-80]',
+    activeCls: 'border-[--brand-secondary-80] bg-[--brand-secondary-20] text-ds-fg',
   },
   solid: {
     key: 'solid',
@@ -307,7 +307,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
       <div className="flex max-h-full w-full max-w-xl flex-col overflow-hidden rounded-ds-sheet border border-[#1f1f23] bg-[#0a0a0a] shadow-2xl">
         {/* Kopf */}
         <div className="flex items-center gap-2 border-b border-[#18181b] px-4 py-3">
-          <Brain size={16} strokeWidth={1.5} className="shrink-0 text-sky-300" />
+          <Brain size={16} strokeWidth={1.5} className="shrink-0 text-[--brand-secondary]" />
           <div className="min-w-0 flex-1">
             <div className="font-mono text-[14px] font-bold text-white">{copy.title}</div>
             <div className="truncate font-mono text-[11px] text-zinc-500">
@@ -457,7 +457,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
                   type="button"
                   onClick={() => onStudyMissed(missedCards)}
                   data-testid="recall-check-study-missed"
-                  className="flex items-center justify-center gap-2 rounded-ds-xl border border-sky-500/40 bg-sky-500/10 py-3 font-mono text-[13px] font-bold text-sky-200 transition-colors hover:border-sky-400/70"
+                  className="flex items-center justify-center gap-2 rounded-ds-xl border border-[--brand-secondary-50] bg-[--brand-secondary-12] py-3 font-mono text-[13px] font-bold text-[--brand-secondary] transition-colors hover:border-[--brand-secondary-80]"
                 >
                   <Brain size={15} strokeWidth={1.5} />
                   {copy.studyMissed.replace('{count}', String(missedCards.length))}
@@ -485,7 +485,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
                 type="button"
                 onClick={() => setRevealed(true)}
                 data-testid="recall-check-reveal"
-                className="flex w-full items-center justify-center gap-2 rounded-ds-xl border border-[#3f3f46] bg-[#111] py-3 font-mono text-[13px] font-bold text-zinc-100 transition-colors hover:border-sky-500/50"
+                className="flex w-full items-center justify-center gap-2 rounded-ds-xl border border-[#3f3f46] bg-[#111] py-3 font-mono text-[13px] font-bold text-zinc-100 transition-colors hover:border-[--brand-secondary-50]"
               >
                 <Eye size={15} strokeWidth={1.5} />
                 {copy.reveal}

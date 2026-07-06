@@ -102,7 +102,7 @@ const FreeRecallCard = memo(function FreeRecallCard({
           </div>
 
           <div data-study-scroll="allow" className={`${bodyClass} flex flex-col overscroll-y-contain`}>
-            <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-[#f0ede8]`}>
+            <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-ds-fg`}>
               {answered.answer}
             </p>
 
@@ -182,7 +182,7 @@ const FreeRecallCard = memo(function FreeRecallCard({
         </div>
 
         <div className={`${bodyClass} flex flex-col`}>
-          <p className={`font-sans font-medium leading-[1.55] text-[#f0ede8] ${compact ? 'text-[15px]' : 'text-[16px] md:text-lg'}`}>
+          <p className={`font-sans font-medium leading-[1.55] text-ds-fg ${compact ? 'text-[15px]' : 'text-[16px] md:text-lg'}`}>
             {questionText}
           </p>
 

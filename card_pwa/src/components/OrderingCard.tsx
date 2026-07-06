@@ -140,10 +140,10 @@ function ItemRow({ id, label, position, feedback, correctPosition, submitted, is
 }
 
 const TYPE_BADGE: Record<Card['type'], { labelKey: 'type_new' | 'type_learning' | 'type_review' | 'type_relearning'; cls: string }> = {
-  new:        { labelKey: 'type_new',        cls: 'border-blue-500/30 bg-blue-500/10 text-blue-500' },
+  new:        { labelKey: 'type_new',        cls: 'border-[--brand-secondary-25] bg-[--brand-secondary-08] text-[--brand-secondary]' },
   learning:   { labelKey: 'type_learning',   cls: 'border-amber-500/30 bg-amber-500/10 text-amber-300' },
-  review:     { labelKey: 'type_review',     cls: 'border-rose-500/30 bg-rose-500/10 text-rose-300' },
-  relearning: { labelKey: 'type_relearning', cls: 'border-orange-500/30 bg-orange-500/10 text-orange-300' },
+  review:     { labelKey: 'type_review',     cls: 'border-ds-border-strong bg-ds-panel text-ds-muted' },
+  relearning: { labelKey: 'type_relearning', cls: 'border-rose-500/30 bg-rose-500/10 text-rose-300' },
 }
 
 const OrderingCard = memo(function OrderingCard({
@@ -277,7 +277,7 @@ const OrderingCard = memo(function OrderingCard({
           {/* Scrollable list */}
           <div className={`min-h-0 flex-1 overflow-y-auto no-scrollbar px-[12px] pt-[12px] overscroll-contain ${compact ? '' : 'pb-[12px]'}`}>
             {question.question && (
-              <p className={`font-mono font-medium leading-[1.55] text-[#f0ede8] ${compact ? 'text-[15px]' : 'text-[16px]'} mb-4`}>
+              <p className={`font-mono font-medium leading-[1.55] text-ds-fg ${compact ? 'text-[15px]' : 'text-[16px]'} mb-4`}>
                 {question.question}
               </p>
             )}
@@ -378,7 +378,7 @@ const OrderingCard = memo(function OrderingCard({
             </div>
           )}
 
-          <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-mono font-medium leading-[1.55] text-[#f0ede8]`}>
+          <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-mono font-medium leading-[1.55] text-ds-fg`}>
             {answer.explanation}
           </p>
 

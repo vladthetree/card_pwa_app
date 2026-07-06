@@ -210,19 +210,19 @@ function statusBadge(entry: MesserVideoProgress | undefined, copy: Copy): { labe
     case 'solid':
       return { label: copy.solid, cls: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' }
     case 'ok':
-      return { label: copy.ok, cls: 'border-sky-500/30 bg-sky-500/10 text-sky-300' }
+      return { label: copy.ok, cls: 'border-[--brand-secondary-25] bg-[--brand-secondary-12] text-[--brand-secondary]' }
     case 'gaps':
       return { label: copy.gaps, cls: 'border-amber-500/30 bg-amber-500/10 text-amber-300' }
     case 'watched':
       return { label: copy.seen, cls: 'border-zinc-600/40 bg-zinc-500/10 text-zinc-300' }
     default:
-      return { label: copy.open, cls: 'border-sky-500/30 bg-sky-500/10 text-sky-300' }
+      return { label: copy.open, cls: 'border-[--brand-secondary-25] bg-[--brand-secondary-12] text-[--brand-secondary]' }
   }
 }
 
 const CONFIDENCE_CHIPS: Array<{ level: VideoConfidence; labelKey: 'gapsFull' | 'okFull' | 'solidFull'; activeCls: string }> = [
   { level: 'gaps', labelKey: 'gapsFull', activeCls: 'border-amber-400/70 bg-amber-500/20 text-amber-100' },
-  { level: 'ok', labelKey: 'okFull', activeCls: 'border-sky-400/70 bg-sky-500/20 text-sky-100' },
+  { level: 'ok', labelKey: 'okFull', activeCls: 'border-[--brand-secondary-80] bg-[--brand-secondary-20] text-ds-fg' },
   { level: 'solid', labelKey: 'solidFull', activeCls: 'border-emerald-400/70 bg-emerald-500/20 text-emerald-100' },
 ]
 
@@ -254,7 +254,7 @@ function VideoStudyBar({
         onClick={onToggle}
         data-testid="video-studybar-toggle"
         aria-expanded={false}
-        className={`mt-2 flex w-full max-w-3xl items-center justify-center gap-2 rounded-ds-lg border border-[#18181b] bg-[#080808] font-mono font-bold text-zinc-400 transition-colors hover:border-sky-500/40 hover:text-sky-200 ${
+        className={`mt-2 flex w-full max-w-3xl items-center justify-center gap-2 rounded-ds-lg border border-[#18181b] bg-[#080808] font-mono font-bold text-zinc-400 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary] ${
           compact ? 'py-1.5 text-[11px]' : 'py-2 text-[12px]'
         }`}
       >
@@ -309,7 +309,7 @@ function VideoStudyBar({
           type="button"
           onClick={onStartRecall}
           data-testid="video-recall-start"
-          className="flex shrink-0 items-center gap-1.5 rounded-ds-lg border border-sky-500/40 bg-sky-500/10 px-3 py-1.5 font-mono text-[12px] font-bold text-sky-200 transition-colors hover:border-sky-400/70"
+          className="flex shrink-0 items-center gap-1.5 rounded-ds-lg border border-[--brand-secondary-50] bg-[--brand-secondary-12] px-3 py-1.5 font-mono text-[12px] font-bold text-[--brand-secondary] transition-colors hover:border-[--brand-secondary-80]"
         >
           <Brain size={14} strokeWidth={1.5} />
           {copy.recall}
@@ -330,7 +330,7 @@ function VideoStudyBar({
         type="button"
         onClick={onStartRecall}
         data-testid="video-recall-start"
-        className="flex w-full items-center justify-center gap-2 rounded-ds-xl border border-sky-500/40 bg-sky-500/10 py-3 font-mono text-[13px] font-bold text-sky-200 transition-colors hover:border-sky-400/70"
+        className="flex w-full items-center justify-center gap-2 rounded-ds-xl border border-[--brand-secondary-50] bg-[--brand-secondary-12] py-3 font-mono text-[13px] font-bold text-[--brand-secondary] transition-colors hover:border-[--brand-secondary-80]"
       >
         <Brain size={16} strokeWidth={1.5} />
         {copy.recall}
@@ -378,7 +378,7 @@ function DownloadControl({
   if (item.progress !== undefined) {
     const pct = Math.round(item.progress * 100)
     return (
-      <span className="flex shrink-0 items-center gap-1 font-mono text-[10px] font-bold text-sky-300" aria-label={`${copy.downloading} ${pct}%`}>
+      <span className="flex shrink-0 items-center gap-1 font-mono text-[10px] font-bold text-[--brand-secondary]" aria-label={`${copy.downloading} ${pct}%`}>
         <Loader2 size={13} className="animate-spin" />
         {pct}%
       </span>
@@ -415,7 +415,7 @@ function DownloadControl({
       title={copy.download}
       aria-label={copy.download}
       data-testid={`video-download-${item.file}`}
-      className="flex shrink-0 items-center justify-center rounded-[6px] border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 text-zinc-400 transition-colors hover:border-sky-500/40 hover:text-sky-300"
+      className="flex shrink-0 items-center justify-center rounded-[6px] border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 text-zinc-400 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
     >
       <Download size={13} strokeWidth={1.5} />
     </button>
@@ -457,7 +457,7 @@ function ChapterDownloadButton({
 
   if (stats.active) {
     return (
-      <span className="flex shrink-0 items-center gap-1.5 rounded-ds border border-sky-500/40 bg-sky-500/10 px-2 py-1 font-mono text-[10px] font-bold text-sky-200">
+      <span className="flex shrink-0 items-center gap-1.5 rounded-ds border border-[--brand-secondary-50] bg-[--brand-secondary-12] px-2 py-1 font-mono text-[10px] font-bold text-[--brand-secondary]">
         <Loader2 size={12} className="animate-spin" />
         {stats.done}/{stats.total}
         <button
@@ -466,7 +466,7 @@ function ChapterDownloadButton({
           aria-label={copy.cancel}
           title={copy.cancel}
           data-testid="chapter-cancel"
-          className="ml-0.5 text-sky-300/80 transition-colors hover:text-rose-300"
+          className="ml-0.5 text-[--brand-secondary-80] transition-colors hover:text-rose-300"
         >
           <X size={12} />
         </button>
@@ -481,7 +481,7 @@ function ChapterDownloadButton({
         onClick={onDownload}
         data-testid="chapter-download"
         title={copy.chapterDownload}
-        className="flex shrink-0 items-center gap-1.5 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 font-mono text-[10px] font-bold text-zinc-300 transition-colors hover:border-sky-500/40 hover:text-sky-300"
+        className="flex shrink-0 items-center gap-1.5 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 font-mono text-[10px] font-bold text-zinc-300 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
       >
         <HardDriveDownload size={12} strokeWidth={1.5} />
         {copy.chapterDownload}
@@ -704,7 +704,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
               title={copy.allOffline}
               aria-label={copy.allOffline}
               data-testid={`objective-download-all-${group.objective}`}
-              className="flex shrink-0 items-center gap-1 rounded-[6px] border border-[#1f1f23] bg-[#0c0c0c] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-zinc-400 transition-colors hover:border-sky-500/40 hover:text-sky-300"
+              className="flex shrink-0 items-center gap-1 rounded-[6px] border border-[#1f1f23] bg-[#0c0c0c] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-zinc-400 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
             >
               <HardDriveDownload size={11} strokeWidth={1.5} />
               {pending.length}
@@ -719,7 +719,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
               <div
                 key={video.file}
                 className={`flex items-center gap-2 rounded-ds-lg border px-2 py-2 transition-colors ${
-                  isActive ? 'border-sky-500/60 bg-sky-500/10' : 'border-transparent hover:border-[#1f1f23] hover:bg-[#0c0c0c]'
+                  isActive ? 'border-[--brand-secondary-80] bg-[--brand-secondary-12]' : 'border-transparent hover:border-[#1f1f23] hover:bg-[#0c0c0c]'
                 }`}
               >
                 <button
@@ -728,7 +728,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
                   data-testid={`local-video-${video.file}`}
                   className="flex min-w-0 flex-1 items-center gap-2 text-left"
                 >
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-ds border border-sky-500/30 bg-sky-500/10 text-sky-300">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-ds border border-[--brand-secondary-25] bg-[--brand-secondary-12] text-[--brand-secondary]">
                     <Play size={13} strokeWidth={1.5} />
                   </span>
                   <span className="min-w-0 flex-1 truncate font-mono text-[13px] text-zinc-100">{video.title}</span>
@@ -795,7 +795,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
                 <span className="min-w-0 flex-1">
                   <span className="flex items-baseline gap-2">
                     <span className="truncate font-mono text-[16px] font-bold text-white">{domain.title}</span>
-                    <span className="shrink-0 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-sky-400">{videoCount}</span>
+                    <span className="shrink-0 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-[--brand-secondary]">{videoCount}</span>
                   </span>
                   <span className="block truncate font-mono text-[12px] text-zinc-500">
                     {domainGroups.length} {copy.objective}
@@ -866,8 +866,8 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
               data-testid="video-tags-toggle"
               className={`flex shrink-0 items-center gap-1.5 rounded-ds-lg border px-2.5 py-1.5 font-mono text-[11px] font-bold transition-colors ${
                 isDesktop && showTagSidebar
-                  ? 'border-sky-400/60 bg-sky-500/15 text-sky-100'
-                  : 'border-sky-500/30 bg-sky-500/10 text-sky-300 hover:border-sky-400/60'
+                  ? 'border-[--brand-secondary-80] bg-[--brand-secondary-15] text-ds-fg'
+                  : 'border-[--brand-secondary-25] bg-[--brand-secondary-12] text-[--brand-secondary] hover:border-[--brand-secondary-80]'
               }`}
             >
               <Hash size={13} strokeWidth={1.5} />
@@ -996,7 +996,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
               <button
                 type="button"
                 onClick={exitWriting}
-                className="flex h-11 shrink-0 items-center gap-1.5 rounded-ds-lg border border-sky-500/40 bg-sky-500/10 px-3 font-mono text-[13px] font-bold text-sky-200 transition-colors hover:border-sky-400/70"
+                className="flex h-11 shrink-0 items-center gap-1.5 rounded-ds-lg border border-[--brand-secondary-50] bg-[--brand-secondary-12] px-3 font-mono text-[13px] font-bold text-[--brand-secondary] transition-colors hover:border-[--brand-secondary-80]"
                 data-testid="messer-writing-done"
               >
                 <ArrowLeft size={16} strokeWidth={1.5} />
