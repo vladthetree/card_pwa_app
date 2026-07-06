@@ -13,19 +13,19 @@
 
   :root {
     color-scheme: dark;
-    --ds-bg: #0b0b09;
-    --ds-floor: #100f0c;
-    --ds-card: #15130f;
-    --ds-panel: #1b1812;
-    --ds-panel-hover: #201c15;
-    --ds-border: #2b271f;
-    --ds-border-strong: #574c3f;
-    --ds-border-hover: #6b5e4e;
-    --ds-fg: #f2eee5;
-    --ds-text-normal: #d7d0c3;
-    --ds-muted: #837c6f;
-    --ds-subtle: #625a4d;
-    --ds-code-bg: #211d16;
+    --ds-bg: #000000;
+    --ds-floor: #070605;
+    --ds-card: #11100d;
+    --ds-panel: #17140f;
+    --ds-panel-hover: #1f1a12;
+    --ds-border: #2a251c;
+    --ds-border-strong: #5d5040;
+    --ds-border-hover: #806a52;
+    --ds-fg: #f7f2e8;
+    --ds-text-normal: rgba(247,242,232,0.74);
+    --ds-muted: #8c8274;
+    --ds-subtle: #655d50;
+    --ds-code-bg: #17130e;
     --ds-accent-primary: #e75f3c;
     --ds-accent-secondary: #79b7aa;
     --ds-accent-emerald: #6ec58a;
@@ -65,7 +65,7 @@
     --app-viewport-height: 100dvh;
     --app-bottom-viewport-gap: 0px;
     --app-bottom-safe-area: env(safe-area-inset-bottom, 0px);
-    --home-bottom-bar-bg: #0b0b09;
+    --home-bottom-bar-bg: #000000;
     /* Radius-Skala — EINZIGER Tuning-Punkt für die Eckenrundung der ganzen App.
        Konzentrisch zur iPhone-Gehäuserundung (~55px Display-Radius beim 15 Pro):
        außenliegende große Flächen runder, kleine Controls proportional weicher.
@@ -77,11 +77,9 @@
     --radius-ds-xl: 16px;
     --radius-ds-2xl: 20px;
     --radius-ds-sheet: 24px;
-    --app-background:
-      linear-gradient(90deg, rgba(242, 238, 229, 0.028) 1px, transparent 1px) 0 0 / 44px 44px,
-      linear-gradient(rgba(242, 238, 229, 0.018) 1px, transparent 1px) 0 0 / 44px 44px,
-      repeating-linear-gradient(0deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 5px),
-      var(--theme-background, var(--ds-bg));
+    --app-background: #000000;
+    --card-border-color: rgba(255,255,255,0.58);
+    --card-border-width: 0.5px;
   }
 
   html, body, #root {
@@ -96,7 +94,7 @@
     /* Expliziter Farbwert zusätzlich zum Shorthand: iOS 26 Liquid Glass tönt
        Status-/Home-Indicator-Zone aus dem html/body-background-color-Fallback
        (theme-color wird ignoriert) — transparente Roots ergäben weiße Balken. */
-    background-color: var(--theme-background, var(--ds-bg));
+    background-color: var(--app-background);
     overscroll-behavior: none;
     overscroll-behavior-x: none;
     overscroll-behavior-y: none;
@@ -112,7 +110,7 @@
     min-height: 100dvh;
     overflow: hidden;
     background: var(--app-background);
-    background-color: var(--theme-background, var(--ds-bg));
+    background-color: var(--app-background);
     color: var(--theme-text);
     font-family: var(--app-font-family);
     -webkit-font-smoothing: antialiased;
@@ -147,7 +145,7 @@
     flex: 0 0 auto;
     place-content: center;
     margin: 0;
-    border: 1px solid #000;
+    border: 1px solid var(--ds-border-hover);
     border-radius: 0;
     background: transparent;
     cursor: pointer;
@@ -158,7 +156,7 @@
     width: 12px;
     height: 12px;
     transform: scale(0);
-    background: #ef4444;
+    background: var(--brand-primary);
     transition: transform 120ms ease-out;
   }
 
@@ -195,7 +193,7 @@
     min-height: 100dvh;
     overflow: hidden;
     overscroll-behavior-y: none;
-    background: var(--theme-background);
+    background: var(--app-background);
     touch-action: pan-y;
     scrollbar-width: none;
   }
@@ -234,13 +232,13 @@
   }
 
   :is(button, a, [role='button']):focus-visible {
-    outline: 2px solid rgba(231, 95, 60, 0.78);
+    outline: 2px solid var(--brand-primary-80);
     outline-offset: 2px;
     box-shadow: none;
   }
 
   :is(input, select, textarea):focus-visible {
-    outline: 2px solid rgba(231, 95, 60, 0.62);
+    outline: 2px solid var(--brand-primary-50);
     outline-offset: 1px;
     box-shadow: none;
   }
@@ -561,8 +559,15 @@
   }
 
   .ds-card {
-    @apply rounded-ds border border-ds-border bg-ds-card shadow-card;
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.018), transparent 42%);
+    @apply rounded-ds border bg-ds-card shadow-card;
+    border-color: var(--card-border-color);
+    border-width: var(--card-border-width);
+  }
+
+  .card-gradient-border {
+    border-color: var(--card-border-color) !important;
+    border-width: var(--card-border-width) !important;
+    background: var(--ds-card);
   }
 
   .home-bottom-sheet-panel {

@@ -19,6 +19,12 @@ interface MetaBallsProps {
   enableTransparency?: boolean
 }
 
+const MAX_CANVAS_DPR = 2.5
+
+function getCanvasDpr(): number {
+  return Math.min(Math.max(window.devicePixelRatio || 1, 1), MAX_CANVAS_DPR)
+}
+
 function parseHexColor(hex: string): [number, number, number] {
   const clean = hex.replace('#', '')
   const normalized = clean.length === 3
@@ -137,12 +143,27 @@ export default function MetaBalls({
     if (!container) return undefined
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined
 
+    const canvas = document.createElement('canvas')
+    const contextAttributes: WebGLContextAttributes = {
+      alpha: true,
+      antialias: false,
+      depth: true,
+      premultipliedAlpha: false,
+      preserveDrawingBuffer: false,
+      powerPreference: 'default',
+      stencil: false,
+    }
+    if (!canvas.getContext('webgl2', contextAttributes)) return undefined
+
+    container.classList.remove('is-webgl-ready')
     let renderer: Renderer | null = null
     let animationFrameId = 0
 
     try {
-      const dpr = 1
-      renderer = new Renderer({ dpr, alpha: true, premultipliedAlpha: false })
+      renderer = new Renderer({ canvas, dpr: getCanvasDpr(), alpha: true, premultipliedAlpha: false })
+      if (!renderer.isWebgl2) {
+        throw new Error('WebGL2 required for MetaBalls shader')
+      }
       const gl = renderer.gl
       gl.clearColor(0, 0, 0, enableTransparency ? 0 : 1)
       container.appendChild(gl.canvas)
@@ -201,13 +222,15 @@ export default function MetaBalls({
       let pointerInside = false
       let pointerX = 0
       let pointerY = 0
+      let webglReady = false
 
       const resize = () => {
         const width = Math.max(1, container.clientWidth)
         const height = Math.max(1, container.clientHeight)
-        renderer?.setSize(width * dpr, height * dpr)
-        gl.canvas.style.width = `${width}px`
-        gl.canvas.style.height = `${height}px`
+        if (renderer) {
+          renderer.dpr = getCanvasDpr()
+          renderer.setSize(width, height)
+        }
         program.uniforms.iResolution.value.set(gl.canvas.width, gl.canvas.height, 0)
       }
 
@@ -264,6 +287,10 @@ export default function MetaBalls({
         mouseBallPos.y += (targetY - mouseBallPos.y) * hoverSmoothness
         program.uniforms.iMouse.value.set(mouseBallPos.x, mouseBallPos.y, 0)
         renderer?.render({ scene, camera })
+        if (!webglReady) {
+          container.classList.add('is-webgl-ready')
+          webglReady = true
+        }
       }
 
       animationFrameId = requestAnimationFrame(update)
@@ -277,9 +304,15 @@ export default function MetaBalls({
         if (gl.canvas.parentNode === container) {
           container.removeChild(gl.canvas)
         }
+        container.classList.remove('is-webgl-ready')
         gl.getExtension('WEBGL_lose_context')?.loseContext()
       }
     } catch (error) {
+      if (renderer?.gl?.canvas.parentNode === container) {
+        container.removeChild(renderer.gl.canvas)
+      }
+      renderer?.gl?.getExtension('WEBGL_lose_context')?.loseContext()
+      container.classList.remove('is-webgl-ready')
       console.warn('[MetaBalls] WebGL loader unavailable', error)
       return undefined
     }

@@ -31,7 +31,6 @@ interface Props {
   questTopDeckName: string | null
   questStarting: boolean
   onStartDailyQuest: () => void
-  onShowDecks: () => void
 }
 
 function CompactStatTile({
@@ -182,7 +181,6 @@ export function HomeStatsSection({
   questTopDeckName,
   questStarting,
   onStartDailyQuest,
-  onShowDecks,
 }: Props) {
   const learningReviewCount = stats ? stats.learning + stats.review : 0
   const streakValue = gamificationProfile?.currentStreak ?? 0
@@ -226,9 +224,7 @@ export function HomeStatsSection({
           topDeckName={questTopDeckName}
           starting={questStarting}
           onStart={onStartDailyQuest}
-          onShowDecks={onShowDecks}
         />
-        {statGrid}
       </div>
     )
   } else if (mode === 'heatmap') {

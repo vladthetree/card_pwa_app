@@ -27,7 +27,12 @@
   opacity: 0.86;
   mix-blend-mode: screen;
   transform: translate3d(0, 0, 0);
+  transition: opacity 160ms ease-out;
   animation: metaballs-drift-a 2.1s ease-in-out infinite alternate;
+}
+
+.metaballs-container.is-webgl-ready .metaballs-fallback {
+  opacity: 0;
 }
 
 .metaballs-fallback-b {

@@ -615,6 +615,18 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
   }
   useEffect(() => () => { if (noteBlurTimer.current) window.clearTimeout(noteBlurTimer.current) }, [])
 
+  useEffect(() => {
+    if (!isHandsetLayout || keyboardOpen || !noteFocused) return
+    const timer = window.setTimeout(() => {
+      const active = document.activeElement
+      if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement) {
+        active.blur()
+      }
+      setNoteFocused(false)
+    }, 450)
+    return () => window.clearTimeout(timer)
+  }, [isHandsetLayout, keyboardOpen, noteFocused])
+
   // Zurück zur normalen Videoansicht: Tastatur schließen (Textfeld blur).
   const exitWriting = () => {
     ;(document.activeElement as HTMLElement | null)?.blur()
@@ -644,6 +656,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
           src={videoSrc}
           variant={compact ? 'compact' : 'full'}
           keyboardOpen={keyboardOpen}
+          pauseForKeyboardInput={compact && writingMode}
           onTimeChange={setCurrentVideoTime}
           seekRequest={seekRequest}
           labels={{ fullscreen: copy.fullscreen, exitFullscreen: copy.exitFullscreen, speed: copy.speed }}
@@ -1003,13 +1016,12 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
           </div>
 
           {/* Video + Lernleiste: im Schreibmodus ausgeblendet → Notizzettel bekommt
-              den ganzen Platz über der Tastatur. */}
-          {!writingMode && (
-            <>
-              <div className="flex shrink-0 justify-center px-3">{renderPlayer(true)}</div>
-              {!keyboardOpen && <div className="flex shrink-0 justify-center px-3">{renderStudyBar(true)}</div>}
-            </>
-          )}
+              den ganzen Platz über der Tastatur. Der Player bleibt gemountet,
+              damit er kontrolliert pausieren und danach weiterlaufen kann. */}
+          <div className={writingMode ? 'hidden' : 'flex shrink-0 justify-center px-3'}>
+            {renderPlayer(true)}
+          </div>
+          {!writingMode && !keyboardOpen && <div className="flex shrink-0 justify-center px-3">{renderStudyBar(true)}</div>}
 
           {/* Notizzettel: EINE Instanz (kein Remount beim Moduswechsel → Fokus bleibt).
               Im Schreibmodus füllt er den ganzen sichtbaren Bereich über der Tastatur. */}

@@ -266,7 +266,6 @@ export default function HomeView({
               questTopDeckName={questTopDeckName}
               questStarting={questStarting}
               onStartDailyQuest={() => { void handleStartDailyQuest() }}
-              onShowDecks={() => setHomeTab('decks')}
             />
           </div>
         </div>

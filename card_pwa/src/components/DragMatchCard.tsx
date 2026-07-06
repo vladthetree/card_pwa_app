@@ -129,7 +129,7 @@ const DragMatchCard = memo(function DragMatchCard({
   ) : null
 
   const cardShellCls = `border ${
-    submitted ? (isCorrect ? 'border-emerald-500/45' : 'border-rose-500/45') : 'border-ds-border'
+    submitted ? (isCorrect ? 'border-emerald-500/45' : 'border-rose-500/45') : 'border-transparent card-gradient-border'
   } flex flex-col overflow-hidden rounded-ds bg-ds-card shadow-card ${
     compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[380px] md:min-h-[440px]'
   }`
