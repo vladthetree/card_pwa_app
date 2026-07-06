@@ -132,13 +132,13 @@ export function HomeBottomBar({
               onClick={() => { setFilterOpen(false); setActionsOpen(v => !v) }}
               className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-ds border transition-colors active:scale-[0.98] ${
                 actionsOpen
-                  ? 'border-[--brand-primary-50] bg-[--brand-primary-15] text-[--brand-primary]'
-                  : 'border-[--brand-primary-25] bg-[--brand-primary-08] text-[--brand-primary] hover:bg-[--brand-primary-12]'
+                  ? 'border-white/35 bg-white/10 text-white'
+                  : 'border-transparent bg-transparent text-white hover:bg-ds-card/55'
               }`}
               aria-label={language === 'de' ? 'Erstellen & Aktionen' : 'Create & actions'}
               title={language === 'de' ? 'Erstellen' : 'Create'}
             >
-              <Plus size={18} strokeWidth={1.8} />
+              <Plus size={18} strokeWidth={1.8} className="text-white" />
             </button>
           </div>
         </div>

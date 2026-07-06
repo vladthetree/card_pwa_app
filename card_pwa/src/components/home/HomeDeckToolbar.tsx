@@ -305,12 +305,12 @@ export function HomeDeckToolbar({
             <button
               type="button"
               onClick={handleToggleActionsMenu}
-              className="group flex h-auto min-h-8 min-w-0 items-center justify-center gap-1 rounded-ds border border-ds-border bg-ds-card px-2.5 py-1 font-mono text-xs uppercase tracking-[0.1em] text-white/82 shadow-card transition-all duration-300 ease-out hover:border-ds-border-hover hover:bg-ds-panel active:scale-95 hover:text-white"
+              className="group flex h-auto min-h-8 min-w-0 items-center justify-center gap-1 rounded-ds border border-ds-border bg-ds-card px-2.5 py-1 font-mono text-xs uppercase tracking-[0.1em] text-white shadow-card transition-all duration-300 ease-out hover:border-ds-border-hover hover:bg-ds-panel active:scale-95"
               aria-haspopup="menu"
               aria-expanded={showActionsMenu}
               aria-label={language === 'de' ? 'Aktionen oeffnen' : 'Open actions'}
             >
-              <Plus size={14} strokeWidth={1.5} />
+              <Plus size={14} strokeWidth={1.5} className="text-white" />
               <ChevronDown size={12} strokeWidth={1.5} className={`transition-transform duration-150 ${showActionsMenu ? 'rotate-180' : ''}`} />
             </button>
             {showActionsMenu && floatingStyle && createPortal(

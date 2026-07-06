@@ -233,7 +233,7 @@ const OrderingCard = memo(function OrderingCard({
   // Compact landscape: slightly smaller items
   void isHandsetLandscape
 
-  const cardShellCls = `flex flex-col overflow-hidden rounded-ds border border-ds-border bg-ds-card shadow-card ${
+  const cardShellCls = `flex flex-col overflow-hidden rounded-ds border border-transparent bg-ds-card shadow-card card-gradient-border ${
     compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[380px] md:min-h-[440px]'
   }`
 

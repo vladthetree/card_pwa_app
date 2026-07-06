@@ -9,49 +9,96 @@ import { STORAGE_KEYS } from '../constants/appIdentity'
  */
 export const THEMES = {
   default: {
-    name: 'Ledger',
-    primary: '#e75f3c',
-    secondary: '#79b7aa',
-    accent: '#d8a24c',
-    background: '#0b0b09',
-    surface: '#15130f',
-    surfaceHover: '#1b1812',
-    border: '#2b271f',
-    borderHover: '#574c3f',
-    text: '#f2eee5',
-    textSecondary: 'rgba(242,238,229,0.70)',
-    textMuted: '#837c6f',
-    glow: 'rgba(231,95,60,0.16)',
+    name: 'Ember Ledger',
+    primary: '#f05f3e',
+    secondary: '#8fc7ba',
+    accent: '#d9a24a',
+    background: '#000000',
+    floor: '#070605',
+    card: '#11100d',
+    surface: '#11100d',
+    surfaceHover: '#1f1a12',
+    panel: '#17140f',
+    panelHover: '#211b13',
+    border: '#2a251c',
+    borderStrong: '#5d5040',
+    borderHover: '#806a52',
+    text: '#f7f2e8',
+    textSecondary: 'rgba(247,242,232,0.74)',
+    textMuted: '#8c8274',
+    subtle: '#655d50',
+    codeBg: '#17130e',
+    cardBorder: 'rgba(255,255,255,0.58)',
+    glow: 'rgba(240,95,62,0.16)',
   },
   ghost: {
-    name: 'Ghost',
-    primary: '#f2eee5',
-    secondary: '#9ea79d',
-    accent: '#c8bfae',
-    background: '#090908',
-    surface: '#121210',
-    surfaceHover: '#191815',
-    border: '#282720',
-    borderHover: '#555044',
+    name: 'Bone Ink',
+    primary: '#f3efe7',
+    secondary: '#9fa99c',
+    accent: '#c9bfad',
+    background: '#000000',
+    floor: '#060606',
+    card: '#10100e',
+    surface: '#10100e',
+    surfaceHover: '#191813',
+    panel: '#151511',
+    panelHover: '#1d1b15',
+    border: '#292820',
+    borderStrong: '#5a5548',
+    borderHover: '#817767',
     text: '#f6f2eb',
-    textSecondary: 'rgba(246,242,235,0.70)',
-    textMuted: '#807a6c',
+    textSecondary: 'rgba(246,242,235,0.72)',
+    textMuted: '#837d70',
+    subtle: '#625b50',
+    codeBg: '#161511',
+    cardBorder: 'rgba(255,255,255,0.56)',
     glow: 'rgba(246,242,235,0.10)',
   },
   blueSteel: {
     name: 'Slate Reed',
-    primary: '#8aa39b',
-    secondary: '#d2a45c',
-    accent: '#b8c2bb',
-    background: '#080a0a',
-    surface: '#101413',
-    surfaceHover: '#171d1b',
-    border: '#22302c',
-    borderHover: '#4a635b',
-    text: '#e8eee9',
-    textSecondary: 'rgba(232,238,233,0.70)',
-    textMuted: '#748078',
-    glow: 'rgba(138,163,155,0.14)',
+    primary: '#9bb7ad',
+    secondary: '#d6a85e',
+    accent: '#c5cfc8',
+    background: '#000000',
+    floor: '#050707',
+    card: '#0d1311',
+    surface: '#0d1311',
+    surfaceHover: '#17211d',
+    panel: '#121a17',
+    panelHover: '#1a2520',
+    border: '#22312c',
+    borderStrong: '#4f6c62',
+    borderHover: '#709184',
+    text: '#eaf1ed',
+    textSecondary: 'rgba(234,241,237,0.72)',
+    textMuted: '#77847d',
+    subtle: '#56615b',
+    codeBg: '#111916',
+    cardBorder: 'rgba(255,255,255,0.56)',
+    glow: 'rgba(155,183,173,0.14)',
+  },
+  mono: {
+    name: 'Mono Signal',
+    primary: '#ffffff',
+    secondary: '#d9d9d9',
+    accent: '#8f8f8f',
+    background: '#000000',
+    floor: '#050505',
+    card: '#0b0b0b',
+    surface: '#0b0b0b',
+    surfaceHover: '#151515',
+    panel: '#101010',
+    panelHover: '#181818',
+    border: '#242424',
+    borderStrong: '#686868',
+    borderHover: '#f0f0f0',
+    text: '#ffffff',
+    textSecondary: 'rgba(255,255,255,0.76)',
+    textMuted: '#8b8b8b',
+    subtle: '#5f5f5f',
+    codeBg: '#111111',
+    cardBorder: 'rgba(255,255,255,0.68)',
+    glow: 'rgba(255,255,255,0.12)',
   },
 } as const
 
@@ -65,7 +112,7 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
-const APP_CHROME_COLOR = '#0b0b09'
+const APP_CHROME_COLOR = '#000000'
 
 interface ThemeProviderProps {
   children: ReactNode
@@ -86,17 +133,18 @@ function hexToRgbTuple(hex: string): [number, number, number] {
 }
 
 function getThemeChromeColor(key: ThemeKey): string {
-  // Chrome-Farbe (theme-color-Meta + body-Fallback) muss exakt dem
-  // Theme-Hintergrund entsprechen: iOS malt die Home-Indicator-Zone der
-  // Standalone-PWA damit — eine abweichende Farbe (z. B. konstant #0b0b09
-  // bei Ghost/BlueSteel) erzeugt dort einen sichtbaren Streifen.
-  return THEMES[key]?.background ?? APP_CHROME_COLOR
+  // Chrome-Farbe (theme-color-Meta + body-Fallback) bleibt bewusst echtes
+  // Schwarz, damit iOS Status-/Home-Indicator-Zonen keine getönten Streifen
+  // gegen den App-Hintergrund zeigen.
+  void key
+  return APP_CHROME_COLOR
 }
 
 function normalizeSavedThemeKey(value: string | null): ThemeKey {
   if (!value) return 'default'
   if (value === 'blue-steel' || value === 'blue_steel' || value === 'bluesteel') return 'blueSteel'
-  if (value === 'dark') return 'ghost'
+  if (value === 'mono' || value === 'black-white' || value === 'black_white' || value === 'blackwhite' || value === 'monochrome') return 'mono'
+  if (value === 'dark') return 'mono'
   if (value === 'paper' || value === 'slate' || value === 'aurora' || value === 'ocean' || value === 'forest' || value === 'cyber' || value === 'midnight') return 'blueSteel'
   if (value === 'ember' || value === 'sunset') return 'default'
   if (value in THEMES) return value as ThemeKey
@@ -147,15 +195,37 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
     root.style.setProperty('--ds-accent-primary', theme.primary)
     root.style.setProperty('--ds-accent-secondary', theme.secondary)
+    root.style.setProperty('--ds-accent-amber', theme.accent)
+    root.style.setProperty('--ds-bg', theme.background)
+    root.style.setProperty('--ds-floor', theme.floor)
+    root.style.setProperty('--ds-card', theme.card)
+    root.style.setProperty('--ds-panel', theme.panel)
+    root.style.setProperty('--ds-panel-hover', theme.panelHover)
+    root.style.setProperty('--ds-border', theme.border)
+    root.style.setProperty('--ds-border-strong', theme.borderStrong)
+    root.style.setProperty('--ds-border-hover', theme.borderHover)
+    root.style.setProperty('--ds-fg', theme.text)
+    root.style.setProperty('--ds-text-normal', theme.textSecondary)
+    root.style.setProperty('--ds-muted', theme.textMuted)
+    root.style.setProperty('--ds-subtle', theme.subtle)
+    root.style.setProperty('--ds-code-bg', theme.codeBg)
+    root.style.setProperty('--app-background', theme.background)
+    root.style.setProperty('--home-bottom-bar-bg', theme.background)
+    root.style.setProperty('--card-border-color', theme.cardBorder)
 
     // Keep legacy variables in sync while migrating components to the manifest brand contract.
     root.style.setProperty('--theme-primary', theme.primary)
     root.style.setProperty('--theme-secondary', theme.secondary)
     root.style.setProperty('--theme-accent', theme.accent)
     root.style.setProperty('--theme-background', theme.background)
+    root.style.setProperty('--theme-floor', theme.floor)
+    root.style.setProperty('--theme-card', theme.card)
     root.style.setProperty('--theme-surface', theme.surface)
     root.style.setProperty('--theme-surface-hover', theme.surfaceHover)
+    root.style.setProperty('--theme-panel', theme.panel)
+    root.style.setProperty('--theme-panel-hover', theme.panelHover)
     root.style.setProperty('--theme-border', theme.border)
+    root.style.setProperty('--theme-border-strong', theme.borderStrong)
     root.style.setProperty('--theme-border-hover', theme.borderHover)
     root.style.setProperty('--theme-text', theme.text)
     root.style.setProperty('--theme-text-secondary', theme.textSecondary)

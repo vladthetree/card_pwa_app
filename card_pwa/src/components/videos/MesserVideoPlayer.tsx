@@ -42,6 +42,7 @@ interface Props {
   src: string
   variant: 'compact' | 'full'
   keyboardOpen?: boolean
+  pauseForKeyboardInput?: boolean
   onEnded?: () => void
   onTimeChange?: (seconds: number) => void
   seekRequest?: { id: number; seconds: number } | null
@@ -53,6 +54,7 @@ export default function MesserVideoPlayer({
   src,
   variant,
   keyboardOpen = false,
+  pauseForKeyboardInput = false,
   onEnded,
   onTimeChange,
   seekRequest,
@@ -69,6 +71,7 @@ export default function MesserVideoPlayer({
   // das neue Element (Zeit ≈ 0) umsetzt und sonst die alte Position überschriebe.
   const lastPositionRef = useRef(0)
   const lastDurationRef = useRef(0)
+  const keyboardPauseRef = useRef({ pausedByInput: false, shouldResume: false })
   const [rate, setRate] = useState(() => getPlaybackRate())
   const [isFs, setIsFs] = useState(false)
 
@@ -87,6 +90,37 @@ export default function MesserVideoPlayer({
   useEffect(() => {
     if (videoRef.current) videoRef.current.playbackRate = rate
   }, [rate, src])
+
+  useEffect(() => {
+    keyboardPauseRef.current = { pausedByInput: false, shouldResume: false }
+  }, [file, src])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    if (pauseForKeyboardInput) {
+      if (!keyboardPauseRef.current.pausedByInput) {
+        keyboardPauseRef.current.shouldResume = !video.paused && !video.ended
+      }
+      if (keyboardPauseRef.current.shouldResume) {
+        keyboardPauseRef.current.pausedByInput = true
+        video.pause()
+      }
+      return
+    }
+
+    if (!keyboardPauseRef.current.pausedByInput) {
+      keyboardPauseRef.current.shouldResume = false
+      return
+    }
+
+    const shouldResume = keyboardPauseRef.current.shouldResume
+    keyboardPauseRef.current = { pausedByInput: false, shouldResume: false }
+    if (shouldResume && !video.ended) {
+      void video.play().catch(() => {})
+    }
+  }, [pauseForKeyboardInput, file, src])
 
   useEffect(() => {
     const video = videoRef.current
@@ -171,6 +205,14 @@ export default function MesserVideoPlayer({
     saveResumePosition(file, video.currentTime, video.duration)
   }
 
+  const handlePlay = () => {
+    if (!pauseForKeyboardInput) return
+    const video = videoRef.current
+    if (!video) return
+    keyboardPauseRef.current = { pausedByInput: true, shouldResume: true }
+    video.pause()
+  }
+
   const handleEnded = () => {
     clearResumePosition(file)
     lastPositionRef.current = 0
@@ -205,6 +247,7 @@ export default function MesserVideoPlayer({
           controlsList="nodownload"
           onLoadedMetadata={handleLoadedMetadata}
           onTimeUpdate={handleTimeUpdate}
+          onPlay={handlePlay}
           onPause={handlePause}
           onEnded={handleEnded}
           className={

@@ -10,7 +10,7 @@ import { HomeDailyQuestTile } from '../../components/home/HomeDailyQuestTile'
  * Dashboard-Kachel "Pilot" = Daily Quest, rekonstruiert aus dem Handy-
  * Screenshot vom 8. Juni 2026 (`WhatsApp …23.36.20.jpeg`): "DAILY QUEST /
  * Jetzt: 25 Karten / 01 General Security Concepts · … heute …" mit
- * "25 Karten starten" + "Decks anzeigen".
+ * klarer "25 Karten starten"-Aktion.
  */
 
 function render(overrides: Partial<Parameters<typeof HomeDailyQuestTile>[0]> = {}) {
@@ -22,7 +22,6 @@ function render(overrides: Partial<Parameters<typeof HomeDailyQuestTile>[0]> = {
       topDeckName: '01 General Security Concepts',
       starting: false,
       onStart: () => {},
-      onShowDecks: () => {},
       ...overrides,
     }),
   )
@@ -37,10 +36,10 @@ describe('HomeDailyQuestTile — Pilot-Modus (Beleg …23.36.20.jpeg)', () => {
     expect(html).toContain('277 heute fällig')
   })
 
-  it('bietet Start- und Decks-anzeigen-Aktionen an', () => {
+  it('bietet nur die klare Start-Aktion an', () => {
     const html = render()
     expect(html).toContain('25 Karten starten')
-    expect(html).toContain('Decks anzeigen')
+    expect(html).not.toContain('Decks anzeigen')
     expect(html).toContain('data-testid="daily-quest-start"')
   })
 
