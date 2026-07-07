@@ -2,7 +2,7 @@
  * AI_CONTEXT: Vitest coverage for study session manager; protects services behavior from regressions in the learning PWA.
  */
 import { describe, expect, it } from 'vitest'
-import { getCardWeight, sortStudyCards } from '../../services/studyCardOrdering'
+import { getCardWeight, interleaveCardsByDeck, sortStudyCards } from '../../services/studyCardOrdering'
 import type { Card } from '../../types'
 
 function createCard(overrides: Partial<Card>): Card {
@@ -10,6 +10,7 @@ function createCard(overrides: Partial<Card>): Card {
   return {
     id: overrides.id ?? `card-${Math.random()}`,
     noteId: overrides.noteId ?? `note-${Math.random()}`,
+    deckId: overrides.deckId,
     type: overrides.type ?? 'new',
     front: overrides.front ?? 'Q',
     back: overrides.back ?? 'A',
@@ -298,6 +299,41 @@ describe('sortStudyCards — due date filter (Bug 1 fix)', () => {
         nextDayStartsAt: 6,
       })
       expect(result).toHaveLength(1)
+    })
+  })
+
+  describe('interleaveCardsByDeck (Daily Quest)', () => {
+    const deckCard = (id: string, deckId?: string) => createCard({ id, deckId })
+
+    it('rotiert im Round-Robin über die Decks statt Deck-Blöcke zu bilden', () => {
+      const cards = [
+        deckCard('a1', 'deck-a'), deckCard('a2', 'deck-a'), deckCard('a3', 'deck-a'),
+        deckCard('b1', 'deck-b'), deckCard('b2', 'deck-b'),
+        deckCard('c1', 'deck-c'),
+      ]
+      const result = interleaveCardsByDeck(cards)
+      expect(result.map(card => card.id)).toEqual(['a1', 'b1', 'c1', 'a2', 'b2', 'a3'])
+    })
+
+    it('behält die Reihenfolge innerhalb eines Decks bei (stabil)', () => {
+      const cards = [
+        deckCard('a1', 'deck-a'), deckCard('b1', 'deck-b'),
+        deckCard('a2', 'deck-a'), deckCard('b2', 'deck-b'),
+      ]
+      const result = interleaveCardsByDeck(cards)
+      const deckAOrder = result.filter(card => card.deckId === 'deck-a').map(card => card.id)
+      const deckBOrder = result.filter(card => card.deckId === 'deck-b').map(card => card.id)
+      expect(deckAOrder).toEqual(['a1', 'a2'])
+      expect(deckBOrder).toEqual(['b1', 'b2'])
+      expect(result).toHaveLength(cards.length)
+    })
+
+    it('lässt Single-Deck-Sessions und Karten ohne deckId unverändert', () => {
+      const singleDeck = [deckCard('a1', 'deck-a'), deckCard('a2', 'deck-a')]
+      expect(interleaveCardsByDeck(singleDeck)).toEqual(singleDeck)
+
+      const noDeckIds = [deckCard('x1'), deckCard('x2'), deckCard('x3')]
+      expect(interleaveCardsByDeck(noDeckIds)).toEqual(noDeckIds)
     })
   })
 })

@@ -1273,6 +1273,88 @@ class TestLWW:
 
 
 # ═════════════════════════════════════════════════════════════════════════════
+# Tests: Progress Reset (globaler Lernfortschritt-Reset)
+# ═════════════════════════════════════════════════════════════════════════════
+
+class TestProgressReset:
+
+    def test_progress_reset_resets_cards_and_clears_reviews(self, api, db_helper):
+        """progress.reset bypasses higher-reps-wins and clears review history."""
+        api.push(
+            op_id="pr-create",
+            op_type="card.create",
+            payload={
+                "id": "pr-card", "deckId": "d1", "noteId": "n1",
+                "front": "Q", "back": "A", "tags": [], "extra": {},
+                "type": 2, "queue": 2, "due": 120, "dueAt": 120 * 86400000,
+                "interval": 3, "factor": 2600, "stability": 2.5, "difficulty": 4.0,
+                "reps": 5, "lapses": 1, "algorithm": "fsrs", "updatedAt": 1000
+            },
+            client_id="c1",
+            client_timestamp=1000
+        )
+        api.push(
+            op_id="pr-review",
+            op_type="review",
+            payload={
+                "cardId": "pr-card", "rating": 3, "timeMs": 1200, "timestamp": 1500,
+                "updated": {
+                    "type": 2, "queue": 2, "due": 125, "dueAt": 125 * 86400000,
+                    "interval": 5, "factor": 2600, "reps": 6, "lapses": 1,
+                    "algorithm": "fsrs", "updatedAt": 1500
+                }
+            },
+            client_id="c1",
+            client_timestamp=1500
+        )
+        assert db_helper.count("server_reviews") == 1
+
+        # A plain card.update with reps=0 would be rejected (higher reps wins) —
+        # progress.reset must apply anyway.
+        api.push(
+            op_id="pr-reset",
+            op_type="progress.reset",
+            payload={"timestamp": 2000, "due": 200, "dueAt": 200 * 86400000},
+            client_id="c1",
+            client_timestamp=2000
+        )
+
+        rows = db_helper.query(
+            "SELECT type, queue, due, due_at, interval, factor, stability, difficulty, reps, lapses, updated_at "
+            "FROM server_cards WHERE id='pr-card'"
+        )
+        assert rows[0] == (0, 0, 200, 200 * 86400000, 0, 2500, None, None, 0, 0, 2000)
+        assert db_helper.count("server_reviews") == 0
+
+    def test_progress_reset_keeps_cards_updated_after_reset_timestamp(self, api, db_helper):
+        """Cards written after the reset moment stay untouched (per-card LWW)."""
+        api.push(
+            op_id="pr-newer-create",
+            op_type="card.create",
+            payload={
+                "id": "pr-newer", "deckId": "d1", "noteId": "n2",
+                "front": "Q", "back": "A", "tags": [], "extra": {},
+                "type": 2, "queue": 2, "due": 130, "dueAt": 130 * 86400000,
+                "interval": 4, "factor": 2500, "stability": 1.0, "difficulty": 3.0,
+                "reps": 2, "lapses": 0, "algorithm": "sm2", "updatedAt": 3000
+            },
+            client_id="c1",
+            client_timestamp=3000
+        )
+
+        api.push(
+            op_id="pr-reset-older",
+            op_type="progress.reset",
+            payload={"timestamp": 2500, "due": 200, "dueAt": 200 * 86400000},
+            client_id="c2",
+            client_timestamp=2500
+        )
+
+        rows = db_helper.query("SELECT reps, interval, updated_at FROM server_cards WHERE id='pr-newer'")
+        assert rows[0] == (2, 4, 3000)
+
+
+# ═════════════════════════════════════════════════════════════════════════════
 # Tests: Tombstones & Snapshot Filtering
 # ═════════════════════════════════════════════════════════════════════════════
 

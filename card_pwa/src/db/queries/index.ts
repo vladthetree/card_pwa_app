@@ -40,6 +40,7 @@ export {
   recordReview,
   undoReview,
   forceCardReviewTomorrow,
+  resetLearningProgress,
   smoothBacklog,
 } from './reviews'
 

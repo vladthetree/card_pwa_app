@@ -21,6 +21,7 @@ function mapCard(r: CardRecord): Card {
   return {
     id: r.id,
     noteId: r.noteId,
+    deckId: r.deckId,
     type: (['new', 'learning', 'review', 'relearning'] as const)[r.type] ?? 'new',
     front: r.front,
     back: r.back,

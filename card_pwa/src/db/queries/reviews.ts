@@ -521,6 +521,73 @@ export async function undoReview(token: ReviewUndoToken): Promise<{ ok: boolean;
   }
 }
 
+/** Baut den Reset-Zustand einer Karte („neu“, heute fällig, Historie genullt).
+ *  Pure Konstruktion — auch der Pull-Applier (progress.reset) nutzt sie. */
+export function buildResetCardRecord(
+  card: CardRecord,
+  input: { timestamp: number; dueDay: number; dueAt: number },
+): CardRecord {
+  const record: CardRecord = {
+    ...card,
+    type: SM2.CARD_TYPE_NEW,
+    queue: SM2.QUEUE_NEW,
+    due: input.dueDay,
+    dueAt: input.dueAt,
+    interval: 0,
+    factor: 2500,
+    reps: 0,
+    lapses: 0,
+    updatedAt: input.timestamp,
+  }
+  delete record.stability
+  delete record.difficulty
+  return record
+}
+
+/**
+ * Setzt den kompletten Lernfortschritt zurück: alle Karten auf „neu“ (heute
+ * fällig), Review-Historie und abgeleitete Metriken (Heatmap, Streak, Stats)
+ * geleert. Decks, Karteninhalte und Notizen bleiben erhalten.
+ *
+ * Sync: läuft als eigene Operation `progress.reset`, weil die
+ * „höhere-reps-gewinnen“-Konfliktregel (Server + Pull) ein normales
+ * card.update mit reps=0 verwerfen würde — der Reset käme beim nächsten
+ * Sync sonst zurück.
+ */
+export async function resetLearningProgress(): Promise<{ ok: boolean; cards: number; error?: string }> {
+  try {
+    const timestamp = Date.now()
+    const dueDay = Math.floor(timestamp / 86_400_000)
+    const dueAt = dueDay * 86_400_000
+
+    let resetCount = 0
+    await db.transaction('rw', [db.cards, db.reviews, db.cardStats, db.deckProgress, db.activeSessions], async () => {
+      const cards = await db.cards.toArray()
+      const resetCards = cards
+        .filter(card => !card.isDeleted)
+        .map(card => buildResetCardRecord(card, { timestamp, dueDay, dueAt }))
+      resetCount = resetCards.length
+      if (resetCards.length > 0) {
+        await db.cards.bulkPut(resetCards)
+      }
+      await db.reviews.clear()
+      await db.cardStats.clear()
+      await db.deckProgress.clear()
+      await db.activeSessions.clear()
+    })
+
+    await enqueueSyncOperation('progress.reset', { timestamp, due: dueDay, dueAt })
+
+    emitReviewUpdatedEvent()
+
+    return { ok: true, cards: resetCount }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    console.error('[resetLearningProgress]', message)
+    return { ok: false, cards: 0, error: message }
+  }
+}
+
 export async function forceCardReviewTomorrow(cardId: string): Promise<{ ok: boolean; error?: string }> {
   try {
     const card = await db.cards.get(cardId)

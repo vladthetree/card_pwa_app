@@ -14,6 +14,8 @@ export interface CardExtra {
 export interface Card {
   id: string
   noteId: string
+  /** Ursprungs-Deck — für Metriken und Deck-Interleaving in Misch-Sessions. */
+  deckId?: string
   type: 'new' | 'learning' | 'review' | 'relearning'
   front: string
   back: string
