@@ -438,8 +438,11 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
 
     return (
       <>
-        <div className="min-h-screen bg-[#050505] px-4 py-10 text-white">
-          <div className="mx-auto max-w-2xl ds-card p-8 text-center">
+        {/* Eigener Scroll-Container (App-Shell ist overflow-hidden): auf dem
+            iPhone muss die Auswertung scrollen, sonst sind die Buttons unten
+            unerreichbar abgeschnitten. */}
+        <div className="h-full min-h-0 overflow-y-auto overscroll-contain bg-[#050505] px-4 pt-safe-4 pb-safe-4 text-white">
+          <div className="mx-auto max-w-2xl ds-card p-5 text-center sm:p-8">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-ds-xl border border-emerald-300/25 bg-emerald-400/10 text-emerald-200">
               <Shuffle size={22} />
             </div>

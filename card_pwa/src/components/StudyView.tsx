@@ -730,23 +730,37 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
 
     return (
       <>
-        <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8">
+        {/* Auswertung: eigener Scroll-Container (App-Shell ist overflow-hidden) —
+            auf kleinen Displays (iPhone) muss der Inhalt scrollen können, sonst
+            liegen Home/Neustart unerreichbar unter dem Bildschirmrand. */}
+        <div className="h-full min-h-0 overflow-y-auto overscroll-contain">
+          <div className="mx-auto flex min-h-full w-full max-w-lg flex-col px-4 pt-safe-2 pb-safe-4 md:max-w-2xl">
+            <div className="flex shrink-0 items-center py-2">
+              <button
+                onClick={handleExit}
+                aria-label={t.home}
+                data-testid="completion-back-button"
+                className="ds-icon-button group flex h-11 w-11"
+              >
+                <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-0.5" />
+              </button>
+            </div>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-            className={`w-full max-w-lg md:max-w-2xl rounded-ds border bg-ds-card p-8 text-center shadow-card sm:p-10 ${
+            className={`my-auto w-full rounded-ds border bg-ds-card p-5 text-center shadow-card sm:p-8 ${
               isPerfectSession ? 'border-emerald-500/40' : 'border-[#18181b]'
             }`}
           >
             {isPerfectSession ? (
-              <div className="perfect-session-pop mx-auto mb-4 inline-flex items-center justify-center">
-                <Sparkles size={56} className="text-emerald-300" />
+              <div className="perfect-session-pop mx-auto mb-3 inline-flex items-center justify-center">
+                <Sparkles size={48} className="text-emerald-300" />
               </div>
             ) : (
-              <CheckCircle size={52} className="text-green-400 mx-auto mb-4" />
+              <CheckCircle size={44} className="text-green-400 mx-auto mb-3" />
             )}
-            <h2 className="text-2xl font-bold text-white mb-2">{t.session_completed}</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">{t.session_completed}</h2>
             {isPerfectSession && (
               <div
                 className="perfect-session-shine mx-auto mb-3 inline-flex items-center gap-1.5 rounded-[6px] border border-emerald-400/40 bg-emerald-400/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-emerald-200"
@@ -813,6 +827,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
               </button>
             </div>
           </motion.div>
+          </div>
         </div>
         <AnimatePresence>
           {editingCard && (
