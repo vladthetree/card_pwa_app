@@ -40,6 +40,7 @@ export type SyncOperationType =
   | 'shuffleCollection.delete'
   | 'videoNote.upsert'
   | 'videoNote.delete'
+  | 'progress.reset'
 
 export interface SyncQueueRecord {
   id?: number

@@ -60,11 +60,11 @@ export function HomeDailyQuestTile({
       className="min-w-0 overflow-hidden rounded-ds border border-transparent bg-ds-card p-3 shadow-card card-gradient-border sm:p-4"
     >
       <div className="flex min-w-0 items-start gap-3">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[7px] border border-[--brand-secondary-25] bg-[--brand-secondary-08] text-[--brand-secondary]">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[7px] border border-[--brand-primary-25] bg-[--brand-primary-08] text-[--brand-primary]">
           <ListChecks size={20} strokeWidth={1.5} />
         </div>
         <div className="min-w-0 flex-1">
-          <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[--brand-secondary]">
+          <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[--brand-primary]">
             {copy.label}
           </div>
           <div className="mt-0.5 break-words font-sans text-base font-semibold leading-tight text-ds-fg min-[420px]:text-lg sm:text-xl">
@@ -82,10 +82,10 @@ export function HomeDailyQuestTile({
           data-testid="daily-quest-start"
           onClick={onStart}
           disabled={!hasWork || starting}
-          className="flex min-h-[48px] min-w-0 items-center justify-center gap-2 rounded-ds border border-[--brand-secondary-50] bg-[--brand-secondary] px-3 font-sans text-[14px] font-semibold text-[#07100e] transition-all duration-150 hover:brightness-110 active:scale-[0.98] disabled:cursor-default disabled:border-ds-border disabled:bg-ds-floor disabled:text-ds-muted disabled:opacity-100 sm:px-4"
+          className="flex min-h-[48px] min-w-0 items-center justify-center gap-2 rounded-ds border border-[--brand-primary-50] bg-[--brand-primary] px-3 font-sans text-[14px] font-semibold text-[#150b08] transition-all duration-150 hover:brightness-110 active:scale-[0.98] disabled:cursor-default disabled:border-ds-border disabled:bg-ds-floor disabled:text-ds-muted disabled:opacity-100 sm:px-4"
         >
           {starting
-            ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#04140b]/30 border-t-[#04140b]" />
+            ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#150b08]/30 border-t-[#150b08]" />
             : <Play size={16} strokeWidth={2} />}
           <span className="min-w-0 truncate">{copy.start(questSize)}</span>
         </button>

@@ -506,6 +506,37 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       (candidate_ts, card_id, state_user_id, source_client, source_client)
     )
 
+  elif op_type == "progress.reset":
+    # Globaler Lernfortschritt-Reset: alle Karten des Users auf "neu", Review-
+    # Historie geloescht. Bewusst OHNE die "hoehere reps gewinnen"-Regel
+    # (card_should_apply) — die wuerde reps=0 immer verwerfen. Stattdessen LWW
+    # pro Karte gegen den Reset-Zeitpunkt: nach dem Reset geschriebene
+    # Kartenstaende (spaetere updated_at) bleiben erhalten.
+    candidate_ts = payload.get("timestamp") or client_timestamp or now
+    ts = _to_int_or_none(candidate_ts) or now
+    due_days = _to_int_or_none(payload.get("due"))
+    if due_days is None:
+      due_days = ts // day_ms
+    due_at = _to_int_or_none(payload.get("dueAt"))
+    if due_at is None:
+      due_at = due_days * day_ms
+
+    conn.execute(
+      """
+      UPDATE server_cards SET
+        type=0, queue=0, due=?, due_at=?, interval=0, factor=2500,
+        stability=NULL, difficulty=NULL, retrievability=NULL,
+        reps=0, lapses=0, updated_at=?, last_source_client=?
+      WHERE user_id=? AND is_deleted=0
+        AND (updated_at IS NULL OR updated_at <= ?)
+      """,
+      (due_days, due_at, ts, source_client, state_user_id, ts)
+    )
+    conn.execute(
+      "DELETE FROM server_reviews WHERE user_id=? AND reviewed_at <= ?",
+      (state_user_id, ts)
+    )
+
   elif op_type == "shuffleCollection.upsert":
     collection_id = payload.get("id")
     name = payload.get("name")

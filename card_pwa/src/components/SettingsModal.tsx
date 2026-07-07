@@ -23,7 +23,7 @@ import {
   FONT_FAMILY_OPTIONS,
 } from '../contexts/SettingsContext'
 import { THEMES, useTheme, type ThemeKey } from '../contexts/ThemeContext'
-import { clearAlgorithmDiagnostics, getAlgorithmDiagnostics, getYoungCardLapseRate, normalizeDueDates, type AlgorithmDiagnosticsEntry, type YoungCardLapseStats } from '../db/queries'
+import { clearAlgorithmDiagnostics, getAlgorithmDiagnostics, getYoungCardLapseRate, normalizeDueDates, resetLearningProgress, type AlgorithmDiagnosticsEntry, type YoungCardLapseStats } from '../db/queries'
 import { clearErrorLogs, downloadErrorLogsAsTxt, getErrorLogs, type ErrorLogEntry } from '../services/errorLog'
 import { UI_TOKENS } from '../constants/ui'
 import { subscribeToWebPushNotificationsWithStatus, type WebPushSubscribeStatus } from '../services/webPush'
@@ -401,6 +401,32 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
       onConfirm: () => {
         clearVideoProgress()
         setLocalDataStatus(settings.language === 'de' ? 'Video-Fortschritt zurückgesetzt.' : 'Video progress reset.')
+      },
+    })
+  }
+
+  const confirmResetLearningProgress = () => {
+    setConfirmModal({
+      title: isDE ? 'Lernfortschritt zurücksetzen' : 'Reset learning progress',
+      message: isDE
+        ? 'Alle Karten werden auf „neu“ zurückgesetzt und die komplette Review-Historie (Heatmap, Streak, Statistiken) wird gelöscht — auch auf dem Server und anderen Geräten. Decks, Karteninhalte und Notizen bleiben erhalten. Das kann nicht rückgängig gemacht werden.'
+        : 'All cards are reset to “new” and the entire review history (heatmap, streak, statistics) is deleted — including on the server and other devices. Decks, card content, and notes are kept. This cannot be undone.',
+      confirmLabel: isDE ? 'Fortschritt löschen' : 'Delete progress',
+      variant: 'danger',
+      onConfirm: async () => {
+        const result = await resetLearningProgress()
+        if (result.ok) {
+          localStorage.removeItem(STORAGE_KEYS.studySession)
+          localStorage.removeItem(STORAGE_KEYS.legacyStudySession)
+          setLocalDataStatus(isDE
+            ? `Lernfortschritt zurückgesetzt (${result.cards} Karten).`
+            : `Learning progress reset (${result.cards} cards).`)
+          window.setTimeout(() => {
+            window.location.reload()
+          }, 600)
+        } else {
+          setLocalDataStatus(isDE ? 'Zurücksetzen fehlgeschlagen.' : 'Reset failed.')
+        }
       },
     })
   }
@@ -1493,6 +1519,25 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                       className={`${UI_TOKENS.button.ghost} py-2 border-amber-400/30 text-amber-200 hover:text-amber-100`}
                     >
                       {settings.language === 'de' ? 'Video-Fortschritt zurücksetzen' : 'Reset video progress'}
+                    </button>
+                  </div>
+
+                  <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
+                    <p className="text-xs text-white/50 font-medium uppercase tracking-wide">
+                      {isDE ? 'Lernfortschritt & Metriken' : 'Learning progress & metrics'}
+                    </p>
+                    <p className="text-xs text-white/40 leading-relaxed">
+                      {isDE
+                        ? 'Setzt alle Karten auf „neu“ zurück und löscht die komplette Review-Historie (Heatmap, Streak, Statistiken) — wird auf Server und andere Geräte synchronisiert. Decks, Karteninhalte und Notizen bleiben erhalten.'
+                        : 'Resets all cards to “new” and deletes the entire review history (heatmap, streak, statistics) — synced to the server and other devices. Decks, card content, and notes are kept.'}
+                    </p>
+                    <button
+                      type="button"
+                      data-testid="reset-learning-progress"
+                      onClick={confirmResetLearningProgress}
+                      className={`${UI_TOKENS.button.ghost} py-2 border-rose-400/30 text-rose-200 hover:text-rose-100`}
+                    >
+                      {isDE ? 'Fortschritt & Metriken zurücksetzen' : 'Reset progress & metrics'}
                     </button>
                   </div>
 

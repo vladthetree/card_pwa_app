@@ -89,3 +89,33 @@ export function sortStudyCards(cards: Card[], options: SortStudyCardsOptions = {
   return [...exemptCards, ...cappedLimited].sort(compareCards)
 }
 
+/**
+ * Round-Robin über die Ursprungs-Decks einer bereits sortierten Auswahl:
+ * WELCHE Karten in der Session landen, entscheidet weiterhin sortStudyCards
+ * (Fälligkeit/Priorität) — hier wird nur die REIHENFOLGE innerhalb der Auswahl
+ * gemischt, damit in Misch-Sessions (Daily Quest) kein Deck einen Block bildet
+ * (Interleaving-Effekt). Stabil: Reihenfolge innerhalb eines Decks bleibt,
+ * Deck-Rotation folgt dem ersten Auftreten. Karten ohne deckId zählen als
+ * ein gemeinsames Pseudo-Deck.
+ */
+export function interleaveCardsByDeck(cards: Card[]): Card[] {
+  const queues = new Map<string, Card[]>()
+  for (const card of cards) {
+    const key = card.deckId ?? ''
+    const queue = queues.get(key)
+    if (queue) queue.push(card)
+    else queues.set(key, [card])
+  }
+  if (queues.size <= 1) return cards
+
+  const deckQueues = [...queues.values()]
+  const result: Card[] = []
+  while (result.length < cards.length) {
+    for (const queue of deckQueues) {
+      const next = queue.shift()
+      if (next) result.push(next)
+    }
+  }
+  return result
+}
+

@@ -5,6 +5,7 @@
  * Important: Pull must respect selected deck scope, applied op IDs, local sync meta, and worker fallbacks for heavy normalization/resolution.
  */
 import { db, type CardRecord, type DeckRecord, type ReviewRecord, type ShuffleCollectionRecord } from '../db'
+import { buildResetCardRecord } from '../db/queries/reviews'
 import type { SyncOperationType } from './syncQueue'
 import { flushSyncQueue, getSyncQueuePendingCount } from './syncQueue'
 import { createWorker } from '../utils/workers/workerPool'
@@ -615,6 +616,34 @@ async function applyReviewUndo(payload: unknown) {
   }
 }
 
+/** progress.reset: globaler Lernfortschritt-Reset eines anderen Geräts.
+ *  Bewusst OHNE reps-first-Guard (der würde reps=0 immer verwerfen) —
+ *  stattdessen LWW pro Karte gegen den Reset-Zeitpunkt: Karten, die NACH dem
+ *  Reset bereits wieder gelernt wurden, bleiben unangetastet. */
+async function applyProgressReset(payload: unknown, fallbackTs = 0) {
+  if (!payload || typeof payload !== 'object') return
+  const value = payload as { timestamp?: number; due?: number; dueAt?: number }
+  const timestamp = Number(value.timestamp ?? fallbackTs ?? 0)
+  if (!Number.isFinite(timestamp) || timestamp <= 0) return
+
+  const dueDay = Number.isFinite(value.due) ? Number(value.due) : Math.floor(timestamp / 86_400_000)
+  const dueAt = Number.isFinite(value.dueAt) ? Number(value.dueAt) : dueDay * 86_400_000
+
+  await db.transaction('rw', [db.cards, db.reviews, db.cardStats, db.deckProgress, db.activeSessions], async () => {
+    const cards = await db.cards.toArray()
+    const resetCards = cards
+      .filter(card => !card.isDeleted && Number(card.updatedAt ?? card.createdAt ?? 0) <= timestamp)
+      .map(card => buildResetCardRecord(card, { timestamp, dueDay, dueAt }))
+    if (resetCards.length > 0) {
+      await db.cards.bulkPut(resetCards)
+    }
+    await db.reviews.where('timestamp').belowOrEqual(timestamp).delete()
+    await db.cardStats.clear()
+    await db.deckProgress.clear()
+    await db.activeSessions.clear()
+  })
+}
+
 async function applyShuffleCollectionUpsert(payload: unknown) {
   const collection = normalizeShuffleCollection(payload)
   if (!collection) return
@@ -703,6 +732,9 @@ async function applyOperation(op: PulledOperation) {
       return
     case 'review.undo':
       await applyReviewUndo(op.payload)
+      return
+    case 'progress.reset':
+      await applyProgressReset(op.payload, fallbackTs)
       return
     case 'shuffleCollection.upsert':
       await applyShuffleCollectionUpsert(op.payload)

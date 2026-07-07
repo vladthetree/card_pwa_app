@@ -32,6 +32,9 @@ function dateKey(date: Date): string {
   return date.toISOString().slice(0, 10)
 }
 
+/** Wochen im GitHub-Fokusstreifen (~ halbes Jahr). */
+const STRIP_WEEKS = 26
+
 function startOfDayMs(date: Date): number {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
 }
@@ -117,16 +120,46 @@ export default function ReviewHeatmap({ year }: Props) {
     return result
   }, [activeYear, countsByDay, monthLabelFormatter])
 
-  const focusedMonths = useMemo(() => {
+  // GitHub-Style-Fokusansicht: durchgehender Wochenstreifen (Spalten = Wochen,
+  // Zeilen = Mo–So) statt gestrecktem Monatsraster — nur so bleiben die Zellen
+  // echte Quadrate, unabhängig von der Displaybreite (iPhone-Fix).
+  const weekStrip = useMemo(() => {
     const now = new Date()
-    const currentMonthIndex = activeYear === now.getFullYear() ? now.getMonth() : 0
-    const prevMonthIndex = currentMonthIndex - 1
+    const reference = activeYear === now.getFullYear()
+      ? now
+      : new Date(activeYear, 11, 31)
+    const end = new Date(reference.getFullYear(), reference.getMonth(), reference.getDate())
+    const mondayOffset = (end.getDay() + 6) % 7
+    const currentMonday = new Date(end)
+    currentMonday.setDate(end.getDate() - mondayOffset)
+    const startMonday = new Date(currentMonday)
+    startMonday.setDate(currentMonday.getDate() - (STRIP_WEEKS - 1) * 7)
 
-    return {
-      previous: prevMonthIndex >= 0 ? buildMonthGrid(activeYear, prevMonthIndex) : null,
-      current: buildMonthGrid(activeYear, currentMonthIndex),
+    const monthFormatter = new Intl.DateTimeFormat(
+      settings.language === 'de' ? 'de-DE' : 'en-US',
+      { month: 'short' },
+    )
+    const weeks: HeatmapDay[][] = []
+    const monthMarks: Array<{ weekIndex: number; label: string }> = []
+    let lastMonth = -1
+    const cursor = new Date(startMonday)
+    for (let w = 0; w < STRIP_WEEKS; w += 1) {
+      const week: HeatmapDay[] = []
+      for (let d = 0; d < 7; d += 1) {
+        const dayDate = new Date(cursor)
+        const key = dateKey(dayDate)
+        week.push({ date: dayDate, key, count: countsByDay.get(key) ?? 0 })
+        cursor.setDate(cursor.getDate() + 1)
+      }
+      const weekMonth = week[0].date.getMonth()
+      if (weekMonth !== lastMonth) {
+        monthMarks.push({ weekIndex: w, label: monthFormatter.format(week[0].date) })
+        lastMonth = weekMonth
+      }
+      weeks.push(week)
     }
-  }, [activeYear, countsByDay, monthLabelFormatter])
+    return { weeks, monthMarks }
+  }, [activeYear, countsByDay, settings.language])
 
   // ── Theme-aware cell colours ──────────────────────────────────────────────
   const [pr, pg, pb] = hexToRgb(theme.primary)
@@ -151,7 +184,7 @@ export default function ReviewHeatmap({ year }: Props) {
     return neonLevels[4]
   }
 
-  const CELL_H = 13
+  const CELL_MAX = 13
   const CELL_H_SM = 9
   const GAP = 3
 
@@ -160,87 +193,85 @@ export default function ReviewHeatmap({ year }: Props) {
     en: ['Mo', '', 'We', '', 'Fr', '', 'Su'],
   }
 
-  // Full-width GitHub-style month (focus view)
-  const renderMonthWide = (month: MonthGrid) => {
+  // GitHub-style week strip (focus view): quadratische Zellen via aspect-ratio,
+  // auf breiten Screens gedeckelt über maxWidth (Zellen max. CELL_MAX px).
+  const renderWeekStrip = () => {
     const dayLabels = DAY_LABELS[settings.language] ?? DAY_LABELS['en']
+    const columnCount = weekStrip.weeks.length
     return (
-      <div style={{ width: '100%' }}>
-        {/* Month name */}
-        <div
-          style={{
-            fontFamily: 'monospace',
-            fontSize: '0.58rem',
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            color: theme.primary,
-            textShadow: `0 0 8px rgba(${pr},${pg},${pb},0.5)`,
-            marginBottom: '6px',
-          }}
-        >
-          {month.label}
-        </div>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `16px repeat(${columnCount}, minmax(0, 1fr))`,
+          gap: GAP,
+          width: '100%',
+          maxWidth: `${16 + GAP + columnCount * (CELL_MAX + GAP)}px`,
+        }}
+      >
+        {/* Month marks above the strip */}
+        {weekStrip.monthMarks.map(mark => (
+          <div
+            key={`m-${mark.weekIndex}`}
+            style={{
+              gridRow: 1,
+              gridColumn: mark.weekIndex + 2,
+              fontFamily: 'monospace',
+              fontSize: '0.44rem',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: `rgba(${pr},${pg},${pb},0.55)`,
+              whiteSpace: 'nowrap',
+              overflow: 'visible',
+              lineHeight: 1,
+            }}
+          >
+            {mark.label}
+          </div>
+        ))}
 
-        <div style={{ display: 'flex', gap: '5px', width: '100%' }}>
-          {/* Day-of-week labels */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: GAP, width: '16px', flexShrink: 0 }}>
-            {dayLabels.map((lbl, i) => (
+        {/* Day-of-week labels */}
+        {dayLabels.map((lbl, i) => (
+          <div
+            key={`d-${i}`}
+            style={{
+              gridRow: i + 2,
+              gridColumn: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              fontFamily: 'monospace',
+              fontSize: '0.40rem',
+              letterSpacing: '0.04em',
+              color: i >= 5 ? `rgba(${sr},${sg},${sb},0.5)` : `rgba(${pr},${pg},${pb},0.35)`,
+              lineHeight: 1,
+            }}
+          >
+            {lbl}
+          </div>
+        ))}
+
+        {/* Cells: Spalte = Woche, Zeile = Wochentag */}
+        {weekStrip.weeks.map((week, wi) =>
+          week.map((day, di) => {
+            const isFuture = startOfDayMs(day.date) > todayStartMs
+            return (
               <div
-                key={i}
+                key={day.key}
+                title={formatTooltip(settings.language, day)}
                 style={{
-                  height: CELL_H,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'flex-end',
-                  fontFamily: 'monospace',
-                  fontSize: '0.40rem',
-                  letterSpacing: '0.04em',
-                  color: i >= 5 ? `rgba(${sr},${sg},${sb},0.5)` : `rgba(${pr},${pg},${pb},0.35)`,
-                  lineHeight: 1,
+                  gridRow: di + 2,
+                  gridColumn: wi + 2,
+                  width: '100%',
+                  aspectRatio: '1 / 1',
+                  borderRadius: '2px',
+                  border: '1px solid',
+                  cursor: 'default',
+                  ...getCellStyle(day.count, isFuture),
                 }}
-              >
-                {lbl}
-              </div>
-            ))}
-          </div>
-
-          {/* Week columns */}
-          <div style={{ display: 'flex', gap: GAP, flex: 1 }}>
-            {month.weeks.map((week, wi) => (
-              <div key={wi} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: GAP }}>
-                {week.map((day, di) => {
-                  if (!day) {
-                    return (
-                      <div
-                        key={`e-${wi}-${di}`}
-                        style={{
-                          height: CELL_H,
-                          width: '100%',
-                          borderRadius: '3px',
-                          border: `1px solid rgba(${pr},${pg},${pb},0.05)`,
-                        }}
-                      />
-                    )
-                  }
-                  const isFuture = startOfDayMs(day.date) > todayStartMs
-                  return (
-                    <div
-                      key={day.key}
-                      title={formatTooltip(settings.language, day)}
-                      style={{
-                        height: CELL_H,
-                        width: '100%',
-                        borderRadius: '3px',
-                        border: '1px solid',
-                        cursor: 'default',
-                        ...getCellStyle(day.count, isFuture),
-                      }}
-                    />
-                  )
-                })}
-              </div>
-            ))}
-          </div>
-        </div>
+              />
+            )
+          }),
+        )}
       </div>
     )
   }
@@ -270,15 +301,16 @@ export default function ReviewHeatmap({ year }: Props) {
       >
         {month.label}
       </div>
+      {/* Feste Zellgröße statt flex-Streckung — Quadrate wie bei GitHub. */}
       <div style={{ display: 'flex', gap: '2px', flex: 1 }}>
         {month.weeks.map((week, wi) => (
-          <div key={wi} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
             {week.map((day, di) => {
               if (!day) {
                 return (
                   <div
                     key={`e-${wi}-${di}`}
-                    style={{ height: CELL_H_SM, width: '100%', borderRadius: '2px', border: `1px solid rgba(${pr},${pg},${pb},0.05)` }}
+                    style={{ height: CELL_H_SM, width: CELL_H_SM, borderRadius: '2px', border: `1px solid rgba(${pr},${pg},${pb},0.05)` }}
                   />
                 )
               }
@@ -289,7 +321,7 @@ export default function ReviewHeatmap({ year }: Props) {
                   title={formatTooltip(settings.language, day)}
                   style={{
                     height: CELL_H_SM,
-                    width: '100%',
+                    width: CELL_H_SM,
                     borderRadius: '2px',
                     border: '1px solid',
                     cursor: 'default',
@@ -436,7 +468,7 @@ export default function ReviewHeatmap({ year }: Props) {
             {allMonths.map(month => renderMonthCompact(month))}
           </div>
         ) : (
-          renderMonthWide(focusedMonths.current)
+          renderWeekStrip()
         )}
       </div>
     </div>
