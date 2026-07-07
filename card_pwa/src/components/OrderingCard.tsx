@@ -378,6 +378,22 @@ const OrderingCard = memo(function OrderingCard({
             </div>
           )}
 
+          {/* Korrekte Reihenfolge immer zeigen — das Vorderseiten-Feedback
+              (→ #n) verschwindet nach dem Auto-Flip. */}
+          {correctItems.length > 0 && (
+            <div className="mb-3 flex flex-col gap-1.5">
+              <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-emerald-400">
+                {t.correct_label}
+              </span>
+              {correctItems.map((item, idx) => (
+                <div key={idx} className="flex items-baseline gap-2 rounded-ds border border-ds-border bg-ds-floor px-3 py-1.5">
+                  <span className="shrink-0 font-mono text-[11px] font-bold text-emerald-400">#{idx + 1}</span>
+                  <span className="font-mono text-[13px] leading-snug text-zinc-200">{item}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
           <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-mono font-medium leading-[1.55] text-ds-fg`}>
             {answer.explanation}
           </p>

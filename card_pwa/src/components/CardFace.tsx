@@ -502,9 +502,9 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                   data-study-scroll="allow"
                   className={`${bodyClass} flex flex-col overscroll-y-contain`}
                 >
-                  {correctKeys.length > 0 && hasAnswered && (
+                  {correctKeys.length > 0 && (
                     <>
-                      {!isAnswerCorrect && (
+                      {hasAnswered && !isAnswerCorrect && (
                         <div className="mb-2 flex items-center gap-2 rounded-ds border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-rose-300">
                           <X size={16} strokeWidth={1.5} className="shrink-0" />
                           <span className={`${correctAnswerTextClass} font-mono font-bold`}>

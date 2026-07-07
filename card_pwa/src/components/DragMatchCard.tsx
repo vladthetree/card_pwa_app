@@ -164,13 +164,20 @@ const DragMatchCard = memo(function DragMatchCard({
 
           <div data-study-scroll="allow" className={`${bodyClass} flex flex-col overscroll-y-contain`}>
             {submitted && (
-              <div className={`mb-3 flex items-center gap-2 rounded-ds border px-3 py-2 ${
-                isCorrect ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300' : 'border-rose-500/40 bg-rose-500/10 text-rose-300'
-              }`}>
-                <span className="font-mono font-bold text-sm">
-                  {isCorrect ? `${t.correct_label}: ${correctText}` : `${t.wrong_label}: ${selectedText}`}
-                </span>
-              </div>
+              <>
+                {!isCorrect && (
+                  <div className="mb-2 flex items-center gap-2 rounded-ds border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-rose-300">
+                    <span className="font-mono font-bold text-sm">
+                      {`${t.wrong_label}: ${selectedText}`}
+                    </span>
+                  </div>
+                )}
+                <div className="mb-3 flex items-center gap-2 rounded-ds border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-emerald-300">
+                  <span className="font-mono font-bold text-sm">
+                    {`${t.correct_label}: ${correctText}`}
+                  </span>
+                </div>
+              </>
             )}
 
             <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-ds-fg`}>
