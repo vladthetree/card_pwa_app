@@ -3,7 +3,7 @@
  */
 import { describe, expect, it } from 'vitest'
 import { initialSessionState, sessionReducer } from '../../services/studySessionReducer'
-import type { Card, ReviewUndoToken } from '../../types'
+import type { Card } from '../../types'
 
 function createCard(id: string): Card {
   return {
@@ -22,24 +22,6 @@ function createCard(id: string): Card {
   }
 }
 
-function undoToken(cardId: string): ReviewUndoToken {
-  return {
-    cardId,
-    reviewId: 1,
-    previous: {
-      type: 2,
-      queue: 2,
-      due: 0,
-      dueAt: 0,
-      interval: 1,
-      factor: 2500,
-      reps: 1,
-      lapses: 0,
-      algorithm: 'sm2',
-    },
-  }
-}
-
 describe('study session reducer', () => {
   it('requeues a single Again-rated card instead of ending the session', () => {
     const card = createCard('card-1')
@@ -50,7 +32,6 @@ describe('study session reducer', () => {
       type: 'RATE_SUCCESS',
       rating: 1,
       cardId: card.id,
-      undoToken: undoToken(card.id),
       forcedTomorrow: false,
     })
 
@@ -70,7 +51,6 @@ describe('study session reducer', () => {
       type: 'RATE_SUCCESS',
       rating: 1,
       cardId: first.id,
-      undoToken: undoToken(first.id),
       forcedTomorrow: false,
     })
 
@@ -92,7 +72,6 @@ describe('study session reducer', () => {
       type: 'RATE_SUCCESS',
       rating: 1,
       cardId: card.id,
-      undoToken: undoToken(card.id),
       forcedTomorrow: true,
     })
 
@@ -102,7 +81,7 @@ describe('study session reducer', () => {
     expect(state.againCounts[card.id]).toBeUndefined()
   })
 
-  it('records review events and restores them on undo', () => {
+  it('records review events and keeps the rated card only as read-only snapshot', () => {
     const card = createCard('card-1')
     let state = sessionReducer(initialSessionState, { type: 'INIT', cards: [card] })
 
@@ -111,19 +90,29 @@ describe('study session reducer', () => {
       type: 'RATE_SUCCESS',
       rating: 3,
       cardId: card.id,
-      undoToken: undoToken(card.id),
       forcedTomorrow: false,
     })
 
+    // Bewertung ist endgültig: Karte verlässt die Queue, sessionCount und
+    // reviewEvents bleiben bestehen — lastRatedCard dient nur der Ansicht.
     expect(state.cards).toEqual([])
+    expect(state.isDone).toBe(true)
     expect(state.sessionCount).toBe(1)
     expect(state.reviewEvents).toEqual([{ cardId: card.id, rating: 3, elapsedMs: 1234 }])
+    expect(state.lastRatedCard?.id).toBe(card.id)
+  })
 
-    state = sessionReducer(state, { type: 'UNDO_START' })
-    state = sessionReducer(state, { type: 'UNDO_SUCCESS' })
+  it('clears lastRatedCard on INIT and RESTART', () => {
+    const card = createCard('card-1')
+    let state = sessionReducer(initialSessionState, { type: 'INIT', cards: [card] })
+    state = sessionReducer(state, { type: 'RATE_START', rating: 3, elapsedMs: 500 })
+    state = sessionReducer(state, { type: 'RATE_SUCCESS', rating: 3, cardId: card.id, forcedTomorrow: false })
+    expect(state.lastRatedCard).not.toBeNull()
 
-    expect(state.cards.map(restoredCard => restoredCard.id)).toEqual([card.id])
-    expect(state.sessionCount).toBe(0)
-    expect(state.reviewEvents).toEqual([])
+    const restarted = sessionReducer(state, { type: 'RESTART' })
+    expect(restarted.lastRatedCard).toBeNull()
+
+    const reinitialized = sessionReducer(state, { type: 'INIT', cards: [card] })
+    expect(reinitialized.lastRatedCard).toBeNull()
   })
 })

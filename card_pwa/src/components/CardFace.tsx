@@ -25,6 +25,12 @@ interface Props {
   compact?: boolean
   originDeckName?: string
   useDragMatchMode?: boolean
+  /** Antwortseite wurde bereits gezeigt → Antwort-Eingaben der Vorderseite sperren
+   *  (sonst ließe sich die Lösung erst ansehen und dann „wissend“ anklicken). */
+  answerRevealed?: boolean
+  /** Read-only-Ansicht (Zurückblättern auf die letzte bewertete Karte):
+   *  sämtliche Antwort-Eingaben gesperrt, inkl. Free-Recall-Selbstbewertung. */
+  readOnly?: boolean
 }
 
 /**
@@ -118,9 +124,14 @@ function shuffleEntries<T>(entries: T[]): T[] {
  * CardFace: Renders front/back of flashcard with interactive elements
  * Memoized to prevent unnecessary re-renders on parent updates
  */
-const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName, useDragMatchMode = true }: Props) {
+const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName, useDragMatchMode = true, answerRevealed = false, readOnly = false }: Props) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
+
+  // Antwort-Eingaben sperren, sobald die Rückseite schon sichtbar war oder die
+  // Karte nur angesehen wird. Free Recall ist die Ausnahme: dort gehört das
+  // Aufdecken zum Ablauf, nur readOnly sperrt die Selbstbewertung.
+  const inputLocked = readOnly || answerRevealed
 
   // Dispatch to PBQ sub-components when card type requires it
   const anyQuestion = useMemo(() => parseQuestion(card.front), [card.id, card.front])
@@ -134,6 +145,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
           flipped={flipped} onFlip={onFlip} onEdit={onEdit}
           onAnswerEvaluated={onAnswerEvaluated ?? (() => {})}
           compact={compact} originDeckName={originDeckName}
+          inputLocked={inputLocked}
         />
       </Suspense>
     )
@@ -148,6 +160,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
           flipped={flipped} onFlip={onFlip} onEdit={onEdit}
           onAnswerEvaluated={onAnswerEvaluated ?? (() => {})}
           compact={compact} originDeckName={originDeckName}
+          inputLocked={inputLocked}
         />
       </Suspense>
     )
@@ -164,6 +177,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
           flipped={flipped} onFlip={onFlip} onEdit={onEdit}
           onAnswerEvaluated={onAnswerEvaluated ?? (() => {})}
           compact={compact} originDeckName={originDeckName}
+          inputLocked={readOnly}
         />
       </Suspense>
     )
@@ -182,6 +196,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
           flipped={flipped} onFlip={onFlip} onEdit={onEdit}
           onAnswerEvaluated={onAnswerEvaluated ?? (() => {})}
           compact={compact} originDeckName={originDeckName}
+          inputLocked={inputLocked}
         />
       </Suspense>
     )
@@ -302,7 +317,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   }, [flipped])
 
   const handleAnswerSelect = (letter: string) => {
-    if (hasAnswered || impactPhase !== 'idle') return
+    if (hasAnswered || impactPhase !== 'idle' || inputLocked) return
     const answeredCorrectly = correctKeys.includes(letter)
     setSelectedAnswer(letter)
     setImpactPhase('selected')
@@ -408,7 +423,11 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                     <div className="mt-5 flex flex-col gap-2.5">
                       {displayOptions.map(({ key, text, displayLetter }) => {
                         const isSelected = selectedAnswer === key
-                        const isImpact = impactPhase !== 'idle'
+                        // hasAnswered zählt mit: Nach dem Zurückblättern auf die
+                        // Vorderseite bleibt die getroffene Auswahl sichtbar,
+                        // statt die Karte fälschlich unbeantwortet wirken zu lassen.
+                        const isImpact = impactPhase !== 'idle' || hasAnswered
+                        const optionsDisabled = impactPhase !== 'idle' || hasAnswered || inputLocked
                         let optionCls = 'border-ds-border bg-ds-floor text-zinc-200 hover:border-ds-border-hover hover:bg-ds-panel'
                         if (isImpact) {
                           if (isSelected) {
@@ -418,6 +437,8 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                           } else {
                             optionCls = 'border-transparent bg-transparent text-zinc-700 opacity-35'
                           }
+                        } else if (inputLocked) {
+                          optionCls = 'border-ds-border bg-ds-floor text-zinc-500 opacity-60'
                         }
 
                         return (
@@ -428,8 +449,8 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                               e.stopPropagation()
                               handleAnswerSelect(key)
                             }}
-                            disabled={impactPhase !== 'idle'}
-                            className={`${optionBaseClass} ${optionTextClass} ${optionCls} ${impactPhase === 'idle' ? 'cursor-pointer active:scale-[0.99]' : 'cursor-default'}`}
+                            disabled={optionsDisabled}
+                            className={`${optionBaseClass} ${optionTextClass} ${optionCls} ${optionsDisabled ? 'cursor-default' : 'cursor-pointer active:scale-[0.99]'}`}
                           >
                             <span className="font-mono font-bold text-zinc-500">{displayLetter})</span>
                             <span className="min-w-0 font-sans">{text}</span>
@@ -439,6 +460,11 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                       {impactPhase !== 'idle' && (
                         <p className="pt-1 text-center font-mono text-[9px] uppercase tracking-[0.12em] text-ds-muted" aria-live="polite">
                           {revealPendingLabel}
+                        </p>
+                      )}
+                      {impactPhase === 'idle' && inputLocked && !hasAnswered && !readOnly && (
+                        <p className="pt-1 text-center font-mono text-[9px] uppercase tracking-[0.12em] text-ds-muted" aria-live="polite">
+                          {t.answer_revealed_locked}
                         </p>
                       )}
                     </div>

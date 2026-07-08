@@ -34,10 +34,12 @@ interface Props {
   onAnswerEvaluated: (score: number) => void
   compact?: boolean
   originDeckName?: string
+  /** Read-only-Ansicht → Selbstbewertung gesperrt (Aufdecken bleibt erlaubt). */
+  inputLocked?: boolean
 }
 
 const FreeRecallCard = memo(function FreeRecallCard({
-  card, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName,
+  card, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName, inputLocked = false,
 }: Props) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
@@ -49,10 +51,10 @@ const FreeRecallCard = memo(function FreeRecallCard({
   const [selfCheck, setSelfCheck] = useState<boolean | null>(null)
 
   const handleSelfCheck = useCallback((known: boolean) => {
-    if (selfCheck !== null) return
+    if (selfCheck !== null || inputLocked) return
     setSelfCheck(known)
     onAnswerEvaluated(scoreFreeRecallSelfCheck(known))
-  }, [selfCheck, onAnswerEvaluated])
+  }, [selfCheck, inputLocked, onAnswerEvaluated])
 
   const renderOriginBadge = () => originDeckName ? (
     <span className="max-w-[160px] truncate rounded-[3px] border border-[--brand-secondary-25] bg-[--brand-secondary-12] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[--brand-secondary]">
@@ -123,13 +125,15 @@ const FreeRecallCard = memo(function FreeRecallCard({
                   type="button"
                   data-testid="freerecall-not-known"
                   onClick={(e) => { e.stopPropagation(); handleSelfCheck(false) }}
-                  disabled={selfCheck !== null}
+                  disabled={selfCheck !== null || inputLocked}
                   className={`flex min-h-[44px] items-center justify-center gap-2 rounded-ds border px-3 py-2.5 font-mono text-[13px] transition-all duration-200 ${
                     selfCheck === false
                       ? 'border-rose-500 bg-rose-500/15 text-rose-300'
-                      : selfCheck === null
-                      ? 'border-ds-border bg-ds-floor text-zinc-300 hover:border-rose-500/40 hover:text-rose-300 active:scale-[0.99]'
-                      : 'border-transparent bg-transparent text-zinc-700 opacity-35'
+                      : selfCheck !== null
+                      ? 'border-transparent bg-transparent text-zinc-700 opacity-35'
+                      : inputLocked
+                      ? 'border-ds-border bg-ds-floor text-zinc-500 opacity-60'
+                      : 'border-ds-border bg-ds-floor text-zinc-300 hover:border-rose-500/40 hover:text-rose-300 active:scale-[0.99]'
                   }`}
                 >
                   <X size={14} strokeWidth={2} /> {t.freerecall_not_known}
@@ -138,13 +142,15 @@ const FreeRecallCard = memo(function FreeRecallCard({
                   type="button"
                   data-testid="freerecall-known"
                   onClick={(e) => { e.stopPropagation(); handleSelfCheck(true) }}
-                  disabled={selfCheck !== null}
+                  disabled={selfCheck !== null || inputLocked}
                   className={`flex min-h-[44px] items-center justify-center gap-2 rounded-ds border px-3 py-2.5 font-mono text-[13px] transition-all duration-200 ${
                     selfCheck === true
                       ? 'border-emerald-500 bg-emerald-500/15 text-emerald-300'
-                      : selfCheck === null
-                      ? 'border-ds-border bg-ds-floor text-zinc-300 hover:border-emerald-500/40 hover:text-emerald-300 active:scale-[0.99]'
-                      : 'border-transparent bg-transparent text-zinc-700 opacity-35'
+                      : selfCheck !== null
+                      ? 'border-transparent bg-transparent text-zinc-700 opacity-35'
+                      : inputLocked
+                      ? 'border-ds-border bg-ds-floor text-zinc-500 opacity-60'
+                      : 'border-ds-border bg-ds-floor text-zinc-300 hover:border-emerald-500/40 hover:text-emerald-300 active:scale-[0.99]'
                   }`}
                 >
                   <Check size={14} strokeWidth={2} /> {t.freerecall_known}
