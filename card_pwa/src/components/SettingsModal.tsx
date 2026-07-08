@@ -167,8 +167,10 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
       key: 'dailyReminder',
       label: t.notification_channel_daily_reminder,
       description: t.notification_channel_daily_reminder_help,
-      defaultTitle: isDE ? 'Lern-Reminder' : 'Study reminder',
-      defaultBody: isDE ? 'Zeit für deine heutige Session in Card_PWA.' : 'Time for your daily study session in Card_PWA.',
+      defaultTitle: isDE ? 'Tagesimpuls' : 'Daily study cue',
+      defaultBody: isDE
+        ? 'Eine kurze Session reicht: waehle eine Karte, die heute wirklich haengen bleiben soll.'
+        : 'One short session is enough: choose one card that should actually stick today.',
     },
     {
       key: 'kpiAlert',

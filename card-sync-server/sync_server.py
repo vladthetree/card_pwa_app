@@ -77,9 +77,11 @@ from server.db.schema import (
 from server.routes.base import BaseRoutesMixin
 from server.routes.auth import AuthRoutesMixin
 from server.routes.sync import SyncRoutesMixin
+from server.routes.push import PushRoutesMixin
+from server.push.scheduler import start_push_scheduler
 
 
-class Handler(AuthRoutesMixin, SyncRoutesMixin, BaseRoutesMixin, BaseHTTPRequestHandler):
+class Handler(PushRoutesMixin, AuthRoutesMixin, SyncRoutesMixin, BaseRoutesMixin, BaseHTTPRequestHandler):
 
   # Auth context populated by _resolve_auth().
   _current_user_id = None
@@ -141,6 +143,10 @@ class Handler(AuthRoutesMixin, SyncRoutesMixin, BaseRoutesMixin, BaseHTTPRequest
         self._route_sync_bootstrap_upload()
       elif path == "/sync/handshake":              # POST /sync/handshake
         self._route_sync_handshake()
+      elif path == "/push/subscribe":              # POST /push/subscribe
+        self._route_push_subscribe()
+      elif path == "/push/send-due":               # POST /push/send-due
+        self._route_push_send_due()
       else:
         self._send_json(404, {"ok": False, "error": "not_found"})
     except Exception:
@@ -183,6 +189,8 @@ if __name__ == "__main__":
       f"safetyWindow={env_int(GC_SAFETY_WINDOW, 100)}"
     )
   
+  start_push_scheduler()
+
   server = ThreadingHTTPServer((HOST, PORT), Handler)
   
   # SSL/TLS Kontext einrichten

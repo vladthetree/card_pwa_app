@@ -378,6 +378,33 @@ def init_db():
     conn.commit()
     LOGGER.info("UNMAPPED_MIGRATED  decks=%d  cards=%d  to=%s", empty_decks, empty_cards, default_id[:8])
 
+  # ─────────────────────────────────────────────────────────────
+  # Web Push subscriptions for daily motivation reminders
+  # ─────────────────────────────────────────────────────────────
+  conn.execute("""
+    CREATE TABLE IF NOT EXISTS push_subscriptions (
+      endpoint TEXT PRIMARY KEY,
+      subscription_json TEXT NOT NULL,
+      user_id TEXT,
+      client_id TEXT,
+      language TEXT NOT NULL DEFAULT 'de',
+      timezone TEXT NOT NULL DEFAULT 'UTC',
+      daily_time TEXT NOT NULL DEFAULT '20:00',
+      daily_enabled INTEGER NOT NULL DEFAULT 1,
+      user_agent TEXT,
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      last_sent_date TEXT,
+      last_sent_at INTEGER,
+      last_error TEXT,
+      disabled_at INTEGER
+    )
+  """)
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_push_due ON push_subscriptions(daily_enabled, disabled_at, daily_time)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_push_user_id ON push_subscriptions(user_id)")
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_push_client_id ON push_subscriptions(client_id)")
+  conn.commit()
+
   ensure_security_deck_hierarchy(conn)
   conn.commit()
 

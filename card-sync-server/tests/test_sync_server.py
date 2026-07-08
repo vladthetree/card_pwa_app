@@ -2515,5 +2515,67 @@ class TestEventLogGc:
         assert db_helper.count("sync_operations") == 0
 
 
+# ═════════════════════════════════════════════════════════════════════════════
+# Tests: Web Push Daily Motivation
+# ═════════════════════════════════════════════════════════════════════════════
+
+class TestWebPushMotivation:
+
+    def test_daily_motivation_rotation_is_deterministic_and_changes_by_day(self):
+        from server.push.motivation import build_daily_motivation_payload
+
+        first = build_daily_motivation_payload("de", "2026-07-08", "endpoint-A")
+        repeated = build_daily_motivation_payload("de", "2026-07-08", "endpoint-A")
+        week = [
+            build_daily_motivation_payload("de", f"2026-07-{day:02d}", "endpoint-A")
+            for day in range(8, 15)
+        ]
+
+        assert first == repeated
+        assert first["channel"] == "dailyMotivation"
+        assert first["tag"] == "card-pwa-daily-motivation"
+        assert first["url"] == "/?view=study"
+        assert first["body"]
+        assert len({item["messageIndex"] for item in week}) > 1
+
+    def test_push_subscribe_stores_subscription_preferences(self, server, db_helper):
+        body = {
+            "subscription": {
+                "endpoint": "https://push.example.test/subscription/test-device",
+                "keys": {
+                    "p256dh": "public-key",
+                    "auth": "auth-secret",
+                },
+            },
+            "clientId": "client-push-test",
+            "language": "de",
+            "timezone": "Europe/Berlin",
+            "reminders": {
+                "enabled": True,
+                "time": "07:45",
+            },
+            "userAgent": "pytest",
+        }
+
+        response = requests.post(f"http://localhost:{server['port']}/push/subscribe", json=body, timeout=2)
+        assert response.status_code == 200
+        assert response.json()["ok"] is True
+
+        rows = db_helper.query(
+            """
+            SELECT endpoint, client_id, language, timezone, daily_time, daily_enabled, disabled_at
+            FROM push_subscriptions
+            WHERE endpoint='https://push.example.test/subscription/test-device'
+            """
+        )
+        assert len(rows) == 1
+        assert rows[0][1] == "client-push-test"
+        assert rows[0][2] == "de"
+        assert rows[0][3] == "Europe/Berlin"
+        assert rows[0][4] == "07:45"
+        assert rows[0][5] == 1
+        assert rows[0][6] is None
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
