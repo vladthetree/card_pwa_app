@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Application service for web Push; owns business logic outside React components for learning, sync, profile, update, or session flows.
  */
-import { fetchWithTimeout } from './syncConfig'
+import { buildAuthHeaders, fetchWithTimeout, getActiveSyncTransportConfig, getOrCreateSyncClientId } from './syncConfig'
 
 type Language = 'de' | 'en'
 
@@ -12,6 +12,23 @@ export interface DailyReminderPreferences {
 
 const PUSH_SUBSCRIBE_ENDPOINT = (import.meta.env.VITE_PUSH_SUBSCRIBE_ENDPOINT as string | undefined)?.trim()
 const VAPID_PUBLIC_KEY = (import.meta.env.VITE_WEB_PUSH_PUBLIC_KEY as string | undefined)?.trim()
+
+function getPushSubscribeEndpoint() {
+  if (PUSH_SUBSCRIBE_ENDPOINT) return PUSH_SUBSCRIBE_ENDPOINT
+
+  const syncEndpoint = getActiveSyncTransportConfig().endpoint.trim()
+  if (!syncEndpoint) return ''
+
+  return syncEndpoint.replace(/\/$/, '').replace(/\/sync$/, '') + '/push/subscribe'
+}
+
+function getLocalTimeZone() {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+  } catch {
+    return 'UTC'
+  }
+}
 
 export type WebPushSubscribeStatus =
   | 'subscribed'
@@ -70,20 +87,25 @@ export async function subscribeToWebPushNotificationsWithStatus(
 
     if (!subscription) return 'error'
 
-    if (!PUSH_SUBSCRIBE_ENDPOINT) {
+    const subscribeEndpoint = getPushSubscribeEndpoint()
+    if (!subscribeEndpoint) {
       return 'missing-subscribe-endpoint'
     }
 
     const payload = {
       subscription: subscription.toJSON(),
+      clientId: getOrCreateSyncClientId(),
       language,
+      channel: 'dailyMotivation',
       reminders,
+      timezone: getLocalTimeZone(),
+      timezoneOffsetMinutes: new Date().getTimezoneOffset(),
       userAgent: navigator.userAgent,
     }
 
-    const response = await fetchWithTimeout(PUSH_SUBSCRIBE_ENDPOINT, {
+    const response = await fetchWithTimeout(subscribeEndpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...buildAuthHeaders() },
       body: JSON.stringify(payload),
     }, 10_000)
 

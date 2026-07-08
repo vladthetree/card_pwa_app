@@ -21,6 +21,7 @@ function loadServiceWorker(): LoadedSw {
   const showNotification = vi.fn(async () => undefined)
   const matchAll = vi.fn(async () => [])
   const openWindow = vi.fn(async () => undefined)
+  const cacheStores = new Map<string, Map<string, Response>>()
 
   const selfLike = {
     addEventListener: (type: string, listener: Listener) => {
@@ -42,12 +43,18 @@ function loadServiceWorker(): LoadedSw {
   }
 
   const cachesLike = {
-    open: vi.fn(async () => ({
-      add: vi.fn(async () => undefined),
-      addAll: vi.fn(async () => undefined),
-      put: vi.fn(async () => undefined),
-      match: vi.fn(async () => null),
-    })),
+    open: vi.fn(async (name: string) => {
+      if (!cacheStores.has(name)) cacheStores.set(name, new Map())
+      const store = cacheStores.get(name)!
+      return {
+        add: vi.fn(async () => undefined),
+        addAll: vi.fn(async () => undefined),
+        put: vi.fn(async (request: RequestInfo | URL, response: Response) => {
+          store.set(String(request), response)
+        }),
+        match: vi.fn(async (request: RequestInfo | URL) => store.get(String(request)) ?? null),
+      }
+    }),
     match: vi.fn(async () => null),
     keys: vi.fn(async () => []),
     delete: vi.fn(async () => true),
@@ -65,6 +72,7 @@ function loadServiceWorker(): LoadedSw {
     setTimeout,
     clearTimeout,
     Promise,
+    Response,
   })
 
   return { listeners, showNotification, matchAll, openWindow }
@@ -144,6 +152,60 @@ describe('service-worker notification handlers', () => {
     expect(options.icon).toBe('/pwa-icons/icon-192.png')
     expect(options.badge).toBe('/pwa-icons/icon-192.png')
     expect(options.data.url).toBe('/')
+  })
+
+  it('routes daily motivation push payloads to the study view', async () => {
+    const sw = loadServiceWorker()
+    const pushHandler = sw.listeners.push?.[0]
+    expect(pushHandler).toBeDefined()
+
+    const event = createEvent({
+      data: {
+        json: () => ({
+          channel: 'dailyMotivation',
+          language: 'de',
+          title: 'Heute nur die erste Karte.',
+          body: 'Der Anfang ist der schwere Teil.',
+        }),
+      },
+    })
+
+    pushHandler(event)
+    await event.done
+
+    expect(sw.showNotification).toHaveBeenCalledTimes(1)
+    const [title, options] = sw.showNotification.mock.calls[0]
+    expect(title).toBe('Heute nur die erste Karte.')
+    expect(options.body).toBe('Der Anfang ist der schwere Teil.')
+    expect(options.tag).toBe('card-pwa-daily-motivation')
+    expect(options.data.url).toBe('/?view=study')
+  })
+
+  it('shows a rotating local daily motivation when configured without a push event', async () => {
+    const sw = loadServiceWorker()
+    const messageHandler = sw.listeners.message?.[0]
+    expect(messageHandler).toBeDefined()
+
+    const event = createEvent({
+      data: {
+        type: 'DAILY_REMINDER_CONFIG',
+        enabled: true,
+        time: '00:00',
+        language: 'de',
+        nextDayStartsAt: 0,
+      },
+    })
+
+    messageHandler(event)
+    await event.done
+
+    expect(sw.showNotification).toHaveBeenCalledTimes(1)
+    const [title, options] = sw.showNotification.mock.calls[0]
+    expect(title).not.toBe('Tagesimpuls')
+    expect(typeof title).toBe('string')
+    expect(options.body).toEqual(expect.any(String))
+    expect(options.tag).toBe('card-pwa-daily-motivation')
+    expect(options.data.url).toBe('/?view=study')
   })
 
   it('shows a local test push notification when the message handler receives TEST_PUSH_NOTIFICATION', async () => {

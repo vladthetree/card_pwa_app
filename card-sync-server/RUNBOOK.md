@@ -174,5 +174,41 @@ Typische Endpunkte:
 - `GET /sync/pull`
 - `POST /sync/handshake`
 - `GET /sync/snapshot`
+- `POST /push/subscribe`
+- `POST /push/send-due`
 
 Für Details ist der Servercode die Quelle: `sync_server.py`.
+
+## Web Push Tagesmotivation
+
+Die PWA registriert Push-Subscriptions ueber `POST /push/subscribe`. Wenn
+`VITE_PUSH_SUBSCRIBE_ENDPOINT` leer ist, leitet das Frontend den Endpoint aus
+`VITE_SYNC_ENDPOINT` ab (`/push/subscribe` neben `/sync`).
+
+Server-seitig erforderlich:
+
+```bash
+WEB_PUSH_VAPID_PRIVATE_KEY=<private VAPID key or key file supported by pywebpush>
+WEB_PUSH_VAPID_SUBJECT=mailto:admin@example.test
+PUSH_DAILY_SCHEDULER_ENABLED=1
+PUSH_DAILY_POLL_SECONDS=60
+```
+
+Die installierte Dependency bringt dafuer den CLI `vapid` mit:
+
+```bash
+./.venv/bin/vapid --gen --json
+./.venv/bin/vapid --applicationServerKey --private-key <private-key-file>
+```
+
+Frontend-seitig erforderlich:
+
+```bash
+VITE_WEB_PUSH_PUBLIC_KEY=<public VAPID key>
+```
+
+Hinweise fuer iPhone:
+- Die PWA muss per Safari "Zum Home-Bildschirm" installiert sein.
+- Die App muss per HTTPS ausgeliefert werden.
+- Die Benachrichtigungs-Erlaubnis muss aus einer Nutzeraktion erfolgen.
+- Der Server verschickt die taegliche Nachricht; der Service Worker zeigt sie an.
