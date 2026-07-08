@@ -19,6 +19,8 @@ interface Props {
   onAnswerEvaluated: (score: number) => void
   compact?: boolean
   originDeckName?: string
+  /** Antwortseite war schon sichtbar bzw. Karte ist read-only → Zuordnen gesperrt. */
+  inputLocked?: boolean
 }
 
 interface MatchState {
@@ -70,7 +72,7 @@ const TYPE_BADGE: Record<Card['type'], { labelKey: 'type_new' | 'type_learning' 
 }
 
 const MatchingCard = memo(function MatchingCard({
-  card, question, answer, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName,
+  card, question, answer, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName, inputLocked = false,
 }: Props) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
@@ -92,6 +94,7 @@ const MatchingCard = memo(function MatchingCard({
   })
   const submittedRef = useRef(false)
   const flipTimerRef = useRef<number | null>(null)
+  const prevFlippedRef = useRef(false)
 
   useEffect(() => {
     submittedRef.current = false
@@ -104,18 +107,29 @@ const MatchingCard = memo(function MatchingCard({
     }
   }, [card.id])
 
+  // Manueller Flip auf die Rückseite verwirft den pending Auto-Flip —
+  // sonst togglet der Timer die Karte zurück auf die Vorderseite.
+  useEffect(() => {
+    const was = prevFlippedRef.current
+    prevFlippedRef.current = flipped
+    if (flipped && !was && flipTimerRef.current !== null) {
+      window.clearTimeout(flipTimerRef.current)
+      flipTimerRef.current = null
+    }
+  }, [flipped])
+
   const handleLeftTap = useCallback((left: string) => {
-    if (state.submitted) return
+    if (state.submitted || inputLocked) return
     dispatch({ type: 'SELECT_LEFT', left })
-  }, [state.submitted])
+  }, [state.submitted, inputLocked])
 
   const handleRightTap = useCallback((right: string) => {
-    if (state.submitted || !state.selectedLeft) return
+    if (state.submitted || inputLocked || !state.selectedLeft) return
     dispatch({ type: 'CONNECT', right })
-  }, [state.submitted, state.selectedLeft])
+  }, [state.submitted, inputLocked, state.selectedLeft])
 
   const handleSubmit = useCallback(() => {
-    if (state.submitted || submittedRef.current) return
+    if (state.submitted || submittedRef.current || inputLocked) return
     submittedRef.current = true
     const s = computeMatchingScore(state.connections, question.pairs)
     dispatch({ type: 'SUBMIT', score: s })
@@ -128,7 +142,7 @@ const MatchingCard = memo(function MatchingCard({
       flipTimerRef.current = null
       onFlip()
     }, delay)
-  }, [state.submitted, state.connections, question.pairs, onAnswerEvaluated, onFlip, prefersReducedMotion])
+  }, [state.submitted, state.connections, question.pairs, inputLocked, onAnswerEvaluated, onFlip, prefersReducedMotion])
 
   const allConnected = leftItems.every(l => !!state.connections[l])
   const scoreCount   = state.score !== null ? Math.round(state.score * question.pairs.length) : 0
@@ -195,13 +209,15 @@ const MatchingCard = memo(function MatchingCard({
                   <button
                     key={left}
                     type="button"
-                    disabled={state.submitted}
+                    disabled={state.submitted || inputLocked}
                     onClick={(e) => { e.stopPropagation(); handleLeftTap(left) }}
                     className={`grid min-h-[44px] grid-cols-[1fr_auto] items-center gap-2 rounded-ds border px-3 text-left transition-all duration-150 ${
                       state.submitted
                         ? feedback === 'correct'
                           ? 'border-emerald-500/60 bg-emerald-500/8 cursor-default'
                           : 'border-rose-500/60 bg-rose-500/8 cursor-default'
+                        : inputLocked
+                        ? 'border-ds-border bg-ds-floor opacity-60 cursor-default'
                         : isSelected
                         ? 'border-[--brand-secondary-50] bg-[--brand-secondary-12]'
                         : 'border-ds-border bg-ds-floor hover:border-ds-border-hover'
@@ -260,14 +276,14 @@ const MatchingCard = memo(function MatchingCard({
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); handleSubmit() }}
-              disabled={state.submitted || !allConnected}
+              disabled={state.submitted || inputLocked || !allConnected}
               className={`min-h-[44px] w-full rounded-ds border text-sm font-medium transition-all duration-200 ${
-                state.submitted || !allConnected
+                state.submitted || inputLocked || !allConnected
                   ? 'border-zinc-700 bg-transparent text-zinc-600 cursor-default'
                   : 'border-[--brand-secondary-50] bg-[--brand-secondary-08] text-[--brand-secondary] hover:bg-[--brand-secondary-12] active:scale-[0.99]'
               }`}
             >
-              {t.matching_confirm_button}
+              {inputLocked && !state.submitted ? t.answer_revealed_locked : t.matching_confirm_button}
             </button>
           </div>
         </div>

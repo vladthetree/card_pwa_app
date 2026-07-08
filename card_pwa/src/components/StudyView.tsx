@@ -1,14 +1,15 @@
 /**
  * AI_CONTEXT:
- * Role: Active flashcard review session UI; coordinates card ordering, persisted session restore, rating submission, undo, coach feedback, and card rendering variants.
+ * Role: Active flashcard review session UI; coordinates card ordering, persisted session restore, rating submission, read-only peek of the last rated card, coach feedback, and card rendering variants.
  * Used by: App.tsx when a deck, tag batch, daily quest, or shuffle session starts study.
- * Important: Scheduling writes happen through db/queries recordReview/undoReview; local UI state belongs in studySessionReducer and studySessionPersistence.
+ * Important: Scheduling writes happen through db/queries recordReview; local UI state belongs in studySessionReducer and studySessionPersistence.
+ * Bewertungen sind endgültig: Zurückblättern ist read-only (kein erneutes Antworten, kein zweites XP).
  */
 import { useState, useEffect, useCallback, useMemo, useReducer, useRef } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { ArrowLeft, RotateCcw, CheckCircle, AlertCircle, RefreshCw, Type, Info, Sparkles } from 'lucide-react'
 import { useDeckCards } from '../hooks/useCardDb'
-import { recordReview, undoReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession, readActiveSession } from '../db/queries'
+import { recordReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession, readActiveSession } from '../db/queries'
 import { STRINGS, useSettings, type QuestionTextSize } from '../contexts/SettingsContext'
 import { interleaveCardsByDeck, sortStudyCards } from '../services/studyCardOrdering'
 import { buildDragMatchModePlan } from '../services/studyModeSelector'
@@ -101,6 +102,13 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
   const [answerWasIncorrect, setAnswerWasIncorrect] = useState(false)
   const [showHeaderLegend, setShowHeaderLegend] = useState(false)
   const [rewardToast, setRewardToast] = useState<RewardHint | null>(null)
+  // Antwortseite der aktuellen Karte war schon sichtbar → Antwort-Eingaben
+  // bleiben gesperrt (verhindert „Lösung ansehen, zurückswipen, richtig klicken“).
+  const [answerRevealed, setAnswerRevealed] = useState(false)
+  // Read-only-Blick zurück auf die zuletzt bewertete Karte (ersetzt das Undo):
+  // ansehen ja — erneut beantworten/bewerten und zweites XP nein.
+  const [peeking, setPeeking] = useState(false)
+  const [peekFlipped, setPeekFlipped] = useState(true)
   const { isHandsetLayout, isHandsetLandscape } = useHandsetLayout()
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
   const sessionMomentumRef = useRef(0)
@@ -357,6 +365,17 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     () => session.cards[0] ?? null,
     [session.cards]
   )
+
+  // Pro Karte zurücksetzen (sessionCount zählt Requeues mit); Peek schließen.
+  useEffect(() => {
+    setAnswerRevealed(false)
+    setPeeking(false)
+    setPeekFlipped(true)
+  }, [currentCard?.id, session.sessionCount])
+
+  useEffect(() => {
+    if (session.isFlipped) setAnswerRevealed(true)
+  }, [session.isFlipped])
   if (!loading && session.cards.length > 0 && !dragMatchModePlanReadyRef.current) {
     dragMatchModePlanRef.current = buildDragMatchModePlan(session.cards, dragMatchModeSeedRef.current)
     dragMatchModePlanReadyRef.current = true
@@ -434,8 +453,12 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     if (typeof navigator.vibrate === 'function') {
       navigator.vibrate(10)
     }
+    if (peeking) {
+      setPeekFlipped(prev => !prev)
+      return
+    }
     dispatch({ type: 'FLIP' })
-  }, [])
+  }, [peeking])
 
   const cycleQuestionTextSize = useCallback(() => {
     const nextByCurrent: Record<QuestionTextSize, QuestionTextSize> = {
@@ -458,7 +481,8 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     if (!isHandsetLayout || session.isDone || session.isSubmitting) return
 
     // PBQ cards (ordering/matching) handle their own touch interactions
-    const variant = getCardVariant(currentCard?.front ?? '')
+    const activeFront = peeking ? (session.lastRatedCard?.front ?? '') : (currentCard?.front ?? '')
+    const variant = getCardVariant(activeFront)
     if (variant === 'ordering' || variant === 'matching') return
 
     const start = touchStartRef.current
@@ -474,7 +498,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     if (Math.abs(deltaX) >= 40 && Math.abs(deltaY) <= 50) {
       handleFlip()
     }
-  }, [isHandsetLayout, session.isDone, session.isSubmitting, currentCard, handleFlip])
+  }, [isHandsetLayout, session.isDone, session.isSubmitting, session.lastRatedCard, peeking, currentCard, handleFlip])
 
   const handleAnswerEvaluated = useCallback((score: number) => {
     setAnswerWasIncorrect(score < 1.0)
@@ -482,7 +506,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
 
   const handleRate = useCallback(
     async (rating: Rating) => {
-      if (!currentCard || session.isSubmitting || session.isDone || isAlgorithmMigrating) return
+      if (!currentCard || peeking || session.isSubmitting || session.isDone || isAlgorithmMigrating) return
 
       // P2.2: MC wrong answer always triggers Again (rating 1) — README §Sonderregel.
       const effectiveRating: Rating = answerWasIncorrect ? 1 : rating
@@ -498,11 +522,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
           return
         }
 
-        if (!result.undoToken) {
-          dispatch({ type: 'RATE_ERROR', message: t.save_rating_failed })
-          return
-        }
-
         // P2.3: After the 3rd consecutive Again on this card within the session,
         // force it to tomorrow and remove it from the active queue.
         let forcedTomorrow = false
@@ -513,7 +532,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
           }
         }
 
-        dispatch({ type: 'RATE_SUCCESS', rating: effectiveRating, cardId: currentCard.id, undoToken: result.undoToken, forcedTomorrow })
+        dispatch({ type: 'RATE_SUCCESS', rating: effectiveRating, cardId: currentCard.id, forcedTomorrow })
         registerSessionReward(effectiveRating, elapsedMs)
         noteOfflineSave()
         setAnswerWasIncorrect(false)
@@ -524,6 +543,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     },
     [
       currentCard,
+      peeking,
       session.isSubmitting,
       session.isDone,
       isAlgorithmMigrating,
@@ -548,11 +568,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     try {
       const result = await recordReview(currentCard.id, rating, elapsedMs, settings.algorithm, settings.algorithmParams)
       if (result.ok) {
-        if (!result.undoToken) {
-          dispatch({ type: 'RATE_ERROR', message: t.save_failed })
-          return
-        }
-
         // P2.3: Apply the force-tomorrow rule on retry just as in handleRate.
         // againCounts was not modified by the preceding RATE_ERROR, so the
         // check here reflects the correct pre-retry state.
@@ -564,7 +579,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
           }
         }
 
-        dispatch({ type: 'RATE_SUCCESS', rating, cardId: currentCard.id, undoToken: result.undoToken, forcedTomorrow })
+        dispatch({ type: 'RATE_SUCCESS', rating, cardId: currentCard.id, forcedTomorrow })
         registerSessionReward(rating, elapsedMs)
         noteOfflineSave()
         setAnswerWasIncorrect(false)
@@ -587,21 +602,17 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     registerSessionReward,
   ])
 
-  const handleUndoLastRating = useCallback(async () => {
-    if (!session.lastUndoToken || session.isSubmitting || isAlgorithmMigrating) return
+  // Read-only zurückblättern: zeigt die zuletzt bewertete Karte nur an —
+  // bewusst ohne Undo, ohne erneutes Antworten und ohne zweites XP.
+  const handlePeekLast = useCallback(() => {
+    if (!session.lastRatedCard || session.isSubmitting) return
+    setPeekFlipped(true)
+    setPeeking(true)
+  }, [session.lastRatedCard, session.isSubmitting])
 
-    dispatch({ type: 'UNDO_START' })
-    const result = await undoReview(session.lastUndoToken)
-    if (!result.ok) {
-      dispatch({ type: 'RATE_ERROR', message: result.error || t.save_failed })
-      return
-    }
-
-    dispatch({ type: 'UNDO_SUCCESS' })
-    sessionMomentumRef.current = 0
-    setRewardToast(null)
-    setAnswerWasIncorrect(false)
-  }, [session.lastUndoToken, session.isSubmitting, isAlgorithmMigrating, t.save_failed])
+  const handlePeekReturn = useCallback(() => {
+    setPeeking(false)
+  }, [])
 
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
@@ -615,7 +626,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
       }
 
       // Rating keys
-      if (session.isFlipped && !session.error && !session.isSubmitting && !session.isDone) {
+      if (!peeking && session.isFlipped && !session.error && !session.isSubmitting && !session.isDone) {
         if (e.key === '1') handleRate(1)
         if (e.key === '2') handleRate(2)
         if (e.key === '3') handleRate(3)
@@ -628,7 +639,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
 
     window.addEventListener('keydown', handleKeydown)
     return () => window.removeEventListener('keydown', handleKeydown)
-  }, [handleFlip, handleRate, maxSelectableRating, session.isDone, session.isFlipped, session.error, session.isSubmitting, handleExit])
+  }, [handleFlip, handleRate, maxSelectableRating, peeking, session.isDone, session.isFlipped, session.error, session.isSubmitting, handleExit])
 
   const handleRestart = useCallback(() => {
     const sortedCards = buildSessionCards(cards, studyCardLimit)
@@ -805,15 +816,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
               </p>
             )}
 
-            {session.lastUndoToken && !session.isSubmitting && (
-              <button
-                type="button"
-                onClick={handleUndoLastRating}
-                className="mt-4 mb-3 w-full rounded-ds border border-ds-border bg-ds-floor py-2 text-sm text-white/80 transition hover:border-ds-border-hover hover:text-white"
-              >
-                {t.undo_last_rating}
-              </button>
-            )}
             <div className="mt-4 flex gap-3">
               <button
                 onClick={handleExit}
@@ -848,6 +850,11 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
   // Focus mode: hide session header content but keep its space reserved
   // (visibility instead of display) so the card never jumps. Back button stays.
   const focusHidden = settings.focusMode ? 'invisible' : ''
+
+  // Handset: Antwortseite reserviert unten die Bewertungsleiste; sonst hält
+  // ein fester Bodenabstand (~1/6 Displayhöhe) die eckige Karte von der
+  // iPhone-Display-Rundung fern.
+  const showHandsetRatingArea = isHandsetLayout && !peeking && session.isFlipped && !!currentCard
 
   // Study Screen
   return (
@@ -1046,7 +1053,50 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
               und die Folgekarte nie mounten (schwarzer Kartenbereich). Der Key-
               Wechsel remountet die Karte direkt, nur mit Enter-Animation.
               Guard: __tests__/ui/no-animatepresence-wait.test.ts */}
-          {currentCard && (
+          {peeking && session.lastRatedCard ? (
+              // Read-only-Rückblick auf die zuletzt bewertete Karte: reine
+              // Ansicht — keine Antwort-Eingaben, keine Bewertung, kein XP.
+              <motion.div
+                key={`peek:${session.lastRatedCard.id}:${session.sessionCount}`}
+                initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 22, scale: 0.96 }}
+                animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: prefersReducedMotion ? 0.12 : 0.22, ease: [0.22, 1, 0.36, 1] }}
+                className={`w-full ${isHandsetLayout ? 'flex h-full min-h-0 flex-col' : 'mx-auto my-auto max-w-5xl'}`}
+                style={isHandsetLayout ? { maxHeight: '100%' } : undefined}
+              >
+                <div className="mb-2 flex shrink-0 items-center justify-between gap-3 rounded-ds border border-amber-500/30 bg-amber-500/10 px-3 py-1.5">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-amber-200/90">
+                    {t.peek_view_only}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handlePeekReturn}
+                    className="rounded-ds bg-white px-3 py-1.5 text-xs font-semibold text-black transition hover:bg-white/90 active:scale-[0.98]"
+                  >
+                    {t.peek_continue}
+                  </button>
+                </div>
+                <div className={`flex flex-col lg:flex-row items-start gap-6 w-full ${isHandsetLayout ? 'h-full min-h-0 flex-1' : ''}`}>
+                  <div className={`w-full min-w-0 flex-1 ${isHandsetLayout ? 'h-full min-h-0' : ''}`}>
+                    <div
+                      className="h-full card-no-select"
+                      onTouchStart={handleTouchStart}
+                      onTouchEnd={handleTouchEnd}
+                    >
+                      <CardFace
+                        card={session.lastRatedCard}
+                        flipped={peekFlipped}
+                        onFlip={handleFlip}
+                        onEdit={() => setEditingCard(session.lastRatedCard)}
+                        compact={isHandsetLayout}
+                        useDragMatchMode={dragMatchModePlanRef.current.has(session.lastRatedCard.id)}
+                        readOnly
+                      />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ) : currentCard && (
               // Include the attempt count so an Again-requeued single card
               // remounts with fresh answer/PBQ state instead of staying submitted.
               <motion.div
@@ -1072,6 +1122,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
                         onAnswerEvaluated={handleAnswerEvaluated}
                         compact={isHandsetLayout}
                         useDragMatchMode={useDragMatchForCurrentCard}
+                        answerRevealed={answerRevealed}
                       />
                     </div>
                   </div>
@@ -1082,7 +1133,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
           {/* Desktop/Tablet rating bar remains inline */}
           {!isHandsetLayout && (
             <AnimatePresence initial={false}>
-              {session.isFlipped && currentCard && (
+              {!peeking && session.isFlipped && currentCard && (
                 <motion.div
                   initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
                   animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
@@ -1096,14 +1147,14 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
             </AnimatePresence>
           )}
 
-          {session.lastUndoToken && !session.isSubmitting && (
+          {!isHandsetLayout && session.lastRatedCard && !session.isSubmitting && !peeking && (
             <div className="mt-3 flex justify-center">
               <button
                 type="button"
-                onClick={handleUndoLastRating}
+                onClick={handlePeekLast}
                 className="rounded-ds border border-ds-border bg-ds-floor px-3 py-1.5 text-xs text-white/70 transition hover:border-ds-border-hover hover:text-white"
               >
-                {t.undo_last_rating}
+                {t.view_last_card}
               </button>
             </div>
           )}
@@ -1141,7 +1192,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
         </div>
 
         {/* Handset rating area: permanently reserved lower area in answer state */}
-        {isHandsetLayout && session.isFlipped && currentCard && (
+        {showHandsetRatingArea && (
           <AnimatePresence initial={false}>
             <motion.div
               initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
@@ -1167,6 +1218,25 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
               </div>
             </motion.div>
           </AnimatePresence>
+        )}
+
+        {/* Handset-Bodenabstand (~1/6 Displayhöhe): hält das eckige Kartenende
+            oberhalb der iPhone-Display-Rundung; beherbergt den Peek-Button. */}
+        {isHandsetLayout && !showHandsetRatingArea && (
+          <div
+            className="flex shrink-0 items-start justify-center pt-3"
+            style={{ height: '16.7dvh' }}
+          >
+            {session.lastRatedCard && !session.isSubmitting && !peeking && (
+              <button
+                type="button"
+                onClick={handlePeekLast}
+                className="rounded-ds border border-ds-border bg-ds-floor px-3 py-1.5 text-xs text-white/70 transition hover:border-ds-border-hover hover:text-white"
+              >
+                {t.view_last_card}
+              </button>
+            )}
+          </div>
         )}
       </div>
 

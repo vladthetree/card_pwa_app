@@ -40,6 +40,8 @@ interface Props {
   onAnswerEvaluated: (score: number) => void
   compact?: boolean
   originDeckName?: string
+  /** Antwortseite war schon sichtbar bzw. Karte ist read-only → kein Drag/Tap mehr. */
+  inputLocked?: boolean
 }
 
 // Anzeige-Buchstaben werden nach Position vergeben (A, B, C, D …), unabhängig
@@ -56,7 +58,7 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 const DragMatchCard = memo(function DragMatchCard({
-  card, question, answer, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName,
+  card, question, answer, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName, inputLocked = false,
 }: Props) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
@@ -79,6 +81,10 @@ const DragMatchCard = memo(function DragMatchCard({
   )
 
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
+  // Flip-Choreografie wie beim Inline-MC-Renderer: erst flip-out auf der
+  // Vorderseite, dann Seitenwechsel mit flip-in — statt hartem Schnitt.
+  const [flipOutActive, setFlipOutActive] = useState(false)
+  const [flipInActive, setFlipInActive] = useState(false)
   const submitted = selectedKey !== null
   const isCorrect = submitted && selectedKey === correctKey
   const selectedText = selectedKey ? (question.options[selectedKey] ?? '—') : '—'
@@ -86,33 +92,65 @@ const DragMatchCard = memo(function DragMatchCard({
   const dropZoneRef = useRef<HTMLDivElement | null>(null)
   const selectedKeyRef = useRef<string | null>(null)
   const flipTimerRef = useRef<number | null>(null)
+  const flipOutTimerRef = useRef<number | null>(null)
+  const prevFlippedRef = useRef(false)
+
+  const clearPendingFlipTimers = useCallback(() => {
+    if (flipTimerRef.current !== null) {
+      window.clearTimeout(flipTimerRef.current)
+      flipTimerRef.current = null
+    }
+    if (flipOutTimerRef.current !== null) {
+      window.clearTimeout(flipOutTimerRef.current)
+      flipOutTimerRef.current = null
+    }
+  }, [])
 
   useEffect(() => {
     selectedKeyRef.current = null
 
-    return () => {
-      if (flipTimerRef.current !== null) {
-        window.clearTimeout(flipTimerRef.current)
-        flipTimerRef.current = null
-      }
+    return clearPendingFlipTimers
+  }, [card.id, clearPendingFlipTimers])
+
+  // Wird die Karte zwischenzeitlich manuell umgedreht (Swipe/Space), muss der
+  // pending Auto-Flip verfallen — sonst togglet der Timer brutal zurück auf
+  // die Vorderseite. Der Wechsel auf die Rückseite animiert mit flip-in.
+  useEffect(() => {
+    const was = prevFlippedRef.current
+    prevFlippedRef.current = flipped
+    if (flipped && !was) {
+      clearPendingFlipTimers()
+      setFlipOutActive(false)
+      setFlipInActive(true)
+      const t = window.setTimeout(() => setFlipInActive(false), 400)
+      return () => window.clearTimeout(t)
     }
-  }, [card.id])
+  }, [flipped, clearPendingFlipTimers])
 
   const handleSelect = useCallback((key: string) => {
-    if (selectedKeyRef.current !== null) return
+    if (selectedKeyRef.current !== null || inputLocked) return
     selectedKeyRef.current = key
     setSelectedKey(key)
     const score = scoreDragMatchChoice(answer, key)
     onAnswerEvaluated(score)
     const delay = prefersReducedMotion ? 400 : (score === 1 ? 700 : 1800)
-    if (flipTimerRef.current !== null) {
-      window.clearTimeout(flipTimerRef.current)
+    clearPendingFlipTimers()
+    if (prefersReducedMotion) {
+      flipTimerRef.current = window.setTimeout(() => {
+        flipTimerRef.current = null
+        onFlip()
+      }, delay)
+      return
     }
-    flipTimerRef.current = window.setTimeout(() => {
-      flipTimerRef.current = null
-      onFlip()
-    }, delay)
-  }, [answer, onAnswerEvaluated, onFlip, prefersReducedMotion])
+    flipOutTimerRef.current = window.setTimeout(() => {
+      flipOutTimerRef.current = null
+      setFlipOutActive(true)
+      flipTimerRef.current = window.setTimeout(() => {
+        flipTimerRef.current = null
+        onFlip()
+      }, 220)
+    }, delay - 220)
+  }, [answer, inputLocked, clearPendingFlipTimers, onAnswerEvaluated, onFlip, prefersReducedMotion])
 
   // Drag-Ende: prüfen, ob der Chip über der Drop-Zone losgelassen wurde.
   const handleDragEnd = useCallback((key: string, point: { x: number; y: number }) => {
@@ -141,7 +179,7 @@ const DragMatchCard = memo(function DragMatchCard({
   // ── BACK (Erklärung + Merkhilfe) ─────────────────────────────────────────
   if (flipped) {
     return (
-      <div className={`w-full ${compact ? 'h-full' : ''}`}>
+      <div className={`w-full ${compact ? 'h-full' : ''} ${flipInActive ? 'study-flip-in' : ''}`} style={{ perspective: '1000px' }}>
         <div className={cardShellCls}>
           <div className="shrink-0 border-b border-ds-border px-[14px] py-[8px]">
             <div className="flex items-center justify-between gap-3">
@@ -198,7 +236,7 @@ const DragMatchCard = memo(function DragMatchCard({
 
   // ── FRONT (Frage + Drop-Zone + Optionen) ─────────────────────────────────
   return (
-    <div className={`w-full ${compact ? 'h-full' : ''}`}>
+    <div className={`w-full ${compact ? 'h-full' : ''} ${flipOutActive ? 'study-flip-out' : ''}`} style={{ perspective: '1000px' }}>
       <div className={cardShellCls}>
         {/* Header: "FRAGE" links, DRAG-MATCH-Badge rechts (exakt wie Screenshot) */}
         <div className="shrink-0 border-b border-ds-border px-[14px] py-[8px]">
@@ -240,7 +278,9 @@ const DragMatchCard = memo(function DragMatchCard({
             }`}
           >
             {!submitted && (
-              <span className="font-mono text-[11px] uppercase tracking-[0.18em]">{t.dragmatch_dropzone_hint}</span>
+              <span className="font-mono text-[11px] uppercase tracking-[0.18em]">
+                {inputLocked ? t.answer_revealed_locked : t.dragmatch_dropzone_hint}
+              </span>
             )}
             {submitted && isCorrect && (
               <span className="font-mono text-[15px] font-semibold">{correctText}</span>
@@ -278,29 +318,32 @@ const DragMatchCard = memo(function DragMatchCard({
           <div className="mt-auto grid grid-cols-2 gap-2.5 pt-6">
             {shuffledOptions.map(({ key, text, displayLetter }) => {
               const isSel = selectedKey === key
+              const chipLocked = submitted || inputLocked
               const cls = submitted
                 ? (isSel
                   ? (isCorrect ? 'border-emerald-500/60 bg-emerald-500/10' : 'border-rose-500/60 bg-rose-500/10')
                   : key === correctKey
                   ? 'border-emerald-500/40 bg-emerald-500/5'
                   : 'border-ds-border bg-ds-floor')
+                : inputLocked
+                ? 'border-ds-border bg-ds-floor opacity-60'
                 : 'border-ds-border bg-ds-floor'
               return (
                 <motion.button
                   key={key}
                   type="button"
                   data-testid={`dragmatch-option-${displayLetter}`}
-                  drag={!submitted}
+                  drag={!chipLocked}
                   dragElastic={0.04}
                   dragMomentum={false}
                   dragSnapToOrigin
                   dragTransition={{ bounceStiffness: 500, bounceDamping: 28 }}
                   whileDrag={{ scale: 1.03, zIndex: 30 }}
                   onDragEnd={(_e, info) => handleDragEnd(key, info.point)}
-                  style={{ touchAction: submitted ? 'auto' : 'none' }}
-                  disabled={submitted}
+                  style={{ touchAction: chipLocked ? 'auto' : 'none' }}
+                  disabled={chipLocked}
                   className={`block transform-gpu select-none rounded-ds border px-3 py-3 text-left font-mono leading-snug transition-colors duration-150 ease-out will-change-transform ${cls} ${
-                    submitted ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'
+                    chipLocked ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'
                   }`}
                 >
                   <span className="text-[12px] font-bold text-zinc-500">{displayLetter})</span>{' '}

@@ -1,12 +1,14 @@
 /**
  * AI_CONTEXT:
- * Role: Reducer for in-session UI state: current card queue, flip state, submit/undo lifecycle, low-rating counters, repair markers, and review events.
+ * Role: Reducer for in-session UI state: current card queue, flip state, submit lifecycle, low-rating counters, repair markers, and review events.
  * Used by: StudyView via useReducer.
  * Important: Reducer state is UI/session state only; persistent scheduling mutations happen after successful db/queries review calls.
+ * Bewertungen sind endgültig: es gibt bewusst kein Undo — die zuletzt bewertete
+ * Karte wird nur als read-only Snapshot (lastRatedCard) fürs Nochmal-Ansehen gehalten.
  */
 import { applyRating } from './sessionRecovery'
 import type { PersistedStudySession } from './studySessionPersistence'
-import type { Card, Rating, ReviewUndoToken, SessionReviewEvent } from '../types'
+import type { Card, Rating, SessionReviewEvent } from '../types'
 
 export interface SessionState {
   cards: Card[]
@@ -16,20 +18,13 @@ export interface SessionState {
   error: string | null
   isSubmitting: boolean
   lastRating: { rating: Rating; elapsedMs: number } | null
-  lastUndoToken: ReviewUndoToken | null
+  /** Zuletzt bewertete Karte — nur zum read-only Zurückblättern, nie zum Neu-Bewerten. */
+  lastRatedCard: Card | null
   lowRatingCounts: Record<string, number>
   relearnSuccessCounts: Record<string, number>
   forcedTomorrowCardIds: string[]
   againCounts: Record<string, number>
   reviewEvents: SessionReviewEvent[]
-  beforeLastRating: {
-    cards: Card[]
-    lowRatingCounts: Record<string, number>
-    relearnSuccessCounts: Record<string, number>
-    forcedTomorrowCardIds: string[]
-    againCounts: Record<string, number>
-    reviewEvents: SessionReviewEvent[]
-  } | null
   startTime: number
 }
 
@@ -39,10 +34,8 @@ export type SessionAction =
   | { type: 'SYNC_CARDS'; cards: Card[] }
   | { type: 'FLIP' }
   | { type: 'RATE_START'; rating: Rating; elapsedMs: number }
-  | { type: 'RATE_SUCCESS'; rating: Rating; cardId: string; undoToken: ReviewUndoToken; forcedTomorrow: boolean }
+  | { type: 'RATE_SUCCESS'; rating: Rating; cardId: string; forcedTomorrow: boolean }
   | { type: 'RATE_ERROR'; message: string }
-  | { type: 'UNDO_START' }
-  | { type: 'UNDO_SUCCESS' }
   | { type: 'CLEAR_ERROR' }
   | { type: 'RESTART' }
 
@@ -54,13 +47,12 @@ export const initialSessionState: SessionState = {
   error: null,
   isSubmitting: false,
   lastRating: null,
-  lastUndoToken: null,
+  lastRatedCard: null,
   lowRatingCounts: {},
   relearnSuccessCounts: {},
   forcedTomorrowCardIds: [],
   againCounts: {},
   reviewEvents: [],
-  beforeLastRating: null,
   startTime: Date.now(),
 }
 
@@ -87,13 +79,12 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
         error: null,
         isSubmitting: false,
         lastRating: action.snapshot.lastRating,
-        lastUndoToken: null,
+        lastRatedCard: null,
         lowRatingCounts: { ...action.snapshot.lowRatingCounts },
         relearnSuccessCounts: { ...action.snapshot.relearnSuccessCounts },
         forcedTomorrowCardIds: [...action.snapshot.forcedTomorrowCardIds],
         againCounts: { ...action.snapshot.againCounts },
         reviewEvents: [...(action.snapshot.reviewEvents ?? [])],
-        beforeLastRating: null,
         startTime: action.snapshot.startTime,
       }
     case 'SYNC_CARDS':
@@ -110,14 +101,6 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
         isSubmitting: true,
         error: null,
         lastRating: { rating: action.rating, elapsedMs: action.elapsedMs },
-        beforeLastRating: {
-          cards: [...state.cards],
-          lowRatingCounts: { ...state.lowRatingCounts },
-          relearnSuccessCounts: { ...state.relearnSuccessCounts },
-          forcedTomorrowCardIds: [...state.forcedTomorrowCardIds],
-          againCounts: { ...state.againCounts },
-          reviewEvents: [...state.reviewEvents],
-        },
       }
     case 'RATE_SUCCESS': {
       const currentCard = state.cards[0]
@@ -173,13 +156,12 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
         isDone: nextCards.length === 0,
         isFlipped: false,
         sessionCount,
-        lastUndoToken: action.undoToken,
+        lastRatedCard: currentCard,
         lowRatingCounts: nextLowRatingCounts,
         relearnSuccessCounts: nextRelearnSuccessCounts,
         forcedTomorrowCardIds,
         againCounts: nextAgainCounts,
         reviewEvents,
-        beforeLastRating: state.beforeLastRating,
         startTime: Date.now(),
       }
     }
@@ -188,42 +170,6 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
         ...state,
         isSubmitting: false,
         error: action.message,
-      }
-    case 'UNDO_START':
-      return {
-        ...state,
-        isSubmitting: true,
-        error: null,
-      }
-    case 'UNDO_SUCCESS':
-      if (!state.beforeLastRating) {
-        return {
-          ...state,
-          isSubmitting: false,
-          isDone: state.cards.length === 0,
-          isFlipped: false,
-          lastRating: null,
-          lastUndoToken: null,
-          startTime: Date.now(),
-        }
-      }
-      return {
-        ...state,
-        cards: [...state.beforeLastRating.cards],
-        isSubmitting: false,
-        isDone: state.beforeLastRating.cards.length === 0,
-        sessionCount: Math.max(0, state.sessionCount - 1),
-        // Nach Undo zurück auf die Vorderseite, damit keine alte Bewertung impliziert wird.
-        isFlipped: false,
-        lastRating: null,
-        lastUndoToken: null,
-        lowRatingCounts: { ...state.beforeLastRating.lowRatingCounts },
-        relearnSuccessCounts: { ...state.beforeLastRating.relearnSuccessCounts },
-        forcedTomorrowCardIds: [...state.beforeLastRating.forcedTomorrowCardIds],
-        againCounts: { ...state.beforeLastRating.againCounts },
-        reviewEvents: [...state.beforeLastRating.reviewEvents],
-        beforeLastRating: null,
-        startTime: Date.now(),
       }
     case 'CLEAR_ERROR':
       return {

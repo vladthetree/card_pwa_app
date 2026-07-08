@@ -37,6 +37,8 @@ interface Props {
   onAnswerEvaluated: (score: number) => void
   compact?: boolean
   originDeckName?: string
+  /** Antwortseite war schon sichtbar bzw. Karte ist read-only → Sortieren gesperrt. */
+  inputLocked?: boolean
 }
 
 function shuffleArray(arr: string[]): string[] {
@@ -147,7 +149,7 @@ const TYPE_BADGE: Record<Card['type'], { labelKey: 'type_new' | 'type_learning' 
 }
 
 const OrderingCard = memo(function OrderingCard({
-  card, question, answer, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName,
+  card, question, answer, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName, inputLocked = false,
 }: Props) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
@@ -162,6 +164,7 @@ const OrderingCard = memo(function OrderingCard({
   const [score, setScore]         = useState<number | null>(null)
   const submittedRef = useRef(false)
   const flipTimerRef = useRef<number | null>(null)
+  const prevFlippedRef = useRef(false)
 
   useEffect(() => {
     submittedRef.current = false
@@ -173,6 +176,17 @@ const OrderingCard = memo(function OrderingCard({
       }
     }
   }, [card.id])
+
+  // Manueller Flip auf die Rückseite verwirft den pending Auto-Flip —
+  // sonst togglet der Timer die Karte zurück auf die Vorderseite.
+  useEffect(() => {
+    const was = prevFlippedRef.current
+    prevFlippedRef.current = flipped
+    if (flipped && !was && flipTimerRef.current !== null) {
+      window.clearTimeout(flipTimerRef.current)
+      flipTimerRef.current = null
+    }
+  }, [flipped])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -196,7 +210,7 @@ const OrderingCard = memo(function OrderingCard({
   }, [])
 
   const handleSubmit = useCallback(() => {
-    if (submitted || submittedRef.current) return
+    if (submitted || submittedRef.current || inputLocked) return
     submittedRef.current = true
     const s = computeOrderingScore(order, answer.correctOrder, question.items)
     setScore(s)
@@ -210,7 +224,7 @@ const OrderingCard = memo(function OrderingCard({
       flipTimerRef.current = null
       onFlip()
     }, delay)
-  }, [submitted, order, answer.correctOrder, question.items, onAnswerEvaluated, onFlip, prefersReducedMotion])
+  }, [submitted, order, answer.correctOrder, question.items, inputLocked, onAnswerEvaluated, onFlip, prefersReducedMotion])
 
   const correctItems = useMemo(
     () => answer.correctOrder.map(i => question.items[i]),
@@ -298,7 +312,7 @@ const OrderingCard = memo(function OrderingCard({
                       position={idx + 1}
                       feedback={submitted ? getFeedback(idx) : 'none'}
                       correctPosition={submitted && getFeedback(idx) === 'incorrect' ? getCorrectPosition(item) : undefined}
-                      submitted={submitted}
+                      submitted={submitted || inputLocked}
                     />
                   ))}
                 </div>
@@ -325,14 +339,14 @@ const OrderingCard = memo(function OrderingCard({
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); handleSubmit() }}
-              disabled={submitted}
+              disabled={submitted || inputLocked}
               className={`min-h-[44px] w-full rounded-ds border text-sm font-medium transition-all duration-200 ${
-                submitted
+                submitted || inputLocked
                   ? 'border-zinc-700 bg-transparent text-zinc-600 cursor-default'
                   : 'border-[--brand-secondary-50] bg-[--brand-secondary-08] text-[--brand-secondary] hover:bg-[--brand-secondary-12] active:scale-[0.99]'
               }`}
             >
-              {t.ordering_confirm_button}
+              {inputLocked && !submitted ? t.answer_revealed_locked : t.ordering_confirm_button}
             </button>
           </div>
         </div>
