@@ -1,13 +1,14 @@
 /**
  * AI_CONTEXT:
- * Role: Active-recall quiz after a video; shows only the finished Messer MC questions mapped to exactly that video and suggests a confidence state.
+ * Role: Active-recall quiz after a video; combines the mapped Messer MC deck questions with curated transcript questions and suggests a confidence state.
  * Used by: VideosView recall-check modal.
  * Important: It intentionally does not write reviews or alter FSRS/SM2 scheduling; it trains recall and calibrates confidence only.
  */
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Brain, Check, Eye, Loader2, RotateCcw, X } from 'lucide-react'
 import { listDeckCards } from '../../db/queries'
 import type { Card } from '../../types'
+import type { TranscriptQuestion } from '../../data/messerTranscriptQuestions'
 import {
   parseQuestion,
   parseAnswer,
@@ -24,6 +25,10 @@ import { MESSER_VIDEO_BY_QUESTION_ID, normalizeMesserVideoTitle } from '../../da
  * Objective-Deck (`getSecurityObjectiveDeckId`) und behält davon nur die Fragen, die
  * laut generiertem Mapping (messerVideoQuestionMap) zu GENAU diesem Video
  * gehören — erst erinnern, dann aufdecken, dann ehrlich selbst bewerten.
+ *
+ * Zusätzlich (nie ersetzend): kuratierte Fragen aus dem Videotranskript
+ * (messerTranscriptQuestions) füllen den Check auf, wenn zu einem Video weniger
+ * Deck-Fragen existieren als der Umfang vorsieht — Deck-Fragen haben Vorrang.
  *
  * Bewusst NICHT planungswirksam: der Check schreibt keine Reviews und verändert
  * den FSRS-Zeitplan nicht. Sein Nutzen liegt im Abrufakt selbst (Testing-Effekt)
@@ -51,6 +56,7 @@ const COPY = {
     answer: 'Antwort',
     explanation: 'Erklärung',
     mnemonic: 'Merkhilfe',
+    fromTranscript: 'Aus dem Video',
     resultTitle: 'Ergebnis',
     resultScore: '{known} von {total} aus dem Gedächtnis gewusst',
     studyMissed: 'Diese {count} Karten regulär lernen',
@@ -77,6 +83,7 @@ const COPY = {
     answer: 'Answer',
     explanation: 'Explanation',
     mnemonic: 'Mnemonic',
+    fromTranscript: 'From the video',
     resultTitle: 'Result',
     resultScore: 'Recalled {known} of {total} from memory',
     studyMissed: 'Study these {count} cards for real',
@@ -94,6 +101,8 @@ interface Props {
   deckId: string
   objective: string
   videoTitle: string
+  /** Playlist-Index des Videos — Schlüssel für die kuratierten Transkript-Fragen. */
+  videoIndex?: number | null
   language: 'de' | 'en'
   /** Fragenanzahl pro Check (Einstellung „Abruf-Check-Umfang"). */
   maxCards?: number
@@ -216,6 +225,37 @@ export function buildRecallCardView(card: Card): RecallCardView {
   }
 }
 
+const OPTION_LABELS = ['A', 'B', 'C', 'D'] as const
+
+/**
+ * Bereitet eine kuratierte Transkript-Frage für die Abruf-Ansicht auf.
+ * `order` ist eine Permutation der Options-Indizes (Mischen pro Session, damit
+ * sich nicht die Buchstabenposition statt des Inhalts einprägt).
+ */
+export function buildTranscriptQuestionView(
+  question: TranscriptQuestion,
+  order: readonly number[] = [0, 1, 2, 3],
+): RecallCardView {
+  return {
+    prompt: question.q,
+    options: order.map((sourceIndex, position) => ({
+      label: OPTION_LABELS[position],
+      text: question.options[sourceIndex],
+      correct: sourceIndex === question.correct,
+    })),
+    answer: question.why,
+    merkhilfe: null,
+  }
+}
+
+/** Ein Quiz-Eintrag: gemappte Deck-Karte oder kuratierte Transkript-Frage. */
+export interface RecallQuizItem {
+  source: 'deck' | 'transcript'
+  view: RecallCardView
+  /** Nur bei `source === 'deck'` gesetzt (für den Study-Handoff). */
+  card?: Card
+}
+
 const CONFIDENCE_META: Record<VideoConfidence, { key: 'gaps' | 'ok' | 'solid'; cls: string; activeCls: string }> = {
   gaps: {
     key: 'gaps',
@@ -234,10 +274,10 @@ const CONFIDENCE_META: Record<VideoConfidence, { key: 'gaps' | 'ok' | 'solid'; c
   },
 }
 
-export default function VideoRecallCheck({ deckId, objective, videoTitle, language, maxCards = DEFAULT_MAX_CARDS, onClose, onConfidence, onStudyMissed }: Props) {
+export default function VideoRecallCheck({ deckId, objective, videoTitle, videoIndex, language, maxCards = DEFAULT_MAX_CARDS, onClose, onConfidence, onStudyMissed }: Props) {
   const copy = COPY[language]
   const [phase, setPhase] = useState<Phase>('loading')
-  const [cards, setCards] = useState<Card[]>([])
+  const [items, setItems] = useState<RecallQuizItem[]>([])
   const [index, setIndex] = useState(0)
   const [revealed, setRevealed] = useState(false)
   const [knownCount, setKnownCount] = useState(0)
@@ -246,35 +286,53 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
   useEffect(() => {
     let cancelled = false
     setPhase('loading')
-    void listDeckCards(deckId).then(all => {
+    const deckCardsPromise = listDeckCards(deckId)
+      .then(all => all.filter(card => card.front?.trim() && isProfessorMesserRecallCard(card, objective, videoTitle)))
+      .catch(() => [] as Card[])
+    // Kuratierte Transkript-Fragen lazy laden — hält sie aus dem Videos-Chunk heraus.
+    const transcriptPromise: Promise<TranscriptQuestion[]> =
+      videoIndex === null || videoIndex === undefined
+        ? Promise.resolve([])
+        : import('../../data/messerTranscriptQuestions')
+            .then(mod => mod.MESSER_TRANSCRIPT_QUESTIONS[String(videoIndex).padStart(3, '0')] ?? [])
+            .catch(() => [])
+    void Promise.all([deckCardsPromise, transcriptPromise]).then(([deckCards, transcriptQuestions]) => {
       if (cancelled) return
-      const usable = all.filter(card => card.front?.trim() && isProfessorMesserRecallCard(card, objective, videoTitle))
-      if (usable.length === 0) {
+      // Deck-Fragen haben Vorrang; Transkript-Fragen füllen bis maxCards auf.
+      const deckItems: RecallQuizItem[] = shuffle(deckCards)
+        .slice(0, maxCards)
+        .map(card => ({ source: 'deck', card, view: buildRecallCardView(card) }))
+      const transcriptItems: RecallQuizItem[] = shuffle(transcriptQuestions)
+        .slice(0, Math.max(0, maxCards - deckItems.length))
+        .map(question => ({ source: 'transcript', view: buildTranscriptQuestionView(question, shuffle([0, 1, 2, 3])) }))
+      const combined = [...deckItems, ...transcriptItems]
+      if (combined.length === 0) {
         setPhase('empty')
         return
       }
-      setCards(shuffle(usable).slice(0, maxCards))
+      setItems(combined)
       setIndex(0)
       setRevealed(false)
       setKnownCount(0)
       setMissedCards([])
       setPhase('quiz')
-    }).catch(() => {
-      if (!cancelled) setPhase('empty')
     })
     return () => {
       cancelled = true
     }
-  }, [deckId, objective, videoTitle, maxCards])
+  }, [deckId, objective, videoTitle, videoIndex, maxCards])
 
-  const current = cards[index]
-  const view = useMemo(() => (current ? buildRecallCardView(current) : null), [current])
-  const total = cards.length
+  const current = items[index]
+  const view = current?.view ?? null
+  const total = items.length
 
   const grade = (known: boolean) => {
     const nextKnown = knownCount + (known ? 1 : 0)
-    if (!known && current) {
-      setMissedCards(prev => (prev.some(card => card.id === current.id) ? prev : [...prev, current]))
+    // In den Study-Handoff gehören nur echte Deck-Karten; Transkript-Fragen
+    // existieren nicht als Karten und zählen nur im Ergebnis.
+    const missedCard = !known && current?.source === 'deck' ? current.card : undefined
+    if (missedCard) {
+      setMissedCards(prev => (prev.some(card => card.id === missedCard.id) ? prev : [...prev, missedCard]))
     }
     if (index + 1 >= total) {
       setKnownCount(nextKnown)
@@ -287,7 +345,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
   }
 
   const restart = () => {
-    setCards(prev => shuffle(prev))
+    setItems(prev => shuffle(prev))
     setIndex(0)
     setRevealed(false)
     setKnownCount(0)
@@ -345,7 +403,17 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, langua
           {phase === 'quiz' && view && (
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.12em] text-zinc-500">
-                <span className="shrink-0">{copy.card} {index + 1}/{total}</span>
+                <span className="flex shrink-0 items-center gap-2">
+                  {copy.card} {index + 1}/{total}
+                  {current?.source === 'transcript' && (
+                    <span
+                      data-testid="recall-check-transcript-badge"
+                      className="rounded-[5px] border border-[--brand-secondary-25] bg-[--brand-secondary-08] px-1.5 py-0.5 text-[9px] font-bold tracking-[0.1em] text-[--brand-secondary]"
+                    >
+                      {copy.fromTranscript}
+                    </span>
+                  )}
+                </span>
                 <span>{copy.intro}</span>
               </div>
 
