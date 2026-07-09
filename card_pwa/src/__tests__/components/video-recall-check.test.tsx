@@ -4,8 +4,9 @@
 import { describe, it, expect } from 'vitest'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import VideoRecallCheck, { buildRecallCardView, isProfessorMesserRecallCard } from '../../components/videos/VideoRecallCheck'
+import VideoRecallCheck, { buildRecallCardView, buildTranscriptQuestionView, isProfessorMesserRecallCard } from '../../components/videos/VideoRecallCheck'
 import { MESSER_VIDEO_BY_QUESTION_ID, normalizeMesserVideoTitle } from '../../data/messerVideoQuestionMap'
+import { MESSER_TRANSCRIPT_QUESTIONS } from '../../data/messerTranscriptQuestions'
 import type { Card } from '../../types'
 
 /**
@@ -185,6 +186,51 @@ describe('isProfessorMesserRecallCard', () => {
     expect(isProfessorMesserRecallCard(card, '1.2', 'The CIA Triad')).toBe(false)
     // Ohne Video-Kontext (Legacy-Aufruf) bleibt die Domain-Filterung erhalten.
     expect(isProfessorMesserRecallCard(card, '1.2')).toBe(true)
+  })
+})
+
+describe('buildTranscriptQuestionView — kuratierte Transkript-Fragen', () => {
+  const question = {
+    q: 'Which port does HTTPS use?',
+    options: ['80', '443', '22', '3389'] as [string, string, string, string],
+    correct: 1 as const,
+    why: 'HTTPS läuft über TCP 443.',
+  }
+
+  it('bildet Optionen mit Labels A–D und markiert die korrekte', () => {
+    const view = buildTranscriptQuestionView(question)
+    expect(view.prompt).toBe('Which port does HTTPS use?')
+    expect(view.options.map(option => option.label)).toEqual(['A', 'B', 'C', 'D'])
+    expect(view.options.find(option => option.correct)?.text).toBe('443')
+    expect(view.answer).toContain('TCP 443')
+    expect(view.merkhilfe).toBeNull()
+  })
+
+  it('hält die Korrekt-Markierung auch bei gemischter Optionsreihenfolge', () => {
+    const view = buildTranscriptQuestionView(question, [3, 2, 1, 0])
+    // Position der korrekten Quelle (Index 1) ist jetzt Label C.
+    expect(view.options.find(option => option.correct)?.label).toBe('C')
+    expect(view.options.find(option => option.correct)?.text).toBe('443')
+    expect(view.options.filter(option => option.correct)).toHaveLength(1)
+  })
+})
+
+describe('MESSER_TRANSCRIPT_QUESTIONS — Datenqualität', () => {
+  it('jeder Eintrag: 3-stelliger Video-Index, 4 eindeutige Optionen, korrekter Index im Bereich', () => {
+    const entries = Object.entries(MESSER_TRANSCRIPT_QUESTIONS)
+    expect(entries.length).toBeGreaterThan(0)
+    for (const [videoIndex, questions] of entries) {
+      expect(videoIndex).toMatch(/^\d{3}$/)
+      expect(questions.length).toBeGreaterThan(0)
+      for (const question of questions) {
+        expect(question.q.trim().length).toBeGreaterThan(10)
+        expect(question.options).toHaveLength(4)
+        expect(new Set(question.options).size).toBe(4)
+        expect(question.correct).toBeGreaterThanOrEqual(0)
+        expect(question.correct).toBeLessThanOrEqual(3)
+        expect(question.why.trim().length).toBeGreaterThan(10)
+      }
+    }
   })
 })
 

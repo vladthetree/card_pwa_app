@@ -23,3 +23,4 @@ public/sql-wasm.wasm
 !scripts/
 scripts/*
 !scripts/check-safe-area-legacy.mjs
+!scripts/build-messer-transcripts.mjs

@@ -14,6 +14,7 @@ import {
   Clock,
   Download,
   ExternalLink,
+  FileText,
   HardDriveDownload,
   Hash,
   Loader2,
@@ -38,6 +39,7 @@ import { summarizeDownloads } from '../../utils/videoDownloadQueue'
 import MesserVideoPlayer from './MesserVideoPlayer'
 import VideoNotesPanel from './VideoNotesPanel'
 import VideoRecallCheck from './VideoRecallCheck'
+import VideoTranscriptPanel from './VideoTranscriptPanel'
 import TagCollectionPanel from './TagCollectionPanel'
 import VideoTagSidebar from './VideoTagSidebar'
 
@@ -65,6 +67,7 @@ const COPY = {
     pickVideo: 'Wähle links ein Video aus, um es hier abzuspielen.',
     hasNote: 'Notiz vorhanden',
     recall: 'Abruf-Check',
+    transcript: 'Transkript',
     confidenceLabel: 'Selbsteinschätzung',
     confidenceHint: 'Schau das Video, prüf dich aktiv und setz ehrlich deinen Status — Schauen allein ist noch kein Können.',
     deckRate: 'Deck-Quote: {rate} % ({total} Reviews)',
@@ -116,6 +119,7 @@ const COPY = {
     pickVideo: 'Pick a video on the left to play it here.',
     hasNote: 'Has note',
     recall: 'Recall check',
+    transcript: 'Transcript',
     confidenceLabel: 'Self-assessment',
     confidenceHint: 'Watch the video, quiz yourself, and set your status honestly — watching alone is not knowing.',
     deckRate: 'Deck rate: {rate}% ({total} reviews)',
@@ -230,6 +234,7 @@ function VideoStudyBar({
   confidence,
   deckStats,
   onStartRecall,
+  onOpenTranscript,
   onSetConfidence,
   copy,
   compact = false,
@@ -240,6 +245,7 @@ function VideoStudyBar({
   /** Tatsächliche Erfolgsquote des Objective-Decks (Kalibrierungs-Anker). */
   deckStats?: { rate: number; total: number } | null
   onStartRecall: () => void
+  onOpenTranscript: () => void
   onSetConfidence: (next: VideoConfidence | null) => void
   copy: Copy
   compact?: boolean
@@ -314,6 +320,16 @@ function VideoStudyBar({
           <Brain size={14} strokeWidth={1.5} />
           {copy.recall}
         </button>
+        <button
+          type="button"
+          onClick={onOpenTranscript}
+          data-testid="video-transcript-open"
+          title={copy.transcript}
+          aria-label={copy.transcript}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-ds-lg border border-[#1f1f23] bg-[#0c0c0c] text-zinc-400 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
+        >
+          <FileText size={14} strokeWidth={1.5} />
+        </button>
         <div className="flex flex-1 justify-end">{chips}</div>
         {collapseBtn}
       </div>
@@ -326,15 +342,26 @@ function VideoStudyBar({
         <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">{copy.recall}</span>
         {collapseBtn}
       </div>
-      <button
-        type="button"
-        onClick={onStartRecall}
-        data-testid="video-recall-start"
-        className="flex w-full items-center justify-center gap-2 rounded-ds-xl border border-[--brand-secondary-50] bg-[--brand-secondary-12] py-3 font-mono text-[13px] font-bold text-[--brand-secondary] transition-colors hover:border-[--brand-secondary-80]"
-      >
-        <Brain size={16} strokeWidth={1.5} />
-        {copy.recall}
-      </button>
+      <div className="flex items-stretch gap-2">
+        <button
+          type="button"
+          onClick={onStartRecall}
+          data-testid="video-recall-start"
+          className="flex flex-1 items-center justify-center gap-2 rounded-ds-xl border border-[--brand-secondary-50] bg-[--brand-secondary-12] py-3 font-mono text-[13px] font-bold text-[--brand-secondary] transition-colors hover:border-[--brand-secondary-80]"
+        >
+          <Brain size={16} strokeWidth={1.5} />
+          {copy.recall}
+        </button>
+        <button
+          type="button"
+          onClick={onOpenTranscript}
+          data-testid="video-transcript-open"
+          className="flex shrink-0 items-center justify-center gap-2 rounded-ds-xl border border-[#1f1f23] bg-[#0c0c0c] px-4 font-mono text-[12px] font-bold text-zinc-300 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
+        >
+          <FileText size={14} strokeWidth={1.5} />
+          {copy.transcript}
+        </button>
+      </div>
 
       <div className="mt-3 flex items-center justify-between gap-2">
         <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">{copy.confidenceLabel}</span>
@@ -527,6 +554,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
   const [activeFile, setActiveFile] = useState<string | null>(null)
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set())
   const [recallOpen, setRecallOpen] = useState(false)
+  const [transcriptOpen, setTranscriptOpen] = useState(false)
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [showTagSidebar, setShowTagSidebar] = usePersistentBool('card-pwa-video-tags-open-v2', false)
   const [studyBarOpen, setStudyBarOpen] = usePersistentBool('card-pwa-video-studybar-open-v2', false)
@@ -568,6 +596,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
   const openVideo = (item: LocalVideoItem) => {
     markWatched(item.objective)
     setRecallOpen(false)
+    setTranscriptOpen(false)
     setCurrentVideoTime(0)
     setSeekRequest(null)
     if (isDesktop) setCoursePanelOpen(false)
@@ -849,6 +878,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
         confidence={progress[activeItem.objective]?.confidence ?? null}
         deckStats={deckSuccessRates[getSecurityObjectiveDeckId(activeItem.objective)] ?? null}
         onStartRecall={() => setRecallOpen(true)}
+        onOpenTranscript={() => setTranscriptOpen(true)}
         onSetConfidence={next => setConfidence(activeItem.objective, next)}
         copy={copy}
         compact={compact}
@@ -1083,12 +1113,24 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
         />
       )}
 
+      {/* Transkript zum aktiven Video (reine Anzeige, redaktioneller Text) */}
+      {transcriptOpen && activeItem && (
+        <VideoTranscriptPanel
+          videoIndex={activeItem.index}
+          objective={activeItem.objective}
+          videoTitle={activeItem.title}
+          language={language}
+          onClose={() => setTranscriptOpen(false)}
+        />
+      )}
+
       {/* Abruf-Check (aktives Erinnern, nicht planungswirksam) */}
       {recallOpen && activeItem && (
         <VideoRecallCheck
           deckId={getSecurityObjectiveDeckId(activeItem.objective)}
           objective={activeItem.objective}
           videoTitle={activeItem.title}
+          videoIndex={activeItem.index}
           language={language}
           maxCards={settings.recallCheckSize}
           onClose={() => setRecallOpen(false)}
