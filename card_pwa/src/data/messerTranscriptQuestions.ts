@@ -536,10 +536,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is an SNMP trap?',
       options: [
-        'A honeypot for SNMP-based attacks',
-        'A filter that blocks SNMP polling',
-        'A backup copy of the MIB database',
-        'A proactive alert the SNMP agent sends to the management station (UDP 162) when a configured condition fires',
+        'A honeypot that lures attackers with fake SNMP services on open ports',
+        'A filter on the management station that drops unauthorized polling requests',
+        'A compressed backup copy of the MIB database, sent to the server daily',
+        'An alert the agent itself sends to the management station when a condition fires',
       ],
       correct: 3,
       why: 'Normales SNMP fragt Werte per Polling ab (UDP 161). Ein Trap dreht das um: Der Agent meldet sich von selbst über UDP 162, z. B. wenn CRC-Fehler um einen Schwellwert steigen.',
@@ -927,10 +927,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What does "situational awareness" mean in user training?',
       options: [
-        'Knowing the office evacuation routes',
-        'Always looking for threats: phishing links and attachments, unusual URLs, or an official-looking envelope with a USB drive',
-        'Monitoring the server room temperature',
-        'Reading the news every morning',
+        'Knowing the office evacuation routes and assembly points by heart',
+        'Always watching for threats like phishing links, odd URLs, or a mailed USB drive',
+        'Monitoring the server room temperature and humidity around the clock',
+        'Reading the security news every morning before opening any email',
       ],
       correct: 1,
       why: 'Nutzer sollen Bedrohungen laufend erkennen: Phishing per Mail oder SMS, verdächtige URLs — und auch physische Angriffe wie einen zugesandten USB-Stick nicht einfach einstecken.',
@@ -1152,10 +1152,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What are dependencies in the context of technical changes?',
       options: [
-        'One update requires other components to be changed first — e.g., firewalls must run new code before the management software can be updated',
-        'The financial budget of the change',
-        'The number of users affected',
-        'The vendor’s support hotline availability',
+        'One update requires other components to be changed first, possibly on other systems',
+        'The financial budget that must be approved before a change window is scheduled',
+        'The number of users whose applications are affected during the change window',
+        'The vendor support contracts that must stay valid while changes are implemented',
       ],
       correct: 0,
       why: 'Abhängigkeiten verketten Änderungen: Erst muss Dienst/Version A aktualisiert sein, dann funktioniert Update B — auch systemübergreifend (erst alle Firewalls, dann die Managementsoftware).',
@@ -1178,10 +1178,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'Which applications does the video list for blockchain beyond cryptocurrency?',
       options: [
-        'Real-time video streaming',
-        'Wireless channel selection',
-        'Payment processing, digital identification, supply chain monitoring, and digital voting',
-        'Compressing backup archives',
+        'Real-time video streaming and content delivery for large media platforms',
+        'Selecting the least congested wireless channels in dense Wi-Fi deployments',
+        'Payment processing, digital identification, supply chain monitoring, digital voting',
+        'Compressing backup archives so they can be verified faster after transfer',
       ],
       correct: 2,
       why: 'Die Blockchain eignet sich überall, wo Transaktionen nachvollziehbar festgehalten werden müssen — Zahlungen, digitale Identitäten, Lieferketten, digitale Wahlen (auch z. B. ein Hausverkauf).',
@@ -1274,10 +1274,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What made the January 2017 watering hole attack on financial supervision sites notable?',
       options: [
-        'It only ran on weekends',
-        'It used no software at all',
-        'It was announced beforehand',
-        'The malicious JavaScript was served only to IP addresses of specific financial organizations',
+        'It only ran on weekends, when the banks’ security teams were out of office',
+        'It used no malicious software at all, only social engineering over the phone',
+        'It was announced beforehand in hacking forums, but nobody took it seriously',
+        'The malicious JavaScript was served only to IP addresses of specific banks',
       ],
       correct: 3,
       why: 'Die kompromittierten Seiten (u. a. die polnische Finanzaufsicht) lieferten den Schadcode gezielt nur an IP-Adressen bestimmter Banken aus — alle anderen sahen die normale Seite.',
@@ -1370,10 +1370,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'Why is a buffer overflow not trivially exploitable?',
       options: [
-        'Because memory is always encrypted',
-        'Because it requires physical access',
-        'Because antivirus always detects it',
-        'Extra data in memory often just crashes the system — the attacker needs a repeatable overflow with a useful effect',
+        'Because modern memory is always encrypted, so overflowed bytes stay unreadable',
+        'Because it requires physical access to the machine running the application',
+        'Because antivirus software reliably detects every attempted memory overflow',
+        'Random extra data usually just crashes the app — a repeatable, useful overflow is rare',
       ],
       correct: 3,
       why: 'Wahllos Speicher zu überschreiben lässt Apps meist nur abstürzen. Wertvoll ist ein Overflow, der wiederholbar ist und zuverlässig einen Vorteil verschafft.',
@@ -1407,10 +1407,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is a race condition?',
       options: [
-        'A CPU benchmark competition',
-        'A network latency measurement',
-        'Two events occur nearly simultaneously and the application does not account for the overlap',
-        'A disk defragmentation error',
+        'A benchmark where two CPUs compete to finish the same workload first',
+        'A measurement of how quickly packets travel between two network endpoints',
+        'Two events happen nearly simultaneously and the application does not expect that',
+        'A disk error that appears when defragmentation runs during a backup job',
       ],
       correct: 2,
       why: 'Wenn zwei Vorgänge fast gleichzeitig laufen und die Anwendung das nicht berücksichtigt, entstehen unerwartete Ergebnisse — der Klassiker unter den Anwendungsfehlern.',
@@ -1440,10 +1440,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'Which real-world race condition cases does the video mention?',
       options: [
-        'The Mars rover Spirit reboot loop (2004) and a Tesla Model 3 TOCTOU exploit at Pwn2Own 2023',
-        'The Morris worm and Stuxnet',
-        'Heartbleed and Shellshock',
-        'The Ariane 5 explosion and Y2K',
+        'The Mars rover Spirit reboot loop and a Tesla TOCTOU exploit at Pwn2Own',
+        'The Morris worm outbreak and the Stuxnet attack on industrial centrifuges',
+        'The Heartbleed OpenSSL bug and the Shellshock vulnerability in bash',
+        'The Ariane 5 rocket failure and the Y2K date rollover problem worldwide',
       ],
       correct: 0,
       why: 'Spirit hing 2004 wegen eines Dateisystemfehlers in einer Reboot-Schleife; beim Pwn2Own 2023 brachte ein TOCTOU-Angriff über Bluetooth Root-Rechte auf dem Tesla-Infotainment — 100.000 $ Prämie plus Auto.',
@@ -1477,10 +1477,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'How do digital signatures protect the update process?',
       options: [
-        'They compress the update file',
-        'They hide the update from attackers',
-        'They make updates install faster',
-        'The OS validates the developer’s signature, so you know the update really comes from e.g. Microsoft or Adobe',
+        'They compress the update file so it downloads faster from the mirror',
+        'They hide the update contents from attackers until installation begins',
+        'They make updates install faster by skipping usual compatibility checks',
+        'The OS validates the developer’s signature before installing the update',
       ],
       correct: 3,
       why: 'Viele Betriebssysteme installieren nur signierte Software: Die Signatur stammt vom Entwickler, das OS prüft sie — hohes Vertrauen, dass das Update legitim ist. App-interne Updater prüfen das automatisch.',
@@ -1488,10 +1488,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'Why is the SolarWinds Orion incident (December 2020) so instructive?',
       options: [
-        'The update servers were simply offline',
-        'A digitally signed, completely normal-looking update contained attacker code planted in the build system months earlier',
-        'Users had ignored the update for years',
-        'The malware only affected home users',
+        'The update servers were offline for weeks, so nobody received patches',
+        'A normal-looking, digitally signed update carried code planted by attackers',
+        'Users had ignored the update for years, leaving old vulnerabilities open',
+        'The malware only affected home users and never reached large networks',
       ],
       correct: 1,
       why: 'Die Angreifer saßen im Entwicklungssystem von SolarWinds; ihr Code wurde ins reguläre, signierte Update eingerollt und automatisch verteilt — Zugang zu hunderten Behörden und Konzernen über einen vertrauten Prozess.',
@@ -1584,10 +1584,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'Why is bloatware a security concern on a brand-new device?',
       options: [
-        'It voids the warranty',
-        'It changes the desktop wallpaper',
-        'It blocks operating system updates',
-        'It wastes storage, can auto-start and slow the system, and each app may carry exploitable vulnerabilities',
+        'It voids the manufacturer warranty as soon as you uninstall any of it',
+        'It changes the desktop wallpaper and resets personal browser settings',
+        'It blocks operating system updates until every bundled app is registered',
+        'It wastes storage, may auto-start, and every extra app can carry vulnerabilities',
       ],
       correct: 3,
       why: 'Bloatware belegt Speicher, läuft teils automatisch mit — und jede dieser Apps kann bekannte oder unbekannte Schwachstellen haben: ein Risiko ab dem ersten Einschalten. Entfernen: deinstallieren, notfalls per Dritt-Uninstaller.',
@@ -1743,10 +1743,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is an indicator of compromise (IOC)?',
       options: [
-        'A certificate for security audits',
-        'Evidence giving high confidence that a system has been breached — e.g., unusual traffic, changed file hashes, or modified DNS entries',
-        'A list of all installed patches',
-        'The severity score of a vulnerability',
+        'A certificate that auditors issue after completing a security review',
+        'Evidence of a likely breach, such as unusual traffic or changed file hashes',
+        'A list of all patches that are currently missing from a monitored system',
+        'The severity score a scanner assigns to a newly published vulnerability',
       ],
       correct: 1,
       why: 'IOCs sind Belege für eine Kompromittierung: ungewöhnlich viel Traffic, veränderte Datei-Hashes, manipulierte DNS-Einträge, auffällige Login-Muster oder plötzlich häufig gelesene Dateien.',
@@ -1765,10 +1765,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is an "impossible travel" login pattern?',
       options: [
-        'A user logging in during vacation',
-        'A login without a password',
-        'Two failed logins in a row',
-        'Logins for the same account from locations too far apart to travel between in that time (e.g., Nebraska, minutes later Australia)',
+        'A user logging in while on vacation without notifying the security team',
+        'A login that succeeds without any password thanks to cached credentials',
+        'Two failed logins in a row followed by a successful third attempt',
+        'Logins from places too far apart to travel between in the elapsed time',
       ],
       correct: 3,
       why: 'Meldet sich dasselbe Konto binnen Minuten aus Omaha und Australien an, kann das physisch nicht stimmen — die Authentifizierungslogs sollten so etwas sofort alarmieren.',
@@ -1802,10 +1802,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is a UTM (Unified Threat Management) appliance, and what is its main drawback?',
       options: [
-        'A pure VPN device without firewall features',
-        'A cloud-only firewall service',
-        'A backup appliance for log files',
-        'An all-in-one box (URL filter, malware, spam, router, IPS, QoS) — but often layer-4-only, and enabling many features hurts performance',
+        'A pure VPN concentrator appliance that offers no firewall features at all',
+        'A cloud-only firewall service that requires no on-premises hardware',
+        'A dedicated appliance that stores and analyzes log files from the network',
+        'An all-in-one security box whose performance drops as more features are enabled',
       ],
       correct: 3,
       why: 'UTMs bündeln viele Dienste in einem Gerät. Nachteile laut Video: oft nur Portnummern-basiert (Layer 4), und je mehr Funktionen aktiv sind, desto stärker bricht die Leistung ein.',
@@ -1824,10 +1824,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is a web application firewall (WAF) designed to do?',
       options: [
-        'Accelerate web page loading',
-        'Encrypt all HTTP traffic',
-        'Analyze input to web applications and block attacks like SQL injection or cross-site scripting',
-        'Host websites redundantly',
+        'To accelerate web page loading by caching static content close to users',
+        'To encrypt all HTTP traffic between the browser and the application server',
+        'To analyze input to web applications and block attacks like SQL injection',
+        'To host redundant copies of websites across multiple geographic regions',
       ],
       correct: 2,
       why: 'Ein WAF prüft die Eingaben in Web-Apps (HTTP/HTTPS) und blockt z. B. SQL-Injections vor dem Applikationsserver — PCI DSS schreibt WAFs für Kreditkarten-Anwendungen vor; oft läuft er neben einem NGFW.',
@@ -1898,10 +1898,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What distinguishes an online (double-conversion) UPS from an offline/standby UPS?',
       options: [
-        'It has no batteries',
-        'It only works in the cloud',
-        'It is always cheaper',
-        'The load always runs from the battery path — no switchover moment when main power fails',
+        'It contains no batteries and relies purely on capacitors to bridge outages',
+        'It only works for cloud infrastructure, not for on-premises server rooms',
+        'It is always the cheapest option and therefore used in most home offices',
+        'The load always runs from the battery path, so failover has no switchover gap',
       ],
       correct: 3,
       why: 'Offline/Standby-USVs schalten erst beim Ausfall auf Batterie um; die Online-/Doppelwandler-USV versorgt dauerhaft über den Batteriepfad. Line-Interactive gleicht sinkende Spannung aus (gut bei häufigen Brownouts).',
@@ -1983,10 +1983,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is the known weakness of WPA2?',
       options: [
-        'It sends all traffic unencrypted',
-        'The four-way handshake exposes a hash that can be brute-forced offline to recover the pre-shared key',
-        'It only works with WEP hardware',
-        'It limits networks to ten devices',
+        'It sends all wireless traffic unencrypted unless a RADIUS server is used',
+        'The four-way handshake exposes a hash that can be brute-forced offline',
+        'It only works with legacy WEP hardware and inherits its key weaknesses',
+        'It limits every network to ten devices, forcing insecure workarounds',
       ],
       correct: 1,
       why: 'Beim WPA2-Handshake lässt sich ein Hash abgreifen; mit GPU- oder Cloud-Cracking wird daraus offline in Tagen der Pre-Shared Key — wer ihn hat, kommt ins Netz.',
@@ -2016,10 +2016,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'Which three roles are involved in an 802.1X authentication?',
       options: [
-        'Supplicant (the client), authenticator (the access device), and the authentication/AAA server',
-        'Sender, router, and DNS server',
-        'Browser, proxy, and web server',
-        'Token, badge, and card reader',
+        'Supplicant (client), authenticator (access device), and authentication server',
+        'Sender, intermediate router, and the authoritative DNS server for the zone',
+        'Browser, caching proxy, and the web server that hosts the login portal',
+        'Hardware token, employee badge, and the card reader at the network closet',
       ],
       correct: 0,
       why: 'Der Supplicant will ins Netz, der Authenticator (z. B. Access Point/Switch) vermittelt, der AAA-Server prüft die Credentials — abgewickelt über EAP, für den Nutzer unsichtbar schnell. AAA steht für Authentication, Authorization, Accounting.',
@@ -2079,10 +2079,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is OSINT?',
       options: [
-        'A proprietary firewall ruleset',
-        'Open-source intelligence — publicly available information from forums, social media, government sources, and public company data',
-        'An encrypted messaging protocol',
-        'A Linux distribution for hackers',
+        'A proprietary firewall ruleset sold by threat intelligence vendors',
+        'Publicly available intelligence from forums, social media, and government data',
+        'An encrypted messaging protocol used by security research communities',
+        'A Linux distribution preloaded with penetration testing tools',
       ],
       correct: 1,
       why: 'OSINT ist frei zugängliche Information: Diskussionsgruppen (auch von Hackergruppen), Social Media, Regierungsberichte und öffentliche Unternehmensdaten — man muss nur wissen, wo man sucht.',
@@ -2101,10 +2101,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'How does the Cyber Threat Alliance (CTA) work?',
       options: [
-        'It sells zero-day exploits to members',
-        'It provides free antivirus software',
-        'It regulates ISPs internationally',
-        'Members submit threat data in a standard format; the alliance validates and scores it, then shares it with all members',
+        'It sells zero-day exploits to member organizations at discounted rates',
+        'It provides free antivirus licenses to companies that join the alliance',
+        'It regulates internet service providers across international borders',
+        'Members share threat data that is validated, scored, and distributed to all',
       ],
       correct: 3,
       why: 'In der CTA teilen Organisationen Bedrohungsdaten: Einreichungen werden validiert, mit einem Schweregrad bewertet und allen Mitgliedern bereitgestellt.',
@@ -2234,10 +2234,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is the purpose of a SIEM in security monitoring?',
       options: [
-        'To replace the firewall',
-        'To consolidate logs from many devices into one database for reporting and cross-source correlation',
-        'To encrypt all endpoints',
-        'To assign IP addresses',
+        'To replace the firewall as the primary control at the network edge',
+        'To consolidate logs from many devices for reporting and correlation',
+        'To encrypt every endpoint disk from one central management console',
+        'To assign IP addresses and track them across the whole infrastructure',
       ],
       correct: 1,
       why: 'Der SIEM (Security Information and Event Manager) führt Logs von Firewalls, Switches, Servern usw. in einer zentralen Datenbank zusammen — das ermöglicht Reports und Korrelation über sonst unterschiedliche Datentypen.',
@@ -2293,10 +2293,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'How does a proxy differ from a traditional firewall for web traffic?',
       options: [
-        'It sits in the middle and makes the web request on the user’s behalf, then decides whether to forward the response',
-        'It only blocks DNS queries',
-        'It encrypts the user’s hard drive',
-        'It replaces the switch',
+        'It makes web requests on the user’s behalf and inspects the responses',
+        'It only blocks DNS queries and leaves the web traffic itself untouched',
+        'It encrypts the user’s hard drive before allowing any internet access',
+        'It replaces the switch and forwards frames based on MAC addresses',
       ],
       correct: 0,
       why: 'Der Proxy stellt die Anfrage stellvertretend, empfängt die Antwort und entscheidet dann über die Weiterleitung — nebenbei kann er cachen und Zugriffskontrolle leisten. Transparent = ohne Client-Konfiguration.',
@@ -2319,10 +2319,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is Active Directory?',
       options: [
-        'A firewall ruleset for Windows',
-        'A central, redundant database of the network’s computers, users, shares, groups, and more, used for authentication',
-        'An antivirus engine',
-        'A backup protocol',
+        'A firewall ruleset that ships with Windows Server installations',
+        'A central database of the network’s computers, users, shares, and groups',
+        'An antivirus engine built into every modern Windows client',
+        'A backup protocol for replicating files between domain controllers',
       ],
       correct: 1,
       why: 'Active Directory ist die zentrale, redundante Datenbank aller Netzobjekte (Rechner, Benutzerkonten, Freigaben, Sicherheitsgruppen) — darüber wird zentral authentifiziert und werden Berechtigungen vergeben.',
@@ -2330,10 +2330,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What does Group Policy add on top of Active Directory?',
       options: [
-        'It replaces user passwords',
-        'It encrypts the AD database',
-        'Configuration settings, login scripts, and security parameters applied to users and devices',
-        'It provides internet access',
+        'It replaces user passwords with certificate-based authentication',
+        'It encrypts the Active Directory database on every domain controller',
+        'Central configuration, login scripts, and security settings for users and devices',
+        'It provides internet access control lists for the perimeter firewall',
       ],
       correct: 2,
       why: 'Group Policy legt sich über AD und setzt zentral Konfigurationen, Login-Skripte, Netzwerk- und Sicherheitsparameter für einzelne Nutzer oder Geräte durch (Group Policy Management Editor).',
@@ -2341,10 +2341,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is the difference between discretionary (DAC) and mandatory (MAC) access control in Linux?',
       options: [
-        'DAC: the user assigns rights at their discretion; MAC: a central administrator assigns all rights',
-        'DAC is more secure than MAC',
-        'MAC only works on Windows',
-        'They are identical',
+        'DAC: users assign rights themselves; MAC: a central administrator assigns them',
+        'DAC is the more secure model and is required in government networks',
+        'MAC only exists on Windows; Linux supports discretionary control only',
+        'They are two names for the same model used in different documentation',
       ],
       correct: 0,
       why: 'Standard-Linux ist DAC — der Nutzer vergibt Rechte selbst. In Hochsicherheitsumgebungen will man MAC, wo ein zentraler Admin alle Rechte festlegt.',
@@ -2352,10 +2352,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What does SELinux (Security-Enhanced Linux) enable?',
       options: [
-        'A graphical desktop environment',
-        'Faster boot times',
-        'Automatic patching',
-        'Mandatory access control with least privilege, limiting the scope of a breach or malicious code',
+        'A graphical desktop environment for security-focused distributions',
+        'A kernel patch that primarily improves boot times on server hardware',
+        'An automatic patching service maintained by the Linux distribution',
+        'Mandatory access control with least privilege, limiting a breach’s scope',
       ],
       correct: 3,
       why: 'SELinux bringt Mandatory Access Control und Least Privilege: Rechte sind exakt auf die Aufgabe beschränkt, sodass ein Sicherheitsvorfall oder Schadcode nur begrenzten Handlungsspielraum hat.',
@@ -2389,10 +2389,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What does DKIM (DomainKeys Identified Mail) provide?',
       options: [
-        'A digital signature in the mail transport, validated via a public key in the sender’s DNS',
-        'A password for the mailbox',
-        'A backup of all emails',
-        'A faster delivery route',
+        'A digital signature added in transport, validated via a DNS public key',
+        'A one-time password that protects access to the user’s mailbox',
+        'An automatic backup of all outgoing mail to a separate archive server',
+        'A routing shortcut that speeds up delivery between large providers',
       ],
       correct: 0,
       why: 'DKIM signiert die Mail im Transport zwischen den Servern; der Empfänger holt den öffentlichen Schlüssel aus dem DNS-TXT-Record des Absenders und validiert damit die Signatur (sichtbar in den Headern).',
@@ -2400,10 +2400,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What does a DMARC record let a domain owner specify?',
       options: [
-        'The font used in emails',
-        'What to do with mail that fails SPF/DKIM (accept, quarantine, or reject) plus a destination for compliance reports',
-        'The maximum attachment size',
-        'The sender’s display name',
+        'The font and layout rules that all outgoing corporate mail must follow',
+        'What receivers do with mail failing SPF/DKIM, plus where reports go',
+        'The maximum attachment size accepted by the organization’s gateway',
+        'The display name that mail clients show for messages from the domain',
       ],
       correct: 1,
       why: 'DMARC baut auf SPF und DKIM auf: Es legt fest, was mit nicht validierbaren Mails geschieht (akzeptieren, in Quarantäne/Spam, abweisen) — und kann Compliance-Reports über echte vs. gefälschte Mails liefern.',
@@ -2426,10 +2426,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What do the DLP terms "data in motion", "data at rest", and "data in use" describe?',
       options: [
-        'Three encryption algorithms',
-        'Backup schedules',
-        'Traffic on the network, files stored on a system, and data in a system’s active memory',
-        'Three types of USB drives',
+        'Three encryption algorithms for symmetric, asymmetric, and hashing use',
+        'Three backup schedules: continuous, nightly, and weekly full backups',
+        'Data on the network, data stored on a system, and data in active memory',
+        'Three USB device classes distinguished by their transfer speeds',
       ],
       correct: 2,
       why: 'DLP überwacht Daten in Bewegung (Netzwerkpakete), im Ruhezustand (im Dateisystem gespeichert) und in Verwendung (im aktiven Speicher des Endpoints).',
@@ -2437,10 +2437,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'Why is USB storage a particular DLP concern (as in the 2008 U.S. DoD agent.btz incident)?',
       options: [
-        'USB drives are too slow for backups',
-        'USB drives cannot be encrypted',
-        'They only work on Windows',
-        'They are tiny and portable — easy to carry data out unnoticed or bring malware in; agent.btz spread via USB and got flash media banned',
+        'USB drives are too slow for backups and therefore rarely monitored',
+        'USB drives cannot be encrypted, so their contents are always readable',
+        'USB drives only work on machines with local administrator rights',
+        'They are tiny and portable — easy to sneak data out or bring malware in',
       ],
       correct: 3,
       why: 'USB-Sticks sind winzig und mobil: Daten lassen sich unbemerkt heraus- oder Malware hineintragen. 2008 verbreitete sich agent.btz per USB im US-Verteidigungsministerium — daraufhin wurden Flash-Medien gesperrt (per lokalem DLP-Agent).',
@@ -2448,10 +2448,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'How can an email-based DLP solution protect an organization?',
       options: [
-        'By blocking outbound mail that contains sensitive data (e.g., SSNs, W-2s) and quarantining suspicious inbound mail',
-        'By speeding up email delivery',
-        'By archiving all email forever',
-        'By encrypting the mail server disk',
+        'It blocks outbound mail with sensitive data and quarantines suspicious inbound mail',
+        'It speeds up email delivery by prioritizing internal messages first',
+        'It archives all email forever to satisfy any retention regulations',
+        'It encrypts the mail server disks against physical theft of hardware',
       ],
       correct: 0,
       why: 'E-Mail-DLP prüft ein- und ausgehende Mails: Es blockt ausgehende Nachrichten mit sensiblen Daten (Sozialversicherungsnummern, W-2, Fake-Überweisungen) und stellt verdächtige eingehende Mails in Quarantäne — hätte z. B. 2016 den Boeing-Datenabfluss verhindert.',
@@ -2485,10 +2485,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'How does EDR (Endpoint Detection and Response) go beyond traditional antivirus?',
       options: [
-        'It only uses signatures',
-        'It requires no agent',
-        'It only works offline',
-        'It adds behavioral analysis/ML, root-cause analysis, and can automatically isolate, quarantine, and roll back to a known-good state',
+        'It relies purely on signature files, just with much faster updates',
+        'It removes the need for any agent by scanning from the network side',
+        'It only works while the endpoint is offline and idle overnight',
+        'It adds behavioral analysis, root-cause analysis, and automated response',
       ],
       correct: 3,
       why: 'EDR erweitert Signaturen um Verhaltensanalyse/ML und Prozessüberwachung, liefert Root-Cause-Analyse und kann automatisch isolieren, in Quarantäne stellen und das System auf einen bekannten guten Stand zurückrollen.',
@@ -2496,10 +2496,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What distinguishes XDR (Extended Detection and Response) from EDR?',
       options: [
-        'XDR correlates data across many systems and sources (e.g., network traffic, user-behavior analytics), not just one endpoint',
-        'XDR only runs on mobile devices',
-        'XDR removes the need for any agents',
-        'XDR is an older technology than EDR',
+        'XDR correlates data from many systems and sources, not just one endpoint',
+        'XDR only runs on mobile devices and tablets, never on servers',
+        'XDR removes the need for agents by using network taps exclusively',
+        'XDR is the older technology that EDR was later designed to replace',
       ],
       correct: 0,
       why: 'Ein Angriff betrifft oft mehrere Systeme. XDR wertet Daten vieler Systeme und Quellen zusammen aus (u. a. Netzwerkverkehr, User-Behavior-Analytics), findet dadurch bisher übersehene Bedrohungen und reduziert False Positives.',
@@ -2544,10 +2544,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'How does "somewhere you are" work as a factor?',
       options: [
-        'It measures typing speed',
-        'It checks the password strength',
-        'It reads a hardware token',
-        'It uses location (IP address, GPS) to allow or deny — e.g., blocking a login from a country different from minutes ago',
+        'It measures typing speed and compares it to the user’s stored profile',
+        'It checks the password strength before every single login attempt',
+        'It reads a hardware token that must be plugged into the device',
+        'It uses location data like IP address and GPS to allow or deny a login',
       ],
       correct: 3,
       why: 'Der Standortfaktor nutzt IP-Adresse und GPS: Ein Login aus einem anderen Land als kurz zuvor kann blockiert werden. IP allein ist ungenau (v. a. bei IPv6), deshalb oft mit GPS kombiniert.',
@@ -2557,26 +2557,26 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
   // 102 — 4.8 Incident Planning
   '102': [
     {
-      q: 'What is a tabletop exercise?',
+      q: 'Why should incident response exercises run on test systems within a limited time?',
       options: [
-        'A full-scale disaster drill with real failover',
-        'Sitting around a table and logistically stepping through the incident policies and procedures',
-        'A penetration test of production',
-        'A hardware stress test',
-      ],
-      correct: 1,
-      why: 'Beim Tabletop-Exercise gehen alle Beteiligten am Tisch ein Szenario Schritt für Schritt durch — in wenigen Stunden, ohne den Aufwand eines vollen Notfall-Drills, um Lücken in den Abläufen zu finden.',
-    },
-    {
-      q: 'What does a phishing simulation test?',
-      options: [
-        'Whether users click, whether internal filters catch the mail, and how anti-phishing systems react',
-        'The mail server’s storage capacity',
-        'The speed of the internet connection',
-        'The strength of user passwords',
+        'Production must not be affected, and participants have other duties too',
+        'Test systems produce more realistic results than production systems',
+        'Regulations forbid any kind of testing during regular business hours',
+        'Attackers only target test systems while exercises are running',
       ],
       correct: 0,
-      why: 'Die Phishing-Simulation zeigt, wer klickt, ob die automatischen Filter die Mail abfangen und wie die Anti-Phishing-Systeme beim Besuch der Seite reagieren — Klicker bekommen zusätzliches Training.',
+      why: 'Übungen dürfen die Produktion nicht beeinträchtigen und haben ein Zeitbudget — die Beteiligten haben noch andere Aufgaben. Getestet werden Prozesse, Prozeduren und technische Fähigkeiten.',
+    },
+    {
+      q: 'What should happen right after an incident response exercise ends?',
+      options: [
+        'The team disbands and the documentation is archived unchanged',
+        'A joint evaluation of how it went, leading to changes in the plans',
+        'The exercise is repeated immediately to confirm the results',
+        'The results are published on the company website for transparency',
+      ],
+      correct: 1,
+      why: 'Nach der Übung setzen sich alle zusammen und bewerten die Abläufe — daraus entstehen Anpassungen an Prozessen und Prozeduren für künftige Ereignisse.',
     },
     {
       q: 'Why might a security event have multiple root causes?',
@@ -2592,10 +2592,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is threat hunting?',
       options: [
-        'Waiting for alarms to fire before acting',
-        'Deleting old log files',
-        'Buying cyber insurance',
-        'Proactively finding vulnerabilities first — e.g., adjusting firewall rules, tracking new CVEs, and confirming systems are patched',
+        'Waiting for alarms to fire and reacting as quickly as possible afterwards',
+        'Deleting old log files so attackers cannot learn from past incidents',
+        'Buying cyber insurance to shift the risk of undetected intrusions',
+        'Proactively finding vulnerabilities before attackers can exploit them',
       ],
       correct: 3,
       why: 'Threat Hunting sucht die Schwachstelle vor dem Angreifer: Firewall-Regeln anpassen, neu gemeldete Schwachstellen verfolgen und prüfen, dass die eigenen Systeme aktuell gepatcht sind.',
@@ -2618,10 +2618,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'Why is a chain of custody important in digital forensics?',
       options: [
-        'It documents who accessed the data and proves (via hashes/signatures) the data is unchanged since collection',
-        'It speeds up data acquisition',
-        'It encrypts the original evidence',
-        'It deletes duplicate files',
+        'It documents who accessed the evidence and proves it was never altered',
+        'It speeds up data acquisition by parallelizing the disk imaging process',
+        'It encrypts the original evidence so only the court can ever read it',
+        'It removes duplicate files so the evidence archive stays small',
       ],
       correct: 0,
       why: 'Die Chain of Custody hält fest, wer wann auf die Daten zugriff, und belegt per Hashes/digitalen Signaturen, dass die Daten seit der Sicherung unverändert sind — entscheidend für spätere Gerichtsverfahren.',
@@ -2629,10 +2629,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'Why work from copies rather than the original media during acquisition?',
       options: [
-        'Copies are faster to search',
-        'Working on copies prevents altering the original and guards against remote wipe (especially on mobile devices)',
-        'Originals cannot be read directly',
-        'Copies compress better',
+        'Copies can be searched faster because they are stored on fast disks',
+        'Copies protect the original from changes and from remote wiping',
+        'Original media cannot be read directly by forensic workstations',
+        'Copies compress better and save space in the evidence archive',
       ],
       correct: 1,
       why: 'Aus dem Original werden Kopien gezogen und nur mit diesen gearbeitet — das schützt die Originaldaten vor Veränderung und vor Fernlöschung (gerade bei Mobilgeräten); wichtig ist auch die Live-Erfassung bei verschlüsselten Systemen.',
@@ -2655,10 +2655,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What does an Acceptable Use Policy (AUP) define?',
       options: [
-        'The encryption algorithm for stored data',
-        'What users may do with company technology (computers, phones, mobile devices) — and it protects the organization legally',
-        'The backup schedule',
-        'The physical layout of the data center',
+        'The encryption algorithm required for data stored on company servers',
+        'What users may do with company technology — it also protects the firm legally',
+        'The backup schedule for all workstations and how long backups are kept',
+        'The physical layout of the data center and who may enter which zones',
       ],
       correct: 1,
       why: 'Die AUP legt fest, was Nutzer mit der bereitgestellten Technik tun dürfen. Sie informiert nicht nur, sondern schützt die Organisation rechtlich — etwa als Beleg bei einer Kündigung wegen Regelverstoßes.',
@@ -2677,10 +2677,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is the goal of the Software Development Lifecycle (SDLC)?',
       options: [
-        'To move from idea to finished application (requirements, build, test, deploy) on schedule and budget',
-        'To encrypt source code',
-        'To replace change management',
-        'To monitor network traffic',
+        'Moving from idea to deployed application on schedule and on budget',
+        'Encrypting the source code repository against external attackers',
+        'Replacing change management for all development departments',
+        'Monitoring the production network traffic generated by applications',
       ],
       correct: 0,
       why: 'Der SDLC führt strukturiert von der Idee zur fertigen App (Anforderungen, Entwicklung, Test, Deployment) — termin- und budgetgerecht. Zwei gängige Modelle: das lineare Waterfall und das schnelle, iterative Agile.',
@@ -2688,10 +2688,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What does the change management process critically include?',
       options: [
-        'A marketing plan for the change',
-        'The salary of the technician',
-        'A social media announcement',
-        'Documentation of frequency, duration, install process, and — most importantly — a fallback procedure if it fails',
+        'A marketing plan that announces the change to all customers',
+        'The salary grade of the technician who implements the change',
+        'A social media post published once the change is completed',
+        'Documented scope, duration, install process, and a fallback procedure',
       ],
       correct: 3,
       why: 'Change Management dokumentiert Häufigkeit, Dauer und Installationsprozess einer Änderung — und vor allem eine Fallback-Prozedur, falls sie schiefgeht. So werden Änderungen mit geringstem Risiko umgesetzt.',
@@ -2703,7 +2703,7 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'Which two organizations commonly provide ready-made security standards?',
       options: [
-        'ISO (International Organization for Standardization) and NIST (National Institute of Standards and Technology)',
+        'ISO and NIST',
         'ICANN and IANA',
         'IEEE and W3C',
         'FBI and CIA',
@@ -2714,10 +2714,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What might a password standard specify beyond complexity?',
       options: [
-        'The color of the login screen',
-        'Authentication method (e.g., no local accounts, LDAP to Active Directory), reset handling, change frequency, and storage',
-        'The employee’s job title',
-        'The office Wi-Fi name',
+        'The color scheme and layout of the corporate login screen',
+        'Authentication method, reset handling, change frequency, and storage',
+        'The job titles of employees who may request password resets',
+        'The SSID naming convention for the corporate wireless networks',
       ],
       correct: 1,
       why: 'Ein Passwort-Standard regelt neben der Komplexität auch die Authentifizierungsmethode (z. B. keine lokalen Konten, stattdessen LDAP zu Active Directory), Reset-Abläufe, Änderungsintervalle und die sichere Speicherung.',
@@ -2751,10 +2751,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What does the Sarbanes-Oxley (SOX) regulation focus on?',
       options: [
-        'Health care information',
-        'The finances of a public company and protecting/making financial data available to the right people',
-        'Wireless network encryption',
-        'Physical door locks',
+        'The privacy of health care records held by insurance companies',
+        'The finances of public companies and protecting their financial data',
+        'The encryption standards for wireless networks in public buildings',
+        'The physical security requirements for data center door locks',
       ],
       correct: 1,
       why: 'Sarbanes-Oxley (Public Company Accounting Reform and Investor Protection Act, 2002) betrifft die Finanzen eines Unternehmens: Finanzdaten müssen geschützt und den richtigen Personen zugänglich sein.',
@@ -2824,7 +2824,7 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
         'HIPAA',
         'Sarbanes-Oxley',
         'GDPR',
-        'PCI DSS (Payment Card Industry Data Security Standard)',
+        'PCI DSS',
       ],
       correct: 3,
       why: 'Wer Kreditkartennummern speichert, muss laut PCI DSS regelmäßig (z. B. jährlich) eine Risikobewertung durchführen.',
@@ -2832,10 +2832,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is a one-time risk assessment typically tied to?',
       options: [
-        'A specific project, such as an acquisition or installing new equipment/software',
-        'The daily login process',
-        'Every email sent',
-        'The lunch schedule',
+        'A specific project, such as an acquisition or new equipment',
+        'The daily login process of every administrator account',
+        'Every single email that enters or leaves the organization',
+        'The weekly staff meeting schedule of the security team',
       ],
       correct: 0,
       why: 'Das einmalige Assessment hängt meist an einem konkreten Projekt — etwa einer Firmenübernahme oder der Einführung neuer Hard-/Software, um deren Risiken zu verstehen.',
@@ -2869,10 +2869,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'How does "avoiding" risk differ from "mitigating" it?',
       options: [
-        'Avoiding removes the risk entirely (no further management needed); mitigating reduces it (e.g., a next-gen firewall)',
-        'They are the same',
-        'Avoiding means buying insurance',
-        'Mitigating means ignoring the risk',
+        'Avoiding removes the risk entirely; mitigating only reduces it',
+        'They are two interchangeable names for the same strategy',
+        'Avoiding means buying insurance; mitigating means ignoring it',
+        'Mitigating means accepting the risk without countermeasures',
       ],
       correct: 0,
       why: 'Vermeiden entfernt das Risiko komplett (keine weitere Steuerung nötig); Mindern reduziert es — etwa mit einer Next-Generation-Firewall gegen Internet-Risiken.',
@@ -2880,10 +2880,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is the purpose of a risk register (risk reporting)?',
       options: [
-        'To log user passwords',
-        'To schedule backups',
-        'To encrypt sensitive files',
-        'A continuously updated list of tracked risks with descriptions and handling, referenced by upper management',
+        'A log of user passwords kept for the security administrators',
+        'A calendar that schedules the nightly and weekly backup jobs',
+        'An encrypted vault for the company’s most sensitive files',
+        'A continuously updated list of tracked risks used by management',
       ],
       correct: 3,
       why: 'Das Risk Reporting/Register listet alle verfolgten Risiken mit Beschreibung und Umgang — ein ständig aktualisiertes Dokument (kritische und aufkommende Risiken), auf das das Management seine Entscheidungen stützt.',
@@ -2906,10 +2906,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What does RPO (Recovery Point Objective) describe?',
       options: [
-        'The point in time / amount of data needed to be considered operational again (e.g., the last 12 months of data)',
-        'The time to diagnose a fault',
-        'The mean time between failures',
-        'The cost of replacement equipment',
+        'The data state required to be considered operational again',
+        'The time needed to diagnose the root cause of an outage',
+        'The average running time between two consecutive failures',
+        'The purchase cost of the replacement for failed equipment',
       ],
       correct: 0,
       why: 'Das RPO ist der Datenstand, ab dem man wieder als betriebsbereit gilt — z. B. mindestens die letzten 12 Monate an Daten, die aus dem Backup zurückgeladen sein müssen.',
@@ -2917,10 +2917,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What does MTTR (Mean Time To Repair) include?',
       options: [
-        'Only the time to buy new equipment',
-        'The time before the next failure',
-        'Time to diagnose, obtain, install, and configure the replacement — reducible by spending more (e.g., spare stock, 2-hour contracts)',
-        'The manufacturing date of the device',
+        'Only the shipping time for replacement parts from the vendor',
+        'The time that passes before the next failure of the system',
+        'Time to diagnose, obtain, install, and configure the replacement',
+        'The age of the device when the manufacturer ends its support',
       ],
       correct: 2,
       why: 'MTTR umfasst Diagnose, Beschaffung, Einbau und Konfiguration des Ersatzes. Mit mehr Budget (Ersatzteile auf Lager, 2-Stunden-Verträge) lässt sich die Reparaturzeit senken.',
@@ -2928,10 +2928,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What does MTBF (Mean Time Between Failures) help with?',
       options: [
-        'Encrypting the equipment',
-        'Setting user passwords',
-        'Configuring the firewall',
-        'Predicting how long equipment runs before an outage — for planning and risk assessment',
+        'Encrypting equipment configurations before they are archived',
+        'Choosing the password policies for infrastructure devices',
+        'Scheduling the firewall rule reviews across the fiscal year',
+        'Predicting how long equipment runs before the next failure',
       ],
       correct: 3,
       why: 'MTBF schätzt, wie lange ein Gerät bis zum nächsten Ausfall läuft (grob: Gesamtlaufzeit geteilt durch Anzahl Ausfälle) — nützlich, um das Ausfallrisiko einzuschätzen und zu planen.',
@@ -2976,10 +2976,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What lesson does the SolarWinds supply-chain attack (2020) teach?',
       options: [
-        'Digital signatures make updates 100% safe',
-        'Supply chains need no analysis',
-        'Only small companies are targeted',
-        'A trusted, digitally signed vendor update can carry malware — of ~300,000 possible customers, at least 18,000 were infected',
+        'Digital signatures guarantee that vendor updates are always safe',
+        'Supply chains are too complex to analyze, so audits are pointless',
+        'Only small companies are targeted through their software vendors',
+        'Even a trusted, signed vendor update can deliver malware at scale',
       ],
       correct: 3,
       why: 'Angreifer schleusten Schadcode in ein signiertes SolarWinds-Update; von rund 300.000 potenziell betroffenen Kunden installierten mindestens 18.000 die Malware — ein Weckruf für gründliche Supply-Chain-Analyse.',
@@ -3061,10 +3061,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'Who is a "data subject" as defined by GDPR?',
       options: [
-        'Any information relating to an identified or identifiable natural person — effectively everyone living there',
-        'Only company executives',
-        'Only the data processor',
-        'Only people who signed a contract',
+        'Any identified or identifiable natural person — effectively everyone',
+        'Only the executives who sign the company’s privacy policy',
+        'Only the employees of the data processor handling the records',
+        'Only customers who explicitly signed a data processing contract',
       ],
       correct: 0,
       why: 'Ein Data Subject ist jede identifizierte oder identifizierbare natürliche Person — praktisch jeder Einwohner: Name, Adresse, genetische Daten, Standortdaten usw. sind geschützt.',
@@ -3072,10 +3072,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is a data inventory?',
       options: [
-        'A list of physical servers',
-        'A backup of all databases',
-        'A firewall rule set',
-        'A listing of all data the company collects and stores, including owner, update frequency, and format',
+        'A list of the physical servers installed in the data center',
+        'A nightly backup of all production databases and file shares',
+        'The firewall rule set that protects the storage networks',
+        'A listing of all data the company collects, stores, and owns',
       ],
       correct: 3,
       why: 'Das Data Inventory listet alle gesammelten und gespeicherten Daten — mit Eigentümer, Aktualisierungshäufigkeit und Format —, um die Datenschutzfolgen zu verstehen, besonders beim Teilen mit Dritten.',
@@ -3146,10 +3146,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What signs should users look for to recognize a phishing email?',
       options: [
-        'A professional-looking logo',
-        'A familiar sender name',
-        'A short subject line',
-        'Spelling/grammar errors, suspicious domains, unusual attachments, and requests for personal information or credentials',
+        'A professional-looking logo in the header of the message',
+        'A familiar sender name displayed by the email client',
+        'A short subject line without any special characters',
+        'Spelling errors, odd domains, unusual attachments, credential requests',
       ],
       correct: 3,
       why: 'Warnzeichen sind Rechtschreib-/Grammatikfehler, verdächtige Domainnamen im Link, ungewöhnliche Anhänge und die Aufforderung, persönliche Daten oder Zugangsdaten preiszugeben — nie Links klicken oder Anhänge ausführen.',
@@ -3157,10 +3157,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is "anomalous behavior recognition"?',
       options: [
-        'Watching for risky, unexpected, or unintentional behavior (e.g., modifying host files, logins from another country, mistyped domains)',
-        'Recognizing familiar user faces',
-        'Blocking all outbound traffic',
-        'Renaming suspicious files',
+        'Watching for risky, unexpected, or unintentional user behavior',
+        'Recognizing employee faces at the building entrance cameras',
+        'Blocking all outbound traffic after regular business hours',
+        'Renaming suspicious files so users cannot execute them',
       ],
       correct: 0,
       why: 'Erkannt wird auffälliges Verhalten in drei Kategorien: riskant (Host-Datei ändern, sensible Uploads), unerwartet (Login aus anderem Land, Datenspitzen) und unbeabsichtigt (falsche Domain, verlorener USB-Stick, Fehlkonfiguration).',
@@ -3168,10 +3168,10 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
     {
       q: 'What is the security awareness team responsible for?',
       options: [
-        'Writing the application code',
-        'Managing the company finances',
-        'Configuring the firewalls',
-        'Monitoring, reporting, and training users — creating materials, custom/compliance training, and tracking metrics over time',
+        'Writing the application code for the security tools in use',
+        'Managing the company finances and the insurance contracts',
+        'Configuring the perimeter firewalls and the VPN appliances',
+        'Monitoring, reporting, and training users on security issues',
       ],
       correct: 3,
       why: 'Das Security-Awareness-Team überwacht, berichtet und schult: Es erstellt Trainingsmaterial (auch rollen-/compliance-spezifisch), Poster und Mails und verfolgt Metriken (Phishing-Klickrate, MFA-Nutzung), um die Wirkung zu belegen.',

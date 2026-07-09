@@ -232,6 +232,31 @@ describe('MESSER_TRANSCRIPT_QUESTIONS — Datenqualität', () => {
       }
     }
   })
+
+  it('kein extremer Längen-Bias: korrekte Option < 3x so lang wie der längste Distraktor', () => {
+    // Sonst verrät die Länge die Antwort („nimm die längste") und verzerrt die
+    // Verstanden-Empfehlung. Regressionsgrenze; Ziel wäre langfristig < 1.8.
+    for (const [videoIndex, questions] of Object.entries(MESSER_TRANSCRIPT_QUESTIONS)) {
+      questions.forEach((question, i) => {
+        const correctLen = question.options[question.correct].length
+        const maxDistractor = Math.max(
+          ...question.options.filter((_, j) => j !== question.correct).map(o => o.length),
+        )
+        expect(correctLen / maxDistractor, `${videoIndex} Frage ${i + 1}`).toBeLessThan(3)
+      })
+    }
+  })
+
+  it('keine wortgleichen Fragen über Videos hinweg', () => {
+    const seen = new Map<string, string>()
+    for (const [videoIndex, questions] of Object.entries(MESSER_TRANSCRIPT_QUESTIONS)) {
+      for (const question of questions) {
+        const key = question.q.trim().toLowerCase()
+        expect(seen.get(key), `"${question.q}" in ${seen.get(key)} und ${videoIndex}`).toBeUndefined()
+        seen.set(key, videoIndex)
+      }
+    }
+  })
 })
 
 describe('VideoRecallCheck — Render-Smoke-Test', () => {
