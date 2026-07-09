@@ -34,6 +34,7 @@ import { getDeckSuccessRates, type DeckSuccessRate } from '../../db/queries'
 import type { Card } from '../../types'
 import { profileScopeId } from '../../services/profileService'
 import { useMesserVideoProgress, resolveVideoStatus, type MesserVideoProgress, type VideoConfidence } from '../../hooks/useMesserVideoProgress'
+import { useVideoRecallScores, computeRecallVerdict, videoScoreKey, type VideoRecallVerdict } from '../../hooks/useVideoRecallScores'
 import { useLocalMesserVideos, useVideoSource, type LocalVideoItem, type LocalVideoObjectiveGroup } from '../../hooks/useLocalMesserVideos'
 import { summarizeDownloads } from '../../utils/videoDownloadQueue'
 import MesserVideoPlayer from './MesserVideoPlayer'
@@ -68,6 +69,9 @@ const COPY = {
     hasNote: 'Notiz vorhanden',
     recall: 'Abruf-Check',
     transcript: 'Transkript',
+    verdictUnderstood: 'VERSTANDEN',
+    verdictAlmost: 'FAST',
+    verdictReview: 'NOCHMAL',
     confidenceLabel: 'Selbsteinschätzung',
     confidenceHint: 'Schau das Video, prüf dich aktiv und setz ehrlich deinen Status — Schauen allein ist noch kein Können.',
     deckRate: 'Deck-Quote: {rate} % ({total} Reviews)',
@@ -120,6 +124,9 @@ const COPY = {
     hasNote: 'Has note',
     recall: 'Recall check',
     transcript: 'Transcript',
+    verdictUnderstood: 'GOT IT',
+    verdictAlmost: 'ALMOST',
+    verdictReview: 'REVIEW',
     confidenceLabel: 'Self-assessment',
     confidenceHint: 'Watch the video, quiz yourself, and set your status honestly — watching alone is not knowing.',
     deckRate: 'Deck rate: {rate}% ({total} reviews)',
@@ -222,6 +229,13 @@ function statusBadge(entry: MesserVideoProgress | undefined, copy: Copy): { labe
     default:
       return { label: copy.open, cls: 'border-[--brand-secondary-25] bg-[--brand-secondary-12] text-[--brand-secondary]' }
   }
+}
+
+/** Chip-Stile für die Verstanden-Empfehlung aus dem Abruf-Check (pro Video). */
+const VERDICT_CHIP: Record<Exclude<VideoRecallVerdict, 'unknown'>, { labelKey: 'verdictUnderstood' | 'verdictAlmost' | 'verdictReview'; cls: string }> = {
+  understood: { labelKey: 'verdictUnderstood', cls: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' },
+  almost: { labelKey: 'verdictAlmost', cls: 'border-[--brand-secondary-25] bg-[--brand-secondary-12] text-[--brand-secondary]' },
+  review: { labelKey: 'verdictReview', cls: 'border-amber-500/30 bg-amber-500/10 text-amber-300' },
 }
 
 const CONFIDENCE_CHIPS: Array<{ level: VideoConfidence; labelKey: 'gapsFull' | 'okFull' | 'solidFull'; activeCls: string }> = [
@@ -535,6 +549,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
   const profileId = profileScopeId(profile)
   const { withNotes: objectivesWithNotes, allTags } = useVideoNoteIndex(profileId)
   const { progress, markWatched, setConfidence } = useMesserVideoProgress()
+  const { scores: recallScores, recordRun: recordRecallRun } = useVideoRecallScores()
 
   // Echte Erfolgsquoten der Objective-Decks als Kalibrierungs-Anker neben der
   // Selbsteinschätzung (einmal pro Mount; ein Batch-Read statt 35 Einzelqueries).
@@ -759,6 +774,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
         <div className="mt-1 flex flex-col gap-1">
           {group.videos.map(video => {
             const isActive = activeItem?.file === video.file
+            const verdict = computeRecallVerdict(recallScores[videoScoreKey(video.index)])
             return (
               <div
                 key={video.file}
@@ -776,6 +792,15 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
                     <Play size={13} strokeWidth={1.5} />
                   </span>
                   <span className="min-w-0 flex-1 truncate font-mono text-[13px] text-zinc-100">{video.title}</span>
+                  {/* Verstanden-Empfehlung aus dem letzten Abruf-Check dieses Videos */}
+                  {verdict !== 'unknown' && (
+                    <span
+                      data-testid={`video-verdict-${video.index}`}
+                      className={`shrink-0 rounded-[6px] border px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] ${VERDICT_CHIP[verdict].cls}`}
+                    >
+                      {copy[VERDICT_CHIP[verdict].labelKey]}
+                    </span>
+                  )}
                 </button>
                 <DownloadControl
                   item={video}
@@ -1133,6 +1158,8 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
           videoIndex={activeItem.index}
           language={language}
           maxCards={settings.recallCheckSize}
+          previousRuns={recallScores[videoScoreKey(activeItem.index)]}
+          onResult={(known, total) => recordRecallRun(activeItem.index, known, total)}
           onClose={() => setRecallOpen(false)}
           onConfidence={next => {
             setConfidence(activeItem.objective, next)

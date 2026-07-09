@@ -18,6 +18,7 @@ import {
   type OrderingAnswer,
 } from '../../utils/cardTextParser'
 import { suggestConfidence, type VideoConfidence } from '../../hooks/useMesserVideoProgress'
+import { computeRecallVerdict, type RecallRunResult, type VideoRecallVerdict } from '../../hooks/useVideoRecallScores'
 import { MESSER_VIDEO_BY_QUESTION_ID, normalizeMesserVideoTitle } from '../../data/messerVideoQuestionMap'
 
 /**
@@ -59,6 +60,10 @@ const COPY = {
     fromTranscript: 'Aus dem Video',
     resultTitle: 'Ergebnis',
     resultScore: '{known} von {total} aus dem Gedächtnis gewusst',
+    verdictTitle: 'Empfehlung',
+    verdictUnderstood: 'Video verstanden — du kannst weiterziehen.',
+    verdictAlmost: 'Fast — wiederhole den Check oder wirf noch einen Blick ins Video.',
+    verdictReview: 'Schau dir das Video noch einmal an, bevor du weitermachst.',
     studyMissed: 'Diese {count} Karten regulär lernen',
     suggestion: 'Vorschlag für deine Selbsteinschätzung:',
     setConfidence: 'Status setzen',
@@ -86,6 +91,10 @@ const COPY = {
     fromTranscript: 'From the video',
     resultTitle: 'Result',
     resultScore: 'Recalled {known} of {total} from memory',
+    verdictTitle: 'Recommendation',
+    verdictUnderstood: 'Video understood — you can move on.',
+    verdictAlmost: 'Almost — repeat the check or revisit parts of the video.',
+    verdictReview: 'Watch the video again before moving on.',
     studyMissed: 'Study these {count} cards for real',
     suggestion: 'Suggested self-assessment:',
     setConfidence: 'Set status',
@@ -111,6 +120,10 @@ interface Props {
   /** Handoff: „Nicht gewusst“-Karten als reguläre (planungswirksame) Lernsession
    *  des Objective-Decks starten. Der Check selbst bleibt non-scheduling. */
   onStudyMissed?: (cards: Card[]) => void
+  /** Bisherige Läufe dieses Videos (für die Verstanden-Empfehlung); beim Mount eingefroren. */
+  previousRuns?: RecallRunResult[]
+  /** Wird bei jedem abgeschlossenen Durchlauf aufgerufen (Score-Historie). */
+  onResult?: (known: number, total: number) => void
 }
 
 type Phase = 'loading' | 'empty' | 'quiz' | 'result'
@@ -274,7 +287,7 @@ const CONFIDENCE_META: Record<VideoConfidence, { key: 'gaps' | 'ok' | 'solid'; c
   },
 }
 
-export default function VideoRecallCheck({ deckId, objective, videoTitle, videoIndex, language, maxCards = DEFAULT_MAX_CARDS, onClose, onConfidence, onStudyMissed }: Props) {
+export default function VideoRecallCheck({ deckId, objective, videoTitle, videoIndex, language, maxCards = DEFAULT_MAX_CARDS, onClose, onConfidence, onStudyMissed, previousRuns, onResult }: Props) {
   const copy = COPY[language]
   const [phase, setPhase] = useState<Phase>('loading')
   const [items, setItems] = useState<RecallQuizItem[]>([])
@@ -282,6 +295,10 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
   const [revealed, setRevealed] = useState(false)
   const [knownCount, setKnownCount] = useState(0)
   const [missedCards, setMissedCards] = useState<Card[]>([])
+  // Lauf-Historie für die Empfehlung: beim Mount eingefroren (der Parent hängt
+  // via onResult neue Läufe an seine Kopie an — sonst würde doppelt gezählt),
+  // lokal wächst sie mit jedem „Nochmal"-Durchlauf weiter.
+  const [runHistory, setRunHistory] = useState<RecallRunResult[]>(() => previousRuns ?? [])
 
   useEffect(() => {
     let cancelled = false
@@ -336,6 +353,8 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
     }
     if (index + 1 >= total) {
       setKnownCount(nextKnown)
+      setRunHistory(prev => [...prev, { known: nextKnown, total, at: Date.now() }])
+      onResult?.(nextKnown, total)
       setPhase('result')
       return
     }
@@ -354,6 +373,13 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
   }
 
   const suggested = suggestConfidence(knownCount, total)
+  const verdict: VideoRecallVerdict = computeRecallVerdict(runHistory)
+
+  const VERDICT_META: Record<Exclude<VideoRecallVerdict, 'unknown'>, { text: string; cls: string; Icon: typeof Check }> = {
+    understood: { text: copy.verdictUnderstood, cls: 'border-emerald-500/30 bg-emerald-500/5 text-emerald-200', Icon: Check },
+    almost: { text: copy.verdictAlmost, cls: 'border-[--brand-secondary-25] bg-[--brand-secondary-08] text-[--brand-secondary]', Icon: Eye },
+    review: { text: copy.verdictReview, cls: 'border-amber-500/30 bg-amber-500/5 text-amber-200', Icon: RotateCcw },
+  }
 
   return (
     <div
@@ -489,6 +515,24 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
                   {copy.resultScore.replace('{known}', String(knownCount)).replace('{total}', String(total))}
                 </div>
               </div>
+
+              {/* Verstanden-Empfehlung: objektives Urteil aus der Lauf-Historie
+                  (siehe computeRecallVerdict) — über der subjektiven Selbsteinschätzung. */}
+              {verdict !== 'unknown' && (() => {
+                const meta = VERDICT_META[verdict]
+                return (
+                  <div
+                    data-testid={`recall-check-verdict-${verdict}`}
+                    className={`flex items-start gap-2.5 rounded-ds-xl border px-3 py-2.5 ${meta.cls}`}
+                  >
+                    <meta.Icon size={15} strokeWidth={2} className="mt-0.5 shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <div className="font-mono text-[10px] uppercase tracking-[0.12em] opacity-80">{copy.verdictTitle}</div>
+                      <div className="font-mono text-[13px] font-bold leading-relaxed">{meta.text}</div>
+                    </div>
+                  </div>
+                )
+              })()}
 
               <div>
                 <div className="mb-2 font-mono text-[11px] text-zinc-500">{copy.suggestion}</div>
