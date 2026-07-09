@@ -50,8 +50,11 @@ const COPY = {
     emptyBody: 'Zu diesem Video gibt es noch keine fertigen Abruf-Fragen. Schau das Video, halte rechts Notizen fest — sobald Fragen zu diesem Video vorliegen, erscheinen sie hier.',
     notScheduling: 'Zählt nicht zur Wiederholung — dient dem aktiven Abruf und deiner Selbsteinschätzung.',
     intro: 'Erinnere dich an die Antwort, bevor du aufdeckst.',
+    pickIntro: 'Tippe die richtige Antwort an.',
     card: 'Karte',
     reveal: 'Antwort zeigen',
+    revealMissed: 'Weiß ich nicht — Antwort zeigen',
+    next: 'Weiter',
     knew: 'Gewusst',
     missed: 'Nicht gewusst',
     answer: 'Antwort',
@@ -81,8 +84,11 @@ const COPY = {
     emptyBody: 'This video has no finished recall questions yet. Watch the video and take notes on the right — questions will show up here once they exist for this video.',
     notScheduling: 'Does not count as a review — it serves active recall and your self-assessment.',
     intro: 'Try to recall the answer before you reveal it.',
+    pickIntro: 'Tap the correct answer.',
     card: 'Card',
     reveal: 'Show answer',
+    revealMissed: "Don't know — show answer",
+    next: 'Next',
     knew: 'Knew it',
     missed: 'Missed it',
     answer: 'Answer',
@@ -293,6 +299,8 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
   const [items, setItems] = useState<RecallQuizItem[]>([])
   const [index, setIndex] = useState(0)
   const [revealed, setRevealed] = useState(false)
+  // Angeklickte Option (Label) bei MC-Fragen; null = per „Weiß ich nicht" aufgedeckt.
+  const [picked, setPicked] = useState<string | null>(null)
   const [knownCount, setKnownCount] = useState(0)
   const [missedCards, setMissedCards] = useState<Card[]>([])
   // Lauf-Historie für die Empfehlung: beim Mount eingefroren (der Parent hängt
@@ -330,6 +338,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
       setItems(combined)
       setIndex(0)
       setRevealed(false)
+      setPicked(null)
       setKnownCount(0)
       setMissedCards([])
       setPhase('quiz')
@@ -361,15 +370,28 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
     setKnownCount(nextKnown)
     setIndex(index + 1)
     setRevealed(false)
+    setPicked(null)
   }
 
   const restart = () => {
     setItems(prev => shuffle(prev))
     setIndex(0)
     setRevealed(false)
+    setPicked(null)
     setKnownCount(0)
     setMissedCards([])
     setPhase('quiz')
+  }
+
+  // MC-Fragen: Antwort anklicken statt selbst bewerten — richtig geklickt zählt
+  // als gewusst, falsch geklickt (oder „Weiß ich nicht") als nicht gewusst.
+  const hasOptions = (view?.options.length ?? 0) > 0
+  const pickedCorrect = view?.options.find(option => option.label === picked)?.correct ?? false
+
+  const pickOption = (label: string) => {
+    if (revealed) return
+    setPicked(label)
+    setRevealed(true)
   }
 
   const suggested = suggestConfidence(knownCount, total)
@@ -440,7 +462,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
                     </span>
                   )}
                 </span>
-                <span>{copy.intro}</span>
+                <span>{hasOptions ? copy.pickIntro : copy.intro}</span>
               </div>
 
               <div className="min-h-[140px] rounded-ds-2xl border border-[#1f1f23] bg-[#0c0c0c] p-4">
@@ -448,28 +470,42 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
                   {view.prompt}
                 </div>
 
-                {/* MC-Optionen als schlichte Textzeilen: vor dem Aufdecken neutral,
-                    danach die korrekte grün, die übrigen abgedimmt. */}
+                {/* MC-Optionen: vor dem Aufdecken anklickbar (die Wahl IST die
+                    Bewertung); danach die korrekte grün, eine falsch gewählte
+                    rot, die übrigen abgedimmt. Nach dem Aufdecken gesperrt. */}
                 {view.options.length > 0 && (
-                  <div className="mt-4 flex flex-col gap-1" data-testid="recall-check-options">
+                  <div className="mt-4 flex flex-col gap-1.5" data-testid="recall-check-options">
                     {view.options.map(option => {
+                      const isPicked = picked === option.label
                       const highlight = revealed && option.correct
-                      const dimmed = revealed && !option.correct
+                      const wrongPick = revealed && isPicked && !option.correct
+                      const dimmed = revealed && !option.correct && !isPicked
                       return (
-                        <div
+                        <button
                           key={option.label}
-                          className={`flex items-start gap-2.5 py-0.5 font-mono text-[13px] leading-relaxed transition-colors ${
-                            highlight ? 'text-emerald-200' : dimmed ? 'text-zinc-600' : 'text-zinc-300'
+                          type="button"
+                          disabled={revealed}
+                          onClick={() => pickOption(option.label)}
+                          data-testid={`recall-check-option-${option.label}`}
+                          className={`flex items-start gap-2.5 rounded-ds-lg border px-2.5 py-2 text-left font-mono text-[13px] leading-relaxed transition-colors ${
+                            highlight
+                              ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-200'
+                              : wrongPick
+                                ? 'border-rose-500/40 bg-rose-500/10 text-rose-200'
+                                : dimmed
+                                  ? 'border-transparent text-zinc-600'
+                                  : 'border-[#1f1f23] bg-[#0f0f0f] text-zinc-300 hover:border-[--brand-secondary-50] hover:text-zinc-100'
                           }`}
                         >
                           <span className={`shrink-0 font-bold ${
-                            highlight ? 'text-emerald-300' : dimmed ? 'text-zinc-700' : 'text-zinc-500'
+                            highlight ? 'text-emerald-300' : wrongPick ? 'text-rose-300' : dimmed ? 'text-zinc-700' : 'text-zinc-500'
                           }`}>
                             {option.label}
                           </span>
                           <span className="min-w-0 flex-1">{option.text}</span>
                           {highlight && <Check size={14} strokeWidth={2} className="mt-0.5 shrink-0 text-emerald-300" />}
-                        </div>
+                          {wrongPick && <X size={14} strokeWidth={2} className="mt-0.5 shrink-0 text-rose-300" />}
+                        </button>
                       )
                     })}
                   </div>
@@ -589,8 +625,34 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
         </div>
 
         {/* Aktionsleiste: fest unter dem scrollenden Inhalt, damit Aufdecken und
-            Bewerten auch bei langen Karten auf kleinen Displays erreichbar bleiben. */}
-        {phase === 'quiz' && (
+            Bewerten auch bei langen Karten auf kleinen Displays erreichbar bleiben.
+            MC-Fragen bewerten sich über die angeklickte Option selbst — hier gibt
+            es nur „Weiß ich nicht" (vor der Wahl) und „Weiter" (nach dem Aufdecken). */}
+        {phase === 'quiz' && hasOptions && (
+          <div className="shrink-0 border-t border-[#18181b] px-4 py-3">
+            {!revealed ? (
+              <button
+                type="button"
+                onClick={() => setRevealed(true)}
+                data-testid="recall-check-reveal"
+                className="flex w-full items-center justify-center gap-2 rounded-ds-xl border border-[#3f3f46] bg-[#111] py-2.5 font-mono text-[12px] text-zinc-400 transition-colors hover:border-[--brand-secondary-50] hover:text-zinc-200"
+              >
+                <Eye size={14} strokeWidth={1.5} />
+                {copy.revealMissed}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => grade(picked !== null && pickedCorrect)}
+                data-testid="recall-check-next"
+                className="flex w-full items-center justify-center gap-2 rounded-ds-xl border border-[--brand-secondary-50] bg-[--brand-secondary-12] py-4 font-mono text-[13px] font-bold text-[--brand-secondary] transition-colors hover:border-[--brand-secondary-80]"
+              >
+                {copy.next}
+              </button>
+            )}
+          </div>
+        )}
+        {phase === 'quiz' && !hasOptions && (
           <div className="shrink-0 border-t border-[#18181b] px-4 py-3">
             {!revealed ? (
               <button
