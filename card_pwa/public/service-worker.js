@@ -917,43 +917,75 @@ function getDefaultPushNotification(languageHint) {
 }
 
 const DAILY_MOTIVATION_MESSAGES = {
+  // GENERATED from card-sync-server/server/push/motivation.py.
+  // Keep this inline: the Service Worker must have offline reminder copy without loading app chunks.
   de: [
-    ['Heute nur die erste Karte.', 'Der Anfang ist der schwere Teil. Danach arbeitet dein Stapel fuer dich.'],
-    ['Mach den Rueckstand kleiner.', 'Nicht heroisch, nur sauber: ein kurzer Durchlauf nimmt dem Berg die Kante.'],
-    ['Eine gute Wiederholung zaehlt.', 'Ziel ist nicht Tempo. Ziel ist, dass eine Antwort morgen leichter auftaucht.'],
-    ['Trainiere die Abrufspur.', 'Lesen fuehlt sich leicht an. Erinnern baut die Leitung, die du spaeter brauchst.'],
-    ['Dein zukuenftiges Ich schaut zu.', 'Zehn Minuten heute sind eine ruhigere Pruefungsvorbereitung spaeter.'],
-    ['Kleine Session, echte Wirkung.', 'Nimm die faelligen Karten ernst, aber nicht dramatisch. Fang an.'],
+    ['Heute nur die erste Karte.', 'Der Anfang ist der schwere Teil. Danach arbeitet dein Stapel für dich.'],
+    ['Mach den Rückstand kleiner.', 'Nicht heroisch, nur sauber: ein kurzer Durchlauf nimmt dem Berg die Kante.'],
+    ['Eine gute Wiederholung zählt.', 'Ziel ist nicht Tempo. Ziel ist, dass eine Antwort morgen leichter auftaucht.'],
+    ['Trainiere die Abrufspur.', 'Lesen fühlt sich leicht an. Erinnern baut die Leitung, die du später brauchst.'],
+    ['Dein zukünftiges Ich schaut zu.', 'Zehn Minuten heute sind eine ruhigere Prüfungsvorbereitung später.'],
+    ['Kleine Session, echte Wirkung.', 'Nimm die fälligen Karten ernst, aber nicht dramatisch. Fang an.'],
     ['Schwierige Karten sind Hinweise.', 'Wenn etwas hakt, ist das kein Urteil. Es ist die genaue Stelle, an der Lernen passiert.'],
-    ['Lernen ist ein System.', 'Du musst heute nicht alles wissen. Du musst nur den naechsten Kontakt herstellen.'],
+    ['Lernen ist ein System.', 'Du musst heute nicht alles wissen. Du musst nur den nächsten Kontakt herstellen.'],
     ['Mach die Erinnerung lauter.', 'Jede aktive Antwort ist ein kleines Signal: Das hier bleibt wichtig.'],
-    ['Heute zaehlt Wiederfinden.', 'Nicht perfekt formulieren. Erst wiederfinden, dann schaerfen.'],
-    ['Deine Karten warten nicht auf Motivation.', 'Gut so: Routine traegt auch dann, wenn die Stimmung noch bootet.'],
-    ['Kurz pruefen, ehrlich bewerten.', 'Die App wird besser, wenn du ehrlich klickst. Dein Gedaechtnis auch.'],
-    ['Ein Deck ist kein Berg.', 'Es ist eine Reihe kleiner Tueren. Oeffne heute nur die naechste.'],
-    ['Halte die Kette leise stabil.', 'Keine Show, kein Druck. Nur der naechste saubere Review.'],
+    ['Heute zählt Wiederfinden.', 'Nicht perfekt formulieren. Erst wiederfinden, dann schärfen.'],
+    ['Deine Karten warten nicht auf Motivation.', 'Gut so: Routine trägt auch dann, wenn die Stimmung noch bootet.'],
+    ['Kurz prüfen, ehrlich bewerten.', 'Die App wird besser, wenn du ehrlich klickst. Dein Gedächtnis auch.'],
+    ['Ein Deck ist kein Berg.', 'Es ist eine Reihe kleiner Türen. Öffne heute nur die nächste.'],
+    ['Halte die Kette leise stabil.', 'Keine Show, kein Druck. Nur der nächste saubere Review.'],
     ['Falsche Antworten sind Daten.', 'Sie zeigen dir, wo dein Training den besten Hebel hat.'],
-    ['Heute eine Luecke schliessen.', 'Such dir die Karte, die gestern noch wacklig war, und gib ihr Halt.'],
-    ['Wissen wird durch Rueckkehr fest.', 'Du musst nicht laenger lernen, sondern regelmaessig wieder auftauchen.'],
-    ['Dein Stapel wird leichter.', 'Nicht durch Warten, sondern durch die naechste bewertete Karte.'],
+    ['Heute eine Lücke schließen.', 'Such dir die Karte, die gestern noch wacklig war, und gib ihr Halt.'],
+    ['Wissen wird durch Rückkehr fest.', 'Du musst nicht länger lernen, sondern regelmäßig wieder auftauchen.'],
+    ['Dein Stapel wird leichter.', 'Nicht durch Warten, sondern durch die nächste bewertete Karte.'],
     ['Gib deinem Fokus einen Startpunkt.', 'Eine Karte, eine Antwort, eine Bewertung. Mehr muss der erste Schritt nicht sein.'],
-    ['Uebung macht Signale vertraut.', 'Ports, Begriffe, Angriffe, Regeln: Was du abrufst, wird navigierbar.'],
+    ['Übung macht Signale vertraut.', 'Ports, Begriffe, Angriffe, Regeln: Was du abrufst, wird navigierbar.'],
     ['Heute ohne Drama lernen.', 'Setz dich kurz hin, dreh die erste Karte um, und lass den Flow entstehen.'],
-    ['Die guten Sessions sind oft unspektakulaer.', 'Ein paar ehrliche Reviews schlagen eine perfekte Ausrede.'],
+    ['Die guten Sessions sind oft unspektakulär.', 'Ein paar ehrliche Reviews schlagen eine perfekte Ausrede.'],
     ['Schieb nicht den ganzen Stapel.', 'Schieb nur die erste Karte in Bewegung. Der Rest folgt leichter.'],
     ['Dein Gehirn mag klare Wiederkehr.', 'Gleiche Zeit, kleine Session, echte Abrufarbeit.'],
     ['Nicht sammeln. Abrufen.', 'Der Fortschritt entsteht in dem Moment, in dem du die Antwort selbst ziehst.'],
     ['Heute reicht ein stabiler Treffer.', 'Eine Karte weniger im Nebel ist ein echter Gewinn.'],
-    ['Mach Lernen messbar.', 'Oeffne die Session und lass die Bewertungen zeigen, was wirklich sitzt.'],
-    ['Der naechste Review ist der Hebel.', 'Du musst nicht alles neu lernen. Du musst das Richtige rechtzeitig beruehren.'],
-    ['Bleib freundlich und exakt.', 'Wenn eine Karte faellt, heb sie sachlich wieder auf.'],
-    ['Sicherheit lernt man in Wiederholungen.', 'Concepts werden belastbar, wenn du sie mehrmals aktiv zurueckholst.'],
-    ['Heute ein sauberer Kontakt.', 'Eine kurze Session ist genug, um den Lernfaden nicht abreissen zu lassen.'],
+    ['Mach Lernen messbar.', 'Öffne die Session und lass die Bewertungen zeigen, was wirklich sitzt.'],
+    ['Der nächste Review ist der Hebel.', 'Du musst nicht alles neu lernen. Du musst das Richtige rechtzeitig berühren.'],
+    ['Bleib freundlich und exakt.', 'Wenn eine Karte fällt, heb sie sachlich wieder auf.'],
+    ['Sicherheit lernt man in Wiederholungen.', 'Concepts werden belastbar, wenn du sie mehrmals aktiv zurückholst.'],
+    ['Heute ein sauberer Kontakt.', 'Eine kurze Session ist genug, um den Lernfaden nicht abreißen zu lassen.'],
+    ['Port 443 kennst du im Schlaf?', 'Genau so fühlen sich bald auch die anderen an. Wiederholung macht Fakten selbstverständlich.'],
+    ['Defense in Depth gilt auch beim Lernen.', 'Karten, Videos, Abruf-Checks: Mehrere Schichten halten Wissen besser als eine.'],
+    ['Patch deine Wissenslücken.', 'Wie beim Patch Tuesday: regelmäßig, bevor jemand die Lücke findet — der Prüfer zum Beispiel.'],
+    ['Vertraue nicht, verifiziere.', 'Zero Trust fürs Gedächtnis: Erst wenn du es abgerufen hast, weißt du, dass es sitzt.'],
+    ['Dein Wissen braucht Integrität.', 'Die CIA-Triade deines Lernens: verfügbar, belastbar, jederzeit abrufbar.'],
+    ['Ein Acronym pro Tag reicht schon.', 'AAA, SIEM, SASE: Heute eines festigen ist besser als zehn überfliegen.'],
+    ['Brute Force funktioniert beim Lernen nicht.', 'Verteilte Wiederholung schlägt die Nachtschicht vor der Prüfung. Immer.'],
+    ['Dein Fortschritt ist verschlüsselt gespeichert.', 'Jede Session zahlt ein. Auch wenn du es heute noch nicht siehst.'],
+    ['Die Prüfung ist ein Abruf-Test.', 'Also trainiere genau das: abrufen, nicht wiedererkennen.'],
+    ['Mach heute den Recall-Check.', 'Ein Video anschauen ist Input. Der Check danach macht daraus Wissen.'],
+    ['Multi-Faktor fürs Gedächtnis.', 'Lesen plus Hören plus Abrufen: Mehrere Faktoren, stärkere Erinnerung.'],
+    ['Ein Video plus fünf Fragen.', 'Das ist eine komplette Lerneinheit. Mehr braucht ein guter Tag nicht.'],
+    ['Dein Streak ist ein Sicherheitskonzept.', 'Kontinuität schützt vor dem Vergessen wie Monitoring vor dem Angriff.'],
+    ['Auch Profis fangen bei 1.1 an.', 'Jede Domäne beginnt mit einer Karte. Du bist längst unterwegs.'],
+    ['Heute zählt Anwesenheit.', 'Nicht jede Session muss glänzen. Sie muss nur stattfinden.'],
+    ['Müde? Dann nur drei Karten.', 'Drei ehrliche Antworten sind mehr wert als ein schlechtes Gewissen.'],
+    ['Log deinen Lernfortschritt wie ein SIEM.', 'Kleine Events, sauber erfasst, ergeben zusammen das große Bild.'],
+    ['Wackelige Karten zuerst.', 'Die unbequemste Karte von gestern ist die wertvollste von heute.'],
+    ['Prüfungswissen ist ein Marathonlauf.', 'Wer täglich kurz läuft, muss am Ende nicht sprinten.'],
+    ['Incident Response fürs Vergessen.', 'Erkennen, eingrenzen, wiederherstellen: Genau das macht dein nächster Review.'],
+    ['Dein Gedächtnis hat eine Baseline.', 'Jede Wiederholung hebt sie an. Abweichungen nach oben sind erwünscht.'],
+    ['Verfügbarkeit zählt auch für Wissen.', 'Was du in der Prüfung brauchst, muss jetzt regelmäßig online sein.'],
+    ['Kein Tag ohne Backup.', 'Eine kurze Session sichert, was du gestern gelernt hast.'],
+    ['Social Engineering wirkt nicht auf dich.', 'Auch nicht die Ausrede, dass morgen der bessere Lerntag ist.'],
+    ['Least Privilege für Ablenkungen.', 'Gib dem Handy nur die Rechte, die es braucht: keine, bis die Session fertig ist.'],
+    ['Fünf Minuten sind ein Fenster.', 'Warteschlange, Kaffee, Bahn: Dein Stapel passt in jede Lücke.'],
+    ['Die Kurve vergisst schneller als du denkst.', 'Aber ein einziger Abruf heute biegt sie wieder nach oben.'],
+    ['Du sammelst keine Punkte, du baust Wege.', 'Jeder Abruf verstärkt die Route, die dich durch die Prüfung trägt.'],
+    ['Encryption at rest reicht nicht.', 'Wissen muss in transit funktionieren: raus aus dem Kopf, rein in die Antwort.'],
+    ['Heute schon gehärtet?', 'System-Hardening für den Kopf: eine Session, unnötige Zweifel deinstalliert.'],
   ],
   en: [
     ['Start with the first card.', 'The beginning is the hard part. After that, the stack starts moving.'],
     ['Make the backlog smaller.', 'No heroics: one clean pass takes the edge off the pile.'],
-    ['One honest recall counts.', "The goal is not speed. The goal is making tomorrow's answer easier."],
+    ['One honest recall counts.', 'The goal is not speed. The goal is making tomorrow\'s answer easier.'],
     ['Train the retrieval path.', 'Reading feels easy. Recall builds the route you need later.'],
     ['Future you is watching.', 'Ten minutes today means calmer prep later.'],
     ['Small session, real effect.', 'Take the due cards seriously, not dramatically. Begin.'],
@@ -982,25 +1014,92 @@ const DAILY_MOTIVATION_MESSAGES = {
     ['Be kind and precise.', 'When a card falls, pick it up calmly.'],
     ['Security knowledge needs repetition.', 'Concepts become durable when you actively retrieve them more than once.'],
     ['One clean contact today.', 'A short session is enough to keep the learning thread intact.'],
+    ['You know port 443 in your sleep?', 'The rest will feel like that soon. Repetition turns facts into reflexes.'],
+    ['Defense in depth works for studying too.', 'Cards, videos, recall checks: layered learning holds better than one pass.'],
+    ['Patch your knowledge gaps.', 'Like Patch Tuesday: regularly, before someone finds the hole — the examiner, for instance.'],
+    ['Don\'t trust, verify.', 'Zero trust for memory: only a successful recall proves it is really there.'],
+    ['Your knowledge needs integrity.', 'The CIA triad of studying: available, resilient, retrievable on demand.'],
+    ['One acronym a day is plenty.', 'AAA, SIEM, SASE: nailing one beats skimming ten.'],
+    ['Brute force does not work on learning.', 'Spaced repetition beats the all-nighter. Every time.'],
+    ['Your progress is stored encrypted.', 'Every session pays in, even when you cannot see it yet.'],
+    ['The exam is a retrieval test.', 'So train exactly that: recall, not recognition.'],
+    ['Do the recall check today.', 'Watching a video is input. The check afterwards turns it into knowledge.'],
+    ['Multi-factor for your memory.', 'Reading plus listening plus recalling: more factors, stronger trace.'],
+    ['One video plus five questions.', 'That is a complete study unit. A good day needs no more.'],
+    ['Your streak is a security concept.', 'Continuity protects against forgetting like monitoring against attacks.'],
+    ['Even pros start at 1.1.', 'Every domain begins with one card. You are already on the way.'],
+    ['Today, showing up counts.', 'Not every session has to shine. It only has to happen.'],
+    ['Tired? Then just three cards.', 'Three honest answers beat a guilty conscience.'],
+    ['Log your progress like a SIEM.', 'Small events, cleanly recorded, add up to the big picture.'],
+    ['Wobbly cards first.', 'Yesterday\'s most uncomfortable card is today\'s most valuable one.'],
+    ['Exam prep is a marathon.', 'Run a little every day and you will not have to sprint at the end.'],
+    ['Incident response for forgetting.', 'Detect, contain, recover: that is exactly what your next review does.'],
+    ['Your memory has a baseline.', 'Every repetition raises it. Upward anomalies are welcome.'],
+    ['Availability applies to knowledge too.', 'What you need in the exam must be online regularly now.'],
+    ['No day without a backup.', 'A short session secures what you learned yesterday.'],
+    ['Social engineering does not work on you.', 'Neither does the excuse that tomorrow is the better study day.'],
+    ['Least privilege for distractions.', 'Give your phone only the rights it needs: none, until the session is done.'],
+    ['Five minutes is a window.', 'Queue, coffee, train: your deck fits into any gap.'],
+    ['The curve forgets faster than you think.', 'But a single recall today bends it back up.'],
+    ['You are not collecting points, you are building routes.', 'Every recall strengthens the path that carries you through the exam.'],
+    ['Encryption at rest is not enough.', 'Knowledge must work in transit: out of your head, into the answer.'],
+    ['Hardened your system today?', 'Hardening for the mind: one session, unnecessary doubts uninstalled.'],
   ],
 }
 
-function dailyMotivationIndex(dateKey, languageHint) {
-  const source = `${dateKey}:${languageHint === 'de' ? 'de' : 'en'}`
+function normalizeMotivationLanguage(languageHint) {
+  return languageHint === 'de' ? 'de' : 'en'
+}
+
+function motivationDaypartSlot(hour) {
+  if (hour < 11) return 0
+  if (hour < 17) return 1
+  return 2
+}
+
+function normalizeMotivationSlot(value, fallback = 0) {
+  const number = Number(value)
+  if (!Number.isFinite(number) || number < 0) return fallback
+  return Math.floor(number)
+}
+
+function motivationHashSeed(source) {
   let hash = 2166136261
   for (let i = 0; i < source.length; i += 1) {
     hash ^= source.charCodeAt(i)
     hash = Math.imul(hash, 16777619)
   }
-  const messages = DAILY_MOTIVATION_MESSAGES[languageHint === 'de' ? 'de' : 'en']
-  return Math.abs(hash >>> 0) % messages.length
+  return hash >>> 0
 }
 
-function getDailyReminderNotification(languageHint, dateKey = getDateKey(new Date())) {
-  const lang = languageHint === 'de' ? 'de' : 'en'
+function dailyMotivationIndex(dateKey, languageHint, slot = 0, seedKey = 'splash') {
+  const lang = normalizeMotivationLanguage(languageHint)
   const messages = DAILY_MOTIVATION_MESSAGES[lang]
-  const [title, body] = messages[dailyMotivationIndex(dateKey, lang)]
-  return { title, body }
+  let index = motivationHashSeed(`${dateKey}:${seedKey}`) % messages.length
+  const safeSlot = normalizeMotivationSlot(slot)
+  for (let step = 1; step <= safeSlot; step += 1) {
+    let nextIndex = motivationHashSeed(`${dateKey}#${step}:${seedKey}`) % messages.length
+    if (nextIndex === index) nextIndex = (nextIndex + 1) % messages.length
+    index = nextIndex
+  }
+  return index
+}
+
+function getDailyReminderNotification(
+  languageHint,
+  dateKey = getDateKey(new Date()),
+  slot = motivationDaypartSlot(new Date().getHours()),
+  avoidMessageIndex = null
+) {
+  const lang = normalizeMotivationLanguage(languageHint)
+  const messages = DAILY_MOTIVATION_MESSAGES[lang]
+  const safeSlot = normalizeMotivationSlot(slot)
+  let messageIndex = dailyMotivationIndex(dateKey, lang, safeSlot)
+  if (Number.isInteger(avoidMessageIndex) && messages.length > 1 && messageIndex === avoidMessageIndex) {
+    messageIndex = (messageIndex + 1) % messages.length
+  }
+  const [title, body] = messages[messageIndex]
+  return { title, body, messageIndex, slot: safeSlot }
 }
 
 function parseReminderTime(value) {
@@ -1028,13 +1127,15 @@ async function getDailyReminderState() {
   try {
     const cache = await caches.open(DAILY_REMINDER_STATE_CACHE)
     const response = await cache.match(DAILY_REMINDER_STATE_URL)
-    if (!response) return { lastSentDate: '' }
+    if (!response) return { lastSentDate: '', lastMessageIndex: null, lastSlot: null }
     const data = await response.json()
     return {
       lastSentDate: typeof data?.lastSentDate === 'string' ? data.lastSentDate : '',
+      lastMessageIndex: Number.isInteger(data?.lastMessageIndex) ? data.lastMessageIndex : null,
+      lastSlot: Number.isInteger(data?.lastSlot) ? data.lastSlot : null,
     }
   } catch {
-    return { lastSentDate: '' }
+    return { lastSentDate: '', lastMessageIndex: null, lastSlot: null }
   }
 }
 
@@ -1065,7 +1166,8 @@ async function maybeSendDailyReminder() {
   const state = await getDailyReminderState()
   if (state.lastSentDate === today) return
 
-  const defaults = getDailyReminderNotification(dailyReminderLanguage, today)
+  const slot = motivationDaypartSlot(now.getHours())
+  const defaults = getDailyReminderNotification(dailyReminderLanguage, today, slot, state.lastMessageIndex)
 
   try {
     await self.registration.showNotification(channel.title || defaults.title, {
@@ -1076,9 +1178,16 @@ async function maybeSendDailyReminder() {
       badge: '/pwa-icons/icon-192.png',
       data: {
         url: '/?view=study',
+        dateKey: today,
+        messageIndex: defaults.messageIndex,
+        slot: defaults.slot,
       },
     })
-    await setDailyReminderState({ lastSentDate: today })
+    await setDailyReminderState({
+      lastSentDate: today,
+      lastMessageIndex: defaults.messageIndex,
+      lastSlot: defaults.slot,
+    })
   } catch {
     // Permission can be denied at runtime.
   }
@@ -1130,10 +1239,15 @@ self.addEventListener('push', event => {
     const channel = getNotificationChannelConfig(isDailyMotivation ? 'dailyReminder' : 'pushGeneral')
     if (!swNotificationsEnabled || !channel.enabled || !self.registration.showNotification) return
 
-    const languageHint = payload.language === 'de' ? 'de' : 'en'
+    const languageHint = normalizeMotivationLanguage(payload.language)
+    const motivationDateKey = typeof payload.dateKey === 'string' ? payload.dateKey : getDateKey(new Date())
+    const motivationSlot = normalizeMotivationSlot(payload.slot, motivationDaypartSlot(new Date().getHours()))
     const defaults = isDailyMotivation
-      ? getDailyReminderNotification(languageHint, typeof payload.dateKey === 'string' ? payload.dateKey : getDateKey(new Date()))
+      ? getDailyReminderNotification(languageHint, motivationDateKey, motivationSlot)
       : getDefaultPushNotification(languageHint)
+    const messageIndex = Number.isInteger(payload.messageIndex)
+      ? payload.messageIndex
+      : (Number.isInteger(defaults.messageIndex) ? defaults.messageIndex : null)
 
     const title = typeof payload.title === 'string' && payload.title.trim()
       ? payload.title
@@ -1150,6 +1264,7 @@ self.addEventListener('push', event => {
       badge: typeof payload.badge === 'string' ? payload.badge : '/pwa-icons/icon-192.png',
       data: {
         url: typeof payload.url === 'string' ? payload.url : (isDailyMotivation ? '/?view=study' : '/'),
+        ...(isDailyMotivation ? { dateKey: motivationDateKey, messageIndex, slot: motivationSlot } : {}),
       },
     })
   })())

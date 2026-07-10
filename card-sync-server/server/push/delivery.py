@@ -12,14 +12,16 @@ except Exception:  # pragma: no cover - exercised in environments without pywebp
   WebPushException = Exception
   webpush = None
 
-from server.config import LOGGER, WEB_PUSH_VAPID_PRIVATE_KEY, WEB_PUSH_VAPID_SUBJECT
+from server.config import LOGGER, PUSH_DAILY_SLOTS, WEB_PUSH_VAPID_PRIVATE_KEY, WEB_PUSH_VAPID_SUBJECT
 from server.db.connection import open_db
 from server.push.motivation import (
   build_daily_motivation_payload,
-  has_passed_daily_time,
+  compute_due_slot_index,
+  effective_slot_times,
   local_date_key,
   normalize_daily_time,
   normalize_language,
+  parse_last_sent_slot,
   utc_now,
 )
 
@@ -156,14 +158,19 @@ def send_due_motivation_pushes(limit: int = 100, now=None) -> dict:
     for row in rows:
       stats["checked"] += 1
       date_key = local_date_key(now_utc, row["timezone"])
-      if row["last_sent_date"] == date_key:
+      # Mehrere Sprüche pro Tag: globale Zusatz-Slots (PUSH_DAILY_SLOTS) plus
+      # die nutzergewählte daily_time, chronologisch sortiert. Es wird immer nur der
+      # NEUESTE fällige Slot gesendet — verpasste Slots werden nicht nachgeholt.
+      slots = effective_slot_times(PUSH_DAILY_SLOTS, row["daily_time"])
+      due_slot = compute_due_slot_index(now_utc, row["timezone"], slots)
+      if due_slot is None:
         stats["skipped"] += 1
         continue
-      if not has_passed_daily_time(now_utc, row["timezone"], row["daily_time"]):
+      if parse_last_sent_slot(row["last_sent_date"], date_key) >= due_slot:
         stats["skipped"] += 1
         continue
 
-      payload = build_daily_motivation_payload(row["language"], date_key, row["endpoint"])
+      payload = build_daily_motivation_payload(row["language"], date_key, row["endpoint"], slot=due_slot)
       try:
         _send_web_push(row["subscription_json"], payload)
         conn.execute(
@@ -172,7 +179,7 @@ def send_due_motivation_pushes(limit: int = 100, now=None) -> dict:
           SET last_sent_date=?, last_sent_at=?, last_error=NULL
           WHERE endpoint=?
           """,
-          (date_key, _now_ms(), row["endpoint"])
+          (f"{date_key}#{due_slot}", _now_ms(), row["endpoint"])
         )
         stats["sent"] += 1
       except Exception as err:

@@ -5,6 +5,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import vm from 'node:vm'
 import { describe, expect, it, vi } from 'vitest'
+import { MOTIVATION_QUOTES } from '../../data/motivationQuotes'
 
 type Listener = (event: any) => void
 
@@ -13,15 +14,47 @@ type LoadedSw = {
   showNotification: ReturnType<typeof vi.fn>
   matchAll: ReturnType<typeof vi.fn>
   openWindow: ReturnType<typeof vi.fn>
+  setNow: (value: string | number | Date) => void
 }
 
-function loadServiceWorker(): LoadedSw {
+type ServiceWorkerMotivationCatalog = Record<'de' | 'en', string[][]>
+
+const serviceWorkerSourcePath = path.resolve(__dirname, '../../../public/service-worker.js')
+
+function readServiceWorkerMotivationCatalog(): ServiceWorkerMotivationCatalog {
+  const source = fs.readFileSync(serviceWorkerSourcePath, 'utf8')
+  const match = source.match(/const DAILY_MOTIVATION_MESSAGES = (\{[\s\S]*?\n\})\n\nfunction normalizeMotivationLanguage/)
+  if (!match) throw new Error('DAILY_MOTIVATION_MESSAGES not found in service-worker.js')
+  return vm.runInNewContext(`(${match[1]})`) as ServiceWorkerMotivationCatalog
+}
+
+function toTimestamp(value: string | number | Date): number {
+  return value instanceof Date ? value.getTime() : new Date(value).getTime()
+}
+
+function loadServiceWorker(initialNow: string | number | Date = '2026-07-09T20:00:00'): LoadedSw {
   const listeners: Record<string, Listener[]> = {}
 
   const showNotification = vi.fn(async () => undefined)
   const matchAll = vi.fn(async () => [])
   const openWindow = vi.fn(async () => undefined)
   const cacheStores = new Map<string, Map<string, Response>>()
+  const nowRef = { value: toTimestamp(initialNow) }
+  const MockDate = class extends Date {
+    constructor(...args: any[]) {
+      if (args.length === 0) {
+        super(nowRef.value)
+      } else if (args.length === 1) {
+        super(args[0])
+      } else {
+        super(args[0], args[1], args[2], args[3], args[4], args[5], args[6])
+      }
+    }
+
+    static now() {
+      return nowRef.value
+    }
+  }
 
   const selfLike = {
     addEventListener: (type: string, listener: Listener) => {
@@ -60,8 +93,7 @@ function loadServiceWorker(): LoadedSw {
     delete: vi.fn(async () => true),
   }
 
-  const sourcePath = path.resolve(__dirname, '../../../public/service-worker.js')
-  const source = fs.readFileSync(sourcePath, 'utf8')
+  const source = fs.readFileSync(serviceWorkerSourcePath, 'utf8')
 
   vm.runInNewContext(source, {
     self: selfLike,
@@ -73,9 +105,18 @@ function loadServiceWorker(): LoadedSw {
     clearTimeout,
     Promise,
     Response,
+    Date: MockDate,
   })
 
-  return { listeners, showNotification, matchAll, openWindow }
+  return {
+    listeners,
+    showNotification,
+    matchAll,
+    openWindow,
+    setNow: value => {
+      nowRef.value = toTimestamp(value)
+    },
+  }
 }
 
 function createEvent(overrides: Partial<any> = {}) {
@@ -95,6 +136,18 @@ function createEvent(overrides: Partial<any> = {}) {
 }
 
 describe('service-worker notification handlers', () => {
+  it('keeps the offline service-worker motivation catalog in sync with the app catalog', () => {
+    const swCatalog = readServiceWorkerMotivationCatalog()
+    const appCatalog = {
+      de: MOTIVATION_QUOTES.de.map(quote => [quote.title, quote.body]),
+      en: MOTIVATION_QUOTES.en.map(quote => [quote.title, quote.body]),
+    }
+
+    expect(swCatalog).toEqual(appCatalog)
+    expect(swCatalog.de.length).toBeGreaterThanOrEqual(60)
+    expect(swCatalog.en.length).toBe(swCatalog.de.length)
+  })
+
   it('shows push notification with payload values when JSON payload is valid', async () => {
     const sw = loadServiceWorker()
     const pushHandler = sw.listeners.push?.[0]
@@ -181,6 +234,35 @@ describe('service-worker notification handlers', () => {
     expect(options.data.url).toBe('/?view=study')
   })
 
+  it('uses slot-aware offline copy when a daily motivation push has no text payload', async () => {
+    const sw = loadServiceWorker()
+    const pushHandler = sw.listeners.push?.[0]
+    expect(pushHandler).toBeDefined()
+
+    for (const slot of [0, 1]) {
+      const event = createEvent({
+        data: {
+          json: () => ({
+            channel: 'dailyMotivation',
+            language: 'de',
+            dateKey: '2026-07-09',
+            slot,
+          }),
+        },
+      })
+      pushHandler(event)
+      await event.done
+    }
+
+    expect(sw.showNotification).toHaveBeenCalledTimes(2)
+    const [firstTitle, firstOptions] = sw.showNotification.mock.calls[0]
+    const [secondTitle, secondOptions] = sw.showNotification.mock.calls[1]
+    expect(firstTitle).not.toBe(secondTitle)
+    expect(firstOptions.data.slot).toBe(0)
+    expect(secondOptions.data.slot).toBe(1)
+    expect(firstOptions.data.messageIndex).not.toBe(secondOptions.data.messageIndex)
+  })
+
   it('shows a rotating local daily motivation when configured without a push event', async () => {
     const sw = loadServiceWorker()
     const messageHandler = sw.listeners.message?.[0]
@@ -206,6 +288,37 @@ describe('service-worker notification handlers', () => {
     expect(options.body).toEqual(expect.any(String))
     expect(options.tag).toBe('card-pwa-daily-motivation')
     expect(options.data.url).toBe('/?view=study')
+  })
+
+  it('avoids repeating the same local offline reminder on consecutive study days', async () => {
+    const sw = loadServiceWorker('2026-01-18T20:00:00')
+    const messageHandler = sw.listeners.message?.[0]
+    expect(messageHandler).toBeDefined()
+
+    const config = {
+      type: 'DAILY_REMINDER_CONFIG',
+      enabled: true,
+      time: '00:00',
+      language: 'de',
+      nextDayStartsAt: 0,
+    }
+
+    const firstEvent = createEvent({ data: config })
+    messageHandler(firstEvent)
+    await firstEvent.done
+
+    sw.setNow('2026-01-19T20:00:00')
+    const secondEvent = createEvent({ data: config })
+    messageHandler(secondEvent)
+    await secondEvent.done
+
+    expect(sw.showNotification).toHaveBeenCalledTimes(2)
+    const [firstTitle, firstOptions] = sw.showNotification.mock.calls[0]
+    const [secondTitle, secondOptions] = sw.showNotification.mock.calls[1]
+    expect(firstTitle).not.toBe(secondTitle)
+    expect(firstOptions.data.slot).toBe(2)
+    expect(secondOptions.data.slot).toBe(2)
+    expect(secondOptions.data.messageIndex).toBe((firstOptions.data.messageIndex + 1) % MOTIVATION_QUOTES.de.length)
   })
 
   it('shows a local test push notification when the message handler receives TEST_PUSH_NOTIFICATION', async () => {

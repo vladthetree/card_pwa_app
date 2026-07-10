@@ -2577,5 +2577,48 @@ class TestWebPushMotivation:
         assert rows[0][6] is None
 
 
+class TestMotivationSlots:
+    """Slot-Logik für mehrere Motivations-Pushes pro Tag (reine Unit-Tests)."""
+
+    def test_effective_slot_times_merges_daily_time(self):
+        from datetime import datetime, timezone as tz
+        from server.push.motivation import compute_due_slot_index, effective_slot_times
+
+        slots = effective_slot_times("08:30,13:00", "20:00")
+        assert slots == ["08:30", "13:00", "20:00"]
+        # Leere Zusatz-Slots => altes Verhalten (nur daily_time)
+        assert effective_slot_times("", "20:00") == ["20:00"]
+
+        def at(hour):
+            return datetime(2026, 7, 9, hour, 0, tzinfo=tz.utc)
+
+        assert compute_due_slot_index(at(7), "UTC", slots) is None
+        assert compute_due_slot_index(at(9), "UTC", slots) == 0
+        assert compute_due_slot_index(at(14), "UTC", slots) == 1
+        assert compute_due_slot_index(at(21), "UTC", slots) == 2
+
+    def test_parse_last_sent_slot_formats(self):
+        from server.push.motivation import parse_last_sent_slot
+
+        assert parse_last_sent_slot("2026-07-09#1", "2026-07-09") == 1
+        assert parse_last_sent_slot("2026-07-08#2", "2026-07-09") == -1
+        assert parse_last_sent_slot(None, "2026-07-09") == -1
+        # Altformat ohne Slot: konservativ als "heute fertig" werten
+        assert parse_last_sent_slot("2026-07-09", "2026-07-09") >= 2
+
+    def test_consecutive_slots_pick_different_messages(self):
+        from server.push.motivation import select_daily_motivation
+
+        picks = [
+            select_daily_motivation("de", "2026-07-09", "endpoint-x", slot=s)["messageIndex"]
+            for s in range(3)
+        ]
+        assert picks[0] != picks[1]
+        assert picks[1] != picks[2]
+        # Deterministisch: gleicher Input, gleicher Spruch
+        again = select_daily_motivation("de", "2026-07-09", "endpoint-x", slot=2)
+        assert again["messageIndex"] == picks[2]
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

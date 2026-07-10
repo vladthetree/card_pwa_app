@@ -4,7 +4,7 @@
  * Used by: main.tsx mounts this component; feature views are lazy-loaded from here.
  * Important: App-level navigation is local state, not a router; add new primary screens by extending the View type and this switch flow.
  */
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { LazyMotion } from 'framer-motion'
 import { AnimatePresence, motion, useReducedMotion } from './ui/motion'
 import { ThemeProvider, useTheme } from './contexts/ThemeContext'
@@ -23,11 +23,14 @@ import {
 import { APP_NAME, SW_CHANNELS } from './constants/appIdentity'
 import { supportsServiceWorker } from './env'
 import { useAutoJoinDefaultProfile } from './hooks/useAutoJoinDefaultProfile'
+import { pickLaunchMotivationQuote } from './utils/motivationQuote'
 import { useFullscreenPreference } from './hooks/useFullscreen'
 import type { ServiceWorkerStartupReadiness } from './runtime/swRegistration'
 
 const SAFE_AREA_DEBUG_STORAGE_KEY = 'card-pwa-safe-area-debug'
-const INITIAL_SPLASH_MIN_MS = 1250
+// Lang genug, um den Motivationsspruch auf dem Splash zu lesen (bewusst
+// verlängert — der Spruch ist Teil des Starterlebnisses, kein Ladebalken).
+const INITIAL_SPLASH_MIN_MS = 3500
 
 interface AppProps {
   startupReady?: Promise<ServiceWorkerStartupReadiness>
@@ -260,6 +263,8 @@ function ViewFallback({ reason = 'startup' }: { reason?: 'startup' | 'update' })
   const loadingText = reason === 'update'
     ? (settings.language === 'de' ? 'Aktualisiere App' : 'Updating app')
     : (settings.language === 'de' ? 'Pruefe App-Version' : 'Checking app version')
+  // Motivationsspruch: pro App-Launch neu gewählt, innerhalb dieses Starts stabil.
+  const quote = useMemo(() => pickLaunchMotivationQuote(settings.language === 'de' ? 'de' : 'en'), [settings.language])
 
   return (
     <div
@@ -269,24 +274,38 @@ function ViewFallback({ reason = 'startup' }: { reason?: 'startup' | 'update' })
       aria-live="polite"
     >
       <div className="flex min-h-[22rem] w-full max-w-xl flex-col items-center justify-center">
-        <div className="relative h-56 w-72 max-w-[78vw] overflow-hidden sm:h-64 sm:w-80">
-          <Suspense fallback={null}>
-            <MetaBalls
-              color={theme.primary}
-              cursorBallColor={theme.secondary}
-              cursorBallSize={prefersReducedMotion ? 0 : 2.4}
-              ballCount={prefersReducedMotion ? 5 : 12}
-              animationSize={24}
-              enableMouseInteraction={false}
-              enableTransparency
-              hoverSmoothness={0.08}
-              clumpFactor={0.72}
-              speed={prefersReducedMotion ? 0 : 0.9}
+        <div className="relative h-44 w-72 max-w-[78vw] overflow-hidden sm:h-52 sm:w-80">
+          {prefersReducedMotion ? (
+            /* iOS „Bewegung reduzieren": Die WebGL-Metaballs stünden hier still
+               und sähen nur wie ein verwischter Fleck aus — stattdessen ein
+               bewusst gestalteter, ruhiger Glow in den Theme-Farben. */
+            <div
+              aria-hidden
+              className="absolute inset-0"
+              style={{
+                background: `radial-gradient(ellipse 55% 45% at 38% 52%, ${theme.primary}55, transparent 70%), radial-gradient(ellipse 45% 40% at 66% 46%, ${theme.secondary}40, transparent 72%)`,
+                filter: 'saturate(1.15)',
+              }}
             />
-          </Suspense>
+          ) : (
+            <Suspense fallback={null}>
+              <MetaBalls
+                color={theme.primary}
+                cursorBallColor={theme.secondary}
+                cursorBallSize={2.4}
+                ballCount={12}
+                animationSize={24}
+                enableMouseInteraction={false}
+                enableTransparency
+                hoverSmoothness={0.08}
+                clumpFactor={0.72}
+                speed={0.9}
+              />
+            </Suspense>
+          )}
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_38%,rgba(11,11,9,0.58)_100%)]" />
         </div>
-        <div className="mt-6 text-center">
+        <div className="mt-5 text-center">
           <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-ds-muted">
             {APP_NAME}
           </div>
@@ -294,6 +313,15 @@ function ViewFallback({ reason = 'startup' }: { reason?: 'startup' | 'update' })
             {loadingText}
             <span className="ml-1 inline-block animate-pulse text-[--brand-primary]">...</span>
           </div>
+        </div>
+        {/* Motivationsspruch — der Grund, warum der Splash bewusst etwas länger steht. */}
+        <div className="mt-7 max-w-sm px-2 text-center" data-testid="splash-motivation">
+          <div className="font-mono text-[15px] font-bold leading-snug text-white">
+            {quote.title}
+          </div>
+          <p className="mt-2 font-mono text-[12.5px] leading-relaxed text-zinc-400">
+            {quote.body}
+          </p>
         </div>
       </div>
     </div>
