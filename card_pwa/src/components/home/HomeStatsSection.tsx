@@ -5,11 +5,12 @@ import { useState, type ReactNode } from 'react'
 import { motion } from '../../ui/motion'
 import ReviewHeatmap from '../ReviewHeatmap.tsx'
 import { HomeDailyQuestTile } from './HomeDailyQuestTile'
+import { HomeQuestsPanel } from './HomeQuestsPanel'
 import type { GamificationProfile } from '../../types'
 
 // 'clean' (Beleg `…23.40.53.jpeg`): Dashboard-Kachel fast komplett ausgeblendet,
 // bleibt aber als Swipe-Slide erreichbar, damit mobile Nutzer wieder herauskommen.
-export type HomeDashboardMode = 'kpi' | 'heatmap' | 'pilot' | 'clean'
+export type HomeDashboardMode = 'kpi' | 'heatmap' | 'pilot' | 'quests' | 'clean'
 
 interface Props {
   t: Record<string, string>
@@ -78,9 +79,10 @@ function CompactStatTile({
   )
 }
 
-const DASHBOARD_CAROUSEL_MODES: HomeDashboardMode[] = ['pilot', 'kpi', 'heatmap', 'clean']
+const DASHBOARD_CAROUSEL_MODES: HomeDashboardMode[] = ['pilot', 'quests', 'kpi', 'heatmap', 'clean']
 const DASHBOARD_LABELS: Record<HomeDashboardMode, string> = {
   pilot: 'Pilot',
+  quests: 'Quests',
   kpi: 'KPI',
   heatmap: 'Heatmap',
   clean: 'Minimal',
@@ -226,6 +228,17 @@ export function HomeStatsSection({
           onStart={onStartDailyQuest}
         />
       </div>
+    )
+  } else if (mode === 'quests') {
+    dashboardContent = (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.14 }}
+        className="w-full min-w-0"
+      >
+        <HomeQuestsPanel t={t} profile={gamificationProfile} />
+      </motion.div>
     )
   } else if (mode === 'heatmap') {
     dashboardContent = (

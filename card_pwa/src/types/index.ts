@@ -74,22 +74,11 @@ export interface GlobalStats {
   successToday: number
 }
 
-export type GamificationRarity = 'common' | 'rare' | 'epic'
+export type GamificationRankTier = 'cadet' | 'pilot' | 'builder' | 'engineer' | 'strategist' | 'architect'
 
-export interface GamificationAchievement {
-  id: string
-  title: string
-  description: string
-  unlocked: boolean
-  progress: number
-  target: number
-  rarity: GamificationRarity
-}
-
+/** Anzeige-Texte kommen aus STRINGS (DE/EN) über die Quest-ID, nicht aus dem Modell. */
 export interface GamificationQuest {
   id: string
-  title: string
-  description: string
   progress: number
   target: number
   rewardXp: number
@@ -98,7 +87,7 @@ export interface GamificationQuest {
 
 export interface GamificationProfile {
   level: number
-  title: string
+  rankTier: GamificationRankTier
   totalXp: number
   currentLevelXp: number
   nextLevelXp: number
@@ -112,7 +101,6 @@ export interface GamificationProfile {
   longestStreak: number
   streakAtRisk: boolean
   activeCardCount: number
-  achievements: GamificationAchievement[]
   quests: GamificationQuest[]
 }
 

@@ -2,9 +2,9 @@
  * AI_CONTEXT: Utility module for gamification; provides pure helpers for scheduling, parsing, scoring, tags, video notes, backup, or app data transformations.
  */
 import type {
-  GamificationAchievement,
   GamificationProfile,
   GamificationQuest,
+  GamificationRankTier,
   Rating,
 } from '../types'
 import { getDayStartMs } from './time'
@@ -12,6 +12,9 @@ import { getDayStartMs } from './time'
 const DAY_MS = 86_400_000
 const DAILY_REVIEW_GOAL = 20
 const DAILY_SUCCESS_GOAL = 15
+const QUEST_REVIEW_REWARD_XP = 40
+const QUEST_SUCCESS_REWARD_XP = 35
+const QUEST_STREAK_REWARD_XP = 25
 
 export interface GamificationReviewInput {
   rating: Rating
@@ -73,6 +76,40 @@ export function getReviewXp(rating: Rating, timeMs: number): number {
   return baseByRating[rating] + speedBonus
 }
 
+/** Combo-Bonus für die n-te sichere Antwort in Folge (comboCount 0 = Fehlversuch). */
+export function getComboBonusXp(comboCount: number): number {
+  return Math.min(12, Math.floor(Math.max(0, comboCount) / 3) * 2)
+}
+
+/** Anzahl der letzten ununterbrochenen Erfolge (rating >= 3) in Zeitreihenfolge. */
+export function getTrailingComboCount(reviews: Pick<GamificationReviewInput, 'rating' | 'timestamp'>[]): number {
+  const ordered = [...reviews].sort((a, b) => a.timestamp - b.timestamp)
+  let combo = 0
+  for (const review of ordered) combo = review.rating >= 3 ? combo + 1 : 0
+  return combo
+}
+
+/**
+ * XP eines Lerntags: Basis-XP plus Combo-Bonus in Review-Reihenfolge plus die
+ * Quest-Belohnungen des Tages — deterministisch aus der Historie, damit
+ * angezeigtes und gutgeschriebenes XP identisch bleiben.
+ */
+function computeDayXp(dayReviews: GamificationReviewInput[]): number {
+  if (dayReviews.length === 0) return 0
+  const ordered = [...dayReviews].sort((a, b) => a.timestamp - b.timestamp)
+  let combo = 0
+  let successes = 0
+  let xp = 0
+  for (const review of ordered) {
+    combo = review.rating >= 3 ? combo + 1 : 0
+    if (review.rating >= 3) successes += 1
+    xp += getReviewXp(review.rating, review.timeMs) + getComboBonusXp(combo)
+  }
+  if (ordered.length >= DAILY_REVIEW_GOAL) xp += QUEST_REVIEW_REWARD_XP
+  if (successes >= DAILY_SUCCESS_GOAL) xp += QUEST_SUCCESS_REWARD_XP
+  return xp + QUEST_STREAK_REWARD_XP
+}
+
 export function getLevelProgress(totalXp: number): Pick<
   GamificationProfile,
   'level' | 'currentLevelXp' | 'nextLevelXp' | 'levelProgress'
@@ -99,13 +136,13 @@ function getXpRequiredForLevel(level: number): number {
   return 120 + level * 70 + Math.floor(Math.pow(level, 1.35) * 18)
 }
 
-function getRankTitle(level: number): string {
-  if (level >= 30) return 'Neural Architect'
-  if (level >= 20) return 'Recall Strategist'
-  if (level >= 12) return 'Memory Engineer'
-  if (level >= 7) return 'Focus Builder'
-  if (level >= 3) return 'Review Pilot'
-  return 'Warm-up Cadet'
+function getRankTier(level: number): GamificationRankTier {
+  if (level >= 30) return 'architect'
+  if (level >= 20) return 'strategist'
+  if (level >= 12) return 'engineer'
+  if (level >= 7) return 'builder'
+  if (level >= 3) return 'pilot'
+  return 'cadet'
 }
 
 function getDayBuckets(reviews: GamificationReviewInput[], nextDayStartsAt: number): Map<number, GamificationReviewInput[]> {
@@ -155,79 +192,32 @@ function getStreakStats(dayBuckets: Map<number, GamificationReviewInput[]>, nowM
   }
 }
 
-function makeAchievement(
-  id: string,
-  title: string,
-  description: string,
-  progress: number,
-  target: number,
-  rarity: GamificationAchievement['rarity'],
-): GamificationAchievement {
-  const normalizedProgress = Math.max(0, Math.min(target, Math.floor(progress)))
-  return {
-    id,
-    title,
-    description,
-    progress: normalizedProgress,
-    target,
-    rarity,
-    unlocked: normalizedProgress >= target,
-  }
-}
-
-function buildAchievements(input: {
-  totalReviews: number
-  reviewedToday: number
-  successRate: number
-  currentStreak: number
-  longestStreak: number
-  activeCardCount: number
-}): GamificationAchievement[] {
-  return [
-    makeAchievement('first-spark', 'First Spark', 'Erstes Review abgeschlossen', input.totalReviews, 1, 'common'),
-    makeAchievement('daily-20', 'Daily Engine', '20 Karten an einem Lerntag reviewen', input.reviewedToday, 20, 'common'),
-    makeAchievement('streak-3', 'Three-Day Signal', '3 Tage Lernserie erreichen', Math.max(input.currentStreak, input.longestStreak), 3, 'rare'),
-    makeAchievement('streak-7', 'Week Protocol', '7 Tage Lernserie erreichen', Math.max(input.currentStreak, input.longestStreak), 7, 'epic'),
-    makeAchievement('accuracy-80', 'Clean Recall', '80% Erfolgsrate nach 30 Reviews', input.totalReviews >= 30 && input.successRate >= 80 ? 1 : 0, 1, 'rare'),
-    makeAchievement('hundred-reviews', 'Hundred Loop', '100 Reviews insgesamt schaffen', input.totalReviews, 100, 'rare'),
-    makeAchievement('deck-builder', 'Deck Builder', '100 aktive Karten im System haben', input.activeCardCount, 100, 'common'),
-  ]
-}
-
 function buildQuests(input: {
   reviewedToday: number
   successToday: number
-  currentStreak: number
-  streakAtRisk: boolean
 }): GamificationQuest[] {
-  const streakProgress = input.streakAtRisk ? 0 : Math.min(1, input.currentStreak > 0 ? 1 : 0)
   return [
     {
       id: 'daily-review-goal',
-      title: 'Daily Calibration',
-      description: `${DAILY_REVIEW_GOAL} Reviews für einen stabilen Lernimpuls`,
       progress: Math.min(input.reviewedToday, DAILY_REVIEW_GOAL),
       target: DAILY_REVIEW_GOAL,
-      rewardXp: 40,
+      rewardXp: QUEST_REVIEW_REWARD_XP,
       isComplete: input.reviewedToday >= DAILY_REVIEW_GOAL,
     },
     {
       id: 'daily-success-goal',
-      title: 'Precision Run',
-      description: `${DAILY_SUCCESS_GOAL} sichere Antworten heute`,
       progress: Math.min(input.successToday, DAILY_SUCCESS_GOAL),
       target: DAILY_SUCCESS_GOAL,
-      rewardXp: 35,
+      rewardXp: QUEST_SUCCESS_REWARD_XP,
       isComplete: input.successToday >= DAILY_SUCCESS_GOAL,
     },
     {
+      // Erste-Karte-Prinzip: ein Review am Lerntag sichert die Serie.
       id: 'streak-shield',
-      title: 'Streak Shield',
-      description: input.streakAtRisk ? 'Heute ein Review machen, um die Serie zu halten' : 'Lernserie ist für heute geschützt',
-      progress: streakProgress,
+      progress: Math.min(input.reviewedToday, 1),
       target: 1,
-      rewardXp: 25,
-      isComplete: streakProgress >= 1,
+      rewardXp: QUEST_STREAK_REWARD_XP,
+      isComplete: input.reviewedToday > 0,
     },
   ]
 }
@@ -244,23 +234,16 @@ export function buildGamificationProfile({
   const totalReviews = reviews.length
   const successfulReviews = reviews.filter(review => review.rating >= 3).length
   const successToday = todayReviews.filter(review => review.rating >= 3).length
-  const totalXp = reviews.reduce((sum, review) => sum + getReviewXp(review.rating, review.timeMs), 0)
-  const todayXp = todayReviews.reduce((sum, review) => sum + getReviewXp(review.rating, review.timeMs), 0)
+  let totalXp = 0
+  for (const dayReviews of dayBuckets.values()) totalXp += computeDayXp(dayReviews)
+  const todayXp = computeDayXp(todayReviews)
   const successRate = totalReviews === 0 ? 0 : Math.round((successfulReviews / totalReviews) * 100)
   const streakStats = getStreakStats(dayBuckets, nowMs, nextDayStartsAt)
   const levelProgress = getLevelProgress(totalXp)
-  const achievements = buildAchievements({
-    totalReviews,
-    reviewedToday: todayReviews.length,
-    successRate,
-    currentStreak: streakStats.currentStreak,
-    longestStreak: streakStats.longestStreak,
-    activeCardCount,
-  })
 
   return {
     ...levelProgress,
-    title: getRankTitle(levelProgress.level),
+    rankTier: getRankTier(levelProgress.level),
     totalXp,
     totalReviews,
     successRate,
@@ -268,12 +251,9 @@ export function buildGamificationProfile({
     successToday,
     todayXp,
     activeCardCount,
-    achievements,
     quests: buildQuests({
       reviewedToday: todayReviews.length,
       successToday,
-      currentStreak: streakStats.currentStreak,
-      streakAtRisk: streakStats.streakAtRisk,
     }),
     ...streakStats,
   }

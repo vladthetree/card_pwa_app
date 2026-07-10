@@ -26,12 +26,12 @@ import { buildLearningCoachSummary } from '../services/learningCoach'
 import type { Card, Rating, ShuffleCollection } from '../types'
 import { formatDeckName } from '../utils/cardTextParser'
 import { flattenDeckTree } from '../utils/securityDeckHierarchy'
-import { getReviewXp } from '../utils/gamification'
+import { useSessionRewards } from '../hooks/useSessionRewards'
 import CardFace from './CardFace'
 import EditCardModal from './EditCardModal'
 import RatingBar from './RatingBar'
 import SessionCoachPanel from './SessionCoachPanel'
-import StudyHeaderProgress, { type RewardHint } from './StudyHeaderProgress'
+import StudyHeaderProgress from './StudyHeaderProgress'
 
 interface Props {
   collection: ShuffleCollection
@@ -85,7 +85,6 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   const [session, dispatch] = useReducer(sessionReducer, initialSessionState)
   const [editingCard, setEditingCard] = useState<Card | null>(null)
   const [answerWasIncorrect, setAnswerWasIncorrect] = useState(false)
-  const [rewardToast, setRewardToast] = useState<RewardHint | null>(null)
   const [sessionDeckCounts, setSessionDeckCounts] = useState<Record<string, number>>({})
   // Antwortseite der aktuellen Karte war schon sichtbar → Antwort-Eingaben
   // bleiben gesperrt (verhindert „Lösung ansehen, zurückflippen, richtig klicken“).
@@ -93,24 +92,17 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   // Read-only-Blick zurück auf die zuletzt bewertete Karte (ersetzt das Undo).
   const [peeking, setPeeking] = useState(false)
   const [peekFlipped, setPeekFlipped] = useState(true)
-  const sessionMomentumRef = useRef(0)
-  const rewardToastTimerRef = useRef<number | null>(null)
+  const { rewardToast, registerSessionReward } = useSessionRewards({
+    language: settings.language,
+    nextDayStartsAt: settings.nextDayStartsAt,
+    resetKey: collection.id,
+  })
   const dragMatchModePlanRef = useRef<Set<string>>(new Set())
   const dragMatchModePlanReadyRef = useRef(false)
 
   useWakeLock()
 
   useEffect(() => {
-    return () => {
-      if (rewardToastTimerRef.current !== null) {
-        window.clearTimeout(rewardToastTimerRef.current)
-      }
-    }
-  }, [])
-
-  useEffect(() => {
-    sessionMomentumRef.current = 0
-    setRewardToast(null)
     dragMatchModePlanRef.current = new Set()
     dragMatchModePlanReadyRef.current = false
     dragMatchModeSeedRef.current = `${collection.id}:${Date.now()}:${Math.random()}`
@@ -263,36 +255,6 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     setAnswerWasIncorrect(score < 1.0)
   }, [])
 
-  const registerSessionReward = useCallback((rating: Rating, elapsedMs: number) => {
-    const isSuccess = rating >= 3
-    const nextCombo = isSuccess ? sessionMomentumRef.current + 1 : 0
-    sessionMomentumRef.current = nextCombo
-
-    const baseXp = getReviewXp(rating, elapsedMs)
-    const comboBonus = isSuccess ? Math.min(12, Math.floor(nextCombo / 3) * 2) : 0
-    const xp = baseXp + comboBonus
-    const comboLabel = nextCombo >= 2
-      ? `${nextCombo}x ${settings.language === 'de' ? 'Combo' : 'combo'}`
-      : (isSuccess ? (settings.language === 'de' ? 'Sicher erinnert' : 'Recall locked') : (settings.language === 'de' ? 'Trainingspunkt' : 'Practice point'))
-
-    if (rewardToastTimerRef.current !== null) {
-      window.clearTimeout(rewardToastTimerRef.current)
-    }
-
-    setRewardToast({
-      id: `${Date.now()}-${rating}-${nextCombo}`,
-      xp,
-      combo: nextCombo,
-      label: comboLabel,
-      tone: isSuccess ? 'success' : 'practice',
-    })
-
-    rewardToastTimerRef.current = window.setTimeout(() => {
-      setRewardToast(null)
-      rewardToastTimerRef.current = null
-    }, 1600)
-  }, [settings.language])
-
   const handleRate = useCallback(async (rating: Rating) => {
     if (!currentCard || peeking || session.isSubmitting || session.isDone || isAlgorithmMigrating) return
 
@@ -401,8 +363,6 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   const handleRestart = useCallback(() => {
     clearPersistedSession()
     setAnswerWasIncorrect(false)
-    sessionMomentumRef.current = 0
-    setRewardToast(null)
     setSessionDeckCounts(buildDeckCounts(cards))
     dispatch({ type: 'INIT', cards })
   }, [cards, clearPersistedSession])

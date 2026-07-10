@@ -28,7 +28,7 @@ import { buildLearningCoachSummary } from '../services/learningCoach'
 import type { Deck, Card, Rating } from '../types'
 import { formatDeckName } from '../utils/cardTextParser'
 import { getCardVariant } from '../utils/cardVariant'
-import { getReviewXp } from '../utils/gamification'
+import { useSessionRewards } from '../hooks/useSessionRewards'
 import { useSessionPersistence } from '../hooks/useSessionPersistence'
 import { useHandsetLayout } from '../hooks/useHandsetLayout'
 import { useWakeLock } from '../hooks/useWakeLock'
@@ -38,7 +38,7 @@ import RatingBar from './RatingBar.tsx'
 import StreakBadge from './StreakBadge.tsx'
 import DailyGoalRing from './DailyGoalRing.tsx'
 import SessionCoachPanel from './SessionCoachPanel'
-import StudyHeaderProgress, { type RewardHint } from './StudyHeaderProgress'
+import StudyHeaderProgress from './StudyHeaderProgress'
 
 interface Props {
   /** Deck to study */
@@ -101,7 +101,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
   const [editingCard, setEditingCard] = useState<Card | null>(null)
   const [answerWasIncorrect, setAnswerWasIncorrect] = useState(false)
   const [showHeaderLegend, setShowHeaderLegend] = useState(false)
-  const [rewardToast, setRewardToast] = useState<RewardHint | null>(null)
   // Antwortseite der aktuellen Karte war schon sichtbar → Antwort-Eingaben
   // bleiben gesperrt (verhindert „Lösung ansehen, zurückswipen, richtig klicken“).
   const [answerRevealed, setAnswerRevealed] = useState(false)
@@ -111,8 +110,11 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
   const [peekFlipped, setPeekFlipped] = useState(true)
   const { isHandsetLayout, isHandsetLandscape } = useHandsetLayout()
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
-  const sessionMomentumRef = useRef(0)
-  const rewardToastTimerRef = useRef<number | null>(null)
+  const { rewardToast, registerSessionReward } = useSessionRewards({
+    language: settings.language,
+    nextDayStartsAt: settings.nextDayStartsAt,
+    resetKey: deck.id,
+  })
   const studyCardLimit = normalizeStudyCardLimit(settings.studyCardLimit ?? DEFAULT_STUDY_CARD_LIMIT)
   const sessionRef = useRef(session)
   const studyCardLimitRef = useRef(studyCardLimit)
@@ -170,16 +172,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
   useWakeLock()
 
   useEffect(() => {
-    return () => {
-      if (rewardToastTimerRef.current !== null) {
-        window.clearTimeout(rewardToastTimerRef.current)
-      }
-    }
-  }, [])
-
-  useEffect(() => {
-    sessionMomentumRef.current = 0
-    setRewardToast(null)
     dragMatchModePlanRef.current = new Set()
     dragMatchModePlanReadyRef.current = false
     dragMatchModeSeedRef.current = `${deck.id}:${Date.now()}:${Math.random()}`
@@ -419,36 +411,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
   ])
   const maxSelectableRating: Rating = answerWasIncorrect ? 3 : 4
 
-  const registerSessionReward = useCallback((rating: Rating, elapsedMs: number) => {
-    const isSuccess = rating >= 3
-    const nextCombo = isSuccess ? sessionMomentumRef.current + 1 : 0
-    sessionMomentumRef.current = nextCombo
-
-    const baseXp = getReviewXp(rating, elapsedMs)
-    const comboBonus = isSuccess ? Math.min(12, Math.floor(nextCombo / 3) * 2) : 0
-    const xp = baseXp + comboBonus
-    const comboLabel = nextCombo >= 2
-      ? `${nextCombo}x ${settings.language === 'de' ? 'Combo' : 'combo'}`
-      : (isSuccess ? (settings.language === 'de' ? 'Sicher erinnert' : 'Recall locked') : (settings.language === 'de' ? 'Trainingspunkt' : 'Practice point'))
-
-    if (rewardToastTimerRef.current !== null) {
-      window.clearTimeout(rewardToastTimerRef.current)
-    }
-
-    setRewardToast({
-      id: `${Date.now()}-${rating}-${nextCombo}`,
-      xp,
-      combo: nextCombo,
-      label: comboLabel,
-      tone: isSuccess ? 'success' : 'practice',
-    })
-
-    rewardToastTimerRef.current = window.setTimeout(() => {
-      setRewardToast(null)
-      rewardToastTimerRef.current = null
-    }, 1600)
-  }, [settings.language])
-
   const handleFlip = useCallback(() => {
     if (typeof navigator.vibrate === 'function') {
       navigator.vibrate(10)
@@ -645,8 +607,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     const sortedCards = buildSessionCards(cards, studyCardLimit)
     clearPersistedSession()
     setAnswerWasIncorrect(false)
-    sessionMomentumRef.current = 0
-    setRewardToast(null)
     dragMatchModePlanRef.current = new Set()
     dragMatchModePlanReadyRef.current = false
     dragMatchModeSeedRef.current = `${deck.id}:restart:${Date.now()}:${Math.random()}`
