@@ -31,6 +31,9 @@ WEB_PUSH_VAPID_PRIVATE_KEY = os.environ.get("WEB_PUSH_VAPID_PRIVATE_KEY", "")
 WEB_PUSH_VAPID_SUBJECT = os.environ.get("WEB_PUSH_VAPID_SUBJECT", "mailto:admin@card-pwa.local")
 PUSH_DAILY_SCHEDULER_ENABLED = os.environ.get("PUSH_DAILY_SCHEDULER_ENABLED", "1")
 PUSH_DAILY_POLL_SECONDS = os.environ.get("PUSH_DAILY_POLL_SECONDS", "60")
+# Zusätzliche Motivations-Slots (HH:MM, kommagetrennt) neben der nutzergewählten
+# Erinnerungszeit — leer setzen ("") für das alte Verhalten mit genau einem Push/Tag.
+PUSH_DAILY_SLOTS = os.environ.get("PUSH_DAILY_SLOTS", "08:30,13:00")
 
 LOGGER = logging.getLogger("card-sync-server")
 HEALTH_LOG_EVERY_MS = os.environ.get("SYNC_HEALTH_LOG_EVERY_MS", "60000")
