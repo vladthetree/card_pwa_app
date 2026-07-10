@@ -36,16 +36,16 @@ geschnitten — egal wie hübsch es ist.
   App-Start zur ersten fälligen Karte muss minimal bleiben. Die
   Motivationstexte sind bewusst so formuliert („Heute nur die erste
   Karte.“); UI-Änderungen dürfen keine Schritte davor einbauen.
-- **Belohnung:** XP/Quests/Achievements
+- **Belohnung:** XP/Quests
   ([gamification.ts](card_pwa/src/utils/gamification.ts), Tagesziel:
   20 Reviews / 15 Erfolge), Streak
   ([useStreak.ts](card_pwa/src/hooks/useStreak.ts), StreakBadge,
   DailyGoalRing), Heatmap ([ReviewHeatmap.tsx](card_pwa/src/components/ReviewHeatmap.tsx)),
   Session-Coach ([learningCoach.ts](card_pwa/src/services/learningCoach.ts)
   + SessionCoachPanel) mit Ein-Tap-Mini-Session für Problemkarten.
-- **Neue Mechanik zuerst als Quest/Achievement in `gamification.ts`
-  modellieren**, bevor ein neues System gebaut wird — die Primitiven
-  (Quests, Achievements, Tagesziele) decken das meiste ab.
+- **Neue Mechanik zuerst als Quest in `gamification.ts` modellieren**,
+  bevor ein neues System gebaut wird — die Primitiven (Quests, Tagesziele)
+  decken das meiste ab. Achievements gibt es bewusst nicht.
 
 ### Anti-Patterns (nicht bauen)
 
@@ -94,7 +94,6 @@ geschnitten — egal wie hübsch es ist.
 - [ ] Belohnt Abrufqualität, nicht Zeit oder Klicks
 - [ ] Funktioniert vollständig offline
 - [ ] Respektiert Invarianten 1–4
-- [ ] Nutzt vorhandene Primitiven (Quest/Achievement/Streak/Coach) statt
-      neuem System
+- [ ] Nutzt vorhandene Primitiven (Quest/Streak/Coach) statt neuem System
 - [ ] `npm run build` + `TZ=UTC npm test -- --run` grün; UI-Wirkung mit dem
       Skill `run-card-pwa` im echten Browser geprüft

@@ -44,7 +44,7 @@ export {
   smoothBacklog,
 } from './reviews'
 
-export { getGamificationProfile } from './gamification'
+export { getGamificationProfile, getTodayTrailingCombo } from './gamification'
 
 export {
   readActiveSession,

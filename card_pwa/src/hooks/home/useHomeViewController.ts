@@ -29,7 +29,7 @@ interface HomeDeckCreateStrings {
 export function readInitialDashboardMode(): HomeDashboardMode {
   if (typeof window === 'undefined') return 'pilot'
   const stored = window.localStorage.getItem(STORAGE_KEYS.homeDashboardMode)
-  if (stored === 'kpi' || stored === 'heatmap' || stored === 'pilot' || stored === 'clean') return stored
+  if (stored === 'kpi' || stored === 'heatmap' || stored === 'pilot' || stored === 'quests' || stored === 'clean') return stored
   if (stored === 'life') {
     window.localStorage.setItem(STORAGE_KEYS.homeDashboardMode, 'pilot')
     window.localStorage.setItem(STORAGE_KEYS.homeShowHeatmap, '0')

@@ -2,7 +2,13 @@
  * AI_CONTEXT: Vitest coverage for gamification; protects services behavior from regressions in the learning PWA.
  */
 import { describe, expect, it } from 'vitest'
-import { buildGamificationProfile, getLevelProgress, getReviewXp } from '../../utils/gamification'
+import {
+  buildGamificationProfile,
+  getComboBonusXp,
+  getLevelProgress,
+  getReviewXp,
+  getTrailingComboCount,
+} from '../../utils/gamification'
 
 const DAY_MS = 86_400_000
 
@@ -14,7 +20,30 @@ describe('gamification profile', () => {
     expect(getReviewXp(4, 8_000)).toBe(16)
   })
 
-  it('computes current streak, longest streak, today XP, and achievements from reviews only', () => {
+  it('grows the combo bonus every third consecutive success and caps at 12', () => {
+    expect(getComboBonusXp(0)).toBe(0)
+    expect(getComboBonusXp(2)).toBe(0)
+    expect(getComboBonusXp(3)).toBe(2)
+    expect(getComboBonusXp(9)).toBe(6)
+    expect(getComboBonusXp(18)).toBe(12)
+    expect(getComboBonusXp(30)).toBe(12)
+  })
+
+  it('counts trailing consecutive successes in timestamp order', () => {
+    expect(getTrailingComboCount([])).toBe(0)
+    expect(getTrailingComboCount([
+      { rating: 3 as const, timestamp: 3_000 },
+      { rating: 1 as const, timestamp: 1_000 },
+      { rating: 4 as const, timestamp: 2_000 },
+    ])).toBe(2)
+    expect(getTrailingComboCount([
+      { rating: 3 as const, timestamp: 1_000 },
+      { rating: 1 as const, timestamp: 3_000 },
+      { rating: 4 as const, timestamp: 2_000 },
+    ])).toBe(0)
+  })
+
+  it('computes current streak, longest streak, and today XP from reviews only', () => {
     const nowMs = new Date('2026-04-18T12:00:00.000Z').getTime()
     const reviews = [
       { rating: 4 as const, timeMs: 6_000, timestamp: nowMs - 60_000 },
@@ -33,10 +62,27 @@ describe('gamification profile', () => {
     expect(profile.currentStreak).toBe(3)
     expect(profile.longestStreak).toBe(3)
     expect(profile.streakAtRisk).toBe(false)
-    expect(profile.todayXp).toBe(16)
+    // 16 Basis-XP (rating 4, Speed-Bonus) + 25 XP Streak-Shield-Quest des Tages
+    expect(profile.todayXp).toBe(41)
+    // Tage: 16+25, 10+25, 6+25, 12+25
+    expect(profile.totalXp).toBe(144)
     expect(profile.successRate).toBe(75)
-    expect(profile.achievements.find(item => item.id === 'first-spark')?.unlocked).toBe(true)
-    expect(profile.achievements.find(item => item.id === 'streak-3')?.unlocked).toBe(true)
+  })
+
+  it('credits quest rewards and combo bonuses per learning day', () => {
+    const nowMs = new Date('2026-04-18T12:00:00.000Z').getTime()
+    const reviews = Array.from({ length: 20 }, (_, index) => ({
+      rating: 3 as const,
+      timeMs: 20_000,
+      timestamp: nowMs - 3_600_000 + index * 60_000,
+    }))
+
+    const profile = buildGamificationProfile({ reviews, activeCardCount: 20, nowMs })
+
+    // 20 × 10 Basis + 126 Combo + 40 (20 Reviews) + 35 (15 Erfolge) + 25 (Streak-Shield)
+    expect(profile.totalXp).toBe(426)
+    expect(profile.todayXp).toBe(426)
+    expect(profile.quests.every(quest => quest.isComplete)).toBe(true)
   })
 
   it('marks an existing streak at risk when today has no review', () => {
