@@ -377,6 +377,7 @@ export default function ReviewHeatmap({ year }: Props) {
               fontSize: '0.70rem',
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
+              whiteSpace: 'nowrap',
               color: theme.primary,
               textShadow: `0 0 10px rgba(${pr},${pg},${pb},0.65)`,
             }}
@@ -394,8 +395,8 @@ export default function ReviewHeatmap({ year }: Props) {
           >
             {activeYear}
           </span>
-          {/* Legend */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginLeft: '2px' }}>
+          {/* Legend — auf schmalen Screens ausgeblendet (Kopfzeile entlasten) */}
+          <div className="hidden min-[480px]:flex" style={{ alignItems: 'center', gap: '3px', marginLeft: '2px' }}>
             {neonLevels.map((s, idx) => (
               <span
                 key={idx}
@@ -404,6 +405,7 @@ export default function ReviewHeatmap({ year }: Props) {
             ))}
           </div>
           <div
+            className="hidden min-[480px]:block"
             title={streak.atRisk ? t.heatmap_streak_risk : undefined}
             style={{
               marginLeft: '6px',
