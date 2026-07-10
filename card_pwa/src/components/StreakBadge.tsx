@@ -16,9 +16,10 @@ export default function StreakBadge({ compact = false }: Props) {
 
   if (days === 0 && !atRisk) return null
 
+  // Aktiver Streak in Brand-Orange (positive Metrik); Warnfarbe nur bei Risiko.
   const colorClass = atRisk
     ? 'border-amber-500/35 bg-amber-500/10 text-amber-300'
-    : 'border-rose-500/35 bg-rose-500/10 text-rose-300 streak-badge-active'
+    : 'border-[--brand-primary-50] bg-[--brand-primary-12] text-[--brand-primary] streak-badge-active'
 
   const title = atRisk ? t.streak_at_risk_hint : `${days} ${t.streak_days}`
 

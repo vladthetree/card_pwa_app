@@ -15,17 +15,21 @@ import { ListChecks, Play } from 'lucide-react'
 const COPY = {
   de: {
     label: 'Daily Quest',
-    now: (count: number) => `Jetzt: ${count} Karten`,
-    start: (count: number) => `${count} Karten starten`,
+    now: (count: number) => `Jetzt: ${count} ${count === 1 ? 'Karte' : 'Karten'}`,
+    start: (count: number) => `${count} ${count === 1 ? 'Karte' : 'Karten'} starten`,
     dueToday: (count: number) => `${count} heute fällig`,
     allDone: 'Alles erledigt — keine fälligen Karten',
+    noDecksTitle: 'Starte mit deinem ersten Deck',
+    noDecksHint: 'Importiere ein Deck, um zu lernen',
   },
   en: {
     label: 'Daily Quest',
-    now: (count: number) => `Now: ${count} cards`,
-    start: (count: number) => `Start ${count} cards`,
+    now: (count: number) => `Now: ${count} ${count === 1 ? 'card' : 'cards'}`,
+    start: (count: number) => `Start ${count} ${count === 1 ? 'card' : 'cards'}`,
     dueToday: (count: number) => `${count} due today`,
     allDone: 'All done — no cards due',
+    noDecksTitle: 'Start with your first deck',
+    noDecksHint: 'Import a deck to start learning',
   },
 } as const
 
@@ -37,19 +41,23 @@ interface Props {
   dueTodayTotal: number
   /** Deck mit den meisten heute fälligen Karten — Untertitel-Hinweis. */
   topDeckName: string | null
+  /** false = leeres Profil: Onboarding-Text statt „Alles erledigt“ + totem Button. */
+  hasDecks?: boolean
   starting: boolean
   onStart: () => void
 }
 
 export function HomeDailyQuestTile({
-  language, questSize, dueTodayTotal, topDeckName, starting, onStart,
+  language, questSize, dueTodayTotal, topDeckName, hasDecks = true, starting, onStart,
 }: Props) {
   const copy = COPY[language]
   const hasWork = questSize > 0
-  const subtitleParts = [
-    ...(topDeckName ? [topDeckName] : []),
-    copy.dueToday(dueTodayTotal),
-  ]
+  const subtitleParts = hasDecks
+    ? [
+        ...(topDeckName ? [topDeckName] : []),
+        copy.dueToday(dueTodayTotal),
+      ]
+    : [copy.noDecksHint]
 
   return (
     <motion.section
@@ -68,7 +76,7 @@ export function HomeDailyQuestTile({
             {copy.label}
           </div>
           <div className="mt-0.5 break-words font-sans text-base font-semibold leading-tight text-ds-fg min-[420px]:text-lg sm:text-xl">
-            {hasWork ? copy.now(questSize) : copy.allDone}
+            {hasWork ? copy.now(questSize) : hasDecks ? copy.allDone : copy.noDecksTitle}
           </div>
           <div className="mt-0.5 truncate font-mono text-[12px] text-ds-muted">
             {subtitleParts.join(' · ')}
@@ -76,6 +84,7 @@ export function HomeDailyQuestTile({
         </div>
       </div>
 
+      {hasDecks && (
       <div className="mt-3 grid min-w-0 gap-2">
         <button
           type="button"
@@ -90,6 +99,7 @@ export function HomeDailyQuestTile({
           <span className="min-w-0 truncate">{copy.start(questSize)}</span>
         </button>
       </div>
+      )}
     </motion.section>
   )
 }

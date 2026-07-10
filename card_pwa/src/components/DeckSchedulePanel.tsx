@@ -42,6 +42,7 @@ export function DeckSchedulePanel({
     {
       key: 'due',
       label: t.stats_due,
+      shortLabel: t.stats_due,
       icon: BookOpen,
       iconClass: 'text-white/70',
       info: language === 'de'
@@ -51,6 +52,7 @@ export function DeckSchedulePanel({
     {
       key: 'new',
       label: t.stats_new,
+      shortLabel: t.stats_new,
       icon: Lightbulb,
       iconClass: 'text-white/80',
       info: language === 'de'
@@ -60,6 +62,7 @@ export function DeckSchedulePanel({
     {
       key: 'review',
       label: t.schedule_review,
+      shortLabel: t.schedule_review_short,
       icon: RotateCcw,
       iconClass: 'text-zinc-300/80',
       info: language === 'de'
@@ -76,9 +79,10 @@ export function DeckSchedulePanel({
           const Icon = item.icon
           const isInfoOpen = activeInfoKey === item.key
           return (
-            <div key={item.key} className="relative flex items-center justify-center gap-1.5 px-1 py-1 sm:px-1.5 sm:py-0.5">
-              <Icon className={`h-[18px] w-[18px] sm:h-3.5 sm:w-3.5 ${item.iconClass}`} strokeWidth={1.5} aria-hidden="true" />
-              <span className="hidden sm:inline text-[10px] font-mono uppercase tracking-[0.12em] text-white/50">{item.label}</span>
+            <div key={item.key} className="relative flex min-w-0 flex-col items-center justify-center gap-0.5 px-1 py-1 sm:flex-row sm:gap-1.5 sm:px-1.5 sm:py-0.5">
+              <Icon className={`h-4 w-4 sm:h-3.5 sm:w-3.5 ${item.iconClass}`} strokeWidth={1.5} aria-hidden="true" />
+              <span className="max-w-full truncate text-[8px] font-mono uppercase tracking-[0.08em] text-white/50 sm:hidden">{item.shortLabel}</span>
+              <span className="hidden text-[10px] font-mono uppercase tracking-[0.12em] text-white/50 sm:inline">{item.label}</span>
               <button
                 type="button"
                 onClick={(e) => {

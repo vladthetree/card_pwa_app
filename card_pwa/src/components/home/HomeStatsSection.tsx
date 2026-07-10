@@ -30,6 +30,7 @@ interface Props {
   /** Daily Quest (Pilot-Modus, Beleg `…23.36.20.jpeg`) */
   questSize: number
   questTopDeckName: string | null
+  questHasDecks?: boolean
   questStarting: boolean
   onStartDailyQuest: () => void
 }
@@ -181,6 +182,7 @@ export function HomeStatsSection({
   onModeChange,
   questSize,
   questTopDeckName,
+  questHasDecks = true,
   questStarting,
   onStartDailyQuest,
 }: Props) {
@@ -190,8 +192,8 @@ export function HomeStatsSection({
     ? `${gamificationProfile.successRate}%`
     : `${streakValue}d`
   const streakLabel = gamificationProfile && gamificationProfile.totalReviews > 0
-    ? (language === 'de' ? 'Accuracy' : 'Accuracy')
-    : (language === 'de' ? 'Streak' : 'Streak')
+    ? t.stats_accuracy
+    : t.stats_streak
   const forecastTitle = language === 'de' ? 'Prognose der Zukunftskarten (15 Tage)' : 'Future cards forecast (15 days)'
   const statGrid = stats ? (
     <motion.div
@@ -202,7 +204,7 @@ export function HomeStatsSection({
     >
       <CompactStatTile label={t.stats_now_due} value={stats.nowDue} tone="orange" />
       <CompactStatTile label={t.stats_new} value={stats.new} tone="blue" />
-      <CompactStatTile label={language === 'de' ? 'Lernen/Review' : 'Learning/Review'} value={learningReviewCount} />
+      <CompactStatTile label={t.stats_learning_review} value={learningReviewCount} />
       <CompactStatTile
         label={streakLabel}
         value={accuracyValue}
@@ -224,6 +226,7 @@ export function HomeStatsSection({
           questSize={questSize}
           dueTodayTotal={stats?.nowDue ?? 0}
           topDeckName={questTopDeckName}
+          hasDecks={questHasDecks}
           starting={questStarting}
           onStart={onStartDailyQuest}
         />

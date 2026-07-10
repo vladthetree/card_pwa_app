@@ -42,7 +42,8 @@ export const UI_TOKENS = {
   rating: {
     again: 'border-red-500/30 bg-red-500/10 text-red-200 hover:border-red-400/45',
     hard:  'border-amber-500/30 bg-amber-500/10 text-amber-200 hover:border-amber-400/45',
-    good:  'border-[--brand-secondary-25] bg-[--brand-secondary-08] text-[--brand-secondary] hover:border-[--brand-secondary-50]',
+    // Häufigste Aktion — visuell gleichwertig zu den gefüllten Nachbar-Buttons halten.
+    good:  'border-[--brand-secondary-50] bg-[--brand-secondary-12] text-[--brand-secondary] hover:border-[--brand-secondary]',
     easy:  'border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:border-emerald-400/45',
   },
 

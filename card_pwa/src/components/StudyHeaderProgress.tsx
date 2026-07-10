@@ -32,13 +32,13 @@ export default function StudyHeaderProgress({ current, total, reward, reducedMot
             animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 3 }}
             transition={{ duration: reducedMotion ? 0.1 : 0.22, ease: 'easeOut' }}
-            className="pointer-events-none absolute right-0 top-0 z-10 whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.08em] text-zinc-500"
+            className="pointer-events-none absolute right-0 top-0 z-10 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-300"
             aria-live="polite"
           >
             <span className={reward.tone === 'success' ? 'font-bold text-[--brand-primary]' : 'font-bold text-amber-300'}>
               +{reward.xp} XP
             </span>
-            {reward.combo >= 3 && <span className="text-zinc-600"> / {reward.combo}x</span>}
+            {reward.combo >= 3 && <span className="text-zinc-400"> / {reward.combo}x</span>}
           </motion.div>
         )}
       </AnimatePresence>

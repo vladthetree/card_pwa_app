@@ -44,7 +44,7 @@ export function HomeQuestsPanel({ t, profile }: Props) {
       </div>
       <div className="mt-1 flex justify-between font-mono text-[9px] tabular-nums text-ds-muted">
         <span>{currentLevelXp}/{nextLevelXp} XP</span>
-        <span>{totalXp.toLocaleString()} XP</span>
+        <span>{t.quest_xp_total}: {totalXp.toLocaleString()} XP</span>
       </div>
 
       <div className="mt-2.5 grid gap-2">

@@ -264,6 +264,7 @@ export default function HomeView({
               onModeChange={controller.setDashboardMode}
               questSize={questSize}
               questTopDeckName={questTopDeckName}
+              questHasDecks={decks.length > 0}
               questStarting={questStarting}
               onStartDailyQuest={() => { void handleStartDailyQuest() }}
             />
