@@ -2,7 +2,7 @@
  * AI_CONTEXT: Home-screen React component for home Daily Quest Tile; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
 import { motion } from '../../ui/motion'
-import { ListChecks, Play } from 'lucide-react'
+import { ListChecks, Play, Timer } from 'lucide-react'
 
 /**
  * HomeDailyQuestTile — Dashboard-Modus "Pilot" (rekonstruiert aus dem
@@ -17,6 +17,7 @@ const COPY = {
     label: 'Daily Quest',
     now: (count: number) => `Jetzt: ${count} ${count === 1 ? 'Karte' : 'Karten'}`,
     start: (count: number) => `${count} ${count === 1 ? 'Karte' : 'Karten'} starten`,
+    mini: 'Nur 3 Minuten · 5 Karten',
     dueToday: (count: number) => `${count} heute fällig`,
     allDone: 'Alles erledigt — keine fälligen Karten',
     noDecksTitle: 'Starte mit deinem ersten Deck',
@@ -26,6 +27,7 @@ const COPY = {
     label: 'Daily Quest',
     now: (count: number) => `Now: ${count} ${count === 1 ? 'card' : 'cards'}`,
     start: (count: number) => `Start ${count} ${count === 1 ? 'card' : 'cards'}`,
+    mini: 'Just 3 minutes · 5 cards',
     dueToday: (count: number) => `${count} due today`,
     allDone: 'All done — no cards due',
     noDecksTitle: 'Start with your first deck',
@@ -45,10 +47,12 @@ interface Props {
   hasDecks?: boolean
   starting: boolean
   onStart: () => void
+  /** Kleinster Schritt: 5-Karten-Mini-Session (~3 Minuten). */
+  onStartMini?: () => void
 }
 
 export function HomeDailyQuestTile({
-  language, questSize, dueTodayTotal, topDeckName, hasDecks = true, starting, onStart,
+  language, questSize, dueTodayTotal, topDeckName, hasDecks = true, starting, onStart, onStartMini,
 }: Props) {
   const copy = COPY[language]
   const hasWork = questSize > 0
@@ -98,6 +102,18 @@ export function HomeDailyQuestTile({
             : <Play size={16} strokeWidth={2} />}
           <span className="min-w-0 truncate">{copy.start(questSize)}</span>
         </button>
+        {onStartMini && hasWork && (
+          <button
+            type="button"
+            data-testid="daily-quest-mini"
+            onClick={onStartMini}
+            disabled={starting}
+            className="flex min-h-[38px] min-w-0 items-center justify-center gap-2 rounded-ds border border-ds-border bg-transparent px-3 font-mono text-[12px] text-ds-muted transition-all duration-150 hover:border-ds-border-hover hover:text-ds-fg active:scale-[0.98]"
+          >
+            <Timer size={13} strokeWidth={2} />
+            <span className="min-w-0 truncate">{copy.mini}</span>
+          </button>
+        )}
       </div>
       )}
     </motion.section>

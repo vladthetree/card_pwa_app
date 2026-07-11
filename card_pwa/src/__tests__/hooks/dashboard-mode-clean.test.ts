@@ -38,8 +38,8 @@ describe('Dashboard-Modus clean — Persistenz', () => {
     expect(readInitialDashboardMode()).toBe('clean')
   })
 
-  it('fällt bei unbekannten Werten auf den Daily-Quest-Modus zurück', () => {
+  it('fällt bei unbekannten Werten auf das Heute-Paket zurück', () => {
     stubWindowWithStorage({ [STORAGE_KEYS.homeDashboardMode]: 'bogus' })
-    expect(readInitialDashboardMode()).toBe('pilot')
+    expect(readInitialDashboardMode()).toBe('today')
   })
 })

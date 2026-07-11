@@ -10,9 +10,18 @@ import { compareByDueRank, getCardTypePriority, seededRank } from './cardOrderin
 
 interface SortStudyCardsOptions {
   maxCards?: number
+  /** Tagesdosis-Kappe für neue Karten in dieser Auswahl (Infinity = keine).
+   *  Fällige/Lern-Karten sind davon unberührt. */
+  maxNewCards?: number
   nowMs?: number
   nextDayStartsAt?: number
   runSeed?: string | number
+}
+
+/** Verbleibende Neu-Karten-Dosis für heute (0 in der Einstellung = unbegrenzt). */
+export function resolveNewCardAllowance(newCardsPerDay: number, introducedToday: number): number {
+  if (!Number.isFinite(newCardsPerDay) || newCardsPerDay <= 0) return Number.POSITIVE_INFINITY
+  return Math.max(0, Math.floor(newCardsPerDay) - Math.max(0, introducedToday))
 }
 
 export function getCardWeight(card: Card): number {
@@ -84,7 +93,21 @@ export function sortStudyCards(cards: Card[], options: SortStudyCardsOptions = {
   const exemptCards = dueCards.filter(c => c.type === 'learning' || c.type === 'relearning')
   const limitedCards = dueCards.filter(c => c.type !== 'learning' && c.type !== 'relearning')
 
-  const cappedLimited = [...limitedCards].sort(compareCards).slice(0, maxCards)
+  const maxNewCards = Number.isFinite(options.maxNewCards)
+    ? Math.max(0, Math.floor(options.maxNewCards as number))
+    : Number.POSITIVE_INFINITY
+
+  const sortedLimited = [...limitedCards].sort(compareCards)
+  const cappedLimited: Card[] = []
+  let newTaken = 0
+  for (const card of sortedLimited) {
+    if (cappedLimited.length >= maxCards) break
+    if (card.type === 'new') {
+      if (newTaken >= maxNewCards) continue
+      newTaken += 1
+    }
+    cappedLimited.push(card)
+  }
 
   return [...exemptCards, ...cappedLimited].sort(compareCards)
 }

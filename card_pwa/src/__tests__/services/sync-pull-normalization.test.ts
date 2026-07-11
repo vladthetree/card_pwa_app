@@ -16,6 +16,8 @@ const state = vi.hoisted(() => ({
   authToken: '',
   profileRecord: null as ProfileRecord | null,
   syncMeta: new Map<string, unknown>(),
+  /** review.undo-Fallback: jüngste Review der Karte (reviews.where(...).reverse().first()). */
+  latestReviewForCard: undefined as ReviewRecord | undefined,
 }))
 
 function mockResponse(body: unknown, ok = true, status = 200): Response {
@@ -71,8 +73,14 @@ const mockDb = vi.hoisted(() => ({
     bulkAdd: vi.fn(async (reviews: Omit<ReviewRecord, 'id'>[]) => {
       state.savedReviews = reviews
     }),
+    get: vi.fn<() => Promise<ReviewRecord | undefined>>(async () => undefined),
     where: vi.fn(() => ({
-      equals: vi.fn(() => ({ delete: vi.fn(async () => 0) })),
+      equals: vi.fn(() => ({
+        delete: vi.fn(async () => 0),
+        reverse: vi.fn(() => ({
+          first: vi.fn(async (): Promise<ReviewRecord | undefined> => state.latestReviewForCard),
+        })),
+      })),
       anyOf: vi.fn(() => ({ delete: vi.fn(async () => 0) })),
     })),
     delete: vi.fn(async () => 1),
@@ -199,6 +207,9 @@ describe('syncPull normalization', () => {
     mockDb.reviews.toArray.mockResolvedValue([])
     mockDb.reviews.delete.mockClear()
     mockDb.reviews.clear.mockClear()
+    mockDb.reviews.get.mockReset()
+    mockDb.reviews.get.mockImplementation(async () => undefined)
+    state.latestReviewForCard = undefined
     mockDb.videoNotes2.bulkPut.mockClear()
     mockDb.videoNotes2.get.mockClear()
     mockDb.videoNotes2.get.mockResolvedValue(undefined)
@@ -972,9 +983,10 @@ describe('syncPull normalization', () => {
     expect(mockDb.reviews.add).not.toHaveBeenCalled()
   })
 
-  it('uses reviewId from review.undo payload for deletion', async () => {
+  it('deletes the payload reviewId on review.undo only when it belongs to the same card', async () => {
     const now = Date.now()
     ;(mockDb.cards.get as CardGetterMock).mockResolvedValueOnce({ id: 'c-undo', createdAt: now - 1000, updatedAt: now - 1000 } as CardRecord)
+    mockDb.reviews.get.mockResolvedValueOnce({ id: 77, cardId: 'c-undo', rating: 3, timeMs: 0, timestamp: now } as ReviewRecord)
 
     state.responses = [
       { ok: true, needsSnapshot: false, serverCursor: 0 },
@@ -1002,6 +1014,41 @@ describe('syncPull normalization', () => {
 
     expect(mockDb.cards.update).toHaveBeenCalledWith('c-undo', expect.objectContaining({ type: 2, queue: 2 }))
     expect(mockDb.reviews.delete).toHaveBeenCalledWith(77)
+  })
+
+  it('falls back to the latest review of the card when the review.undo reviewId belongs to another card', async () => {
+    const now = Date.now()
+    ;(mockDb.cards.get as CardGetterMock).mockResolvedValueOnce({ id: 'c-undo', createdAt: now - 1000, updatedAt: now - 1000 } as CardRecord)
+    // Fremde Auto-Increment-ID: Zeile 77 gehört lokal zu einer anderen Karte.
+    mockDb.reviews.get.mockResolvedValueOnce({ id: 77, cardId: 'other-card', rating: 3, timeMs: 0, timestamp: now } as ReviewRecord)
+    state.latestReviewForCard = { id: 123, cardId: 'c-undo', rating: 4, timeMs: 0, timestamp: now } as ReviewRecord
+
+    state.responses = [
+      { ok: true, needsSnapshot: false, serverCursor: 0 },
+      {
+        ok: true,
+        operations: [
+          {
+            id: 22,
+            opId: 'op-review-undo-foreign',
+            type: 'review.undo',
+            payload: {
+              cardId: 'c-undo',
+              reviewId: 77,
+              restored: { type: 2, queue: 2, due: 1, updatedAt: now },
+            },
+          },
+        ],
+        nextCursor: 22,
+        hasMore: false,
+      },
+    ]
+
+    const { pullAndApplySyncDeltas } = await import('../../services/syncPull')
+    await pullAndApplySyncDeltas()
+
+    expect(mockDb.reviews.delete).not.toHaveBeenCalledWith(77)
+    expect(mockDb.reviews.delete).toHaveBeenCalledWith(123)
   })
 
   it('prefers higher incoming reps over a newer local timestamp for card.update', async () => {

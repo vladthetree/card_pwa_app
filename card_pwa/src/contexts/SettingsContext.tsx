@@ -60,6 +60,12 @@ interface Settings {
   recallCheckSize: number
   /** Kartenanzahl der Daily-Quest-Session (deckübergreifend, Home-Kachel). */
   dailyQuestSize: number
+  /** Tagesdosis neuer Karten über alle Sessions (0 = unbegrenzt). Hält den
+   *  Einstieg in einen großen Neu-Karten-Berg vorhersagbar klein. */
+  newCardsPerDay: number
+  /** Prüfungstermin (ISO YYYY-MM-DD, z. B. Sec+) für den Countdown mit
+   *  Tempo-Empfehlung auf der Heute-Kachel. null = kein Termin gesetzt. */
+  examDateIso: string | null
   /** Focus mode: hides the study session header (deck stats, progress) while
    *  reserving its space, so the card does not jump. Back button stays visible. */
   focusMode: boolean
@@ -91,6 +97,8 @@ interface SettingsContextType {
   setDailyGoal: (goal: number) => void
   setRecallCheckSize: (size: number) => void
   setDailyQuestSize: (size: number) => void
+  setNewCardsPerDay: (count: number) => void
+  setExamDateIso: (dateIso: string | null) => void
   setFocusMode: (enabled: boolean) => void
   setFullscreenEnabled: (enabled: boolean) => void
   setSm2Params: (params: Partial<SM2Params>) => void
@@ -179,6 +187,8 @@ const DEFAULT_SETTINGS: Settings = {
   dailyGoal: 20,
   recallCheckSize: 7,
   dailyQuestSize: 25,
+  newCardsPerDay: 10,
+  examDateIso: null,
   focusMode: false,
   fullscreenEnabled: false,
 }
@@ -200,6 +210,19 @@ function normalizeDailyQuestSize(value: unknown): number {
   const parsed = Number(value)
   if (!Number.isFinite(parsed)) return 25
   return Math.max(10, Math.min(100, Math.round(parsed / 5) * 5))
+}
+
+export function normalizeNewCardsPerDay(value: unknown): number {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return 10
+  return Math.max(0, Math.min(100, Math.round(parsed)))
+}
+
+export function normalizeExamDateIso(value: unknown): string | null {
+  if (typeof value !== 'string') return null
+  const trimmed = value.trim()
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return null
+  return Number.isNaN(Date.parse(`${trimmed}T00:00:00`)) ? null : trimmed
 }
 
 export function normalizeSettings(input: Partial<Settings> | undefined): Settings {
@@ -233,6 +256,8 @@ export function normalizeSettings(input: Partial<Settings> | undefined): Setting
     dailyGoal: normalizeDailyGoal(input?.dailyGoal),
     recallCheckSize: normalizeRecallCheckSize(input?.recallCheckSize),
     dailyQuestSize: normalizeDailyQuestSize(input?.dailyQuestSize),
+    newCardsPerDay: normalizeNewCardsPerDay(input?.newCardsPerDay),
+    examDateIso: normalizeExamDateIso(input?.examDateIso),
     focusMode: input?.focusMode === true,
     fullscreenEnabled: input?.fullscreenEnabled === true,
   }
@@ -415,6 +440,14 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     saveSettings({ ...settings, dailyQuestSize: normalizeDailyQuestSize(size) })
   }
 
+  const setNewCardsPerDay = (count: number) => {
+    saveSettings({ ...settings, newCardsPerDay: normalizeNewCardsPerDay(count) })
+  }
+
+  const setExamDateIso = (dateIso: string | null) => {
+    saveSettings({ ...settings, examDateIso: normalizeExamDateIso(dateIso) })
+  }
+
   const setFocusMode = (focusMode: boolean) => {
     saveSettings({ ...settings, focusMode })
   }
@@ -490,6 +523,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setDailyGoal,
         setRecallCheckSize,
         setDailyQuestSize,
+        setNewCardsPerDay,
+        setExamDateIso,
         setFocusMode,
         setFullscreenEnabled,
         setSm2Params,

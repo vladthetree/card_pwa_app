@@ -56,6 +56,85 @@ async function parseCsvInWorker(
   })
 }
 
+// ─── Backup-CSV (dbBackup.downloadDbBackupAsCsv) ────────────────────────────
+// Das eigene CSV-Backup trägt eine feste Header-Zeile; ohne diese Erkennung
+// würde der generische Parser card_id/note_id als front/back interpretieren.
+
+const BACKUP_CSV_HEADER = [
+  'card_id', 'note_id', 'deck_id', 'deck_name', 'front', 'back', 'tags',
+  'acronym', 'examples', 'port', 'protocol', 'type', 'queue', 'due',
+  'interval', 'factor', 'reps', 'lapses', 'created_at',
+] as const
+
+function isBackupCsvHeader(row: string[] | undefined): boolean {
+  if (!row || row.length < BACKUP_CSV_HEADER.length) return false
+  return BACKUP_CSV_HEADER.every((name, index) => (row[index] ?? '').trim() === name)
+}
+
+function numberOr(value: string | undefined, fallback: number): number {
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : fallback
+}
+
+/** Stellt Karten aus dem schema-festen CSV-Backup wieder her (IDs, Deck-Zuordnung
+ *  und SM2-Scheduling bleiben erhalten; FSRS-Felder kennt das CSV-Format nicht). */
+function parseBackupCsvRows(fileName: string, rows: string[][], now: number): ParsedImport {
+  const deckById = new Map<string, ImportedDeck>()
+  const cards: ImportedCard[] = []
+  const daysSinceEpoch = Math.floor(now / 86_400_000)
+
+  for (const cols of rows) {
+    const front = (cols[4] ?? '').trim()
+    const back = (cols[5] ?? '').trim()
+    if (!front && !back) continue
+
+    const deckId = (cols[2] ?? '').trim() || 'backup-deck'
+    if (!deckById.has(deckId)) {
+      deckById.set(deckId, {
+        id: deckId,
+        name: (cols[3] ?? '').trim() || deckId,
+        createdAt: now,
+        source: 'anki-import',
+      })
+    }
+
+    cards.push({
+      id:       (cols[0] ?? '').trim() || generateId(),
+      noteId:   (cols[1] ?? '').trim() || generateId(),
+      deckId,
+      front,
+      back,
+      tags:     (cols[6] ?? '').trim().split(' ').filter(Boolean),
+      extra: {
+        acronym:  cols[7] ?? '',
+        examples: cols[8] ?? '',
+        port:     cols[9] ?? '',
+        protocol: cols[10] ?? '',
+      },
+      type:     numberOr(cols[11], SM2.CARD_TYPE_NEW),
+      queue:    numberOr(cols[12], SM2.QUEUE_NEW),
+      due:      numberOr(cols[13], daysSinceEpoch),
+      interval: numberOr(cols[14], 0),
+      factor:   numberOr(cols[15], SM2.DEFAULT_EASE),
+      reps:     numberOr(cols[16], 0),
+      lapses:   numberOr(cols[17], 0),
+      algorithm: 'sm2',
+      createdAt: numberOr(cols[18], now),
+    })
+  }
+
+  if (!cards.length) {
+    throw new Error('Backup-CSV enthält keine Karten.')
+  }
+
+  return {
+    decks: Array.from(deckById.values()),
+    cards,
+    format: 'csv',
+    sourceName: fileName,
+  }
+}
+
 function stripHtml(str: string): string {
   if (!str) return ''
   return str.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()
@@ -401,6 +480,12 @@ export async function parseCsvText(
       delimiter: '',      // auto-detect
     })
     rowsToProcess = result.data
+
+    // Eigenes CSV-Backup: schema-aware wiederherstellen statt die Header-
+    // Spalten als front/back zu raten.
+    if (isBackupCsvHeader(rowsToProcess[0])) {
+      return parseBackupCsvRows(fileName, rowsToProcess.slice(1), now)
+    }
   }
 
   if (!rowsToProcess.length) {

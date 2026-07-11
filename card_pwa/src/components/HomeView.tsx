@@ -4,7 +4,7 @@
  * Used by: App.tsx for the home and shuffle-management modes.
  * Important: Most state is delegated to hooks/home/*; keep this file as orchestration/glue, not raw data-query logic.
  */
-import { lazy, Suspense, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { ArrowLeft, Play } from 'lucide-react'
 import { useDecks, useGamificationProfile, useShuffleCollections, useStats } from '../hooks/useCardDb'
@@ -20,11 +20,14 @@ import { HomeDeckListSection } from './home/HomeDeckListSection'
 import { HomeShuffleSection } from './home/HomeShuffleSection'
 import { HomeBottomBar } from './home/HomeBottomBar'
 import { HomeTagBrowseSection } from './home/HomeTagBrowseSection'
+import { HomeTodayPackageTile } from './home/HomeTodayPackageTile'
 import { useTagCardIndex } from '../hooks/home/useTagCardIndex'
 import { useHomeDeckFilters } from '../hooks/home/useHomeDeckFilters'
 import { useHomeStorageEstimate } from '../hooks/home/useHomeStorageEstimate'
 import { useHomeDerivedData } from '../hooks/home/useHomeDerivedData'
 import { useHomeViewController } from '../hooks/home/useHomeViewController'
+import { useTodayPackage } from '../hooks/home/useTodayPackage'
+import { computeExamPacing } from '../utils/todayPackage'
 import { flattenDeckTree } from '../utils/securityDeckHierarchy'
 import { isReviewDeck } from '../utils/reviewDecks'
 import { pickDailyQuestCards } from '../db/queries'
@@ -56,9 +59,13 @@ interface Props {
   onOpenLabs?: () => void
   /** Lernvideos (Professor Messer) — eigene Ansicht, im Ansichten-Menü. */
   onOpenVideos?: () => void
+  /** Heute-Paket: bestimmtes Kurs-Video direkt öffnen (openRecall = zum Check). */
+  onOpenVideoAtIndex?: (videoIndex: number, openRecall: boolean) => void
   /** Unterbrochene Session für die „Weiterlernen“-Kachel (null = keine). */
   resumeSession?: { deckName: string; remaining: number } | null
   onResumeSession?: () => void
+  /** ?view=import / launchQueue: öffnet das ImportModal (file = vorgeladene Datei). */
+  importRequest?: { token: number; file: File | null } | null
 }
 
 type HomeTab = 'decks' | 'tags'
@@ -73,8 +80,10 @@ export default function HomeView({
   onStartDailyQuest,
   onOpenLabs,
   onOpenVideos,
+  onOpenVideoAtIndex,
   resumeSession,
   onResumeSession,
+  importRequest,
 }: Props) {
   const [homeTab, setHomeTab] = useState<HomeTab>('decks')
   const tagCardIndex = useTagCardIndex()
@@ -105,6 +114,7 @@ export default function HomeView({
     reload,
     hasNativePrompt,
     install,
+    importRequest,
   })
 
   const derivedData = useHomeDerivedData({
@@ -147,13 +157,29 @@ export default function HomeView({
     }
     return bestName
   }, [homeDecks, derivedData.deckScheduleOverview])
-  const questSize = Math.min(settings.dailyQuestSize, stats?.nowDue ?? 0)
+  // Echte Session-Größe statt roher Fälligkeitszahl: die Tagesdosis neuer
+  // Karten kappt die Quest — der Button soll versprechen, was die Session hält.
+  const [questPreviewSize, setQuestPreviewSize] = useState<number | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    void pickDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt, settings.newCardsPerDay)
+      .then(cards => {
+        if (!cancelled) setQuestPreviewSize(cards.length)
+      })
+      .catch(() => {
+        if (!cancelled) setQuestPreviewSize(null)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [settings.dailyQuestSize, settings.nextDayStartsAt, settings.newCardsPerDay, stats?.nowDue])
+  const questSize = questPreviewSize ?? Math.min(settings.dailyQuestSize, stats?.nowDue ?? 0)
 
   const handleStartDailyQuest = async () => {
     if (questStarting || !onStartDailyQuest) return
     setQuestStarting(true)
     try {
-      const questCards = await pickDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt)
+      const questCards = await pickDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt, settings.newCardsPerDay)
       if (questCards.length > 0) {
         onStartDailyQuest(questCards)
       }
@@ -161,6 +187,53 @@ export default function HomeView({
       setQuestStarting(false)
     }
   }
+
+  // Mini-Session: der kleinste immer verfügbare Schritt — 5 Karten, ~3 Minuten.
+  // Senkt die Startschwelle an Tagen, an denen die volle Quest zu groß wirkt.
+  const MINI_SESSION_SIZE = 5
+  const handleStartMiniSession = async () => {
+    if (questStarting || !onStartDailyQuest) return
+    setQuestStarting(true)
+    try {
+      const miniCards = await pickDailyQuestCards(MINI_SESSION_SIZE, settings.nextDayStartsAt, settings.newCardsPerDay)
+      if (miniCards.length > 0) {
+        onStartDailyQuest(miniCards)
+      }
+    } finally {
+      setQuestStarting(false)
+    }
+  }
+
+  // Heute-Paket: geführter Tagespfad (Kurs-Video → Abruf-Check → Karten der
+  // Objective). Ohne erreichbare Videos fällt der Slide auf die Quest-Kachel zurück.
+  const todayPackage = useTodayPackage({
+    nextDayStartsAt: settings.nextDayStartsAt,
+    newCardsPerDay: settings.newCardsPerDay,
+    studyCardLimit: settings.studyCardLimit,
+  })
+  const examPacing = useMemo(() => computeExamPacing({
+    examDateIso: settings.examDateIso,
+    remainingNewCards: stats?.new ?? 0,
+    remainingVideos: todayPackage.remainingVideos,
+  }), [settings.examDateIso, stats?.new, todayPackage.remainingVideos])
+  const todayPackageTile = (todayPackage.loading || todayPackage.available)
+    ? (
+        <HomeTodayPackageTile
+          language={settings.language}
+          loading={todayPackage.loading}
+          video={todayPackage.video}
+          videoNumber={todayPackage.videoNumber}
+          videoTotal={todayPackage.videoTotal}
+          steps={todayPackage.steps}
+          objectiveDeck={todayPackage.objectiveDeck}
+          remainingCards={todayPackage.remainingCards}
+          completedToday={todayPackage.completedToday}
+          pacing={examPacing}
+          onWatchVideo={(videoIndex, openRecall) => onOpenVideoAtIndex?.(videoIndex, openRecall)}
+          onStartCards={deckToStudy => onStartStudy(deckToStudy)}
+        />
+      )
+    : undefined
 
   const renderHeaderBar = () => (
     <HomeHeaderBar
@@ -267,6 +340,8 @@ export default function HomeView({
               questHasDecks={decks.length > 0}
               questStarting={questStarting}
               onStartDailyQuest={() => { void handleStartDailyQuest() }}
+              onStartMiniSession={() => { void handleStartMiniSession() }}
+              todayPackageTile={todayPackageTile}
             />
           </div>
         </div>
@@ -491,6 +566,7 @@ export default function HomeView({
               onSelectedDeckIdChange={controller.setSelectedDeckId}
               onExportTxt={() => { void controller.handleExportTxt() }}
               onExportCsv={() => { void controller.handleExportCsv() }}
+              onExportJson={() => { void controller.handleExportJson() }}
             />
           )}
         </AnimatePresence>
@@ -518,7 +594,7 @@ export default function HomeView({
         {controller.showCreateCard && <CreateCardModal onClose={controller.closeCreateCard} />}
         {controller.showSettings && <SettingsModal isOpen onClose={controller.closeSettings} />}
         {controller.showFaq && <FaqModal isOpen onClose={controller.closeFaq} />}
-        {controller.showImport && <ImportModal isOpen onClose={controller.closeImport} />}
+        {controller.showImport && <ImportModal isOpen onClose={controller.closeImport} initialFile={controller.importFile} />}
 
         {controller.confirmModal !== null && (
           <ConfirmModal

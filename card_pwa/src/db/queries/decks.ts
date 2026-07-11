@@ -6,12 +6,13 @@
  */
 import { db, type CardRecord, type DeckRecord } from '../../db'
 import { readAllCardsShared, readAllDecksShared } from './sharedReads'
-import { SM2 } from '../../utils/sm2'
+import { SM2, isStudyableCard } from '../../utils/sm2'
 import { factorToDifficulty } from '../../utils/algorithmParams'
 import { getDayStartMs } from '../../utils/time'
 import { generateUuidV7 } from '../../utils/id'
 import { enqueueSyncOperation } from '../../services/syncQueue'
-import { sortStudyCards } from '../../services/studyCardOrdering'
+import { resolveNewCardAllowance, sortStudyCards } from '../../services/studyCardOrdering'
+import { countNewCardsIntroducedToday } from './reviews'
 import { normalizeTagId } from '../../utils/tagIdentity'
 import type { Deck, Card, DeckScheduleOverview } from '../../types'
 
@@ -164,6 +165,9 @@ async function computeAllDeckStats(
 
     stats.total += 1
 
+    // Suspendierte Karten zählen zum Bestand, aber nie als new/learning/due.
+    if (!isStudyableCard(row)) continue
+
     if (row.type === SM2.CARD_TYPE_NEW) {
       stats.new += 1
       continue
@@ -248,9 +252,13 @@ export async function getDeckNameMap(): Promise<Record<string, string>> {
  * Session über alle Decks — fällige Karten deckübergreifend, priorisiert wie
  * eine reguläre Session (sortStudyCards), gekappt auf `limit`.
  */
-export async function pickDailyQuestCards(limit: number, nextDayStartsAt = 0): Promise<Card[]> {
-  const cards = await listAllCards()
-  return sortStudyCards(cards, { maxCards: limit, nextDayStartsAt })
+export async function pickDailyQuestCards(limit: number, nextDayStartsAt = 0, newCardsPerDay = 0): Promise<Card[]> {
+  const cards = (await listAllCards()).filter(isStudyableCard)
+  // Tagesdosis: neue Karten nur bis zur verbleibenden Dosis mitnehmen
+  // (0 = unbegrenzt, dann entfällt auch die Zähl-Query).
+  const introducedToday = newCardsPerDay > 0 ? await countNewCardsIntroducedToday(nextDayStartsAt) : 0
+  const maxNewCards = resolveNewCardAllowance(newCardsPerDay, introducedToday)
+  return sortStudyCards(cards, { maxCards: limit, nextDayStartsAt, maxNewCards })
 }
 
 export interface DeckHomeMetadata {
@@ -328,6 +336,10 @@ export async function getDeckHomeMetadata(
       const deckSchedule = deckScheduleOverview[ownerDeckId]
       if (!deckSchedule) continue
 
+      // Tags oben bewusst auch für suspendierte Karten sammeln (Tag-Browse
+      // zeigt sie mit Badge); nur die Lernplan-Zähler lassen sie aus.
+      if (!isStudyableCard(row)) continue
+
       if (row.type === SM2.CARD_TYPE_NEW) {
         newByDeck[ownerDeckId] += 1
         continue
@@ -399,7 +411,7 @@ export async function listDeckStudyCandidates(deckId: string, nextDayStartsAt = 
 
   const inStudyWindow = (row: CardRecord) => resolveDueAtMs(row) < tomorrowStartMs
   const candidates = rows.filter(row => {
-    if (row.isDeleted) return false
+    if (!isStudyableCard(row)) return false
     if (row.type === SM2.CARD_TYPE_NEW) return true
     if (row.type === SM2.CARD_TYPE_LEARNING || row.type === SM2.CARD_TYPE_RELEARNING) {
       return inStudyWindow(row)

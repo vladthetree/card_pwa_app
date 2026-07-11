@@ -13,8 +13,8 @@ import type { ImportPlan, ParsedImport } from '../utils/import/types'
 import { UI_TOKENS } from '../constants/ui'
 import ProgressBar from './ProgressBar'
 
-const ACCEPTED = '.apkg,.colpkg,.txt,.csv'
-const ACCEPTED_TYPES = new Set(['apkg', 'colpkg', 'txt', 'csv'])
+const ACCEPTED = '.apkg,.colpkg,.txt,.csv,.json'
+const ACCEPTED_TYPES = new Set(['apkg', 'colpkg', 'txt', 'csv', 'json'])
 const MAX_IMPORT_SIZE_BYTES = 100 * 1024 * 1024
 
 function getFileExt(name: string): string {
@@ -50,20 +50,37 @@ async function validateImportFile(file: File, language: 'de' | 'en'): Promise<st
 interface Props {
   isOpen: boolean
   onClose: () => void
+  /** Vorab geladene Datei (File-Handler/launchQueue) — wird beim Öffnen direkt verarbeitet. */
+  initialFile?: File | null
 }
 
-export default function ImportModal({ isOpen, onClose }: Props) {
+export default function ImportModal({ isOpen, onClose, initialFile = null }: Props) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
   const prefersReducedMotion = useReducedMotion()
   const [status, setStatus] = useState<ImportStatus>({ phase: 'idle' })
   const [isDragOver, setIsDragOver] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  // JSON-Backup: Reviews/VideoNotes werden nach erfolgreichem Karten-Import
+  // wiederhergestellt (dedupe-basiert, keine Sync-Ops).
+  const backupExtrasRef = useRef<import('../utils/dbBackup').DbBackupPayload | null>(null)
+
+  const applyBackupExtras = useCallback(async () => {
+    const payload = backupExtrasRef.current
+    if (!payload) return
+    backupExtrasRef.current = null
+    const { restoreReviewsFromBackupPayload, restoreVideoNotesFromBackupPayload } = await import('../utils/dbBackup')
+    await restoreReviewsFromBackupPayload(payload)
+    await restoreVideoNotesFromBackupPayload(payload)
+  }, [])
 
   // Reset state while closed so a previous success/error screen does not flash
   // briefly on the next open before the modal returns to idle.
   useEffect(() => {
-    if (!isOpen) setStatus({ phase: 'idle' })
+    if (!isOpen) {
+      setStatus({ phase: 'idle' })
+      backupExtrasRef.current = null
+    }
   }, [isOpen])
 
   // Close on Escape
@@ -84,12 +101,13 @@ export default function ImportModal({ isOpen, onClose }: Props) {
         const result = await executeImportWithProgress(resolvedPlan, progress => {
           setStatus({ phase: 'importing', stage: progress.stage, done: progress.done, total: progress.total })
         })
+        await applyBackupExtras()
         setStatus({ phase: 'done', ...result })
       } catch (err) {
         setStatus({ phase: 'error', message: err instanceof Error ? err.message : t.import_db_write_error })
       }
     },
-    [t.import_db_write_error]
+    [applyBackupExtras, t.import_db_write_error]
   )
 
   const processFile = useCallback(async (file: File) => {
@@ -108,6 +126,11 @@ export default function ImportModal({ isOpen, onClose }: Props) {
       if (ext === 'apkg' || ext === 'colpkg') {
         const { parseApkg } = await import('../utils/import/apkgImporter')
         parsed = await parseApkg(file, settings.language, settings.algorithm)
+      } else if (ext === 'json') {
+        const { parseJsonBackupFile } = await import('../utils/import/jsonBackupImporter')
+        const backup = await parseJsonBackupFile(file, settings.language)
+        parsed = backup.parsed
+        backupExtrasRef.current = backup.payload
       } else {
         const { parseCsv } = await import('../utils/import/csvImporter')
         parsed = await parseCsv(file, settings.language, settings.algorithm)
@@ -128,11 +151,21 @@ export default function ImportModal({ isOpen, onClose }: Props) {
       const result = await executeImportWithProgress(plan, progress => {
         setStatus({ phase: 'importing', stage: progress.stage, done: progress.done, total: progress.total })
       })
+      await applyBackupExtras()
       setStatus({ phase: 'done', ...result })
     } catch (err) {
       setStatus({ phase: 'error', message: err instanceof Error ? err.message : t.import_unknown_error })
     }
-  }, [settings.algorithm, settings.language, t.import_unknown_error, t.import_unsupported_file])
+  }, [applyBackupExtras, settings.algorithm, settings.language, t.import_unknown_error, t.import_unsupported_file])
+
+  // Vorab geladene Datei (File-Handler) genau einmal pro File-Objekt verarbeiten.
+  const handledInitialFileRef = useRef<File | null>(null)
+  useEffect(() => {
+    if (!isOpen || !initialFile) return
+    if (handledInitialFileRef.current === initialFile) return
+    handledInitialFileRef.current = initialFile
+    void processFile(initialFile)
+  }, [isOpen, initialFile, processFile])
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault(); setIsDragOver(false)

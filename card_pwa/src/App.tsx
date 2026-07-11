@@ -28,9 +28,10 @@ import { useFullscreenPreference } from './hooks/useFullscreen'
 import type { ServiceWorkerStartupReadiness } from './runtime/swRegistration'
 
 const SAFE_AREA_DEBUG_STORAGE_KEY = 'card-pwa-safe-area-debug'
-// Lang genug, um den Motivationsspruch auf dem Splash zu lesen (bewusst
-// verlängert — der Spruch ist Teil des Starterlebnisses, kein Ladebalken).
-const INITIAL_SPLASH_MIN_MS = 3500
+// Der Start-Splash bleibt stehen, bis der Nutzer tippt — der Motivationsspruch
+// soll in Ruhe lesbar sein. Der Tap wird erst nach dieser Zeit scharf, damit
+// ein hastiger Doppel-Tap beim Öffnen den Spruch nicht sofort wegwischt.
+const INITIAL_SPLASH_TAP_ENABLE_MS = 3000
 
 interface AppProps {
   startupReady?: Promise<ServiceWorkerStartupReadiness>
@@ -49,10 +50,10 @@ const loadMotionFeatures = () => import('./ui/motionFeatures').then(mod => mod.d
 function getInitialView(): View {
   if (typeof window !== 'undefined') {
     const v = new URLSearchParams(window.location.search).get('view')
-    if (v === 'import') return 'import'
     if (v === 'shuffle' || v === 'shuffle-manage') return 'shuffle-manage'
     // 'study' startet nach der Initialisierung direkt eine Session (Resume oder
     // Daily Quest) — siehe den Quick-Study-Effekt in AppShell.
+    // 'import' bleibt auf Home und öffnet dort das ImportModal (importRequest).
   }
   return 'home'
 }
@@ -61,6 +62,19 @@ function getInitialView(): View {
 function isQuickStudyRequested(): boolean {
   if (typeof window === 'undefined') return false
   return new URLSearchParams(window.location.search).get('view') === 'study'
+}
+
+/** Manifest-Shortcut und File-Handler verlinken auf `/?view=import`. */
+function isImportRequested(): boolean {
+  if (typeof window === 'undefined') return false
+  return new URLSearchParams(window.location.search).get('view') === 'import'
+}
+
+/** Import-Anforderung an Home: token erzwingt den Effekt auch bei erneutem
+ *  Öffnen, file kommt aus dem launchQueue-File-Handler (sonst null). */
+export interface HomeImportRequest {
+  token: number
+  file: File | null
 }
 
 function buildSyntheticDeck(id: string, name: string, cards: Card[]): Deck {
@@ -256,13 +270,14 @@ const VideosView = lazy(() => import('./components/videos/VideosView'))
 const UpdateBanner = lazy(() => import('./components/UpdateBanner'))
 const MetaBalls = lazy(() => import('./components/MetaBalls'))
 
-function ViewFallback({ reason = 'startup' }: { reason?: 'startup' | 'update' }) {
+function ViewFallback({ reason = 'startup', continueHint = false }: { reason?: 'startup' | 'update'; continueHint?: boolean }) {
   const { settings } = useSettings()
   const { theme } = useTheme()
   const prefersReducedMotion = useReducedMotion()
   const loadingText = reason === 'update'
     ? (settings.language === 'de' ? 'Aktualisiere App' : 'Updating app')
     : (settings.language === 'de' ? 'Pruefe App-Version' : 'Checking app version')
+  const continueText = settings.language === 'de' ? 'Tippen, um fortzufahren' : 'Tap to continue'
   // Motivationsspruch: pro App-Launch neu gewählt, innerhalb dieses Starts stabil.
   const quote = useMemo(() => pickLaunchMotivationQuote(settings.language === 'de' ? 'de' : 'en'), [settings.language])
 
@@ -309,10 +324,16 @@ function ViewFallback({ reason = 'startup' }: { reason?: 'startup' | 'update' })
           <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-ds-muted">
             {APP_NAME}
           </div>
-          <div className="mt-2 font-mono text-sm text-white/75">
-            {loadingText}
-            <span className="ml-1 inline-block animate-pulse text-[--brand-primary]">...</span>
-          </div>
+          {continueHint ? (
+            <div className="mt-2 animate-pulse font-mono text-sm text-[--brand-primary]" data-testid="splash-continue-hint">
+              {continueText}
+            </div>
+          ) : (
+            <div className="mt-2 font-mono text-sm text-white/75">
+              {loadingText}
+              <span className="ml-1 inline-block animate-pulse text-[--brand-primary]">...</span>
+            </div>
+          )}
         </div>
         {/* Motivationsspruch — der Grund, warum der Splash bewusst etwas länger steht. */}
         <div className="mt-7 max-w-sm px-2 text-center" data-testid="splash-motivation">
@@ -356,9 +377,18 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
   // gleich nach dem Mount aus der Adresszeile, bevor spätere Effekte sie lesen.
   const [quickStudyRequested] = useState(isQuickStudyRequested)
   const quickStudyHandledRef = useRef(false)
+  const [importRequest, setImportRequest] = useState<HomeImportRequest | null>(
+    () => (isImportRequested() ? { token: 1, file: null } : null)
+  )
+  // Heute-Paket-Sprungziel für die Lernvideos-Ansicht (null = normale Öffnung).
+  const [videosInitialTarget, setVideosInitialTarget] = useState<{ videoIndex: number; openRecall: boolean } | null>(null)
   const [updateInstalledNotice, setUpdateInstalledNotice] = useState(false)
   const [pendingReloadAfterStudy, setPendingReloadAfterStudy] = useState(false)
   const [showInitialSplash, setShowInitialSplash] = useState(true)
+  // Beide müssen wahr sein, bevor der Tap den Splash schließt: die App ist
+  // startbereit UND die Mindest-Lesezeit ist vorbei.
+  const [splashStartupDone, setSplashStartupDone] = useState(false)
+  const [splashTapEnabled, setSplashTapEnabled] = useState(false)
   const [showUpdateSplash, setShowUpdateSplash] = useState(false)
   const updateNoticeTimerRef = useRef<number | null>(null)
   const updateActivationFallbackRef = useRef<number | null>(null)
@@ -366,28 +396,36 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
 
   useEffect(() => {
     let cancelled = false
-    const minSplash = new Promise<void>(resolve => {
-      window.setTimeout(resolve, INITIAL_SPLASH_MIN_MS)
-    })
 
-    void Promise.all([
-      minSplash,
-      startupReady.catch(() => ({ status: 'error', activatedUpdate: false }) satisfies ServiceWorkerStartupReadiness),
-    ]).then(([, readiness]) => {
-      if (cancelled) return
+    const tapTimer = window.setTimeout(() => {
+      if (!cancelled) setSplashTapEnabled(true)
+    }, INITIAL_SPLASH_TAP_ENABLE_MS)
 
-      if (readiness.activatedUpdate) {
-        window.location.reload()
-        return
-      }
+    void startupReady
+      .catch(() => ({ status: 'error', activatedUpdate: false }) satisfies ServiceWorkerStartupReadiness)
+      .then(readiness => {
+        if (cancelled) return
 
-      setShowInitialSplash(false)
-    })
+        if (readiness.activatedUpdate) {
+          window.location.reload()
+          return
+        }
+
+        setSplashStartupDone(true)
+      })
 
     return () => {
       cancelled = true
+      window.clearTimeout(tapTimer)
     }
   }, [startupReady])
+
+  const splashContinueReady = splashStartupDone && splashTapEnabled
+
+  const dismissInitialSplash = () => {
+    if (!splashContinueReady) return
+    setShowInitialSplash(false)
+  }
 
   useEffect(() => {
     if (!swSupported) return
@@ -483,9 +521,7 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
     if (typeof window === 'undefined') return
 
     const url = new URL(window.location.href)
-    if (view === 'import') {
-      url.searchParams.set('view', 'import')
-    } else if (view === 'shuffle-manage') {
+    if (view === 'shuffle-manage') {
       url.searchParams.set('view', 'shuffle')
     } else {
       url.searchParams.delete('view')
@@ -493,6 +529,30 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
 
     window.history.replaceState({}, '', url)
   }, [view])
+
+  // file_handlers aus dem Manifest (Chromium): geöffnete .apkg/.csv-Dateien
+  // landen über die launchQueue direkt im ImportModal auf Home.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const launchQueue = (window as unknown as {
+      launchQueue?: { setConsumer: (consumer: (params: { files?: FileSystemFileHandle[] }) => void) => void }
+    }).launchQueue
+    if (!launchQueue) return
+
+    launchQueue.setConsumer(params => {
+      void (async () => {
+        const handle = params.files?.[0]
+        if (!handle) return
+        try {
+          const file = await handle.getFile()
+          setView('home')
+          setImportRequest(prev => ({ token: (prev?.token ?? 0) + 1, file }))
+        } catch (error) {
+          console.warn('[App] launchQueue-Datei konnte nicht gelesen werden:', error)
+        }
+      })()
+    })
+  }, [])
 
   useEffect(() => {
     if (settings.shuffleModeEnabled) return
@@ -563,7 +623,7 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
     quickStudyHandledRef.current = true
     void (async () => {
       if (await resumeStudySession()) return
-      const cards = await pickDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt)
+      const cards = await pickDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt, settings.newCardsPerDay)
       if (cards.length > 0) startDailyQuest(cards)
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -612,6 +672,17 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
     setActiveDeck(null)
     setActiveTagCards(null)
     setActiveShuffleCollection(null)
+    setVideosInitialTarget(null)
+    setView('videos')
+  }
+
+  // Heute-Paket: Lernvideos-Ansicht direkt bei einem bestimmten Kurs-Video
+  // öffnen (optional gleich mit Abruf-Check) — ein Tap vom Home zum Inhalt.
+  const openVideoAtIndex = (videoIndex: number, openRecall: boolean) => {
+    setActiveDeck(null)
+    setActiveTagCards(null)
+    setActiveShuffleCollection(null)
+    setVideosInitialTarget({ videoIndex, openRecall })
     setView('videos')
   }
 
@@ -666,8 +737,10 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                   onStartDailyQuest={startDailyQuest}
                   onOpenLabs={openLabs}
                   onOpenVideos={openVideos}
+                  onOpenVideoAtIndex={openVideoAtIndex}
                   resumeSession={resumeInfo}
                   onResumeSession={() => void resumeStudySession()}
+                  importRequest={importRequest}
                 />
               </motion.div>
             )}
@@ -734,7 +807,13 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0 h-full"
               >
-                <VideosView language={settings.language} onExit={goHome} onStartObjectiveStudy={startObjectiveStudy} />
+                <VideosView
+                  language={settings.language}
+                  onExit={goHome}
+                  onStartObjectiveStudy={startObjectiveStudy}
+                  initialVideoIndex={videosInitialTarget?.videoIndex ?? null}
+                  initialRecallOpen={videosInitialTarget?.openRecall ?? false}
+                />
               </motion.div>
             )}
           </Suspense>
@@ -746,10 +825,22 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: prefersReducedMotion ? 0.12 : 0.24, ease: 'easeOut' }}
-                className="fixed inset-0 z-[2200] flex bg-[--ds-bg]"
+                className={`fixed inset-0 z-[2200] flex bg-[--ds-bg] ${activeSplashMode === 'startup' && splashContinueReady ? 'cursor-pointer' : ''}`}
                 style={{ background: 'var(--app-background)' }}
+                data-testid={activeSplashMode === 'startup' ? 'splash-continue' : undefined}
+                role={activeSplashMode === 'startup' ? 'button' : undefined}
+                tabIndex={activeSplashMode === 'startup' ? 0 : undefined}
+                onClick={activeSplashMode === 'startup' ? dismissInitialSplash : undefined}
+                onKeyDown={activeSplashMode === 'startup'
+                  ? event => {
+                      if (event.key === 'Enter' || event.key === ' ') dismissInitialSplash()
+                    }
+                  : undefined}
               >
-                <ViewFallback reason={activeSplashMode === 'update' ? 'update' : 'startup'} />
+                <ViewFallback
+                  reason={activeSplashMode === 'update' ? 'update' : 'startup'}
+                  continueHint={activeSplashMode === 'startup' && splashContinueReady}
+                />
               </motion.div>
             )}
           </AnimatePresence>

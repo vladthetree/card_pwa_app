@@ -8,6 +8,7 @@ import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import type { Card } from '../types'
 import type { MatchingQuestion, MatchingAnswer } from '../utils/cardTextParser'
 import { computeMatchingScore } from '../utils/pbqScoring'
+import { seededShuffle } from '../utils/hash'
 
 interface Props {
   card: Card
@@ -54,15 +55,6 @@ function matchingReducer(state: MatchState, action: MatchAction): MatchState {
   }
 }
 
-function shuffleArray<T>(arr: T[]): T[] {
-  const result = [...arr]
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    const tmp = result[i]; result[i] = result[j]; result[j] = tmp
-  }
-  return result
-}
-
 
 const TYPE_BADGE: Record<Card['type'], { labelKey: 'type_new' | 'type_learning' | 'type_review' | 'type_relearning'; cls: string }> = {
   new:        { labelKey: 'type_new',        cls: 'border-[--brand-secondary-25] bg-[--brand-secondary-08] text-[--brand-secondary]' },
@@ -79,8 +71,11 @@ const MatchingCard = memo(function MatchingCard({
   const prefersReducedMotion = useReducedMotion()
   const badge = TYPE_BADGE[card.type]
 
+  // Seeded statt Math.random: Reload/Resume darf die Zuordnungs-Reihenfolge
+  // nicht verändern.
   const rightItems = useMemo(
-    () => shuffleArray([...new Set(question.pairs.map(p => p.right))]),
+    () => seededShuffle(`${card.id}:${card.front}`, [...new Set(question.pairs.map(p => p.right))]),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [card.id, card.front]
   )
 

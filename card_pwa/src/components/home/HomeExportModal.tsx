@@ -16,6 +16,7 @@ interface Props {
   onSelectedDeckIdChange: (value: 'all' | string) => void
   onExportTxt: () => void
   onExportCsv: () => void
+  onExportJson: () => void
 }
 
 export function HomeExportModal({
@@ -29,6 +30,7 @@ export function HomeExportModal({
   onSelectedDeckIdChange,
   onExportTxt,
   onExportCsv,
+  onExportJson,
 }: Props) {
   if (!isOpen) return null
 
@@ -68,7 +70,15 @@ export function HomeExportModal({
           <p className="mt-2 text-[11px] text-[--brand-secondary-50]">{t.migration_phase1_no_db_extract}</p>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-2">
+        <div className="mt-4 grid grid-cols-3 gap-2">
+          <button
+            type="button"
+            onClick={onExportJson}
+            disabled={isExporting}
+            className={`${UI_TOKENS.button.footerPrimary} disabled:opacity-60 inline-flex items-center justify-center gap-1.5`}
+          >
+            <Download size={12} strokeWidth={1.5} /> .json
+          </button>
           <button
             type="button"
             onClick={onExportTxt}

@@ -9,7 +9,7 @@ import type { HomeDashboardMode } from '../../components/home/HomeStatsSection'
 import { STORAGE_KEYS } from '../../constants/appIdentity'
 import type { Deck, ShuffleCollection } from '../../types'
 import { createDeck, deleteDeck, deleteShuffleCollection } from '../../db/queries'
-import { exportDbBackupAsCsv, exportDbBackupAsTxt } from '../../utils/dbBackup'
+import { exportDbBackupAsCsv, exportDbBackupAsJson, exportDbBackupAsTxt } from '../../utils/dbBackup'
 import { subscribeToWebPushNotifications } from '../../services/webPush'
 
 export interface HomeConfirmModalState {
@@ -27,15 +27,24 @@ interface HomeDeckCreateStrings {
 }
 
 export function readInitialDashboardMode(): HomeDashboardMode {
-  if (typeof window === 'undefined') return 'pilot'
+  if (typeof window === 'undefined') return 'today'
   const stored = window.localStorage.getItem(STORAGE_KEYS.homeDashboardMode)
-  if (stored === 'kpi' || stored === 'heatmap' || stored === 'pilot' || stored === 'quests' || stored === 'clean') return stored
-  if (stored === 'life') {
-    window.localStorage.setItem(STORAGE_KEYS.homeDashboardMode, 'pilot')
-    window.localStorage.setItem(STORAGE_KEYS.homeShowHeatmap, '0')
-    return 'pilot'
+  if (stored === 'today' || stored === 'kpi' || stored === 'heatmap' || stored === 'quests' || stored === 'clean') return stored
+  // 'pilot' (alte Standard-Kachel) EINMALIG auf das Heute-Paket migrieren —
+  // der geführte Tagespfad soll der erste Blick beim Öffnen sein. Das Flag
+  // stellt sicher, dass eine spätere bewusste Pilot-Wahl bestehen bleibt.
+  if (stored === 'pilot') {
+    if (window.localStorage.getItem(STORAGE_KEYS.homeDashboardTodayMigration) === '1') return 'pilot'
+    window.localStorage.setItem(STORAGE_KEYS.homeDashboardTodayMigration, '1')
+    window.localStorage.setItem(STORAGE_KEYS.homeDashboardMode, 'today')
+    return 'today'
   }
-  return window.localStorage.getItem(STORAGE_KEYS.homeShowHeatmap) === '1' ? 'heatmap' : 'pilot'
+  if (stored === 'life') {
+    window.localStorage.setItem(STORAGE_KEYS.homeDashboardMode, 'today')
+    window.localStorage.setItem(STORAGE_KEYS.homeShowHeatmap, '0')
+    return 'today'
+  }
+  return window.localStorage.getItem(STORAGE_KEYS.homeShowHeatmap) === '1' ? 'heatmap' : 'today'
 }
 
 export function persistDashboardMode(mode: HomeDashboardMode): void {
@@ -86,6 +95,8 @@ export function useHomeViewController(input: {
   reload: () => Promise<unknown> | unknown
   hasNativePrompt: boolean
   install: () => Promise<unknown>
+  /** ?view=import / launchQueue: token-getriggerte ImportModal-Öffnung. */
+  importRequest?: { token: number; file: File | null } | null
 }): {
   showCreateCard: boolean
   showCreateDeckModal: boolean
@@ -96,6 +107,8 @@ export function useHomeViewController(input: {
   showFaq: boolean
   showInstallHintModal: boolean
   showImport: boolean
+  /** Vorab geladene Datei aus dem File-Handler (launchQueue), sonst null. */
+  importFile: File | null
   showExportModal: boolean
   isExporting: boolean
   selectedDeckId: 'all' | string
@@ -146,6 +159,7 @@ export function useHomeViewController(input: {
   handleCreateDeck: () => Promise<void>
   handleExportTxt: () => Promise<void>
   handleExportCsv: () => Promise<void>
+  handleExportJson: () => Promise<void>
 } {
   const { t, settings, reload, hasNativePrompt, install } = input
   const [showCreateCard, setShowCreateCard] = useState(false)
@@ -181,6 +195,17 @@ export function useHomeViewController(input: {
   useEffect(() => {
     persistShuffleOnlyMode(showShuffleOnly)
   }, [showShuffleOnly])
+
+  // ?view=import (Manifest-Shortcut) bzw. launchQueue-Datei: ImportModal öffnen.
+  // Token statt Objekt-Identität, damit wiederholte Anforderungen erneut öffnen.
+  const importRequestToken = input.importRequest?.token ?? 0
+  const importRequestFile = input.importRequest?.file ?? null
+  const [importFile, setImportFile] = useState<File | null>(null)
+  useEffect(() => {
+    if (importRequestToken <= 0) return
+    setImportFile(importRequestFile)
+    setShowImport(true)
+  }, [importRequestToken, importRequestFile])
 
   useEffect(() => {
     if (!navigator.serviceWorker?.controller) return
@@ -287,6 +312,16 @@ export function useHomeViewController(input: {
     }
   }, [selectedDeckIds])
 
+  const handleExportJson = useCallback(async () => {
+    try {
+      setIsExporting(true)
+      await exportDbBackupAsJson({ deckIds: selectedDeckIds })
+      setShowExportModal(false)
+    } finally {
+      setIsExporting(false)
+    }
+  }, [selectedDeckIds])
+
   return {
     showCreateCard,
     showCreateDeckModal,
@@ -297,6 +332,7 @@ export function useHomeViewController(input: {
     showFaq,
     showInstallHintModal,
     showImport,
+    importFile,
     showExportModal,
     isExporting,
     selectedDeckId,
@@ -328,7 +364,10 @@ export function useHomeViewController(input: {
     closeFaq: () => setShowFaq(false),
     closeInstallHintModal: () => setShowInstallHintModal(false),
     openImport: () => setShowImport(true),
-    closeImport: () => setShowImport(false),
+    closeImport: () => {
+      setShowImport(false)
+      setImportFile(null)
+    },
     openExport: () => setShowExportModal(true),
     closeExport: () => setShowExportModal(false),
     openFutureForecast: () => setShowFutureForecast(true),
@@ -363,5 +402,6 @@ export function useHomeViewController(input: {
     handleCreateDeck,
     handleExportTxt,
     handleExportCsv,
+    handleExportJson,
   }
 }

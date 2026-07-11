@@ -209,6 +209,63 @@ export async function restoreVideoNotesFromBackupPayload(
   return result
 }
 
+/** Verlustfreies JSON-Vollbackup: Decks, Karten (inkl. Scheduling), Reviews,
+ *  Video Notes und Settings — Roundtrip-Format für restore via ImportModal. */
+export function downloadDbBackupAsJson(payload: DbBackupPayload) {
+  const stamp = new Date(payload.meta.exportedAt).toISOString().replace(/[:.]/g, '-')
+  const blob = new Blob([JSON.stringify(payload)], { type: 'application/json;charset=utf-8' })
+  triggerDownload(blob, `card-pwa-backup-${stamp}.json`)
+}
+
+export async function exportDbBackupAsJson(options: ExportOptions = {}) {
+  const payload = await buildDbBackupPayload(options)
+  downloadDbBackupAsJson(payload)
+}
+
+export interface RestoreReviewsResult {
+  added: number
+  skipped: number
+}
+
+/** Stellt Reviews aus einem JSON-Backup lokal wieder her. Dedupe über opId
+ *  bzw. (cardId, timestamp, rating); es werden keine Sync-Ops erzeugt —
+ *  serverbekannte Reviews kommen ohnehin über den Pull zurück. */
+export async function restoreReviewsFromBackupPayload(
+  payload: Pick<DbBackupPayload, 'data'>,
+): Promise<RestoreReviewsResult> {
+  const rows = Array.isArray(payload.data?.reviews) ? payload.data.reviews : []
+  const result: RestoreReviewsResult = { added: 0, skipped: 0 }
+  if (rows.length === 0) return result
+
+  const existing = await db.reviews.toArray()
+  const knownOpIds = new Set(existing.map(review => review.opId).filter(Boolean))
+  const knownComposite = new Set(existing.map(review => `${review.cardId}|${review.timestamp}|${review.rating}`))
+  const knownCardIds = new Set((await db.cards.toArray()).map(card => card.id))
+
+  for (const raw of rows) {
+    if (!isRecord(raw) || typeof raw.cardId !== 'string') {
+      result.skipped += 1
+      continue
+    }
+    const compositeKey = `${raw.cardId}|${raw.timestamp}|${raw.rating}`
+    if (
+      (typeof raw.opId === 'string' && knownOpIds.has(raw.opId)) ||
+      knownComposite.has(compositeKey) ||
+      !knownCardIds.has(raw.cardId)
+    ) {
+      result.skipped += 1
+      continue
+    }
+
+    const { id: _autoIncrementId, ...review } = raw as ReviewRecord
+    await db.reviews.add(review)
+    knownComposite.add(compositeKey)
+    result.added += 1
+  }
+
+  return result
+}
+
 export function downloadDbBackupAsTxt(payload: DbBackupPayload) {
   const stamp = new Date(payload.meta.exportedAt).toISOString().replace(/[:.]/g, '-')
   const filename = `card-pwa-backup-${stamp}.txt`

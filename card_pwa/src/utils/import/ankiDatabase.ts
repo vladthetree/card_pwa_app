@@ -1,6 +1,7 @@
 /**
  * AI_CONTEXT: Import utility for anki Database; parses or normalizes external Anki/CSV/APKG data into app card structures.
  */
+import sqlWasmUrl from 'sql.js/dist/sql-wasm.wasm?url'
 import { decompress as zstdDecompress } from '../../vendor/fzstd'
 import type { Algorithm, Language } from '../../contexts/SettingsContext'
 import type { ImportedCard, ImportedDeck } from './types'
@@ -39,7 +40,7 @@ async function initSqlJs() {
   const sqlModule = await import('sql.js')
   const initFn = (sqlModule as { default?: unknown }).default ?? sqlModule
   const SQL = await (initFn as CallableFunction)({
-    locateFile: () => '/sql-wasm.wasm',
+    locateFile: () => sqlWasmUrl,
   })
   return SQL
 }

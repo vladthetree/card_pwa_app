@@ -30,6 +30,8 @@ export { normalizeDueDates, createCard, updateCard, deleteCard } from './cards'
 
 export {
   getGlobalStats,
+  countNewCardsIntroducedToday,
+  listDeckCardIdsReviewedToday,
   getFutureDueForecast,
   getDeckSuccessRates,
   type DeckSuccessRate,

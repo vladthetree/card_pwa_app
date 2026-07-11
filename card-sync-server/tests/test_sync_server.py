@@ -16,6 +16,10 @@ import socket
 from pathlib import Path
 
 SERVER_DIR = Path(__file__).resolve().parents[1]
+
+# Familien-PIN für Join-Tests: der Standard-Testserver läuft mit konfigurierter
+# PIN, damit die Join-Flows testbar bleiben (fail closed ohne Konfiguration).
+TEST_JOIN_PIN = "4711"
 if str(SERVER_DIR) not in sys.path:
     sys.path.insert(0, str(SERVER_DIR))
 
@@ -90,7 +94,7 @@ def _stop_server(proc):
 @pytest.fixture
 def server(temp_db):
     """Start sync server with temporary database."""
-    srv = _start_server(temp_db)
+    srv = _start_server(temp_db, env_overrides={"SYNC_JOIN_PIN": TEST_JOIN_PIN})
     yield srv
     _stop_server(srv["proc"])
 
@@ -149,13 +153,15 @@ def api(server):
             r = requests.post(f"http://localhost:{port}/auth/profile/switch", json=body, headers=self._headers(auth_token))
             return r.json() if r.text else {}
 
-        def join_public_profile(self, user_id, device_id, device_label="Device"):
+        def join_public_profile(self, user_id, device_id, device_label="Device", join_pin=TEST_JOIN_PIN):
             """POST /auth/profile/join"""
             body = {
                 "userId": user_id,
                 "deviceId": device_id,
                 "deviceLabel": device_label,
             }
+            if join_pin is not None:
+                body["joinPin"] = join_pin
             r = requests.post(f"http://localhost:{port}/auth/profile/join", json=body)
             return r.json() if r.text else {}
 
@@ -1543,6 +1549,72 @@ class TestProfileSwitch:
         assert device_rows == [(second["userId"],)]
         assert active_tokens[0][0] == 1
         assert revoked_old_tokens[0][0] >= 1
+
+    def test_public_profiles_requires_authentication(self, api, server):
+        created = api.create_profile(device_id="pub-auth-dev", profile_name="PubAuth")
+        base = f"http://localhost:{server['port']}"
+
+        anonymous = requests.get(f"{base}/auth/public-profiles")
+        assert anonymous.status_code == 401
+        assert anonymous.json()["error"] == "unauthorized"
+
+        authed = requests.get(
+            f"{base}/auth/public-profiles",
+            headers={"Authorization": f"Bearer {created['profileToken']}"},
+        )
+        assert authed.status_code == 200
+        assert authed.json()["ok"] is True
+
+    def test_profile_join_personal_requires_pin(self, api, server):
+        target = api.create_profile(device_id="pin-target-dev", profile_name="PinTarget")
+        base = f"http://localhost:{server['port']}"
+
+        without_pin = requests.post(f"{base}/auth/profile/join", json={
+            "userId": target["userId"], "deviceId": "pin-join-dev", "deviceLabel": "Browser",
+        })
+        assert without_pin.status_code == 403
+        assert without_pin.json()["error"] == "join_pin_invalid"
+
+        wrong_pin = requests.post(f"{base}/auth/profile/join", json={
+            "userId": target["userId"], "deviceId": "pin-join-dev", "deviceLabel": "Browser",
+            "joinPin": "0000",
+        })
+        assert wrong_pin.status_code == 403
+        assert wrong_pin.json()["error"] == "join_pin_invalid"
+
+        correct_pin = api.join_public_profile(
+            user_id=target["userId"], device_id="pin-join-dev",
+        )
+        assert correct_pin["ok"] is True
+        assert correct_pin["userId"] == target["userId"]
+
+    def test_profile_join_default_profile_needs_no_pin(self, api, server, db_helper):
+        default_rows = db_helper.query(
+            "SELECT user_id FROM users WHERE TRIM(profile_name)='Default' LIMIT 1"
+        )
+        assert default_rows, "Default profile should exist after schema init"
+        default_user_id = default_rows[0][0]
+
+        joined = api.join_public_profile(
+            user_id=default_user_id, device_id="default-join-dev", join_pin=None,
+        )
+        assert joined["ok"] is True
+        assert joined["userId"] == default_user_id
+
+    def test_profile_join_fails_closed_without_configured_pin(self, server_factory, db_helper):
+        srv = server_factory({"SYNC_JOIN_PIN": ""})
+        base = f"http://localhost:{srv['port']}"
+
+        created = requests.post(f"{base}/auth/profile", json={
+            "deviceId": "closed-owner-dev", "profileName": "Closed",
+        }).json()
+
+        denied = requests.post(f"{base}/auth/profile/join", json={
+            "userId": created["userId"], "deviceId": "closed-join-dev", "deviceLabel": "Browser",
+            "joinPin": "anything",
+        })
+        assert denied.status_code == 403
+        assert denied.json()["error"] == "join_pin_not_configured"
 
     def test_list_profiles_returns_profile_metadata(self, api):
         created = api.create_profile(device_id="dev-profile-2", profile_name="Ben")

@@ -26,6 +26,7 @@ import { useHandsetLayout } from '../hooks/useHandsetLayout'
 import type { Card } from '../types'
 import type { OrderingQuestion, OrderingAnswer } from '../utils/cardTextParser'
 import { computeOrderingScore } from '../utils/pbqScoring'
+import { seededShuffle } from '../utils/hash'
 
 interface Props {
   card: Card
@@ -39,15 +40,6 @@ interface Props {
   originDeckName?: string
   /** Antwortseite war schon sichtbar bzw. Karte ist read-only → Sortieren gesperrt. */
   inputLocked?: boolean
-}
-
-function shuffleArray(arr: string[]): string[] {
-  const result = [...arr]
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    const tmp = result[i]; result[i] = result[j]; result[j] = tmp
-  }
-  return result
 }
 
 // Six-dot grip pattern — more recognisable as "draggable" than a single icon
@@ -157,7 +149,10 @@ const OrderingCard = memo(function OrderingCard({
   const prefersReducedMotion = useReducedMotion()
   const badge = TYPE_BADGE[card.type]
 
-  const shuffledItems = useMemo(() => shuffleArray(question.items), [card.id, card.front])
+  // Seeded statt Math.random: Reload/Resume darf die Ausgangsreihenfolge
+  // der Sortier-Items nicht verändern.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const shuffledItems = useMemo(() => seededShuffle(`${card.id}:${card.front}`, question.items), [card.id, card.front])
   const [order, setOrder]         = useState<string[]>(shuffledItems)
   const [activeId, setActiveId]   = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)

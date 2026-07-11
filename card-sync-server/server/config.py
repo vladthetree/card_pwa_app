@@ -40,6 +40,11 @@ HEALTH_LOG_EVERY_MS = os.environ.get("SYNC_HEALTH_LOG_EVERY_MS", "60000")
 
 DEFAULT_PROFILE_NAME = "Default"
 
+# Familien-PIN für /auth/profile/join auf Nicht-Default-Profile. Leer = Join
+# auf persönliche Profile ist deaktiviert (fail closed); das Default-Profil
+# (geteilte Bibliothek) bleibt bewusst ohne PIN beitretbar.
+JOIN_PIN = os.environ.get("SYNC_JOIN_PIN", "")
+
 SY0_701_ROOT_DECKS = {
   "1": ("01_General_Security_Concepts", "General Security Concepts"),
   "2": ("02_Threats_Vulnerabilities_Mitigations", "Threats, Vulnerabilities, and Mitigations"),

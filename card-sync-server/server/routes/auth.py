@@ -1,11 +1,12 @@
 """Auth + profile routes: profile creation, pairing, recovery, revoke, device
 removal, profile switch/join, and the public/default profile lookups.
 """
+import hmac
 import sqlite3
 import time
 from urllib.parse import urlparse, parse_qs
 
-from server.config import DEFAULT_PROFILE_NAME
+from server.config import DEFAULT_PROFILE_NAME, JOIN_PIN
 from server.common.helpers import client_short as _client_short, parse_int
 from server.auth.tokens import (
   generate_pairing_code,
@@ -41,10 +42,16 @@ class AuthRoutesMixin:
       conn.close()
 
   # ---------------------------------------------------------------------------
-  # GET /auth/public-profiles  — list all profiles with deck counts (no auth)
+  # GET /auth/public-profiles  — list all profiles with deck counts
+  # (requires auth: die globale Profilliste inkl. userIds ist der Schlüssel
+  # zum Join-Flow und gehört nicht unauthentifiziert ins WLAN)
   # ---------------------------------------------------------------------------
 
   def _route_auth_public_profiles(self):
+    if not self._resolve_auth():
+      self._send_json(401, {"ok": False, "error": "unauthorized"})
+      return
+
     conn = open_db(sqlite3.Row)
     try:
       rows = conn.execute("""
@@ -68,7 +75,9 @@ class AuthRoutesMixin:
       conn.close()
 
   # ---------------------------------------------------------------------------
-  # POST /auth/profile/join  — join any public profile (no auth required)
+  # POST /auth/profile/join  — join a profile. Das Default-Profil (geteilte
+  # Bibliothek) bleibt ohne Nachweis beitretbar (Zero-Touch-Onboarding);
+  # persönliche Profile verlangen die Familien-PIN (SYNC_JOIN_PIN, fail closed).
   # ---------------------------------------------------------------------------
 
   def _route_auth_profile_join(self):
@@ -99,6 +108,17 @@ class AuthRoutesMixin:
       if not user:
         self._send_json(404, {"ok": False, "error": "profile_not_found"})
         return
+
+      if user_id != get_default_profile_id(conn):
+        join_pin = str(data.get("joinPin") or "")
+        if not JOIN_PIN:
+          log(f"AUTH_PROFILE_JOIN_DENIED  ip={client_ip}  user={_client_short(user_id)}  reason=pin_not_configured")
+          self._send_json(403, {"ok": False, "error": "join_pin_not_configured"})
+          return
+        if not join_pin or not hmac.compare_digest(join_pin, JOIN_PIN):
+          log(f"AUTH_PROFILE_JOIN_DENIED  ip={client_ip}  user={_client_short(user_id)}  reason=pin_invalid")
+          self._send_json(403, {"ok": False, "error": "join_pin_invalid"})
+          return
 
       # Revoke existing tokens for this device before issuing the new binding.
       # issue_device_token upserts the devices row; deleting it here would break

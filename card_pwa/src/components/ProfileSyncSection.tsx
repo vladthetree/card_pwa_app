@@ -99,6 +99,11 @@ const STRINGS = {
     recover_profile_desc: 'Stellt ein vorhandenes Profil auf diesem Gerät wieder her und lädt den Serverstand.',
     profile_connected: 'Bestehendes Profil wurde verbunden und initial synchronisiert.',
     recovery_invalid: 'Recovery-Code ist ungültig oder abgelaufen.',
+    join_pin_label: 'Familien-PIN',
+    join_pin_placeholder: 'PIN für Profilwechsel',
+    join_pin_hint: 'Für den Wechsel auf ein persönliches Profil wird die Familien-PIN benötigt (auf dem Server als SYNC_JOIN_PIN konfiguriert).',
+    join_pin_invalid: 'Familien-PIN ist falsch.',
+    join_pin_not_configured: 'Auf dem Server ist keine Familien-PIN konfiguriert (SYNC_JOIN_PIN). Profilwechsel ist deaktiviert.',
   },
   en: {
     title: 'Profile & Sync',
@@ -155,6 +160,11 @@ const STRINGS = {
     recover_profile_desc: 'Restores an existing profile on this device and pulls the server state.',
     profile_connected: 'Existing profile linked and initial sync completed.',
     recovery_invalid: 'Recovery code is invalid or expired.',
+    join_pin_label: 'Family PIN',
+    join_pin_placeholder: 'PIN for profile switch',
+    join_pin_hint: 'Switching to a personal profile requires the family PIN (configured on the server as SYNC_JOIN_PIN).',
+    join_pin_invalid: 'Family PIN is incorrect.',
+    join_pin_not_configured: 'No family PIN is configured on the server (SYNC_JOIN_PIN). Profile switching is disabled.',
   },
 } as const
 
@@ -193,6 +203,11 @@ function resolveErrorMessage(error: string, t: typeof STRINGS['de'] | typeof STR
       return t.device_already_linked
     case 'profile_name_reserved':
       return t.profile_name_reserved
+    case 'join_pin_invalid':
+    case 'join_pin_required':
+      return t.join_pin_invalid
+    case 'join_pin_not_configured':
+      return t.join_pin_not_configured
     default:
       return error
   }
@@ -205,6 +220,7 @@ export default function ProfileSyncSection({ language }: Props) {
   const [busy, setBusy] = useState(false)
   const [profileNameInput, setProfileNameInput] = useState('')
   const [recoveryCodeInput, setRecoveryCodeInput] = useState('')
+  const [joinPinInput, setJoinPinInput] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [publicProfiles, setPublicProfiles] = useState<PublicProfileSummary[]>([])
@@ -324,7 +340,7 @@ export default function ProfileSyncSection({ language }: Props) {
   const loadProfiles = async () => {
     if (!effectiveEndpoint) return
     setLoadingProfiles(true)
-    const listed = await listPublicProfiles(effectiveEndpoint)
+    const listed = await listPublicProfiles(effectiveEndpoint, profile?.profileToken)
     if (!listed.ok) {
       setLoadingProfiles(false)
       return
@@ -610,6 +626,7 @@ export default function ProfileSyncSection({ language }: Props) {
       target.userId,
       deviceId,
       navigator.userAgent.slice(0, 60),
+      target.isDefault ? undefined : joinPinInput.trim() || undefined,
     )
 
     if (!joined.ok || !joined.userId || !joined.profileToken) {
@@ -792,6 +809,26 @@ export default function ProfileSyncSection({ language }: Props) {
                 <p className="rounded-ds border border-zinc-900 bg-black/20 px-3 py-2 text-xs text-zinc-600">
                   {language === 'de' ? 'Kein weiteres Profil vorhanden.' : 'No other profile available.'}
                 </p>
+              )}
+
+              {showProfileList && otherProfiles.some(item => !item.isDefault) && (
+                <div className="rounded-ds border border-zinc-900 bg-black/20 px-3 py-2">
+                  <label htmlFor="join-pin-input" className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
+                    {t.join_pin_label}
+                  </label>
+                  <input
+                    id="join-pin-input"
+                    type="password"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    value={joinPinInput}
+                    onChange={event => setJoinPinInput(event.target.value)}
+                    maxLength={64}
+                    placeholder={t.join_pin_placeholder}
+                    className="mt-1 w-full rounded-ds border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-zinc-500"
+                  />
+                  <p className="mt-1 text-[11px] text-zinc-600">{t.join_pin_hint}</p>
+                </div>
               )}
 
               {showProfileList && otherProfiles.map(item => {

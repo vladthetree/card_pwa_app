@@ -8,6 +8,7 @@ import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import type { Card } from '../types'
 import type { Question, Answer } from '../utils/cardTextParser'
 import { correctDragMatchKey, scoreDragMatchChoice } from '../utils/dragMatchScoring'
+import { seededShuffle } from '../utils/hash'
 
 /**
  * DragMatchCard — Studien-Renderer "M2 Drag-Match" (rekonstruiert aus den
@@ -48,14 +49,6 @@ interface Props {
 // vom kanonischen Schlüssel der Option.
 const DISPLAY_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 
-function shuffle<T>(arr: T[]): T[] {
-  const out = [...arr]
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    const tmp = out[i]; out[i] = out[j]; out[j] = tmp
-  }
-  return out
-}
 
 const DragMatchCard = memo(function DragMatchCard({
   card, question, answer, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName, inputLocked = false,
@@ -68,10 +61,11 @@ const DragMatchCard = memo(function DragMatchCard({
   const correctKey = correctDragMatchKey(answer)
   const correctText = question.options[correctKey] ?? ''
 
-  // Optionen einmalig pro Karte mischen; jeder Eintrag behält seinen kanonischen
-  // Schlüssel, bekommt aber einen Anzeige-Buchstaben nach Position (wie im Screenshot).
+  // Optionen deterministisch pro Karte mischen (seeded): Reload/Resume ändert
+  // die Reihenfolge nicht. Jeder Eintrag behält seinen kanonischen Schlüssel,
+  // bekommt aber einen Anzeige-Buchstaben nach Position (wie im Screenshot).
   const shuffledOptions = useMemo(
-    () => shuffle(Object.entries(question.options)).map(([key, text], index) => ({
+    () => seededShuffle(`${card.id}:${card.front}`, Object.entries(question.options)).map(([key, text], index) => ({
       key,
       text,
       displayLetter: DISPLAY_LETTERS[index] ?? key,

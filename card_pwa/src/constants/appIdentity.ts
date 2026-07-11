@@ -20,6 +20,8 @@ export const STORAGE_KEYS = {
   brandingMigration: 'card-pwa-branding-migration-v1',
   homeShowHeatmap: 'card-pwa-home-heatmap',
   homeDashboardMode: 'card-pwa-home-dashboard-mode',
+  homeDashboardTodayMigration: 'card-pwa-home-dashboard-today-migrated',
+  todayPackagePointer: 'card-pwa-today-package-pointer',
   homeDeckSortMode: 'card-pwa-home-deck-sort-mode',
   homeShuffleDecksTop: 'card-pwa-home-shuffle-decks-top',
   homeShuffleOnlyMode: 'card-pwa-home-shuffle-only-mode',

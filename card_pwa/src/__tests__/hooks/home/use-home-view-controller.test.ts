@@ -30,7 +30,7 @@ describe('useHomeViewController helpers', () => {
       persistShuffleOnlyMode,
     } = await import('../../../hooks/home/useHomeViewController')
 
-    expect(readInitialDashboardMode()).toBe('pilot')
+    expect(readInitialDashboardMode()).toBe('today')
     expect(readInitialShuffleOnlyMode()).toBe(false)
 
     persistDashboardMode('pilot')
@@ -41,15 +41,29 @@ describe('useHomeViewController helpers', () => {
     expect(window.localStorage.getItem('card-pwa-home-shuffle-only-mode')).toBe('1')
   })
 
-  it('migrates removed life dashboard mode back to the Daily Quest mode', async () => {
+  it('migrates removed life dashboard mode to the Today package mode', async () => {
     window.localStorage.setItem('card-pwa-home-dashboard-mode', 'life')
     window.localStorage.setItem('card-pwa-home-heatmap', '1')
 
     const { readInitialDashboardMode } = await import('../../../hooks/home/useHomeViewController')
 
-    expect(readInitialDashboardMode()).toBe('pilot')
-    expect(window.localStorage.getItem('card-pwa-home-dashboard-mode')).toBe('pilot')
+    expect(readInitialDashboardMode()).toBe('today')
+    expect(window.localStorage.getItem('card-pwa-home-dashboard-mode')).toBe('today')
     expect(window.localStorage.getItem('card-pwa-home-heatmap')).toBe('0')
+  })
+
+  it('migrates the old pilot default to the Today package mode exactly once', async () => {
+    window.localStorage.setItem('card-pwa-home-dashboard-mode', 'pilot')
+
+    const { readInitialDashboardMode } = await import('../../../hooks/home/useHomeViewController')
+
+    // Erste Lesung: einmalige Migration auf das Heute-Paket.
+    expect(readInitialDashboardMode()).toBe('today')
+    expect(window.localStorage.getItem('card-pwa-home-dashboard-mode')).toBe('today')
+
+    // Bewusste spätere Pilot-Wahl bleibt dank Migrations-Flag bestehen.
+    window.localStorage.setItem('card-pwa-home-dashboard-mode', 'pilot')
+    expect(readInitialDashboardMode()).toBe('pilot')
   })
 
   it('validates deck creation input and maps duplicate errors', async () => {

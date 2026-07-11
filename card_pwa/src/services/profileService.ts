@@ -696,14 +696,16 @@ export async function restoreLocalStudyDataFromRollback(snapshot: LocalStudyData
   if (snapshot.shuffleCollections.length > 0) await db.shuffleCollections.bulkPut(snapshot.shuffleCollections)
 }
 
-/** GET /auth/public-profiles — list all public profiles with deck counts. No auth required. */
-export async function listPublicProfiles(endpoint: string): Promise<PublicProfilesResponse> {
+/** GET /auth/public-profiles — list all public profiles with deck counts (requires device token). */
+export async function listPublicProfiles(endpoint: string, profileToken?: string): Promise<PublicProfilesResponse> {
   const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
   const target = `${base}/auth/public-profiles`
   try {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    if (profileToken) headers.Authorization = `Bearer ${profileToken}`
     const res = await fetchWithTimeout(
       target,
-      { method: 'GET', headers: { 'Content-Type': 'application/json' } },
+      { method: 'GET', headers },
       SYNC_FETCH_TIMEOUT_MS,
     )
     const { json, error } = await resolveProfileApiResponse<PublicProfilesResponse>('list public profiles', target, res)
@@ -715,12 +717,13 @@ export async function listPublicProfiles(endpoint: string): Promise<PublicProfil
   }
 }
 
-/** POST /auth/profile/join — join any public profile without auth. */
+/** POST /auth/profile/join — Default-Profil ohne Nachweis, persönliche Profile nur mit Familien-PIN. */
 export async function joinPublicProfile(
   endpoint: string,
   userId: string,
   deviceId: string,
   deviceLabel?: string,
+  joinPin?: string,
 ): Promise<JoinProfileResponse> {
   const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
   const target = `${base}/auth/profile/join`
@@ -730,7 +733,12 @@ export async function joinPublicProfile(
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, deviceId, deviceLabel: deviceLabel ?? 'Browser' }),
+        body: JSON.stringify({
+          userId,
+          deviceId,
+          deviceLabel: deviceLabel ?? 'Browser',
+          ...(joinPin ? { joinPin } : {}),
+        }),
       },
       SYNC_FETCH_TIMEOUT_MS,
     )

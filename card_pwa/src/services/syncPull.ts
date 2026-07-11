@@ -604,10 +604,16 @@ async function applyReviewUndo(payload: unknown) {
     await db.cards.update(cardId, value.restored)
   }
 
+  // payload.reviewId ist die LOKALE Auto-Increment-ID des sendenden Geräts —
+  // hier zeigt sie fast sicher auf eine andere Zeile. Nur löschen, wenn die
+  // Zeile nachweislich zur selben Karte gehört; sonst jüngste Review der Karte.
   const reviewId = Number(value.reviewId)
   if (Number.isFinite(reviewId) && reviewId > 0) {
-    await db.reviews.delete(reviewId)
-    return
+    const candidate = await db.reviews.get(reviewId)
+    if (candidate && candidate.cardId === cardId) {
+      await db.reviews.delete(reviewId)
+      return
+    }
   }
 
   const latestReview = await db.reviews.where('cardId').equals(cardId).reverse().first()

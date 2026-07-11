@@ -10,7 +10,8 @@ import type { GamificationProfile } from '../../types'
 
 // 'clean' (Beleg `…23.40.53.jpeg`): Dashboard-Kachel fast komplett ausgeblendet,
 // bleibt aber als Swipe-Slide erreichbar, damit mobile Nutzer wieder herauskommen.
-export type HomeDashboardMode = 'kpi' | 'heatmap' | 'pilot' | 'quests' | 'clean'
+// 'today': geführtes Heute-Paket (Video → Abruf-Check → Karten) — erster Slide.
+export type HomeDashboardMode = 'today' | 'kpi' | 'heatmap' | 'pilot' | 'quests' | 'clean'
 
 interface Props {
   t: Record<string, string>
@@ -33,6 +34,10 @@ interface Props {
   questHasDecks?: boolean
   questStarting: boolean
   onStartDailyQuest: () => void
+  /** Kleinster Schritt: 5-Karten-Mini-Session (~3 Minuten). */
+  onStartMiniSession?: () => void
+  /** Heute-Paket (geführter Tagespfad Video → Abruf-Check → Karten). */
+  todayPackageTile?: ReactNode
 }
 
 function CompactStatTile({
@@ -80,8 +85,9 @@ function CompactStatTile({
   )
 }
 
-const DASHBOARD_CAROUSEL_MODES: HomeDashboardMode[] = ['pilot', 'quests', 'kpi', 'heatmap', 'clean']
+const DASHBOARD_CAROUSEL_MODES: HomeDashboardMode[] = ['today', 'pilot', 'quests', 'kpi', 'heatmap', 'clean']
 const DASHBOARD_LABELS: Record<HomeDashboardMode, string> = {
+  today: 'Heute',
   pilot: 'Pilot',
   quests: 'Quests',
   kpi: 'KPI',
@@ -155,17 +161,23 @@ function DashboardModeCarousel({
 
       <div className={`flex items-center justify-center gap-2 sm:hidden ${isCleanMode ? 'mt-0' : 'mt-2'}`} aria-label={language === 'de' ? 'Dashboard-Auswahl' : 'Dashboard selection'}>
         {DASHBOARD_CAROUSEL_MODES.map((option, index) => (
+          // 44px-Touch-Ziel (unsichtbares Padding + negatives Margin), der
+          // sichtbare Punkt bleibt klein.
           <button
             key={option}
             type="button"
             onClick={() => goTo(index)}
-            className={`h-2 rounded-full transition-all ${
-              activeIndex === index ? 'w-6 bg-white' : 'w-2 bg-white/30 hover:bg-white/50'
-            }`}
+            className="group -my-3.5 flex h-11 min-w-[44px] items-center justify-center"
             aria-label={language === 'de' ? `${DASHBOARD_LABELS[option]} anzeigen` : `Show ${DASHBOARD_LABELS[option]}`}
             aria-current={activeIndex === index}
             title={DASHBOARD_LABELS[option]}
-          />
+          >
+            <span
+              className={`h-2 rounded-full transition-all ${
+                activeIndex === index ? 'w-6 bg-white' : 'w-2 bg-white/30 group-hover:bg-white/50'
+              }`}
+            />
+          </button>
         ))}
       </div>
     </div>
@@ -185,6 +197,8 @@ export function HomeStatsSection({
   questHasDecks = true,
   questStarting,
   onStartDailyQuest,
+  onStartMiniSession,
+  todayPackageTile,
 }: Props) {
   const learningReviewCount = stats ? stats.learning + stats.review : 0
   const streakValue = gamificationProfile?.currentStreak ?? 0
@@ -218,6 +232,23 @@ export function HomeStatsSection({
 
   if (mode === 'kpi') {
     dashboardContent = statGrid
+  } else if (mode === 'today') {
+    dashboardContent = (
+      <div className="relative z-20 grid w-full min-w-0 gap-2 pb-1 sm:gap-3">
+        {todayPackageTile ?? (
+          <HomeDailyQuestTile
+            language={language}
+            questSize={questSize}
+            dueTodayTotal={stats?.nowDue ?? 0}
+            topDeckName={questTopDeckName}
+            hasDecks={questHasDecks}
+            starting={questStarting}
+            onStart={onStartDailyQuest}
+            onStartMini={onStartMiniSession}
+          />
+        )}
+      </div>
+    )
   } else if (mode === 'pilot') {
     dashboardContent = (
       <div className="relative z-20 grid w-full min-w-0 gap-2 pb-1 sm:gap-3">
@@ -229,6 +260,7 @@ export function HomeStatsSection({
           hasDecks={questHasDecks}
           starting={questStarting}
           onStart={onStartDailyQuest}
+          onStartMini={onStartMiniSession}
         />
       </div>
     )

@@ -7,7 +7,6 @@ all_src.txt
 .env.*.local
 !.env.example
 
-scripts/
 *.md
 *.sh
 .vscode/
@@ -17,10 +16,10 @@ scripts/
 logs/
 *.log
 
-public/sql-wasm.wasm
-
 !CLAUDE.md
-!scripts/
-scripts/*
-!scripts/check-safe-area-legacy.mjs
-!scripts/build-messer-transcripts.mjs
+
+# Build-/Betriebs-relevante Scripts sind versioniert (Clean Checkout muss
+# bauen: vite.config.ts importiert mediaServer.mjs, package.json referenziert
+# prod-server/validate/e2e/cert/ufw). Nur Ad-hoc-Reste bleiben ignoriert.
+!scripts/*.mjs
+!scripts/*.sh

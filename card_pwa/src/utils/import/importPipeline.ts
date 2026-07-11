@@ -138,6 +138,21 @@ export interface ImportResult {
 }
 
 /**
+ * Bestätigte Konflikt-Updates übernehmen NUR Inhalt (front/back/tags/extra) —
+ * nie den Lernzustand: queue/due/interval/reps/lapses/… bleiben unangetastet,
+ * sonst setzt ein Re-Import einer überarbeiteten Quelle den Fortschritt zurück.
+ */
+function buildContentOnlyCardUpdate(card: ImportedCard, importedAt: number) {
+  return {
+    front: card.front,
+    back:  card.back,
+    tags:  card.tags,
+    extra: card.extra,
+    updatedAt: importedAt,
+  }
+}
+
+/**
  * Schreibt den bestätigten ImportPlan in IndexedDB.
  * Neue Decks werden angelegt, Karten werden bulk-inserted / updated.
  */
@@ -157,25 +172,11 @@ export async function executeImport(plan: ImportPlan): Promise<ImportResult> {
       await db.cards.bulkAdd(normalizedToAdd)
     }
 
-    // Aktualisierungen (vom User bestätigt)
+    // Aktualisierungen (vom User bestätigt) — content-only, Lernzustand bleibt
     for (const card of normalizedToUpdate) {
-      await db.cards.where('noteId').equals(card.noteId).modify({
-        front:    card.front,
-        back:     card.back,
-        tags:     card.tags,
-        extra:    card.extra,
-        type:     card.type,
-        queue:    card.queue,
-        due:      card.due,
-        dueAt:    card.dueAt,
-        interval: card.interval,
-        factor:   card.factor,
-        stability: card.stability,
-        difficulty: card.difficulty,
-        reps:     card.reps,
-        lapses:   card.lapses,
-        algorithm: card.algorithm,
-      })
+      await db.cards.where('noteId').equals(card.noteId).modify(
+        buildContentOnlyCardUpdate(card, importedAt)
+      )
     }
   })
 
@@ -198,24 +199,7 @@ export async function executeImport(plan: ImportPlan): Promise<ImportResult> {
       ...normalizedToUpdate.map(card =>
         enqueueSyncOperation('card.update', {
           cardId: card.id,
-          updates: {
-            front: card.front,
-            back: card.back,
-            tags: card.tags,
-            extra: card.extra,
-            type: card.type,
-            queue: card.queue,
-            due: card.due,
-            dueAt: card.dueAt,
-            interval: card.interval,
-            factor: card.factor,
-            stability: card.stability,
-            difficulty: card.difficulty,
-            reps: card.reps,
-            lapses: card.lapses,
-            algorithm: card.algorithm,
-            updatedAt: importedAt,
-          },
+          updates: buildContentOnlyCardUpdate(card, importedAt),
           timestamp: importedAt,
         })
       ),
@@ -266,23 +250,9 @@ export async function executeImportWithProgress(
         const chunk = normalizedToUpdate.slice(i, i + CHUNK_SIZE)
         await Promise.all(
           chunk.map(card =>
-            db.cards.where('noteId').equals(card.noteId).modify({
-              front: card.front,
-              back: card.back,
-              tags: card.tags,
-              extra: card.extra,
-              type: card.type,
-              queue: card.queue,
-              due: card.due,
-              dueAt: card.dueAt,
-              interval: card.interval,
-              factor: card.factor,
-              stability: card.stability,
-              difficulty: card.difficulty,
-              reps: card.reps,
-              lapses: card.lapses,
-              algorithm: card.algorithm,
-            })
+            db.cards.where('noteId').equals(card.noteId).modify(
+              buildContentOnlyCardUpdate(card, importedAt)
+            )
           )
         )
         onProgress?.({
@@ -315,24 +285,7 @@ export async function executeImportWithProgress(
       ...normalizedToUpdate.map(card =>
         enqueueSyncOperation('card.update', {
           cardId: card.id,
-          updates: {
-            front: card.front,
-            back: card.back,
-            tags: card.tags,
-            extra: card.extra,
-            type: card.type,
-            queue: card.queue,
-            due: card.due,
-            dueAt: card.dueAt,
-            interval: card.interval,
-            factor: card.factor,
-            stability: card.stability,
-            difficulty: card.difficulty,
-            reps: card.reps,
-            lapses: card.lapses,
-            algorithm: card.algorithm,
-            updatedAt: importedAt,
-          },
+          updates: buildContentOnlyCardUpdate(card, importedAt),
           timestamp: importedAt,
         })
       ),

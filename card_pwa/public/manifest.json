@@ -51,19 +51,6 @@
       "purpose": "maskable"
     }
   ],
-  "share_target": {
-    "action": "/?view=import",
-    "method": "POST",
-    "enctype": "multipart/form-data",
-    "params": {
-      "files": [
-        {
-          "name": "file",
-          "accept": [".apkg", ".csv", "application/zip", "text/csv"]
-        }
-      ]
-    }
-  },
   "file_handlers": [
     {
       "action": "/?view=import",

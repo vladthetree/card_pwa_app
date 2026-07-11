@@ -6,7 +6,7 @@
  */
 import { db, type CardRecord } from '../../db'
 import { readAllCardsShared, readAllDecksShared } from './sharedReads'
-import { calculateCardStateAfterReview, SM2 } from '../../utils/sm2'
+import { calculateCardStateAfterReview, SM2, isStudyableCard } from '../../utils/sm2'
 import { calculateCardStateAfterReviewFSRS } from '../../utils/fsrs'
 import { type AlgorithmParams } from '../../utils/algorithmParams'
 import { enqueueSyncOperation } from '../../services/syncQueue'
@@ -164,6 +164,48 @@ export async function getYoungCardLapseRate(days = 30, maxReps = 3): Promise<You
   return { rate: total === 0 ? 0 : Math.round((lapses / total) * 100), total }
 }
 
+/**
+ * Zählt Karten, deren ERSTE Bewertung überhaupt heute passiert ist — also die
+ * heute „angebrochene" Neu-Karten-Dosis. Grundlage der Tagesdosis-Kappe
+ * (`newCardsPerDay`): Sessions dürfen nur noch die Differenz an neuen Karten
+ * ziehen. Wiederholungen bereits bekannter Karten zählen nicht.
+ */
+export async function countNewCardsIntroducedToday(nextDayStartsAt = 0): Promise<number> {
+  const todayStartMs = getDayStartMs(Date.now(), nextDayStartsAt)
+  const todayReviews = await db.reviews.where('timestamp').aboveOrEqual(todayStartMs).toArray()
+  const cardIds = Array.from(new Set(todayReviews.map(review => review.cardId)))
+  if (cardIds.length === 0) return 0
+
+  let introduced = 0
+  for (const cardId of cardIds) {
+    const earlier = await db.reviews
+      .where('[cardId+timestamp]')
+      .between([cardId, 0], [cardId, todayStartMs], true, false)
+      .count()
+    if (earlier === 0) introduced += 1
+  }
+  return introduced
+}
+
+/**
+ * IDs der Karten eines Decks, die heute mindestens einmal bewertet wurden.
+ * Misst den Karten-Schritt des Heute-Pakets ehrlich über echten Abruf statt
+ * über Klicks auf den Start-Button.
+ */
+export async function listDeckCardIdsReviewedToday(deckId: string, nextDayStartsAt = 0): Promise<string[]> {
+  const todayStartMs = getDayStartMs(Date.now(), nextDayStartsAt)
+  const [todayReviews, deckCards] = await Promise.all([
+    db.reviews.where('timestamp').aboveOrEqual(todayStartMs).toArray(),
+    db.cards.where('deckId').equals(deckId).toArray(),
+  ])
+  const deckCardIds = new Set(deckCards.filter(card => !card.isDeleted).map(card => card.id))
+  const reviewed = new Set<string>()
+  for (const review of todayReviews) {
+    if (deckCardIds.has(review.cardId)) reviewed.add(review.cardId)
+  }
+  return Array.from(reviewed)
+}
+
 export async function getGlobalStats(nextDayStartsAt = 0): Promise<GlobalStats> {
   const nowMs = Date.now()
   const dayMs = 86_400_000
@@ -192,6 +234,9 @@ export async function getGlobalStats(nextDayStartsAt = 0): Promise<GlobalStats> 
   for (const card of cards) {
     if (card.isDeleted) continue
     total += 1
+
+    // Suspendierte Karten zählen zum Bestand, aber nie als new/learning/due.
+    if (!isStudyableCard(card)) continue
 
     const isLearningType = card.type === SM2.CARD_TYPE_LEARNING || card.type === SM2.CARD_TYPE_RELEARNING
     const isReviewType = card.type === SM2.CARD_TYPE_REVIEW

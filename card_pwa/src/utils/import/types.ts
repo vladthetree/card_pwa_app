@@ -17,7 +17,7 @@ export interface ImportedDeck extends DeckRecord {}
 export interface ParsedImport {
   decks: ImportedDeck[]
   cards: ImportedCard[]
-  format: 'apkg' | 'colpkg' | 'csv' | 'txt'
+  format: 'apkg' | 'colpkg' | 'csv' | 'txt' | 'json'
   sourceName: string
 }
 

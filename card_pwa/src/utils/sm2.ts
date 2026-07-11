@@ -34,6 +34,17 @@ export const SM2 = {
   EASY_MULTIPLIER: DEFAULT_SM2_PARAMS.easyMultiplier,
 } as const
 
+/**
+ * Zentrale Lernbarkeits-Prüfung: suspendierte Karten (queue=-1, aus Anki-
+ * Importen) und gelöschte Karten dürfen weder in Lernstapeln noch in
+ * New/Learning/Due-Zählern auftauchen. Überall verwenden, wo Karten für
+ * Auswahl oder Statistik gefiltert werden.
+ */
+export function isStudyableCard(card: { queue?: number; isDeleted?: boolean }): boolean {
+  if (card.isDeleted) return false
+  return card.queue !== SM2.QUEUE_SUSPENDED
+}
+
 // ─── Private Helpers ─────────────────────────────────────────────────────────
 
 function calculateNewEase(currentEase: number, rating: number, params: SM2Params): number {

@@ -67,7 +67,30 @@ async function waitFor(check, timeoutMs, label) {
   return false
 }
 
+// Start-Splash ist tap-gated (Motivationsspruch bleibt stehen, bis man tippt).
+// Kann nach dem einmaligen SW-Install-Reload erneut auftauchen — deshalb vor
+// jedem click/shot prüfen und ggf. wegklicken (wartet bis der Tap scharf ist).
+async function dismissSplashIfPresent(maxWaitMs = 8000) {
+  const attempt = () => page.evaluate(() => {
+    const splash = document.querySelector('[data-testid="splash-continue"]')
+    if (!splash) return 'gone'
+    if (!document.querySelector('[data-testid="splash-continue-hint"]')) return 'not-ready'
+    splash.click()
+    return 'clicked'
+  })
+  const start = Date.now()
+  for (;;) {
+    let state
+    try { state = await attempt() } catch { state = 'not-ready' /* context swap (SW reload) */ }
+    if (state === 'gone') return
+    if (state === 'clicked') { await sleep(400); return }
+    if (Date.now() - start > maxWaitMs) { console.error('WARN  splash still tap-locked'); return }
+    await sleep(250)
+  }
+}
+
 async function clickText(text) {
+  await dismissSplashIfPresent()
   const hit = await page.evaluate(needle => {
     const n = needle.toLowerCase()
     const nodes = [...document.querySelectorAll('button, [role=button], a')]
@@ -101,6 +124,7 @@ async function runStep(step) {
       break
     }
     case 'shot': {
+      await dismissSplashIfPresent()
       const path = arg || 'card-pwa-shot.png'
       await page.screenshot({ path })
       console.log(`ok    shot: ${path}`)
@@ -108,6 +132,7 @@ async function runStep(step) {
     }
     case 'click': await clickText(arg); break
     case 'focus': {
+      await dismissSplashIfPresent()
       const el = await page.$(arg)
       if (!el) { console.error(`WARN  focus: no element matching ${arg}`); break }
       await el.click()
@@ -135,6 +160,9 @@ await waitFor(looksLikeHome, 60000, 'home screen')
 // First visit can trigger a one-time service-worker auto-reload; let it settle.
 await sleep(3000)
 await waitFor(looksLikeHome, 20000, 'home stable after SW setup')
+// Start-Splash wegklicken, sobald der Tap scharf ist (kommt nach dem
+// einmaligen SW-Install-Reload evtl. wieder — die Steps prüfen erneut).
+await dismissSplashIfPresent(15000)
 
 for (const step of steps) await runStep(step)
 

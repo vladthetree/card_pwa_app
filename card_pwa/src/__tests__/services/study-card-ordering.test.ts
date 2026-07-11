@@ -2,7 +2,7 @@
  * AI_CONTEXT: Vitest coverage for study session manager; protects services behavior from regressions in the learning PWA.
  */
 import { describe, expect, it } from 'vitest'
-import { getCardWeight, interleaveCardsByDeck, sortStudyCards } from '../../services/studyCardOrdering'
+import { getCardWeight, interleaveCardsByDeck, resolveNewCardAllowance, sortStudyCards } from '../../services/studyCardOrdering'
 import type { Card } from '../../types'
 
 function createCard(overrides: Partial<Card>): Card {
@@ -334,6 +334,58 @@ describe('sortStudyCards — due date filter (Bug 1 fix)', () => {
 
       const noDeckIds = [deckCard('x1'), deckCard('x2'), deckCard('x3')]
       expect(interleaveCardsByDeck(noDeckIds)).toEqual(noDeckIds)
+    })
+  })
+
+  // Tagesdosis neuer Karten (newCardsPerDay): kappt nur den Neu-Anteil einer
+  // Session — Fällige und Intraday-Lernschritte bleiben unangetastet.
+  describe('maxNewCards (Tagesdosis)', () => {
+    it('kappt neue Karten auf die Dosis, Fällige bleiben drin', () => {
+      const nowMs = Date.now()
+      const cards = [
+        ...Array.from({ length: 6 }, (_, idx) => createCard({ id: `new-${idx}`, type: 'new' })),
+        createCard({ id: 'review-due', type: 'review', dueAt: nowMs - 1_000, due: 1 }),
+      ]
+
+      const result = sortStudyCards(cards, { maxCards: 10, maxNewCards: 2 })
+      expect(result.filter(card => card.type === 'new')).toHaveLength(2)
+      expect(result.map(card => card.id)).toContain('review-due')
+      expect(result).toHaveLength(3)
+    })
+
+    it('bei aufgebrauchter Dosis (0) kommen keine neuen Karten mehr', () => {
+      const cards = Array.from({ length: 4 }, (_, idx) => createCard({ id: `new-${idx}`, type: 'new' }))
+      expect(sortStudyCards(cards, { maxCards: 10, maxNewCards: 0 })).toHaveLength(0)
+    })
+
+    it('Lern-/Relearning-Karten sind von der Dosis ausgenommen', () => {
+      const nowMs = Date.now()
+      const cards = [
+        createCard({ id: 'learning-1', type: 'learning', dueAt: nowMs - 1 }),
+        createCard({ id: 'new-1', type: 'new' }),
+      ]
+
+      const result = sortStudyCards(cards, { maxCards: 10, maxNewCards: 0 })
+      expect(result.map(card => card.id)).toEqual(['learning-1'])
+    })
+
+    it('ohne Option bleibt das Verhalten unverändert (unbegrenzt)', () => {
+      const cards = Array.from({ length: 5 }, (_, idx) => createCard({ id: `new-${idx}`, type: 'new' }))
+      expect(sortStudyCards(cards, { maxCards: 10 })).toHaveLength(5)
+    })
+  })
+
+  describe('resolveNewCardAllowance', () => {
+    it('0 oder ungültige Einstellung bedeutet unbegrenzt', () => {
+      expect(resolveNewCardAllowance(0, 5)).toBe(Number.POSITIVE_INFINITY)
+      expect(resolveNewCardAllowance(-1, 5)).toBe(Number.POSITIVE_INFINITY)
+      expect(resolveNewCardAllowance(Number.NaN, 5)).toBe(Number.POSITIVE_INFINITY)
+    })
+
+    it('zieht heute bereits angebrochene Karten von der Dosis ab', () => {
+      expect(resolveNewCardAllowance(10, 0)).toBe(10)
+      expect(resolveNewCardAllowance(10, 4)).toBe(6)
+      expect(resolveNewCardAllowance(10, 12)).toBe(0)
     })
   })
 })

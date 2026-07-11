@@ -9,9 +9,9 @@ import { useState, useEffect, useCallback, useMemo, useReducer, useRef } from 'r
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { ArrowLeft, RotateCcw, CheckCircle, AlertCircle, RefreshCw, Type, Info, Sparkles } from 'lucide-react'
 import { useDeckCards } from '../hooks/useCardDb'
-import { recordReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession, readActiveSession } from '../db/queries'
+import { recordReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession, readActiveSession, countNewCardsIntroducedToday } from '../db/queries'
 import { STRINGS, useSettings, type QuestionTextSize } from '../contexts/SettingsContext'
-import { interleaveCardsByDeck, sortStudyCards } from '../services/studyCardOrdering'
+import { interleaveCardsByDeck, resolveNewCardAllowance, sortStudyCards } from '../services/studyCardOrdering'
 import { buildDragMatchModePlan } from '../services/studyModeSelector'
 import {
   buildPersistedStudySession,
@@ -177,16 +177,36 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     dragMatchModeSeedRef.current = `${deck.id}:${Date.now()}:${Math.random()}`
   }, [deck.id])
 
+  // Tagesdosis neuer Karten: bereits heute angebrochene Karten abziehen, damit
+  // jede weitere Session nur die Rest-Dosis an Neuen zieht (null = lädt noch).
+  const [newCardAllowance, setNewCardAllowance] = useState<number | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    if (settings.newCardsPerDay <= 0) {
+      setNewCardAllowance(Number.POSITIVE_INFINITY)
+      return
+    }
+    void countNewCardsIntroducedToday(settings.nextDayStartsAt).then(introduced => {
+      if (!cancelled) setNewCardAllowance(resolveNewCardAllowance(settings.newCardsPerDay, introduced))
+    }).catch(() => {
+      if (!cancelled) setNewCardAllowance(Number.POSITIVE_INFINITY)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [deck.id, settings.newCardsPerDay, settings.nextDayStartsAt])
+
   const buildSessionCards = useCallback((inputCards: Card[], limit: number): Card[] => {
     const sorted = sortStudyCards(inputCards, {
       maxCards: normalizeStudyCardLimit(limit),
+      maxNewCards: newCardAllowance ?? Number.POSITIVE_INFINITY,
       nextDayStartsAt: settings.nextDayStartsAt,
       runSeed: dragMatchModeSeedRef.current,
     })
     // Daily Quest (deckübergreifende Session): Decks interleaven, damit kein
     // Deck die Queue als Block dominiert — Auswahl bleibt fälligkeitsbasiert.
     return deck.id === 'daily-quest' ? interleaveCardsByDeck(sorted) : sorted
-  }, [settings.nextDayStartsAt, deck.id])
+  }, [settings.nextDayStartsAt, deck.id, newCardAllowance])
 
   const clearPersistedSession = useCallback(() => {
     void clearActiveSession(deck.id)
@@ -232,6 +252,8 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
 
   useEffect(() => {
     if (loading) return
+    // Erst starten, wenn die Rest-Tagesdosis neuer Karten bekannt ist.
+    if (newCardAllowance === null) return
     if (session.isDone) return
     if (session.cards.length > 0) return
 
@@ -270,6 +292,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
   }, [
     cards,
     loading,
+    newCardAllowance,
     allowResume,
     deck.id,
     clearPersistedSession,

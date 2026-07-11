@@ -40,7 +40,7 @@ import { SettingsSliderRow } from './SettingsSliderRow'
 import { SettingsSwitchRow } from './SettingsSwitchRow'
 import ConfirmModal from './ConfirmModal'
 import ProfileSyncSection from './ProfileSyncSection'
-import { exportDbBackupAsCsv, exportDbBackupAsTxt } from '../utils/dbBackup'
+import { exportDbBackupAsCsv, exportDbBackupAsJson, exportDbBackupAsTxt } from '../utils/dbBackup'
 import { clearVideoProgress } from '../hooks/useMesserVideoProgress'
 import {
   MIN_STUDY_CARD_LIMIT,
@@ -96,6 +96,8 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     setDailyGoal,
     setRecallCheckSize,
     setDailyQuestSize,
+    setNewCardsPerDay,
+    setExamDateIso,
     setFocusMode,
     setSm2Params,
     setFsrsParams,
@@ -107,6 +109,16 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
   const [openSection, setOpenSection] = useState<SettingsSectionKey | null>(null)
   // Entscheidungsgrundlage für FSRS-Learning-Steps (Audit ⑥): erst messen.
   const [youngLapseStats, setYoungLapseStats] = useState<YoungCardLapseStats | null>(null)
+
+  // Dialog-Grundverhalten: Escape schließt das Modal.
+  useEffect(() => {
+    if (!isOpen) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [isOpen, onClose])
 
   useEffect(() => {
     if (openSection !== 'learning' || youngLapseStats !== null) return
@@ -639,11 +651,13 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     setNotificationTestStatus(mapWebPushStatusToText(status, t))
   }
 
-  const runDataExport = async (format: 'txt' | 'csv') => {
+  const runDataExport = async (format: 'txt' | 'csv' | 'json') => {
     setDataExportStatus(null)
     try {
       if (format === 'txt') {
         await exportDbBackupAsTxt()
+      } else if (format === 'json') {
+        await exportDbBackupAsJson()
       } else {
         await exportDbBackupAsCsv()
       }
@@ -689,6 +703,9 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
 
           {/* Modal */}
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="settings-modal-title"
             initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
@@ -702,7 +719,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
               <div className="flex min-w-0 items-center gap-2">
                 <SettingsIcon size={18} strokeWidth={1.5} className="text-zinc-400" />
                 <div className="min-w-0">
-                  <h2 className="text-zinc-100 font-black text-lg tracking-tight">{t.settings}</h2>
+                  <h2 id="settings-modal-title" className="text-zinc-100 font-black text-lg tracking-tight">{t.settings}</h2>
                   <p className="text-xs text-zinc-500 mt-0.5">
                     {t.settings_expand_sections}
                   </p>
@@ -711,6 +728,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
               <button
                 onClick={onClose}
                 className="ds-icon-button flex h-9 w-9"
+                aria-label={settings.language === 'de' ? 'Einstellungen schließen' : 'Close settings'}
               >
                 <X size={18} strokeWidth={1.5} />
               </button>
@@ -1010,6 +1028,52 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                       : 'Cap for the cross-deck daily quest session on the home screen.'}
                     ariaLabel={settings.language === 'de' ? 'Karten pro Daily Quest' : 'Cards per daily quest'}
                   />
+
+                  <SettingsSliderRow
+                    sectionLabel={settings.language === 'de' ? 'Neue Karten' : 'New cards'}
+                    label={settings.language === 'de' ? 'Neue Karten pro Tag' : 'New cards per day'}
+                    valueLabel={settings.newCardsPerDay === 0 ? '∞' : settings.newCardsPerDay}
+                    value={settings.newCardsPerDay}
+                    min={0}
+                    max={50}
+                    step={1}
+                    onValueChange={setNewCardsPerDay}
+                    help={settings.language === 'de'
+                      ? 'Tagesdosis unbekannter Karten über alle Sessions — hält den Einstieg klein und vorhersagbar. 0 = unbegrenzt.'
+                      : 'Daily dose of unseen cards across all sessions — keeps getting started small and predictable. 0 = unlimited.'}
+                    ariaLabel={settings.language === 'de' ? 'Neue Karten pro Tag' : 'New cards per day'}
+                  />
+
+                  <div>
+                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
+                      {settings.language === 'de' ? 'Prüfungstermin' : 'Exam date'}
+                    </label>
+                    <div className={`${UI_TOKENS.surface.panelSoft} p-4`}>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="date"
+                          value={settings.examDateIso ?? ''}
+                          onChange={event => setExamDateIso(event.target.value || null)}
+                          aria-label={settings.language === 'de' ? 'Prüfungstermin' : 'Exam date'}
+                          className="flex-1 rounded-ds border border-[#18181b] bg-[#0c0c0c] px-3 py-2 font-mono text-sm text-white [color-scheme:dark] focus:border-[--brand-primary-50] focus:outline-none"
+                        />
+                        {settings.examDateIso && (
+                          <button
+                            type="button"
+                            onClick={() => setExamDateIso(null)}
+                            className="rounded-ds border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-xs font-semibold text-white/70 transition hover:border-[#3f3f46] hover:text-white"
+                          >
+                            {settings.language === 'de' ? 'Entfernen' : 'Clear'}
+                          </button>
+                        )}
+                      </div>
+                      <p className="mt-2 text-xs leading-relaxed text-white/45">
+                        {settings.language === 'de'
+                          ? 'Zieldatum (z. B. Security+). Die Heute-Kachel rechnet daraus ein ruhiges Tempo: restliche Videos und neue Karten pro Tag.'
+                          : 'Target date (e.g. Security+). The Today tile derives a calm pace from it: remaining videos and new cards per day.'}
+                      </p>
+                    </div>
+                  </div>
 
                   <div>
                     <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
@@ -1312,7 +1376,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     <p className="text-xs text-white/50 font-medium uppercase tracking-wide">
                       {settings.language === 'de' ? 'Lokale Daten' : 'Local data'}
                     </p>
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-4">
                       <button
                         type="button"
                         onClick={() => setShowImportModal(true)}
@@ -1336,6 +1400,14 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                       >
                         <Download size={13} strokeWidth={1.5} />
                         CSV
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { void runDataExport('json') }}
+                        className={`${UI_TOKENS.button.ghost} justify-center py-2.5`}
+                      >
+                        <Download size={13} strokeWidth={1.5} />
+                        JSON
                       </button>
                     </div>
                     {dataExportStatus && (

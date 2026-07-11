@@ -1,0 +1,218 @@
+/**
+ * AI_CONTEXT:
+ * Role: Data hook for the Home "Heute-Paket" tile — resolves today's course video,
+ *       derives the three step states (video, recall check, cards) from real signals,
+ *       and advances the completion pointer when a package is done.
+ * Used by: HomeView (todayPackageTile slide).
+ * Important: Step completion is measured via actual signals (recall run recorded,
+ *            cards reviewed via recordReview) — never via button clicks. The package
+ *            itself schedules nothing.
+ */
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { db } from '../../db'
+import {
+  listDeckCards,
+  listDeckCardIdsReviewedToday,
+  countNewCardsIntroducedToday,
+} from '../../db/queries'
+import { resolveNewCardAllowance, sortStudyCards } from '../../services/studyCardOrdering'
+import { buildLocalVideoManifest, type LocalVideoMeta } from '../../utils/localVideoManifest'
+import { getSecurityObjectiveDeckId, getSecurityObjectiveDeckName } from '../../utils/securityDeckHierarchy'
+import {
+  hasRecallRunSince,
+  persistTodayPackagePointer,
+  pickTodayVideo,
+  readTodayPackagePointer,
+} from '../../utils/todayPackage'
+import { readVideoProgress } from '../useMesserVideoProgress'
+import { readRecallScores, videoScoreKey } from '../useVideoRecallScores'
+import { getDayStartMs } from '../../utils/time'
+import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
+import type { Deck } from '../../types'
+
+const MANIFEST_URL = '/media/messer/index.json'
+
+export interface TodayPackageSteps {
+  video: boolean
+  recall: boolean
+  cards: boolean
+}
+
+export interface TodayPackageData {
+  loading: boolean
+  /** false = kein Videokatalog erreichbar UND keine Offline-Kopien. */
+  available: boolean
+  video: LocalVideoMeta | null
+  /** Position im Kurs (1-basiert) und Gesamtzahl, z. B. „Video 12/121“. */
+  videoNumber: number
+  videoTotal: number
+  steps: TodayPackageSteps
+  /** Deck der Objective für den Karten-Schritt (null = Deck ohne Karten). */
+  objectiveDeck: Deck | null
+  /** Karten, die im Karten-Schritt noch offen sind (Button-Label). */
+  remainingCards: number
+  /** Heute wurde (mindestens) ein Paket abgeschlossen. */
+  completedToday: boolean
+  /** Noch nicht abgeschlossene Kurs-Videos (Prüfungs-Pacing). */
+  remainingVideos: number
+  reload: () => void
+}
+
+async function loadVideoCatalog(): Promise<LocalVideoMeta[]> {
+  const files = new Set<string>()
+  try {
+    const res = await fetch(MANIFEST_URL, { cache: 'no-store' })
+    if (res.ok) {
+      const data = (await res.json()) as { files?: unknown }
+      if (Array.isArray(data.files)) {
+        for (const file of data.files) {
+          if (typeof file === 'string') files.add(file)
+        }
+      }
+    }
+  } catch {
+    // Offline — dann zählen nur die heruntergeladenen Kopien.
+  }
+  try {
+    for (const row of await db.videoDownloads.toArray()) files.add(row.file)
+  } catch {
+    // Ohne Downloads-Tabelle bleibt es beim Server-Manifest.
+  }
+  return buildLocalVideoManifest(Array.from(files))
+}
+
+interface Options {
+  nextDayStartsAt: number
+  newCardsPerDay: number
+  studyCardLimit: number
+}
+
+const EMPTY_STEPS: TodayPackageSteps = { video: false, recall: false, cards: false }
+
+export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimit }: Options): TodayPackageData {
+  const [data, setData] = useState<Omit<TodayPackageData, 'reload'>>({
+    loading: true,
+    available: false,
+    video: null,
+    videoNumber: 0,
+    videoTotal: 0,
+    steps: EMPTY_STEPS,
+    objectiveDeck: null,
+    remainingCards: 0,
+    completedToday: false,
+    remainingVideos: 0,
+  })
+  const catalogRef = useRef<LocalVideoMeta[] | null>(null)
+  const computeVersionRef = useRef(0)
+
+  const compute = useCallback(async () => {
+    const version = computeVersionRef.current + 1
+    computeVersionRef.current = version
+
+    if (catalogRef.current === null) {
+      catalogRef.current = await loadVideoCatalog()
+    }
+    const catalog = catalogRef.current
+    if (computeVersionRef.current !== version) return
+
+    if (catalog.length === 0) {
+      setData(prev => ({ ...prev, loading: false, available: false }))
+      return
+    }
+
+    const todayStartMs = getDayStartMs(Date.now(), nextDayStartsAt)
+    const progress = readVideoProgress()
+    const recallScores = readRecallScores()
+
+    const computeSteps = async (video: LocalVideoMeta): Promise<{
+      steps: TodayPackageSteps
+      objectiveDeck: Deck | null
+      remainingCards: number
+    }> => {
+      const progressEntry = progress[video.objective]
+      const videoDone = progressEntry?.watched === true && progressEntry.updatedAt >= todayStartMs
+      const recallDone = hasRecallRunSince(recallScores[videoScoreKey(video.index)], todayStartMs)
+
+      const deckId = getSecurityObjectiveDeckId(video.objective)
+      const [deckCards, reviewedIds, introducedToday] = await Promise.all([
+        listDeckCards(deckId),
+        listDeckCardIdsReviewedToday(deckId, nextDayStartsAt),
+        newCardsPerDay > 0 ? countNewCardsIntroducedToday(nextDayStartsAt) : Promise.resolve(0),
+      ])
+      const maxNewCards = resolveNewCardAllowance(newCardsPerDay, introducedToday)
+      const preview = sortStudyCards(deckCards, { maxCards: studyCardLimit, maxNewCards, nextDayStartsAt })
+      const reviewedSet = new Set(reviewedIds)
+      const remaining = preview.filter(card => !reviewedSet.has(card.id))
+
+      const objectiveDeck: Deck | null = deckCards.length > 0
+        ? {
+            id: deckId,
+            name: getSecurityObjectiveDeckName(video.objective),
+            total: deckCards.length,
+            new: deckCards.filter(c => c.type === 'new').length,
+            learning: deckCards.filter(c => c.type === 'learning' || c.type === 'relearning').length,
+            due: deckCards.filter(c => c.type === 'review').length,
+          }
+        : null
+
+      return {
+        steps: {
+          video: videoDone || recallDone,
+          recall: recallDone,
+          // Ohne planbare Karten gilt der Schritt als erledigt (z. B. Dosis
+          // aufgebraucht oder Objective ohne Karten) — Abruf passiert dann im Check.
+          cards: preview.length === 0 || remaining.length === 0,
+        },
+        objectiveDeck,
+        remainingCards: remaining.length,
+      }
+    }
+
+    // Abgeschlossene Pakete vorrücken (in der Regel höchstens eins pro Aufruf).
+    let pointer = readTodayPackagePointer()
+    let video = pickTodayVideo(catalog, pointer.lastCompletedIndex)
+    let details = video ? await computeSteps(video) : null
+    while (video && details && details.steps.video && details.steps.recall && details.steps.cards) {
+      pointer = { lastCompletedIndex: video.index, lastCompletedAt: Date.now() }
+      persistTodayPackagePointer(pointer)
+      video = pickTodayVideo(catalog, pointer.lastCompletedIndex)
+      details = video ? await computeSteps(video) : null
+    }
+    if (computeVersionRef.current !== version) return
+
+    setData({
+      loading: false,
+      available: true,
+      video,
+      videoNumber: video ? catalog.findIndex(entry => entry.index === video?.index) + 1 : 0,
+      videoTotal: catalog.length,
+      steps: details?.steps ?? EMPTY_STEPS,
+      objectiveDeck: details?.objectiveDeck ?? null,
+      remainingCards: details?.remainingCards ?? 0,
+      completedToday: pointer.lastCompletedAt >= todayStartMs,
+      remainingVideos: catalog.filter(entry => entry.index > pointer.lastCompletedIndex).length,
+    })
+  }, [nextDayStartsAt, newCardsPerDay, studyCardLimit])
+
+  useEffect(() => {
+    void compute()
+
+    const onReviewUpdated = () => void compute()
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void compute()
+    }
+    window.addEventListener(REVIEW_UPDATED_EVENT, onReviewUpdated)
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      window.removeEventListener(REVIEW_UPDATED_EVENT, onReviewUpdated)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [compute])
+
+  const reload = useCallback(() => {
+    catalogRef.current = null
+    void compute()
+  }, [compute])
+
+  return { ...data, reload }
+}

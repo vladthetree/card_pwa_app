@@ -9,6 +9,7 @@ import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import { parseMcQuestion, parseMcAnswer, parseQuestion, parseAnswer } from '../utils/cardTextParser'
 import type { OrderingAnswer, MatchingAnswer } from '../utils/cardTextParser'
 import { isDragMatchShape, isFreeRecallCard } from '../utils/cardVariant'
+import { seededShuffle } from '../utils/hash'
 import type { Card } from '../types'
 
 const OrderingCard   = lazy(() => import('./OrderingCard'))
@@ -109,16 +110,6 @@ function getCorrectAnswerTextClass(size: 'default' | 'large' | 'xlarge' | 'xxlar
   return 'text-[10px] sm:text-xs'
 }
 
-function shuffleEntries<T>(entries: T[]): T[] {
-  const shuffled = [...entries]
-  for (let i = shuffled.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1))
-    const temp = shuffled[i]
-    shuffled[i] = shuffled[j]
-    shuffled[j] = temp
-  }
-  return shuffled
-}
 
 /**
  * CardFace: Renders front/back of flashcard with interactive elements
@@ -223,10 +214,11 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
     : (answered.correct ? [answered.correct] : [])
   // Inhalte werden pro Karte gemischt, die Anzeige-Buchstaben laufen aber immer
   // A, B, C, … nach Position. Logik (Auswahl/Korrektheit) bleibt am kanonischen
-  // Schlüssel der Option hängen.
+  // Schlüssel der Option hängen. Seeded statt Math.random: ein Reload/Resume
+  // mitten in der Session darf die Optionsreihenfolge nicht verändern.
   const displayOptions = useMemo(() => {
     const entries = Object.entries(question.options).filter(([, text]) => text)
-    const ordered = entries.length < 2 ? entries : shuffleEntries(entries)
+    const ordered = entries.length < 2 ? entries : seededShuffle(`${card.id}:${card.front}`, entries)
     return ordered.map(([key, text], index) => ({
       key,
       text,

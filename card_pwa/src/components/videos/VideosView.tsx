@@ -198,6 +198,10 @@ interface Props {
   /** Abruf-Check-Handoff: startet eine reguläre Lernsession des Objective-Decks
    *  mit den „Nicht gewusst"-Karten (verlässt die Video-Ansicht). */
   onStartObjectiveStudy?: (input: { deckId: string; deckName: string; cards: Card[] }) => void
+  /** Heute-Paket: dieses Kurs-Video (Playlist-Index) nach dem Laden direkt öffnen. */
+  initialVideoIndex?: number | null
+  /** Heute-Paket: zusätzlich direkt den Abruf-Check zum Video öffnen. */
+  initialRecallOpen?: boolean
 }
 
 function formatBytes(n: number): string {
@@ -541,7 +545,7 @@ function ChapterDownloadButton({
   )
 }
 
-export default function VideosView({ language, onExit, onStartObjectiveStudy }: Props) {
+export default function VideosView({ language, onExit, onStartObjectiveStudy, initialVideoIndex = null, initialRecallOpen = false }: Props) {
   const copy = COPY[language]
   const { isHandsetLayout } = useHandsetLayout()
   const isDesktop = !isHandsetLayout
@@ -622,6 +626,21 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy }: 
     setSeekRequest({ id: Date.now(), seconds })
     setCurrentVideoTime(seconds)
   }
+
+  // Heute-Paket-Sprungziel: das angeforderte Kurs-Video einmalig öffnen, sobald
+  // der Katalog geladen ist (optional direkt mit Abruf-Check).
+  const initialTargetConsumedRef = useRef(false)
+  useEffect(() => {
+    if (initialTargetConsumedRef.current) return
+    if (initialVideoIndex === null || initialVideoIndex === undefined) return
+    if (groups.length === 0) return
+    initialTargetConsumedRef.current = true
+    const target = groups.flatMap(group => group.videos).find(item => item.index === initialVideoIndex)
+    if (!target) return
+    openVideo(target)
+    if (initialRecallOpen) setRecallOpen(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groups, initialVideoIndex, initialRecallOpen])
 
   // Aus der Tag-Ansicht zu einem verbundenen Video springen.
   const openObjectiveFromTag = (objective: string) => {

@@ -400,9 +400,14 @@ async function persistReachability(state) {
 async function fetchAndCacheNavigation(request, timeoutMs) {
   const response = await fetchNavigationWithTimeout(request, timeoutMs)
   if (response && response.ok) {
-    const cache = await caches.open(CACHE_NAME)
-    await cache.put('/', response.clone())
-    await cache.put('/index.html', response.clone())
+    // Nur echte HTML-Antworten als App-Shell cachen: eine Navigation auf z. B.
+    // /health liefert JSON 200 und würde sonst die Offline-Shell vergiften.
+    const contentType = response.headers.get('content-type') || ''
+    if (contentType.includes('text/html')) {
+      const cache = await caches.open(CACHE_NAME)
+      await cache.put('/', response.clone())
+      await cache.put('/index.html', response.clone())
+    }
     void persistReachability('connected')
     return response
   }
@@ -460,6 +465,17 @@ self.addEventListener('fetch', event => {
   // (Seeking, iOS) nativ behandeln, und 206-/GB-Antworten gehören nicht in den
   // SW-Cache. Offline-Kopien werden separat in IndexedDB gehalten.
   if (url.pathname.startsWith('/media/') || request.destination === 'video') return
+
+  // API-Endpunkte nie abfangen oder cachen: Antworten von /auth, /sync und
+  // /health sind zustandsbehaftet (Tokens, Profil-Listen, Ops) und dürfen
+  // weder als Offline-Shell noch als Runtime-Cache-Treffer wieder auftauchen.
+  if (
+    url.pathname === '/health' ||
+    url.pathname.startsWith('/auth/') ||
+    url.pathname.startsWith('/sync/') ||
+    url.pathname === '/auth' ||
+    url.pathname === '/sync'
+  ) return
 
   const accepts = request.headers.get('accept') || ''
   const isDocumentRequest =
