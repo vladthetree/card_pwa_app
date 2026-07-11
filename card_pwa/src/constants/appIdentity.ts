@@ -29,6 +29,8 @@ export const STORAGE_KEYS = {
   homeActiveTab: 'card-pwa-home-active-tab',
   labsCompleted: 'card-pwa-labs-completed',
   labsTrainingSolved: 'card-pwa-labs-training-solved',
+  /** sessionStorage: ?view=import überlebt den SW-Install-/Update-Reload. */
+  pendingImportRequest: 'card-pwa-pending-import',
 } as const
 
 export const DATABASE_NAMES = {

@@ -20,7 +20,7 @@ import {
   listCardsByIds,
   pickDailyQuestCards,
 } from './db/queries'
-import { APP_NAME, SW_CHANNELS } from './constants/appIdentity'
+import { APP_NAME, STORAGE_KEYS, SW_CHANNELS } from './constants/appIdentity'
 import { supportsServiceWorker } from './env'
 import { useAutoJoinDefaultProfile } from './hooks/useAutoJoinDefaultProfile'
 import { pickLaunchMotivationQuote } from './utils/motivationQuote'
@@ -64,10 +64,24 @@ function isQuickStudyRequested(): boolean {
   return new URLSearchParams(window.location.search).get('view') === 'study'
 }
 
-/** Manifest-Shortcut und File-Handler verlinken auf `/?view=import`. */
+/** Manifest-Shortcut und File-Handler verlinken auf `/?view=import`.
+ *  Der SW-Install-/Update-Fluss lädt die Seite neu (controllerchange → reload),
+ *  nachdem der URL-Sync `?view=…` bereits entfernt hat — deshalb wird die
+ *  Anforderung in sessionStorage geparkt und erst beim Öffnen des ImportModals
+ *  konsumiert (useHomeViewController). */
 function isImportRequested(): boolean {
   if (typeof window === 'undefined') return false
-  return new URLSearchParams(window.location.search).get('view') === 'import'
+  if (new URLSearchParams(window.location.search).get('view') === 'import') {
+    try {
+      sessionStorage.setItem(STORAGE_KEYS.pendingImportRequest, '1')
+    } catch { /* best effort */ }
+    return true
+  }
+  try {
+    return sessionStorage.getItem(STORAGE_KEYS.pendingImportRequest) === '1'
+  } catch {
+    return false
+  }
 }
 
 /** Import-Anforderung an Home: token erzwingt den Effekt auch bei erneutem

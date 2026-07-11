@@ -367,6 +367,12 @@ export function useHomeViewController(input: {
     closeImport: () => {
       setShowImport(false)
       setImportFile(null)
+      // Geparkte ?view=import-Anforderung gilt erst jetzt als erledigt: das
+      // Flag muss den SW-Install-/Update-Reload überleben, der direkt nach
+      // dem ersten Öffnen feuern kann (App.tsx: controllerchange → reload).
+      try {
+        sessionStorage.removeItem(STORAGE_KEYS.pendingImportRequest)
+      } catch { /* best effort */ }
     },
     openExport: () => setShowExportModal(true),
     closeExport: () => setShowExportModal(false),
