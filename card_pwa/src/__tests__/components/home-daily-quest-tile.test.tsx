@@ -41,6 +41,8 @@ describe('HomeDailyQuestTile — Pilot-Modus (Beleg …23.36.20.jpeg)', () => {
     const html = render()
     expect(html).toContain('25 Karten starten')
     expect(html).not.toContain('Decks anzeigen')
+    expect(html).not.toContain('3 Minuten')
+    expect(html).not.toContain('daily-quest-mini')
     expect(html).toContain('data-testid="daily-quest-start"')
   })
 

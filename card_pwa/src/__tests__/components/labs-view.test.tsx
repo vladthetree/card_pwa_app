@@ -38,7 +38,7 @@ describe('LabsView — Liste (Beleg …23.38.26.jpeg)', () => {
     createElement(LabsView, { language: 'de', onExit: () => {} }),
   )
 
-  it('zeigt Titel, Untertitel und Fortschritts-Pill (x / 71)', () => {
+  it('zeigt Titel, Untertitel und Fortschritts-Pill mit aktuellem Inventarziel', () => {
     expect(html).toContain('Labs')
     expect(html).toContain('Interaktive Sicherheits-Szenarien')
     expect(html).toContain(`/ ${LAB_TARGET_INVENTORY}`)

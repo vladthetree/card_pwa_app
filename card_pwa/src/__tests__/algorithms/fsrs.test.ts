@@ -7,6 +7,11 @@ import { createNewCard } from '../fixtures/cardFixtures'
 import { expectDifficultyValid } from '../fixtures/assertions'
 
 describe('FSRS Algorithm', () => {
+  it.each([0, 5])('rejects out-of-range rating %i', (rating) => {
+    const card = createNewCard({ type: 2, queue: 2, reps: 3, interval: 3 })
+    expect(() => calculateCardStateAfterReviewFSRS(card, rating as 1 | 2 | 3 | 4)).toThrow(RangeError)
+  })
+
   describe('Core behavior', () => {
     it('keeps review state on rating 1 in current FSRS integration', () => {
       const card = createNewCard({ stability: 3, difficulty: 5, reps: 5, lapses: 2, type: 2, queue: 2 })

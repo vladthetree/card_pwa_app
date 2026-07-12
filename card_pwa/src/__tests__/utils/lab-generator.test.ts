@@ -23,7 +23,10 @@ import { STORAGE_KEYS } from '../../constants/appIdentity'
  * Zielkapazitaet (>= 9999 unterscheidbare Uebungs-Labs).
  */
 
-const SAMPLE_SEEDS = Array.from({ length: 60 }, (_v, i) => i * 7919 + 13)
+// 24 coprime-spaced seeds exercise every blueprint with 312 generated
+// scenarios. Variant-capacity tests below cover the full combinatorial range,
+// so generating 780 scenarios here only repeated the same invariants.
+const SAMPLE_SEEDS = Array.from({ length: 24 }, (_v, i) => i * 7919 + 13)
 
 describe('Lab-Blueprints — Pool-Invarianten', () => {
   it('IDs eindeutig, Kategorien existieren, jede Kategorie hat einen Blueprint', () => {

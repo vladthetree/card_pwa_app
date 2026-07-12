@@ -18,7 +18,7 @@ describe('csvImporter', () => {
   })
 
   it('creates UUIDv7 identifiers for imported decks and cards', async () => {
-    const parsed = await parseCsvText('sample.csv', 'Question,Answer\n', 'de', 'sm2')
+    const parsed = await parseCsvText('sample.csv', 'Question,Answer\nWhat is TLS?,Transport Layer Security\n', 'de', 'sm2')
 
     expect(parsed.decks).toHaveLength(1)
     expect(parsed.cards).toHaveLength(1)
@@ -27,7 +27,7 @@ describe('csvImporter', () => {
     expect(parsed.cards[0].noteId).toMatch(uuidV7Pattern)
   })
 
-  it('parses semicolon-separated csv and currently keeps header row as card', async () => {
+  it('parses semicolon-separated csv and skips a recognized header row', async () => {
     const parsed = await parseCsvText(
       'semicolon.csv',
       'Front;Back;Tags\nQ1;A1;tag1 tag2\nQ2;A2;tag3\n',
@@ -35,9 +35,9 @@ describe('csvImporter', () => {
       'sm2',
     )
 
-    expect(parsed.cards).toHaveLength(3)
-    expect(parsed.cards[0].front).toBe('Front')
-    expect(parsed.cards[0].back).toBe('Back')
+    expect(parsed.cards).toHaveLength(2)
+    expect(parsed.cards[0].front).toBe('Q1')
+    expect(parsed.cards[0].back).toBe('A1')
   })
 
   it('strips html tags from front/back content', async () => {

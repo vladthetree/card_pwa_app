@@ -175,7 +175,7 @@ export default function HomeView({
       return
     }
     let cancelled = false
-    void pickDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt, {
+    void pickDailyQuestCards(settings.studyCardLimit, settings.nextDayStartsAt, {
       excludeCardIds: todayPackage.activeCardIds,
       runSeed: 'daily-quest-preview',
     })
@@ -188,38 +188,19 @@ export default function HomeView({
     return () => {
       cancelled = true
     }
-  }, [settings.dailyQuestSize, settings.nextDayStartsAt, stats?.nowDue, todayPackage.loading, activePackageCardIdsKey])
+  }, [settings.studyCardLimit, settings.nextDayStartsAt, stats?.nowDue, todayPackage.loading, activePackageCardIdsKey])
   const questSize = questPreviewSize ?? 0
 
   const handleStartDailyQuest = async () => {
     if (questStarting || !onStartDailyQuest) return
     setQuestStarting(true)
     try {
-      const questCards = await pickDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt, {
+      const questCards = await pickDailyQuestCards(settings.studyCardLimit, settings.nextDayStartsAt, {
         excludeCardIds: todayPackage.activeCardIds,
         runSeed: `daily-quest:${Date.now()}:${Math.random()}`,
       })
       if (questCards.length > 0) {
         onStartDailyQuest(questCards)
-      }
-    } finally {
-      setQuestStarting(false)
-    }
-  }
-
-  // Mini-Session: der kleinste immer verfügbare Schritt — 5 Karten, ~3 Minuten.
-  // Senkt die Startschwelle an Tagen, an denen die volle Quest zu groß wirkt.
-  const MINI_SESSION_SIZE = 5
-  const handleStartMiniSession = async () => {
-    if (questStarting || !onStartDailyQuest) return
-    setQuestStarting(true)
-    try {
-      const miniCards = await pickDailyQuestCards(MINI_SESSION_SIZE, settings.nextDayStartsAt, {
-        excludeCardIds: todayPackage.activeCardIds,
-        runSeed: `daily-quest-mini:${Date.now()}:${Math.random()}`,
-      })
-      if (miniCards.length > 0) {
-        onStartDailyQuest(miniCards)
       }
     } finally {
       setQuestStarting(false)
@@ -357,7 +338,6 @@ export default function HomeView({
               questHasDecks={decks.length > 0}
               questStarting={questStarting}
               onStartDailyQuest={() => { void handleStartDailyQuest() }}
-              onStartMiniSession={() => { void handleStartMiniSession() }}
               todayPackageTile={todayPackageTile}
             />
           </div>

@@ -2,6 +2,13 @@
  * AI_CONTEXT: Vitest coverage for use home view controller; protects hooks behavior from regressions in the learning PWA.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  persistDashboardMode,
+  persistShuffleOnlyMode,
+  readInitialDashboardMode,
+  readInitialShuffleOnlyMode,
+  submitHomeDeckCreation,
+} from '../../../hooks/home/homeControllerHelpers'
 
 describe('useHomeViewController helpers', () => {
   beforeEach(() => {
@@ -22,14 +29,7 @@ describe('useHomeViewController helpers', () => {
     })
   })
 
-  it('reads and persists dashboard mode preferences', async () => {
-    const {
-      readInitialDashboardMode,
-      persistDashboardMode,
-      readInitialShuffleOnlyMode,
-      persistShuffleOnlyMode,
-    } = await import('../../../hooks/home/useHomeViewController')
-
+  it('reads and persists dashboard mode preferences', () => {
     expect(readInitialDashboardMode()).toBe('today')
     expect(readInitialShuffleOnlyMode()).toBe(false)
 
@@ -41,21 +41,27 @@ describe('useHomeViewController helpers', () => {
     expect(window.localStorage.getItem('card-pwa-home-shuffle-only-mode')).toBe('1')
   })
 
-  it('migrates removed life dashboard mode to the Today package mode', async () => {
+  it('round-trips the clean dashboard mode', () => {
+    persistDashboardMode('clean')
+    expect(readInitialDashboardMode()).toBe('clean')
+  })
+
+  it('falls back to the Today package for unknown dashboard modes', () => {
+    window.localStorage.setItem('card-pwa-home-dashboard-mode', 'bogus')
+    expect(readInitialDashboardMode()).toBe('today')
+  })
+
+  it('migrates removed life dashboard mode to the Today package mode', () => {
     window.localStorage.setItem('card-pwa-home-dashboard-mode', 'life')
     window.localStorage.setItem('card-pwa-home-heatmap', '1')
-
-    const { readInitialDashboardMode } = await import('../../../hooks/home/useHomeViewController')
 
     expect(readInitialDashboardMode()).toBe('today')
     expect(window.localStorage.getItem('card-pwa-home-dashboard-mode')).toBe('today')
     expect(window.localStorage.getItem('card-pwa-home-heatmap')).toBe('0')
   })
 
-  it('migrates the old pilot default to the Today package mode exactly once', async () => {
+  it('migrates the old pilot default to the Today package mode exactly once', () => {
     window.localStorage.setItem('card-pwa-home-dashboard-mode', 'pilot')
-
-    const { readInitialDashboardMode } = await import('../../../hooks/home/useHomeViewController')
 
     // Erste Lesung: einmalige Migration auf das Heute-Paket.
     expect(readInitialDashboardMode()).toBe('today')
@@ -67,14 +73,13 @@ describe('useHomeViewController helpers', () => {
   })
 
   it('validates deck creation input and maps duplicate errors', async () => {
-    const { submitHomeDeckCreation } = await import('../../../hooks/home/useHomeViewController')
     const createDeckMock = vi.fn()
 
     await expect(submitHomeDeckCreation('   ', {
       deck_name_empty: 'empty',
       deck_name_exists: 'exists',
       save_failed: 'failed',
-    }, createDeckMock as never)).resolves.toEqual({ ok: false, error: 'empty' })
+    }, createDeckMock)).resolves.toEqual({ ok: false, error: 'empty' })
     expect(createDeckMock).not.toHaveBeenCalled()
 
     createDeckMock.mockResolvedValueOnce({ ok: false, error: 'A deck with this name already exists.' })
@@ -82,14 +87,14 @@ describe('useHomeViewController helpers', () => {
       deck_name_empty: 'empty',
       deck_name_exists: 'exists',
       save_failed: 'failed',
-    }, createDeckMock as never)).resolves.toEqual({ ok: false, error: 'exists' })
+    }, createDeckMock)).resolves.toEqual({ ok: false, error: 'exists' })
 
     createDeckMock.mockResolvedValueOnce({ ok: true, deckId: 'deck-1' })
     await expect(submitHomeDeckCreation(' Alpha ', {
       deck_name_empty: 'empty',
       deck_name_exists: 'exists',
       save_failed: 'failed',
-    }, createDeckMock as never)).resolves.toEqual({ ok: true, error: null })
+    }, createDeckMock)).resolves.toEqual({ ok: true, error: null })
     expect(createDeckMock).toHaveBeenLastCalledWith('Alpha')
   })
 })

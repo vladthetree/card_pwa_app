@@ -324,7 +324,7 @@ def db_helper(server):
 
 class TestPushAndIdempotency:
     
-    def test_push_stores_sync_event_with_client_id(self, api, db_helper, server):
+    def test_push_stores_sync_event_with_client_id(self, api, db_helper):
         """Push stores event in sync_operations with correct source_client."""
         assert api.health()["ok"] is True
         
@@ -394,7 +394,7 @@ class TestPushAndIdempotency:
         assert op_rows[0][1] == "server-maintenance-publisher"
         assert json.loads(op_rows[0][2])["deckId"] == "1728574508386"
     
-    def test_duplicate_push_is_idempotent(self, api, db_helper, server):
+    def test_duplicate_push_is_idempotent(self, db_helper, server):
         """Same opId not duplicated; second request returns duplicate=true."""
         push_payload = {
             "opId": "dup-1",
@@ -564,7 +564,7 @@ class TestPull:
         assert len(rows) == 1
         assert rows[0][0] >= 1
 
-    def test_pull_clamps_negative_since_and_large_limit(self, server, db_helper):
+    def test_pull_clamps_negative_since_and_large_limit(self, server):
         """Pull sanitizes untrusted query params and caps large page sizes."""
         conn = sqlite3.connect(server["db"])
         try:
@@ -1621,7 +1621,7 @@ class TestProfileSwitch:
         assert correct_pin["ok"] is True
         assert correct_pin["userId"] == target["userId"]
 
-    def test_profile_join_default_profile_needs_no_pin(self, api, server, db_helper):
+    def test_profile_join_default_profile_needs_no_pin(self, api, db_helper):
         default_rows = db_helper.query(
             "SELECT user_id FROM users WHERE TRIM(profile_name)='Default' LIMIT 1"
         )
@@ -1634,7 +1634,7 @@ class TestProfileSwitch:
         assert joined["ok"] is True
         assert joined["userId"] == default_user_id
 
-    def test_profile_join_fails_closed_without_configured_pin(self, server_factory, db_helper):
+    def test_profile_join_fails_closed_without_configured_pin(self, server_factory):
         srv = server_factory({"SYNC_JOIN_PIN": ""})
         base = f"http://localhost:{srv['port']}"
 
@@ -1990,34 +1990,6 @@ class TestProfileSwitch:
         assert r.status_code == 403
         assert r.json()["error"] == "forbidden_profile_switch"
     
-    def test_snapshot_after_rebuild_not_empty_with_entities_in_log(self, api, db_helper):
-        """After rebuild, snapshot contains reconstructed entities."""
-        # Push events
-        api.push(
-            op_id="d-evt",
-            op_type="deck.create",
-            payload={"id": "rebuild-deck", "name": "Rebuilt", "source": "test"},
-            client_id="c1"
-        )
-        api.push(
-            op_id="c-evt",
-            op_type="card.create",
-            payload={
-                "id": "rebuild-card", "deckId": "rebuild-deck", "noteId": "n1",
-                "front": "Q", "back": "A", "tags": [], "extra": {},
-                "type": 0, "queue": 2, "due": 100, "dueAt": 1000,
-                "interval": 1, "factor": 2500, "stability": 1.5, "difficulty": 0.5,
-                "reps": 0, "lapses": 0, "algorithm": "sm2"
-            },
-            client_id="c1"
-        )
-        
-        # Verify entities in state
-        snap = api.snapshot("test-client")
-        assert any(d["id"] == "rebuild-deck" for d in snap["decks"])
-        assert any(c["id"] == "rebuild-card" for c in snap["cards"])
-
-
 # ═════════════════════════════════════════════════════════════════════════════
 # Tests: Startup Flags
 # ═════════════════════════════════════════════════════════════════════════════

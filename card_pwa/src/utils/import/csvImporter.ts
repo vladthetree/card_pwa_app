@@ -71,6 +71,14 @@ function isBackupCsvHeader(row: string[] | undefined): boolean {
   return BACKUP_CSV_HEADER.every((name, index) => (row[index] ?? '').trim() === name)
 }
 
+function isGenericCsvHeader(row: string[] | undefined): boolean {
+  if (!row || row.length < 2) return false
+  const normalize = (value: string | undefined) => (value ?? '').replace(/^\uFEFF/, '').trim().toLowerCase()
+  const frontHeaders = new Set(['front', 'question', 'frage', 'vorderseite'])
+  const backHeaders = new Set(['back', 'answer', 'antwort', 'rückseite'])
+  return frontHeaders.has(normalize(row[0])) && backHeaders.has(normalize(row[1]))
+}
+
 function numberOr(value: string | undefined, fallback: number): number {
   const parsed = Number(value)
   return Number.isFinite(parsed) ? parsed : fallback
@@ -485,6 +493,9 @@ export async function parseCsvText(
     // Spalten als front/back zu raten.
     if (isBackupCsvHeader(rowsToProcess[0])) {
       return parseBackupCsvRows(fileName, rowsToProcess.slice(1), now)
+    }
+    if (isGenericCsvHeader(rowsToProcess[0])) {
+      rowsToProcess = rowsToProcess.slice(1)
     }
   }
 

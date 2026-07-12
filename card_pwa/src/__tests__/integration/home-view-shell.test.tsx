@@ -213,6 +213,55 @@ vi.mock('../../hooks/home/useHomeStorageEstimate', () => ({
   }),
 }))
 
+vi.mock('../../hooks/home/useTodayPackage', () => ({
+  useTodayPackage: () => ({
+    activeCardIds: [],
+    available: false,
+    completedToday: false,
+    loading: false,
+    objectiveDeck: null,
+    remainingCards: 0,
+    remainingVideos: 0,
+    steps: [],
+    video: null,
+    videoNumber: 0,
+    videoTotal: 0,
+  }),
+}))
+
+vi.mock('../../db/queries', () => ({
+  pickDailyQuestCards: vi.fn(async () => []),
+}))
+
+vi.mock('../../utils/todayPackage', () => ({
+  computeExamPacing: () => null,
+}))
+
+vi.mock('../../utils/securityDeckHierarchy', () => ({
+  flattenDeckTree: (decks: Deck[]) => decks,
+}))
+
+vi.mock('../../utils/reviewDecks', () => ({
+  isReviewDeck: (candidate: Deck) => candidate.id.startsWith('needs-review'),
+}))
+
+vi.mock('../../ui/motion', async () => {
+  const React = await import('react')
+  const motion = new Proxy({}, {
+    get: (_target, tag: string) => ({ children, ...props }: Record<string, unknown>) => {
+      const clean = Object.fromEntries(
+        Object.entries(props).filter(([key]) => !['initial', 'animate', 'exit', 'transition', 'layout'].includes(key)),
+      )
+      return React.createElement(tag, clean, children as React.ReactNode)
+    },
+  })
+  return {
+    motion,
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => React.createElement(React.Fragment, null, children),
+    useReducedMotion: () => true,
+  }
+})
+
 vi.mock('../../components/home/HomeHeaderBar', () => ({
   HomeHeaderBar: (props: Record<string, unknown>) => <div data-test="header">{String(props.language)}</div>,
 }))
@@ -240,6 +289,18 @@ vi.mock('../../components/home/HomeShuffleSection', () => ({
     captured.shuffleSectionProps = props
     return <div data-test="shuffle-section">shuffle-section</div>
   },
+}))
+
+vi.mock('../../components/home/HomeBottomBar', () => ({
+  HomeBottomBar: () => <div data-test="bottom-bar">bottom-bar</div>,
+}))
+
+vi.mock('../../components/home/HomeTagBrowseSection', () => ({
+  HomeTagBrowseSection: () => <div data-test="tag-browse">tag-browse</div>,
+}))
+
+vi.mock('../../components/home/HomeTodayPackageTile', () => ({
+  HomeTodayPackageTile: () => <div data-test="today-package">today-package</div>,
 }))
 
 vi.mock('../../components/home/HomeCreateDeckModal', () => ({

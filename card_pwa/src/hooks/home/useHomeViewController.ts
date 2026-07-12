@@ -11,6 +11,21 @@ import type { Deck, ShuffleCollection } from '../../types'
 import { createDeck, deleteDeck, deleteShuffleCollection } from '../../db/queries'
 import { exportDbBackupAsCsv, exportDbBackupAsJson, exportDbBackupAsTxt } from '../../utils/dbBackup'
 import { subscribeToWebPushNotifications } from '../../services/webPush'
+import {
+  persistDashboardMode,
+  persistShuffleOnlyMode,
+  readInitialDashboardMode,
+  readInitialShuffleOnlyMode,
+  submitHomeDeckCreation,
+} from './homeControllerHelpers'
+
+export {
+  persistDashboardMode,
+  persistShuffleOnlyMode,
+  readInitialDashboardMode,
+  readInitialShuffleOnlyMode,
+  submitHomeDeckCreation,
+} from './homeControllerHelpers'
 
 export interface HomeConfirmModalState {
   title: string
@@ -18,71 +33,6 @@ export interface HomeConfirmModalState {
   confirmLabel?: string
   variant?: 'danger' | 'default'
   onConfirm: () => void
-}
-
-interface HomeDeckCreateStrings {
-  deck_name_empty: string
-  deck_name_exists: string
-  save_failed: string
-}
-
-export function readInitialDashboardMode(): HomeDashboardMode {
-  if (typeof window === 'undefined') return 'today'
-  const stored = window.localStorage.getItem(STORAGE_KEYS.homeDashboardMode)
-  if (stored === 'today' || stored === 'kpi' || stored === 'heatmap' || stored === 'quests' || stored === 'clean') return stored
-  // 'pilot' (alte Standard-Kachel) EINMALIG auf das Heute-Paket migrieren —
-  // der geführte Tagespfad soll der erste Blick beim Öffnen sein. Das Flag
-  // stellt sicher, dass eine spätere bewusste Pilot-Wahl bestehen bleibt.
-  if (stored === 'pilot') {
-    if (window.localStorage.getItem(STORAGE_KEYS.homeDashboardTodayMigration) === '1') return 'pilot'
-    window.localStorage.setItem(STORAGE_KEYS.homeDashboardTodayMigration, '1')
-    window.localStorage.setItem(STORAGE_KEYS.homeDashboardMode, 'today')
-    return 'today'
-  }
-  if (stored === 'life') {
-    window.localStorage.setItem(STORAGE_KEYS.homeDashboardMode, 'today')
-    window.localStorage.setItem(STORAGE_KEYS.homeShowHeatmap, '0')
-    return 'today'
-  }
-  return window.localStorage.getItem(STORAGE_KEYS.homeShowHeatmap) === '1' ? 'heatmap' : 'today'
-}
-
-export function persistDashboardMode(mode: HomeDashboardMode): void {
-  if (typeof window === 'undefined') return
-  window.localStorage.setItem(STORAGE_KEYS.homeDashboardMode, mode)
-  window.localStorage.setItem(STORAGE_KEYS.homeShowHeatmap, mode === 'heatmap' ? '1' : '0')
-}
-
-export function readInitialShuffleOnlyMode(): boolean {
-  if (typeof window === 'undefined') return false
-  return window.localStorage.getItem(STORAGE_KEYS.homeShuffleOnlyMode) === '1'
-}
-
-export function persistShuffleOnlyMode(value: boolean): void {
-  if (typeof window === 'undefined') return
-  window.localStorage.setItem(STORAGE_KEYS.homeShuffleOnlyMode, value ? '1' : '0')
-}
-
-export async function submitHomeDeckCreation(
-  deckName: string,
-  strings: HomeDeckCreateStrings,
-  createDeckFn: typeof createDeck = createDeck,
-): Promise<{ ok: boolean; error: string | null }> {
-  const trimmed = deckName.trim()
-  if (!trimmed) {
-    return { ok: false, error: strings.deck_name_empty }
-  }
-
-  const result = await createDeckFn(trimmed)
-  if (!result.ok) {
-    const isDuplicate = result.error?.toLowerCase().includes('already exists') ?? false
-    return {
-      ok: false,
-      error: isDuplicate ? strings.deck_name_exists : (result.error ?? strings.save_failed),
-    }
-  }
-
-  return { ok: true, error: null }
 }
 
 export function useHomeViewController(input: {
@@ -276,7 +226,7 @@ export function useHomeViewController(input: {
       deck_name_empty: t.deck_name_empty,
       deck_name_exists: t.deck_name_exists,
       save_failed: t.save_failed,
-    })
+    }, createDeck)
     setIsCreatingDeck(false)
 
     if (!result.ok) {

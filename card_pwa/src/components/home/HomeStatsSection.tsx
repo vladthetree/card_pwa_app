@@ -34,8 +34,6 @@ interface Props {
   questHasDecks?: boolean
   questStarting: boolean
   onStartDailyQuest: () => void
-  /** Kleinster Schritt: 5-Karten-Mini-Session (~3 Minuten). */
-  onStartMiniSession?: () => void
   /** Heute-Paket (geführter Tagespfad Video → Abruf-Check → Karten). */
   todayPackageTile?: ReactNode
 }
@@ -197,7 +195,6 @@ export function HomeStatsSection({
   questHasDecks = true,
   questStarting,
   onStartDailyQuest,
-  onStartMiniSession,
   todayPackageTile,
 }: Props) {
   const learningReviewCount = stats ? stats.learning + stats.review : 0
@@ -244,7 +241,6 @@ export function HomeStatsSection({
             hasDecks={questHasDecks}
             starting={questStarting}
             onStart={onStartDailyQuest}
-            onStartMini={onStartMiniSession}
           />
         )}
       </div>
@@ -260,7 +256,6 @@ export function HomeStatsSection({
           hasDecks={questHasDecks}
           starting={questStarting}
           onStart={onStartDailyQuest}
-          onStartMini={onStartMiniSession}
         />
       </div>
     )

@@ -58,10 +58,7 @@ interface Settings {
   dailyGoal: number
   /** Fragenanzahl pro Video-Abruf-Check (Lernvideos). */
   recallCheckSize: number
-  /** Eigenstaendige Zielgroesse der deckuebergreifenden Daily Quest. */
-  dailyQuestSize: number
-  /** Tagesdosis neuer Karten fuer Deck-/Paket-Sessions (0 = unbegrenzt).
-   *  Die eigenstaendige Daily Quest verwendet stattdessen dailyQuestSize. */
+  /** Tagesdosis neuer Karten fuer Deck-/Paket-Sessions (0 = unbegrenzt). */
   newCardsPerDay: number
   /** Prüfungstermin (ISO YYYY-MM-DD, z. B. Sec+) für den Countdown mit
    *  Tempo-Empfehlung auf der Heute-Kachel. null = kein Termin gesetzt. */
@@ -96,7 +93,6 @@ interface SettingsContextType {
   setNextDayStartsAt: (hour: number) => void
   setDailyGoal: (goal: number) => void
   setRecallCheckSize: (size: number) => void
-  setDailyQuestSize: (size: number) => void
   setNewCardsPerDay: (count: number) => void
   setExamDateIso: (dateIso: string | null) => void
   setFocusMode: (enabled: boolean) => void
@@ -186,7 +182,6 @@ const DEFAULT_SETTINGS: Settings = {
   nextDayStartsAt: 4,
   dailyGoal: 20,
   recallCheckSize: 7,
-  dailyQuestSize: 25,
   newCardsPerDay: 10,
   examDateIso: null,
   focusMode: false,
@@ -204,12 +199,6 @@ function normalizeRecallCheckSize(value: unknown): number {
   const parsed = Number(value)
   if (!Number.isFinite(parsed)) return 7
   return Math.max(3, Math.min(15, Math.round(parsed)))
-}
-
-function normalizeDailyQuestSize(value: unknown): number {
-  const parsed = Number(value)
-  if (!Number.isFinite(parsed)) return 25
-  return Math.max(10, Math.min(100, Math.round(parsed / 5) * 5))
 }
 
 export function normalizeNewCardsPerDay(value: unknown): number {
@@ -255,7 +244,6 @@ export function normalizeSettings(input: Partial<Settings> | undefined): Setting
     nextDayStartsAt: Number.isInteger(rawNextDayStartsAt) && rawNextDayStartsAt >= 0 && rawNextDayStartsAt <= 23 ? rawNextDayStartsAt : 4,
     dailyGoal: normalizeDailyGoal(input?.dailyGoal),
     recallCheckSize: normalizeRecallCheckSize(input?.recallCheckSize),
-    dailyQuestSize: normalizeDailyQuestSize(input?.dailyQuestSize),
     newCardsPerDay: normalizeNewCardsPerDay(input?.newCardsPerDay),
     examDateIso: normalizeExamDateIso(input?.examDateIso),
     focusMode: input?.focusMode === true,
@@ -436,10 +424,6 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     saveSettings({ ...settings, recallCheckSize: normalizeRecallCheckSize(size) })
   }
 
-  const setDailyQuestSize = (size: number) => {
-    saveSettings({ ...settings, dailyQuestSize: normalizeDailyQuestSize(size) })
-  }
-
   const setNewCardsPerDay = (count: number) => {
     saveSettings({ ...settings, newCardsPerDay: normalizeNewCardsPerDay(count) })
   }
@@ -522,7 +506,6 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setNextDayStartsAt,
         setDailyGoal,
         setRecallCheckSize,
-        setDailyQuestSize,
         setNewCardsPerDay,
         setExamDateIso,
         setFocusMode,

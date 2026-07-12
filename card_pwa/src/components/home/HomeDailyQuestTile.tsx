@@ -2,13 +2,13 @@
  * AI_CONTEXT: Home-screen React component for home Daily Quest Tile; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
 import { motion } from '../../ui/motion'
-import { ListChecks, Play, Timer } from 'lucide-react'
+import { ListChecks, Play } from 'lucide-react'
 
 /**
  * HomeDailyQuestTile — Dashboard-Modus "Pilot" (rekonstruiert aus dem
  * Handy-Screenshot vom 8. Juni 2026, `WhatsApp …23.36.20.jpeg`):
- * "DAILY QUEST / Jetzt: 25 Karten / <Top-Deck> · <heute fällig> …" mit
- * klarem "25 Karten starten"-Button.
+ * "DAILY QUEST / Jetzt: <Tageslimit> Karten / <Top-Deck> · <heute fällig> …"
+ * mit einer klaren Start-Aktion.
  * Startet eine gemischte Session über mehrere Decks (pickDailyQuestCards).
  */
 
@@ -17,7 +17,6 @@ const COPY = {
     label: 'Daily Quest',
     now: (count: number) => `Jetzt: ${count} ${count === 1 ? 'Karte' : 'Karten'}`,
     start: (count: number) => `${count} ${count === 1 ? 'Karte' : 'Karten'} starten`,
-    mini: 'Nur 3 Minuten · 5 Karten',
     dueToday: (count: number) => `${count} heute fällig`,
     mixed: 'Alle Decks · fällige zuerst',
     focus: (name: string) => `Fokus: ${name}`,
@@ -29,7 +28,6 @@ const COPY = {
     label: 'Daily Quest',
     now: (count: number) => `Now: ${count} ${count === 1 ? 'card' : 'cards'}`,
     start: (count: number) => `Start ${count} ${count === 1 ? 'card' : 'cards'}`,
-    mini: 'Just 3 minutes · 5 cards',
     dueToday: (count: number) => `${count} due today`,
     mixed: 'All decks · due cards first',
     focus: (name: string) => `Focus: ${name}`,
@@ -41,7 +39,7 @@ const COPY = {
 
 interface Props {
   language: 'de' | 'en'
-  /** Eigenstaendige Quest-Groesse (nur vom verfuegbaren Gesamtpool gekappt). */
+  /** Quest-Groesse aus "Taegliche Karten pro Deck" (vom Gesamtpool gekappt). */
   questSize: number
   /** Gesamtzahl jetzt fälliger Karten (stats.nowDue). */
   dueTodayTotal: number
@@ -51,12 +49,10 @@ interface Props {
   hasDecks?: boolean
   starting: boolean
   onStart: () => void
-  /** Kleinster Schritt: 5-Karten-Mini-Session (~3 Minuten). */
-  onStartMini?: () => void
 }
 
 export function HomeDailyQuestTile({
-  language, questSize, dueTodayTotal, topDeckName, hasDecks = true, starting, onStart, onStartMini,
+  language, questSize, dueTodayTotal, topDeckName, hasDecks = true, starting, onStart,
 }: Props) {
   const copy = COPY[language]
   const hasWork = questSize > 0
@@ -107,18 +103,6 @@ export function HomeDailyQuestTile({
             : <Play size={16} strokeWidth={2} />}
           <span className="min-w-0 truncate">{copy.start(questSize)}</span>
         </button>
-        {onStartMini && hasWork && (
-          <button
-            type="button"
-            data-testid="daily-quest-mini"
-            onClick={onStartMini}
-            disabled={starting}
-            className="flex min-h-[38px] min-w-0 items-center justify-center gap-2 rounded-ds border border-ds-border bg-transparent px-3 font-mono text-[12px] text-ds-muted transition-all duration-150 hover:border-ds-border-hover hover:text-ds-fg active:scale-[0.98]"
-          >
-            <Timer size={13} strokeWidth={2} />
-            <span className="min-w-0 truncate">{copy.mini}</span>
-          </button>
-        )}
       </div>
       )}
     </motion.section>

@@ -11,8 +11,13 @@ import {
 } from '../fixtures/assertions'
 
 describe('SM2 Algorithm', () => {
+  it.each([0, 5])('rejects out-of-range rating %i', (rating) => {
+    const card = createNewCard({ type: 2, queue: 2, reps: 3, interval: 3 })
+    expect(() => calculateCardStateAfterReview(card, rating as 1 | 2 | 3 | 4)).toThrow(RangeError)
+  })
+
   describe('Ease Factor Calculation', () => {
-    it('should decrease ease by 16% on rating 1 (Again)', () => {
+    it('decreases ease by 200 points on rating 1 (Again)', () => {
       const card = createNewCard({ factor: 2500, reps: 1, type: 2, queue: 2 })
       const result = calculateCardStateAfterReview(card, 1)
       // SM2 adjusts ease by fixed amounts: -200, -150, 0, +150
@@ -20,7 +25,7 @@ describe('SM2 Algorithm', () => {
       expectEaseWithinBounds(result.factor)
     })
 
-    it('should decrease ease by 20% on rating 2 (Hard)', () => {
+    it('decreases ease by 150 points on rating 2 (Hard)', () => {
       const card = createNewCard({ factor: 2500, reps: 1, type: 2, queue: 2 })
       const result = calculateCardStateAfterReview(card, 2)
       expect(result.factor).toBe(2350) // 2500 - 150
@@ -35,7 +40,7 @@ describe('SM2 Algorithm', () => {
       expectEaseWithinBounds(result.factor)
     })
 
-    it('should increase ease by 16% on rating 4 (Easy)', () => {
+    it('increases ease by 150 points on rating 4 (Easy)', () => {
       const card = createNewCard({ factor: 2500, reps: 1, type: 2, queue: 2 })
       const result = calculateCardStateAfterReview(card, 4)
       expect(result.factor).toBe(2650) // 2500 + 150

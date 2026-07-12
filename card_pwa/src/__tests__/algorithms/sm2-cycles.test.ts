@@ -93,12 +93,12 @@ describe('SM2 — Full Card Cycles', () => {
   // ─── Cycle 4: review → relearning (Again/Lapse path) ─────────────────────
 
   describe('Cycle: review → relearning (Again path)', () => {
-    it('new card + Again → learning reset, lapses=1, dueAt ~1 min from now', () => {
+    it('new card + Again → learning reset without a lapse, dueAt ~1 min from now', () => {
       const card = createNewCard({ type: 0, queue: 0, reps: 0, lapses: 0 })
       const result = calculateCardStateAfterReview(card, 1)
 
       expect(result.type).toBe(1)          // back to LEARNING
-        expect(result.lapses).toBe(0)
+      expect(result.lapses).toBe(0)
       expect(result.reps).toBe(0)          // reps reset
       expect(result.dueAt).toBeGreaterThan(Date.now())
       expect(result.dueAt).toBeLessThan(Date.now() + 3 * 60_000)

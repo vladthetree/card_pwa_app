@@ -639,7 +639,7 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
     void (async () => {
       if (await resumeStudySession()) return
       const activePackageCardIds = readTodayPackagePointer().activeCardIds ?? []
-      const cards = await pickDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt, {
+      const cards = await pickDailyQuestCards(settings.studyCardLimit, settings.nextDayStartsAt, {
         excludeCardIds: activePackageCardIds,
         runSeed: `quick-daily-quest:${Date.now()}:${Math.random()}`,
       })
