@@ -1,12 +1,15 @@
 import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
 import path from 'path'
 
 export default defineConfig({
-  plugins: [react()],
   test: {
     globals: true,
     environment: 'node',
+    // VM contexts keep file isolation without paying for a new process/worker
+    // per test file. A fixed limit also recycles workers before the VM module
+    // cache can grow without bounds on long watch sessions.
+    pool: 'vmThreads',
+    vmMemoryLimit: '512MB',
     testTimeout: 10000,
     setupFiles: [],
     coverage: {

@@ -135,7 +135,6 @@ export function useMesserVideoProgress() {
 
   const markWatched = useCallback((objective: string) => {
     setProgress(prev => {
-      if (prev[objective]?.watched) return prev
       const existing = prev[objective] ?? EMPTY_ENTRY
       const next = { ...prev, [objective]: { ...existing, watched: true, updatedAt: Date.now() } }
       persist(next)

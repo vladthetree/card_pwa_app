@@ -1024,8 +1024,8 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     step={5}
                     onValueChange={setDailyQuestSize}
                     help={settings.language === 'de'
-                      ? 'Obergrenze der deck-übergreifenden Daily-Quest-Session auf dem Homescreen.'
-                      : 'Cap for the cross-deck daily quest session on the home screen.'}
+                      ? 'Eigenständige Zielgröße der deck-übergreifenden Auswahl. Fällige Karten kommen zuerst, danach wird zufällig aus allen Decks aufgefüllt. Unabhängig vom aktuellen Paket und von „Neue Karten pro Tag“. Nur ein kleinerer verfügbarer Kartenpool kann die Anzahl reduzieren.'
+                      : 'Independent target size for the cross-deck selection. Due cards come first, then the quest is filled randomly from all decks. Independent of the current package and “New cards per day”; only a smaller available pool can reduce the count.'}
                     ariaLabel={settings.language === 'de' ? 'Karten pro Daily Quest' : 'Cards per daily quest'}
                   />
 
@@ -1039,8 +1039,8 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     step={1}
                     onValueChange={setNewCardsPerDay}
                     help={settings.language === 'de'
-                      ? 'Tagesdosis unbekannter Karten über alle Sessions — hält den Einstieg klein und vorhersagbar. 0 = unbegrenzt.'
-                      : 'Daily dose of unseen cards across all sessions — keeps getting started small and predictable. 0 = unlimited.'}
+                      ? 'Tagesdosis unbekannter Karten für normale Deck-Sessions und das aktuelle Lernpaket. Die Daily Quest hat ihre eigene Kartenanzahl. 0 = unbegrenzt.'
+                      : 'Daily dose of unseen cards for regular deck sessions and the current learning package. Daily Quest uses its own card count. 0 = unlimited.'}
                     ariaLabel={settings.language === 'de' ? 'Neue Karten pro Tag' : 'New cards per day'}
                   />
 

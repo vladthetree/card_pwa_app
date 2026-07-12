@@ -394,18 +394,18 @@ export const AI_MODE_GUIDES: AiModeGuide[] = [
   // ── Daily Quest (orthogonal) ───────────────────────────────────────────────
   {
     modeId: 'daily-quest',
-    name: 'Daily Quest (Pilot-Kachel: 25 Karten gemischt)',
+    name: 'Daily Quest (konfigurierbare Kartenanzahl, deckübergreifend)',
     purpose:
-      'Niedrigschwelliger Tageseinstieg: eine gemischte Session über alle Decks (max. 25 fällige Karten) direkt von der Startseite.',
+      'Eigenständiger Tageseinstieg: eine gemischte Session in der konfigurierten Größe über alle Decks, unabhängig vom aktuellen Lernpaket.',
     appLogic: [
-      'Kachel: src/components/home/HomeDailyQuestTile.tsx; Kartenwahl: pickDailyQuestCards (src/db/queries/decks.ts) → sortStudyCards-Priorisierung',
+      'Kachel: src/components/home/HomeDailyQuestTile.tsx; Kartenwahl: pickDailyQuestCards → buildDailyQuestSelection (fällige zuerst, Paketkarten ausgeschlossen, dann zufällig auffüllen und Decks interleaven)',
     ],
     researchBasis: [
       { claim: 'Tägliche, verteilte Übung schlägt seltene Marathon-Sitzungen bei gleicher Gesamtzeit.', sourceIds: ['cepeda-2006', 'dunlosky-2013'] },
       { claim: 'Kriteriumsbasiertes, über Tage verteiltes Wiederlernen (heute fällige Karten zuerst) ist die wirksamste Routine für dauerhaftes Wissen.', sourceIds: ['rawson-dunlosky-2022'] },
     ],
     dos: [
-      { text: 'Die Quest klein und täglich halten (≈ 25 Karten) statt selten und groß — Regelmäßigkeit ist der Hebel.', sourceIds: ['cepeda-2006', 'rawson-dunlosky-2022'] },
+      { text: 'Die Quest-Größe realistisch konfigurieren und täglich halten statt seltene Marathon-Sitzungen zu planen — Regelmäßigkeit ist der Hebel.', sourceIds: ['cepeda-2006', 'rawson-dunlosky-2022'] },
       { text: 'Fällige Karten (Learning/Review) vor neuen priorisieren — die Quest übernimmt die Session-Priorisierung der App.', sourceIds: ['ye-2022-fsrs'], appLogic: 'src/services/studyCardOrdering.ts (sortStudyCards: learning → relearning → review → new)' },
     ],
     donts: [

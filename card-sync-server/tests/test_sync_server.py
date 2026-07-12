@@ -13,6 +13,7 @@ import tempfile
 import os
 import sys
 import socket
+import shutil
 from pathlib import Path
 
 SERVER_DIR = Path(__file__).resolve().parents[1]
@@ -49,6 +50,9 @@ def _start_server(temp_db, env_overrides=None):
     env = os.environ.copy()
     env["SYNC_DB_PATH"] = temp_db
     env["SYNC_PORT"] = str(port)
+    # Tests drive push delivery explicitly. Disabling the background loop also
+    # guarantees that the shared test database is idle between test cases.
+    env["PUSH_DAILY_SCHEDULER_ENABLED"] = "0"
     if env_overrides:
         env.update({key: str(value) for key, value in env_overrides.items()})
 
@@ -91,12 +95,41 @@ def _stop_server(proc):
         proc.kill()
 
 
-@pytest.fixture
-def server(temp_db):
-    """Start sync server with temporary database."""
-    srv = _start_server(temp_db, env_overrides={"SYNC_JOIN_PIN": TEST_JOIN_PIN})
-    yield srv
+@pytest.fixture(scope="module")
+def shared_server():
+    """Start the default test server once and retain a pristine DB template."""
+    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
+        db_path = f.name
+    template_path = f"{db_path}.template"
+    srv = _start_server(db_path, env_overrides={"SYNC_JOIN_PIN": TEST_JOIN_PIN})
+
+    # Startup closes its schema connection before serving requests. Checkpoint
+    # WAL once so the template is a single self-contained SQLite file.
+    conn = sqlite3.connect(db_path)
+    try:
+        conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+    finally:
+        conn.close()
+    shutil.copyfile(db_path, template_path)
+
+    yield {**srv, "template": template_path}
+
     _stop_server(srv["proc"])
+    for path in (db_path, template_path, f"{db_path}-wal", f"{db_path}-shm"):
+        if os.path.exists(path):
+            os.remove(path)
+
+
+@pytest.fixture
+def server(shared_server):
+    """Reset the shared server database to its pristine startup state."""
+    db_path = shared_server["db"]
+    for suffix in ("-wal", "-shm"):
+        sidecar = f"{db_path}{suffix}"
+        if os.path.exists(sidecar):
+            os.remove(sidecar)
+    shutil.copyfile(shared_server["template"], db_path)
+    return shared_server
 
 
 @pytest.fixture

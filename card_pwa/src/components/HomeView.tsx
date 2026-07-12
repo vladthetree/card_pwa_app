@@ -142,8 +142,17 @@ export default function HomeView({
     language: settings.language,
   })
 
-  // Daily Quest (Pilot-Kachel): Untertitel-Hinweis = Deck mit den meisten heute
-  // fälligen Karten; Session = fällige Karten deckübergreifend (max. 25).
+  // Aktuelles Lernpaket zuerst aufloesen: Seine feste Kartenmenge wird aus der
+  // Daily Quest ausgeschlossen, damit beide Lernpfade unabhaengig bleiben.
+  const todayPackage = useTodayPackage({
+    nextDayStartsAt: settings.nextDayStartsAt,
+    newCardsPerDay: settings.newCardsPerDay,
+    studyCardLimit: settings.studyCardLimit,
+  })
+  const activePackageCardIdsKey = todayPackage.activeCardIds.join('\u0000')
+
+  // Daily Quest: Untertitel-Hinweis = Deck mit den meisten heute faelligen
+  // Karten; die Auswahl selbst kommt zufaellig und deckuebergreifend zustande.
   const [questStarting, setQuestStarting] = useState(false)
   const questTopDeckName = useMemo(() => {
     let bestName: string | null = null
@@ -157,12 +166,19 @@ export default function HomeView({
     }
     return bestName
   }, [homeDecks, derivedData.deckScheduleOverview])
-  // Echte Session-Größe statt roher Fälligkeitszahl: die Tagesdosis neuer
-  // Karten kappt die Quest — der Button soll versprechen, was die Session hält.
+  // Echte Session-Groesse statt roher Faelligkeitszahl. Nur ein insgesamt zu
+  // kleiner Kartenpool darf die in den Optionen gesetzte Quest-Groesse kuerzen.
   const [questPreviewSize, setQuestPreviewSize] = useState<number | null>(null)
   useEffect(() => {
+    if (todayPackage.loading) {
+      setQuestPreviewSize(null)
+      return
+    }
     let cancelled = false
-    void pickDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt, settings.newCardsPerDay)
+    void pickDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt, {
+      excludeCardIds: todayPackage.activeCardIds,
+      runSeed: 'daily-quest-preview',
+    })
       .then(cards => {
         if (!cancelled) setQuestPreviewSize(cards.length)
       })
@@ -172,14 +188,17 @@ export default function HomeView({
     return () => {
       cancelled = true
     }
-  }, [settings.dailyQuestSize, settings.nextDayStartsAt, settings.newCardsPerDay, stats?.nowDue])
-  const questSize = questPreviewSize ?? Math.min(settings.dailyQuestSize, stats?.nowDue ?? 0)
+  }, [settings.dailyQuestSize, settings.nextDayStartsAt, stats?.nowDue, todayPackage.loading, activePackageCardIdsKey])
+  const questSize = questPreviewSize ?? 0
 
   const handleStartDailyQuest = async () => {
     if (questStarting || !onStartDailyQuest) return
     setQuestStarting(true)
     try {
-      const questCards = await pickDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt, settings.newCardsPerDay)
+      const questCards = await pickDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt, {
+        excludeCardIds: todayPackage.activeCardIds,
+        runSeed: `daily-quest:${Date.now()}:${Math.random()}`,
+      })
       if (questCards.length > 0) {
         onStartDailyQuest(questCards)
       }
@@ -195,7 +214,10 @@ export default function HomeView({
     if (questStarting || !onStartDailyQuest) return
     setQuestStarting(true)
     try {
-      const miniCards = await pickDailyQuestCards(MINI_SESSION_SIZE, settings.nextDayStartsAt, settings.newCardsPerDay)
+      const miniCards = await pickDailyQuestCards(MINI_SESSION_SIZE, settings.nextDayStartsAt, {
+        excludeCardIds: todayPackage.activeCardIds,
+        runSeed: `daily-quest-mini:${Date.now()}:${Math.random()}`,
+      })
       if (miniCards.length > 0) {
         onStartDailyQuest(miniCards)
       }
@@ -206,11 +228,6 @@ export default function HomeView({
 
   // Heute-Paket: geführter Tagespfad (Kurs-Video → Abruf-Check → Karten der
   // Objective). Ohne erreichbare Videos fällt der Slide auf die Quest-Kachel zurück.
-  const todayPackage = useTodayPackage({
-    nextDayStartsAt: settings.nextDayStartsAt,
-    newCardsPerDay: settings.newCardsPerDay,
-    studyCardLimit: settings.studyCardLimit,
-  })
   const examPacing = useMemo(() => computeExamPacing({
     examDateIso: settings.examDateIso,
     remainingNewCards: stats?.new ?? 0,

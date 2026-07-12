@@ -142,3 +142,88 @@ export function interleaveCardsByDeck(cards: Card[]): Card[] {
   return result
 }
 
+export interface DailyQuestSelectionOptions {
+  maxCards: number
+  nextDayStartsAt?: number
+  nowMs?: number
+  runSeed?: string | number
+  /** Karten des aktuell laufenden Lernpakets bleiben aus der Daily Quest. */
+  excludeCardIds?: readonly string[]
+}
+
+/**
+ * Baut die eigenstaendige Daily-Quest-Auswahl:
+ *
+ * 1. jetzt faellige Reviews/Lernschritte,
+ * 2. spaeter am Lerntag faellige Schritte,
+ * 3. neue Karten zum Auffuellen.
+ *
+ * Innerhalb jeder Prioritaetsstufe sorgt ein frischer Seed fuer Abwechslung;
+ * Round-Robin ueber die Ursprungsdecks verhindert Deck-Bloecke. Anders als
+ * normale Sessions hat die Quest ihre eigene, exakte Groesse und kein
+ * `newCardsPerDay`-Budget. Nur ein zu kleiner verfuegbarer Pool darf sie kuerzen.
+ */
+export function buildDailyQuestSelection(
+  cards: Card[],
+  options: DailyQuestSelectionOptions,
+): Card[] {
+  const maxCards = Number.isFinite(options.maxCards)
+    ? Math.max(1, Math.floor(options.maxCards))
+    : 1
+  const nowMs = options.nowMs ?? Date.now()
+  const excluded = new Set(options.excludeCardIds ?? [])
+  const available = cards.filter(card => !excluded.has(card.id))
+  if (available.length === 0) return []
+
+  // sortStudyCards filtert Zukunftskarten aus und behaelt die Scheduler-
+  // Prioritaeten. Das eigentliche Quest-Limit wird erst nach den Stufen gesetzt,
+  // damit Learning-Karten die gewuenschte Quest-Groesse nicht ueberschreiten.
+  const ordered = sortStudyCards(available, {
+    maxCards: available.length,
+    maxNewCards: Number.POSITIVE_INFINITY,
+    nowMs,
+    nextDayStartsAt: options.nextDayStartsAt,
+    runSeed: options.runSeed,
+  })
+
+  const dueNow: Card[] = []
+  const dueLaterToday: Card[] = []
+  const newCards: Card[] = []
+  for (const card of ordered) {
+    if (card.type === 'new') newCards.push(card)
+    else if (resolveDueAtMs(card) <= nowMs) dueNow.push(card)
+    else dueLaterToday.push(card)
+  }
+
+  return [
+    ...interleaveCardsByDeck(dueNow),
+    ...interleaveCardsByDeck(dueLaterToday),
+    ...interleaveCardsByDeck(newCards),
+  ].slice(0, maxCards)
+}
+
+export interface StudySessionSelectionOptions {
+  sessionId: string
+  maxCards: number
+  maxNewCards: number
+  nextDayStartsAt?: number
+  runSeed?: string | number
+}
+
+/**
+ * Letzte Auswahlgrenze vor dem Mount einer StudyView-Session. Die Daily Quest
+ * ist bereits vollstaendig ausgewaehlt und bleibt deshalb unveraendert; normale
+ * Deck-/Paket-Sessions folgen weiter dem allgemeinen Limit und Neu-Karten-Budget.
+ */
+export function buildStudySessionSelection(
+  cards: Card[],
+  options: StudySessionSelectionOptions,
+): Card[] {
+  if (options.sessionId === 'daily-quest') return cards
+  return sortStudyCards(cards, {
+    maxCards: options.maxCards,
+    maxNewCards: options.maxNewCards,
+    nextDayStartsAt: options.nextDayStartsAt,
+    runSeed: options.runSeed,
+  })
+}

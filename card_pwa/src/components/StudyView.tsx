@@ -11,7 +11,7 @@ import { ArrowLeft, RotateCcw, CheckCircle, AlertCircle, RefreshCw, Type, Info, 
 import { useDeckCards } from '../hooks/useCardDb'
 import { recordReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession, readActiveSession, countNewCardsIntroducedToday } from '../db/queries'
 import { STRINGS, useSettings, type QuestionTextSize } from '../contexts/SettingsContext'
-import { interleaveCardsByDeck, resolveNewCardAllowance, sortStudyCards } from '../services/studyCardOrdering'
+import { buildStudySessionSelection, resolveNewCardAllowance } from '../services/studyCardOrdering'
 import { buildDragMatchModePlan } from '../services/studyModeSelector'
 import {
   buildPersistedStudySession,
@@ -197,15 +197,13 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
   }, [deck.id, settings.newCardsPerDay, settings.nextDayStartsAt])
 
   const buildSessionCards = useCallback((inputCards: Card[], limit: number): Card[] => {
-    const sorted = sortStudyCards(inputCards, {
+    return buildStudySessionSelection(inputCards, {
+      sessionId: deck.id,
       maxCards: normalizeStudyCardLimit(limit),
       maxNewCards: newCardAllowance ?? Number.POSITIVE_INFINITY,
       nextDayStartsAt: settings.nextDayStartsAt,
       runSeed: dragMatchModeSeedRef.current,
     })
-    // Daily Quest (deckübergreifende Session): Decks interleaven, damit kein
-    // Deck die Queue als Block dominiert — Auswahl bleibt fälligkeitsbasiert.
-    return deck.id === 'daily-quest' ? interleaveCardsByDeck(sorted) : sorted
   }, [settings.nextDayStartsAt, deck.id, newCardAllowance])
 
   const clearPersistedSession = useCallback(() => {

@@ -32,6 +32,7 @@ describe('HomeDailyQuestTile — Pilot-Modus (Beleg …23.36.20.jpeg)', () => {
     const html = render()
     expect(html).toContain('Daily Quest')
     expect(html).toContain('Jetzt: 25 Karten')
+    expect(html).toContain('Alle Decks · fällige zuerst')
     expect(html).toContain('01 General Security Concepts')
     expect(html).toContain('277 heute fällig')
   })

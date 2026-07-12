@@ -12,7 +12,7 @@ import type { TodayPackageSteps } from '../../hooks/home/useTodayPackage'
 
 const COPY = {
   de: {
-    label: 'Heute-Paket',
+    label: 'Aktuelles Paket',
     videoOf: (n: number, total: number) => `Video ${n}/${total}`,
     objective: (code: string) => `Objective ${code}`,
     stepVideo: 'Video ansehen',
@@ -22,7 +22,7 @@ const COPY = {
     actionVideo: 'Video ansehen',
     actionRecall: 'Abruf-Check starten',
     actionCards: (count: number) => count === 1 ? '1 Karte lernen' : `${count} Karten lernen`,
-    completedToday: 'Paket geschafft — nächstes bereit',
+    completedToday: 'Voriges geschafft · weiter mit diesem Paket',
     courseDone: 'Alle Kurs-Videos durchgearbeitet!',
     courseDoneHint: 'Weiter geht es mit den fälligen Karten in der Daily Quest.',
     pacing: (days: number, videos: number, cards: number) =>
@@ -30,7 +30,7 @@ const COPY = {
     loading: 'Lade Heute-Paket',
   },
   en: {
-    label: "Today's package",
+    label: 'Current package',
     videoOf: (n: number, total: number) => `Video ${n}/${total}`,
     objective: (code: string) => `Objective ${code}`,
     stepVideo: 'Watch the video',
@@ -40,7 +40,7 @@ const COPY = {
     actionVideo: 'Watch video',
     actionRecall: 'Start recall check',
     actionCards: (count: number) => count === 1 ? 'Study 1 card' : `Study ${count} cards`,
-    completedToday: 'Package done — next one ready',
+    completedToday: 'Previous one done · continue with this package',
     courseDone: 'All course videos completed!',
     courseDoneHint: 'Keep going with the due cards in the daily quest.',
     pacing: (days: number, videos: number, cards: number) =>
@@ -127,12 +127,17 @@ export function HomeTodayPackageTile({
             <GraduationCap size={20} strokeWidth={1.5} />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="flex min-w-0 items-baseline gap-2 font-mono text-[10px] uppercase tracking-[0.14em]">
-              <span className="text-[--brand-primary]">{copy.label}</span>
-              {completedToday && (
-                <span className="truncate normal-case tracking-normal text-emerald-300">✓ {copy.completedToday}</span>
-              )}
+            <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[--brand-primary]">
+              {copy.label}
             </div>
+            {completedToday && (
+              <div
+                className="mt-0.5 font-mono text-[10px] leading-tight text-emerald-300"
+                data-testid="today-package-current-notice"
+              >
+                ✓ {copy.completedToday}
+              </div>
+            )}
             <div className="mt-0.5 break-words font-sans text-base font-semibold leading-tight text-ds-fg min-[420px]:text-lg">
               {video.title}
             </div>

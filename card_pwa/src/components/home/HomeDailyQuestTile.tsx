@@ -19,7 +19,9 @@ const COPY = {
     start: (count: number) => `${count} ${count === 1 ? 'Karte' : 'Karten'} starten`,
     mini: 'Nur 3 Minuten · 5 Karten',
     dueToday: (count: number) => `${count} heute fällig`,
-    allDone: 'Alles erledigt — keine fälligen Karten',
+    mixed: 'Alle Decks · fällige zuerst',
+    focus: (name: string) => `Fokus: ${name}`,
+    allDone: 'Alles erledigt — keine lernbereiten Karten',
     noDecksTitle: 'Starte mit deinem ersten Deck',
     noDecksHint: 'Importiere ein Deck, um zu lernen',
   },
@@ -29,7 +31,9 @@ const COPY = {
     start: (count: number) => `Start ${count} ${count === 1 ? 'card' : 'cards'}`,
     mini: 'Just 3 minutes · 5 cards',
     dueToday: (count: number) => `${count} due today`,
-    allDone: 'All done — no cards due',
+    mixed: 'All decks · due cards first',
+    focus: (name: string) => `Focus: ${name}`,
+    allDone: 'All done — no study-ready cards',
     noDecksTitle: 'Start with your first deck',
     noDecksHint: 'Import a deck to start learning',
   },
@@ -37,7 +41,7 @@ const COPY = {
 
 interface Props {
   language: 'de' | 'en'
-  /** Größe der Quest-Session (gekappt auf die fälligen Karten). */
+  /** Eigenstaendige Quest-Groesse (nur vom verfuegbaren Gesamtpool gekappt). */
   questSize: number
   /** Gesamtzahl jetzt fälliger Karten (stats.nowDue). */
   dueTodayTotal: number
@@ -58,8 +62,9 @@ export function HomeDailyQuestTile({
   const hasWork = questSize > 0
   const subtitleParts = hasDecks
     ? [
-        ...(topDeckName ? [topDeckName] : []),
+        copy.mixed,
         copy.dueToday(dueTodayTotal),
+        ...(topDeckName ? [copy.focus(topDeckName)] : []),
       ]
     : [copy.noDecksHint]
 

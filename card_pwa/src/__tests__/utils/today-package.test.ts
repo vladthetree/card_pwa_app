@@ -17,20 +17,44 @@ function video(index: number, objective = '1.1'): LocalVideoMeta {
 }
 
 describe('parseTodayPackagePointer', () => {
+  const emptyPointer = {
+    lastCompletedIndex: 0,
+    lastCompletedAt: 0,
+    activeIndex: 0,
+    activeStartedAt: 0,
+    activeCardIds: null,
+  }
+
   it('liefert den Leerstand für fehlende/kaputte Werte', () => {
-    expect(parseTodayPackagePointer(null)).toEqual({ lastCompletedIndex: 0, lastCompletedAt: 0 })
-    expect(parseTodayPackagePointer('not-json')).toEqual({ lastCompletedIndex: 0, lastCompletedAt: 0 })
-    expect(parseTodayPackagePointer('{"lastCompletedIndex":"x"}')).toEqual({ lastCompletedIndex: 0, lastCompletedAt: 0 })
+    expect(parseTodayPackagePointer(null)).toEqual(emptyPointer)
+    expect(parseTodayPackagePointer('not-json')).toEqual(emptyPointer)
+    expect(parseTodayPackagePointer('{"lastCompletedIndex":"x"}')).toEqual(emptyPointer)
   })
 
-  it('parst einen gespeicherten Zeiger', () => {
+  it('migriert einen alten gespeicherten Zeiger ohne aktive Paketgrenze', () => {
     expect(parseTodayPackagePointer('{"lastCompletedIndex":12,"lastCompletedAt":1000}'))
-      .toEqual({ lastCompletedIndex: 12, lastCompletedAt: 1000 })
+      .toEqual({ ...emptyPointer, lastCompletedIndex: 12, lastCompletedAt: 1000 })
+  })
+
+  it('parst das aktive Paket samt fester Karten-IDs', () => {
+    expect(parseTodayPackagePointer(JSON.stringify({
+      lastCompletedIndex: 12,
+      lastCompletedAt: 1000,
+      activeIndex: 13,
+      activeStartedAt: 1100,
+      activeCardIds: ['card-a', 42, 'card-b'],
+    }))).toEqual({
+      lastCompletedIndex: 12,
+      lastCompletedAt: 1000,
+      activeIndex: 13,
+      activeStartedAt: 1100,
+      activeCardIds: ['card-a', 'card-b'],
+    })
   })
 
   it('klemmt negative Werte auf 0', () => {
     expect(parseTodayPackagePointer('{"lastCompletedIndex":-3,"lastCompletedAt":-1}'))
-      .toEqual({ lastCompletedIndex: 0, lastCompletedAt: 0 })
+      .toEqual(emptyPointer)
   })
 })
 

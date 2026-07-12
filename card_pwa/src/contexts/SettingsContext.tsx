@@ -58,10 +58,10 @@ interface Settings {
   dailyGoal: number
   /** Fragenanzahl pro Video-Abruf-Check (Lernvideos). */
   recallCheckSize: number
-  /** Kartenanzahl der Daily-Quest-Session (deckübergreifend, Home-Kachel). */
+  /** Eigenstaendige Zielgroesse der deckuebergreifenden Daily Quest. */
   dailyQuestSize: number
-  /** Tagesdosis neuer Karten über alle Sessions (0 = unbegrenzt). Hält den
-   *  Einstieg in einen großen Neu-Karten-Berg vorhersagbar klein. */
+  /** Tagesdosis neuer Karten fuer Deck-/Paket-Sessions (0 = unbegrenzt).
+   *  Die eigenstaendige Daily Quest verwendet stattdessen dailyQuestSize. */
   newCardsPerDay: number
   /** Prüfungstermin (ISO YYYY-MM-DD, z. B. Sec+) für den Countdown mit
    *  Tempo-Empfehlung auf der Heute-Kachel. null = kein Termin gesetzt. */

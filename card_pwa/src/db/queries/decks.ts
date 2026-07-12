@@ -11,8 +11,7 @@ import { factorToDifficulty } from '../../utils/algorithmParams'
 import { getDayStartMs } from '../../utils/time'
 import { generateUuidV7 } from '../../utils/id'
 import { enqueueSyncOperation } from '../../services/syncQueue'
-import { resolveNewCardAllowance, sortStudyCards } from '../../services/studyCardOrdering'
-import { countNewCardsIntroducedToday } from './reviews'
+import { buildDailyQuestSelection } from '../../services/studyCardOrdering'
 import { normalizeTagId } from '../../utils/tagIdentity'
 import type { Deck, Card, DeckScheduleOverview } from '../../types'
 
@@ -249,16 +248,22 @@ export async function getDeckNameMap(): Promise<Record<string, string>> {
 
 /**
  * Daily Quest (Dashboard-Kachel "Pilot", Beleg `…23.36.20.jpeg`): gemischte
- * Session über alle Decks — fällige Karten deckübergreifend, priorisiert wie
- * eine reguläre Session (sortStudyCards), gekappt auf `limit`.
+ * Session ueber alle Decks — unabhaengig vom aktuellen Lernpaket und von der
+ * Tagesdosis neuer Karten. Faellige Karten kommen zuerst; der Rest wird aus
+ * allen Decks aufgefuellt und pro Start neu gemischt.
  */
-export async function pickDailyQuestCards(limit: number, nextDayStartsAt = 0, newCardsPerDay = 0): Promise<Card[]> {
+export async function pickDailyQuestCards(
+  limit: number,
+  nextDayStartsAt = 0,
+  options: { excludeCardIds?: readonly string[]; runSeed?: string | number } = {},
+): Promise<Card[]> {
   const cards = (await listAllCards()).filter(isStudyableCard)
-  // Tagesdosis: neue Karten nur bis zur verbleibenden Dosis mitnehmen
-  // (0 = unbegrenzt, dann entfällt auch die Zähl-Query).
-  const introducedToday = newCardsPerDay > 0 ? await countNewCardsIntroducedToday(nextDayStartsAt) : 0
-  const maxNewCards = resolveNewCardAllowance(newCardsPerDay, introducedToday)
-  return sortStudyCards(cards, { maxCards: limit, nextDayStartsAt, maxNewCards })
+  return buildDailyQuestSelection(cards, {
+    maxCards: limit,
+    nextDayStartsAt,
+    excludeCardIds: options.excludeCardIds,
+    runSeed: options.runSeed ?? Date.now(),
+  })
 }
 
 export interface DeckHomeMetadata {

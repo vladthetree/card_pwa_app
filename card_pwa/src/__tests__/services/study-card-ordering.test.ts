@@ -2,7 +2,14 @@
  * AI_CONTEXT: Vitest coverage for study session manager; protects services behavior from regressions in the learning PWA.
  */
 import { describe, expect, it } from 'vitest'
-import { getCardWeight, interleaveCardsByDeck, resolveNewCardAllowance, sortStudyCards } from '../../services/studyCardOrdering'
+import {
+  buildDailyQuestSelection,
+  buildStudySessionSelection,
+  getCardWeight,
+  interleaveCardsByDeck,
+  resolveNewCardAllowance,
+  sortStudyCards,
+} from '../../services/studyCardOrdering'
 import type { Card } from '../../types'
 
 function createCard(overrides: Partial<Card>): Card {
@@ -334,6 +341,122 @@ describe('sortStudyCards — due date filter (Bug 1 fix)', () => {
 
       const noDeckIds = [deckCard('x1'), deckCard('x2'), deckCard('x3')]
       expect(interleaveCardsByDeck(noDeckIds)).toEqual(noDeckIds)
+    })
+  })
+
+  describe('buildDailyQuestSelection (unabhaengige Daily Quest)', () => {
+    const nowMs = new Date(2026, 6, 12, 12, 0, 0).getTime()
+
+    it('liefert exakt die konfigurierte Groesse und schliesst Paketkarten aus', () => {
+      const cards = [
+        ...Array.from({ length: 4 }, (_, idx) => createCard({
+          id: `due-${idx}`,
+          deckId: `deck-${idx % 2}`,
+          type: 'review',
+          dueAt: nowMs - 1000,
+        })),
+        ...Array.from({ length: 20 }, (_, idx) => createCard({
+          id: `new-${idx}`,
+          deckId: `deck-${idx % 4}`,
+          type: 'new',
+        })),
+      ]
+
+      const result = buildDailyQuestSelection(cards, {
+        maxCards: 10,
+        nowMs,
+        runSeed: 'quest-a',
+        excludeCardIds: ['due-0', 'new-0'],
+      })
+
+      expect(result).toHaveLength(10)
+      expect(result.map(card => card.id)).not.toContain('due-0')
+      expect(result.map(card => card.id)).not.toContain('new-0')
+    })
+
+    it('bevorzugt faellige Karten und mischt dabei mehrere Decks', () => {
+      const cards = [
+        ...Array.from({ length: 4 }, (_, idx) => createCard({
+          id: `a-due-${idx}`,
+          deckId: 'deck-a',
+          type: 'review',
+          dueAt: nowMs - 5000,
+        })),
+        ...Array.from({ length: 4 }, (_, idx) => createCard({
+          id: `b-due-${idx}`,
+          deckId: 'deck-b',
+          type: 'review',
+          dueAt: nowMs - 5000,
+        })),
+        ...Array.from({ length: 10 }, (_, idx) => createCard({
+          id: `new-${idx}`,
+          deckId: 'deck-c',
+          type: 'new',
+        })),
+      ]
+
+      const result = buildDailyQuestSelection(cards, { maxCards: 6, nowMs, runSeed: 'quest-b' })
+
+      expect(result).toHaveLength(6)
+      expect(result.every(card => card.type === 'review')).toBe(true)
+      expect(new Set(result.map(card => card.deckId))).toEqual(new Set(['deck-a', 'deck-b']))
+      for (let idx = 1; idx < result.length; idx += 1) {
+        expect(result[idx].deckId).not.toBe(result[idx - 1].deckId)
+      }
+    })
+
+    it('variiert die zufaellige Auffuell-Auswahl mit dem Start-Seed', () => {
+      const cards = Array.from({ length: 30 }, (_, idx) => createCard({
+        id: `new-${idx}`,
+        deckId: `deck-${idx % 5}`,
+        type: 'new',
+      }))
+
+      const first = buildDailyQuestSelection(cards, { maxCards: 10, nowMs, runSeed: 'first-run' })
+      const second = buildDailyQuestSelection(cards, { maxCards: 10, nowMs, runSeed: 'second-run' })
+
+      expect(first).toHaveLength(10)
+      expect(second).toHaveLength(10)
+      expect(first.map(card => card.id)).not.toEqual(second.map(card => card.id))
+    })
+
+    it('kuerzt nur, wenn der gesamte lernbereite Pool kleiner ist', () => {
+      const cards = [
+        createCard({ id: 'one', deckId: 'a', type: 'new' }),
+        createCard({ id: 'two', deckId: 'b', type: 'new' }),
+      ]
+      expect(buildDailyQuestSelection(cards, { maxCards: 50, nowMs })).toHaveLength(2)
+    })
+
+    it('bleibt beim Eintritt in StudyView unabhaengig von anderen Limits', () => {
+      const questCards = Array.from({ length: 50 }, (_, idx) => createCard({
+        id: `quest-${idx}`,
+        deckId: `deck-${idx % 5}`,
+        type: 'new',
+      }))
+
+      const result = buildStudySessionSelection(questCards, {
+        sessionId: 'daily-quest',
+        maxCards: 10,
+        maxNewCards: 5,
+        nextDayStartsAt: 4,
+      })
+
+      expect(result).toHaveLength(50)
+      expect(result).toEqual(questCards)
+    })
+
+    it('laesst normale Deck-Sessions weiterhin beide Limits respektieren', () => {
+      const cards = Array.from({ length: 20 }, (_, idx) => createCard({
+        id: `normal-${idx}`,
+        type: 'new',
+      }))
+      const result = buildStudySessionSelection(cards, {
+        sessionId: 'regular-deck',
+        maxCards: 10,
+        maxNewCards: 5,
+      })
+      expect(result).toHaveLength(5)
     })
   })
 

@@ -17,9 +17,21 @@ export interface TodayPackagePointer {
   lastCompletedIndex: number
   /** Zeitstempel des Abschlusses (Date.now()). */
   lastCompletedAt: number
+  /** Playlist-Index des aktuell angebotenen Pakets. */
+  activeIndex: number
+  /** Ab diesem Zeitpunkt zaehlen Signale fuer das aktuelle Paket. */
+  activeStartedAt: number
+  /** Feste Kartenmenge dieses Pakets; null = beim naechsten Laden festlegen. */
+  activeCardIds: string[] | null
 }
 
-const EMPTY_POINTER: TodayPackagePointer = { lastCompletedIndex: 0, lastCompletedAt: 0 }
+const EMPTY_POINTER: TodayPackagePointer = {
+  lastCompletedIndex: 0,
+  lastCompletedAt: 0,
+  activeIndex: 0,
+  activeStartedAt: 0,
+  activeCardIds: null,
+}
 
 /** Pure Parse-Logik (ohne Browser-APIs, daher direkt testbar). */
 export function parseTodayPackagePointer(raw: string | null | undefined): TodayPackagePointer {
@@ -28,9 +40,17 @@ export function parseTodayPackagePointer(raw: string | null | undefined): TodayP
     const parsed = JSON.parse(raw) as Partial<TodayPackagePointer> | null
     const lastCompletedIndex = Number(parsed?.lastCompletedIndex)
     const lastCompletedAt = Number(parsed?.lastCompletedAt)
+    const activeIndex = Number(parsed?.activeIndex)
+    const activeStartedAt = Number(parsed?.activeStartedAt)
+    const activeCardIds = Array.isArray(parsed?.activeCardIds)
+      ? parsed.activeCardIds.filter((id): id is string => typeof id === 'string')
+      : null
     return {
       lastCompletedIndex: Number.isFinite(lastCompletedIndex) ? Math.max(0, Math.floor(lastCompletedIndex)) : 0,
       lastCompletedAt: Number.isFinite(lastCompletedAt) ? Math.max(0, lastCompletedAt) : 0,
+      activeIndex: Number.isFinite(activeIndex) ? Math.max(0, Math.floor(activeIndex)) : 0,
+      activeStartedAt: Number.isFinite(activeStartedAt) ? Math.max(0, activeStartedAt) : 0,
+      activeCardIds,
     }
   } catch {
     return EMPTY_POINTER

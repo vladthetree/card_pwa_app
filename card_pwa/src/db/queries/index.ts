@@ -32,6 +32,7 @@ export {
   getGlobalStats,
   countNewCardsIntroducedToday,
   listDeckCardIdsReviewedToday,
+  listDeckCardIdsReviewedSince,
   getFutureDueForecast,
   getDeckSuccessRates,
   type DeckSuccessRate,

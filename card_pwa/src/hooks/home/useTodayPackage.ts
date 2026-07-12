@@ -12,7 +12,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { db } from '../../db'
 import {
   listDeckCards,
-  listDeckCardIdsReviewedToday,
+  listDeckCardIdsReviewedSince,
   countNewCardsIntroducedToday,
 } from '../../db/queries'
 import { resolveNewCardAllowance, sortStudyCards } from '../../services/studyCardOrdering'
@@ -51,6 +51,8 @@ export interface TodayPackageData {
   objectiveDeck: Deck | null
   /** Karten, die im Karten-Schritt noch offen sind (Button-Label). */
   remainingCards: number
+  /** Feste Karten-IDs des aktuellen Pakets; Daily Quest schliesst sie aus. */
+  activeCardIds: string[]
   /** Heute wurde (mindestens) ein Paket abgeschlossen. */
   completedToday: boolean
   /** Noch nicht abgeschlossene Kurs-Videos (Prüfungs-Pacing). */
@@ -99,6 +101,7 @@ export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimi
     steps: EMPTY_STEPS,
     objectiveDeck: null,
     remainingCards: 0,
+    activeCardIds: [],
     completedToday: false,
     remainingVideos: 0,
   })
@@ -109,89 +112,143 @@ export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimi
     const version = computeVersionRef.current + 1
     computeVersionRef.current = version
 
-    if (catalogRef.current === null) {
-      catalogRef.current = await loadVideoCatalog()
-    }
-    const catalog = catalogRef.current
-    if (computeVersionRef.current !== version) return
-
-    if (catalog.length === 0) {
-      setData(prev => ({ ...prev, loading: false, available: false }))
-      return
-    }
-
-    const todayStartMs = getDayStartMs(Date.now(), nextDayStartsAt)
-    const progress = readVideoProgress()
-    const recallScores = readRecallScores()
-
-    const computeSteps = async (video: LocalVideoMeta): Promise<{
-      steps: TodayPackageSteps
-      objectiveDeck: Deck | null
-      remainingCards: number
-    }> => {
-      const progressEntry = progress[video.objective]
-      const videoDone = progressEntry?.watched === true && progressEntry.updatedAt >= todayStartMs
-      const recallDone = hasRecallRunSince(recallScores[videoScoreKey(video.index)], todayStartMs)
-
-      const deckId = getSecurityObjectiveDeckId(video.objective)
-      const [deckCards, reviewedIds, introducedToday] = await Promise.all([
-        listDeckCards(deckId),
-        listDeckCardIdsReviewedToday(deckId, nextDayStartsAt),
-        newCardsPerDay > 0 ? countNewCardsIntroducedToday(nextDayStartsAt) : Promise.resolve(0),
-      ])
-      const maxNewCards = resolveNewCardAllowance(newCardsPerDay, introducedToday)
-      const preview = sortStudyCards(deckCards, { maxCards: studyCardLimit, maxNewCards, nextDayStartsAt })
-      const reviewedSet = new Set(reviewedIds)
-      const remaining = preview.filter(card => !reviewedSet.has(card.id))
-
-      const objectiveDeck: Deck | null = deckCards.length > 0
-        ? {
-            id: deckId,
-            name: getSecurityObjectiveDeckName(video.objective),
-            total: deckCards.length,
-            new: deckCards.filter(c => c.type === 'new').length,
-            learning: deckCards.filter(c => c.type === 'learning' || c.type === 'relearning').length,
-            due: deckCards.filter(c => c.type === 'review').length,
-          }
-        : null
-
-      return {
-        steps: {
-          video: videoDone || recallDone,
-          recall: recallDone,
-          // Ohne planbare Karten gilt der Schritt als erledigt (z. B. Dosis
-          // aufgebraucht oder Objective ohne Karten) — Abruf passiert dann im Check.
-          cards: preview.length === 0 || remaining.length === 0,
-        },
-        objectiveDeck,
-        remainingCards: remaining.length,
+    try {
+      if (catalogRef.current === null) {
+        catalogRef.current = await loadVideoCatalog()
       }
-    }
+      const catalog = catalogRef.current
+      if (computeVersionRef.current !== version) return
 
-    // Abgeschlossene Pakete vorrücken (in der Regel höchstens eins pro Aufruf).
-    let pointer = readTodayPackagePointer()
-    let video = pickTodayVideo(catalog, pointer.lastCompletedIndex)
-    let details = video ? await computeSteps(video) : null
-    while (video && details && details.steps.video && details.steps.recall && details.steps.cards) {
-      pointer = { lastCompletedIndex: video.index, lastCompletedAt: Date.now() }
-      persistTodayPackagePointer(pointer)
-      video = pickTodayVideo(catalog, pointer.lastCompletedIndex)
-      details = video ? await computeSteps(video) : null
-    }
-    if (computeVersionRef.current !== version) return
+      if (catalog.length === 0) {
+        setData(prev => ({ ...prev, loading: false, available: false }))
+        return
+      }
 
-    setData({
-      loading: false,
-      available: true,
-      video,
-      videoNumber: video ? catalog.findIndex(entry => entry.index === video?.index) + 1 : 0,
-      videoTotal: catalog.length,
-      steps: details?.steps ?? EMPTY_STEPS,
-      objectiveDeck: details?.objectiveDeck ?? null,
-      remainingCards: details?.remainingCards ?? 0,
-      completedToday: pointer.lastCompletedAt >= todayStartMs,
-      remainingVideos: catalog.filter(entry => entry.index > pointer.lastCompletedIndex).length,
-    })
+      const todayStartMs = getDayStartMs(Date.now(), nextDayStartsAt)
+      const progress = readVideoProgress()
+      const recallScores = readRecallScores()
+
+      const computeSteps = async (
+        video: LocalVideoMeta,
+        activeStartedAt: number,
+        storedCardIds: string[] | null,
+      ): Promise<{
+        steps: TodayPackageSteps
+        objectiveDeck: Deck | null
+        remainingCards: number
+        activeCardIds: string[]
+      }> => {
+        const progressEntry = progress[video.objective]
+        const videoDone = progressEntry?.watched === true && progressEntry.updatedAt >= activeStartedAt
+        const recallDone = hasRecallRunSince(recallScores[videoScoreKey(video.index)], activeStartedAt)
+
+        const deckId = getSecurityObjectiveDeckId(video.objective)
+        const [deckCards, reviewedIds] = await Promise.all([
+          listDeckCards(deckId),
+          listDeckCardIdsReviewedSince(deckId, activeStartedAt),
+        ])
+        let activeCardIds = storedCardIds
+        if (activeCardIds === null) {
+          const introducedToday = newCardsPerDay > 0
+            ? await countNewCardsIntroducedToday(nextDayStartsAt)
+            : 0
+          const maxNewCards = resolveNewCardAllowance(newCardsPerDay, introducedToday)
+          activeCardIds = sortStudyCards(deckCards, {
+            maxCards: studyCardLimit,
+            maxNewCards,
+            nextDayStartsAt,
+          }).map(card => card.id)
+        }
+        const deckCardIds = new Set(deckCards.map(card => card.id))
+        activeCardIds = activeCardIds.filter(cardId => deckCardIds.has(cardId))
+        const reviewedSet = new Set(reviewedIds)
+        const remaining = activeCardIds.filter(cardId => !reviewedSet.has(cardId))
+
+        const objectiveDeck: Deck | null = deckCards.length > 0
+          ? {
+              id: deckId,
+              name: getSecurityObjectiveDeckName(video.objective),
+              total: deckCards.length,
+              new: deckCards.filter(c => c.type === 'new').length,
+              learning: deckCards.filter(c => c.type === 'learning' || c.type === 'relearning').length,
+              due: deckCards.filter(c => c.type === 'review').length,
+            }
+          : null
+
+        return {
+          steps: {
+            video: videoDone || recallDone,
+            recall: recallDone,
+            // Ohne planbare Karten gilt der Schritt als erledigt (z. B. Dosis
+            // aufgebraucht oder Objective ohne Karten) — Abruf passiert dann im Check.
+            cards: activeCardIds.length === 0 || remaining.length === 0,
+          },
+          objectiveDeck,
+          remainingCards: remaining.length,
+          activeCardIds,
+        }
+      }
+
+      // Jedes Paket hat eine eigene Zeitgrenze. Nach dem Abschluss wird das
+      // naechste sofort aktiv; alte Reviews koennen es nicht automatisch abhaken.
+      let pointer = readTodayPackagePointer()
+      let video = pickTodayVideo(catalog, pointer.lastCompletedIndex)
+      let activeStartedAt = pointer.activeIndex === video?.index && pointer.activeStartedAt > 0
+        ? Math.max(pointer.activeStartedAt, todayStartMs)
+        : Math.max(pointer.lastCompletedAt, todayStartMs)
+      if (video && (pointer.activeIndex !== video.index || pointer.activeStartedAt !== activeStartedAt)) {
+        pointer = { ...pointer, activeIndex: video.index, activeStartedAt, activeCardIds: null }
+        persistTodayPackagePointer(pointer)
+      }
+      let details = video ? await computeSteps(video, activeStartedAt, pointer.activeCardIds) : null
+      if (video && details && pointer.activeCardIds === null) {
+        pointer = { ...pointer, activeCardIds: details.activeCardIds }
+        persistTodayPackagePointer(pointer)
+      }
+      while (video && details && details.steps.video && details.steps.recall && details.steps.cards) {
+        const completedAt = Date.now()
+        pointer = {
+          lastCompletedIndex: video.index,
+          lastCompletedAt: completedAt,
+          activeIndex: 0,
+          activeStartedAt: completedAt,
+          activeCardIds: null,
+        }
+        persistTodayPackagePointer(pointer)
+        video = pickTodayVideo(catalog, pointer.lastCompletedIndex)
+        if (!video) {
+          details = null
+          break
+        }
+        activeStartedAt = completedAt
+        pointer = { ...pointer, activeIndex: video.index }
+        persistTodayPackagePointer(pointer)
+        details = await computeSteps(video, activeStartedAt, null)
+        pointer = { ...pointer, activeCardIds: details.activeCardIds }
+        persistTodayPackagePointer(pointer)
+      }
+      if (computeVersionRef.current !== version) return
+
+      setData({
+        loading: false,
+        available: true,
+        video,
+        videoNumber: video ? catalog.findIndex(entry => entry.index === video?.index) + 1 : 0,
+        videoTotal: catalog.length,
+        steps: details?.steps ?? EMPTY_STEPS,
+        objectiveDeck: details?.objectiveDeck ?? null,
+        remainingCards: details?.remainingCards ?? 0,
+        activeCardIds: details?.activeCardIds ?? [],
+        completedToday: pointer.lastCompletedAt >= todayStartMs,
+        remainingVideos: catalog.filter(entry => entry.index > pointer.lastCompletedIndex).length,
+      })
+    } catch (error) {
+      console.error('[useTodayPackage]', error)
+      if (computeVersionRef.current !== version) return
+      // Ein einzelner DB-/Netzfehler darf die Kachel nie wieder dauerhaft im
+      // Ladezustand lassen. Der Home-Slide faellt dann auf die Daily Quest zurueck.
+      setData(prev => ({ ...prev, loading: false, available: false }))
+    }
   }, [nextDayStartsAt, newCardsPerDay, studyCardLimit])
 
   useEffect(() => {

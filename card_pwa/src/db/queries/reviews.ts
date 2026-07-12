@@ -176,15 +176,17 @@ export async function countNewCardsIntroducedToday(nextDayStartsAt = 0): Promise
   const cardIds = Array.from(new Set(todayReviews.map(review => review.cardId)))
   if (cardIds.length === 0) return 0
 
-  let introduced = 0
-  for (const cardId of cardIds) {
-    const earlier = await db.reviews
-      .where('[cardId+timestamp]')
-      .between([cardId, 0], [cardId, todayStartMs], true, false)
-      .count()
-    if (earlier === 0) introduced += 1
-  }
-  return introduced
+  // Der fruehere Compound-Index `[cardId+timestamp]` wurde mit DB v16
+  // absichtlich entfernt. Alle Reviews der heute beruehrten Karten ueber den
+  // vorhandenen cardId-Index in EINEM Lauf lesen; das vermeidet sowohl den
+  // SchemaError als auch eine langsame N+1-Abfrage auf mobilen Geraeten.
+  const relatedReviews = await db.reviews.where('cardId').anyOf(cardIds).toArray()
+  const previouslyReviewed = new Set(
+    relatedReviews
+      .filter(review => review.timestamp < todayStartMs)
+      .map(review => review.cardId),
+  )
+  return cardIds.filter(cardId => !previouslyReviewed.has(cardId)).length
 }
 
 /**
@@ -194,8 +196,17 @@ export async function countNewCardsIntroducedToday(nextDayStartsAt = 0): Promise
  */
 export async function listDeckCardIdsReviewedToday(deckId: string, nextDayStartsAt = 0): Promise<string[]> {
   const todayStartMs = getDayStartMs(Date.now(), nextDayStartsAt)
+  return listDeckCardIdsReviewedSince(deckId, todayStartMs)
+}
+
+/**
+ * IDs der Karten eines Decks, die seit einem frei waehlbaren Paket-Start
+ * bewertet wurden. So koennen mehrere Heute-Pakete am selben Tag dieselben
+ * Objective-Decks verwenden, ohne Ergebnisse des vorigen Pakets mitzunehmen.
+ */
+export async function listDeckCardIdsReviewedSince(deckId: string, sinceMs: number): Promise<string[]> {
   const [todayReviews, deckCards] = await Promise.all([
-    db.reviews.where('timestamp').aboveOrEqual(todayStartMs).toArray(),
+    db.reviews.where('timestamp').aboveOrEqual(sinceMs).toArray(),
     db.cards.where('deckId').equals(deckId).toArray(),
   ])
   const deckCardIds = new Set(deckCards.filter(card => !card.isDeleted).map(card => card.id))

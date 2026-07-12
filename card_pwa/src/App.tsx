@@ -24,6 +24,7 @@ import { APP_NAME, STORAGE_KEYS, SW_CHANNELS } from './constants/appIdentity'
 import { supportsServiceWorker } from './env'
 import { useAutoJoinDefaultProfile } from './hooks/useAutoJoinDefaultProfile'
 import { pickLaunchMotivationQuote } from './utils/motivationQuote'
+import { readTodayPackagePointer } from './utils/todayPackage'
 import { useFullscreenPreference } from './hooks/useFullscreen'
 import type { ServiceWorkerStartupReadiness } from './runtime/swRegistration'
 
@@ -637,7 +638,11 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
     quickStudyHandledRef.current = true
     void (async () => {
       if (await resumeStudySession()) return
-      const cards = await pickDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt, settings.newCardsPerDay)
+      const activePackageCardIds = readTodayPackagePointer().activeCardIds ?? []
+      const cards = await pickDailyQuestCards(settings.dailyQuestSize, settings.nextDayStartsAt, {
+        excludeCardIds: activePackageCardIds,
+        runSeed: `quick-daily-quest:${Date.now()}:${Math.random()}`,
+      })
       if (cards.length > 0) startDailyQuest(cards)
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
