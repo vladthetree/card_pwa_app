@@ -192,6 +192,7 @@ export function resolveOperations(input: OperationResolverInput): OperationDiff 
         timeMs?: number
         timestamp?: number
         updated?: Partial<CardRecord>
+        answer?: { selected?: unknown; correct?: unknown; wasCorrect?: unknown }
       }
 
       const cardId = value.cardId ? String(value.cardId) : ''
@@ -212,6 +213,9 @@ export function resolveOperations(input: OperationResolverInput): OperationDiff 
 
       const rating = Number(value.rating)
       const normalizedRating = [1, 2, 3, 4].includes(rating) ? (rating as 1 | 2 | 3 | 4) : 3
+      // Antwortdetails (gewählte/korrekte Antwort) mitnehmen — gleiche Zeile,
+      // gleiches Prinzip wie beim lokalen recordReview und im Main-Thread-Applier.
+      const answer = value.answer && typeof value.answer === 'object' ? value.answer : null
       diff.reviews.add.push({
         opId: op.opId,
         cardId,
@@ -220,6 +224,9 @@ export function resolveOperations(input: OperationResolverInput): OperationDiff 
         timestamp: Number.isFinite(value.timestamp) ? Number(value.timestamp) : Date.now(),
         sourceClient: typeof op.sourceClient === 'string' ? op.sourceClient : undefined,
         createdAt: Number.isFinite(op.createdAt) ? Number(op.createdAt) : undefined,
+        ...(typeof answer?.selected === 'string' ? { selectedAnswer: answer.selected } : {}),
+        ...(typeof answer?.correct === 'string' ? { correctAnswer: answer.correct } : {}),
+        ...(typeof answer?.wasCorrect === 'boolean' ? { answerCorrect: answer.wasCorrect } : {}),
       })
       continue
     }

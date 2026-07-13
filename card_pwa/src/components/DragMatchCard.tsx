@@ -5,7 +5,7 @@ import { memo, useMemo, useRef, useState, useCallback, useEffect } from 'react'
 import { Edit, X } from 'lucide-react'
 import { motion, useReducedMotion } from '../ui/motion'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
-import type { Card } from '../types'
+import type { AnswerEvaluatedHandler, Card } from '../types'
 import type { Question, Answer } from '../utils/cardTextParser'
 import { correctDragMatchKey, scoreDragMatchChoice } from '../utils/dragMatchScoring'
 import { seededShuffle } from '../utils/hash'
@@ -38,7 +38,7 @@ interface Props {
   flipped: boolean
   onFlip: () => void
   onEdit?: () => void
-  onAnswerEvaluated: (score: number) => void
+  onAnswerEvaluated: AnswerEvaluatedHandler
   compact?: boolean
   originDeckName?: string
   /** Antwortseite war schon sichtbar bzw. Karte ist read-only → kein Drag/Tap mehr. */
@@ -126,7 +126,11 @@ const DragMatchCard = memo(function DragMatchCard({
     selectedKeyRef.current = key
     setSelectedKey(key)
     const score = scoreDragMatchChoice(answer, key)
-    onAnswerEvaluated(score)
+    // Kanonischer Schlüssel + Text (nicht der gemischte Anzeige-Buchstabe).
+    onAnswerEvaluated(score, {
+      selected: `${key}: ${question.options[key] ?? ''}`,
+      correct: `${correctKey}: ${correctText}`,
+    })
     const delay = prefersReducedMotion ? 400 : (score === 1 ? 700 : 1800)
     clearPendingFlipTimers()
     if (prefersReducedMotion) {
@@ -144,7 +148,7 @@ const DragMatchCard = memo(function DragMatchCard({
         onFlip()
       }, 220)
     }, delay - 220)
-  }, [answer, inputLocked, clearPendingFlipTimers, onAnswerEvaluated, onFlip, prefersReducedMotion])
+  }, [answer, question.options, correctKey, correctText, inputLocked, clearPendingFlipTimers, onAnswerEvaluated, onFlip, prefersReducedMotion])
 
   // Drag-Ende: prüfen, ob der Chip über der Drop-Zone losgelassen wurde.
   const handleDragEnd = useCallback((key: string, point: { x: number; y: number }) => {

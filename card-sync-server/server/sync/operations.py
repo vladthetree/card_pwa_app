@@ -317,13 +317,14 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
 
     conn.execute("""
       INSERT OR REPLACE INTO server_cards
-      (id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due, due_at, interval, factor,
+      (id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due, due_at, learning_step, last_reviewed_at, interval, factor,
        stability, difficulty, retrievability, reps, lapses, algorithm, metadata_json, is_deleted, created_at, updated_at, deleted_at, last_source_client, user_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
       card_id, payload.get("noteId"), payload.get("deckId"), payload.get("front"), payload.get("back"),
       tags_json, extra_json,
       payload.get("type"), payload.get("queue"), payload.get("due"), normalized_due_at,
+      payload.get("learningStep"), payload.get("lastReviewedAt"),
       payload.get("interval"), payload.get("factor"), payload.get("stability"), payload.get("difficulty"), payload.get("retrievability"),
       payload.get("reps"), payload.get("lapses"), payload.get("algorithm"),
       metadata_json, is_deleted,
@@ -350,6 +351,7 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
     _MAP = {
       "noteId": "note_id", "deckId": "deck_id", "front": "front", "back": "back",
       "type": "type", "queue": "queue", "due": "due", "dueAt": "due_at",
+      "learningStep": "learning_step", "lastReviewedAt": "last_reviewed_at",
       "interval": "interval", "factor": "factor", "stability": "stability",
       "difficulty": "difficulty", "retrievability": "retrievability", "reps": "reps", "lapses": "lapses", "algorithm": "algorithm",
     }
@@ -433,11 +435,12 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
 
     conn.execute("""
       UPDATE server_cards SET
-        type=?, queue=?, due=?, due_at=?, interval=?, factor=?, stability=?, difficulty=?, retrievability=?,
+        type=?, queue=?, due=?, due_at=?, learning_step=?, last_reviewed_at=?, interval=?, factor=?, stability=?, difficulty=?, retrievability=?,
         reps=?, lapses=?, algorithm=?, updated_at=?, last_source_client=?
       WHERE id=? AND user_id=?
     """, (
       updated.get("type"), updated.get("queue"), updated.get("due"), updated.get("dueAt"),
+      updated.get("learningStep"), updated.get("lastReviewedAt") or payload.get("timestamp"),
       updated.get("interval"), updated.get("factor"), updated.get("stability"), updated.get("difficulty"), updated.get("retrievability"),
       updated.get("reps"), updated.get("lapses"), updated.get("algorithm"),
       candidate_ts, source_client, card_id, state_user_id,
@@ -447,11 +450,21 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
     if rating in (1, 2, 3, 4):
       reviewed_at = _to_int_or_none(payload.get("timestamp")) or candidate_ts
       review_op_id = op_id or f"{source_client or ''}:{card_id}:{reviewed_at}:{rating}"
+      # Antwortdetails interaktiver Karten (optional, seit Client-Payload
+      # `answer`): gewählte + korrekte Antwort und Richtig/Falsch-Flag.
+      answer = payload.get("answer") or {}
+      if not isinstance(answer, dict):
+        answer = {}
+      selected_answer = answer.get("selected") if isinstance(answer.get("selected"), str) else None
+      correct_answer = answer.get("correct") if isinstance(answer.get("correct"), str) else None
+      was_correct = answer.get("wasCorrect")
+      answer_correct = (1 if was_correct else 0) if isinstance(was_correct, bool) else None
       conn.execute(
         """
         INSERT OR IGNORE INTO server_reviews
-        (review_op_id, card_id, rating, time_ms, reviewed_at, source_client, created_at, undone_at, user_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, NULL, ?)
+        (review_op_id, card_id, rating, time_ms, reviewed_at, source_client, created_at, undone_at, user_id,
+         selected_answer, correct_answer, answer_correct)
+        VALUES (?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)
         """,
         (
           review_op_id,
@@ -462,6 +475,9 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
           source_client,
           int(time.time()),
           state_user_id,
+          selected_answer,
+          correct_answer,
+          answer_correct,
         )
       )
 
@@ -481,11 +497,12 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
 
     conn.execute("""
       UPDATE server_cards SET
-        type=?, queue=?, due=?, due_at=?, interval=?, factor=?, stability=?, difficulty=?, retrievability=?,
+        type=?, queue=?, due=?, due_at=?, learning_step=?, last_reviewed_at=?, interval=?, factor=?, stability=?, difficulty=?, retrievability=?,
         reps=?, lapses=?, algorithm=?, updated_at=?, last_source_client=?
       WHERE id=? AND user_id=?
     """, (
       restored.get("type"), restored.get("queue"), restored.get("due"), restored.get("dueAt"),
+      restored.get("learningStep"), restored.get("lastReviewedAt"),
       restored.get("interval"), restored.get("factor"), restored.get("stability"), restored.get("difficulty"), restored.get("retrievability"),
       restored.get("reps"), restored.get("lapses"), restored.get("algorithm"),
       candidate_ts, source_client, card_id, state_user_id,
@@ -524,7 +541,7 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
     conn.execute(
       """
       UPDATE server_cards SET
-        type=0, queue=0, due=?, due_at=?, interval=0, factor=2500,
+        type=0, queue=0, due=?, due_at=?, learning_step=0, last_reviewed_at=NULL, interval=0, factor=2500,
         stability=NULL, difficulty=NULL, retrievability=NULL,
         reps=0, lapses=0, updated_at=?, last_source_client=?
       WHERE user_id=? AND is_deleted=0

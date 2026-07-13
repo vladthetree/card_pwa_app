@@ -20,13 +20,14 @@ import { HomeDeckListSection } from './home/HomeDeckListSection'
 import { HomeShuffleSection } from './home/HomeShuffleSection'
 import { HomeBottomBar } from './home/HomeBottomBar'
 import { HomeTagBrowseSection } from './home/HomeTagBrowseSection'
-import { HomeTodayPackageTile } from './home/HomeTodayPackageTile'
+import { HomeTodayPackageTile, TodayPackageOfflineNotice } from './home/HomeTodayPackageTile'
 import { useTagCardIndex } from '../hooks/home/useTagCardIndex'
 import { useHomeDeckFilters } from '../hooks/home/useHomeDeckFilters'
 import { useHomeStorageEstimate } from '../hooks/home/useHomeStorageEstimate'
 import { useHomeDerivedData } from '../hooks/home/useHomeDerivedData'
 import { useHomeViewController } from '../hooks/home/useHomeViewController'
 import { useTodayPackage } from '../hooks/home/useTodayPackage'
+import { useDayStartMs } from '../hooks/useDayStartMs'
 import { computeExamPacing } from '../utils/todayPackage'
 import { flattenDeckTree } from '../utils/securityDeckHierarchy'
 import { isReviewDeck } from '../utils/reviewDecks'
@@ -91,7 +92,7 @@ export default function HomeView({
   const { collections: shuffleCollections } = useShuffleCollections()
   const { settings, profile } = useSettings()
   const prefersReducedMotion = useReducedMotion()
-  const { stats } = useStats(settings.nextDayStartsAt, settings.studyCardLimit)
+  const { stats } = useStats(settings.nextDayStartsAt, settings.studyCardLimit, settings.newCardsPerDay)
   const { profile: gamificationProfile } = useGamificationProfile(settings.nextDayStartsAt)
   const t = STRINGS[settings.language]
   const { canInstall, isInstalled, hasNativePrompt, isIos, isInstalling, install } = usePwaInstall()
@@ -124,6 +125,7 @@ export default function HomeView({
     profileUserId: profile?.userId,
     studyCardLimit: settings.studyCardLimit,
     nextDayStartsAt: settings.nextDayStartsAt,
+    newCardsPerDay: settings.newCardsPerDay,
     showFutureForecast: controller.showFutureForecast,
     showExportModal: controller.showExportModal,
   })
@@ -168,6 +170,9 @@ export default function HomeView({
   }, [homeDecks, derivedData.deckScheduleOverview])
   // Echte Session-Groesse statt roher Faelligkeitszahl. Nur ein insgesamt zu
   // kleiner Kartenpool darf die in den Optionen gesetzte Quest-Groesse kuerzen.
+  // Tagesgrenze auch offline mitnehmen: an einem neuen Lerntag wird die
+  // Vorschau neu gerechnet statt den Vortagsstand („Alles erledigt“) zu zeigen.
+  const todayDayStartMs = useDayStartMs(settings.nextDayStartsAt)
   const [questPreviewSize, setQuestPreviewSize] = useState<number | null>(null)
   useEffect(() => {
     if (todayPackage.loading) {
@@ -183,12 +188,16 @@ export default function HomeView({
         if (!cancelled) setQuestPreviewSize(cards.length)
       })
       .catch(() => {
+        // Unbekannt bleibt unbekannt (Ladezustand) — nie als „erledigt“ deuten.
         if (!cancelled) setQuestPreviewSize(null)
       })
     return () => {
       cancelled = true
     }
-  }, [settings.studyCardLimit, settings.nextDayStartsAt, stats?.nowDue, todayPackage.loading, activePackageCardIdsKey])
+  }, [settings.studyCardLimit, settings.nextDayStartsAt, stats?.nowDue, todayPackage.loading, activePackageCardIdsKey, todayDayStartMs])
+  // null = noch keine belastbare Zahl — die Kachel zeigt dann einen
+  // Ladezustand und behauptet nicht faelschlich „Alles erledigt“.
+  const questLoading = questPreviewSize === null
   const questSize = questPreviewSize ?? 0
 
   const handleStartDailyQuest = async () => {
@@ -231,6 +240,11 @@ export default function HomeView({
           onStartCards={deckToStudy => onStartStudy(deckToStudy)}
         />
       )
+    : undefined
+  // Offline ohne jemals gespeicherten Katalog: verstaendliche Meldung statt
+  // stillem Verschwinden der Kachel — die Daily Quest bleibt darunter nutzbar.
+  const todayPackageNotice = todayPackage.offlineNoData
+    ? <TodayPackageOfflineNotice language={settings.language} />
     : undefined
 
   const renderHeaderBar = () => (
@@ -334,11 +348,13 @@ export default function HomeView({
               onOpenFutureForecast={controller.openFutureForecast}
               onModeChange={controller.setDashboardMode}
               questSize={questSize}
+              questLoading={questLoading}
               questTopDeckName={questTopDeckName}
               questHasDecks={decks.length > 0}
               questStarting={questStarting}
               onStartDailyQuest={() => { void handleStartDailyQuest() }}
               todayPackageTile={todayPackageTile}
+              todayPackageNotice={todayPackageNotice}
             />
           </div>
         </div>

@@ -30,12 +30,17 @@ interface Props {
   onModeChange: (mode: HomeDashboardMode) => void
   /** Daily Quest (Pilot-Modus, Beleg `…23.36.20.jpeg`) */
   questSize: number
+  /** true = Quest-Größe noch nicht belastbar (Vorschau lädt) — nie als
+   *  „Alles erledigt“ anzeigen. */
+  questLoading?: boolean
   questTopDeckName: string | null
   questHasDecks?: boolean
   questStarting: boolean
   onStartDailyQuest: () => void
   /** Heute-Paket (geführter Tagespfad Video → Abruf-Check → Karten). */
   todayPackageTile?: ReactNode
+  /** Meldung, wenn das Heute-Paket offline mangels lokaler Daten fehlt. */
+  todayPackageNotice?: ReactNode
 }
 
 function CompactStatTile({
@@ -191,11 +196,13 @@ export function HomeStatsSection({
   onOpenFutureForecast,
   onModeChange,
   questSize,
+  questLoading = false,
   questTopDeckName,
   questHasDecks = true,
   questStarting,
   onStartDailyQuest,
   todayPackageTile,
+  todayPackageNotice,
 }: Props) {
   const learningReviewCount = stats ? stats.learning + stats.review : 0
   const streakValue = gamificationProfile?.currentStreak ?? 0
@@ -232,10 +239,12 @@ export function HomeStatsSection({
   } else if (mode === 'today') {
     dashboardContent = (
       <div className="relative z-20 grid w-full min-w-0 gap-2 pb-1 sm:gap-3">
+        {todayPackageNotice}
         {todayPackageTile ?? (
           <HomeDailyQuestTile
             language={language}
             questSize={questSize}
+            loading={questLoading}
             dueTodayTotal={stats?.nowDue ?? 0}
             topDeckName={questTopDeckName}
             hasDecks={questHasDecks}
@@ -251,6 +260,7 @@ export function HomeStatsSection({
         <HomeDailyQuestTile
           language={language}
           questSize={questSize}
+          loading={questLoading}
           dueTodayTotal={stats?.nowDue ?? 0}
           topDeckName={questTopDeckName}
           hasDecks={questHasDecks}

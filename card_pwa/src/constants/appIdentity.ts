@@ -22,6 +22,8 @@ export const STORAGE_KEYS = {
   homeDashboardMode: 'card-pwa-home-dashboard-mode',
   homeDashboardTodayMigration: 'card-pwa-home-dashboard-today-migrated',
   todayPackagePointer: 'card-pwa-today-package-pointer',
+  /** Zuletzt erfolgreich geladene Videokatalog-Dateiliste — Offline-Quelle des Heute-Pakets. */
+  videoCatalog: 'card-pwa-video-catalog',
   homeDeckSortMode: 'card-pwa-home-deck-sort-mode',
   homeShuffleDecksTop: 'card-pwa-home-shuffle-decks-top',
   homeShuffleOnlyMode: 'card-pwa-home-shuffle-only-mode',

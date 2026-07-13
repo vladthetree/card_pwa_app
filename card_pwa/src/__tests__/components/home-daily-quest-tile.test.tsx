@@ -51,4 +51,19 @@ describe('HomeDailyQuestTile — Pilot-Modus (Beleg …23.36.20.jpeg)', () => {
     expect(html).toContain('Alles erledigt')
     expect(html).toContain('disabled')
   })
+
+  it('zeigt einen Ladezustand statt „Alles erledigt“, solange die Vorschau fehlt', () => {
+    // Offline-Regression: eine noch unbekannte Quest-Größe (questSize 0 wegen
+    // laufender/gescheiterter Vorschau) darf nie als erledigt erscheinen.
+    const html = render({ questSize: 0, loading: true, dueTodayTotal: 0, topDeckName: null })
+    expect(html).not.toContain('Alles erledigt')
+    expect(html).toContain('Prüfe fällige Karten')
+    expect(html).toContain('disabled')
+  })
+
+  it('ignoriert den Ladezustand im leeren Profil (Onboarding-Text bleibt)', () => {
+    const html = render({ questSize: 0, loading: true, hasDecks: false, dueTodayTotal: 0, topDeckName: null })
+    expect(html).toContain('Starte mit deinem ersten Deck')
+    expect(html).not.toContain('Prüfe fällige Karten')
+  })
 })

@@ -242,6 +242,38 @@ export async function enqueueSyncOperation(
   }
 }
 
+/**
+ * Verschiebt atomar mit Fachdaten gespeicherte Operationen idempotent in die
+ * bestehende Retry-Queue. Ein Absturz zwischen Queue-Insert und Outbox-Delete
+ * ist sicher: `opId` verhindert beim nächsten Lauf ein Duplikat.
+ */
+export async function drainTransactionalOutbox(limit = 100): Promise<number> {
+  const outbox = await db.syncOutbox.orderBy('createdAt').limit(limit).toArray()
+  let moved = 0
+
+  for (const item of outbox) {
+    await syncDb.transaction('rw', syncDb.queue, async () => {
+      const existing = await syncDb.queue.where('opId').equals(item.opId).first()
+      if (!existing) {
+        await syncDb.queue.add({
+          opId: item.opId,
+          type: item.type as SyncOperationType,
+          payload: item.payload,
+          createdAt: item.createdAt,
+          updatedAt: item.createdAt,
+          retries: 0,
+          nextRetryAt: item.createdAt,
+        })
+      }
+    })
+    await db.syncOutbox.delete(item.opId)
+    moved += 1
+  }
+
+  if (moved > 0 && isSyncActive()) requestBackgroundDelivery()
+  return moved
+}
+
 async function sendOperation(record: SyncQueueRecord): Promise<SendResult> {
   const config = getSyncConfig()
   const endpoint = getSyncBaseEndpoint()
@@ -334,8 +366,12 @@ export async function flushSyncQueue(options: FlushOptions = {}): Promise<{ proc
   const limit = options.limit ?? 20
   const ts = now()
 
+  // Outbox zuerst materialisieren. Das funktioniert auch offline; der normale
+  // Queue-Backoff übernimmt anschließend die Netz-Zustellung.
+  await drainTransactionalOutbox(Math.max(limit, 100))
+
   if (!isSyncActive()) {
-    return { processed: 0, pending: await syncDb.queue.count() }
+    return { processed: 0, pending: await getSyncQueuePendingCount() }
   }
 
   const candidates = await syncDb.queue.where('nextRetryAt').belowOrEqual(ts).limit(limit).toArray()
@@ -402,9 +438,13 @@ export async function flushSyncQueue(options: FlushOptions = {}): Promise<{ proc
 
 export async function getSyncQueuePendingCount(): Promise<number> {
   // Dead-letter entries are preserved for diagnostics/replay but must not block pull.
-  return syncDb.queue
+  const [queued, outbox] = await Promise.all([
+    syncDb.queue
     .filter(item => item.retries < SYNC_MAX_RETRIES && item.nextRetryAt < Number.MAX_SAFE_INTEGER)
-    .count()
+      .count(),
+    db.syncOutbox.count(),
+  ])
+  return queued + outbox
 }
 
 export async function wakeDeferredSyncQueue(): Promise<void> {
@@ -419,7 +459,7 @@ export async function wakeDeferredSyncQueue(): Promise<void> {
 }
 
 export async function clearSyncQueue(): Promise<void> {
-  await syncDb.queue.clear()
+  await Promise.all([syncDb.queue.clear(), db.syncOutbox.clear()])
 }
 
 export function closeSyncQueueDatabase(): void {

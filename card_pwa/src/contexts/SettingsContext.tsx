@@ -69,6 +69,14 @@ interface Settings {
   /** When on, the app re-enters the Fullscreen API on the first interaction
    *  after load (gesture-less auto-entry is blocked by browsers). */
   fullscreenEnabled: boolean
+  /** Session-only reinforcement after a regular Review/Hard. */
+  hardPracticeEnabled: boolean
+  /** Consecutive Good answers needed to leave Hard reinforcement. */
+  hardPracticeGoodStreak: number
+  /** Maximum reinforcement passes per card; 0 means unlimited. */
+  hardPracticeMaxPasses: number
+  /** How early intraday learning steps may be pulled into a session. */
+  learnAheadMinutes: number
 }
 
 interface SettingsContextType {
@@ -97,6 +105,10 @@ interface SettingsContextType {
   setExamDateIso: (dateIso: string | null) => void
   setFocusMode: (enabled: boolean) => void
   setFullscreenEnabled: (enabled: boolean) => void
+  setHardPracticeEnabled: (enabled: boolean) => void
+  setHardPracticeGoodStreak: (count: number) => void
+  setHardPracticeMaxPasses: (count: number) => void
+  setLearnAheadMinutes: (minutes: number) => void
   setSm2Params: (params: Partial<SM2Params>) => void
   setFsrsParams: (params: Partial<FSRSParams>) => void
   resetAlgorithmParams: () => void
@@ -186,6 +198,16 @@ const DEFAULT_SETTINGS: Settings = {
   examDateIso: null,
   focusMode: false,
   fullscreenEnabled: false,
+  hardPracticeEnabled: true,
+  hardPracticeGoodStreak: 2,
+  hardPracticeMaxPasses: 0,
+  learnAheadMinutes: 20,
+}
+
+function normalizeInteger(value: unknown, fallback: number, min: number, max: number): number {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return fallback
+  return Math.max(min, Math.min(max, Math.round(parsed)))
 }
 
 function normalizeDailyGoal(value: unknown): number {
@@ -248,6 +270,10 @@ export function normalizeSettings(input: Partial<Settings> | undefined): Setting
     examDateIso: normalizeExamDateIso(input?.examDateIso),
     focusMode: input?.focusMode === true,
     fullscreenEnabled: input?.fullscreenEnabled === true,
+    hardPracticeEnabled: input?.hardPracticeEnabled !== false,
+    hardPracticeGoodStreak: normalizeInteger(input?.hardPracticeGoodStreak, 2, 1, 5),
+    hardPracticeMaxPasses: normalizeInteger(input?.hardPracticeMaxPasses, 0, 0, 20),
+    learnAheadMinutes: normalizeInteger(input?.learnAheadMinutes, 20, 0, 60),
   }
 }
 
@@ -440,6 +466,22 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     saveSettings({ ...settings, fullscreenEnabled })
   }
 
+  const setHardPracticeEnabled = (hardPracticeEnabled: boolean) => {
+    saveSettings({ ...settings, hardPracticeEnabled })
+  }
+
+  const setHardPracticeGoodStreak = (count: number) => {
+    saveSettings({ ...settings, hardPracticeGoodStreak: normalizeInteger(count, 2, 1, 5) })
+  }
+
+  const setHardPracticeMaxPasses = (count: number) => {
+    saveSettings({ ...settings, hardPracticeMaxPasses: normalizeInteger(count, 0, 0, 20) })
+  }
+
+  const setLearnAheadMinutes = (minutes: number) => {
+    saveSettings({ ...settings, learnAheadMinutes: normalizeInteger(minutes, 20, 0, 60) })
+  }
+
   const setSm2Params = (params: Partial<SM2Params>) => {
     saveSettings({
       ...settings,
@@ -510,6 +552,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setExamDateIso,
         setFocusMode,
         setFullscreenEnabled,
+        setHardPracticeEnabled,
+        setHardPracticeGoodStreak,
+        setHardPracticeMaxPasses,
+        setLearnAheadMinutes,
         setSm2Params,
         setFsrsParams,
         resetAlgorithmParams,

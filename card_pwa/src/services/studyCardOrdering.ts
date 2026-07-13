@@ -16,7 +16,12 @@ interface SortStudyCardsOptions {
   nowMs?: number
   nextDayStartsAt?: number
   runSeed?: string | number
+  learnAheadMinutes?: number
 }
+
+/** Anki-Standard: Wenn sonst nichts mehr ansteht, dürfen kurze Lernschritte
+ * bis zu 20 Minuten vorgezogen werden. */
+export const DEFAULT_LEARN_AHEAD_MINUTES = 20
 
 /** Verbleibende Neu-Karten-Dosis für heute (0 in der Einstellung = unbegrenzt). */
 export function resolveNewCardAllowance(newCardsPerDay: number, introducedToday: number): number {
@@ -40,15 +45,16 @@ export function sortStudyCards(cards: Card[], options: SortStudyCardsOptions = {
     : 0
   const todayStartMs = getDayStartMs(nowMs, nextDayStartsAt)
   const tomorrowStartMs = todayStartMs + DAY_MS
+  const learnAheadMs = Math.max(0, Math.min(60, options.learnAheadMinutes ?? DEFAULT_LEARN_AHEAD_MINUTES)) * 60_000
 
   const resolveDueAt = resolveDueAtMs
 
   const dueCards = cards.filter(card => {
     if (card.type === 'new') return true
     if (card.type === 'learning' || card.type === 'relearning') {
-      // Keep intraday learning/relearning steps in the active todo queue
-      // for the whole study day so interrupted sessions can resume cleanly.
-      return resolveDueAt(card) < tomorrowStartMs
+      // Exakte Intraday-Schritte respektieren; nur Ankis 20-Minuten-
+      // Learn-ahead-Fenster darf sie in eine jetzt gestartete Session ziehen.
+      return resolveDueAt(card) <= nowMs + learnAheadMs
     }
     // review: due today means dueAt before tomorrow 00:00 local
     return resolveDueAt(card) < tomorrowStartMs
@@ -61,6 +67,10 @@ export function sortStudyCards(cards: Card[], options: SortStudyCardsOptions = {
   const useFreshRunOrder = options.runSeed !== undefined
 
   const compareCards = (a: Card, b: Card): number => {
+    const aIsLearnAhead = (a.type === 'learning' || a.type === 'relearning') && resolveDueAt(a) > nowMs
+    const bIsLearnAhead = (b.type === 'learning' || b.type === 'relearning') && resolveDueAt(b) > nowMs
+    if (aIsLearnAhead !== bIsLearnAhead) return aIsLearnAhead ? 1 : -1
+
     const dueRankDiff = compareByDueRank(a, b, nowMs)
     if (dueRankDiff !== 0) return dueRankDiff
 
@@ -145,6 +155,7 @@ export function interleaveCardsByDeck(cards: Card[]): Card[] {
 export interface DailyQuestSelectionOptions {
   maxCards: number
   nextDayStartsAt?: number
+  learnAheadMinutes?: number
   nowMs?: number
   runSeed?: string | number
   /** Karten des aktuell laufenden Lernpakets bleiben aus der Daily Quest. */
@@ -183,6 +194,7 @@ export function buildDailyQuestSelection(
     maxNewCards: Number.POSITIVE_INFINITY,
     nowMs,
     nextDayStartsAt: options.nextDayStartsAt,
+    learnAheadMinutes: options.learnAheadMinutes,
     runSeed: options.runSeed,
   })
 
@@ -207,6 +219,7 @@ export interface StudySessionSelectionOptions {
   maxCards: number
   maxNewCards: number
   nextDayStartsAt?: number
+  learnAheadMinutes?: number
   runSeed?: string | number
 }
 
@@ -224,6 +237,7 @@ export function buildStudySessionSelection(
     maxCards: options.maxCards,
     maxNewCards: options.maxNewCards,
     nextDayStartsAt: options.nextDayStartsAt,
+    learnAheadMinutes: options.learnAheadMinutes,
     runSeed: options.runSeed,
   })
 }

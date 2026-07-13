@@ -34,7 +34,7 @@ describe('study session persistence helpers', () => {
   it('parses valid persisted session for matching deck', () => {
     const now = Date.UTC(2026, 3, 10, 12, 0, 0)
     const raw = JSON.stringify({
-      version: 4,
+      version: 5,
       deckId: 'deck-1',
       cardIds: ['c1', 'c2'],
       cardLimit: 50,
@@ -59,7 +59,7 @@ describe('study session persistence helpers', () => {
   it('rejects persisted session when deck id differs', () => {
     const now = Date.now()
     const raw = JSON.stringify({
-      version: 4,
+      version: 5,
       deckId: 'deck-a',
       cardIds: ['c1'],
       sessionCount: 1,
@@ -79,7 +79,7 @@ describe('study session persistence helpers', () => {
   it('rejects persisted session when expired', () => {
     const now = Date.now()
     const raw = JSON.stringify({
-      version: 4,
+      version: 5,
       deckId: 'deck-1',
       cardIds: ['c1'],
       sessionCount: 1,
@@ -135,7 +135,7 @@ describe('study session persistence helpers', () => {
       startTime: now - 5_000,
     })
 
-    expect(payload.version).toBe(4)
+    expect(payload.version).toBe(5)
     expect(payload.deckId).toBe('deck-1')
     expect(payload.kind).toBe('deck')
     expect(payload.cardIds).toEqual(['c1', 'c2'])
@@ -231,7 +231,7 @@ describe('study session persistence helpers', () => {
     const sessionId = 'shuffle:collection-1'
     const now = Date.UTC(2026, 3, 10, 12, 0, 0)
     const raw = JSON.stringify({
-      version: 4,
+      version: 5,
       deckId: sessionId,
       kind: 'shuffle',
       collectionId: 'collection-1',

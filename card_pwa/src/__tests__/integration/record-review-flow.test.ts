@@ -10,6 +10,7 @@ const mockedRuntime = vi.hoisted(() => {
     card: null as CardRecord | null,
     reviews: [] as Array<ReviewRecord & { id: number }>,
     reviewId: 1,
+    outbox: [] as Array<{ opId: string; type: string; payload: string; createdAt: number }>,
   }
 
   const cards = {
@@ -41,12 +42,26 @@ const mockedRuntime = vi.hoisted(() => {
     await callback()
   })
 
-  const enqueueSyncOperation = vi.fn(async () => undefined)
+  const enqueueSyncOperation = vi.fn(async (_type: string, _payload: unknown, _opId?: string) => undefined)
+  const syncOutbox = {
+    put: vi.fn(async (item: { opId: string; type: string; payload: string; createdAt: number }) => {
+      state.outbox = [...state.outbox.filter(existing => existing.opId !== item.opId), item]
+    }),
+  }
+  const drainTransactionalOutbox = vi.fn(async () => {
+    const pending = [...state.outbox]
+    state.outbox = []
+    for (const item of pending) {
+      await enqueueSyncOperation(item.type, JSON.parse(item.payload), item.opId)
+    }
+    return pending.length
+  })
 
   return {
     state,
-    db: { cards, reviews, transaction },
+    db: { cards, reviews, syncOutbox, transaction },
     enqueueSyncOperation,
+    drainTransactionalOutbox,
   }
 })
 
@@ -56,6 +71,7 @@ vi.mock('../../db', () => ({
 
 vi.mock('../../services/syncQueue', () => ({
   enqueueSyncOperation: mockedRuntime.enqueueSyncOperation,
+  drainTransactionalOutbox: mockedRuntime.drainTransactionalOutbox,
 }))
 
 import { recordReview, undoReview } from '../../db/queries'
@@ -65,12 +81,14 @@ describe('recordReview integration flow', () => {
     mockedRuntime.state.card = null
     mockedRuntime.state.reviews = []
     mockedRuntime.state.reviewId = 1
+    mockedRuntime.state.outbox = []
     mockedRuntime.db.cards.get.mockClear()
     mockedRuntime.db.cards.update.mockClear()
     mockedRuntime.db.reviews.add.mockClear()
     mockedRuntime.db.reviews.delete.mockClear()
     mockedRuntime.db.transaction.mockClear()
     mockedRuntime.enqueueSyncOperation.mockClear()
+    mockedRuntime.drainTransactionalOutbox.mockClear()
   })
 
   it('should switch algorithms mid-session through the real recordReview flow', async () => {
@@ -107,6 +125,13 @@ describe('recordReview integration flow', () => {
     const fsrsResult = await recordReview(initialCard.id, 3, 3500, 'fsrs')
 
     expect(fsrsResult.ok).toBe(true)
+    expect(fsrsResult.cardState).toMatchObject({
+      algorithm: 'fsrs',
+      type: mockedRuntime.state.card?.type,
+      queue: mockedRuntime.state.card?.queue,
+      dueAt: mockedRuntime.state.card?.dueAt,
+      interval: mockedRuntime.state.card?.interval,
+    })
     expect(mockedRuntime.state.card?.algorithm).toBe('fsrs')
     expect(mockedRuntime.state.card?.stability).toBeDefined()
     expect(mockedRuntime.state.card?.difficulty).toBeDefined()
@@ -119,6 +144,104 @@ describe('recordReview integration flow', () => {
       expect.objectContaining({ algorithm: 'fsrs', cardId: initialCard.id }),
       expect.any(String),
     )
+  })
+
+  it('persistiert falsch gewählte Antworten mit cardId, Auswahl, Lösung und Status', async () => {
+    const initialCard = createNewCard({
+      id: 'card-wrong-answer-1',
+      type: 0,
+      queue: 0,
+      due: Math.floor(Date.now() / 86_400_000),
+      dueAt: Date.now(),
+      algorithm: 'fsrs',
+    })
+    mockedRuntime.state.card = initialCard
+
+    const result = await recordReview(initialCard.id, 1, 2500, 'fsrs', undefined, {
+      selected: 'B: Federation',
+      correct: 'C: Single Sign-On',
+      wasCorrect: false,
+    })
+
+    expect(result.ok).toBe(true)
+    expect(mockedRuntime.state.reviews).toHaveLength(1)
+    expect(mockedRuntime.state.reviews[0]).toMatchObject({
+      cardId: initialCard.id,
+      rating: 1,
+      selectedAnswer: 'B: Federation',
+      correctAnswer: 'C: Single Sign-On',
+      answerCorrect: false,
+    })
+    expect(mockedRuntime.state.reviews[0].timestamp).toBeGreaterThan(0)
+    // Sync-Op trägt dieselben Antwortdetails — Offline-Queue und Server
+    // bekommen exakt das, was lokal gespeichert wurde.
+    expect(mockedRuntime.enqueueSyncOperation).toHaveBeenCalledWith(
+      'review',
+      expect.objectContaining({
+        cardId: initialCard.id,
+        answer: { selected: 'B: Federation', correct: 'C: Single Sign-On', wasCorrect: false },
+      }),
+      expect.any(String),
+    )
+  })
+
+  it('speichert richtige Antworten nach demselben Prinzip und erweitert die Historie', async () => {
+    const initialCard = createNewCard({
+      id: 'card-correct-answer-1',
+      type: 0,
+      queue: 0,
+      due: Math.floor(Date.now() / 86_400_000),
+      dueAt: Date.now(),
+      algorithm: 'fsrs',
+    })
+    mockedRuntime.state.card = initialCard
+
+    const wrong = await recordReview(initialCard.id, 1, 2000, 'fsrs', undefined, {
+      selected: 'A: TACACS+',
+      correct: 'D: RADIUS',
+      wasCorrect: false,
+    })
+    const right = await recordReview(initialCard.id, 3, 1500, 'fsrs', undefined, {
+      selected: 'D: RADIUS',
+      correct: 'D: RADIUS',
+      wasCorrect: true,
+    })
+
+    expect(wrong.ok).toBe(true)
+    expect(right.ok).toBe(true)
+    // Mehrfache Antworten derselben Karte erweitern die Historie (append-only).
+    expect(mockedRuntime.state.reviews).toHaveLength(2)
+    expect(mockedRuntime.state.reviews.map(review => review.cardId)).toEqual([
+      initialCard.id,
+      initialCard.id,
+    ])
+    expect(mockedRuntime.state.reviews[0].answerCorrect).toBe(false)
+    expect(mockedRuntime.state.reviews[1]).toMatchObject({
+      selectedAnswer: 'D: RADIUS',
+      correctAnswer: 'D: RADIUS',
+      answerCorrect: true,
+    })
+  })
+
+  it('lässt Reviews ohne Antwortauswahl unverändert (keine Antwortfelder)', async () => {
+    const initialCard = createNewCard({
+      id: 'card-plain-1',
+      type: 0,
+      queue: 0,
+      due: Math.floor(Date.now() / 86_400_000),
+      dueAt: Date.now(),
+      algorithm: 'fsrs',
+    })
+    mockedRuntime.state.card = initialCard
+
+    const result = await recordReview(initialCard.id, 3, 1200, 'fsrs')
+
+    expect(result.ok).toBe(true)
+    expect(mockedRuntime.state.reviews[0].selectedAnswer).toBeUndefined()
+    expect(mockedRuntime.state.reviews[0].correctAnswer).toBeUndefined()
+    expect(mockedRuntime.state.reviews[0].answerCorrect).toBeUndefined()
+    const payload = (mockedRuntime.enqueueSyncOperation.mock.calls[0] as unknown[])[1] as Record<string, unknown>
+    expect('answer' in payload).toBe(false)
   })
 
   it('should delete review row when undoReview is executed', async () => {
@@ -145,5 +268,19 @@ describe('recordReview integration flow', () => {
     expect(undone.ok).toBe(true)
     expect(mockedRuntime.db.reviews.delete).toHaveBeenCalledTimes(1)
     expect(mockedRuntime.state.reviews).toHaveLength(0)
+  })
+
+  it('commits card, review, and outbox even when queue draining fails afterwards', async () => {
+    const initialCard = createNewCard({ id: 'card-outbox-1', algorithm: 'fsrs' })
+    mockedRuntime.state.card = initialCard
+    mockedRuntime.drainTransactionalOutbox.mockRejectedValueOnce(new Error('queue database unavailable'))
+
+    const result = await recordReview(initialCard.id, 3, 900, 'fsrs')
+
+    expect(result.ok).toBe(true)
+    expect(mockedRuntime.state.reviews).toHaveLength(1)
+    expect(mockedRuntime.state.card?.reps).toBe(1)
+    expect(mockedRuntime.state.outbox).toHaveLength(1)
+    expect(mockedRuntime.enqueueSyncOperation).not.toHaveBeenCalled()
   })
 })

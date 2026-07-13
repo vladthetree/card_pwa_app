@@ -9,15 +9,19 @@ import { expectDifficultyValid, expectDueAtNotInPast } from '../fixtures/asserti
 describe('FSRS — Full Card Cycles', () => {
   afterEach(() => vi.useRealTimers())
 
-  // ─── Cycle 1: new → review (FSRS with enable_short_term: false) ──────────
+  // Cycle 1: new → learning → review with intraday steps
 
-  describe('Cycle: new → review (no intraday steps)', () => {
-    it('new card + Good → review, interval ≥ 1', () => {
+  describe('Cycle: new → learning → review', () => {
+    it('new card + Good → second learning step in 10 minutes', () => {
       const card = createNewCard({ type: 0, queue: 0, reps: 0, stability: 0.5, difficulty: 5 })
+      const before = Date.now()
       const result = calculateCardStateAfterReviewFSRS(card, 3)
 
-      expect(result.interval).toBeGreaterThanOrEqual(1)
-      expect(result.type).toBe(2)
+      expect(result.interval).toBe(0)
+      expect(result.type).toBe(1)
+      expect(result.queue).toBe(1)
+      expect(result.due).toBe(1)
+      expect(result.dueAt).toBeGreaterThanOrEqual(before + 10 * 60_000)
       expectDueAtNotInPast(result.dueAt)
     })
 
@@ -29,16 +33,43 @@ describe('FSRS — Full Card Cycles', () => {
       expectDueAtNotInPast(result.dueAt)
     })
 
-    it('new card + Hard → review, interval ≥ 1', () => {
+    it('new card + Hard → first learning step in about 6 minutes', () => {
       const card = createNewCard({ type: 0, queue: 0, reps: 0, stability: 0.5, difficulty: 5 })
+      const before = Date.now()
       const result = calculateCardStateAfterReviewFSRS(card, 2)
 
-      expect(result.interval).toBeGreaterThanOrEqual(1)
+      expect(result.interval).toBe(0)
+      expect(result.type).toBe(1)
+      expect(result.dueAt).toBeGreaterThanOrEqual(before + 6 * 60_000)
       expectDueAtNotInPast(result.dueAt)
     })
 
+    it('graduates after Good on the second learning step', () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-07-13T12:00:00.000Z'))
+      const firstReviewAt = Date.now()
+      const card = createNewCard({ type: 0, queue: 0, reps: 0, stability: 0.5, difficulty: 5 })
+      const first = calculateCardStateAfterReviewFSRS(card, 3)
+
+      vi.setSystemTime(first.dueAt)
+      const second = calculateCardStateAfterReviewFSRS({
+        ...card,
+        ...first,
+        updatedAt: firstReviewAt,
+      }, 3)
+
+      expect(first.type).toBe(1)
+      expect(second.type).toBe(2)
+      expect(second.queue).toBe(2)
+      expect(second.interval).toBeGreaterThanOrEqual(1)
+    })
+
     it('Easy interval > Good interval for same card', () => {
-      const base = createNewCard({ type: 2, queue: 2, reps: 3, stability: 10, difficulty: 5, interval: 10 })
+      const now = Date.now()
+      const base = createNewCard({
+        type: 2, queue: 2, reps: 3, stability: 10, difficulty: 5,
+        interval: 10, due: Math.floor(now / 86_400_000), dueAt: now,
+      })
       const good = calculateCardStateAfterReviewFSRS(base, 3)
       const easy = calculateCardStateAfterReviewFSRS(base, 4)
 
@@ -46,11 +77,29 @@ describe('FSRS — Full Card Cycles', () => {
     })
 
     it('Hard interval < Good interval for same card', () => {
-      const base = createNewCard({ type: 2, queue: 2, reps: 3, stability: 10, difficulty: 5, interval: 10 })
+      const now = Date.now()
+      const base = createNewCard({
+        type: 2, queue: 2, reps: 3, stability: 10, difficulty: 5,
+        interval: 10, due: Math.floor(now / 86_400_000), dueAt: now,
+      })
       const hard = calculateCardStateAfterReviewFSRS(base, 2)
       const good = calculateCardStateAfterReviewFSRS(base, 3)
 
       expect(hard.interval).toBeLessThanOrEqual(good.interval)
+    })
+
+    it('ignores legacy Hard/Easy multipliers and keeps the library result canonical', () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-07-13T12:00:00.000Z'))
+      const card = createNewCard({
+        type: 2, queue: 2, reps: 5, stability: 8, difficulty: 5,
+        interval: 8, dueAt: Date.now(),
+      })
+
+      const first = calculateCardStateAfterReviewFSRS(card, 2, { hardPen: 1, easyBonus: 1 })
+      const second = calculateCardStateAfterReviewFSRS(card, 2, { hardPen: 2.5, easyBonus: 2.5 })
+
+      expect(second).toEqual(first)
     })
   })
 
@@ -73,6 +122,42 @@ describe('FSRS — Full Card Cycles', () => {
       const result = calculateCardStateAfterReviewFSRS(card, 1)
 
       expect(result.reps).toBe(6)
+    })
+
+    it('review card + Again → 10 minute relearning step', () => {
+      const before = Date.now()
+      const card = createNewCard({
+        type: 2, queue: 2, reps: 5, lapses: 1, stability: 5, difficulty: 5, interval: 5,
+      })
+      const result = calculateCardStateAfterReviewFSRS(card, 1)
+
+      expect(result.type).toBe(3)
+      expect(result.queue).toBe(1)
+      expect(result.interval).toBe(0)
+      expect(result.dueAt).toBeGreaterThanOrEqual(before + 10 * 60_000)
+    })
+
+    it('returns to review after completing the relearning step', () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-07-13T12:00:00.000Z'))
+      const lapsedAt = Date.now()
+      const card = createNewCard({
+        type: 2, queue: 2, reps: 5, lapses: 1, stability: 5, difficulty: 5,
+        interval: 5, dueAt: Date.now(),
+      })
+      const lapsed = calculateCardStateAfterReviewFSRS(card, 1)
+
+      vi.setSystemTime(lapsed.dueAt)
+      const relearned = calculateCardStateAfterReviewFSRS({
+        ...card,
+        ...lapsed,
+        updatedAt: lapsedAt,
+      }, 3)
+
+      expect(lapsed.type).toBe(3)
+      expect(relearned.type).toBe(2)
+      expect(relearned.queue).toBe(2)
+      expect(relearned.interval).toBeGreaterThanOrEqual(1)
     })
 
     it('review card + Again → stability decreases', () => {
@@ -150,10 +235,10 @@ describe('FSRS — Full Card Cycles', () => {
     })
   })
 
-  // ─── Bug F1: interval never 0 after 14:00 local time ─────────────────────
+  // Intraday and day intervals remain distinct at all times.
 
-  describe('Bug F1 — interval ≥ 1 regardless of time of day', () => {
-    it('review card + Again at 14:00 UTC → interval ≥ 1 (was 0 before fix)', () => {
+  describe('intraday interval handling', () => {
+    it('review card + Again at 14:00 UTC → 10 minute relearning interval', () => {
       vi.useFakeTimers()
       vi.setSystemTime(new Date('2026-04-11T14:00:00.000Z'))
 
@@ -162,7 +247,9 @@ describe('FSRS — Full Card Cycles', () => {
       })
       const result = calculateCardStateAfterReviewFSRS(card, 1)
 
-      expect(result.interval).toBeGreaterThanOrEqual(1)
+      expect(result.interval).toBe(0)
+      expect(result.type).toBe(3)
+      expect(result.dueAt).toBe(Date.now() + 10 * 60_000)
     })
 
     it('review card + Hard at 14:00 UTC → interval ≥ 1', () => {

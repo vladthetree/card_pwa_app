@@ -10,7 +10,7 @@ import { DAY_MS, getDayStartMs } from '../utils/time'
 export type StudySessionKind = 'deck' | 'shuffle'
 
 export interface PersistedStudySession {
-  version: 4
+  version: 5
   /** For shuffle sessions this stores the namespaced key, e.g. shuffle:<id>. */
   deckId: string
   kind?: StudySessionKind
@@ -27,12 +27,14 @@ export interface PersistedStudySession {
   relearnSuccessCounts: Record<string, number>
   forcedTomorrowCardIds: string[]
   againCounts: Record<string, number>
+  hardPracticeCardIds: string[]
+  hardPracticePassCounts: Record<string, number>
   reviewEvents?: SessionReviewEvent[]
   expiresAt: number
   startTime: number
 }
 
-export const STUDY_SESSION_VERSION = 4
+export const STUDY_SESSION_VERSION = 5
 export const STUDY_SESSION_TTL_MS = 45 * 60 * 1000
 export const DEFAULT_STUDY_CARD_LIMIT = 50
 export const MIN_STUDY_CARD_LIMIT = 10
@@ -60,6 +62,8 @@ export function parsePersistedStudySession(raw: string | null, sessionId: string
     if (!Array.isArray(parsed.cardIds) || parsed.cardIds.length === 0) return null
     // Provide default for sessions persisted before againCounts was added.
     if (!parsed.againCounts || typeof parsed.againCounts !== 'object') parsed.againCounts = {}
+    if (!Array.isArray(parsed.hardPracticeCardIds)) parsed.hardPracticeCardIds = []
+    if (!parsed.hardPracticePassCounts || typeof parsed.hardPracticePassCounts !== 'object') parsed.hardPracticePassCounts = {}
     if (!Array.isArray(parsed.reviewEvents)) parsed.reviewEvents = []
     if (parsed.kind !== 'shuffle') parsed.kind = 'deck'
     return parsed
@@ -90,6 +94,8 @@ export function buildPersistedStudySession(input: {
   relearnSuccessCounts: Record<string, number>
   forcedTomorrowCardIds: string[]
   againCounts: Record<string, number>
+  hardPracticeCardIds?: string[]
+  hardPracticePassCounts?: Record<string, number>
   reviewEvents?: SessionReviewEvent[]
   startTime: number
   nowMs?: number
@@ -120,6 +126,8 @@ export function buildPersistedStudySession(input: {
     relearnSuccessCounts: input.relearnSuccessCounts,
     forcedTomorrowCardIds: input.forcedTomorrowCardIds,
     againCounts: input.againCounts,
+    hardPracticeCardIds: input.hardPracticeCardIds ?? [],
+    hardPracticePassCounts: input.hardPracticePassCounts ?? {},
     reviewEvents: input.reviewEvents ?? [],
     expiresAt,
     startTime: input.startTime,

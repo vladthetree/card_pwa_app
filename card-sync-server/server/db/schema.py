@@ -157,6 +157,8 @@ def init_db():
       queue INTEGER,
       due INTEGER,
       due_at INTEGER,
+      learning_step INTEGER,
+      last_reviewed_at INTEGER,
       interval INTEGER,
       factor INTEGER,
       stability REAL,
@@ -258,6 +260,12 @@ def init_db():
   if "retrievability" not in card_cols:
     conn.execute("ALTER TABLE server_cards ADD COLUMN retrievability REAL")
     conn.commit()
+  if "learning_step" not in card_cols:
+    conn.execute("ALTER TABLE server_cards ADD COLUMN learning_step INTEGER")
+    conn.commit()
+  if "last_reviewed_at" not in card_cols:
+    conn.execute("ALTER TABLE server_cards ADD COLUMN last_reviewed_at INTEGER")
+    conn.commit()
   conn.execute("CREATE INDEX IF NOT EXISTS idx_card_snapshot_active ON server_cards(id) WHERE deleted_at IS NULL AND is_deleted = 0")
   conn.commit()
 
@@ -292,6 +300,19 @@ def init_db():
   conn.commit()
   conn.execute("CREATE INDEX IF NOT EXISTS idx_review_user_id ON server_reviews(user_id)")
   conn.commit()
+
+  # Antwortdetails interaktiver Karten (additive Migration): gewählte und
+  # korrekte Antwort plus Richtig/Falsch-Flag — NULL für alte Reviews und
+  # Karten ohne Auswahl (klassisches Umdrehen, Free Recall).
+  if "selected_answer" not in review_cols:
+    conn.execute("ALTER TABLE server_reviews ADD COLUMN selected_answer TEXT")
+    conn.commit()
+  if "correct_answer" not in review_cols:
+    conn.execute("ALTER TABLE server_reviews ADD COLUMN correct_answer TEXT")
+    conn.commit()
+  if "answer_correct" not in review_cols:
+    conn.execute("ALTER TABLE server_reviews ADD COLUMN answer_correct INTEGER")
+    conn.commit()
 
   shuffle_cols = [r[1] for r in conn.execute("PRAGMA table_info(server_shuffle_collections)").fetchall()]
   if "user_id" not in shuffle_cols:

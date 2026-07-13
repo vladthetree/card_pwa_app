@@ -7,7 +7,7 @@
  */
 import { useState, useEffect, useCallback, useMemo, useReducer, useRef } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
-import { ArrowLeft, RotateCcw, CheckCircle, AlertCircle, RefreshCw, Type, Info, Sparkles } from 'lucide-react'
+import { ArrowLeft, RotateCcw, CheckCircle, AlertCircle, RefreshCw, Type, Sparkles } from 'lucide-react'
 import { useDeckCards } from '../hooks/useCardDb'
 import { recordReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession, readActiveSession, countNewCardsIntroducedToday } from '../db/queries'
 import { STRINGS, useSettings, type QuestionTextSize } from '../contexts/SettingsContext'
@@ -25,7 +25,7 @@ import {
   initialSessionState,
 } from '../services/studySessionReducer'
 import { buildLearningCoachSummary } from '../services/learningCoach'
-import type { Deck, Card, Rating } from '../types'
+import type { Deck, Card, Rating, ReviewAnswerDetails } from '../types'
 import { formatDeckName } from '../utils/cardTextParser'
 import { getCardVariant } from '../utils/cardVariant'
 import { useSessionRewards } from '../hooks/useSessionRewards'
@@ -100,7 +100,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
   const [session, dispatch] = useReducer(sessionReducer, initialSessionState)
   const [editingCard, setEditingCard] = useState<Card | null>(null)
   const [answerWasIncorrect, setAnswerWasIncorrect] = useState(false)
-  const [showHeaderLegend, setShowHeaderLegend] = useState(false)
   // Antwortseite der aktuellen Karte war schon sichtbar → Antwort-Eingaben
   // bleiben gesperrt (verhindert „Lösung ansehen, zurückswipen, richtig klicken“).
   const [answerRevealed, setAnswerRevealed] = useState(false)
@@ -110,6 +109,11 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
   const [peekFlipped, setPeekFlipped] = useState(true)
   const { isHandsetLayout, isHandsetLandscape } = useHandsetLayout()
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
+  // Konkrete Antwort der aktuellen Karte (MC/Drag-Match/Reihenfolge/Zuordnung),
+  // bis sie mit der Bewertung als Review persistiert ist. Ref statt State: die
+  // Zuordnung zur cardId passiert im selben Closure wie recordReview, und der
+  // Kartenwechsel-Reset verhindert ein Verrutschen auf die nächste Karte.
+  const pendingAnswerRef = useRef<ReviewAnswerDetails | null>(null)
   const { rewardToast, registerSessionReward } = useSessionRewards({
     language: settings.language,
     nextDayStartsAt: settings.nextDayStartsAt,
@@ -154,18 +158,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     studyCardLimitRef.current = studyCardLimit
   }, [studyCardLimit])
 
-  useEffect(() => {
-    if (!showHeaderLegend) return
-
-    const timer = window.setTimeout(() => {
-      setShowHeaderLegend(false)
-    }, 3000)
-
-    return () => {
-      window.clearTimeout(timer)
-    }
-  }, [showHeaderLegend])
-
   useSessionPersistence({ deckId: deck.id, sessionRef, studyCardLimitRef, nextDayStartsAt: settings.nextDayStartsAt })
 
 
@@ -202,9 +194,10 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
       maxCards: normalizeStudyCardLimit(limit),
       maxNewCards: newCardAllowance ?? Number.POSITIVE_INFINITY,
       nextDayStartsAt: settings.nextDayStartsAt,
+      learnAheadMinutes: settings.learnAheadMinutes,
       runSeed: dragMatchModeSeedRef.current,
     })
-  }, [settings.nextDayStartsAt, deck.id, newCardAllowance])
+  }, [settings.nextDayStartsAt, settings.learnAheadMinutes, deck.id, newCardAllowance])
 
   const clearPersistedSession = useCallback(() => {
     void clearActiveSession(deck.id)
@@ -320,6 +313,8 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
       relearnSuccessCounts: session.relearnSuccessCounts,
       forcedTomorrowCardIds: session.forcedTomorrowCardIds,
       againCounts: session.againCounts,
+      hardPracticeCardIds: session.hardPracticeCardIds,
+      hardPracticePassCounts: session.hardPracticePassCounts,
       reviewEvents: session.reviewEvents,
       startTime: session.startTime,
       nextDayStartsAt: settings.nextDayStartsAt,
@@ -336,6 +331,8 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     session.relearnSuccessCounts,
     session.forcedTomorrowCardIds,
     session.againCounts,
+    session.hardPracticeCardIds,
+    session.hardPracticePassCounts,
     session.reviewEvents,
     session.startTime,
     deck.id,
@@ -380,10 +377,13 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
   )
 
   // Pro Karte zurücksetzen (sessionCount zählt Requeues mit); Peek schließen.
+  // Auch die gepufferte Antwort verfällt: sie darf nie einer anderen Karte
+  // zugeordnet werden.
   useEffect(() => {
     setAnswerRevealed(false)
     setPeeking(false)
     setPeekFlipped(true)
+    pendingAnswerRef.current = null
   }, [currentCard?.id, session.sessionCount])
 
   useEffect(() => {
@@ -483,8 +483,9 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     }
   }, [isHandsetLayout, session.isDone, session.isSubmitting, session.lastRatedCard, peeking, currentCard, handleFlip])
 
-  const handleAnswerEvaluated = useCallback((score: number) => {
+  const handleAnswerEvaluated = useCallback((score: number, answer?: Pick<ReviewAnswerDetails, 'selected' | 'correct'>) => {
     setAnswerWasIncorrect(score < 1.0)
+    pendingAnswerRef.current = answer ? { ...answer, wasCorrect: score >= 1.0 } : null
   }, [])
 
   const handleRate = useCallback(
@@ -498,7 +499,32 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
       dispatch({ type: 'RATE_START', rating: effectiveRating, elapsedMs })
 
       try {
-        const result = await recordReview(currentCard.id, effectiveRating, elapsedMs, settings.algorithm, settings.algorithmParams)
+        const practiceOnly = settings.hardPracticeEnabled && session.hardPracticeCardIds.includes(currentCard.id) && effectiveRating !== 1
+        if (practiceOnly) {
+          dispatch({
+            type: 'RATE_SUCCESS',
+            rating: effectiveRating,
+            cardId: currentCard.id,
+            forcedTomorrow: false,
+            practiceOnly: true,
+            hardPracticeEnabled: settings.hardPracticeEnabled,
+            hardPracticeGoodStreak: settings.hardPracticeGoodStreak,
+            hardPracticeMaxPasses: settings.hardPracticeMaxPasses,
+            learnAheadMinutes: settings.learnAheadMinutes,
+          })
+          setAnswerWasIncorrect(false)
+          pendingAnswerRef.current = null
+          return
+        }
+
+        const result = await recordReview(
+          currentCard.id,
+          effectiveRating,
+          elapsedMs,
+          settings.algorithm,
+          settings.algorithmParams,
+          pendingAnswerRef.current ?? undefined,
+        )
 
         if (!result.ok) {
           dispatch({ type: 'RATE_ERROR', message: result.error || t.save_rating_failed })
@@ -515,10 +541,21 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
           }
         }
 
-        dispatch({ type: 'RATE_SUCCESS', rating: effectiveRating, cardId: currentCard.id, forcedTomorrow })
+        dispatch({
+          type: 'RATE_SUCCESS',
+          rating: effectiveRating,
+          cardId: currentCard.id,
+          forcedTomorrow,
+          cardState: result.cardState,
+          hardPracticeEnabled: settings.hardPracticeEnabled,
+          hardPracticeGoodStreak: settings.hardPracticeGoodStreak,
+          hardPracticeMaxPasses: settings.hardPracticeMaxPasses,
+          learnAheadMinutes: settings.learnAheadMinutes,
+        })
         registerSessionReward(effectiveRating, elapsedMs)
         noteOfflineSave()
         setAnswerWasIncorrect(false)
+        pendingAnswerRef.current = null
       } catch (err) {
         const message = err instanceof Error ? err.message : t.unknown_error
         dispatch({ type: 'RATE_ERROR', message })
@@ -532,9 +569,14 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
       isAlgorithmMigrating,
       session.startTime,
       session.againCounts,
+      session.hardPracticeCardIds,
       answerWasIncorrect,
       settings.algorithm,
       settings.algorithmParams,
+      settings.hardPracticeEnabled,
+      settings.hardPracticeGoodStreak,
+      settings.hardPracticeMaxPasses,
+      settings.learnAheadMinutes,
       t.save_rating_failed,
       t.unknown_error,
       registerSessionReward,
@@ -549,7 +591,16 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     dispatch({ type: 'RATE_START', rating, elapsedMs })
 
     try {
-      const result = await recordReview(currentCard.id, rating, elapsedMs, settings.algorithm, settings.algorithmParams)
+      // Retry nach Speicherfehler: die Antwortdetails liegen noch im Ref,
+      // weil der Kartenwechsel erst mit RATE_SUCCESS passiert.
+      const result = await recordReview(
+        currentCard.id,
+        rating,
+        elapsedMs,
+        settings.algorithm,
+        settings.algorithmParams,
+        pendingAnswerRef.current ?? undefined,
+      )
       if (result.ok) {
         // P2.3: Apply the force-tomorrow rule on retry just as in handleRate.
         // againCounts was not modified by the preceding RATE_ERROR, so the
@@ -562,10 +613,21 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
           }
         }
 
-        dispatch({ type: 'RATE_SUCCESS', rating, cardId: currentCard.id, forcedTomorrow })
+        dispatch({
+          type: 'RATE_SUCCESS',
+          rating,
+          cardId: currentCard.id,
+          forcedTomorrow,
+          cardState: result.cardState,
+          hardPracticeEnabled: settings.hardPracticeEnabled,
+          hardPracticeGoodStreak: settings.hardPracticeGoodStreak,
+          hardPracticeMaxPasses: settings.hardPracticeMaxPasses,
+          learnAheadMinutes: settings.learnAheadMinutes,
+        })
         registerSessionReward(rating, elapsedMs)
         noteOfflineSave()
         setAnswerWasIncorrect(false)
+        pendingAnswerRef.current = null
       } else {
         dispatch({ type: 'RATE_ERROR', message: result.error || t.save_failed })
       }
@@ -580,6 +642,10 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     isAlgorithmMigrating,
     settings.algorithm,
     settings.algorithmParams,
+    settings.hardPracticeEnabled,
+    settings.hardPracticeGoodStreak,
+    settings.hardPracticeMaxPasses,
+    settings.learnAheadMinutes,
     t.save_failed,
     t.unknown_error,
     registerSessionReward,
@@ -876,19 +942,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
               <StreakBadge compact />
               <button
                 type="button"
-                onClick={() => setShowHeaderLegend(prev => !prev)}
-                className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-ds border transition-colors ${
-                  showHeaderLegend
-                    ? 'border-ds-border-hover bg-ds-panel text-zinc-100'
-                    : 'border-ds-border bg-ds-card text-zinc-500 hover:border-ds-border-hover hover:text-zinc-50'
-                }`}
-                title={t.legend_label}
-                aria-label={t.legend_label}
-              >
-                <Info size={14} />
-              </button>
-              <button
-                type="button"
                 onClick={cycleQuestionTextSize}
                 className="ds-icon-button inline-flex h-11 w-11 flex-shrink-0"
                 title={`${t.question_text_size}: ${questionTextSizeLabel}`}
@@ -897,20 +950,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
                 <Type size={14} />
               </button>
             </div>
-
-            {/* Legend popup */}
-            {showHeaderLegend && (
-              <div className="absolute top-16 left-4 right-4 z-30 w-auto max-w-xs ds-menu p-3 text-xs">
-                <div className="space-y-1.5">
-                  {headerStats.map(stat => (
-                    <div key={`legend-${stat.key}`} className="flex items-center gap-2">
-                      <span className={`inline-block h-2 w-2 rounded-full ${stat.cls}`} />
-                      <span>{stat.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -949,31 +988,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
                     {stat.value}
                   </div>
                 ))}
-                <button
-                  type="button"
-                  onClick={() => setShowHeaderLegend(prev => !prev)}
-                  className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-ds border transition-colors ${
-                    showHeaderLegend
-                      ? 'border-ds-border-hover bg-ds-panel text-zinc-100'
-                      : 'border-ds-border bg-ds-card text-zinc-500 hover:border-ds-border-hover hover:text-zinc-50'
-                  }`}
-                  title={settings.language === 'de' ? 'Legende' : 'Legend'}
-                  aria-label={settings.language === 'de' ? 'Legende' : 'Legend'}
-                >
-                  <Info size={16} />
-                </button>
-                {showHeaderLegend && (
-                  <div className="absolute top-16 left-1/2 -translate-x-1/2 z-30 ds-menu p-3 text-xs">
-                    <div className="space-y-1.5">
-                      {headerStats.map(stat => (
-                        <div key={`legend-${stat.key}`} className="flex items-center gap-2">
-                          <span className={`inline-block h-2 w-2 rounded-full ${stat.cls}`} />
-                          <span>{stat.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Right: Settings */}
@@ -1088,6 +1102,11 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
                 className={`w-full ${isHandsetLayout ? 'flex h-full min-h-0 flex-col' : 'mx-auto my-auto max-w-5xl'}`}
                 style={isHandsetLayout ? { maxHeight: '100%' } : undefined}
               >
+                {settings.hardPracticeEnabled && session.hardPracticeCardIds.includes(currentCard.id) && (
+                  <div className="mb-2 self-center rounded-ds border border-amber-400/35 bg-amber-400/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-amber-200" role="status">
+                    {settings.language === 'de' ? 'Hard-Verstärkung · Session-Übung' : 'Hard reinforcement · session practice'}
+                  </div>
+                )}
                 <div className={`flex flex-col lg:flex-row items-start gap-6 w-full ${isHandsetLayout ? 'h-full min-h-0 flex-1' : ''}`}>
                   <div className={`w-full min-w-0 flex-1 ${isHandsetLayout ? 'h-full min-h-0' : ''}`}>
                     <div

@@ -51,8 +51,14 @@ export interface CardRecord {
   // SM-2 scheduling (Anki integer format)
   type: number      // 0=new, 1=learning, 2=review, 3=relearning
   queue: number     // 0=new, 1=learning, 2=review, -1=suspended
-  due: number       // days since epoch (review) or steps (learning)
+  due: number       // compatibility day value; precise intraday state lives in dueAt
   dueAt?: number    // unix ms timestamp for intraday scheduling
+  /** Expliziter Index des aktuellen FSRS-/SM2-Lernschritts. `due` bleibt nur
+   * aus Import-/Sync-Kompatibilität erhalten und muss nicht mehr überladen werden. */
+  learningStep?: number
+  /** Zeitpunkt der letzten echten Scheduler-Bewertung. Inhaltsänderungen
+   * dürfen diesen Wert im Gegensatz zu `updatedAt` nicht verschieben. */
+  lastReviewedAt?: number
   interval: number  // days
   factor: number    // ease × 1000 internally (e.g. 2500 = 2.5×)
   stability?: number
@@ -78,6 +84,14 @@ export interface ReviewRecord {
   timestamp: number
   sourceClient?: string
   createdAt?: number
+  // Antwortdetails interaktiver Karten (MC/Drag-Match/Reihenfolge/Zuordnung).
+  // Additiv und optional: ältere Zeilen und Karten ohne Auswahl haben keine.
+  /** Vom Nutzer gewählte Antwort (kanonischer Schlüssel + Text). */
+  selectedAnswer?: string
+  /** Die korrekte Antwort in derselben Darstellung. */
+  correctAnswer?: string
+  /** true/false = Antwort richtig/falsch; undefined = Karte ohne Auswahl. */
+  answerCorrect?: boolean
 }
 
 /** Active study session state persisted in IndexedDB so it survives across
@@ -93,6 +107,15 @@ export interface SyncMetaRecord {
   key: string
   value: unknown
   updatedAt: number
+}
+
+/** Transaktionale Ausgangsbox in derselben IndexedDB wie Karte und Review.
+ * Nach dem Commit wird sie idempotent in die bestehende Retry-Queue überführt. */
+export interface SyncOutboxRecord {
+  opId: string
+  type: string
+  payload: string
+  createdAt: number
 }
 
 /** Local profile state stored in IndexedDB. Single row with id='current'. */
@@ -222,6 +245,7 @@ export class CardPwaDB extends Dexie {
   reviews!: Table<ReviewRecord, number>
   activeSessions!: Table<ActiveSessionRecord, string>
   syncMeta!: Table<SyncMetaRecord, string>
+  syncOutbox!: Table<SyncOutboxRecord, string>
   profile!: Table<ProfileRecord, string>
   cardStats!: Table<CardStatsRecord, string>
   deckProgress!: Table<DeckProgressRecord, string>
@@ -533,6 +557,31 @@ export class CardPwaDB extends Dexie {
           }
         }
         if (records.length > 0) await tx.table('videoTagMeta').bulkPut(records)
+      })
+
+    // Version 21: atomare Review-Outbox und explizite Scheduler-Zeitfelder.
+    // Die neuen Kartenfelder brauchen keinen Index; die Outbox wird per opId
+    // idempotent in die separate Retry-Queue verschoben.
+    this.version(21)
+      .stores({
+        syncOutbox: 'opId, type, createdAt',
+      })
+      .upgrade(async tx => {
+        const dayMs = 86_400_000
+        await tx.table('cards').toCollection().modify((card: CardRecord) => {
+          if (!Number.isFinite(card.learningStep)) {
+            card.learningStep = card.type === 1 || card.type === 3
+              ? (card.due === 1 ? 1 : 0)
+              : 0
+          }
+          if (!Number.isFinite(card.lastReviewedAt) && card.reps > 0) {
+            if (card.type === 2 && Number.isFinite(card.dueAt) && card.interval > 0) {
+              card.lastReviewedAt = Math.max(0, Number(card.dueAt) - card.interval * dayMs)
+            } else if (Number.isFinite(card.updatedAt)) {
+              card.lastReviewedAt = Number(card.updatedAt)
+            }
+          }
+        })
       })
   }
 }

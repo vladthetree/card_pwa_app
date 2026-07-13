@@ -373,8 +373,8 @@ class SyncRoutesMixin:
         conn.execute(
           """
           INSERT OR REPLACE INTO server_cards
-          (id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due, due_at, interval, factor, stability, difficulty, retrievability, reps, lapses, algorithm, metadata_json, is_deleted, created_at, updated_at, deleted_at, last_source_client, user_id)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          (id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due, due_at, learning_step, last_reviewed_at, interval, factor, stability, difficulty, retrievability, reps, lapses, algorithm, metadata_json, is_deleted, created_at, updated_at, deleted_at, last_source_client, user_id)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
           """,
           (
             card_id,
@@ -388,6 +388,8 @@ class SyncRoutesMixin:
             card.get("queue"),
             card.get("due"),
             card.get("dueAt"),
+            card.get("learningStep"),
+            card.get("lastReviewedAt"),
             card.get("interval"),
             card.get("factor"),
             card.get("stability"),
@@ -453,11 +455,18 @@ class SyncRoutesMixin:
           int(time.time()),
           min_value=0,
         )
+        # Antwortdetails (optional): sowohl verschachtelt (`answer`) als auch
+        # flach (`selectedAnswer`/…) akzeptieren — Dexie-Export liefert flach.
+        answer = review.get("answer") if isinstance(review.get("answer"), dict) else {}
+        selected_answer = answer.get("selected") or review.get("selectedAnswer")
+        correct_answer = answer.get("correct") or review.get("correctAnswer")
+        was_correct = answer.get("wasCorrect") if isinstance(answer.get("wasCorrect"), bool) else review.get("answerCorrect")
         conn.execute(
           """
           INSERT INTO server_reviews
-          (review_op_id, card_id, rating, time_ms, reviewed_at, source_client, created_at, undone_at, user_id)
-          VALUES (?, ?, ?, ?, ?, ?, ?, NULL, ?)
+          (review_op_id, card_id, rating, time_ms, reviewed_at, source_client, created_at, undone_at, user_id,
+           selected_answer, correct_answer, answer_correct)
+          VALUES (?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)
           """,
           (
             review_op_id,
@@ -468,6 +477,9 @@ class SyncRoutesMixin:
             source_client,
             created_at,
             state_user_id,
+            selected_answer if isinstance(selected_answer, str) else None,
+            correct_answer if isinstance(correct_answer, str) else None,
+            (1 if was_correct else 0) if isinstance(was_correct, bool) else None,
           )
         )
         summary["reviewsInserted"] += 1
@@ -880,7 +892,7 @@ class SyncRoutesMixin:
       else:
         where_card = f"WHERE deleted_at IS NULL AND IFNULL(is_deleted, 0) = 0 {user_filter}"
       cards_rows = conn.execute(
-        f"""SELECT id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due, due_at, interval, factor, stability, difficulty, retrievability, reps, lapses, algorithm, metadata_json, is_deleted, created_at, updated_at, deleted_at, last_source_client
+        f"""SELECT id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due, due_at, learning_step, last_reviewed_at, interval, factor, stability, difficulty, retrievability, reps, lapses, algorithm, metadata_json, is_deleted, created_at, updated_at, deleted_at, last_source_client
             FROM server_cards {where_card} ORDER BY id ASC""",
         user_params
       ).fetchall()
@@ -943,6 +955,8 @@ class SyncRoutesMixin:
           "queue": normalized_queue,
           "due": normalized_due,
           "dueAt": normalized_due_at,
+          "learningStep": r["learning_step"],
+          "lastReviewedAt": r["last_reviewed_at"],
           "interval": r["interval"],
           "factor": r["factor"],
           "stability": stability,
@@ -1029,14 +1043,15 @@ class SyncRoutesMixin:
           )
         """
       review_rows = conn.execute(
-        f"""SELECT review_op_id, card_id, rating, time_ms, reviewed_at, source_client, created_at
+        f"""SELECT review_op_id, card_id, rating, time_ms, reviewed_at, source_client, created_at,
+                   selected_answer, correct_answer, answer_correct
             FROM server_reviews {where_review}
             ORDER BY reviewed_at ASC, id ASC""",
         user_params
       ).fetchall()
       reviews = []
       for r in review_rows:
-        reviews.append({
+        review = {
           "opId": r["review_op_id"],
           "cardId": r["card_id"],
           "rating": r["rating"],
@@ -1044,7 +1059,15 @@ class SyncRoutesMixin:
           "timestamp": r["reviewed_at"],
           "sourceClient": r["source_client"],
           "createdAt": r["created_at"],
-        })
+        }
+        # Antwortdetails nur mitschicken, wenn vorhanden (alte Reviews: NULL).
+        if r["selected_answer"] is not None or r["correct_answer"] is not None:
+          review["answer"] = {
+            "selected": r["selected_answer"] or "",
+            "correct": r["correct_answer"] or "",
+            "wasCorrect": bool(r["answer_correct"]),
+          }
+        reviews.append(review)
       
       self._send_json(200, {
         "ok": True,

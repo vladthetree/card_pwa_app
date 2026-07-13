@@ -182,6 +182,16 @@ describe('sortStudyCards — due date filter (Bug 1 fix)', () => {
       expect(result).toHaveLength(1)
     })
 
+    it('excludes a learning step outside the 20 minute learn-ahead window', () => {
+      const result = sortStudyCards([c('l1', 'learning', nowMs + 20 * 60_000 + 1)], { nowMs })
+      expect(result).toHaveLength(0)
+    })
+
+    it('respects a configured zero-minute learn-ahead window', () => {
+      const result = sortStudyCards([c('l1', 'learning', nowMs + 1)], { nowMs, learnAheadMinutes: 0 })
+      expect(result).toHaveLength(0)
+    })
+
     it('includes relearning card with dueAt exactly nowMs', () => {
       const result = sortStudyCards([c('r1', 'relearning', nowMs)], { nowMs })
       expect(result).toHaveLength(1)
@@ -268,7 +278,7 @@ describe('sortStudyCards — due date filter (Bug 1 fix)', () => {
       expect(result).toHaveLength(7)
     })
 
-    it('keeps relearning cards in queue after interruption when due later today', () => {
+    it('keeps only relearning cards inside the Anki learn-ahead window after interruption', () => {
       const interruptedAgainCards = [
         c('again-1', 'relearning', nowMs + 5 * 60_000),
         c('again-2', 'relearning', nowMs + 30 * 60_000),
@@ -279,7 +289,7 @@ describe('sortStudyCards — due date filter (Bug 1 fix)', () => {
       ]
 
       const result = sortStudyCards([...interruptedAgainCards, ...regularDueCards], { nowMs })
-      expect(result.map(card => card.id)).toEqual(['rv-due', 'again-1', 'again-2', 'n1'])
+      expect(result.map(card => card.id)).toEqual(['rv-due', 'n1', 'again-1'])
     })
   })
 

@@ -48,6 +48,7 @@ _HTML_ENTITIES = {'amp': '&', 'lt': '<', 'gt': '>', 'quot': '"',
 _LEADING_NUM_RE = re.compile(r'^\s*\d+[\.:]\s*')
 _CHOICE_RE      = re.compile(r'^\s*[A-D][:\.\)]\s*', re.MULTILINE)
 _CLOZE_RE       = re.compile(r'\{\{c(\d+)::([^:}]+)(?:::([^}]*))?\}\}')
+DAY_MS          = 86_400_000
 
 
 def strip_html(text: str) -> str:
@@ -68,6 +69,41 @@ def normalize_front(text: str) -> str:
     t = _CHOICE_RE.sub('', t)        # Antwortoptionen entfernen
     t = unicodedata.normalize('NFKC', t)
     return re.sub(r'\s+', ' ', t).strip().lower()
+
+
+def normalize_anki_schedule(card: dict, now: int) -> dict:
+    """Resolve Anki's queue-dependent overloaded due field to milliseconds."""
+    anki_type = max(0, min(3, int(card.get('type') or 0)))
+    anki_queue = int(card.get('queue') or 0)
+    raw_due = max(0, int(card.get('due') or 0))
+    suspended = anki_queue == -1
+    interval = max(0, int(card.get('interval') or 0))
+
+    if anki_queue in (1, 4):
+        card_type = 3 if anki_type == 3 else 1
+        queue = -1 if suspended else 1
+        due_at = raw_due * 1000 if raw_due else now
+        interval = 0
+    elif anki_queue in (2, 3) or anki_type in (2, 3):
+        card_type = 1 if anki_queue == 3 or anki_type == 1 else (3 if anki_type == 3 else 2)
+        queue = -1 if suspended else (2 if card_type == 2 else 1)
+        due_at = max(0, int(card.get('collection_created_at_ms') or now) + raw_due * DAY_MS)
+        if card_type == 2:
+            interval = max(1, interval)
+    else:
+        card_type = 0
+        queue = -1 if suspended else 0
+        due_at = now + min(raw_due, DAY_MS - 1)
+        interval = 0
+
+    return {
+        'type': card_type,
+        'queue': queue,
+        'due': max(0, due_at // DAY_MS),
+        'dueAt': due_at,
+        'interval': interval,
+        'learningStep': 0,
+    }
 
 
 # ─── Cloze-Parsing ───────────────────────────────────────────────────────────
@@ -146,6 +182,13 @@ def _parse_db(conn: sqlite3.Connection) -> tuple[list[dict], list[dict]]:
     has_new = conn.execute(
         "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='notetypes'"
     ).fetchone()[0] > 0
+    collection_row = conn.execute('SELECT crt FROM col LIMIT 1').fetchone()
+    collection_created_at_ms = max(0, int(collection_row['crt']) * 1000) if collection_row else now_ms()
+    last_review_by_card = {
+        int(row['cid']): int(row['last_reviewed_at'])
+        for row in conn.execute('SELECT cid, MAX(id) AS last_reviewed_at FROM revlog GROUP BY cid')
+        if row['last_reviewed_at'] is not None
+    }
 
     # ── Decks ──────────────────────────────────────────────────────────────
     deck_map: dict[str, str] = {}
@@ -242,6 +285,8 @@ def _parse_db(conn: sqlite3.Connection) -> tuple[list[dict], list[dict]]:
             'factor':    row['factor'] if row['factor'] > 0 else 2500,
             'reps':      row['reps'],
             'lapses':    row['lapses'],
+            'collection_created_at_ms': collection_created_at_ms,
+            'last_reviewed_at': last_review_by_card.get(row['id']),
         })
 
     conn.close()
@@ -294,14 +339,13 @@ def import_into_db(
     source_label: str,
 ) -> dict:
     now     = now_ms()
-    day_ms  = 86_400_000
 
     def make_payload(card: dict) -> dict:
         factor          = card['factor']
-        ivl             = max(1, card['interval'])
+        schedule        = normalize_anki_schedule(card, now)
+        ivl             = schedule['interval']
         fsrs_difficulty = max(1.0, min(10.0, factor / 500))
-        fsrs_stability  = float(ivl)
-        due_at          = max(0, card['due']) * day_ms if card['due'] >= 0 else now
+        fsrs_stability  = float(max(0.5, ivl or 0.5))
 
         return {
             'id':         card['id'],
@@ -311,10 +355,12 @@ def import_into_db(
             'back':       card['back'],
             'tags':       card['tags'],
             'extra':      {'acronym': '', 'examples': '', 'port': '', 'protocol': ''},
-            'type':       card['type'],
-            'queue':      card['queue'],
-            'due':        max(0, card['due']),
-            'dueAt':      due_at,
+            'type':       schedule['type'],
+            'queue':      schedule['queue'],
+            'due':        schedule['due'],
+            'dueAt':      schedule['dueAt'],
+            'learningStep': schedule['learningStep'],
+            'lastReviewedAt': card.get('last_reviewed_at'),
             'interval':   ivl,
             'factor':     round(fsrs_difficulty * 500) if algorithm == 'fsrs' else factor,
             'stability':  fsrs_stability if algorithm == 'fsrs' else None,

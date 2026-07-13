@@ -12,6 +12,7 @@ const mockedDb = vi.hoisted(() => {
   const state = {
     cards: [] as CardRecord[],
     decks: [] as DeckRecord[],
+    reviews: [] as Array<{ cardId: string; timestamp: number }>,
   }
 
   // getDeckHomeMetadata liest seit dem Shared-Read-Umbau die ganze Karten-
@@ -25,13 +26,29 @@ const mockedDb = vi.hoisted(() => {
     toArray: vi.fn(async () => state.decks.map(deck => ({ ...deck }))),
   }
 
-  return { state, cards, decks }
+  // countNewCardsIntroducedToday (newCardsPerDay-Dosis) liest reviews über
+  // timestamp- bzw. cardId-Index; der Mock bildet beide Pfade minimal ab.
+  const reviews = {
+    where: vi.fn((index: string) => ({
+      aboveOrEqual: (value: number) => ({
+        toArray: async () =>
+          index === 'timestamp' ? state.reviews.filter(review => review.timestamp >= value) : [],
+      }),
+      anyOf: (cardIds: string[]) => ({
+        toArray: async () =>
+          index === 'cardId' ? state.reviews.filter(review => cardIds.includes(review.cardId)) : [],
+      }),
+    })),
+  }
+
+  return { state, cards, decks, reviews }
 })
 
 vi.mock('../../db', () => ({
   db: {
     cards: mockedDb.cards,
     decks: mockedDb.decks,
+    reviews: mockedDb.reviews,
   },
 }))
 
@@ -80,6 +97,7 @@ describe('getDeckScheduleOverview', () => {
     vi.setSystemTime(new Date('2026-04-10T12:00:00.000Z'))
     mockedDb.state.cards = []
     mockedDb.state.decks = []
+    mockedDb.state.reviews = []
     mockedDb.cards.toArray.mockClear()
     mockedDb.decks.toArray.mockClear()
   })
@@ -319,5 +337,59 @@ describe('getDeckScheduleOverview', () => {
     ]
 
     await expect(countTodayDueFromDecks(10)).resolves.toBe(20)
+  })
+
+  // Regressionsschutz „10 vs. Regler“: Die Heute-Vorschau muss dieselbe
+  // newCardsPerDay-Dosis anwenden wie die tatsächliche Session-Auswahl —
+  // sonst verspricht die Deck-Karte mehr Karten, als die Session enthält.
+  it('caps today new cards to the newCardsPerDay dose like a real session', async () => {
+    mockedDb.state.cards = Array.from({ length: 40 }, (_, idx) =>
+      createCard({
+        id: `new-${idx}`,
+        deckId: 'deck-1',
+        type: SM2.CARD_TYPE_NEW,
+      })
+    )
+
+    const result = await getDeckScheduleOverview(['deck-1'], 50, 0, 10)
+
+    expect(result['deck-1'].today.new).toBe(10)
+    expect(result['deck-1'].today.total).toBe(10)
+    // Morgen gilt wieder die volle Tagesdosis.
+    expect(result['deck-1'].tomorrow.new).toBe(10)
+  })
+
+  it('subtracts cards already introduced today from the remaining dose', async () => {
+    const now = Date.now()
+    mockedDb.state.cards = Array.from({ length: 40 }, (_, idx) =>
+      createCard({
+        id: `new-${idx}`,
+        deckId: 'deck-1',
+        type: SM2.CARD_TYPE_NEW,
+      })
+    )
+    // 4 Karten wurden heute zum ersten Mal bewertet → Rest-Dosis 6.
+    mockedDb.state.reviews = Array.from({ length: 4 }, (_, idx) => ({
+      cardId: `introduced-${idx}`,
+      timestamp: now - 60_000,
+    }))
+
+    const result = await getDeckScheduleOverview(['deck-1'], 50, 0, 10)
+
+    expect(result['deck-1'].today.new).toBe(6)
+  })
+
+  it('keeps unlimited new cards when newCardsPerDay is 0', async () => {
+    mockedDb.state.cards = Array.from({ length: 40 }, (_, idx) =>
+      createCard({
+        id: `new-${idx}`,
+        deckId: 'deck-1',
+        type: SM2.CARD_TYPE_NEW,
+      })
+    )
+
+    const result = await getDeckScheduleOverview(['deck-1'], 50, 0, 0)
+
+    expect(result['deck-1'].today.new).toBe(40)
   })
 })

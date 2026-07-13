@@ -18,6 +18,7 @@ interface ShuffleSelectionOptions {
   nowMs?: number
   nextDayStartsAt?: number
   runSeed?: string | number
+  learnAheadMinutes?: number
 }
 
 export function getShuffleWeight(card: Card, nowMs = Date.now()): number {

@@ -8,6 +8,7 @@ import {
   computeExamPacing,
   hasRecallRunSince,
   parseTodayPackagePointer,
+  parseVideoCatalogFiles,
   pickTodayVideo,
 } from '../../utils/todayPackage'
 import type { LocalVideoMeta } from '../../utils/localVideoManifest'
@@ -55,6 +56,20 @@ describe('parseTodayPackagePointer', () => {
   it('klemmt negative Werte auf 0', () => {
     expect(parseTodayPackagePointer('{"lastCompletedIndex":-3,"lastCompletedAt":-1}'))
       .toEqual(emptyPointer)
+  })
+})
+
+describe('parseVideoCatalogFiles', () => {
+  it('liefert eine leere Liste für fehlende/kaputte Werte', () => {
+    expect(parseVideoCatalogFiles(null)).toEqual([])
+    expect(parseVideoCatalogFiles(undefined)).toEqual([])
+    expect(parseVideoCatalogFiles('not-json')).toEqual([])
+    expect(parseVideoCatalogFiles('{"files":[]}')).toEqual([])
+  })
+
+  it('parst die persistierte Dateiliste und filtert Nicht-Strings', () => {
+    expect(parseVideoCatalogFiles(JSON.stringify(['a.mp4', 42, 'b.mp4', null])))
+      .toEqual(['a.mp4', 'b.mp4'])
   })
 })
 

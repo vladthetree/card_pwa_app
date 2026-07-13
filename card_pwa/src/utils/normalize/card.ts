@@ -36,6 +36,8 @@ export function normalizeCard(raw: unknown): CardRecord | null {
 
   const due = parseMaybeNumber(value.due)
   const dueAt = parseMaybeNumber(value.dueAt ?? value.due_at)
+  const learningStep = parseMaybeNumber(value.learningStep ?? value.learning_step)
+  const lastReviewedAt = parseMaybeNumber(value.lastReviewedAt ?? value.last_reviewed_at)
   const deletedAt = parseMaybeNumber(value.deletedAt ?? value.deleted_at)
   const createdAt = parseMaybeNumber(value.createdAt ?? value.created_at)
   const updatedAt = parseMaybeNumber(value.updatedAt ?? value.updated_at ?? value.createdAt ?? value.created_at)
@@ -65,6 +67,8 @@ export function normalizeCard(raw: unknown): CardRecord | null {
     queue: normalizedQueue,
     due: Number.isFinite(due) ? due : Math.floor(Date.now() / 86_400_000),
     dueAt: Number.isFinite(dueAt) ? dueAt : undefined,
+    learningStep: Number.isFinite(learningStep) ? Math.max(0, Math.round(learningStep)) : undefined,
+    lastReviewedAt: Number.isFinite(lastReviewedAt) ? lastReviewedAt : undefined,
     interval: Number.isFinite(Number(value.interval)) ? Number(value.interval) : 0,
     factor: Number.isFinite(Number(value.factor)) ? Number(value.factor) : 2500,
     stability: Number.isFinite(Number(value.stability)) ? Number(value.stability) : undefined,
@@ -150,6 +154,20 @@ export function normalizeCardUpdates(raw: unknown): Partial<CardRecord> {
   if ('dueAt' in value || 'due_at' in value) {
     if (Number.isFinite(dueAtRaw)) {
       updates.dueAt = dueAtRaw
+    }
+  }
+
+  const learningStepRaw = parseMaybeNumber(value.learningStep ?? value.learning_step)
+  if ('learningStep' in value || 'learning_step' in value) {
+    if (Number.isFinite(learningStepRaw)) {
+      updates.learningStep = Math.max(0, Math.round(learningStepRaw))
+    }
+  }
+
+  const lastReviewedAtRaw = parseMaybeNumber(value.lastReviewedAt ?? value.last_reviewed_at)
+  if ('lastReviewedAt' in value || 'last_reviewed_at' in value) {
+    if (Number.isFinite(lastReviewedAtRaw)) {
+      updates.lastReviewedAt = lastReviewedAtRaw
     }
   }
 

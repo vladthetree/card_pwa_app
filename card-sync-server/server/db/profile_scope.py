@@ -69,6 +69,8 @@ def ensure_profile_scoped_state_tables(conn):
           queue INTEGER,
           due INTEGER,
           due_at INTEGER,
+          learning_step INTEGER,
+          last_reviewed_at INTEGER,
           interval INTEGER,
           factor INTEGER,
           stability REAL,
@@ -89,10 +91,10 @@ def ensure_profile_scoped_state_tables(conn):
       """)
       conn.execute("""
         INSERT OR REPLACE INTO server_cards_profile_scoped
-        (id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due, due_at, interval, factor,
+        (id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due, due_at, learning_step, last_reviewed_at, interval, factor,
          stability, difficulty, retrievability, reps, lapses, algorithm, metadata_json, is_deleted, created_at,
          updated_at, deleted_at, last_source_client, user_id)
-        SELECT id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due, due_at, interval, factor,
+        SELECT id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due, due_at, learning_step, last_reviewed_at, interval, factor,
          stability, difficulty, retrievability, reps, lapses, algorithm, metadata_json, IFNULL(is_deleted, 0),
          created_at, updated_at, deleted_at, last_source_client, COALESCE(user_id, '')
         FROM server_cards

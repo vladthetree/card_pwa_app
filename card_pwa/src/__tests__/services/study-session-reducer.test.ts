@@ -3,7 +3,7 @@
  */
 import { describe, expect, it } from 'vitest'
 import { initialSessionState, sessionReducer } from '../../services/studySessionReducer'
-import type { Card } from '../../types'
+import type { Card, CardSchedulingState } from '../../types'
 
 function createCard(id: string): Card {
   return {
@@ -22,6 +22,23 @@ function createCard(id: string): Card {
   }
 }
 
+function scheduledState(card: Card, type: 0 | 1 | 2 | 3, overrides: Partial<CardSchedulingState> = {}): CardSchedulingState {
+  return {
+    type,
+    queue: type === 2 ? 2 : type === 0 ? 0 : 1,
+    due: card.due,
+    dueAt: type === 1 || type === 3 ? Date.now() + 10 * 60_000 : card.dueAt,
+    interval: type === 2 ? Math.max(1, card.interval) : 0,
+    factor: 2500,
+    stability: card.stability,
+    difficulty: card.difficulty,
+    reps: card.reps + 1,
+    lapses: card.lapses,
+    algorithm: card.algorithm ?? 'fsrs',
+    ...overrides,
+  }
+}
+
 describe('study session reducer', () => {
   it('requeues a single Again-rated card instead of ending the session', () => {
     const card = createCard('card-1')
@@ -33,6 +50,7 @@ describe('study session reducer', () => {
       rating: 1,
       cardId: card.id,
       forcedTomorrow: false,
+      cardState: scheduledState(card, 3, { lapses: 1 }),
     })
 
     expect(state.cards.map(nextCard => nextCard.id)).toEqual([card.id])
@@ -52,6 +70,7 @@ describe('study session reducer', () => {
       rating: 1,
       cardId: first.id,
       forcedTomorrow: false,
+      cardState: scheduledState(first, 3, { lapses: 1 }),
     })
 
     expect(state.cards.map(nextCard => nextCard.id)).toEqual([second.id, first.id])
@@ -100,6 +119,82 @@ describe('study session reducer', () => {
     expect(state.sessionCount).toBe(1)
     expect(state.reviewEvents).toEqual([{ cardId: card.id, rating: 3, elapsedMs: 1234 }])
     expect(state.lastRatedCard?.id).toBe(card.id)
+  })
+
+  it('repeats a review Hard as session practice without changing its scheduled snapshot again', () => {
+    const card = createCard('card-hard')
+    let state = sessionReducer(initialSessionState, { type: 'INIT', cards: [card] })
+    const longTermState = scheduledState(card, 2, { interval: 12, due: 42, dueAt: 42 * 86_400_000 })
+
+    state = sessionReducer(state, { type: 'RATE_START', rating: 2, elapsedMs: 800 })
+    state = sessionReducer(state, {
+      type: 'RATE_SUCCESS',
+      rating: 2,
+      cardId: card.id,
+      forcedTomorrow: false,
+      cardState: longTermState,
+    })
+
+    expect(state.cards[0]?.interval).toBe(12)
+    expect(state.hardPracticeCardIds).toEqual([card.id])
+
+    state = sessionReducer(state, { type: 'RATE_START', rating: 2, elapsedMs: 700 })
+    state = sessionReducer(state, {
+      type: 'RATE_SUCCESS',
+      rating: 2,
+      cardId: card.id,
+      forcedTomorrow: false,
+      practiceOnly: true,
+    })
+
+    expect(state.cards[0]?.interval).toBe(12)
+    expect(state.hardPracticeCardIds).toEqual([card.id])
+  })
+
+  it('finishes Hard practice after two consecutive Good ratings', () => {
+    const card = createCard('card-hard')
+    let state = sessionReducer(initialSessionState, { type: 'INIT', cards: [card] })
+    state = {
+      ...state,
+      hardPracticeCardIds: [card.id],
+      lowRatingCounts: { [card.id]: 1 },
+    }
+
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      state = sessionReducer(state, { type: 'RATE_START', rating: 3, elapsedMs: 600 })
+      state = sessionReducer(state, {
+        type: 'RATE_SUCCESS',
+        rating: 3,
+        cardId: card.id,
+        forcedTomorrow: false,
+        practiceOnly: true,
+      })
+    }
+
+    expect(state.cards).toEqual([])
+    expect(state.hardPracticeCardIds).toEqual([])
+    expect(state.isDone).toBe(true)
+  })
+
+  it('uses the configured Good streak and optional Hard practice pass limit', () => {
+    const card = createCard('card-hard-config')
+    let state = sessionReducer(initialSessionState, { type: 'INIT', cards: [card] })
+    state = sessionReducer(state, {
+      type: 'RATE_SUCCESS', rating: 2, cardId: card.id, forcedTomorrow: false,
+      hardPracticeEnabled: true, hardPracticeGoodStreak: 3,
+      cardState: scheduledState(card, 2),
+    })
+
+    for (let pass = 0; pass < 2; pass += 1) {
+      state = sessionReducer(state, {
+        type: 'RATE_SUCCESS', rating: 3, cardId: card.id, forcedTomorrow: false,
+        practiceOnly: true, hardPracticeGoodStreak: 3, hardPracticeMaxPasses: 2,
+      })
+    }
+
+    expect(state.hardPracticeCardIds).toEqual([])
+    expect(state.hardPracticePassCounts[card.id]).toBeUndefined()
+    expect(state.isDone).toBe(true)
   })
 
   it('clears lastRatedCard on INIT and RESTART', () => {

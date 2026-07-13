@@ -87,6 +87,8 @@ export interface CardStateUpdate {
   queue: number
   due: number
   dueAt: number
+  learningStep: number
+  lastReviewedAt: number
 }
 
 /**
@@ -138,6 +140,8 @@ export function calculateCardStateAfterReview(
         queue: SM2.QUEUE_LEARNING,
         due: Math.floor((nowMs + ONE_MINUTE_MS) / 86_400_000),
         dueAt: nowMs + ONE_MINUTE_MS,
+        learningStep: 0,
+        lastReviewedAt: nowMs,
       }
     }
 
@@ -152,6 +156,8 @@ export function calculateCardStateAfterReview(
         queue: SM2.QUEUE_REVIEW,
         due: daysSinceEpoch + cfg.easyInterval,
         dueAt: todayStartMs + cfg.easyInterval * 86_400_000,
+        learningStep: 0,
+        lastReviewedAt: nowMs,
       }
     }
 
@@ -167,6 +173,8 @@ export function calculateCardStateAfterReview(
         queue: SM2.QUEUE_REVIEW,
         due: daysSinceEpoch + graduateInterval,
         dueAt: todayStartMs + graduateInterval * 86_400_000,
+        learningStep: 0,
+        lastReviewedAt: nowMs,
       }
     }
 
@@ -179,6 +187,8 @@ export function calculateCardStateAfterReview(
       queue: SM2.QUEUE_LEARNING,
       due: Math.floor((nowMs + TEN_MINUTES_MS) / 86_400_000),
       dueAt: nowMs + TEN_MINUTES_MS,
+      learningStep: 1,
+      lastReviewedAt: nowMs,
     }
   }
 
@@ -198,6 +208,8 @@ export function calculateCardStateAfterReview(
         queue: SM2.QUEUE_LEARNING,
         due: Math.floor((nowMs + TEN_MINUTES_MS) / 86_400_000),
         dueAt: nowMs + TEN_MINUTES_MS,
+        learningStep: 0,
+        lastReviewedAt: nowMs,
       }
     }
 
@@ -212,6 +224,8 @@ export function calculateCardStateAfterReview(
       queue: SM2.QUEUE_REVIEW,
       due: daysSinceEpoch + relearnInterval,
       dueAt: todayStartMs + relearnInterval * 86_400_000,
+      learningStep: 0,
+      lastReviewedAt: nowMs,
     }
   }
 
@@ -235,6 +249,8 @@ export function calculateCardStateAfterReview(
       queue,
       due: Math.floor((nowMs + TEN_MINUTES_MS) / 86_400_000),
       dueAt: nowMs + TEN_MINUTES_MS,
+      learningStep: 0,
+      lastReviewedAt: nowMs,
     }
   } else {
     // Hard / Good / Easy → bleibt im Review-Queue
@@ -246,5 +262,16 @@ export function calculateCardStateAfterReview(
   const due = daysSinceEpoch + newInterval
   const dueAt = todayStartMs + newInterval * 86_400_000
 
-  return { factor: newFactor, interval: newInterval, reps, lapses, type, queue, due, dueAt }
+  return {
+    factor: newFactor,
+    interval: newInterval,
+    reps,
+    lapses,
+    type,
+    queue,
+    due,
+    dueAt,
+    learningStep: 0,
+    lastReviewedAt: nowMs,
+  }
 }

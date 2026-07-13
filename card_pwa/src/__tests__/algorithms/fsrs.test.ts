@@ -13,14 +13,15 @@ describe('FSRS Algorithm', () => {
   })
 
   describe('Core behavior', () => {
-    it('keeps review state on rating 1 in current FSRS integration', () => {
+    it('moves a failed review into Anki-style relearning for 10 minutes', () => {
       const card = createNewCard({ stability: 3, difficulty: 5, reps: 5, lapses: 2, type: 2, queue: 2 })
+      const before = Date.now()
       const result = calculateCardStateAfterReviewFSRS(card, 1)
 
-      expect(result.interval).toBeGreaterThanOrEqual(1)
-      expect(result.dueAt).toBeGreaterThan(Date.now())
-      expect(result.type).toBe(2)
-      expect(result.queue).toBe(2)
+      expect(result.interval).toBe(0)
+      expect(result.dueAt).toBeGreaterThanOrEqual(before + 10 * 60_000)
+      expect(result.type).toBe(3)
+      expect(result.queue).toBe(1)
       expect(result.lapses).toBe(3)
       expect(result.reps).toBe(6)
     })
@@ -94,12 +95,15 @@ describe('FSRS Algorithm', () => {
       expect(Number.isNaN(result.stability)).toBe(false)
     })
 
-    it('enforces minimum initial stability fallback at 0.5 and keeps day-based interval', () => {
+    it('starts a failed new card in the one-minute learning step', () => {
       const card = createNewCard({ stability: undefined, interval: 0, difficulty: 5, reps: 0, type: 0, queue: 0 })
+      const before = Date.now()
       const result = calculateCardStateAfterReviewFSRS(card, 1)
 
-      expect(result.interval).toBeGreaterThanOrEqual(1)
-      expect(result.dueAt).toBeGreaterThan(Date.now())
+      expect(result.interval).toBe(0)
+      expect(result.type).toBe(1)
+      expect(result.queue).toBe(1)
+      expect(result.dueAt).toBeGreaterThanOrEqual(before + 60_000)
       expect(typeof result.stability).toBe('number')
       expect(Number.isNaN(result.stability)).toBe(false)
     })

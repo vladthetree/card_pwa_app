@@ -26,6 +26,8 @@ export interface Card {
   interval: number
   due: number
   dueAt?: number
+  learningStep?: number
+  lastReviewedAt?: number
   reps: number
   lapses: number
   queue: number
@@ -112,6 +114,29 @@ export interface SessionReviewEvent {
   elapsedMs: number
 }
 
+/**
+ * Konkrete Antwort einer interaktiven Karte (MC, Drag-Match, Reihenfolge,
+ * Zuordnung): was der Nutzer gewählt hat und was richtig gewesen wäre —
+ * für richtige wie falsche Antworten identisch aufgebaut. Karten ohne
+ * Auswahl (klassisches Umdrehen, Free Recall) haben keine Details.
+ */
+export interface ReviewAnswerDetails {
+  /** Vom Nutzer gewählte Antwort (kanonischer Options-Schlüssel + Text bzw.
+   *  serialisierte Reihenfolge/Zuordnung). */
+  selected: string
+  /** Die korrekte Antwort in derselben Darstellung. */
+  correct: string
+  /** true = Antwort war richtig. */
+  wasCorrect: boolean
+}
+
+/** Callback der Kartenkomponenten nach einer Antwort: Score (1.0 = richtig)
+ *  plus die konkrete Auswahl; `wasCorrect` leitet die View aus dem Score ab. */
+export type AnswerEvaluatedHandler = (
+  score: number,
+  answer?: Pick<ReviewAnswerDetails, 'selected' | 'correct'>,
+) => void
+
 export type MetricsPeriod = 'all' | '7d'
 
 export interface DeckMetricsSnapshot {
@@ -150,7 +175,7 @@ export interface ShuffleCollectionMetricsSnapshot {
 
 export type CardSchedulingState = Pick<
   import('../db').CardRecord,
-  'type' | 'queue' | 'due' | 'dueAt' | 'interval' | 'factor' | 'stability' | 'difficulty' | 'reps' | 'lapses' | 'algorithm'
+  'type' | 'queue' | 'due' | 'dueAt' | 'learningStep' | 'lastReviewedAt' | 'interval' | 'factor' | 'stability' | 'difficulty' | 'reps' | 'lapses' | 'algorithm'
 >
 
 export interface ReviewUndoToken {

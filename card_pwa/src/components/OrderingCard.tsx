@@ -23,7 +23,7 @@ import { Edit } from 'lucide-react'
 import { useReducedMotion } from '../ui/motion'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import { useHandsetLayout } from '../hooks/useHandsetLayout'
-import type { Card } from '../types'
+import type { AnswerEvaluatedHandler, Card } from '../types'
 import type { OrderingQuestion, OrderingAnswer } from '../utils/cardTextParser'
 import { computeOrderingScore } from '../utils/pbqScoring'
 import { seededShuffle } from '../utils/hash'
@@ -35,7 +35,7 @@ interface Props {
   flipped: boolean
   onFlip: () => void
   onEdit?: () => void
-  onAnswerEvaluated: (score: number) => void
+  onAnswerEvaluated: AnswerEvaluatedHandler
   compact?: boolean
   originDeckName?: string
   /** Antwortseite war schon sichtbar bzw. Karte ist read-only → Sortieren gesperrt. */
@@ -210,7 +210,10 @@ const OrderingCard = memo(function OrderingCard({
     const s = computeOrderingScore(order, answer.correctOrder, question.items)
     setScore(s)
     setSubmitted(true)
-    onAnswerEvaluated(s)
+    onAnswerEvaluated(s, {
+      selected: order.join(' → '),
+      correct: answer.correctOrder.map(i => question.items[i]).join(' → '),
+    })
     const delay = prefersReducedMotion ? 300 : (s === 1.0 ? 600 : 1200)
     if (flipTimerRef.current !== null) {
       window.clearTimeout(flipTimerRef.current)

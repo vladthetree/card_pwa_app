@@ -17,6 +17,17 @@ export function normalizeReview(raw: unknown): Omit<ReviewRecord, 'id'> | null {
   if (typeof cardId !== 'string' || !cardId) return null
   if (![1, 2, 3, 4].includes(rating)) return null
 
+  // Antwortdetails: verschachtelt (`answer`, Snapshot/Sync-Op) oder flach
+  // (`selectedAnswer`/…, Dexie-Export) — beide Formen akzeptieren.
+  const answer = value.answer && typeof value.answer === 'object'
+    ? value.answer as Record<string, unknown>
+    : {}
+  const selectedAnswerRaw = answer.selected ?? value.selectedAnswer ?? value.selected_answer
+  const correctAnswerRaw = answer.correct ?? value.correctAnswer ?? value.correct_answer
+  const answerCorrectRaw = typeof answer.wasCorrect === 'boolean'
+    ? answer.wasCorrect
+    : (typeof value.answerCorrect === 'boolean' ? value.answerCorrect : undefined)
+
   return {
     opId: typeof opIdRaw === 'string' && opIdRaw.trim() ? opIdRaw.trim() : undefined,
     cardId,
@@ -27,5 +38,8 @@ export function normalizeReview(raw: unknown): Omit<ReviewRecord, 'id'> | null {
       ? sourceClientRaw.trim()
       : undefined,
     createdAt: Number.isFinite(createdAt) ? createdAt : undefined,
+    ...(typeof selectedAnswerRaw === 'string' && selectedAnswerRaw ? { selectedAnswer: selectedAnswerRaw } : {}),
+    ...(typeof correctAnswerRaw === 'string' && correctAnswerRaw ? { correctAnswer: correctAnswerRaw } : {}),
+    ...(answerCorrectRaw !== undefined ? { answerCorrect: answerCorrectRaw } : {}),
   }
 }

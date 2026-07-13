@@ -5,7 +5,7 @@ import { memo, useMemo, useReducer, useCallback, useEffect, useRef } from 'react
 import { Edit } from 'lucide-react'
 import { useReducedMotion } from '../ui/motion'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
-import type { Card } from '../types'
+import type { AnswerEvaluatedHandler, Card } from '../types'
 import type { MatchingQuestion, MatchingAnswer } from '../utils/cardTextParser'
 import { computeMatchingScore } from '../utils/pbqScoring'
 import { seededShuffle } from '../utils/hash'
@@ -17,7 +17,7 @@ interface Props {
   flipped: boolean
   onFlip: () => void
   onEdit?: () => void
-  onAnswerEvaluated: (score: number) => void
+  onAnswerEvaluated: AnswerEvaluatedHandler
   compact?: boolean
   originDeckName?: string
   /** Antwortseite war schon sichtbar bzw. Karte ist read-only → Zuordnen gesperrt. */
@@ -128,7 +128,10 @@ const MatchingCard = memo(function MatchingCard({
     submittedRef.current = true
     const s = computeMatchingScore(state.connections, question.pairs)
     dispatch({ type: 'SUBMIT', score: s })
-    onAnswerEvaluated(s)
+    onAnswerEvaluated(s, {
+      selected: question.pairs.map(pair => `${pair.left} → ${state.connections[pair.left] ?? '—'}`).join(' · '),
+      correct: question.pairs.map(pair => `${pair.left} → ${pair.right}`).join(' · '),
+    })
     const delay = prefersReducedMotion ? 300 : (s === 1.0 ? 600 : 1200)
     if (flipTimerRef.current !== null) {
       window.clearTimeout(flipTimerRef.current)

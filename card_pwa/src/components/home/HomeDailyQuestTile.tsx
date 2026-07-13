@@ -21,6 +21,7 @@ const COPY = {
     mixed: 'Alle Decks · fällige zuerst',
     focus: (name: string) => `Fokus: ${name}`,
     allDone: 'Alles erledigt — keine lernbereiten Karten',
+    loading: 'Prüfe fällige Karten',
     noDecksTitle: 'Starte mit deinem ersten Deck',
     noDecksHint: 'Importiere ein Deck, um zu lernen',
   },
@@ -32,6 +33,7 @@ const COPY = {
     mixed: 'All decks · due cards first',
     focus: (name: string) => `Focus: ${name}`,
     allDone: 'All done — no study-ready cards',
+    loading: 'Checking due cards',
     noDecksTitle: 'Start with your first deck',
     noDecksHint: 'Import a deck to start learning',
   },
@@ -41,6 +43,9 @@ interface Props {
   language: 'de' | 'en'
   /** Quest-Groesse aus "Taegliche Karten pro Deck" (vom Gesamtpool gekappt). */
   questSize: number
+  /** true = Vorschau noch nicht berechnet — Ladezustand statt „Alles erledigt“.
+   *  Ein unbekannter Stand darf nie als erledigt interpretiert werden. */
+  loading?: boolean
   /** Gesamtzahl jetzt fälliger Karten (stats.nowDue). */
   dueTodayTotal: number
   /** Deck mit den meisten heute fälligen Karten — Untertitel-Hinweis. */
@@ -52,10 +57,11 @@ interface Props {
 }
 
 export function HomeDailyQuestTile({
-  language, questSize, dueTodayTotal, topDeckName, hasDecks = true, starting, onStart,
+  language, questSize, loading = false, dueTodayTotal, topDeckName, hasDecks = true, starting, onStart,
 }: Props) {
   const copy = COPY[language]
-  const hasWork = questSize > 0
+  const showLoading = loading && hasDecks
+  const hasWork = !showLoading && questSize > 0
   const subtitleParts = hasDecks
     ? [
         copy.mixed,
@@ -81,7 +87,9 @@ export function HomeDailyQuestTile({
             {copy.label}
           </div>
           <div className="mt-0.5 break-words font-sans text-base font-semibold leading-tight text-ds-fg min-[420px]:text-lg sm:text-xl">
-            {hasWork ? copy.now(questSize) : hasDecks ? copy.allDone : copy.noDecksTitle}
+            {showLoading
+              ? `${copy.loading}…`
+              : hasWork ? copy.now(questSize) : hasDecks ? copy.allDone : copy.noDecksTitle}
           </div>
           <div className="mt-0.5 truncate font-mono text-[12px] text-ds-muted">
             {subtitleParts.join(' · ')}
@@ -98,10 +106,10 @@ export function HomeDailyQuestTile({
           disabled={!hasWork || starting}
           className="flex min-h-[48px] min-w-0 items-center justify-center gap-2 rounded-ds border border-[--brand-primary-50] bg-[--brand-primary] px-3 font-sans text-[14px] font-semibold text-[#150b08] transition-all duration-150 hover:brightness-110 active:scale-[0.98] disabled:cursor-default disabled:border-ds-border disabled:bg-ds-floor disabled:text-ds-muted disabled:opacity-100 sm:px-4"
         >
-          {starting
+          {starting || showLoading
             ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#150b08]/30 border-t-[#150b08]" />
             : <Play size={16} strokeWidth={2} />}
-          <span className="min-w-0 truncate">{copy.start(questSize)}</span>
+          <span className="min-w-0 truncate">{showLoading ? `${copy.loading}…` : copy.start(questSize)}</span>
         </button>
       </div>
       )}

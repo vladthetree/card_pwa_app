@@ -148,6 +148,8 @@ def build_card_create_payload(row: sqlite3.Row) -> dict:
         "queue": row["queue"] if row["queue"] is not None else 0,
         "due": due,
         "dueAt": due_at,
+        "learningStep": row["learning_step"],
+        "lastReviewedAt": row["last_reviewed_at"],
         "interval": row["interval"] if row["interval"] is not None else 0,
         "factor": row["factor"] if row["factor"] is not None else 2500,
         "stability": row["stability"],
@@ -167,7 +169,7 @@ def publish_active_card_creates(conn: sqlite3.Connection, user_id: str, dry_run:
     rows = conn.execute(
         """
         SELECT id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due,
-               due_at, interval, factor, stability, difficulty, reps, lapses, algorithm,
+               due_at, learning_step, last_reviewed_at, interval, factor, stability, difficulty, reps, lapses, algorithm,
                metadata_json, created_at, updated_at
         FROM server_cards
         WHERE user_id=? AND IFNULL(is_deleted, 0)=0 AND deleted_at IS NULL

@@ -16,6 +16,7 @@ const mockedRuntime = vi.hoisted(() => {
     reviewId: 1,
     syncActive: true,
     selectedDeckIds: [] as string[],
+    outbox: [] as Array<{ opId: string; type: string; payload: string; createdAt: number }>,
   }
 
   const cards = {
@@ -99,10 +100,24 @@ const mockedRuntime = vi.hoisted(() => {
     await callback()
   })
 
+  const enqueueSyncOperation = vi.fn(async (_type: string, _payload: unknown, _opId?: string) => undefined)
+  const syncOutbox = {
+    put: vi.fn(async (item: { opId: string; type: string; payload: string; createdAt: number }) => {
+      state.outbox = [...state.outbox.filter(existing => existing.opId !== item.opId), item]
+    }),
+  }
+  const drainTransactionalOutbox = vi.fn(async () => {
+    const pending = [...state.outbox]
+    state.outbox = []
+    for (const item of pending) await enqueueSyncOperation(item.type, JSON.parse(item.payload), item.opId)
+    return pending.length
+  })
+
   return {
     state,
-    db: { cards, reviews, activeSessions, decks, transaction },
-    enqueueSyncOperation: vi.fn(async () => undefined),
+    db: { cards, reviews, activeSessions, decks, syncOutbox, transaction },
+    enqueueSyncOperation,
+    drainTransactionalOutbox,
     verifySchedulingPersistence: vi.fn(async () => undefined),
   }
 })
@@ -113,6 +128,7 @@ vi.mock('../../db', () => ({
 
 vi.mock('../../services/syncQueue', () => ({
   enqueueSyncOperation: mockedRuntime.enqueueSyncOperation,
+  drainTransactionalOutbox: mockedRuntime.drainTransactionalOutbox,
 }))
 
 vi.mock('../../db/queries/diagnostics', () => ({
@@ -197,6 +213,7 @@ describe('shuffle flow integration', () => {
     mockedRuntime.state.reviewId = 1
     mockedRuntime.state.syncActive = true
     mockedRuntime.state.selectedDeckIds = []
+    mockedRuntime.state.outbox = []
     mockedRuntime.db.cards.get.mockClear()
     mockedRuntime.db.cards.update.mockClear()
     mockedRuntime.db.cards.where.mockClear()

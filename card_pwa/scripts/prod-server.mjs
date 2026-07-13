@@ -207,6 +207,9 @@ function applySecurityHeaders(res) {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
   res.setHeader('Strict-Transport-Security', 'max-age=15552000')
+  // Required by the threaded WASI build used for local FSRS optimization.
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
+  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp')
 }
 
 // ─── Request handler ──────────────────────────────────────────────────────────

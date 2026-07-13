@@ -10,7 +10,7 @@ import { parseMcQuestion, parseMcAnswer, parseQuestion, parseAnswer } from '../u
 import type { OrderingAnswer, MatchingAnswer } from '../utils/cardTextParser'
 import { isDragMatchShape, isFreeRecallCard } from '../utils/cardVariant'
 import { seededShuffle } from '../utils/hash'
-import type { Card } from '../types'
+import type { AnswerEvaluatedHandler, Card } from '../types'
 
 const OrderingCard   = lazy(() => import('./OrderingCard'))
 const MatchingCard   = lazy(() => import('./MatchingCard'))
@@ -22,7 +22,7 @@ interface Props {
   flipped: boolean
   onFlip: () => void
   onEdit?: () => void
-  onAnswerEvaluated?: (score: number) => void
+  onAnswerEvaluated?: AnswerEvaluatedHandler
   compact?: boolean
   originDeckName?: string
   useDragMatchMode?: boolean
@@ -313,7 +313,12 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
     const answeredCorrectly = correctKeys.includes(letter)
     setSelectedAnswer(letter)
     setImpactPhase('selected')
-    onAnswerEvaluated?.(answeredCorrectly ? 1.0 : 0.0)
+    // Kanonische Options-Schlüssel (nicht die pro Karte gemischten Anzeige-
+    // Buchstaben), damit gespeicherte Antworten stabil auswertbar bleiben.
+    onAnswerEvaluated?.(answeredCorrectly ? 1.0 : 0.0, {
+      selected: `${letter}: ${question.options[letter] ?? ''}`,
+      correct: correctKeys.map(key => `${key}: ${question.options[key] ?? ''}`).join(' · '),
+    })
     pendingAutoFlipRef.current = true
 
     if (!answeredCorrectly) {

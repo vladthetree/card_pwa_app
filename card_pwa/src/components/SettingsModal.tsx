@@ -42,6 +42,7 @@ import ConfirmModal from './ConfirmModal'
 import ProfileSyncSection from './ProfileSyncSection'
 import { exportDbBackupAsCsv, exportDbBackupAsJson, exportDbBackupAsTxt } from '../utils/dbBackup'
 import { clearVideoProgress } from '../hooks/useMesserVideoProgress'
+import { optimizeFsrsParameters } from '../services/fsrsOptimizer'
 import {
   MIN_STUDY_CARD_LIMIT,
   MAX_STUDY_CARD_LIMIT,
@@ -98,6 +99,10 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     setNewCardsPerDay,
     setExamDateIso,
     setFocusMode,
+    setHardPracticeEnabled,
+    setHardPracticeGoodStreak,
+    setHardPracticeMaxPasses,
+    setLearnAheadMinutes,
     setSm2Params,
     setFsrsParams,
     resetAlgorithmParams,
@@ -139,6 +144,8 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
   const [notificationTestStatus, setNotificationTestStatus] = useState<string | null>(null)
   const [localDataStatus, setLocalDataStatus] = useState<string | null>(null)
   const [dataExportStatus, setDataExportStatus] = useState<string | null>(null)
+  const [fsrsOptimizationStatus, setFsrsOptimizationStatus] = useState<string | null>(null)
+  const [isOptimizingFsrs, setIsOptimizingFsrs] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
   const [confirmModal, setConfirmModal] = useState<{
     title: string
@@ -471,6 +478,23 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     const parsed = Number(value)
     if (Number.isFinite(parsed)) {
       updater(parsed)
+    }
+  }
+
+  const handleOptimizeFsrs = async () => {
+    if (isOptimizingFsrs) return
+    setIsOptimizingFsrs(true)
+    setFsrsOptimizationStatus(settings.language === 'de' ? 'Optimiere lokal …' : 'Optimizing locally …')
+    try {
+      const result = await optimizeFsrsParameters()
+      setFsrsParams({ w: result.parameters })
+      setFsrsOptimizationStatus(settings.language === 'de'
+        ? `Gespeichert: ${result.reviewCount} Reviews auf ${result.cardCount} Karten ausgewertet.`
+        : `Saved: evaluated ${result.reviewCount} reviews across ${result.cardCount} cards.`)
+    } catch (error) {
+      setFsrsOptimizationStatus(error instanceof Error ? error.message : String(error))
+    } finally {
+      setIsOptimizingFsrs(false)
     }
   }
 
@@ -928,7 +952,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     max={MAX_STUDY_CARD_LIMIT}
                     step={STUDY_CARD_LIMIT_STEP}
                     onValueChange={setStudyCardLimit}
-                    help={t.study_weight_hint.replace('{count}', '50')}
+                    help={t.study_weight_hint.replace('{count}', String(settings.studyCardLimit))}
                   />
 
                   <div>
@@ -1027,6 +1051,48 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                       : 'Daily dose of unseen cards for regular deck sessions and the current learning package. 0 = unlimited.'}
                     ariaLabel={settings.language === 'de' ? 'Neue Karten pro Tag' : 'New cards per day'}
                   />
+
+                  <SettingsSliderRow
+                    sectionLabel="Learn ahead"
+                    label={settings.language === 'de' ? 'Lernschritte vorziehen' : 'Pull learning steps forward'}
+                    valueLabel={`${settings.learnAheadMinutes} min`}
+                    value={settings.learnAheadMinutes}
+                    min={0}
+                    max={60}
+                    step={5}
+                    onValueChange={setLearnAheadMinutes}
+                    help={settings.language === 'de'
+                      ? 'Wie bei Anki: kurze Lernschritte dürfen so viele Minuten vor Fälligkeit in die Session kommen. 0 respektiert die exakte Uhrzeit.'
+                      : 'Like Anki: short learning steps may enter the session this many minutes early. 0 respects the exact due time.'}
+                  />
+
+                  <div>
+                    <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
+                      {settings.language === 'de' ? 'Hard-Verstärkung' : 'Hard reinforcement'}
+                    </label>
+                    <div className={`${UI_TOKENS.surface.panelSoft} space-y-4 p-4`}>
+                      <SettingsSwitchRow
+                        label={settings.language === 'de' ? 'Hard-Karten in derselben Session wiederholen' : 'Repeat Hard cards in the same session'}
+                        description={settings.language === 'de'
+                          ? 'Das reguläre Hard wird einmal gespeichert und terminiert. Weitere Durchläufe sind reine Session-Übungen und verschieben den Termin nicht erneut.'
+                          : 'The regular Hard is saved and scheduled once. Further passes are session-only practice and do not reschedule the card.'}
+                        checked={settings.hardPracticeEnabled}
+                        onCheckedChange={setHardPracticeEnabled}
+                      />
+                      {settings.hardPracticeEnabled && (
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          <label className="text-xs text-white/65">
+                            {settings.language === 'de' ? 'Benötigte Gut-Serie' : 'Required Good streak'}
+                            <input type="number" min={1} max={5} value={settings.hardPracticeGoodStreak} onChange={event => setHardPracticeGoodStreak(Number(event.target.value))} className="mt-1 w-full rounded-ds border border-[#18181b] bg-[#0a0a0a] px-2 py-1.5 text-white" />
+                          </label>
+                          <label className="text-xs text-white/65">
+                            {settings.language === 'de' ? 'Max. Übungsdurchläufe (0 = ∞)' : 'Max practice passes (0 = ∞)'}
+                            <input type="number" min={0} max={20} value={settings.hardPracticeMaxPasses} onChange={event => setHardPracticeMaxPasses(Number(event.target.value))} className="mt-1 w-full rounded-ds border border-[#18181b] bg-[#0a0a0a] px-2 py-1.5 text-white" />
+                          </label>
+                        </div>
+                      )}
+                    </div>
+                  </div>
 
                   <div>
                     <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
@@ -1172,7 +1238,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                           </label>
                         </div>
                       ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 gap-3">
                           <label className="text-xs text-white/65">
                             <ParameterLabel text="Request Retention" info={t.param_request_retention_info} />
                             <input
@@ -1183,26 +1249,19 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                               className="mt-1 w-full rounded-ds bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
                             />
                           </label>
-                          <label className="text-xs text-white/65">
-                            <ParameterLabel text="Hard Penalty" info={t.param_hard_penalty_info} />
-                            <input
-                              type="number"
-                              step="0.05"
-                              value={settings.algorithmParams.fsrs.hardPen}
-                              onChange={e => updateNumber(e.target.value, value => setFsrsParams({ hardPen: value }))}
-                              className="mt-1 w-full rounded-ds bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
-                            />
-                          </label>
-                          <label className="text-xs text-white/65">
-                            <ParameterLabel text="Easy Bonus" info={t.param_easy_bonus_info} />
-                            <input
-                              type="number"
-                              step="0.05"
-                              value={settings.algorithmParams.fsrs.easyBonus}
-                              onChange={e => updateNumber(e.target.value, value => setFsrsParams({ easyBonus: value }))}
-                              className="mt-1 w-full rounded-ds bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
-                            />
-                          </label>
+                          <button
+                            type="button"
+                            onClick={() => { void handleOptimizeFsrs() }}
+                            disabled={isOptimizingFsrs}
+                            className={`w-full ${UI_TOKENS.button.ghost} py-2 disabled:cursor-wait disabled:opacity-50`}
+                          >
+                            {isOptimizingFsrs
+                              ? (settings.language === 'de' ? 'Optimiere …' : 'Optimizing …')
+                              : (settings.language === 'de' ? 'FSRS mit meiner Historie optimieren' : 'Optimize FSRS from my history')}
+                          </button>
+                          {fsrsOptimizationStatus && (
+                            <p className="text-xs leading-relaxed text-white/55" role="status">{fsrsOptimizationStatus}</p>
+                          )}
                         </div>
                       )}
 

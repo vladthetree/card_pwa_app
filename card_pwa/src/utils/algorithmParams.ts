@@ -18,6 +18,8 @@ export interface SM2Params {
 
 export interface FSRSParams {
   requestRetention: number
+  /** Nur zur Kompatibilität mit bestehenden Einstellungen. FSRS berechnet
+   * Hard/Easy selbst; diese alten Multiplikatoren werden nicht mehr angewandt. */
   hardPen: number
   easyBonus: number
   w: number[]

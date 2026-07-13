@@ -563,6 +563,7 @@ async function applyReview(op: PulledOperation) {
     timeMs?: number
     timestamp?: number
     updated?: Partial<CardRecord>
+    answer?: { selected?: unknown; correct?: unknown; wasCorrect?: unknown }
   }
 
   const cardId = value.cardId ? String(value.cardId) : ''
@@ -583,6 +584,15 @@ async function applyReview(op: PulledOperation) {
   const rating = Number(value.rating)
   const normalizedRating = [1, 2, 3, 4].includes(rating) ? (rating as 1 | 2 | 3 | 4) : 3
 
+  // Antwortdetails (gewählte/korrekte Antwort) anderer Geräte mitnehmen —
+  // gleiche Zeile, gleiches Prinzip wie beim lokalen recordReview.
+  const answer = value.answer && typeof value.answer === 'object' ? value.answer : null
+  const answerFields = {
+    ...(typeof answer?.selected === 'string' ? { selectedAnswer: answer.selected } : {}),
+    ...(typeof answer?.correct === 'string' ? { correctAnswer: answer.correct } : {}),
+    ...(typeof answer?.wasCorrect === 'boolean' ? { answerCorrect: answer.wasCorrect } : {}),
+  }
+
   await db.reviews.add({
     opId: op.opId,
     cardId,
@@ -591,6 +601,7 @@ async function applyReview(op: PulledOperation) {
     timestamp: Number.isFinite(value.timestamp) ? Number(value.timestamp) : Date.now(),
     sourceClient: typeof op.sourceClient === 'string' ? op.sourceClient : undefined,
     createdAt: Number.isFinite(op.createdAt) ? Number(op.createdAt) : undefined,
+    ...answerFields,
   })
 }
 
@@ -1133,6 +1144,11 @@ async function runBootstrapUpload(
             timestamp: review.timestamp,
             sourceClient: review.sourceClient,
             createdAt: review.createdAt,
+            // Antwortdetails (flach, wie im Dexie-Record) — der Server
+            // akzeptiert flach wie verschachtelt.
+            selectedAnswer: review.selectedAnswer,
+            correctAnswer: review.correctAnswer,
+            answerCorrect: review.answerCorrect,
           })),
         shuffleCollections: shuffleCollections.map(collection => ({
           id: collection.id,

@@ -19,6 +19,7 @@ import {
 import { REVIEW_UPDATED_EVENT } from '../constants/appIdentity'
 import type { Deck, Card, GamificationProfile, GlobalStats, ShuffleCollection } from '../types'
 import { buildSelectedShuffleCards, type ShuffleStudyCard } from '../services/shuffleSession'
+import { useDayStartMs } from './useDayStartMs'
 
 const DB_CHANGE_DEBOUNCE_MS = 180
 
@@ -335,6 +336,7 @@ export function useShuffleCards(
     maxCards?: number
     nextDayStartsAt?: number
     runSeed?: string | number
+    learnAheadMinutes?: number
   } = {},
 ) {
   const [cards, setCards] = useState<ShuffleStudyCard[]>([])
@@ -375,6 +377,7 @@ export function useShuffleCards(
         maxCards: options.maxCards,
         nextDayStartsAt: options.nextDayStartsAt,
         runSeed: options.runSeed,
+        learnAheadMinutes: options.learnAheadMinutes,
       })
       if (loadVersionRef.current !== loadVersion) return
       setCards(selectedCards)
@@ -390,7 +393,7 @@ export function useShuffleCards(
         setLoading(false)
       }
     }
-  }, [collectionId, options.maxCards, options.nextDayStartsAt, options.runSeed, options.userId])
+  }, [collectionId, options.learnAheadMinutes, options.maxCards, options.nextDayStartsAt, options.runSeed, options.userId])
 
   useEffect(() => {
     void load()
@@ -401,16 +404,19 @@ export function useShuffleCards(
   return { cards, loading, error, reload: load }
 }
 
-export function useStats(nextDayStartsAt = 0, dailyCardLimit?: number) {
+export function useStats(nextDayStartsAt = 0, dailyCardLimit?: number, newCardsPerDay = 0) {
   const [stats, setStats] = useState<GlobalStats | null>(null)
   const [error, setError] = useState<string | null>(null)
+  // Neuer Lerntag (auch offline) → Zähler wie "heute fällig" neu ableiten,
+  // ohne auf eine DB-Änderung oder einen Sync warten zu müssen.
+  const dayStartMs = useDayStartMs(nextDayStartsAt)
 
   const load = useCallback(async () => {
     try {
       const baseStats = await getGlobalStats(nextDayStartsAt)
       const nowDue = dailyCardLimit === undefined
         ? baseStats.nowDue
-        : await countTodayDueFromDecks(dailyCardLimit, nextDayStartsAt)
+        : await countTodayDueFromDecks(dailyCardLimit, nextDayStartsAt, newCardsPerDay)
 
       setStats({
         ...baseStats,
@@ -419,7 +425,8 @@ export function useStats(nextDayStartsAt = 0, dailyCardLimit?: number) {
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
     }
-  }, [dailyCardLimit, nextDayStartsAt])
+    // dayStartMs erzwingt die Neuberechnung an der Tagesgrenze.
+  }, [dailyCardLimit, nextDayStartsAt, newCardsPerDay, dayStartMs])
 
   useEffect(() => {
     void load()
@@ -432,6 +439,9 @@ export function useStats(nextDayStartsAt = 0, dailyCardLimit?: number) {
 export function useGamificationProfile(nextDayStartsAt = 0) {
   const [profile, setProfile] = useState<GamificationProfile | null>(null)
   const [error, setError] = useState<string | null>(null)
+  // Quests/Streak hängen am Lerntag: an einer neuen Tagesgrenze (auch offline)
+  // zurück auf "nicht erledigt" rechnen statt den Vortagsstand stehen zu lassen.
+  const dayStartMs = useDayStartMs(nextDayStartsAt)
 
   const load = useCallback(async () => {
     try {
@@ -440,7 +450,8 @@ export function useGamificationProfile(nextDayStartsAt = 0) {
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
     }
-  }, [nextDayStartsAt])
+    // dayStartMs erzwingt die Neuberechnung an der Tagesgrenze.
+  }, [nextDayStartsAt, dayStartMs])
 
   useEffect(() => {
     void load()

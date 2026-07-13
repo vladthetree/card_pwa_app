@@ -75,6 +75,37 @@ export function persistTodayPackagePointer(pointer: TodayPackagePointer): void {
   }
 }
 
+/** Pure Parse-Logik für die persistierte Videokatalog-Dateiliste. */
+export function parseVideoCatalogFiles(raw: string | null | undefined): string[] {
+  if (!raw) return []
+  try {
+    const parsed = JSON.parse(raw) as unknown
+    if (!Array.isArray(parsed)) return []
+    return parsed.filter((file): file is string => typeof file === 'string')
+  } catch {
+    return []
+  }
+}
+
+/** Zuletzt erfolgreich geladene Katalog-Dateiliste — hält das Heute-Paket offline verfügbar. */
+export function readCachedVideoCatalogFiles(): string[] {
+  if (typeof window === 'undefined') return []
+  try {
+    return parseVideoCatalogFiles(window.localStorage.getItem(STORAGE_KEYS.videoCatalog))
+  } catch {
+    return []
+  }
+}
+
+export function persistVideoCatalogFiles(files: string[]): void {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(STORAGE_KEYS.videoCatalog, JSON.stringify(files))
+  } catch {
+    // Speicher voll / privater Modus — dann gibt es nur den Netz-Katalog.
+  }
+}
+
 /**
  * Das nächste Kurs-Video in Playlist-Reihenfolge nach dem zuletzt
  * abgeschlossenen Paket. Fehlt der Zeiger, ist es das erste Video;

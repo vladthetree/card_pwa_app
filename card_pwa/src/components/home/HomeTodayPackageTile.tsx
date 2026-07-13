@@ -4,7 +4,7 @@
  * open step; step states come from real learning signals (useTodayPackage).
  */
 import { motion } from '../../ui/motion'
-import { CalendarClock, Check, GraduationCap, Loader2, Play } from 'lucide-react'
+import { CalendarClock, Check, CloudOff, GraduationCap, Loader2, Play } from 'lucide-react'
 import type { Deck } from '../../types'
 import type { LocalVideoMeta } from '../../utils/localVideoManifest'
 import type { ExamPacing } from '../../utils/todayPackage'
@@ -28,6 +28,8 @@ const COPY = {
     pacing: (days: number, videos: number, cards: number) =>
       `Prüfung in ${days} ${days === 1 ? 'Tag' : 'Tagen'} · Tempo: ${videos} ${videos === 1 ? 'Video' : 'Videos'} & ${cards} neue Karten/Tag`,
     loading: 'Lade Heute-Paket',
+    offlineTitle: 'Heute-Paket offline nicht verfügbar',
+    offlineHint: 'Es sind noch keine Kursdaten auf diesem Gerät gespeichert. Öffne die App einmal mit Verbindung zum Server — danach steht das Heute-Paket auch offline bereit.',
   },
   en: {
     label: 'Current package',
@@ -46,6 +48,8 @@ const COPY = {
     pacing: (days: number, videos: number, cards: number) =>
       `Exam in ${days} ${days === 1 ? 'day' : 'days'} · pace: ${videos} ${videos === 1 ? 'video' : 'videos'} & ${cards} new cards/day`,
     loading: "Loading today's package",
+    offlineTitle: "Today's package is unavailable offline",
+    offlineHint: 'No course data is stored on this device yet. Open the app once while connected to the server — after that the package also works offline.',
   },
 } as const
 
@@ -64,6 +68,24 @@ interface Props {
   onWatchVideo: (videoIndex: number, openRecall: boolean) => void
   /** Startet die Karten-Session des Objective-Decks. */
   onStartCards: (deck: Deck) => void
+}
+
+/** Offline ohne lokal gespeicherten Katalog: erklärt, warum das Heute-Paket
+ *  fehlt und wie es offline verfügbar wird. Die Daily Quest bleibt nutzbar. */
+export function TodayPackageOfflineNotice({ language }: { language: 'de' | 'en' }) {
+  const copy = COPY[language]
+  return (
+    <section
+      data-testid="today-package-offline-notice"
+      className="flex min-w-0 items-start gap-2.5 rounded-ds border border-ds-border bg-ds-floor px-3 py-2.5 shadow-card"
+    >
+      <CloudOff size={16} strokeWidth={1.75} className="mt-0.5 shrink-0 text-ds-muted" />
+      <div className="min-w-0">
+        <div className="font-sans text-[13px] font-semibold leading-tight text-ds-fg">{copy.offlineTitle}</div>
+        <div className="mt-1 font-mono text-[11px] leading-relaxed text-ds-muted">{copy.offlineHint}</div>
+      </div>
+    </section>
+  )
 }
 
 function StepRow({ done, active, label }: { done: boolean; active: boolean; label: string }) {

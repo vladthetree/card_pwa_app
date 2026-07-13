@@ -9,6 +9,8 @@ const SCHEDULING_FIELDS = [
   'queue',
   'due',
   'dueAt',
+  'learningStep',
+  'lastReviewedAt',
   'interval',
   'factor',
   'stability',

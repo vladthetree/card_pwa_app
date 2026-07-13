@@ -11,7 +11,8 @@ import { factorToDifficulty } from '../../utils/algorithmParams'
 import { getDayStartMs } from '../../utils/time'
 import { generateUuidV7 } from '../../utils/id'
 import { enqueueSyncOperation } from '../../services/syncQueue'
-import { buildDailyQuestSelection } from '../../services/studyCardOrdering'
+import { buildDailyQuestSelection, resolveNewCardAllowance } from '../../services/studyCardOrdering'
+import { countNewCardsIntroducedToday } from './reviews'
 import { normalizeTagId } from '../../utils/tagIdentity'
 import type { Deck, Card, DeckScheduleOverview } from '../../types'
 
@@ -34,6 +35,8 @@ function mapCard(r: CardRecord): Card {
       : undefined,
     due: r.due,
     dueAt: r.dueAt,
+    learningStep: r.learningStep,
+    lastReviewedAt: r.lastReviewedAt,
     reps: r.reps,
     lapses: r.lapses,
     queue: r.queue,
@@ -275,6 +278,7 @@ export async function getDeckHomeMetadata(
   deckIds: string[],
   dailyCardLimit: number,
   nextDayStartsAt = 0,
+  newCardsPerDay = 0,
 ): Promise<DeckHomeMetadata> {
   if (deckIds.length === 0) {
     return {
@@ -290,6 +294,14 @@ export async function getDeckHomeMetadata(
   const normalizedDailyLimit = Number.isFinite(dailyCardLimit)
     ? Math.max(1, Math.floor(dailyCardLimit))
     : 50
+  // Gleiche Tagesdosis wie die Session (StudyView/Heute-Paket): Die Vorschau
+  // darf nicht mehr neue Karten versprechen, als eine jetzt gestartete Session
+  // tatsächlich enthält (0 = unbegrenzt, wie in den Einstellungen).
+  const hasNewCardDose = Number.isFinite(newCardsPerDay) && newCardsPerDay > 0
+  const tomorrowNewDose = hasNewCardDose ? Math.floor(newCardsPerDay) : Number.POSITIVE_INFINITY
+  const remainingNewToday = hasNewCardDose
+    ? resolveNewCardAllowance(newCardsPerDay, await countNewCardsIntroducedToday(nextDayStartsAt))
+    : Number.POSITIVE_INFINITY
 
   const deckRecords = (await readAllDecksShared()).filter(deck => !deck.isDeleted)
   const childrenByParent = buildDeckChildren(deckRecords)
@@ -381,11 +393,11 @@ export async function getDeckHomeMetadata(
     const cappedTomorrowReview = Math.min(schedule.tomorrow.review, normalizedDailyLimit)
 
     const todayNewCapacity = Math.max(0, normalizedDailyLimit - cappedTodayReview)
-    const todayNew = Math.min(newCards, todayNewCapacity)
+    const todayNew = Math.min(newCards, todayNewCapacity, remainingNewToday)
 
     const remainingNewAfterToday = Math.max(0, newCards - todayNew)
     const tomorrowNewCapacity = Math.max(0, normalizedDailyLimit - cappedTomorrowReview)
-    const tomorrowNew = Math.min(remainingNewAfterToday, tomorrowNewCapacity)
+    const tomorrowNew = Math.min(remainingNewAfterToday, tomorrowNewCapacity, tomorrowNewDose)
 
     schedule.today.review = cappedTodayReview
     schedule.tomorrow.review = cappedTomorrowReview
@@ -437,15 +449,17 @@ export async function listDeckStudyCandidates(deckId: string, nextDayStartsAt = 
 export async function getDeckScheduleOverview(
   deckIds: string[],
   dailyCardLimit: number,
-  nextDayStartsAt = 0
+  nextDayStartsAt = 0,
+  newCardsPerDay = 0
 ): Promise<Record<string, DeckScheduleOverview>> {
   if (deckIds.length === 0) return {}
-  return (await getDeckHomeMetadata(deckIds, dailyCardLimit, nextDayStartsAt)).deckScheduleOverview
+  return (await getDeckHomeMetadata(deckIds, dailyCardLimit, nextDayStartsAt, newCardsPerDay)).deckScheduleOverview
 }
 
 export async function countTodayDueFromDecks(
   dailyCardLimit: number,
-  nextDayStartsAt = 0
+  nextDayStartsAt = 0,
+  newCardsPerDay = 0
 ): Promise<number> {
   const decks = (await readAllDecksShared()).filter(deck => !deck.isDeleted)
   const activeIds = new Set(decks.map(deck => deck.id))
@@ -455,7 +469,7 @@ export async function countTodayDueFromDecks(
 
   if (deckIds.length === 0) return 0
 
-  const overview = await getDeckScheduleOverview(deckIds, dailyCardLimit, nextDayStartsAt)
+  const overview = await getDeckScheduleOverview(deckIds, dailyCardLimit, nextDayStartsAt, newCardsPerDay)
   return deckIds.reduce((sum, deckId) => sum + (overview[deckId]?.today.total ?? 0), 0)
 }
 

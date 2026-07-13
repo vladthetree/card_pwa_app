@@ -25,6 +25,68 @@ interface AnkiModelOld {
   flds: AnkiFieldOld[]
 }
 
+const DAY_MS = 86_400_000
+
+export interface NormalizedAnkiSchedule {
+  type: number
+  queue: number
+  due: number
+  dueAt: number
+  interval: number
+  learningStep: number
+}
+
+/** Translate Anki's queue-dependent overloaded `cards.due` into app time. */
+export function normalizeAnkiSchedule(input: {
+  type: number
+  queue: number
+  due: number
+  interval: number
+  collectionCreatedAtMs: number
+  nowMs: number
+}): NormalizedAnkiSchedule {
+  const ankiType = Math.max(0, Math.min(3, Math.round(Number(input.type) || 0)))
+  const ankiQueue = Math.round(Number(input.queue) || 0)
+  const rawDue = Math.max(0, Math.floor(Number(input.due) || 0))
+  // Only -1 is suspended. -2/-3 are temporary buried queues and should become
+  // studyable again after import because this app has no day-bury state.
+  const suspended = ankiQueue === -1
+  let type = ankiType
+  let queue = suspended ? -1 : Math.max(0, Math.min(2, ankiType))
+  let dueAt = input.nowMs
+  let interval = Math.max(0, Math.floor(Number(input.interval) || 0))
+
+  if (ankiQueue === 1 || ankiQueue === 4) {
+    // Intraday learning/preview queues store Unix epoch seconds.
+    type = ankiType === 3 ? 3 : 1
+    queue = suspended ? -1 : 1
+    dueAt = rawDue > 0 ? rawDue * 1000 : input.nowMs
+    interval = 0
+  } else if (ankiQueue === 2 || ankiQueue === 3 || ankiType === 2 || ankiType === 3) {
+    // Review and interday learning store scheduler days since col.crt.
+    type = ankiQueue === 3 || ankiType === 1 ? 1 : ankiType === 3 ? 3 : 2
+    queue = suspended ? -1 : type === 2 ? 2 : 1
+    dueAt = Math.max(0, input.collectionCreatedAtMs + rawDue * DAY_MS)
+    interval = type === 2 ? Math.max(1, interval) : interval
+  } else {
+    // New-card `due` is a queue position, not a timestamp. Preserve its order
+    // as a tiny offset while making the card immediately available.
+    type = 0
+    queue = suspended ? -1 : 0
+    dueAt = input.nowMs + Math.min(rawDue, DAY_MS - 1)
+    interval = 0
+  }
+
+  return {
+    type,
+    queue,
+    due: Math.max(0, Math.floor(dueAt / DAY_MS)),
+    dueAt,
+    interval,
+    learningStep: 0,
+  }
+}
+
 function isZstd(data: ArrayBuffer): boolean {
   const view = new DataView(data)
   return view.byteLength >= 4 && view.getUint32(0, true) === 0xFD2FB528
@@ -125,6 +187,19 @@ export async function readAnkiSQLite(rawData: ArrayBuffer, language: Language, a
     }
   }
 
+  const collectionResult = db.exec('SELECT crt FROM col LIMIT 1')
+  const collectionCreatedAtMs = collectionResult.length && collectionResult[0].values.length
+    ? Math.max(0, Number(collectionResult[0].values[0][0]) * 1000)
+    : Date.now()
+  const lastReviewByCard = new Map<number, number>()
+  const revlogResult = db.exec('SELECT cid, MAX(id) FROM revlog GROUP BY cid')
+  if (revlogResult.length) {
+    for (const row of revlogResult[0].values) {
+      const [cardId, timestamp] = row as [number, number]
+      if (Number.isFinite(timestamp)) lastReviewByCard.set(cardId, timestamp)
+    }
+  }
+
   const cardsResult = db.exec('SELECT id, nid, did, type, queue, due, ivl, factor, reps, lapses FROM cards')
   const cards: ImportedCard[] = []
   const now = Date.now()
@@ -151,6 +226,14 @@ export async function readAnkiSQLite(rawData: ArrayBuffer, language: Language, a
       const baseFactor = factor > 0 ? factor : SM2.DEFAULT_EASE
       const fsrsDifficulty = Math.max(1, Math.min(10, baseFactor / 500))
       const fsrsStability = Math.max(0.5, ivl || 1)
+      const schedule = normalizeAnkiSchedule({
+        type,
+        queue,
+        due,
+        interval: ivl,
+        collectionCreatedAtMs,
+        nowMs: now,
+      })
 
       cards.push({
         id: String(id),
@@ -160,12 +243,15 @@ export async function readAnkiSQLite(rawData: ArrayBuffer, language: Language, a
         back,
         tags: (note.tags || '').trim().split(/\s+/).filter(Boolean),
         extra: extractExtra(fieldMap),
-        type,
-        queue,
-        due,
-        interval: ivl,
+        type: schedule.type,
+        queue: schedule.queue,
+        due: schedule.due,
+        dueAt: schedule.dueAt,
+        learningStep: schedule.learningStep,
+        lastReviewedAt: lastReviewByCard.get(id),
+        interval: schedule.interval,
         factor: algorithm === 'fsrs' ? Math.round(fsrsDifficulty * 500) : baseFactor,
-        stability: algorithm === 'fsrs' ? fsrsStability : undefined,
+        stability: algorithm === 'fsrs' ? Math.max(0.5, schedule.interval || fsrsStability) : undefined,
         difficulty: algorithm === 'fsrs' ? fsrsDifficulty : undefined,
         reps,
         lapses,

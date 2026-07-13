@@ -24,7 +24,7 @@ import {
 
 function clampStability(stability: number): number {
   if (!Number.isFinite(stability) || Number.isNaN(stability)) return 0.5
-  return Math.max(0.5, Math.min(36500, stability))
+  return Math.max(0.001, Math.min(36500, stability))
 }
 
 function clampDifficulty(difficulty: number): number {
@@ -32,16 +32,15 @@ function clampDifficulty(difficulty: number): number {
   return Math.max(1, Math.min(10, difficulty))
 }
 
-const MANIFEST_MIN_STABILITY = 0.5
-const MANIFEST_DIFFICULTY_LIGHT_STEP = 0.15
-const MANIFEST_DIFFICULTY_STRONG_STEP = 0.4
+const DAY_MS = 86_400_000
+
+/** Ankis bewährte kurze Standardschritte. FSRS bestimmt danach das
+ * Langzeitintervall; alle Schritte bleiben bewusst unter einem Tag. */
+export const FSRS_LEARNING_STEPS = ['1m', '10m'] as const
+export const FSRS_RELEARNING_STEPS = ['10m'] as const
 
 function toEpochDay(value: number): number {
   return Math.max(0, Math.floor(value))
-}
-
-function dayToDate(day: number): Date {
-  return new Date(day * 86_400_000)
 }
 
 function mapCardTypeToFsrsState(type: number): FsrsState {
@@ -81,19 +80,15 @@ function mapFsrsStateToQueue(state: FsrsState): number {
   }
 }
 
-function estimateElapsedDays(today: number, interval: number, due: number): number {
-  if (interval <= 0) return 0
-  const inferredLastReview = due - interval
-  return Math.max(0, today - inferredLastReview)
-}
-
 function buildScheduler(cfg: FSRSParams) {
   const base = generatorParameters({
     request_retention: cfg.requestRetention,
-    enable_fuzz: false,
-    enable_short_term: false,
-    learning_steps: [],
-    relearning_steps: [],
+    // Anki streut Tagesintervalle leicht, damit gleichzeitig gelernte Karten
+    // nicht dauerhaft als Block zusammenbleiben.
+    enable_fuzz: true,
+    enable_short_term: true,
+    learning_steps: FSRS_LEARNING_STEPS,
+    relearning_steps: FSRS_RELEARNING_STEPS,
   })
 
   const mergedWeights = [...base.w]
@@ -110,24 +105,44 @@ function buildScheduler(cfg: FSRSParams) {
 }
 
 function toFsrsCard(
-  card: Pick<CardRecord, 'factor' | 'interval' | 'stability' | 'difficulty' | 'reps' | 'lapses' | 'type' | 'due' | 'dueAt'>,
-  today: number
+  card: Pick<CardRecord, 'factor' | 'interval' | 'stability' | 'difficulty' | 'reps' | 'lapses' | 'type' | 'due' | 'dueAt' | 'learningStep' | 'lastReviewedAt' | 'updatedAt'>,
+  nowMs: number,
 ): Card {
-  const dueAt = Number.isFinite(card.dueAt) ? Math.max(0, Math.round(card.dueAt as number)) : toEpochDay(card.due ?? today) * 86_400_000
-  const due = toEpochDay(dueAt / 86_400_000)
+  const today = toEpochDay(nowMs / DAY_MS)
+  const dueAt = Number.isFinite(card.dueAt) ? Math.max(0, Math.round(card.dueAt as number)) : toEpochDay(card.due ?? today) * DAY_MS
   const interval = Math.max(0, Math.round(card.interval ?? 0))
-  const elapsedDays = estimateElapsedDays(today, interval, due)
+  const state = mapCardTypeToFsrsState(Math.round(card.type ?? 0))
 
-  const base = createEmptyCard(dayToDate(today))
-  base.state = mapCardTypeToFsrsState(Math.round(card.type ?? 0))
+  const base = createEmptyCard(new Date(nowMs))
+  base.state = state
   base.due = new Date(dueAt)
   base.scheduled_days = interval
+  // `due` ist bei FSRS-(Re)Learning-Karten wie bei Anki der aktuelle
+  // Lernschritt. Ältere Datensätze enthielten hier teils einen Epoch-Tag;
+  // solche Werte werden sicher auf den ersten Schritt zurückgeführt.
+  base.learning_steps = state === FsrsState.Learning || state === FsrsState.Relearning
+    ? Number.isFinite(card.learningStep)
+      ? Math.max(0, Math.round(card.learningStep as number))
+      : (card.due === 1 ? 1 : 0)
+    : 0
   base.reps = Number.isFinite(card.reps) ? Math.max(0, Math.round(card.reps as number)) : 0
   base.lapses = Number.isFinite(card.lapses) ? Math.max(0, Math.round(card.lapses as number)) : 0
   base.stability = clampStability(card.stability ?? Math.max(0.5, interval || 1))
   base.difficulty = clampDifficulty(card.difficulty ?? factorToDifficulty(card.factor ?? 2500))
-  if (elapsedDays > 0) {
-    base.last_review = dayToDate(today - elapsedDays)
+
+  if (base.reps > 0 || state !== FsrsState.New) {
+    const inferredLastReviewAt = interval > 0 ? dueAt - interval * DAY_MS : Math.min(dueAt, nowMs)
+    // Bei Review-Karten ist dueAt - interval belastbarer als updatedAt, denn
+    // auch eine reine Inhaltsänderung aktualisiert updatedAt. In kurzen
+    // (Re)Learning-Schritten markiert updatedAt dagegen die letzte Bewertung.
+    const lastReviewAt = Number.isFinite(card.lastReviewedAt)
+      ? Math.min(nowMs, Math.max(0, Math.round(card.lastReviewedAt as number)))
+      : state === FsrsState.Review && interval > 0
+        ? Math.max(0, inferredLastReviewAt)
+        : Number.isFinite(card.updatedAt)
+          ? Math.min(nowMs, Math.max(0, Math.round(card.updatedAt as number)))
+          : Math.max(0, inferredLastReviewAt)
+    base.last_review = new Date(lastReviewAt)
   }
 
   return base
@@ -146,10 +161,12 @@ export interface CardStateUpdate {
   queue: number
   due: number
   dueAt: number
+  learningStep: number
+  lastReviewedAt: number
 }
 
 export function calculateCardStateAfterReviewFSRS(
-  card: Pick<CardRecord, 'factor' | 'interval' | 'stability' | 'difficulty' | 'reps' | 'lapses' | 'type' | 'queue' | 'due' | 'dueAt'>,
+  card: Pick<CardRecord, 'factor' | 'interval' | 'stability' | 'difficulty' | 'reps' | 'lapses' | 'type' | 'queue' | 'due' | 'dueAt' | 'learningStep' | 'lastReviewedAt' | 'updatedAt'>,
   rating: 1 | 2 | 3 | 4,
   params?: Partial<FSRSParams>
 ): CardStateUpdate {
@@ -158,50 +175,24 @@ export function calculateCardStateAfterReviewFSRS(
   }
 
   const nowMs = Date.now()
-  const daysSinceEpoch = toEpochDay(nowMs / 86_400_000)
-  const localMidnight = new Date(nowMs)
-  localMidnight.setHours(0, 0, 0, 0)
-  const todayLocalMs = localMidnight.getTime()
   const cfg = normalizeFSRSParams(params)
 
   const scheduler = buildScheduler(cfg)
-  const source = toFsrsCard(card, daysSinceEpoch)
-  const scheduled = scheduler.next(source, dayToDate(daysSinceEpoch), rating as Grade)
+  const source = toFsrsCard(card, nowMs)
+  const scheduled = scheduler.next(source, new Date(nowMs), rating as Grade)
   const next = scheduled.card
 
-  const computedDueAt = Math.max(nowMs, next.due.getTime())
-  const computedDeltaMs = Math.max(0, computedDueAt - nowMs)
-  let adjustedDeltaMs = computedDeltaMs
-  if (rating === 2) {
-    adjustedDeltaMs = computedDeltaMs / cfg.hardPen
-  } else if (rating === 4) {
-    adjustedDeltaMs = computedDeltaMs * cfg.easyBonus
-  }
-  const dueAt = Math.max(nowMs, Math.round(nowMs + adjustedDeltaMs))
-  // FSRS in this app never schedules intraday review steps; keep interval >= 1 day.
-  const interval = Math.max(1, Math.floor((dueAt - todayLocalMs) / 86_400_000))
-  const dueDay = daysSinceEpoch + interval
-  const fallbackType = mapFsrsStateToCardType(next.state)
-  const fallbackQueue = mapFsrsStateToQueue(next.state)
-  const previousStability = clampStability(
-    card.stability ?? Math.max(MANIFEST_MIN_STABILITY, Math.round(card.interval ?? 0) || 1)
-  )
-  const previousDifficulty = clampDifficulty(card.difficulty ?? ((card.factor ?? 2500) / 500))
-
-  let stability = clampStability(next.stability)
-  let difficulty = clampDifficulty(next.difficulty)
-
-  // Manifest option C: explicit rating semantics for S/D.
-  if (rating === 1) {
-    stability = MANIFEST_MIN_STABILITY
-    difficulty = clampDifficulty(previousDifficulty + MANIFEST_DIFFICULTY_STRONG_STEP)
-  } else if (rating === 2) {
-    stability = clampStability(previousStability * cfg.hardPen)
-    difficulty = clampDifficulty(Math.max(difficulty, previousDifficulty + MANIFEST_DIFFICULTY_LIGHT_STEP))
-  } else if (rating === 4) {
-    stability = clampStability(previousStability * cfg.easyBonus)
-    difficulty = clampDifficulty(Math.min(difficulty, previousDifficulty - MANIFEST_DIFFICULTY_LIGHT_STEP))
-  }
+  const dueAt = Math.max(nowMs, Math.round(next.due.getTime()))
+  const type = mapFsrsStateToCardType(next.state)
+  const queue = mapFsrsStateToQueue(next.state)
+  const interval = next.state === FsrsState.Review
+    ? Math.max(1, Math.round(next.scheduled_days))
+    : Math.max(0, Math.round(next.scheduled_days))
+  const stability = clampStability(next.stability)
+  const difficulty = clampDifficulty(next.difficulty)
+  const due = next.state === FsrsState.Learning || next.state === FsrsState.Relearning
+    ? Math.max(0, Math.round(next.learning_steps))
+    : toEpochDay(dueAt / DAY_MS)
 
   return {
     factor: Math.round(difficulty * 500),
@@ -210,9 +201,13 @@ export function calculateCardStateAfterReviewFSRS(
     difficulty,
     reps: Math.max(0, Math.round(next.reps)),
     lapses: Math.max(0, Math.round(next.lapses)),
-    type: fallbackType,
-    queue: fallbackQueue,
-    due: dueDay,
+    type,
+    queue,
+    due,
     dueAt,
+    learningStep: next.state === FsrsState.Learning || next.state === FsrsState.Relearning
+      ? Math.max(0, Math.round(next.learning_steps))
+      : 0,
+    lastReviewedAt: nowMs,
   }
 }

@@ -88,6 +88,10 @@ export default defineConfig({
     },
   },
   server: {
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+    },
     host: httpsRequested ? '0.0.0.0' : undefined,
     https: httpsConfig,
     port: 5173,

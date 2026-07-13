@@ -36,6 +36,8 @@ export function useSessionPersistence({
         relearnSuccessCounts: current.relearnSuccessCounts,
         forcedTomorrowCardIds: current.forcedTomorrowCardIds,
         againCounts: current.againCounts,
+        hardPracticeCardIds: current.hardPracticeCardIds,
+        hardPracticePassCounts: current.hardPracticePassCounts,
         reviewEvents: current.reviewEvents,
         startTime: current.startTime,
         nextDayStartsAt,

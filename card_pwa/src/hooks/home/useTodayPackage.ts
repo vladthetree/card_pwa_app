@@ -21,16 +21,21 @@ import { getSecurityObjectiveDeckId, getSecurityObjectiveDeckName } from '../../
 import {
   hasRecallRunSince,
   persistTodayPackagePointer,
+  persistVideoCatalogFiles,
   pickTodayVideo,
+  readCachedVideoCatalogFiles,
   readTodayPackagePointer,
 } from '../../utils/todayPackage'
 import { readVideoProgress } from '../useMesserVideoProgress'
 import { readRecallScores, videoScoreKey } from '../useVideoRecallScores'
-import { getDayStartMs } from '../../utils/time'
+import { useDayStartMs } from '../useDayStartMs'
 import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
 import type { Deck } from '../../types'
 
 const MANIFEST_URL = '/media/messer/index.json'
+// Kurz genug, dass ein nicht erreichbarer Pi den Home-Start nicht blockiert;
+// im LAN antwortet der Server in Millisekunden.
+const MANIFEST_FETCH_TIMEOUT_MS = 4000
 
 export interface TodayPackageSteps {
   video: boolean
@@ -40,8 +45,11 @@ export interface TodayPackageSteps {
 
 export interface TodayPackageData {
   loading: boolean
-  /** false = kein Videokatalog erreichbar UND keine Offline-Kopien. */
+  /** false = kein Videokatalog erreichbar UND keine lokalen Daten. */
   available: boolean
+  /** true = Server nicht erreichbar UND noch nie ein Katalog lokal gespeichert
+   *  (weder localStorage-Kopie noch Video-Downloads) → Meldung statt Kachel. */
+  offlineNoData: boolean
   video: LocalVideoMeta | null
   /** Position im Kurs (1-basiert) und Gesamtzahl, z. B. „Video 12/121“. */
   videoNumber: number
@@ -60,27 +68,49 @@ export interface TodayPackageData {
   reload: () => void
 }
 
-async function loadVideoCatalog(): Promise<LocalVideoMeta[]> {
-  const files = new Set<string>()
+/** null = Manifest nicht erreichbar (offline/Server weg/Timeout). */
+async function fetchManifestFiles(): Promise<string[] | null> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), MANIFEST_FETCH_TIMEOUT_MS)
   try {
-    const res = await fetch(MANIFEST_URL, { cache: 'no-store' })
-    if (res.ok) {
-      const data = (await res.json()) as { files?: unknown }
-      if (Array.isArray(data.files)) {
-        for (const file of data.files) {
-          if (typeof file === 'string') files.add(file)
-        }
-      }
-    }
+    const res = await fetch(MANIFEST_URL, { cache: 'no-store', signal: controller.signal })
+    if (!res.ok) return null
+    const data = (await res.json()) as { files?: unknown }
+    if (!Array.isArray(data.files)) return null
+    return data.files.filter((file): file is string => typeof file === 'string')
   } catch {
-    // Offline — dann zählen nur die heruntergeladenen Kopien.
+    return null
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+interface VideoCatalogResult {
+  catalog: LocalVideoMeta[]
+  /** true = Katalog stammt aus lokalen Quellen (Cache/Downloads), nicht vom Server. */
+  fromLocalFallback: boolean
+}
+
+async function loadVideoCatalog(): Promise<VideoCatalogResult> {
+  const files = new Set<string>()
+  const manifestFiles = await fetchManifestFiles()
+  if (manifestFiles !== null) {
+    for (const file of manifestFiles) files.add(file)
+    // Erfolgreiche Antwort sofort persistieren: genau diese Kopie macht das
+    // Heute-Paket nach Neustart ohne Netz wieder verfügbar.
+    persistVideoCatalogFiles(manifestFiles)
+  } else {
+    for (const file of readCachedVideoCatalogFiles()) files.add(file)
   }
   try {
     for (const row of await db.videoDownloads.toArray()) files.add(row.file)
   } catch {
-    // Ohne Downloads-Tabelle bleibt es beim Server-Manifest.
+    // Ohne Downloads-Tabelle bleibt es bei Manifest bzw. Cache.
   }
-  return buildLocalVideoManifest(Array.from(files))
+  return {
+    catalog: buildLocalVideoManifest(Array.from(files)),
+    fromLocalFallback: manifestFiles === null,
+  }
 }
 
 interface Options {
@@ -95,6 +125,7 @@ export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimi
   const [data, setData] = useState<Omit<TodayPackageData, 'reload'>>({
     loading: true,
     available: false,
+    offlineNoData: false,
     video: null,
     videoNumber: 0,
     videoTotal: 0,
@@ -105,26 +136,36 @@ export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimi
     completedToday: false,
     remainingVideos: 0,
   })
-  const catalogRef = useRef<LocalVideoMeta[] | null>(null)
+  const catalogRef = useRef<VideoCatalogResult | null>(null)
   const computeVersionRef = useRef(0)
+  // Tagesgrenze auch offline erkennen: neuer Wert → compute wird neu erzeugt
+  // und der Effekt unten rechnet das Paket für den neuen Lerntag.
+  const todayStartMs = useDayStartMs(nextDayStartsAt)
 
   const compute = useCallback(async () => {
     const version = computeVersionRef.current + 1
     computeVersionRef.current = version
 
     try {
-      if (catalogRef.current === null) {
+      // Leeren Katalog nicht einfrieren: nach Fehlstart (offline ohne lokale
+      // Daten) versucht jeder weitere Anlass (sichtbar werden, Review) den
+      // Server erneut, damit die Kachel nach Reconnect von selbst erscheint.
+      if (catalogRef.current === null || catalogRef.current.catalog.length === 0) {
         catalogRef.current = await loadVideoCatalog()
       }
-      const catalog = catalogRef.current
+      const { catalog, fromLocalFallback } = catalogRef.current
       if (computeVersionRef.current !== version) return
 
       if (catalog.length === 0) {
-        setData(prev => ({ ...prev, loading: false, available: false }))
+        setData(prev => ({
+          ...prev,
+          loading: false,
+          available: false,
+          offlineNoData: fromLocalFallback,
+        }))
         return
       }
 
-      const todayStartMs = getDayStartMs(Date.now(), nextDayStartsAt)
       const progress = readVideoProgress()
       const recallScores = readRecallScores()
 
@@ -232,6 +273,7 @@ export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimi
       setData({
         loading: false,
         available: true,
+        offlineNoData: false,
         video,
         videoNumber: video ? catalog.findIndex(entry => entry.index === video?.index) + 1 : 0,
         videoTotal: catalog.length,
@@ -249,7 +291,7 @@ export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimi
       // Ladezustand lassen. Der Home-Slide faellt dann auf die Daily Quest zurueck.
       setData(prev => ({ ...prev, loading: false, available: false }))
     }
-  }, [nextDayStartsAt, newCardsPerDay, studyCardLimit])
+  }, [nextDayStartsAt, newCardsPerDay, studyCardLimit, todayStartMs])
 
   useEffect(() => {
     void compute()

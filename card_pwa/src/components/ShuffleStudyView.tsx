@@ -23,7 +23,7 @@ import {
 import { initialSessionState, sessionReducer } from '../services/studySessionReducer'
 import { buildDragMatchModePlan } from '../services/studyModeSelector'
 import { buildLearningCoachSummary } from '../services/learningCoach'
-import type { Card, Rating, ShuffleCollection } from '../types'
+import type { Card, Rating, ReviewAnswerDetails, ShuffleCollection } from '../types'
 import { formatDeckName } from '../utils/cardTextParser'
 import { flattenDeckTree } from '../utils/securityDeckHierarchy'
 import { useSessionRewards } from '../hooks/useSessionRewards'
@@ -79,6 +79,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     maxCards: studyCardLimit,
     nextDayStartsAt: settings.nextDayStartsAt,
     runSeed: dragMatchModeSeedRef.current,
+    learnAheadMinutes: settings.learnAheadMinutes,
   })
   const { decks } = useDecks()
 
@@ -99,6 +100,9 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   })
   const dragMatchModePlanRef = useRef<Set<string>>(new Set())
   const dragMatchModePlanReadyRef = useRef(false)
+  // Konkrete Antwort der aktuellen Karte bis zur Persistierung puffern
+  // (gleiches Prinzip wie StudyView; Reset beim Kartenwechsel).
+  const pendingAnswerRef = useRef<ReviewAnswerDetails | null>(null)
 
   useWakeLock()
 
@@ -117,10 +121,13 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   const currentCard = useMemo(() => session.cards[0] ?? null, [session.cards])
 
   // Pro Karte zurücksetzen (sessionCount zählt Requeues mit); Peek schließen.
+  // Auch die gepufferte Antwort verfällt: sie darf nie einer anderen Karte
+  // zugeordnet werden.
   useEffect(() => {
     setAnswerRevealed(false)
     setPeeking(false)
     setPeekFlipped(true)
+    pendingAnswerRef.current = null
   }, [currentCard?.id, session.sessionCount])
 
   useEffect(() => {
@@ -188,6 +195,8 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       relearnSuccessCounts: session.relearnSuccessCounts,
       forcedTomorrowCardIds: session.forcedTomorrowCardIds,
       againCounts: session.againCounts,
+      hardPracticeCardIds: session.hardPracticeCardIds,
+      hardPracticePassCounts: session.hardPracticePassCounts,
       reviewEvents: session.reviewEvents,
       startTime: session.startTime,
       nextDayStartsAt: settings.nextDayStartsAt,
@@ -201,6 +210,8 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     collection.id,
     session.cards,
     session.againCounts,
+    session.hardPracticeCardIds,
+    session.hardPracticePassCounts,
     session.forcedTomorrowCardIds,
     session.isDone,
     session.isFlipped,
@@ -251,8 +262,9 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     dispatch({ type: 'FLIP' })
   }, [peeking])
 
-  const handleAnswerEvaluated = useCallback((score: number) => {
+  const handleAnswerEvaluated = useCallback((score: number, answer?: Pick<ReviewAnswerDetails, 'selected' | 'correct'>) => {
     setAnswerWasIncorrect(score < 1.0)
+    pendingAnswerRef.current = answer ? { ...answer, wasCorrect: score >= 1.0 } : null
   }, [])
 
   const handleRate = useCallback(async (rating: Rating) => {
@@ -263,12 +275,31 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     dispatch({ type: 'RATE_START', rating: effectiveRating, elapsedMs })
 
     try {
+      const practiceOnly = settings.hardPracticeEnabled && session.hardPracticeCardIds.includes(currentCard.id) && effectiveRating !== 1
+      if (practiceOnly) {
+        dispatch({
+          type: 'RATE_SUCCESS',
+          rating: effectiveRating,
+          cardId: currentCard.id,
+          forcedTomorrow: false,
+          practiceOnly: true,
+          hardPracticeEnabled: settings.hardPracticeEnabled,
+          hardPracticeGoodStreak: settings.hardPracticeGoodStreak,
+          hardPracticeMaxPasses: settings.hardPracticeMaxPasses,
+          learnAheadMinutes: settings.learnAheadMinutes,
+        })
+        setAnswerWasIncorrect(false)
+        pendingAnswerRef.current = null
+        return
+      }
+
       const result = await recordReview(
         currentCard.id,
         effectiveRating,
         elapsedMs,
         settings.algorithm,
         settings.algorithmParams,
+        pendingAnswerRef.current ?? undefined,
       )
 
       if (!result.ok) {
@@ -287,9 +318,15 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
         rating: effectiveRating,
         cardId: currentCard.id,
         forcedTomorrow,
+        cardState: result.cardState,
+        hardPracticeEnabled: settings.hardPracticeEnabled,
+        hardPracticeGoodStreak: settings.hardPracticeGoodStreak,
+        hardPracticeMaxPasses: settings.hardPracticeMaxPasses,
+        learnAheadMinutes: settings.learnAheadMinutes,
       })
       registerSessionReward(effectiveRating, elapsedMs)
       setAnswerWasIncorrect(false)
+      pendingAnswerRef.current = null
     } catch (err) {
       dispatch({ type: 'RATE_ERROR', message: err instanceof Error ? err.message : t.unknown_error })
     }
@@ -299,11 +336,16 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     peeking,
     isAlgorithmMigrating,
     session.againCounts,
+    session.hardPracticeCardIds,
     session.isDone,
     session.isSubmitting,
     session.startTime,
     settings.algorithm,
     settings.algorithmParams,
+    settings.hardPracticeEnabled,
+    settings.hardPracticeGoodStreak,
+    settings.hardPracticeMaxPasses,
+    settings.learnAheadMinutes,
     t.save_rating_failed,
     t.unknown_error,
     registerSessionReward,
@@ -317,7 +359,16 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     dispatch({ type: 'RATE_START', rating, elapsedMs })
 
     try {
-      const result = await recordReview(currentCard.id, rating, elapsedMs, settings.algorithm, settings.algorithmParams)
+      // Retry nach Speicherfehler: die Antwortdetails liegen noch im Ref,
+      // weil der Kartenwechsel erst mit RATE_SUCCESS passiert.
+      const result = await recordReview(
+        currentCard.id,
+        rating,
+        elapsedMs,
+        settings.algorithm,
+        settings.algorithmParams,
+        pendingAnswerRef.current ?? undefined,
+      )
       if (!result.ok) {
         dispatch({ type: 'RATE_ERROR', message: result.error || t.save_failed })
         return
@@ -329,9 +380,20 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
         if (forceResult.ok) forcedTomorrow = true
       }
 
-      dispatch({ type: 'RATE_SUCCESS', rating, cardId: currentCard.id, forcedTomorrow })
+      dispatch({
+        type: 'RATE_SUCCESS',
+        rating,
+        cardId: currentCard.id,
+        forcedTomorrow,
+        cardState: result.cardState,
+        hardPracticeEnabled: settings.hardPracticeEnabled,
+        hardPracticeGoodStreak: settings.hardPracticeGoodStreak,
+        hardPracticeMaxPasses: settings.hardPracticeMaxPasses,
+        learnAheadMinutes: settings.learnAheadMinutes,
+      })
       registerSessionReward(rating, elapsedMs)
       setAnswerWasIncorrect(false)
+      pendingAnswerRef.current = null
     } catch (err) {
       dispatch({ type: 'RATE_ERROR', message: err instanceof Error ? err.message : t.unknown_error })
     }
@@ -343,6 +405,10 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     session.lastRating,
     settings.algorithm,
     settings.algorithmParams,
+    settings.hardPracticeEnabled,
+    settings.hardPracticeGoodStreak,
+    settings.hardPracticeMaxPasses,
+    settings.learnAheadMinutes,
     t.save_failed,
     t.unknown_error,
     registerSessionReward,
@@ -590,6 +656,11 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
               className={`mx-auto w-full max-w-5xl ${isHandsetLayout ? 'flex h-full min-h-0 flex-col' : ''}`}
               style={isHandsetLayout ? { maxHeight: '100%' } : undefined}
             >
+              {settings.hardPracticeEnabled && session.hardPracticeCardIds.includes(currentCard.id) && (
+                <div className="mb-2 self-center rounded-ds border border-amber-400/35 bg-amber-400/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-amber-200" role="status">
+                  {settings.language === 'de' ? 'Hard-Verstärkung · Session-Übung' : 'Hard reinforcement · session practice'}
+                </div>
+              )}
               <div className={`flex flex-col gap-6 ${isHandsetLayout ? 'h-full min-h-0 flex-1' : ''}`}>
                 <div className={`flex-1 ${isHandsetLayout ? 'h-full min-h-0' : ''}`}>
                   <CardFace

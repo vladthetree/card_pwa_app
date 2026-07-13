@@ -1006,6 +1006,81 @@ class TestReviewOperations:
         assert rows[0][7] == 0.3  # difficulty
         assert rows[0][8] == 0.91  # retrievability
     
+    def test_review_persists_answer_details_and_exposes_them_in_snapshot(self, api, db_helper):
+        """Falsch gewählte Antworten landen mit Auswahl, Lösung und Status in
+        server_reviews und kommen über den Snapshot zurück zum Client."""
+        api.push(
+            op_id="c-create-answer",
+            op_type="card.create",
+            payload={
+                "id": "card-answer", "deckId": "d1", "noteId": "n1",
+                "front": "Q", "back": "A", "tags": [], "extra": {},
+                "type": 0, "queue": 2, "due": 100, "dueAt": 1000,
+                "interval": 1, "factor": 2500, "stability": 1.5, "difficulty": 0.5,
+                "reps": 0, "lapses": 0, "algorithm": "fsrs", "timestamp": 1000
+            },
+            client_id="c1"
+        )
+
+        api.push(
+            op_id="rev-answer-wrong",
+            op_type="review",
+            payload={
+                "cardId": "card-answer", "rating": 1, "timeMs": 2500, "timestamp": 1500,
+                "answer": {"selected": "B: Federation", "correct": "C: Single Sign-On", "wasCorrect": False},
+                "updated": {
+                    "type": 1, "queue": 1, "due": 100, "dueAt": 2000, "interval": 0,
+                    "factor": 2500, "reps": 1, "lapses": 1, "algorithm": "fsrs", "updatedAt": 1500
+                }
+            },
+            client_id="c1"
+        )
+        # Richtige Antwort: gleiches Prinzip, gleiche Tabelle — Historie wächst.
+        api.push(
+            op_id="rev-answer-right",
+            op_type="review",
+            payload={
+                "cardId": "card-answer", "rating": 3, "timeMs": 1400, "timestamp": 1600,
+                "answer": {"selected": "C: Single Sign-On", "correct": "C: Single Sign-On", "wasCorrect": True},
+                "updated": {
+                    "type": 2, "queue": 2, "due": 101, "dueAt": 3000, "interval": 1,
+                    "factor": 2500, "reps": 2, "lapses": 1, "algorithm": "fsrs", "updatedAt": 1600
+                }
+            },
+            client_id="c1"
+        )
+        # Ohne Antwortdetails (klassische Karte): Spalten bleiben NULL.
+        api.push(
+            op_id="rev-answer-none",
+            op_type="review",
+            payload={
+                "cardId": "card-answer", "rating": 3, "timeMs": 900, "timestamp": 1700,
+                "updated": {
+                    "type": 2, "queue": 2, "due": 102, "dueAt": 4000, "interval": 2,
+                    "factor": 2500, "reps": 3, "lapses": 1, "algorithm": "fsrs", "updatedAt": 1700
+                }
+            },
+            client_id="c1"
+        )
+
+        rows = db_helper.query(
+            "SELECT review_op_id, selected_answer, correct_answer, answer_correct "
+            "FROM server_reviews WHERE card_id='card-answer' ORDER BY reviewed_at"
+        )
+        assert rows == [
+            ("rev-answer-wrong", "B: Federation", "C: Single Sign-On", 0),
+            ("rev-answer-right", "C: Single Sign-On", "C: Single Sign-On", 1),
+            ("rev-answer-none", None, None, None),
+        ]
+
+        snap = api.snapshot("answer-reader")
+        by_op = {entry["opId"]: entry for entry in snap["reviews"]}
+        assert by_op["rev-answer-wrong"]["answer"] == {
+            "selected": "B: Federation", "correct": "C: Single Sign-On", "wasCorrect": False,
+        }
+        assert by_op["rev-answer-right"]["answer"]["wasCorrect"] is True
+        assert "answer" not in by_op["rev-answer-none"]
+
     def test_review_undo_restores_all_scheduling_fields(self, api, db_helper):
         """review.undo restores all scheduling fields."""
         # Create card

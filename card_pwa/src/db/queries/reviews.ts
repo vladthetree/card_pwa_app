@@ -9,7 +9,7 @@ import { readAllCardsShared, readAllDecksShared } from './sharedReads'
 import { calculateCardStateAfterReview, SM2, isStudyableCard } from '../../utils/sm2'
 import { calculateCardStateAfterReviewFSRS } from '../../utils/fsrs'
 import { type AlgorithmParams } from '../../utils/algorithmParams'
-import { enqueueSyncOperation } from '../../services/syncQueue'
+import { drainTransactionalOutbox, enqueueSyncOperation } from '../../services/syncQueue'
 import { buildOpId } from '../../services/syncConfig'
 import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
 import { getDayStartMs, resolveDueAtMs } from '../../utils/time'
@@ -26,6 +26,7 @@ import type {
   MetricsPeriod,
   DeckMetricsSnapshot,
   ShuffleCollectionMetricsSnapshot,
+  ReviewAnswerDetails,
   ReviewUndoToken,
   CardSchedulingState,
   GlobalStats,
@@ -55,7 +56,7 @@ function finiteOr(value: unknown, fallback: number): number {
 function normalizeSchedulingInput(
   card: CardRecord,
   algorithm: 'sm2' | 'fsrs'
-): Pick<CardRecord, 'factor' | 'interval' | 'stability' | 'difficulty' | 'reps' | 'lapses' | 'type' | 'queue' | 'due' | 'dueAt'> {
+): Pick<CardRecord, 'factor' | 'interval' | 'stability' | 'difficulty' | 'reps' | 'lapses' | 'type' | 'queue' | 'due' | 'dueAt' | 'learningStep' | 'lastReviewedAt' | 'updatedAt'> {
   const nowMs = Date.now()
   const type = Number.isInteger(card.type) ? clamp(card.type, 0, 3) : 0
   const queue = Number.isInteger(card.queue) ? clamp(card.queue, -1, 2) : type
@@ -71,12 +72,17 @@ function normalizeSchedulingInput(
     queue,
     due,
     dueAt: Math.max(0, dueAt || nowMs),
+    learningStep: Number.isFinite(card.learningStep)
+      ? Math.max(0, Math.round(card.learningStep as number))
+      : (type === 1 || type === 3) && due === 1 ? 1 : 0,
+    lastReviewedAt: Number.isFinite(card.lastReviewedAt) ? Math.max(0, Math.round(card.lastReviewedAt as number)) : undefined,
     interval,
     factor,
     stability: algorithm === 'fsrs' ? clamp(finiteOr(card.stability, Math.max(0.5, interval || 1)), 0.5, 36500) : card.stability,
     difficulty: algorithm === 'fsrs' ? clamp(finiteOr(card.difficulty, factor / 500), 1, 10) : card.difficulty,
     reps,
     lapses,
+    updatedAt: card.updatedAt,
   }
 }
 
@@ -444,8 +450,11 @@ export async function recordReview(
   rating: Rating,
   timeMs: number,
   algorithm: 'sm2' | 'fsrs' = 'sm2',
-  algorithmParams?: Partial<AlgorithmParams>
-): Promise<{ ok: boolean; error?: string; undoToken?: ReviewUndoToken }> {
+  algorithmParams?: Partial<AlgorithmParams>,
+  /** Konkrete Antwort interaktiver Karten — richtige wie falsche laufen über
+   *  denselben Pfad; Karten ohne Auswahl übergeben nichts. */
+  answer?: ReviewAnswerDetails
+): Promise<{ ok: boolean; error?: string; undoToken?: ReviewUndoToken; cardState?: CardSchedulingState }> {
   try {
     const card = await db.cards.get(cardId)
     if (!card) throw new Error(`Karte ${cardId} nicht gefunden`)
@@ -455,6 +464,8 @@ export async function recordReview(
       queue: card.queue,
       due: card.due,
       dueAt: card.dueAt,
+      learningStep: card.learningStep,
+      lastReviewedAt: card.lastReviewedAt,
       interval: card.interval,
       factor: card.factor,
       stability: card.stability,
@@ -476,6 +487,8 @@ export async function recordReview(
         queue: updated.queue,
         due: updated.due,
         dueAt: updated.dueAt,
+        learningStep: updated.learningStep,
+        lastReviewedAt: updated.lastReviewedAt,
         interval: updated.interval,
         factor: updated.factor,
         stability: updated.stability,
@@ -492,6 +505,8 @@ export async function recordReview(
         queue: updated.queue,
         due: updated.due,
         dueAt: updated.dueAt,
+        learningStep: updated.learningStep,
+        lastReviewedAt: updated.lastReviewedAt,
         interval: updated.interval,
         factor: updated.factor,
         reps: updated.reps,
@@ -504,22 +519,16 @@ export async function recordReview(
     const reviewTimestamp = Date.now()
     const reviewOpId = buildOpId()
     const persistedCardUpdate = { ...cardUpdate, updatedAt: reviewTimestamp }
-    let reviewId = 0
-    await db.transaction('rw', db.cards, db.reviews, async () => {
-      await db.cards.update(cardId, persistedCardUpdate)
-      reviewId = await db.reviews.add({
-        opId: reviewOpId,
-        cardId,
-        rating,
-        timeMs,
-        timestamp: reviewTimestamp,
-        createdAt: reviewTimestamp,
-      })
-    })
-
-    await verifySchedulingPersistence(cardId, effectiveAlgorithm, persistedCardUpdate)
-
-    await enqueueSyncOperation('review', {
+    // Antwortdetails hängen an derselben Review-Zeile (cardId-Zuordnung,
+    // append-only Historie) — kein zweiter Speicherpfad.
+    const answerFields = answer
+      ? {
+          selectedAnswer: answer.selected,
+          correctAnswer: answer.correct,
+          answerCorrect: answer.wasCorrect,
+        }
+      : {}
+    const reviewSyncPayload = {
       cardId,
       rating,
       timeMs,
@@ -529,12 +538,50 @@ export async function recordReview(
       algorithmVersion: effectiveAlgorithm === 'fsrs' ? 2 : 1,
       updated: persistedCardUpdate,
       timestamp: reviewTimestamp,
-    }, reviewOpId)
+      ...(answer ? { answer } : {}),
+    }
+    let reviewId = 0
+    await db.transaction('rw', db.cards, db.reviews, db.syncOutbox, async () => {
+      await db.cards.update(cardId, persistedCardUpdate)
+      reviewId = await db.reviews.add({
+        opId: reviewOpId,
+        cardId,
+        rating,
+        timeMs,
+        timestamp: reviewTimestamp,
+        createdAt: reviewTimestamp,
+        ...answerFields,
+      })
+      await db.syncOutbox.put({
+        opId: reviewOpId,
+        type: 'review',
+        payload: JSON.stringify(reviewSyncPayload),
+        createdAt: reviewTimestamp,
+      })
+    })
+
+    // Alles nach diesem Punkt ist best effort: Karte, Review und Sync-Outbox
+    // sind bereits gemeinsam committed. Ein Diagnose-/Queuefehler darf die UI
+    // niemals zum erneuten Anwenden derselben Bewertung auffordern.
+    try {
+      await verifySchedulingPersistence(cardId, effectiveAlgorithm, persistedCardUpdate)
+    } catch (error) {
+      console.error('[recordReview:verify]', error)
+    }
+    try {
+      await drainTransactionalOutbox()
+    } catch (error) {
+      console.warn('[recordReview:outbox] Outbox bleibt für den nächsten Flush erhalten', error)
+    }
 
     emitReviewUpdatedEvent()
 
     return {
       ok: true,
+      cardState: {
+        ...previousState,
+        ...persistedCardUpdate,
+      },
       undoToken: {
         cardId,
         reviewId,
@@ -589,6 +636,7 @@ export function buildResetCardRecord(
     queue: SM2.QUEUE_NEW,
     due: input.dueDay,
     dueAt: input.dueAt,
+    learningStep: 0,
     interval: 0,
     factor: 2500,
     reps: 0,
@@ -597,6 +645,7 @@ export function buildResetCardRecord(
   }
   delete record.stability
   delete record.difficulty
+  delete record.lastReviewedAt
   return record
 }
 
@@ -665,6 +714,7 @@ export async function forceCardReviewTomorrow(cardId: string): Promise<{ ok: boo
       queue: SM2.QUEUE_REVIEW,
       due: tomorrowDays,
       dueAt: tomorrowMs,
+      learningStep: 0,
       interval: Math.max(1, card.interval || 1),
       updatedAt: Date.now(),
     }
