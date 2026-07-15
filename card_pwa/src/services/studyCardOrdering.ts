@@ -217,27 +217,66 @@ export function buildDailyQuestSelection(
 export interface StudySessionSelectionOptions {
   sessionId: string
   maxCards: number
-  maxNewCards: number
   nextDayStartsAt?: number
   learnAheadMinutes?: number
   runSeed?: string | number
 }
 
 /**
+ * Letzte defensive Schranke fuer normale Decks. Der uebergebene Wert ist immer
+ * der aktuelle Reglerwert aus `settings.studyCardLimit`; kleinere Kartenpools
+ * bleiben unveraendert, groessere werden exakt daran gekappt. Ein ungueltiger
+ * Wert startet aus Sicherheitsgruenden keine unlimitierte Session.
+ */
+export function enforceDailyDeckCardLimit(
+  cards: Card[],
+  configuredDeckLimit: unknown,
+): Card[] {
+  const parsedLimit = Number(configuredDeckLimit)
+  if (!Number.isFinite(parsedLimit)) return []
+  return cards.slice(0, Math.max(0, Math.floor(parsedLimit)))
+}
+
+/**
  * Letzte Auswahlgrenze vor dem Mount einer StudyView-Session. Die Daily Quest
- * ist bereits vollstaendig ausgewaehlt und bleibt deshalb unveraendert; normale
- * Deck-/Paket-Sessions folgen weiter dem allgemeinen Limit und Neu-Karten-Budget.
+ * ist bereits vollstaendig ausgewaehlt und bleibt deshalb unveraendert. Dasselbe
+ * gilt fuer ein fest zusammengestelltes Heute-Paket. Normale Deck-Sessions
+ * folgen allein dem konfigurierten Deck-Limit.
  */
 export function buildStudySessionSelection(
   cards: Card[],
   options: StudySessionSelectionOptions,
 ): Card[] {
-  if (options.sessionId === 'daily-quest') return cards
-  return sortStudyCards(cards, {
-    maxCards: options.maxCards,
-    maxNewCards: options.maxNewCards,
+  if (options.sessionId === 'daily-quest' || options.sessionId.startsWith('today-package:')) return cards
+  const configuredDeckLimit = Number(options.maxCards)
+  if (!Number.isFinite(configuredDeckLimit) || configuredDeckLimit <= 0) return []
+  const ordered = sortStudyCards(cards, {
+    maxCards: configuredDeckLimit,
+    maxNewCards: Number.POSITIVE_INFINITY,
     nextDayStartsAt: options.nextDayStartsAt,
     learnAheadMinutes: options.learnAheadMinutes,
     runSeed: options.runSeed,
   })
+  // sortStudyCards darf Lernschritte allgemein ueber sein internes Limit hinaus
+  // aufnehmen. Bei normalen Decks ist der Regler jedoch die exakte Obergrenze
+  // fuer die gesamte gestartete Session, unabhaengig vom Kartentyp.
+  return enforceDailyDeckCardLimit(ordered, configuredDeckLimit)
+}
+
+/** Feste Kartenauswahl fuer ein Heute-Paket. 0 bedeutet unbegrenzt. Das
+ * Paket-Limit ist absichtlich ein eigener Wert und kennt das Deck-Limit nicht. */
+export function buildTodayPackageSelection(
+  cards: Card[],
+  packageCardLimit: number,
+  options: Pick<SortStudyCardsOptions, 'nextDayStartsAt' | 'nowMs' | 'learnAheadMinutes' | 'runSeed'> = {},
+): Card[] {
+  const normalizedLimit = Number.isFinite(packageCardLimit)
+    ? Math.max(0, Math.floor(packageCardLimit))
+    : 0
+  const ordered = sortStudyCards(cards, {
+    ...options,
+    maxCards: normalizedLimit === 0 ? Number.POSITIVE_INFINITY : normalizedLimit,
+    maxNewCards: Number.POSITIVE_INFINITY,
+  })
+  return normalizedLimit === 0 ? ordered : ordered.slice(0, normalizedLimit)
 }

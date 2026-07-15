@@ -26,8 +26,8 @@ const mockedDb = vi.hoisted(() => {
     toArray: vi.fn(async () => state.decks.map(deck => ({ ...deck }))),
   }
 
-  // countNewCardsIntroducedToday (newCardsPerDay-Dosis) liest reviews über
-  // timestamp- bzw. cardId-Index; der Mock bildet beide Pfade minimal ab.
+  // Reviews bleiben Teil des DB-Mocks, damit der Regressionsfall belegt, dass
+  // bereits gelernte Karten das Deck-Kontingent nicht mehr auf 10/9 kuerzen.
   const reviews = {
     where: vi.fn((index: string) => ({
       aboveOrEqual: (value: number) => ({
@@ -339,27 +339,28 @@ describe('getDeckScheduleOverview', () => {
     await expect(countTodayDueFromDecks(10)).resolves.toBe(20)
   })
 
-  // Regressionsschutz „10 vs. Regler“: Die Heute-Vorschau muss dieselbe
-  // newCardsPerDay-Dosis anwenden wie die tatsächliche Session-Auswahl —
-  // sonst verspricht die Deck-Karte mehr Karten, als die Session enthält.
-  it('caps today new cards to the newCardsPerDay dose like a real session', async () => {
-    mockedDb.state.cards = Array.from({ length: 40 }, (_, idx) =>
-      createCard({
-        id: `new-${idx}`,
-        deckId: 'deck-1',
-        type: SM2.CARD_TYPE_NEW,
-      })
-    )
+  // Nur der aktuelle Reglerwert bestimmt die Vorschau normaler Decks. Das
+  // separate Paket-Kontingent darf sie weder auf 10 noch auf 9 kappen.
+  it.each([10, 30, 70, 120, 190])(
+    'uses the configured daily deck quota %i',
+    async configuredLimit => {
+      mockedDb.state.cards = Array.from({ length: 240 }, (_, idx) =>
+        createCard({
+          id: `new-${idx}`,
+          deckId: 'deck-1',
+          type: SM2.CARD_TYPE_NEW,
+        })
+      )
 
-    const result = await getDeckScheduleOverview(['deck-1'], 50, 0, 10)
+      const result = await getDeckScheduleOverview(['deck-1'], configuredLimit, 0)
 
-    expect(result['deck-1'].today.new).toBe(10)
-    expect(result['deck-1'].today.total).toBe(10)
-    // Morgen gilt wieder die volle Tagesdosis.
-    expect(result['deck-1'].tomorrow.new).toBe(10)
-  })
+      expect(result['deck-1'].today.new).toBe(configuredLimit)
+      expect(result['deck-1'].today.total).toBe(configuredLimit)
+      expect(result['deck-1'].tomorrow.new).toBe(Math.min(240 - configuredLimit, configuredLimit))
+    },
+  )
 
-  it('subtracts cards already introduced today from the remaining dose', async () => {
+  it('does not subtract cards introduced today from a normal deck quota', async () => {
     const now = Date.now()
     mockedDb.state.cards = Array.from({ length: 40 }, (_, idx) =>
       createCard({
@@ -368,18 +369,18 @@ describe('getDeckScheduleOverview', () => {
         type: SM2.CARD_TYPE_NEW,
       })
     )
-    // 4 Karten wurden heute zum ersten Mal bewertet → Rest-Dosis 6.
+    // Der alte globale Budgetpfad zeigte nach einer gelernten Karte 9 statt 10.
     mockedDb.state.reviews = Array.from({ length: 4 }, (_, idx) => ({
       cardId: `introduced-${idx}`,
       timestamp: now - 60_000,
     }))
 
-    const result = await getDeckScheduleOverview(['deck-1'], 50, 0, 10)
+    const result = await getDeckScheduleOverview(['deck-1'], 50, 0)
 
-    expect(result['deck-1'].today.new).toBe(6)
+    expect(result['deck-1'].today.new).toBe(40)
   })
 
-  it('keeps unlimited new cards when newCardsPerDay is 0', async () => {
+  it('uses all available new cards when they fit into the deck quota', async () => {
     mockedDb.state.cards = Array.from({ length: 40 }, (_, idx) =>
       createCard({
         id: `new-${idx}`,
@@ -388,7 +389,7 @@ describe('getDeckScheduleOverview', () => {
       })
     )
 
-    const result = await getDeckScheduleOverview(['deck-1'], 50, 0, 0)
+    const result = await getDeckScheduleOverview(['deck-1'], 50, 0)
 
     expect(result['deck-1'].today.new).toBe(40)
   })

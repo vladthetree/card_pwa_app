@@ -9,12 +9,13 @@ import { useState, useEffect, useCallback, useMemo, useReducer, useRef } from 'r
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { ArrowLeft, RotateCcw, CheckCircle, AlertCircle, RefreshCw, Type, Sparkles } from 'lucide-react'
 import { useDeckCards } from '../hooks/useCardDb'
-import { recordReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession, readActiveSession, countNewCardsIntroducedToday } from '../db/queries'
+import { recordReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession, readActiveSession } from '../db/queries'
 import { STRINGS, useSettings, type QuestionTextSize } from '../contexts/SettingsContext'
-import { buildStudySessionSelection, resolveNewCardAllowance } from '../services/studyCardOrdering'
+import { buildStudySessionSelection, enforceDailyDeckCardLimit } from '../services/studyCardOrdering'
 import { buildDragMatchModePlan } from '../services/studyModeSelector'
 import {
   buildPersistedStudySession,
+  matchesPersistedStudyCardLimit,
   parsePersistedStudySession,
   DEFAULT_STUDY_CARD_LIMIT,
   normalizeStudyCardLimit,
@@ -169,35 +170,15 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     dragMatchModeSeedRef.current = `${deck.id}:${Date.now()}:${Math.random()}`
   }, [deck.id])
 
-  // Tagesdosis neuer Karten: bereits heute angebrochene Karten abziehen, damit
-  // jede weitere Session nur die Rest-Dosis an Neuen zieht (null = lädt noch).
-  const [newCardAllowance, setNewCardAllowance] = useState<number | null>(null)
-  useEffect(() => {
-    let cancelled = false
-    if (settings.newCardsPerDay <= 0) {
-      setNewCardAllowance(Number.POSITIVE_INFINITY)
-      return
-    }
-    void countNewCardsIntroducedToday(settings.nextDayStartsAt).then(introduced => {
-      if (!cancelled) setNewCardAllowance(resolveNewCardAllowance(settings.newCardsPerDay, introduced))
-    }).catch(() => {
-      if (!cancelled) setNewCardAllowance(Number.POSITIVE_INFINITY)
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [deck.id, settings.newCardsPerDay, settings.nextDayStartsAt])
-
   const buildSessionCards = useCallback((inputCards: Card[], limit: number): Card[] => {
     return buildStudySessionSelection(inputCards, {
       sessionId: deck.id,
       maxCards: normalizeStudyCardLimit(limit),
-      maxNewCards: newCardAllowance ?? Number.POSITIVE_INFINITY,
       nextDayStartsAt: settings.nextDayStartsAt,
       learnAheadMinutes: settings.learnAheadMinutes,
       runSeed: dragMatchModeSeedRef.current,
     })
-  }, [settings.nextDayStartsAt, settings.learnAheadMinutes, deck.id, newCardAllowance])
+  }, [settings.nextDayStartsAt, settings.learnAheadMinutes, deck.id])
 
   const clearPersistedSession = useCallback(() => {
     void clearActiveSession(deck.id)
@@ -243,8 +224,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
 
   useEffect(() => {
     if (loading) return
-    // Erst starten, wenn die Rest-Tagesdosis neuer Karten bekannt ist.
-    if (newCardAllowance === null) return
     if (session.isDone) return
     if (session.cards.length > 0) return
 
@@ -265,11 +244,18 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     void readActiveSession(deck.id).then(raw => {
       if (cancelled) return
       const snapshot = parsePersistedStudySession(raw, deck.id)
-      if (snapshot && !snapshot.isDone) {
+      if (
+        snapshot
+        && !snapshot.isDone
+        && matchesPersistedStudyCardLimit(snapshot.cardLimit, studyCardLimit)
+      ) {
         const byId = new Map(cards.map(card => [card.id, card]))
-        const restoredCards = snapshot.cardIds
-          .map(id => byId.get(id))
-          .filter((card): card is Card => Boolean(card))
+        const restoredCards = enforceDailyDeckCardLimit(
+          snapshot.cardIds
+            .map(id => byId.get(id))
+            .filter((card): card is Card => Boolean(card)),
+          studyCardLimit,
+        )
         if (restoredCards.length > 0) {
           dispatch({ type: 'RESTORE', cards: restoredCards, snapshot })
           return
@@ -283,7 +269,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
   }, [
     cards,
     loading,
-    newCardAllowance,
     allowResume,
     deck.id,
     clearPersistedSession,

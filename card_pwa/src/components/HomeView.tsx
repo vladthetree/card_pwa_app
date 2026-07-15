@@ -28,7 +28,7 @@ import { useHomeDerivedData } from '../hooks/home/useHomeDerivedData'
 import { useHomeViewController } from '../hooks/home/useHomeViewController'
 import { useTodayPackage } from '../hooks/home/useTodayPackage'
 import { useDayStartMs } from '../hooks/useDayStartMs'
-import { computeExamPacing } from '../utils/todayPackage'
+import { computeExamDaysLeft } from '../utils/todayPackage'
 import { flattenDeckTree } from '../utils/securityDeckHierarchy'
 import { isReviewDeck } from '../utils/reviewDecks'
 import { pickDailyQuestCards } from '../db/queries'
@@ -50,7 +50,7 @@ const HomeShuffleCollectionModal = lazy(() => import('./home/HomeShuffleCollecti
 interface Props {
   mode?: 'default' | 'shuffle-manage'
   onBackHome?: () => void
-  onStartStudy: (deck: Deck) => void
+  onStartStudy: (deck: Deck, cardIds?: string[]) => void
   onStartTagStudy?: (tag: string, cards: Card[]) => void
   onStartShuffleStudy: (collection: ShuffleCollection) => void
   onOpenShuffleManager?: () => void
@@ -92,7 +92,7 @@ export default function HomeView({
   const { collections: shuffleCollections } = useShuffleCollections()
   const { settings, profile } = useSettings()
   const prefersReducedMotion = useReducedMotion()
-  const { stats } = useStats(settings.nextDayStartsAt, settings.studyCardLimit, settings.newCardsPerDay)
+  const { stats } = useStats(settings.nextDayStartsAt, settings.studyCardLimit)
   const { profile: gamificationProfile } = useGamificationProfile(settings.nextDayStartsAt)
   const t = STRINGS[settings.language]
   const { canInstall, isInstalled, hasNativePrompt, isIos, isInstalling, install } = usePwaInstall()
@@ -125,7 +125,6 @@ export default function HomeView({
     profileUserId: profile?.userId,
     studyCardLimit: settings.studyCardLimit,
     nextDayStartsAt: settings.nextDayStartsAt,
-    newCardsPerDay: settings.newCardsPerDay,
     showFutureForecast: controller.showFutureForecast,
     showExportModal: controller.showExportModal,
   })
@@ -148,8 +147,7 @@ export default function HomeView({
   // Daily Quest ausgeschlossen, damit beide Lernpfade unabhaengig bleiben.
   const todayPackage = useTodayPackage({
     nextDayStartsAt: settings.nextDayStartsAt,
-    newCardsPerDay: settings.newCardsPerDay,
-    studyCardLimit: settings.studyCardLimit,
+    packageCardLimit: settings.newCardsPerDay,
   })
   const activePackageCardIdsKey = todayPackage.activeCardIds.join('\u0000')
 
@@ -218,11 +216,7 @@ export default function HomeView({
 
   // Heute-Paket: geführter Tagespfad (Kurs-Video → Abruf-Check → Karten der
   // Objective). Ohne erreichbare Videos fällt der Slide auf die Quest-Kachel zurück.
-  const examPacing = useMemo(() => computeExamPacing({
-    examDateIso: settings.examDateIso,
-    remainingNewCards: stats?.new ?? 0,
-    remainingVideos: todayPackage.remainingVideos,
-  }), [settings.examDateIso, stats?.new, todayPackage.remainingVideos])
+  const examDaysLeft = computeExamDaysLeft(settings.examDateIso)
   const todayPackageTile = (todayPackage.loading || todayPackage.available)
     ? (
         <HomeTodayPackageTile
@@ -235,9 +229,8 @@ export default function HomeView({
           objectiveDeck={todayPackage.objectiveDeck}
           remainingCards={todayPackage.remainingCards}
           completedToday={todayPackage.completedToday}
-          pacing={examPacing}
           onWatchVideo={(videoIndex, openRecall) => onOpenVideoAtIndex?.(videoIndex, openRecall)}
-          onStartCards={deckToStudy => onStartStudy(deckToStudy)}
+          onStartCards={deckToStudy => onStartStudy(deckToStudy, todayPackage.remainingCardIds)}
         />
       )
     : undefined
@@ -268,8 +261,8 @@ export default function HomeView({
 
   return (
     <div className={`${UI_TOKENS.layout.homeMaxWidth} mx-auto flex h-full min-h-0 w-full flex-col overflow-hidden px-3 sm:px-4`}>
-      {/* Mobile: keine Topbar — Referenz Handy-Stand 8. Juni (Status liegt in
-          Profil & Sync, Streak/Settings/+ in der Bottom-Bar). Header nur ≥md. */}
+      {/* Mobile: kompakte Topbar mit Prüfungs-Countdown und Schnellaktionen.
+          Der vollständige Desktop-Header erscheint weiterhin erst ab ≥md. */}
       {/* pb-3 mobil: Luft zwischen Dashboard-Kachel/KPIs und der Deckliste —
           ohne Abstand überlappten sich die Kartenschatten leicht. */}
       <div className="relative z-20 flex-shrink-0 pt-safe-2 pb-3 sm:pt-safe-4 sm:pb-0">
@@ -287,10 +280,10 @@ export default function HomeView({
               canInstall={canInstall}
               isInstalled={isInstalled}
               isInstalling={isInstalling}
+              examDaysLeft={examDaysLeft}
               onHomeTabChange={setHomeTab}
               onDeckSortModeChange={setDeckSortMode}
               onToggleShuffleOnly={controller.toggleShuffleOnly}
-              onReload={reload}
               onCreateDeck={controller.openCreateDeckModal}
               onCreateVirtualDeck={controller.openCreateShuffleCollection}
               onCreateCard={controller.openCreateCard}

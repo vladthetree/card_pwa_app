@@ -3,11 +3,10 @@
  */
 import { useState, useCallback } from 'react'
 import {
-  Check, Download, FolderPlus, Plus,
-  RefreshCw, Settings, SlidersHorizontal, Upload,
+  CalendarClock, Check, Download, FolderPlus, Plus,
+  Settings, SlidersHorizontal, Upload,
   Shuffle,
 } from 'lucide-react'
-import StreakBadge from '../StreakBadge'
 import {
   MobileBottomSheet,
   MobileBottomSheetDivider,
@@ -29,10 +28,10 @@ interface Props {
   canInstall: boolean
   isInstalled: boolean
   isInstalling: boolean
+  examDaysLeft: number | null
   onHomeTabChange: (tab: HomeTab) => void
   onDeckSortModeChange: (v: DeckSortMode) => void
   onToggleShuffleOnly: () => void
-  onReload: () => void
   onCreateDeck: () => void
   onCreateVirtualDeck?: () => void
   onCreateCard: () => void
@@ -56,10 +55,10 @@ export function HomeBottomBar({
   canInstall,
   isInstalled,
   isInstalling,
+  examDaysLeft,
   onHomeTabChange,
   onDeckSortModeChange,
   onToggleShuffleOnly,
-  onReload,
   onCreateDeck,
   onCreateVirtualDeck,
   onCreateCard,
@@ -77,24 +76,39 @@ export function HomeBottomBar({
   const closeActions = useCallback(() => setActionsOpen(false), [])
 
   const isFilterActive = showShuffleOnly || deckSortMode !== 'name' || homeTab === 'tags'
+  const examCountdownLabel = examDaysLeft === null
+    ? null
+    : language === 'de'
+      ? `Prüfung in ${examDaysLeft} ${examDaysLeft === 1 ? 'Tag' : 'Tagen'}`
+      : `Exam in ${examDaysLeft} ${examDaysLeft === 1 ? 'day' : 'days'}`
 
   return (
     <>
-      {/* Mobile quick controls: icon targets stay, the old visual bar is gone. */}
+      {/* Mobile quick controls in the top bar. */}
       <div className="sm:hidden">
         <div className={`${UI_TOKENS.layout.homeMaxWidth} mx-auto px-2`}>
-          <div className="flex items-center justify-around gap-1.5 py-1">
+          <div className="flex items-center justify-between gap-1.5 py-1">
 
-            {/* Reload */}
-            <button
-              type="button"
-              onClick={onReload}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-ds border border-transparent bg-transparent text-white/48 transition-colors hover:bg-ds-card/55 hover:text-white active:scale-[0.98] active:bg-ds-card/70"
-              aria-label={t.reload}
-              title={t.reload}
-            >
-              <RefreshCw size={17} strokeWidth={1.5} />
-            </button>
+            {/* Exam countdown: intentionally only the remaining days, no pacing. */}
+            {examDaysLeft !== null && examCountdownLabel && (
+              <div
+                data-testid="exam-countdown"
+                className="flex h-11 min-w-[104px] shrink-0 items-center justify-center gap-2 rounded-ds border border-ds-border bg-ds-card/65 px-3 shadow-card"
+                aria-label={examCountdownLabel}
+                title={examCountdownLabel}
+              >
+                <CalendarClock size={16} strokeWidth={1.5} className="shrink-0 text-[--brand-secondary]" aria-hidden="true" />
+                <span className="font-mono text-base font-semibold tabular-nums text-white">{examDaysLeft}</span>
+                <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-white/45">
+                  {language === 'de' ? (examDaysLeft === 1 ? 'Tag' : 'Tage') : (examDaysLeft === 1 ? 'day' : 'days')}
+                </span>
+              </div>
+            )}
+
+            {/* Keep the controls evenly spaced when no exam date is configured. */}
+            {examDaysLeft === null && (
+              <div className="h-11 w-11 shrink-0" aria-hidden="true" />
+            )}
 
             {/* Filter */}
             <button
@@ -122,9 +136,6 @@ export function HomeBottomBar({
             >
               <Settings size={17} strokeWidth={1.5} />
             </button>
-
-            {/* Streak */}
-            <StreakBadge compact />
 
             {/* Create / Actions */}
             <button

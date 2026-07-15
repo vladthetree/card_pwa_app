@@ -13,9 +13,8 @@ import { db } from '../../db'
 import {
   listDeckCards,
   listDeckCardIdsReviewedSince,
-  countNewCardsIntroducedToday,
 } from '../../db/queries'
-import { resolveNewCardAllowance, sortStudyCards } from '../../services/studyCardOrdering'
+import { buildTodayPackageSelection } from '../../services/studyCardOrdering'
 import { buildLocalVideoManifest, type LocalVideoMeta } from '../../utils/localVideoManifest'
 import { getSecurityObjectiveDeckId, getSecurityObjectiveDeckName } from '../../utils/securityDeckHierarchy'
 import {
@@ -61,6 +60,8 @@ export interface TodayPackageData {
   remainingCards: number
   /** Feste Karten-IDs des aktuellen Pakets; Daily Quest schliesst sie aus. */
   activeCardIds: string[]
+  /** Noch offene IDs fuer den Start der fest zusammengestellten Paket-Session. */
+  remainingCardIds: string[]
   /** Heute wurde (mindestens) ein Paket abgeschlossen. */
   completedToday: boolean
   /** Noch nicht abgeschlossene Kurs-Videos (Prüfungs-Pacing). */
@@ -115,13 +116,13 @@ async function loadVideoCatalog(): Promise<VideoCatalogResult> {
 
 interface Options {
   nextDayStartsAt: number
-  newCardsPerDay: number
-  studyCardLimit: number
+  /** Eigenes Limit des aktuellen Pakets; 0 = unbegrenzt. */
+  packageCardLimit: number
 }
 
 const EMPTY_STEPS: TodayPackageSteps = { video: false, recall: false, cards: false }
 
-export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimit }: Options): TodayPackageData {
+export function useTodayPackage({ nextDayStartsAt, packageCardLimit }: Options): TodayPackageData {
   const [data, setData] = useState<Omit<TodayPackageData, 'reload'>>({
     loading: true,
     available: false,
@@ -133,6 +134,7 @@ export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimi
     objectiveDeck: null,
     remainingCards: 0,
     activeCardIds: [],
+    remainingCardIds: [],
     completedToday: false,
     remainingVideos: 0,
   })
@@ -141,6 +143,9 @@ export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimi
   // Tagesgrenze auch offline erkennen: neuer Wert → compute wird neu erzeugt
   // und der Effekt unten rechnet das Paket für den neuen Lerntag.
   const todayStartMs = useDayStartMs(nextDayStartsAt)
+  const normalizedPackageCardLimit = Number.isFinite(packageCardLimit)
+    ? Math.max(0, Math.floor(packageCardLimit))
+    : 0
 
   const compute = useCallback(async () => {
     const version = computeVersionRef.current + 1
@@ -178,6 +183,7 @@ export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimi
         objectiveDeck: Deck | null
         remainingCards: number
         activeCardIds: string[]
+        remainingCardIds: string[]
       }> => {
         const progressEntry = progress[video.objective]
         const videoDone = progressEntry?.watched === true && progressEntry.updatedAt >= activeStartedAt
@@ -190,13 +196,7 @@ export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimi
         ])
         let activeCardIds = storedCardIds
         if (activeCardIds === null) {
-          const introducedToday = newCardsPerDay > 0
-            ? await countNewCardsIntroducedToday(nextDayStartsAt)
-            : 0
-          const maxNewCards = resolveNewCardAllowance(newCardsPerDay, introducedToday)
-          activeCardIds = sortStudyCards(deckCards, {
-            maxCards: studyCardLimit,
-            maxNewCards,
+          activeCardIds = buildTodayPackageSelection(deckCards, normalizedPackageCardLimit, {
             nextDayStartsAt,
           }).map(card => card.id)
         }
@@ -227,6 +227,7 @@ export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimi
           objectiveDeck,
           remainingCards: remaining.length,
           activeCardIds,
+          remainingCardIds: remaining,
         }
       }
 
@@ -238,12 +239,32 @@ export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimi
         ? Math.max(pointer.activeStartedAt, todayStartMs)
         : Math.max(pointer.lastCompletedAt, todayStartMs)
       if (video && (pointer.activeIndex !== video.index || pointer.activeStartedAt !== activeStartedAt)) {
-        pointer = { ...pointer, activeIndex: video.index, activeStartedAt, activeCardIds: null }
+        pointer = {
+          ...pointer,
+          activeIndex: video.index,
+          activeStartedAt,
+          activeCardIds: null,
+          activeCardLimit: normalizedPackageCardLimit,
+        }
+        persistTodayPackagePointer(pointer)
+      } else if (video && pointer.activeCardLimit !== normalizedPackageCardLimit) {
+        // Das Paket hat ein eigenes Kontingent. Aendert der User genau dieses,
+        // wird nur die feste Paket-Auswahl erneuert; der Deck-Regler spielt hier
+        // bewusst keine Rolle.
+        pointer = {
+          ...pointer,
+          activeCardIds: null,
+          activeCardLimit: normalizedPackageCardLimit,
+        }
         persistTodayPackagePointer(pointer)
       }
       let details = video ? await computeSteps(video, activeStartedAt, pointer.activeCardIds) : null
       if (video && details && pointer.activeCardIds === null) {
-        pointer = { ...pointer, activeCardIds: details.activeCardIds }
+        pointer = {
+          ...pointer,
+          activeCardIds: details.activeCardIds,
+          activeCardLimit: normalizedPackageCardLimit,
+        }
         persistTodayPackagePointer(pointer)
       }
       while (video && details && details.steps.video && details.steps.recall && details.steps.cards) {
@@ -254,6 +275,7 @@ export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimi
           activeIndex: 0,
           activeStartedAt: completedAt,
           activeCardIds: null,
+          activeCardLimit: null,
         }
         persistTodayPackagePointer(pointer)
         video = pickTodayVideo(catalog, pointer.lastCompletedIndex)
@@ -262,10 +284,18 @@ export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimi
           break
         }
         activeStartedAt = completedAt
-        pointer = { ...pointer, activeIndex: video.index }
+        pointer = {
+          ...pointer,
+          activeIndex: video.index,
+          activeCardLimit: normalizedPackageCardLimit,
+        }
         persistTodayPackagePointer(pointer)
         details = await computeSteps(video, activeStartedAt, null)
-        pointer = { ...pointer, activeCardIds: details.activeCardIds }
+        pointer = {
+          ...pointer,
+          activeCardIds: details.activeCardIds,
+          activeCardLimit: normalizedPackageCardLimit,
+        }
         persistTodayPackagePointer(pointer)
       }
       if (computeVersionRef.current !== version) return
@@ -281,6 +311,7 @@ export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimi
         objectiveDeck: details?.objectiveDeck ?? null,
         remainingCards: details?.remainingCards ?? 0,
         activeCardIds: details?.activeCardIds ?? [],
+        remainingCardIds: details?.remainingCardIds ?? [],
         completedToday: pointer.lastCompletedAt >= todayStartMs,
         remainingVideos: catalog.filter(entry => entry.index > pointer.lastCompletedIndex).length,
       })
@@ -291,7 +322,7 @@ export function useTodayPackage({ nextDayStartsAt, newCardsPerDay, studyCardLimi
       // Ladezustand lassen. Der Home-Slide faellt dann auf die Daily Quest zurueck.
       setData(prev => ({ ...prev, loading: false, available: false }))
     }
-  }, [nextDayStartsAt, newCardsPerDay, studyCardLimit, todayStartMs])
+  }, [nextDayStartsAt, normalizedPackageCardLimit, todayStartMs])
 
   useEffect(() => {
     void compute()

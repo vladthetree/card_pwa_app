@@ -52,6 +52,16 @@ export function normalizeStudyCardLimit(value: unknown): number {
   return Math.max(MIN_STUDY_CARD_LIMIT, Math.min(MAX_STUDY_CARD_LIMIT, rounded))
 }
 
+/** Eine unterbrochene normale Deck-Session darf nur wiederaufgenommen werden,
+ * wenn sie mit dem aktuell eingestellten Deck-Kontingent gestartet wurde. */
+export function matchesPersistedStudyCardLimit(
+  persistedLimit: unknown,
+  configuredLimit: unknown,
+): boolean {
+  if (!Number.isFinite(Number(persistedLimit))) return false
+  return normalizeStudyCardLimit(persistedLimit) === normalizeStudyCardLimit(configuredLimit)
+}
+
 export function parsePersistedStudySession(raw: string | null, sessionId: string, nowMs = Date.now()): PersistedStudySession | null {
   if (!raw) return null
 

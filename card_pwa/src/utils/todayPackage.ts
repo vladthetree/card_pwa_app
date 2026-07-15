@@ -23,6 +23,9 @@ export interface TodayPackagePointer {
   activeStartedAt: number
   /** Feste Kartenmenge dieses Pakets; null = beim naechsten Laden festlegen. */
   activeCardIds: string[] | null
+  /** Eigenes Kartenlimit, mit dem activeCardIds gebildet wurde.
+   *  null migriert alte Pakete und erzwingt eine einmalige Neuberechnung. */
+  activeCardLimit: number | null
 }
 
 const EMPTY_POINTER: TodayPackagePointer = {
@@ -31,6 +34,7 @@ const EMPTY_POINTER: TodayPackagePointer = {
   activeIndex: 0,
   activeStartedAt: 0,
   activeCardIds: null,
+  activeCardLimit: null,
 }
 
 /** Pure Parse-Logik (ohne Browser-APIs, daher direkt testbar). */
@@ -45,12 +49,17 @@ export function parseTodayPackagePointer(raw: string | null | undefined): TodayP
     const activeCardIds = Array.isArray(parsed?.activeCardIds)
       ? parsed.activeCardIds.filter((id): id is string => typeof id === 'string')
       : null
+    const rawActiveCardLimit = Number(parsed?.activeCardLimit)
+    const activeCardLimit = parsed?.activeCardLimit !== null && Number.isFinite(rawActiveCardLimit)
+      ? Math.max(0, Math.floor(rawActiveCardLimit))
+      : null
     return {
       lastCompletedIndex: Number.isFinite(lastCompletedIndex) ? Math.max(0, Math.floor(lastCompletedIndex)) : 0,
       lastCompletedAt: Number.isFinite(lastCompletedAt) ? Math.max(0, lastCompletedAt) : 0,
       activeIndex: Number.isFinite(activeIndex) ? Math.max(0, Math.floor(activeIndex)) : 0,
       activeStartedAt: Number.isFinite(activeStartedAt) ? Math.max(0, activeStartedAt) : 0,
       activeCardIds,
+      activeCardLimit,
     }
   } catch {
     return EMPTY_POINTER
@@ -133,6 +142,15 @@ export interface ExamPacing {
   videosPerDay: number
 }
 
+/** Volle verbleibende Kalendertage bis zum Prüfungstermin. */
+export function computeExamDaysLeft(examDateIso: string | null, nowMs = Date.now()): number | null {
+  if (!examDateIso) return null
+  const examMs = Date.parse(`${examDateIso}T00:00:00`)
+  if (Number.isNaN(examMs)) return null
+  const daysLeft = Math.ceil((examMs - nowMs) / 86_400_000)
+  return daysLeft > 0 ? daysLeft : null
+}
+
 /**
  * Ruhige Tempo-Rechnung für den Prüfungs-Countdown: Restmenge / Resttage.
  * Kein Schuld-Framing — bei erreichtem/überschrittenem Termin gibt es nichts
@@ -144,12 +162,8 @@ export function computeExamPacing(input: {
   remainingVideos: number
   nowMs?: number
 }): ExamPacing | null {
-  if (!input.examDateIso) return null
-  const examMs = Date.parse(`${input.examDateIso}T00:00:00`)
-  if (Number.isNaN(examMs)) return null
-  const nowMs = input.nowMs ?? Date.now()
-  const daysLeft = Math.ceil((examMs - nowMs) / 86_400_000)
-  if (daysLeft <= 0) return null
+  const daysLeft = computeExamDaysLeft(input.examDateIso, input.nowMs)
+  if (daysLeft === null) return null
   return {
     daysLeft,
     newCardsPerDay: Math.ceil(Math.max(0, input.remainingNewCards) / daysLeft),

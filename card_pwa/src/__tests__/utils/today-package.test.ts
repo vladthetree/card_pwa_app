@@ -5,6 +5,7 @@
  */
 import { describe, expect, it } from 'vitest'
 import {
+  computeExamDaysLeft,
   computeExamPacing,
   hasRecallRunSince,
   parseTodayPackagePointer,
@@ -24,6 +25,7 @@ describe('parseTodayPackagePointer', () => {
     activeIndex: 0,
     activeStartedAt: 0,
     activeCardIds: null,
+    activeCardLimit: null,
   }
 
   it('liefert den Leerstand für fehlende/kaputte Werte', () => {
@@ -44,12 +46,14 @@ describe('parseTodayPackagePointer', () => {
       activeIndex: 13,
       activeStartedAt: 1100,
       activeCardIds: ['card-a', 42, 'card-b'],
+      activeCardLimit: 12,
     }))).toEqual({
       lastCompletedIndex: 12,
       lastCompletedAt: 1000,
       activeIndex: 13,
       activeStartedAt: 1100,
       activeCardIds: ['card-a', 'card-b'],
+      activeCardLimit: 12,
     })
   })
 
@@ -108,6 +112,12 @@ describe('hasRecallRunSince', () => {
 
 describe('computeExamPacing', () => {
   const nowMs = Date.parse('2026-07-10T12:00:00')
+
+  it('liefert für die kompakte Anzeige ausschließlich die Resttage', () => {
+    expect(computeExamDaysLeft('2026-08-09', nowMs)).toBe(30)
+    expect(computeExamDaysLeft(null, nowMs)).toBeNull()
+    expect(computeExamDaysLeft('2026-07-10', nowMs)).toBeNull()
+  })
 
   it('liefert null ohne Termin oder bei kaputtem Datum', () => {
     expect(computeExamPacing({ examDateIso: null, remainingNewCards: 100, remainingVideos: 10, nowMs })).toBeNull()

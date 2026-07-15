@@ -17,7 +17,8 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: card_pwa/package-lock.json
-      - run: npm ci
+      # The official browser optimizer asset is intentionally cpu=wasm32.
+      - run: npm ci --include=dev --force
       - run: npm test -- --run
       - run: npm run build
 

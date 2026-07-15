@@ -5,6 +5,8 @@ import { describe, expect, it } from 'vitest'
 import {
   buildDailyQuestSelection,
   buildStudySessionSelection,
+  buildTodayPackageSelection,
+  enforceDailyDeckCardLimit,
   getCardWeight,
   interleaveCardsByDeck,
   resolveNewCardAllowance,
@@ -448,7 +450,6 @@ describe('sortStudyCards — due date filter (Bug 1 fix)', () => {
       const result = buildStudySessionSelection(questCards, {
         sessionId: 'daily-quest',
         maxCards: 10,
-        maxNewCards: 5,
         nextDayStartsAt: 4,
       })
 
@@ -456,17 +457,72 @@ describe('sortStudyCards — due date filter (Bug 1 fix)', () => {
       expect(result).toEqual(questCards)
     })
 
-    it('laesst normale Deck-Sessions weiterhin beide Limits respektieren', () => {
-      const cards = Array.from({ length: 20 }, (_, idx) => createCard({
-        id: `normal-${idx}`,
-        type: 'new',
-      }))
+    it.each([10, 30, 70, 120, 190])(
+      'nutzt bei normalen Decks exakt den konfigurierten Reglerwert %i',
+      configuredLimit => {
+        const cards = Array.from({ length: 240 }, (_, idx) => createCard({
+          id: `normal-${idx}`,
+          type: 'new',
+        }))
+        const result = buildStudySessionSelection(cards, {
+          sessionId: 'regular-deck',
+          maxCards: configuredLimit,
+        })
+        expect(result).toHaveLength(configuredLimit)
+      },
+    )
+
+    it('wendet den Reglerwert als Obergrenze auf die gesamte normale Deck-Session an', () => {
+      const nowMs = Date.now()
+      const cards = [
+        ...Array.from({ length: 20 }, (_, idx) => createCard({
+          id: `learning-${idx}`,
+          type: 'learning',
+          dueAt: nowMs - idx,
+        })),
+        ...Array.from({ length: 20 }, (_, idx) => createCard({
+          id: `new-${idx}`,
+          type: 'new',
+        })),
+      ]
       const result = buildStudySessionSelection(cards, {
         sessionId: 'regular-deck',
-        maxCards: 10,
-        maxNewCards: 5,
+        maxCards: 15,
       })
-      expect(result).toHaveLength(5)
+
+      expect(result).toHaveLength(15)
+    })
+
+    it('kappt als Safe Guard auch eine bereits zu gross zusammengestellte Session', () => {
+      const oversizedSession = Array.from({ length: 150 }, (_, idx) => createCard({
+        id: `guard-${idx}`,
+        type: 'new',
+      }))
+
+      expect(enforceDailyDeckCardLimit(oversizedSession, 73)).toHaveLength(73)
+      expect(enforceDailyDeckCardLimit(oversizedSession.slice(0, 20), 73)).toHaveLength(20)
+      expect(enforceDailyDeckCardLimit(oversizedSession, Number.NaN)).toEqual([])
+    })
+
+    it('begrenzt eine feste Paket-Session nicht erneut mit dem Deck-Regler', () => {
+      const packageCards = Array.from({ length: 30 }, (_, idx) => createCard({
+        id: `package-${idx}`,
+        type: 'new',
+      }))
+      const result = buildStudySessionSelection(packageCards, {
+        sessionId: 'today-package:objective-1',
+        maxCards: 10,
+      })
+      expect(result).toEqual(packageCards)
+    })
+
+    it('stellt das aktuelle Paket mit seinem eigenen Kontingent zusammen', () => {
+      const cards = Array.from({ length: 30 }, (_, idx) => createCard({
+        id: `package-source-${idx}`,
+        type: 'new',
+      }))
+      expect(buildTodayPackageSelection(cards, 7)).toHaveLength(7)
+      expect(buildTodayPackageSelection(cards, 0)).toHaveLength(30)
     })
   })
 

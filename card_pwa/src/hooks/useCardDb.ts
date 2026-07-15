@@ -404,7 +404,7 @@ export function useShuffleCards(
   return { cards, loading, error, reload: load }
 }
 
-export function useStats(nextDayStartsAt = 0, dailyCardLimit?: number, newCardsPerDay = 0) {
+export function useStats(nextDayStartsAt = 0, dailyCardLimit?: number) {
   const [stats, setStats] = useState<GlobalStats | null>(null)
   const [error, setError] = useState<string | null>(null)
   // Neuer Lerntag (auch offline) → Zähler wie "heute fällig" neu ableiten,
@@ -416,7 +416,7 @@ export function useStats(nextDayStartsAt = 0, dailyCardLimit?: number, newCardsP
       const baseStats = await getGlobalStats(nextDayStartsAt)
       const nowDue = dailyCardLimit === undefined
         ? baseStats.nowDue
-        : await countTodayDueFromDecks(dailyCardLimit, nextDayStartsAt, newCardsPerDay)
+        : await countTodayDueFromDecks(dailyCardLimit, nextDayStartsAt)
 
       setStats({
         ...baseStats,
@@ -426,7 +426,7 @@ export function useStats(nextDayStartsAt = 0, dailyCardLimit?: number, newCardsP
       setError(e instanceof Error ? e.message : String(e))
     }
     // dayStartMs erzwingt die Neuberechnung an der Tagesgrenze.
-  }, [dailyCardLimit, nextDayStartsAt, newCardsPerDay, dayStartMs])
+  }, [dailyCardLimit, nextDayStartsAt, dayStartMs])
 
   useEffect(() => {
     void load()

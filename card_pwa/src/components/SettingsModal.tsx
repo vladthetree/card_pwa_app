@@ -1038,8 +1038,8 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                   />
 
                   <SettingsSliderRow
-                    sectionLabel={settings.language === 'de' ? 'Neue Karten' : 'New cards'}
-                    label={settings.language === 'de' ? 'Neue Karten pro Tag' : 'New cards per day'}
+                    sectionLabel={settings.language === 'de' ? 'Aktuelles Paket' : 'Current package'}
+                    label={settings.language === 'de' ? 'Karten pro aktuellem Paket' : 'Cards per current package'}
                     valueLabel={settings.newCardsPerDay === 0 ? '∞' : settings.newCardsPerDay}
                     value={settings.newCardsPerDay}
                     min={0}
@@ -1047,9 +1047,9 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                     step={1}
                     onValueChange={setNewCardsPerDay}
                     help={settings.language === 'de'
-                      ? 'Tagesdosis unbekannter Karten für normale Deck-Sessions und das aktuelle Lernpaket. 0 = unbegrenzt.'
-                      : 'Daily dose of unseen cards for regular deck sessions and the current learning package. 0 = unlimited.'}
-                    ariaLabel={settings.language === 'de' ? 'Neue Karten pro Tag' : 'New cards per day'}
+                      ? 'Eigenes Kontingent für den Karten-Schritt des aktuellen Pakets. Unabhängig von „Tägliche Karten pro Deck“. 0 = unbegrenzt.'
+                      : 'Separate quota for the current package card step. Independent of “Daily cards per deck”. 0 = unlimited.'}
+                    ariaLabel={settings.language === 'de' ? 'Karten pro aktuellem Paket' : 'Cards per current package'}
                   />
 
                   <SettingsSliderRow

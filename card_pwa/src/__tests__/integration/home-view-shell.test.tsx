@@ -43,6 +43,7 @@ const reviewRoot: Deck = {
 
 const captured = vi.hoisted(() => ({
   toolbarProps: null as Record<string, unknown> | null,
+  bottomBarProps: null as Record<string, unknown> | null,
   deckListProps: null as Record<string, unknown> | null,
   shuffleSectionProps: null as Record<string, unknown> | null,
 }))
@@ -216,6 +217,7 @@ vi.mock('../../hooks/home/useHomeStorageEstimate', () => ({
 vi.mock('../../hooks/home/useTodayPackage', () => ({
   useTodayPackage: () => ({
     activeCardIds: [],
+    remainingCardIds: [],
     available: false,
     completedToday: false,
     loading: false,
@@ -234,6 +236,7 @@ vi.mock('../../db/queries', () => ({
 }))
 
 vi.mock('../../utils/todayPackage', () => ({
+  computeExamDaysLeft: () => 30,
   computeExamPacing: () => null,
 }))
 
@@ -292,7 +295,10 @@ vi.mock('../../components/home/HomeShuffleSection', () => ({
 }))
 
 vi.mock('../../components/home/HomeBottomBar', () => ({
-  HomeBottomBar: () => <div data-test="bottom-bar">bottom-bar</div>,
+  HomeBottomBar: (props: Record<string, unknown>) => {
+    captured.bottomBarProps = props
+    return <div data-test="bottom-bar">bottom-bar</div>
+  },
 }))
 
 vi.mock('../../components/home/HomeTagBrowseSection', () => ({
@@ -374,6 +380,7 @@ describe('HomeView shell wiring', () => {
     expect(html).not.toContain('future-forecast-modal')
     expect(html).not.toContain('export-modal')
     expect(captured.toolbarProps?.showShuffleOnly).toBe(false)
+    expect(captured.bottomBarProps?.examDaysLeft).toBe(30)
     expect(captured.deckListProps?.decks).toEqual([deck])
     expect(captured.deckListProps?.deckScheduleOverview).toEqual({
       'deck-1': {

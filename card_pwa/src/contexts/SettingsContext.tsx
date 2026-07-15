@@ -58,7 +58,8 @@ interface Settings {
   dailyGoal: number
   /** Fragenanzahl pro Video-Abruf-Check (Lernvideos). */
   recallCheckSize: number
-  /** Tagesdosis neuer Karten fuer Deck-/Paket-Sessions (0 = unbegrenzt). */
+  /** Eigenes Kartenkontingent des aktuellen Lernpakets (0 = unbegrenzt).
+   *  Der persistierte Feldname bleibt fuer bestehende Installationen stabil. */
   newCardsPerDay: number
   /** Prüfungstermin (ISO YYYY-MM-DD, z. B. Sec+) für den Countdown mit
    *  Tempo-Empfehlung auf der Heute-Kachel. null = kein Termin gesetzt. */

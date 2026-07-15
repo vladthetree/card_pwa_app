@@ -4,10 +4,9 @@
  * open step; step states come from real learning signals (useTodayPackage).
  */
 import { motion } from '../../ui/motion'
-import { CalendarClock, Check, CloudOff, GraduationCap, Loader2, Play } from 'lucide-react'
+import { Check, CloudOff, GraduationCap, Loader2, Play } from 'lucide-react'
 import type { Deck } from '../../types'
 import type { LocalVideoMeta } from '../../utils/localVideoManifest'
-import type { ExamPacing } from '../../utils/todayPackage'
 import type { TodayPackageSteps } from '../../hooks/home/useTodayPackage'
 
 const COPY = {
@@ -25,8 +24,6 @@ const COPY = {
     completedToday: 'Voriges geschafft · weiter mit diesem Paket',
     courseDone: 'Alle Kurs-Videos durchgearbeitet!',
     courseDoneHint: 'Weiter geht es mit den fälligen Karten in der Daily Quest.',
-    pacing: (days: number, videos: number, cards: number) =>
-      `Prüfung in ${days} ${days === 1 ? 'Tag' : 'Tagen'} · Tempo: ${videos} ${videos === 1 ? 'Video' : 'Videos'} & ${cards} neue Karten/Tag`,
     loading: 'Lade Heute-Paket',
     offlineTitle: 'Heute-Paket offline nicht verfügbar',
     offlineHint: 'Es sind noch keine Kursdaten auf diesem Gerät gespeichert. Öffne die App einmal mit Verbindung zum Server — danach steht das Heute-Paket auch offline bereit.',
@@ -45,8 +42,6 @@ const COPY = {
     completedToday: 'Previous one done · continue with this package',
     courseDone: 'All course videos completed!',
     courseDoneHint: 'Keep going with the due cards in the daily quest.',
-    pacing: (days: number, videos: number, cards: number) =>
-      `Exam in ${days} ${days === 1 ? 'day' : 'days'} · pace: ${videos} ${videos === 1 ? 'video' : 'videos'} & ${cards} new cards/day`,
     loading: "Loading today's package",
     offlineTitle: "Today's package is unavailable offline",
     offlineHint: 'No course data is stored on this device yet. Open the app once while connected to the server — after that the package also works offline.',
@@ -63,7 +58,6 @@ interface Props {
   objectiveDeck: Deck | null
   remainingCards: number
   completedToday: boolean
-  pacing: ExamPacing | null
   /** Öffnet das Video in der Lernvideos-Ansicht (openRecall = direkt zum Check). */
   onWatchVideo: (videoIndex: number, openRecall: boolean) => void
   /** Startet die Karten-Session des Objective-Decks. */
@@ -111,16 +105,9 @@ function StepRow({ done, active, label }: { done: boolean; active: boolean; labe
 
 export function HomeTodayPackageTile({
   language, loading, video, videoNumber, videoTotal, steps, objectiveDeck,
-  remainingCards, completedToday, pacing, onWatchVideo, onStartCards,
+  remainingCards, completedToday, onWatchVideo, onStartCards,
 }: Props) {
   const copy = COPY[language]
-
-  const pacingLine = pacing && (
-    <div className="mt-3 flex min-w-0 items-center gap-2 border-t border-ds-border pt-2.5 font-mono text-[11px] text-ds-muted" data-testid="exam-pacing">
-      <CalendarClock size={13} strokeWidth={1.75} className="shrink-0 text-[--brand-secondary]" />
-      <span className="min-w-0 truncate">{copy.pacing(pacing.daysLeft, pacing.videosPerDay, pacing.newCardsPerDay)}</span>
-    </div>
-  )
 
   let body: React.ReactNode
   if (loading) {
@@ -135,7 +122,6 @@ export function HomeTodayPackageTile({
       <div className="min-w-0">
         <div className="font-sans text-base font-semibold leading-tight text-ds-fg">{copy.courseDone}</div>
         <div className="mt-1 font-mono text-[12px] text-ds-muted">{copy.courseDoneHint}</div>
-        {pacingLine}
       </div>
     )
   } else {
@@ -197,7 +183,6 @@ export function HomeTodayPackageTile({
             </span>
           </button>
         </div>
-        {pacingLine}
       </>
     )
   }

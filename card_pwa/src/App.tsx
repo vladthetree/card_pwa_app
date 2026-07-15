@@ -575,7 +575,18 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
     setView('home')
   }, [settings.shuffleModeEnabled, view])
 
-  const startStudy = (deck: Deck) => {
+  const startStudy = async (deck: Deck, fixedCardIds?: string[]) => {
+    if (fixedCardIds !== undefined) {
+      const packageCards = await listCardsByIds(fixedCardIds)
+      if (packageCards.length === 0) return
+      setAllowSessionResume(false)
+      setActiveDeck(buildSyntheticDeck(`today-package:${deck.id}`, deck.name, packageCards))
+      setActiveTagCards(packageCards)
+      setActiveShuffleCollection(null)
+      setView('study')
+      return
+    }
+
     setAllowSessionResume(true)
     setActiveDeck(deck)
     setActiveTagCards(null)

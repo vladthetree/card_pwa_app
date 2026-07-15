@@ -27,8 +27,7 @@ export function useAppBadge() {
       try {
         const dueToday = await countTodayDueFromDecks(
           settings.studyCardLimit,
-          settings.nextDayStartsAt,
-          settings.newCardsPerDay
+          settings.nextDayStartsAt
         )
         if (cancelled) return
 
@@ -83,5 +82,5 @@ export function useAppBadge() {
       document.removeEventListener('visibilitychange', onVisibilityChange)
       window.removeEventListener(REVIEW_UPDATED_EVENT, onVisibilityChange)
     }
-  }, [settings.language, settings.nextDayStartsAt, settings.studyCardLimit, settings.newCardsPerDay, settings.dailyGoal])
+  }, [settings.language, settings.nextDayStartsAt, settings.studyCardLimit, settings.dailyGoal])
 }

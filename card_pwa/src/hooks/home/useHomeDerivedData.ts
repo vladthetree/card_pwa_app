@@ -88,7 +88,6 @@ export async function getHomeDeckScheduleOverview(
   decks: Deck[],
   studyCardLimit: number,
   nextDayStartsAt: number,
-  newCardsPerDay = 0,
 ): Promise<Record<string, DeckScheduleOverview>> {
   if (decks.length === 0) return {}
   const allDecks = flattenDeckTree(decks)
@@ -96,7 +95,6 @@ export async function getHomeDeckScheduleOverview(
     allDecks.map(deck => deck.id),
     studyCardLimit,
     nextDayStartsAt,
-    newCardsPerDay,
   )
   return metadata.deckScheduleOverview
 }
@@ -120,7 +118,6 @@ export async function getHomeDeckScheduleAndTagIndex(
   decks: Deck[],
   studyCardLimit: number,
   nextDayStartsAt: number,
-  newCardsPerDay = 0,
 ): Promise<Pick<HomeDerivedData, 'deckScheduleOverview' | 'deckTagIndex'>> {
   if (decks.length === 0) {
     return {
@@ -134,7 +131,6 @@ export async function getHomeDeckScheduleAndTagIndex(
     allDecks.map(deck => deck.id),
     studyCardLimit,
     nextDayStartsAt,
-    newCardsPerDay,
   )
 }
 
@@ -145,9 +141,6 @@ export function useHomeDerivedData(input: {
   profileUserId?: string
   studyCardLimit: number
   nextDayStartsAt: number
-  /** Tagesdosis neuer Karten (0 = unbegrenzt) — hält die Heute-Vorschau
-   *  deckungsgleich mit der tatsächlichen Session-Auswahl. */
-  newCardsPerDay?: number
   showFutureForecast: boolean
   showExportModal: boolean
 }): HomeDerivedData {
@@ -158,7 +151,6 @@ export function useHomeDerivedData(input: {
     profileUserId,
     studyCardLimit,
     nextDayStartsAt,
-    newCardsPerDay = 0,
     showFutureForecast,
     showExportModal,
   } = input
@@ -257,7 +249,7 @@ export function useHomeDerivedData(input: {
     let cancelled = false
 
     const loadDeckMetadata = async () => {
-      const next = await getHomeDeckScheduleAndTagIndex(decks, studyCardLimit, nextDayStartsAt, newCardsPerDay)
+      const next = await getHomeDeckScheduleAndTagIndex(decks, studyCardLimit, nextDayStartsAt)
       if (!cancelled) {
         setDeckScheduleOverview(next.deckScheduleOverview)
         setDeckTagIndex(next.deckTagIndex)
@@ -268,7 +260,7 @@ export function useHomeDerivedData(input: {
     return () => {
       cancelled = true
     }
-  }, [decks, studyCardLimit, nextDayStartsAt, newCardsPerDay])
+  }, [decks, studyCardLimit, nextDayStartsAt])
 
   return {
     deckOptions,
