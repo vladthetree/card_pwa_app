@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "sy0701-holdout-leakage-report-1",
+  "manifestVersion": "2026-07-15.1",
+  "generatedAt": 1784148011230,
+  "sourceSnapshotId": "sy0701-v7-2026-07-15",
+  "holdoutItemCount": 0,
+  "leakageFindings": [],
+  "verdict": "NOT_APPLICABLE",
+  "note": "Es existieren noch keine Holdout-Items. Leakage-Prüfung wird wirksam, sobald Readiness-Formen im serverseitigen Holdout-Store angelegt sind (Client/Repo erhalten nur Deskriptoren + Hashes)."
+}

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "sy0701-historical-exposure-report-1",
+  "manifestVersion": "2026-07-15.1",
+  "generatedAt": 1784148011233,
+  "sourceSnapshotId": "sy0701-v7-2026-07-15",
+  "policy": "Für Readiness sind nur Items zulässig, die nachweislich nie an den Kandidaten ausgeliefert wurden.",
+  "exposedPools": {
+    "activeCards": 803,
+    "transcriptQuestions": 264,
+    "labScenarios": 100
+  },
+  "readinessEligibleExistingItems": 0,
+  "conclusion": "Der komplette Bestand gilt als historisch exponiert (täglicher Study-/Recall-/Lab-Zugriff, keine lückenlose Nicht-Auslieferungs-Historie). Readiness-Formen müssen aus neu erstellten Items aufgebaut werden."
+}

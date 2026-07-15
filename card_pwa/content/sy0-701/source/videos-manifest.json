@@ -1,0 +1,730 @@
+{
+  "schemaVersion": "sy0701-videos-1",
+  "exportedAt": 1784147784512,
+  "sourceDir": "/home/_vb/youtube-playlists/CompTIA SY0-701 Security+ Training Course [PLG49S3nxzAnl4QDVqK-hOnoqcSKEIDDuv]",
+  "videos": [
+    {
+      "index": 2,
+      "objective": "1.1",
+      "title": "Security Controls",
+      "file": "002 - 1.1 - Security Controls - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 3,
+      "objective": "1.2",
+      "title": "The CIA Triad",
+      "file": "003 - 1.2 - The CIA Triad - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 4,
+      "objective": "1.2",
+      "title": "Non-repudiation",
+      "file": "004 - 1.2 - Non-repudiation - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 5,
+      "objective": "1.2",
+      "title": "Authentication, Authorization, and Accounting",
+      "file": "005 - 1.2 - Authentication, Authorization, and Accounting - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 6,
+      "objective": "1.2",
+      "title": "Gap Analysis",
+      "file": "006 - 1.2 - Gap Analysis - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 7,
+      "objective": "1.2",
+      "title": "Zero Trust",
+      "file": "007 - 1.2 - Zero Trust - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 8,
+      "objective": "1.2",
+      "title": "Physical Security",
+      "file": "008 - 1.2 - Physical Security - CompTIA SY0-701 Security+.mp4"
+    },
+    {
+      "index": 9,
+      "objective": "1.2",
+      "title": "Deception and Disruption",
+      "file": "009 - 1.2 - Deception and Disruption - CompTIA Security+SY0-701.mp4"
+    },
+    {
+      "index": 10,
+      "objective": "1.3",
+      "title": "Change Management",
+      "file": "010 - 1.3 - Change Management - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 11,
+      "objective": "1.3",
+      "title": "Technical Change Management",
+      "file": "011 - 1.3 - Technical Change Management - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 12,
+      "objective": "1.4",
+      "title": "Public Key Infrastructure",
+      "file": "012 - 1.4 - Public Key Infrastructure - CompTIA Security+ Sy0-701.mp4"
+    },
+    {
+      "index": 13,
+      "objective": "1.4",
+      "title": "Encrypting Data",
+      "file": "013 - 1.4 - Encrypting Data - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 14,
+      "objective": "1.4",
+      "title": "Key Exchange",
+      "file": "014 - 1.4 - Key Exchange - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 15,
+      "objective": "1.4",
+      "title": "Encryption Technologies",
+      "file": "015 - 1.4 - Encryption Technologies - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 16,
+      "objective": "1.4",
+      "title": "Obfuscation",
+      "file": "016 - 1.4 - Obfuscation - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 17,
+      "objective": "1.4",
+      "title": "Hashing and Digital Signatures",
+      "file": "017 - 1.4 - Hashing and Digital Signatures - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 18,
+      "objective": "1.4",
+      "title": "Blockchain Technology",
+      "file": "018 - 1.4 - Blockchain Technology - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 19,
+      "objective": "1.4",
+      "title": "Certificates",
+      "file": "019 - 1.4 - Certificates - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 20,
+      "objective": "2.1",
+      "title": "Threat Actors",
+      "file": "020 - 2.1 - Threat Actors - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 21,
+      "objective": "2.2",
+      "title": "Common Threat Vectors",
+      "file": "021 - 2.2 - Common Threat Vectors - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 22,
+      "objective": "2.2",
+      "title": "Phishing",
+      "file": "022 - 2.2 - Phishing - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 23,
+      "objective": "2.2",
+      "title": "Impersonation",
+      "file": "023 - 2.2 - Impersonation - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 24,
+      "objective": "2.2",
+      "title": "Watering Hole Attacks",
+      "file": "024 - 2.2 - Watering Hole Attacks - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 25,
+      "objective": "2.2",
+      "title": "Other Social Engineering Attacks",
+      "file": "025 - 2.2 - Other Social Engineering Attacks - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 26,
+      "objective": "2.3",
+      "title": "Memory Injections",
+      "file": "026 - 2.3 - Memory Injections - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 27,
+      "objective": "2.3",
+      "title": "Buffer Overflows",
+      "file": "027 - 2.3 - Buffer Overflows - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 28,
+      "objective": "2.3",
+      "title": "Race Conditions",
+      "file": "028 - 2.3 - Race Conditions - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 29,
+      "objective": "2.3",
+      "title": "Malicious Updates",
+      "file": "029 - 2.3 - Malicious Updates - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 30,
+      "objective": "2.3",
+      "title": "Operating System Vulnerabilities",
+      "file": "030 - 2.3 - Operating System Vulnerabilities - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 31,
+      "objective": "2.3",
+      "title": "SQL Injection",
+      "file": "031 - 2.3 - SQL Injection - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 32,
+      "objective": "2.3",
+      "title": "Cross-site Scripting",
+      "file": "032 - 2.3 - Cross-site Scripting - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 33,
+      "objective": "2.3",
+      "title": "Hardware Vulnerabilities",
+      "file": "033 - 2.3 - Hardware Vulnerabilities - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 34,
+      "objective": "2.3",
+      "title": "Virtualization Vulnerabilities",
+      "file": "034 - 2.3 - Virtualization Vulnerabilities - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 35,
+      "objective": "2.3",
+      "title": "Cloud-specific Vulnerabilities",
+      "file": "035 - 2.3 - Cloud-specific Vulnerabilities - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 36,
+      "objective": "2.3",
+      "title": "Supply Chain Vulnerabilities",
+      "file": "036 - 2.3 - Supply Chain Vulnerabilities - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 37,
+      "objective": "2.3",
+      "title": "Misconfiguration Vulnerabilities",
+      "file": "037 - 2.3 - Misconfiguration Vulnerabilities - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 38,
+      "objective": "2.3",
+      "title": "Mobile Device Vulnerabilities",
+      "file": "038 - 2.3 - Mobile Device Vulnerabilities - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 39,
+      "objective": "2.3",
+      "title": "Zero-day Vulnerabilities",
+      "file": "039 - 2.3 - Zero-day Vulnerabilities - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 40,
+      "objective": "2.4",
+      "title": "An Overview of Malware",
+      "file": "040 - 2.4 - An Overview of Malware - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 41,
+      "objective": "2.4",
+      "title": "Viruses and Worms",
+      "file": "041 - 2.4 - Viruses and Worms - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 42,
+      "objective": "2.4",
+      "title": "Spyware and Bloatware",
+      "file": "042 - 2.4 - Spyware and Bloatware - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 43,
+      "objective": "2.4",
+      "title": "Other Malware Types",
+      "file": "043 - 2.4 - Other Malware Types - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 44,
+      "objective": "2.4",
+      "title": "Physical Attacks",
+      "file": "044 - 2.4 - Physical Attacks - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 45,
+      "objective": "2.4",
+      "title": "Denial of Service",
+      "file": "045 - 2.4 - Denial of Service - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 46,
+      "objective": "2.4",
+      "title": "DNS Attacks",
+      "file": "046 - 2.4 - DNS Attacks - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 47,
+      "objective": "2.4",
+      "title": "Wireless Attacks",
+      "file": "047 - 2.4 - Wireless Attacks - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 48,
+      "objective": "2.4",
+      "title": "On-path Attacks",
+      "file": "048 - 2.4 - On-path Attacks - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 49,
+      "objective": "2.4",
+      "title": "Replay Attacks",
+      "file": "049 - 2.4 - Replay Attacks - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 50,
+      "objective": "2.4",
+      "title": "Malicious Code",
+      "file": "050 - 2.4 - Malicious Code - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 51,
+      "objective": "2.4",
+      "title": "Application Attacks",
+      "file": "051 - 2.4 - Application Attacks - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 52,
+      "objective": "2.4",
+      "title": "Cryptographic Attacks",
+      "file": "052 - 2.4 - Cryptographic Attacks - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 53,
+      "objective": "2.4",
+      "title": "Password Attacks",
+      "file": "053 - 2.4 - Password Attacks - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 54,
+      "objective": "2.4",
+      "title": "Indicators of Compromise",
+      "file": "054 - 2.4 - Indicators of Compromise - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 55,
+      "objective": "2.5",
+      "title": "Segmentation and Access Control",
+      "file": "055 - 2.5 - Segmentation and Access Control - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 56,
+      "objective": "2.5",
+      "title": "Mitigation Techniques",
+      "file": "056 - 2.5 - Mitigation Techniques - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 57,
+      "objective": "2.5",
+      "title": "Hardening Techniques",
+      "file": "057 - 2.5 - Hardening Techniques - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 58,
+      "objective": "3.1",
+      "title": "Cloud Infrastructures",
+      "file": "058 - 3.1 - Cloud Infrastructures - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 59,
+      "objective": "3.1",
+      "title": "Network Infrastructure Concepts",
+      "file": "059 - 3.1 - Network Infrastructure Concepts - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 60,
+      "objective": "3.1",
+      "title": "Other Infrastructure Concepts",
+      "file": "060 - 3.1 - Other Infrastructure Concepts - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 61,
+      "objective": "3.1",
+      "title": "Infrastructure Considerations",
+      "file": "061 - 3.1 - Infrastructure Considerations - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 62,
+      "objective": "3.2",
+      "title": "Secure Infrastructures",
+      "file": "062 - 3.2 - Secure Infrastructures - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 63,
+      "objective": "3.2",
+      "title": "Intrusion Prevention",
+      "file": "063 - 3.2 - Intrusion Prevention - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 64,
+      "objective": "3.2",
+      "title": "Network Appliances",
+      "file": "064 - 3.2 - Network Appliances - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 65,
+      "objective": "3.2",
+      "title": "Port Security",
+      "file": "065 - 3.2 - Port Security - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 66,
+      "objective": "3.2",
+      "title": "Firewall Types",
+      "file": "066 - 3.2 - Firewall Types - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 67,
+      "objective": "3.2",
+      "title": "Secure Communication",
+      "file": "067 - 3.2 - Secure Communication - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 68,
+      "objective": "3.3",
+      "title": "Data Types and Classifications",
+      "file": "068 - 3.3 - Data Types and Classifications - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 69,
+      "objective": "3.3",
+      "title": "States of Data",
+      "file": "069 - 3.3 - States of Data - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 70,
+      "objective": "3.3",
+      "title": "Protecting Data",
+      "file": "070 - 3.3 - Protecting Data - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 71,
+      "objective": "3.4",
+      "title": "Resiliency",
+      "file": "071 - 3.4 - Resiliency - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 72,
+      "objective": "3.4",
+      "title": "Capacity Planning",
+      "file": "072 - 3.4 - Capacity Planning - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 73,
+      "objective": "3.4",
+      "title": "Recovery Testing",
+      "file": "073 - 3.4 - Recovery Testing - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 74,
+      "objective": "3.4",
+      "title": "Backups",
+      "file": "074 - 3.4 - Backups - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 75,
+      "objective": "3.4",
+      "title": "Power Resiliency",
+      "file": "075 - 3.4 - Power Resiliency - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 76,
+      "objective": "4.1",
+      "title": "Secure Baselines",
+      "file": "076 - 4.1 - Secure Baselines - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 77,
+      "objective": "4.1",
+      "title": "Hardening Targets",
+      "file": "077 - 4.1 - Hardening Targets - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 78,
+      "objective": "4.1",
+      "title": "Securing Wireless and Mobile",
+      "file": "078 - 4.1 - Securing Wireless and Mobile - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 79,
+      "objective": "4.1",
+      "title": "Wireless Security Settings",
+      "file": "079 - 4.1 - Wireless Security Settings - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 80,
+      "objective": "4.1",
+      "title": "Application Security",
+      "file": "080 - 4.1 - Application Security - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 81,
+      "objective": "4.2",
+      "title": "Asset Management",
+      "file": "081 - 4.2 - Asset Management - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 82,
+      "objective": "4.3",
+      "title": "Vulnerability Scanning",
+      "file": "082 - 4.3 - Vulnerability Scanning - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 83,
+      "objective": "4.3",
+      "title": "Threat Intelligence",
+      "file": "083 - 4.3 - Threat Intelligence - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 84,
+      "objective": "4.3",
+      "title": "Penetration Testing",
+      "file": "084 - 4.3 - Penetration Testing - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 85,
+      "objective": "4.3",
+      "title": "Analyzing Vulnerabilities",
+      "file": "085 - 4.3 - Analyzing Vulnerabilities - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 86,
+      "objective": "4.3",
+      "title": "Vulnerability Remediation",
+      "file": "086 - 4.3 - Vulnerability Remediation - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 87,
+      "objective": "4.4",
+      "title": "Security Monitoring",
+      "file": "087 - 4.4 - Security Monitoring - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 88,
+      "objective": "4.4",
+      "title": "Security Tools",
+      "file": "088 - 4.4 - Security Tools - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 89,
+      "objective": "4.5",
+      "title": "Firewalls",
+      "file": "089 - 4.5 - Firewalls - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 90,
+      "objective": "4.5",
+      "title": "Web Filtering",
+      "file": "090 - 4.5 - Web Filtering - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 91,
+      "objective": "4.5",
+      "title": "Operating System Security",
+      "file": "091 - 4.5 - Operating System Security - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 92,
+      "objective": "4.5",
+      "title": "Secure Protocols",
+      "file": "092 - 4.5 - Secure Protocols - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 93,
+      "objective": "4.5",
+      "title": "Email Security",
+      "file": "093 - 4.5 - Email Security - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 94,
+      "objective": "4.5",
+      "title": "Monitoring Data",
+      "file": "094 - 4.5 - Monitoring Data - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 95,
+      "objective": "4.5",
+      "title": "Endpoint Security",
+      "file": "095 - 4.5 - Endpoint Security - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 96,
+      "objective": "4.6",
+      "title": "Identity and Access Management",
+      "file": "096 - 4.6 - Identity and Access Management - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 97,
+      "objective": "4.6",
+      "title": "Access Controls",
+      "file": "097 - 4.6 - Access Controls - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 98,
+      "objective": "4.6",
+      "title": "Multifactor Authentication",
+      "file": "098 - 4.6 - Multifactor Authentication - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 99,
+      "objective": "4.6",
+      "title": "Password Security",
+      "file": "099 - 4.6 - Password Security - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 100,
+      "objective": "4.7",
+      "title": "Scripting and Automation",
+      "file": "100 - 4.7 - Scripting and Automation - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 101,
+      "objective": "4.8",
+      "title": "Incident Response",
+      "file": "101 - 4.8 - Incident Response - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 102,
+      "objective": "4.8",
+      "title": "Incident Planning",
+      "file": "102 - 4.8 - Incident Planning - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 103,
+      "objective": "4.8",
+      "title": "Digital Forensics",
+      "file": "103 - 4.8 - Digital Forensics - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 104,
+      "objective": "4.9",
+      "title": "Log Data",
+      "file": "104 - 4.9 - Log Data - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 105,
+      "objective": "5.1",
+      "title": "Security Policies",
+      "file": "105 - 5.1 - Security Policies - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 106,
+      "objective": "5.1",
+      "title": "Security Standards",
+      "file": "106 - 5.1 - Security Standards - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 107,
+      "objective": "5.1",
+      "title": "Security Procedures",
+      "file": "107 - 5.1 - Security Procedures - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 108,
+      "objective": "5.1",
+      "title": "Security Considerations",
+      "file": "108 - 5.1 - Security Considerations - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 109,
+      "objective": "5.1",
+      "title": "Data Roles and Responsibilities",
+      "file": "109 - 5.1 - Data Roles and Responsibilities - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 110,
+      "objective": "5.2",
+      "title": "Risk Management",
+      "file": "110 - 5.2 - Risk Management - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 111,
+      "objective": "5.2",
+      "title": "Risk Analysis",
+      "file": "111 - 5.2 - Risk Analysis - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 112,
+      "objective": "5.2",
+      "title": "Risk Management Strategies",
+      "file": "112 - 5.2 - Risk Management Strategies - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 113,
+      "objective": "5.2",
+      "title": "Business Impact Analysis",
+      "file": "113 - 5.2 - Business Impact Analysis - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 114,
+      "objective": "5.3",
+      "title": "Third-party Risk Assessment",
+      "file": "114 - 5.3 - Third-party Risk Assessment - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 115,
+      "objective": "5.3",
+      "title": "Agreement Types",
+      "file": "115 - 5.3 - Agreement Types - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 116,
+      "objective": "5.4",
+      "title": "Compliance",
+      "file": "116 - 5.4 - Compliance - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 117,
+      "objective": "5.4",
+      "title": "Privacy",
+      "file": "117 - 5.4 - Privacy - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 118,
+      "objective": "5.5",
+      "title": "Audits and Assessments",
+      "file": "118 - 5.5 - Audits and Assessments - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 119,
+      "objective": "5.5",
+      "title": "Penetration Tests",
+      "file": "119 - 5.5 - Penetration Tests - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 120,
+      "objective": "5.6",
+      "title": "Security Awareness",
+      "file": "120 - 5.6 - Security Awareness - CompTIA Security+ SY0-701.mp4"
+    },
+    {
+      "index": 121,
+      "objective": "5.6",
+      "title": "User Training",
+      "file": "121 - 5.6 - User Training - CompTIA Security+ SY0-701.mp4"
+    }
+  ],
+  "skippedFiles": [
+    "001 - How to Pass Your SY0-701 Security+ Exam in 2026.mp4"
+  ]
+}

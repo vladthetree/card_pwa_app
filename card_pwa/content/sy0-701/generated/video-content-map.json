@@ -1,0 +1,2208 @@
+{
+  "schemaVersion": "sy0701-video-content-map-1",
+  "manifestVersion": "2026-07-15.1",
+  "generatedAt": 1784148011208,
+  "sourceSnapshotId": "sy0701-v7-2026-07-15",
+  "note": "Karten-IDs sind profilübergreifend identisch (verifiziert); Zuordnung über M-Frage-ID im Kartenfront + generierte Video-Titel-Map, nie über das Objective-Deck.",
+  "videos": [
+    {
+      "videoIndex": 2,
+      "objective": "1.1",
+      "title": "Security Controls",
+      "file": "002 - 1.1 - Security Controls - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728575607281",
+        "1728575671733",
+        "1728575802996",
+        "1728575898815",
+        "1728575980498",
+        "1728576003078",
+        "1728576047633",
+        "1728576145577",
+        "1728576486606",
+        "1728576531749",
+        "1728576557566",
+        "1728576798858",
+        "1728577258425",
+        "1728577295128",
+        "1728577400034",
+        "1728577609188",
+        "1728577652641",
+        "1728577684600",
+        "1728577715502",
+        "1728577866477",
+        "1728577900189",
+        "1728577946940",
+        "1728577973552",
+        "1728578225454",
+        "1728578357454",
+        "1728578398808",
+        "1728578427113",
+        "1728578626914",
+        "1728578658721",
+        "1728578702367",
+        "1728578743324"
+      ],
+      "recallQuestionIds": [
+        "M1-001",
+        "M1-002",
+        "M1-003",
+        "M1-004",
+        "M1-005",
+        "M1-006",
+        "M1-007",
+        "M1-008",
+        "M1-009",
+        "M1-010",
+        "M1-011",
+        "M1-012",
+        "M1-013",
+        "M1-014",
+        "M1-015",
+        "M1-016",
+        "M1-017",
+        "M1-018",
+        "M1-019",
+        "M1-020",
+        "M1-021",
+        "M1-022",
+        "M1-023",
+        "M1-024",
+        "M1-025",
+        "M1-026",
+        "M1-027",
+        "M1-028",
+        "M1-029",
+        "M1-030",
+        "M1-031"
+      ]
+    },
+    {
+      "videoIndex": 3,
+      "objective": "1.2",
+      "title": "The CIA Triad",
+      "file": "003 - 1.2 - The CIA Triad - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728580188327",
+        "1728580341002",
+        "1728580721902",
+        "1728580833593",
+        "1728580937868"
+      ],
+      "recallQuestionIds": [
+        "M1-032",
+        "M1-033",
+        "M1-034",
+        "M1-035",
+        "M1-036"
+      ]
+    },
+    {
+      "videoIndex": 4,
+      "objective": "1.2",
+      "title": "Non-repudiation",
+      "file": "004 - 1.2 - Non-repudiation - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728581032043",
+        "1728581130351",
+        "1728581175475",
+        "1728581211819",
+        "1728581264271",
+        "1728581355781",
+        "1728581458148",
+        "1728581782664",
+        "1728582010811"
+      ],
+      "recallQuestionIds": [
+        "M1-037",
+        "M1-038",
+        "M1-039",
+        "M1-040",
+        "M1-041",
+        "M1-042",
+        "M1-043",
+        "M1-044",
+        "M1-045"
+      ]
+    },
+    {
+      "videoIndex": 5,
+      "objective": "1.2",
+      "title": "Authentication, Authorization, and Accounting",
+      "file": "005 - 1.2 - Authentication, Authorization, and Accounting - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728582261940",
+        "1728582344236",
+        "1728582379407",
+        "1728582662217",
+        "1728582727897"
+      ],
+      "recallQuestionIds": [
+        "M1-046",
+        "M1-047",
+        "M1-048",
+        "M1-049",
+        "M1-050"
+      ]
+    },
+    {
+      "videoIndex": 6,
+      "objective": "1.2",
+      "title": "Gap Analysis",
+      "file": "006 - 1.2 - Gap Analysis - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728594503878"
+      ],
+      "recallQuestionIds": [
+        "M1-051",
+        "T006-01",
+        "T006-02",
+        "T006-03",
+        "T006-04"
+      ]
+    },
+    {
+      "videoIndex": 7,
+      "objective": "1.2",
+      "title": "Zero Trust",
+      "file": "007 - 1.2 - Zero Trust - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728595373661",
+        "1728595471351",
+        "1728595624204",
+        "1728596210594",
+        "1728596360560",
+        "1728596420109",
+        "1728596991068",
+        "1728597125561",
+        "1728597165153"
+      ],
+      "recallQuestionIds": [
+        "M1-052",
+        "M1-053",
+        "M1-054",
+        "M1-055",
+        "M1-056",
+        "M1-057",
+        "M1-058",
+        "M1-059",
+        "M1-060"
+      ]
+    },
+    {
+      "videoIndex": 8,
+      "objective": "1.2",
+      "title": "Physical Security",
+      "file": "008 - 1.2 - Physical Security - CompTIA SY0-701 Security+.mp4",
+      "cardIds": [
+        "1728597672323",
+        "1728598075567",
+        "1728598202804"
+      ],
+      "recallQuestionIds": [
+        "M1-061",
+        "M1-062",
+        "M1-063"
+      ]
+    },
+    {
+      "videoIndex": 9,
+      "objective": "1.2",
+      "title": "Deception and Disruption",
+      "file": "009 - 1.2 - Deception and Disruption - CompTIA Security+SY0-701.mp4",
+      "cardIds": [
+        "1728598803945"
+      ],
+      "recallQuestionIds": [
+        "M1-064",
+        "T009-01",
+        "T009-02",
+        "T009-03",
+        "T009-04"
+      ]
+    },
+    {
+      "videoIndex": 10,
+      "objective": "1.3",
+      "title": "Change Management",
+      "file": "010 - 1.3 - Change Management - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728664841112",
+        "1728665267982"
+      ],
+      "recallQuestionIds": [
+        "M1-065",
+        "M1-066",
+        "T010-01",
+        "T010-02",
+        "T010-03",
+        "T010-04"
+      ]
+    },
+    {
+      "videoIndex": 11,
+      "objective": "1.3",
+      "title": "Technical Change Management",
+      "file": "011 - 1.3 - Technical Change Management - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728665620599",
+        "1728665665642"
+      ],
+      "recallQuestionIds": [
+        "M1-067",
+        "M1-068",
+        "T011-01",
+        "T011-02",
+        "T011-03",
+        "T011-04"
+      ]
+    },
+    {
+      "videoIndex": 12,
+      "objective": "1.4",
+      "title": "Public Key Infrastructure",
+      "file": "012 - 1.4 - Public Key Infrastructure - CompTIA Security+ Sy0-701.mp4",
+      "cardIds": [
+        "1728666406964",
+        "1728666452657",
+        "1728666527085",
+        "1728666620096",
+        "1728666652923",
+        "1728668006980",
+        "1728668074719",
+        "1728668229954",
+        "1728668742654"
+      ],
+      "recallQuestionIds": [
+        "M1-069",
+        "M1-070",
+        "M1-071",
+        "M1-072",
+        "M1-073",
+        "M1-074",
+        "M1-075",
+        "M1-076",
+        "M1-077"
+      ]
+    },
+    {
+      "videoIndex": 13,
+      "objective": "1.4",
+      "title": "Encrypting Data",
+      "file": "013 - 1.4 - Encrypting Data - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728669078281",
+        "1728669233798",
+        "1728669281455",
+        "1728669344784",
+        "1728669781020",
+        "1728669901392",
+        "1728669937321"
+      ],
+      "recallQuestionIds": [
+        "M1-078",
+        "M1-079",
+        "M1-080",
+        "M1-081",
+        "M1-082",
+        "M1-083",
+        "M1-084"
+      ]
+    },
+    {
+      "videoIndex": 14,
+      "objective": "1.4",
+      "title": "Key Exchange",
+      "file": "014 - 1.4 - Key Exchange - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728675213140",
+        "1728675511788",
+        "1728675650498"
+      ],
+      "recallQuestionIds": [
+        "M1-085",
+        "M1-086",
+        "M1-087"
+      ]
+    },
+    {
+      "videoIndex": 15,
+      "objective": "1.4",
+      "title": "Encryption Technologies",
+      "file": "015 - 1.4 - Encryption Technologies - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728675746261",
+        "1728675819604",
+        "1728676495697",
+        "1728676616843",
+        "1728676658755"
+      ],
+      "recallQuestionIds": [
+        "M1-088",
+        "M1-089",
+        "M1-090",
+        "M1-091",
+        "M1-092"
+      ]
+    },
+    {
+      "videoIndex": 16,
+      "objective": "1.4",
+      "title": "Obfuscation",
+      "file": "016 - 1.4 - Obfuscation - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728677282633",
+        "1728677405231",
+        "1728677504907",
+        "1728677849716",
+        "1728678025496"
+      ],
+      "recallQuestionIds": [
+        "M1-093",
+        "M1-094",
+        "M1-095",
+        "M1-096",
+        "M1-097"
+      ]
+    },
+    {
+      "videoIndex": 17,
+      "objective": "1.4",
+      "title": "Hashing and Digital Signatures",
+      "file": "017 - 1.4 - Hashing and Digital Signatures - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728678521196",
+        "1728678905175",
+        "1728678954965",
+        "1728679006387",
+        "1728679028920"
+      ],
+      "recallQuestionIds": [
+        "M1-098",
+        "M1-099",
+        "M1-100",
+        "M1-101",
+        "M1-102"
+      ]
+    },
+    {
+      "videoIndex": 18,
+      "objective": "1.4",
+      "title": "Blockchain Technology",
+      "file": "018 - 1.4 - Blockchain Technology - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728679899388"
+      ],
+      "recallQuestionIds": [
+        "M1-103",
+        "T018-01",
+        "T018-02",
+        "T018-03",
+        "T018-04"
+      ]
+    },
+    {
+      "videoIndex": 19,
+      "objective": "1.4",
+      "title": "Certificates",
+      "file": "019 - 1.4 - Certificates - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728832173306",
+        "1728832246367",
+        "1728832318150",
+        "1728832382513",
+        "1728832486334",
+        "1728832628955",
+        "1728833045831",
+        "1728833152415",
+        "1728833274722",
+        "1728833822183",
+        "1728833850610",
+        "1728833900981",
+        "1728834227764",
+        "1728834287549",
+        "1728834325821",
+        "1728834357184",
+        "1728834517490"
+      ],
+      "recallQuestionIds": [
+        "M1-104",
+        "M1-105",
+        "M1-106",
+        "M1-107",
+        "M1-108",
+        "M1-109",
+        "M1-110",
+        "M1-111",
+        "M1-112",
+        "M1-113",
+        "M1-114",
+        "M1-115",
+        "M1-116",
+        "M1-117",
+        "M1-118",
+        "M1-119",
+        "M1-120"
+      ]
+    },
+    {
+      "videoIndex": 20,
+      "objective": "2.1",
+      "title": "Threat Actors",
+      "file": "020 - 2.1 - Threat Actors - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728925347209",
+        "1728925645774",
+        "1728925881637",
+        "1728925920785",
+        "1728926313614",
+        "1728926473442"
+      ],
+      "recallQuestionIds": [
+        "M2-001",
+        "M2-002",
+        "M2-003",
+        "M2-004",
+        "M2-005",
+        "M2-006"
+      ]
+    },
+    {
+      "videoIndex": 21,
+      "objective": "2.2",
+      "title": "Common Threat Vectors",
+      "file": "021 - 2.2 - Common Threat Vectors - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728934123174",
+        "1728934553820",
+        "1728934644990",
+        "1728934726218",
+        "1728934802697",
+        "1728935077569",
+        "1728935633818",
+        "1728936074534",
+        "1728936160805"
+      ],
+      "recallQuestionIds": [
+        "M2-007",
+        "M2-008",
+        "M2-009",
+        "M2-010",
+        "M2-011",
+        "M2-012",
+        "M2-013",
+        "M2-014",
+        "M2-015"
+      ]
+    },
+    {
+      "videoIndex": 22,
+      "objective": "2.2",
+      "title": "Phishing",
+      "file": "022 - 2.2 - Phishing - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1728936330357",
+        "1728936604868",
+        "1728936658283",
+        "1728937017632"
+      ],
+      "recallQuestionIds": [
+        "M2-016",
+        "M2-017",
+        "M2-018",
+        "M2-019"
+      ]
+    },
+    {
+      "videoIndex": 23,
+      "objective": "2.2",
+      "title": "Impersonation",
+      "file": "023 - 2.2 - Impersonation - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729003025465"
+      ],
+      "recallQuestionIds": [
+        "M2-020",
+        "T023-01",
+        "T023-02",
+        "T023-03",
+        "T023-04"
+      ]
+    },
+    {
+      "videoIndex": 24,
+      "objective": "2.2",
+      "title": "Watering Hole Attacks",
+      "file": "024 - 2.2 - Watering Hole Attacks - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729003632035",
+        "1729003938350"
+      ],
+      "recallQuestionIds": [
+        "M2-021",
+        "M2-022",
+        "T024-01",
+        "T024-02",
+        "T024-03",
+        "T024-04"
+      ]
+    },
+    {
+      "videoIndex": 25,
+      "objective": "2.2",
+      "title": "Other Social Engineering Attacks",
+      "file": "025 - 2.2 - Other Social Engineering Attacks - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729004574263"
+      ],
+      "recallQuestionIds": [
+        "M2-023",
+        "T025-01",
+        "T025-02",
+        "T025-03",
+        "T025-04"
+      ]
+    },
+    {
+      "videoIndex": 26,
+      "objective": "2.3",
+      "title": "Memory Injections",
+      "file": "026 - 2.3 - Memory Injections - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729005007773",
+        "1729005171342",
+        "1729005242071"
+      ],
+      "recallQuestionIds": [
+        "M2-024",
+        "M2-025",
+        "M2-026"
+      ]
+    },
+    {
+      "videoIndex": 27,
+      "objective": "2.3",
+      "title": "Buffer Overflows",
+      "file": "027 - 2.3 - Buffer Overflows - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729005878634"
+      ],
+      "recallQuestionIds": [
+        "M2-027",
+        "T027-01",
+        "T027-02",
+        "T027-03",
+        "T027-04"
+      ]
+    },
+    {
+      "videoIndex": 28,
+      "objective": "2.3",
+      "title": "Race Conditions",
+      "file": "028 - 2.3 - Race Conditions - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729006621297",
+        "1729007012771"
+      ],
+      "recallQuestionIds": [
+        "M2-028",
+        "M2-029",
+        "T028-01",
+        "T028-02",
+        "T028-03",
+        "T028-04"
+      ]
+    },
+    {
+      "videoIndex": 29,
+      "objective": "2.3",
+      "title": "Malicious Updates",
+      "file": "029 - 2.3 - Malicious Updates - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729007731874"
+      ],
+      "recallQuestionIds": [
+        "M2-030",
+        "T029-01",
+        "T029-02",
+        "T029-03",
+        "T029-04"
+      ]
+    },
+    {
+      "videoIndex": 30,
+      "objective": "2.3",
+      "title": "Operating System Vulnerabilities",
+      "file": "030 - 2.3 - Operating System Vulnerabilities - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [],
+      "recallQuestionIds": [
+        "T030-01",
+        "T030-02",
+        "T030-03",
+        "T030-04",
+        "T030-05"
+      ]
+    },
+    {
+      "videoIndex": 31,
+      "objective": "2.3",
+      "title": "SQL Injection",
+      "file": "031 - 2.3 - SQL Injection - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729008958156",
+        "1729009069891",
+        "1729009370356",
+        "1729009525180",
+        "1729009567783"
+      ],
+      "recallQuestionIds": [
+        "M2-031",
+        "M2-032",
+        "M2-033",
+        "M2-034",
+        "M2-035"
+      ]
+    },
+    {
+      "videoIndex": 32,
+      "objective": "2.3",
+      "title": "Cross-site Scripting",
+      "file": "032 - 2.3 - Cross-site Scripting - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729010233588",
+        "1729010739212",
+        "1729010808752",
+        "1729010864188",
+        "1729011152083"
+      ],
+      "recallQuestionIds": [
+        "M2-036",
+        "M2-037",
+        "M2-038",
+        "M2-039",
+        "M2-040"
+      ]
+    },
+    {
+      "videoIndex": 33,
+      "objective": "2.3",
+      "title": "Hardware Vulnerabilities",
+      "file": "033 - 2.3 - Hardware Vulnerabilities - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729016237394",
+        "1729016393818",
+        "1729016466796",
+        "1729016997815"
+      ],
+      "recallQuestionIds": [
+        "M2-041",
+        "M2-042",
+        "M2-043",
+        "M2-044"
+      ]
+    },
+    {
+      "videoIndex": 34,
+      "objective": "2.3",
+      "title": "Virtualization Vulnerabilities",
+      "file": "034 - 2.3 - Virtualization Vulnerabilities - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729017742984",
+        "1729017832455",
+        "1729017946321"
+      ],
+      "recallQuestionIds": [
+        "M2-045",
+        "M2-046",
+        "M2-047"
+      ]
+    },
+    {
+      "videoIndex": 35,
+      "objective": "2.3",
+      "title": "Cloud-specific Vulnerabilities",
+      "file": "035 - 2.3 - Cloud-specific Vulnerabilities - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729018546549",
+        "1729018727159",
+        "1729018813146",
+        "1729019182230"
+      ],
+      "recallQuestionIds": [
+        "M2-048",
+        "M2-049",
+        "M2-050",
+        "M2-051"
+      ]
+    },
+    {
+      "videoIndex": 36,
+      "objective": "2.3",
+      "title": "Supply Chain Vulnerabilities",
+      "file": "036 - 2.3 - Supply Chain Vulnerabilities - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729019659956",
+        "1729019769922",
+        "1729019963492",
+        "1729020064785",
+        "1729020157178"
+      ],
+      "recallQuestionIds": [
+        "M2-052",
+        "M2-053",
+        "M2-054",
+        "M2-055",
+        "M2-056"
+      ]
+    },
+    {
+      "videoIndex": 37,
+      "objective": "2.3",
+      "title": "Misconfiguration Vulnerabilities",
+      "file": "037 - 2.3 - Misconfiguration Vulnerabilities - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729093945243",
+        "1729094001244",
+        "1729094357667",
+        "1729094464415",
+        "1729094720670"
+      ],
+      "recallQuestionIds": [
+        "M2-057",
+        "M2-058",
+        "M2-059",
+        "M2-060",
+        "M2-061"
+      ]
+    },
+    {
+      "videoIndex": 38,
+      "objective": "2.3",
+      "title": "Mobile Device Vulnerabilities",
+      "file": "038 - 2.3 - Mobile Device Vulnerabilities - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729095666668",
+        "1729095773945",
+        "1729096077718"
+      ],
+      "recallQuestionIds": [
+        "M2-062",
+        "M2-063",
+        "M2-064"
+      ]
+    },
+    {
+      "videoIndex": 39,
+      "objective": "2.3",
+      "title": "Zero-day Vulnerabilities",
+      "file": "039 - 2.3 - Zero-day Vulnerabilities - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729096456640"
+      ],
+      "recallQuestionIds": [
+        "M2-065",
+        "T039-01",
+        "T039-02",
+        "T039-03",
+        "T039-04"
+      ]
+    },
+    {
+      "videoIndex": 40,
+      "objective": "2.4",
+      "title": "An Overview of Malware",
+      "file": "040 - 2.4 - An Overview of Malware - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729096807696",
+        "1729097089990",
+        "1729097293203",
+        "1729097352286",
+        "1729097429318"
+      ],
+      "recallQuestionIds": [
+        "M2-066",
+        "M2-067",
+        "M2-068",
+        "M2-069",
+        "M2-070"
+      ]
+    },
+    {
+      "videoIndex": 41,
+      "objective": "2.4",
+      "title": "Viruses and Worms",
+      "file": "041 - 2.4 - Viruses and Worms - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729097907113",
+        "1729098014967",
+        "1729098302259"
+      ],
+      "recallQuestionIds": [
+        "M2-071",
+        "M2-072",
+        "M2-073"
+      ]
+    },
+    {
+      "videoIndex": 42,
+      "objective": "2.4",
+      "title": "Spyware and Bloatware",
+      "file": "042 - 2.4 - Spyware and Bloatware - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729098545424",
+        "1729098771491"
+      ],
+      "recallQuestionIds": [
+        "M2-074",
+        "M2-075",
+        "T042-01",
+        "T042-02",
+        "T042-03",
+        "T042-04"
+      ]
+    },
+    {
+      "videoIndex": 43,
+      "objective": "2.4",
+      "title": "Other Malware Types",
+      "file": "043 - 2.4 - Other Malware Types - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729099376881",
+        "1729099431734",
+        "1729099804993"
+      ],
+      "recallQuestionIds": [
+        "M2-076",
+        "M2-077",
+        "M2-078"
+      ]
+    },
+    {
+      "videoIndex": 44,
+      "objective": "2.4",
+      "title": "Physical Attacks",
+      "file": "044 - 2.4 - Physical Attacks - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729103336431",
+        "1729103461406",
+        "1729103670834"
+      ],
+      "recallQuestionIds": [
+        "M2-079",
+        "M2-080",
+        "M2-081"
+      ]
+    },
+    {
+      "videoIndex": 45,
+      "objective": "2.4",
+      "title": "Denial of Service",
+      "file": "045 - 2.4 - Denial of Service - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729104062053",
+        "1729104262170",
+        "1729104422352",
+        "1729104741764",
+        "1729104839747"
+      ],
+      "recallQuestionIds": [
+        "M2-082",
+        "M2-083",
+        "M2-084",
+        "M2-085",
+        "M2-086"
+      ]
+    },
+    {
+      "videoIndex": 46,
+      "objective": "2.4",
+      "title": "DNS Attacks",
+      "file": "046 - 2.4 - DNS Attacks - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729105178993"
+      ],
+      "recallQuestionIds": [
+        "M2-087",
+        "T046-01",
+        "T046-02",
+        "T046-03",
+        "T046-04"
+      ]
+    },
+    {
+      "videoIndex": 47,
+      "objective": "2.4",
+      "title": "Wireless Attacks",
+      "file": "047 - 2.4 - Wireless Attacks - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729106271934",
+        "1729106340713",
+        "1729106591299",
+        "1729106782316"
+      ],
+      "recallQuestionIds": [
+        "M2-088",
+        "M2-089",
+        "M2-090",
+        "M2-091"
+      ]
+    },
+    {
+      "videoIndex": 48,
+      "objective": "2.4",
+      "title": "On-path Attacks",
+      "file": "048 - 2.4 - On-path Attacks - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729107353631",
+        "1729107583328",
+        "1729107717300"
+      ],
+      "recallQuestionIds": [
+        "M2-092",
+        "M2-093",
+        "M2-094"
+      ]
+    },
+    {
+      "videoIndex": 49,
+      "objective": "2.4",
+      "title": "Replay Attacks",
+      "file": "049 - 2.4 - Replay Attacks - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729174309232",
+        "1729174445461",
+        "1729174658387",
+        "1729174805551"
+      ],
+      "recallQuestionIds": [
+        "M2-095",
+        "M2-096",
+        "M2-097",
+        "M2-098"
+      ]
+    },
+    {
+      "videoIndex": 50,
+      "objective": "2.4",
+      "title": "Malicious Code",
+      "file": "050 - 2.4 - Malicious Code - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729175231855"
+      ],
+      "recallQuestionIds": [
+        "M2-099",
+        "T050-01",
+        "T050-02",
+        "T050-03",
+        "T050-04"
+      ]
+    },
+    {
+      "videoIndex": 51,
+      "objective": "2.4",
+      "title": "Application Attacks",
+      "file": "051 - 2.4 - Application Attacks - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729175578382",
+        "1729175912541",
+        "1729176350133",
+        "1729176391515",
+        "1729176558493"
+      ],
+      "recallQuestionIds": [
+        "M2-100",
+        "M2-101",
+        "M2-102",
+        "M2-103",
+        "M2-104"
+      ]
+    },
+    {
+      "videoIndex": 52,
+      "objective": "2.4",
+      "title": "Cryptographic Attacks",
+      "file": "052 - 2.4 - Cryptographic Attacks - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729178147830",
+        "1729178380874",
+        "1729178403877",
+        "1729178842874"
+      ],
+      "recallQuestionIds": [
+        "M2-105",
+        "M2-106",
+        "M2-107",
+        "M2-108"
+      ]
+    },
+    {
+      "videoIndex": 53,
+      "objective": "2.4",
+      "title": "Password Attacks",
+      "file": "053 - 2.4 - Password Attacks - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729179162672",
+        "1729180047821"
+      ],
+      "recallQuestionIds": [
+        "M2-109",
+        "M2-110",
+        "T053-01",
+        "T053-02",
+        "T053-03",
+        "T053-04"
+      ]
+    },
+    {
+      "videoIndex": 54,
+      "objective": "2.4",
+      "title": "Indicators of Compromise",
+      "file": "054 - 2.4 - Indicators of Compromise - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729180535847"
+      ],
+      "recallQuestionIds": [
+        "M2-111",
+        "T054-01",
+        "T054-02",
+        "T054-03",
+        "T054-04"
+      ]
+    },
+    {
+      "videoIndex": 55,
+      "objective": "2.5",
+      "title": "Segmentation and Access Control",
+      "file": "055 - 2.5 - Segmentation and Access Control - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729182645620",
+        "1729182844022",
+        "1729182899508",
+        "1729183258174",
+        "1729183351572"
+      ],
+      "recallQuestionIds": [
+        "M2-112",
+        "M2-113",
+        "M2-114",
+        "M2-115",
+        "M2-116"
+      ]
+    },
+    {
+      "videoIndex": 56,
+      "objective": "2.5",
+      "title": "Mitigation Techniques",
+      "file": "056 - 2.5 - Mitigation Techniques - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729183952928",
+        "1729184719692",
+        "1729184751308",
+        "1729184967597",
+        "1729185023357",
+        "1729185192740",
+        "1729185236521"
+      ],
+      "recallQuestionIds": [
+        "M2-117",
+        "M2-118",
+        "M2-119",
+        "M2-120",
+        "M2-121",
+        "M2-122",
+        "M2-123"
+      ]
+    },
+    {
+      "videoIndex": 57,
+      "objective": "2.5",
+      "title": "Hardening Techniques",
+      "file": "057 - 2.5 - Hardening Techniques - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729185940822",
+        "1729186250125",
+        "1729186549472",
+        "1729186709321",
+        "1729186723937",
+        "1729187191969"
+      ],
+      "recallQuestionIds": [
+        "M2-124",
+        "M2-125",
+        "M2-126",
+        "M2-127",
+        "M2-128",
+        "M2-129"
+      ]
+    },
+    {
+      "videoIndex": 58,
+      "objective": "3.1",
+      "title": "Cloud Infrastructures",
+      "file": "058 - 3.1 - Cloud Infrastructures - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729192290034",
+        "1729192837629",
+        "1729192907745",
+        "1729193133878"
+      ],
+      "recallQuestionIds": [
+        "M3-002",
+        "M3-001",
+        "M3-003",
+        "M3-004"
+      ]
+    },
+    {
+      "videoIndex": 59,
+      "objective": "3.1",
+      "title": "Network Infrastructure Concepts",
+      "file": "059 - 3.1 - Network Infrastructure Concepts - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729193807209",
+        "1729193932999",
+        "1729194200065",
+        "1729194220599",
+        "1729194266296",
+        "1729194357503",
+        "1729194474927"
+      ],
+      "recallQuestionIds": [
+        "M3-010",
+        "M3-006",
+        "M3-005",
+        "M3-011",
+        "M3-007",
+        "M3-009",
+        "M3-008"
+      ]
+    },
+    {
+      "videoIndex": 60,
+      "objective": "3.1",
+      "title": "Other Infrastructure Concepts",
+      "file": "060 - 3.1 - Other Infrastructure Concepts - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729195941442",
+        "1729196035330",
+        "1729196140243",
+        "1729196325940",
+        "1729196548024"
+      ],
+      "recallQuestionIds": [
+        "M3-015",
+        "M3-014",
+        "M3-016",
+        "M3-013",
+        "M3-012"
+      ]
+    },
+    {
+      "videoIndex": 61,
+      "objective": "3.1",
+      "title": "Infrastructure Considerations",
+      "file": "061 - 3.1 - Infrastructure Considerations - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729198761986",
+        "1729198962970",
+        "1729199602908",
+        "1729199710866"
+      ],
+      "recallQuestionIds": [
+        "M3-020",
+        "M3-019",
+        "M3-018",
+        "M3-017"
+      ]
+    },
+    {
+      "videoIndex": 62,
+      "objective": "3.2",
+      "title": "Secure Infrastructures",
+      "file": "062 - 3.2 - Secure Infrastructures - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [],
+      "recallQuestionIds": [
+        "T062-01",
+        "T062-02",
+        "T062-03",
+        "T062-04",
+        "T062-05"
+      ]
+    },
+    {
+      "videoIndex": 63,
+      "objective": "3.2",
+      "title": "Intrusion Prevention",
+      "file": "063 - 3.2 - Intrusion Prevention - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729262665983",
+        "1729263331128",
+        "1729263374388"
+      ],
+      "recallQuestionIds": [
+        "M3-023",
+        "M3-021",
+        "M3-022"
+      ]
+    },
+    {
+      "videoIndex": 64,
+      "objective": "3.2",
+      "title": "Network Appliances",
+      "file": "064 - 3.2 - Network Appliances - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729264182198",
+        "1729264760996",
+        "1729265068837",
+        "1729265371258",
+        "1729265508608",
+        "1729265956352",
+        "1729266155183"
+      ],
+      "recallQuestionIds": [
+        "M3-028",
+        "M3-027",
+        "M3-025",
+        "M3-030",
+        "M3-026",
+        "M3-029",
+        "M3-024"
+      ]
+    },
+    {
+      "videoIndex": 65,
+      "objective": "3.2",
+      "title": "Port Security",
+      "file": "065 - 3.2 - Port Security - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729267472724",
+        "1729267569310",
+        "1729267646397"
+      ],
+      "recallQuestionIds": [
+        "M3-032",
+        "M3-033",
+        "M3-031"
+      ]
+    },
+    {
+      "videoIndex": 66,
+      "objective": "3.2",
+      "title": "Firewall Types",
+      "file": "066 - 3.2 - Firewall Types - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729268983360",
+        "1729269602613"
+      ],
+      "recallQuestionIds": [
+        "M3-035",
+        "M3-034",
+        "T066-01",
+        "T066-02",
+        "T066-03",
+        "T066-04"
+      ]
+    },
+    {
+      "videoIndex": 67,
+      "objective": "3.2",
+      "title": "Secure Communication",
+      "file": "067 - 3.2 - Secure Communication - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [],
+      "recallQuestionIds": [
+        "T067-01",
+        "T067-02",
+        "T067-03",
+        "T067-04",
+        "T067-05"
+      ]
+    },
+    {
+      "videoIndex": 68,
+      "objective": "3.3",
+      "title": "Data Types and Classifications",
+      "file": "068 - 3.3 - Data Types and Classifications - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [],
+      "recallQuestionIds": [
+        "T068-01",
+        "T068-02",
+        "T068-03",
+        "T068-04",
+        "T068-05"
+      ]
+    },
+    {
+      "videoIndex": 69,
+      "objective": "3.3",
+      "title": "States of Data",
+      "file": "069 - 3.3 - States of Data - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729276559590",
+        "1729276746898",
+        "1729276778013"
+      ],
+      "recallQuestionIds": [
+        "M3-037",
+        "M3-038",
+        "M3-036"
+      ]
+    },
+    {
+      "videoIndex": 70,
+      "objective": "3.3",
+      "title": "Protecting Data",
+      "file": "070 - 3.3 - Protecting Data - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729277620814",
+        "1729277680140",
+        "1729277707224",
+        "1729278256356"
+      ],
+      "recallQuestionIds": [
+        "M3-039",
+        "M3-041",
+        "M3-040",
+        "M3-042"
+      ]
+    },
+    {
+      "videoIndex": 71,
+      "objective": "3.4",
+      "title": "Resiliency",
+      "file": "071 - 3.4 - Resiliency - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729280373313",
+        "1729280425752",
+        "1729280698248"
+      ],
+      "recallQuestionIds": [
+        "M3-045",
+        "M3-043",
+        "M3-044"
+      ]
+    },
+    {
+      "videoIndex": 72,
+      "objective": "3.4",
+      "title": "Capacity Planning",
+      "file": "072 - 3.4 - Capacity Planning - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [],
+      "recallQuestionIds": [
+        "T072-01",
+        "T072-02",
+        "T072-03",
+        "T072-04",
+        "T072-05"
+      ]
+    },
+    {
+      "videoIndex": 73,
+      "objective": "3.4",
+      "title": "Recovery Testing",
+      "file": "073 - 3.4 - Recovery Testing - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729282747703",
+        "1729435542513"
+      ],
+      "recallQuestionIds": [
+        "M3-047",
+        "M3-046",
+        "T073-01",
+        "T073-02",
+        "T073-03",
+        "T073-04"
+      ]
+    },
+    {
+      "videoIndex": 74,
+      "objective": "3.4",
+      "title": "Backups",
+      "file": "074 - 3.4 - Backups - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729283435461",
+        "1729283880472",
+        "1729284162703"
+      ],
+      "recallQuestionIds": [
+        "M3-050",
+        "M3-049",
+        "M3-048"
+      ]
+    },
+    {
+      "videoIndex": 75,
+      "objective": "3.4",
+      "title": "Power Resiliency",
+      "file": "075 - 3.4 - Power Resiliency - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729285411849"
+      ],
+      "recallQuestionIds": [
+        "M3-051",
+        "T075-01",
+        "T075-02",
+        "T075-03",
+        "T075-04"
+      ]
+    },
+    {
+      "videoIndex": 76,
+      "objective": "4.1",
+      "title": "Secure Baselines",
+      "file": "076 - 4.1 - Secure Baselines - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [],
+      "recallQuestionIds": [
+        "T076-01",
+        "T076-02",
+        "T076-03",
+        "T076-04",
+        "T076-05"
+      ]
+    },
+    {
+      "videoIndex": 77,
+      "objective": "4.1",
+      "title": "Hardening Targets",
+      "file": "077 - 4.1 - Hardening Targets - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729437834722",
+        "1729438002934"
+      ],
+      "recallQuestionIds": [
+        "M4-001",
+        "M4-002",
+        "T077-01",
+        "T077-02",
+        "T077-03",
+        "T077-04"
+      ]
+    },
+    {
+      "videoIndex": 78,
+      "objective": "4.1",
+      "title": "Securing Wireless and Mobile",
+      "file": "078 - 4.1 - Securing Wireless and Mobile - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [],
+      "recallQuestionIds": [
+        "T078-01",
+        "T078-02",
+        "T078-03",
+        "T078-04",
+        "T078-05"
+      ]
+    },
+    {
+      "videoIndex": 79,
+      "objective": "4.1",
+      "title": "Wireless Security Settings",
+      "file": "079 - 4.1 - Wireless Security Settings - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729441416045"
+      ],
+      "recallQuestionIds": [
+        "M4-003",
+        "T079-01",
+        "T079-02",
+        "T079-03",
+        "T079-04"
+      ]
+    },
+    {
+      "videoIndex": 80,
+      "objective": "4.1",
+      "title": "Application Security",
+      "file": "080 - 4.1 - Application Security - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729443096377",
+        "1729443455782",
+        "1729443520771"
+      ],
+      "recallQuestionIds": [
+        "M4-006",
+        "M4-005",
+        "M4-004"
+      ]
+    },
+    {
+      "videoIndex": 81,
+      "objective": "4.2",
+      "title": "Asset Management",
+      "file": "081 - 4.2 - Asset Management - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [],
+      "recallQuestionIds": [
+        "T081-01",
+        "T081-02",
+        "T081-03",
+        "T081-04",
+        "T081-05"
+      ]
+    },
+    {
+      "videoIndex": 82,
+      "objective": "4.3",
+      "title": "Vulnerability Scanning",
+      "file": "082 - 4.3 - Vulnerability Scanning - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729525570343",
+        "1729525688307"
+      ],
+      "recallQuestionIds": [
+        "M4-008",
+        "M4-007",
+        "T082-01",
+        "T082-02",
+        "T082-03",
+        "T082-04"
+      ]
+    },
+    {
+      "videoIndex": 83,
+      "objective": "4.3",
+      "title": "Threat Intelligence",
+      "file": "083 - 4.3 - Threat Intelligence - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729526448891",
+        "1729526713518"
+      ],
+      "recallQuestionIds": [
+        "M4-009",
+        "M4-010",
+        "T083-01",
+        "T083-02",
+        "T083-03",
+        "T083-04"
+      ]
+    },
+    {
+      "videoIndex": 84,
+      "objective": "4.3",
+      "title": "Penetration Testing",
+      "file": "084 - 4.3 - Penetration Testing - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729528034674"
+      ],
+      "recallQuestionIds": [
+        "M4-011",
+        "T084-01",
+        "T084-02",
+        "T084-03",
+        "T084-04"
+      ]
+    },
+    {
+      "videoIndex": 85,
+      "objective": "4.3",
+      "title": "Analyzing Vulnerabilities",
+      "file": "085 - 4.3 - Analyzing Vulnerabilities - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729528371221",
+        "1729528670460",
+        "1729529439876"
+      ],
+      "recallQuestionIds": [
+        "M4-014",
+        "M4-013",
+        "M4-012"
+      ]
+    },
+    {
+      "videoIndex": 86,
+      "objective": "4.3",
+      "title": "Vulnerability Remediation",
+      "file": "086 - 4.3 - Vulnerability Remediation - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729530986061"
+      ],
+      "recallQuestionIds": [
+        "M4-015",
+        "T086-01",
+        "T086-02",
+        "T086-03",
+        "T086-04"
+      ]
+    },
+    {
+      "videoIndex": 87,
+      "objective": "4.4",
+      "title": "Security Monitoring",
+      "file": "087 - 4.4 - Security Monitoring - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729540036900"
+      ],
+      "recallQuestionIds": [
+        "M4-016",
+        "T087-01",
+        "T087-02",
+        "T087-03",
+        "T087-04"
+      ]
+    },
+    {
+      "videoIndex": 88,
+      "objective": "4.4",
+      "title": "Security Tools",
+      "file": "088 - 4.4 - Security Tools - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [],
+      "recallQuestionIds": [
+        "T088-01",
+        "T088-02",
+        "T088-03",
+        "T088-04",
+        "T088-05"
+      ]
+    },
+    {
+      "videoIndex": 89,
+      "objective": "4.5",
+      "title": "Firewalls",
+      "file": "089 - 4.5 - Firewalls - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [],
+      "recallQuestionIds": [
+        "T089-01",
+        "T089-02",
+        "T089-03",
+        "T089-04",
+        "T089-05"
+      ]
+    },
+    {
+      "videoIndex": 90,
+      "objective": "4.5",
+      "title": "Web Filtering",
+      "file": "090 - 4.5 - Web Filtering - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729542531766",
+        "1729542555582"
+      ],
+      "recallQuestionIds": [
+        "M4-018",
+        "M4-017",
+        "T090-01",
+        "T090-02",
+        "T090-03",
+        "T090-04"
+      ]
+    },
+    {
+      "videoIndex": 91,
+      "objective": "4.5",
+      "title": "Operating System Security",
+      "file": "091 - 4.5 - Operating System Security - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729543018478",
+        "1729543300068"
+      ],
+      "recallQuestionIds": [
+        "M4-019",
+        "M4-020",
+        "T091-01",
+        "T091-02",
+        "T091-03",
+        "T091-04"
+      ]
+    },
+    {
+      "videoIndex": 92,
+      "objective": "4.5",
+      "title": "Secure Protocols",
+      "file": "092 - 4.5 - Secure Protocols - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [],
+      "recallQuestionIds": [
+        "T092-01",
+        "T092-02",
+        "T092-03",
+        "T092-04",
+        "T092-05"
+      ]
+    },
+    {
+      "videoIndex": 93,
+      "objective": "4.5",
+      "title": "Email Security",
+      "file": "093 - 4.5 - Email Security - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729544236865"
+      ],
+      "recallQuestionIds": [
+        "M4-021",
+        "T093-01",
+        "T093-02",
+        "T093-03",
+        "T093-04"
+      ]
+    },
+    {
+      "videoIndex": 94,
+      "objective": "4.5",
+      "title": "Monitoring Data",
+      "file": "094 - 4.5 - Monitoring Data - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729544752114",
+        "1729545172423"
+      ],
+      "recallQuestionIds": [
+        "M4-022",
+        "M4-023",
+        "T094-01",
+        "T094-02",
+        "T094-03",
+        "T094-04"
+      ]
+    },
+    {
+      "videoIndex": 95,
+      "objective": "4.5",
+      "title": "Endpoint Security",
+      "file": "095 - 4.5 - Endpoint Security - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729545965530"
+      ],
+      "recallQuestionIds": [
+        "M4-024",
+        "T095-01",
+        "T095-02",
+        "T095-03",
+        "T095-04"
+      ]
+    },
+    {
+      "videoIndex": 96,
+      "objective": "4.6",
+      "title": "Identity and Access Management",
+      "file": "096 - 4.6 - Identity and Access Management - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729606385894",
+        "1729606424320",
+        "1729606994413"
+      ],
+      "recallQuestionIds": [
+        "M4-027",
+        "M4-025",
+        "M4-026"
+      ]
+    },
+    {
+      "videoIndex": 97,
+      "objective": "4.6",
+      "title": "Access Controls",
+      "file": "097 - 4.6 - Access Controls - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729609351815",
+        "1729609553997",
+        "1729609703139"
+      ],
+      "recallQuestionIds": [
+        "M4-030",
+        "M4-029",
+        "M4-028"
+      ]
+    },
+    {
+      "videoIndex": 98,
+      "objective": "4.6",
+      "title": "Multifactor Authentication",
+      "file": "098 - 4.6 - Multifactor Authentication - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729610407765",
+        "1729610578431"
+      ],
+      "recallQuestionIds": [
+        "M4-031",
+        "M4-032",
+        "T098-01",
+        "T098-02",
+        "T098-03",
+        "T098-04"
+      ]
+    },
+    {
+      "videoIndex": 99,
+      "objective": "4.6",
+      "title": "Password Security",
+      "file": "099 - 4.6 - Password Security - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729610995931",
+        "1729611036480",
+        "1729611118404",
+        "1729611199039"
+      ],
+      "recallQuestionIds": [
+        "M4-033",
+        "M4-034",
+        "M4-035",
+        "M4-036"
+      ]
+    },
+    {
+      "videoIndex": 100,
+      "objective": "4.7",
+      "title": "Scripting and Automation",
+      "file": "100 - 4.7 - Scripting and Automation - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729612110305",
+        "1729612337101",
+        "1729612543398"
+      ],
+      "recallQuestionIds": [
+        "M4-037",
+        "M4-039",
+        "M4-038"
+      ]
+    },
+    {
+      "videoIndex": 101,
+      "objective": "4.8",
+      "title": "Incident Response",
+      "file": "101 - 4.8 - Incident Response - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [],
+      "recallQuestionIds": [
+        "T101-01",
+        "T101-02",
+        "T101-03",
+        "T101-04",
+        "T101-05"
+      ]
+    },
+    {
+      "videoIndex": 102,
+      "objective": "4.8",
+      "title": "Incident Planning",
+      "file": "102 - 4.8 - Incident Planning - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729614400121"
+      ],
+      "recallQuestionIds": [
+        "M4-040",
+        "T102-01",
+        "T102-02",
+        "T102-03",
+        "T102-04"
+      ]
+    },
+    {
+      "videoIndex": 103,
+      "objective": "4.8",
+      "title": "Digital Forensics",
+      "file": "103 - 4.8 - Digital Forensics - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729614808452",
+        "1729614972339"
+      ],
+      "recallQuestionIds": [
+        "M4-042",
+        "M4-041",
+        "T103-01",
+        "T103-02",
+        "T103-03",
+        "T103-04"
+      ]
+    },
+    {
+      "videoIndex": 104,
+      "objective": "4.9",
+      "title": "Log Data",
+      "file": "104 - 4.9 - Log Data - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [],
+      "recallQuestionIds": [
+        "T104-01",
+        "T104-02",
+        "T104-03",
+        "T104-04",
+        "T104-05"
+      ]
+    },
+    {
+      "videoIndex": 105,
+      "objective": "5.1",
+      "title": "Security Policies",
+      "file": "105 - 5.1 - Security Policies - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729622224382",
+        "1729622405616"
+      ],
+      "recallQuestionIds": [
+        "M5-002",
+        "M5-001",
+        "T105-01",
+        "T105-02",
+        "T105-03",
+        "T105-04"
+      ]
+    },
+    {
+      "videoIndex": 106,
+      "objective": "5.1",
+      "title": "Security Standards",
+      "file": "106 - 5.1 - Security Standards - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729699356554"
+      ],
+      "recallQuestionIds": [
+        "M5-003",
+        "T106-01",
+        "T106-02",
+        "T106-03",
+        "T106-04"
+      ]
+    },
+    {
+      "videoIndex": 107,
+      "objective": "5.1",
+      "title": "Security Procedures",
+      "file": "107 - 5.1 - Security Procedures - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [],
+      "recallQuestionIds": [
+        "T107-01",
+        "T107-02",
+        "T107-03",
+        "T107-04",
+        "T107-05"
+      ]
+    },
+    {
+      "videoIndex": 108,
+      "objective": "5.1",
+      "title": "Security Considerations",
+      "file": "108 - 5.1 - Security Considerations - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729701252008"
+      ],
+      "recallQuestionIds": [
+        "M5-004",
+        "T108-01",
+        "T108-02",
+        "T108-03",
+        "T108-04"
+      ]
+    },
+    {
+      "videoIndex": 109,
+      "objective": "5.1",
+      "title": "Data Roles and Responsibilities",
+      "file": "109 - 5.1 - Data Roles and Responsibilities - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [],
+      "recallQuestionIds": [
+        "T109-01",
+        "T109-02",
+        "T109-03",
+        "T109-04",
+        "T109-05"
+      ]
+    },
+    {
+      "videoIndex": 110,
+      "objective": "5.2",
+      "title": "Risk Management",
+      "file": "110 - 5.2 - Risk Management - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729705368991"
+      ],
+      "recallQuestionIds": [
+        "M5-005",
+        "T110-01",
+        "T110-02",
+        "T110-03",
+        "T110-04"
+      ]
+    },
+    {
+      "videoIndex": 111,
+      "objective": "5.2",
+      "title": "Risk Analysis",
+      "file": "111 - 5.2 - Risk Analysis - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729706570753",
+        "1729706672664",
+        "1729706838699",
+        "1729706866215",
+        "1729706988234",
+        "1729707107108",
+        "1729707523667"
+      ],
+      "recallQuestionIds": [
+        "M5-009",
+        "M5-007",
+        "M5-010",
+        "M5-008",
+        "M5-012",
+        "M5-006",
+        "M5-011"
+      ]
+    },
+    {
+      "videoIndex": 112,
+      "objective": "5.2",
+      "title": "Risk Management Strategies",
+      "file": "112 - 5.2 - Risk Management Strategies - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729708046154",
+        "1729708108607"
+      ],
+      "recallQuestionIds": [
+        "M5-013",
+        "M5-014",
+        "T112-01",
+        "T112-02",
+        "T112-03",
+        "T112-04"
+      ]
+    },
+    {
+      "videoIndex": 113,
+      "objective": "5.2",
+      "title": "Business Impact Analysis",
+      "file": "113 - 5.2 - Business Impact Analysis - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729708541619",
+        "1729708787931"
+      ],
+      "recallQuestionIds": [
+        "M5-015",
+        "M5-016",
+        "T113-01",
+        "T113-02",
+        "T113-03",
+        "T113-04"
+      ]
+    },
+    {
+      "videoIndex": 114,
+      "objective": "5.3",
+      "title": "Third-party Risk Assessment",
+      "file": "114 - 5.3 - Third-party Risk Assessment - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729709419932"
+      ],
+      "recallQuestionIds": [
+        "M5-017",
+        "T114-01",
+        "T114-02",
+        "T114-03",
+        "T114-04"
+      ]
+    },
+    {
+      "videoIndex": 115,
+      "objective": "5.3",
+      "title": "Agreement Types",
+      "file": "115 - 5.3 - Agreement Types - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729710310793"
+      ],
+      "recallQuestionIds": [
+        "M5-018",
+        "T115-01",
+        "T115-02",
+        "T115-03",
+        "T115-04"
+      ]
+    },
+    {
+      "videoIndex": 116,
+      "objective": "5.4",
+      "title": "Compliance",
+      "file": "116 - 5.4 - Compliance - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729783659515",
+        "1729783723324",
+        "1729783769844"
+      ],
+      "recallQuestionIds": [
+        "M5-019",
+        "M5-020",
+        "M5-021"
+      ]
+    },
+    {
+      "videoIndex": 117,
+      "objective": "5.4",
+      "title": "Privacy",
+      "file": "117 - 5.4 - Privacy - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729784557847",
+        "1729784627980"
+      ],
+      "recallQuestionIds": [
+        "M5-022",
+        "M5-023",
+        "T117-01",
+        "T117-02",
+        "T117-03",
+        "T117-04"
+      ]
+    },
+    {
+      "videoIndex": 118,
+      "objective": "5.5",
+      "title": "Audits and Assessments",
+      "file": "118 - 5.5 - Audits and Assessments - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729785415964",
+        "1729785486403"
+      ],
+      "recallQuestionIds": [
+        "M5-025",
+        "M5-024",
+        "T118-01",
+        "T118-02",
+        "T118-03",
+        "T118-04"
+      ]
+    },
+    {
+      "videoIndex": 119,
+      "objective": "5.5",
+      "title": "Penetration Tests",
+      "file": "119 - 5.5 - Penetration Tests - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729785782984",
+        "1729785809766",
+        "1729785886535",
+        "1729785920415",
+        "1729786008395",
+        "1729786075246",
+        "1729786475642"
+      ],
+      "recallQuestionIds": [
+        "M5-028",
+        "M5-030",
+        "M5-029",
+        "M5-026",
+        "M5-031",
+        "M5-027",
+        "M5-032"
+      ]
+    },
+    {
+      "videoIndex": 120,
+      "objective": "5.6",
+      "title": "Security Awareness",
+      "file": "120 - 5.6 - Security Awareness - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [
+        "1729786793022"
+      ],
+      "recallQuestionIds": [
+        "M5-033",
+        "T120-01",
+        "T120-02",
+        "T120-03",
+        "T120-04"
+      ]
+    },
+    {
+      "videoIndex": 121,
+      "objective": "5.6",
+      "title": "User Training",
+      "file": "121 - 5.6 - User Training - CompTIA Security+ SY0-701.mp4",
+      "cardIds": [],
+      "recallQuestionIds": [
+        "T121-01",
+        "T121-02",
+        "T121-03",
+        "T121-04",
+        "T121-05"
+      ]
+    }
+  ],
+  "videosWithoutRecall": []
+}

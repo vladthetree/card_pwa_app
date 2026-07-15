@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "sy0701-exam-source-snapshot-1",
+  "manifestVersion": "2026-07-15.1",
+  "generatedAt": 1784148010779,
+  "snapshot": {
+    "schemaVersion": "sy0701-source-snapshot-1",
+    "snapshotId": "sy0701-v7-2026-07-15",
+    "examCode": "SY0-701",
+    "documentTitle": "CompTIA Security+ SY0-701 V7 Certification Exam Objectives",
+    "documentRevision": "Version 7.0",
+    "documentUrl": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+    "sha256": "95a2c75157928a8ba21b755b9cd25bde12c36983588b9fd4ee4e2268ae756b06",
+    "retrievedAt": 1784073600000,
+    "retrievedAtIso": "2026-07-15",
+    "domainWeights": [
+      12,
+      22,
+      18,
+      28,
+      20
+    ],
+    "maxItems": 90,
+    "durationSec": 5400,
+    "questionTypes": [
+      "multiple-choice",
+      "performance-based"
+    ],
+    "passingScore": 750,
+    "scoreScale": {
+      "min": 100,
+      "max": 900
+    },
+    "offeredLanguages": [
+      "en",
+      "ja",
+      "pt",
+      "es",
+      "th"
+    ],
+    "germanNotOffered": true,
+    "lifecycleStatus": "bookable",
+    "lifecycleCheckedAtIso": "2026-07-15",
+    "retirementEstimate": "2026 (offiziell nur geschätzt: \"usually three years after launch\")",
+    "lifecycleSourceUrl": "https://www.comptia.org/en-us/certifications/security/",
+    "usageBasis": "Privates Eigenstudium des Repo-Inhabers. Objectives-/Akronym-Snapshot dient ausschließlich der persönlichen Lernorganisation und Coverage-Prüfung; keine Redistribution des Dokuments oder abgeleiteter Fragen.",
+    "reviewedBy": "automatisch verifiziert (Download-Hash, Dokumenttitel, Produktseite am 2026-07-15); fachliche Bestätigung durch den Lernenden ausstehend",
+    "notes": [
+      "Hash am 2026-07-15 gegen den Live-Download verifiziert; PDF weist sich als 'EXAM NUMBER: SY0-701 V7' aus (24 Seiten).",
+      "Produktseite am 2026-07-15 geprüft: SY0-701 gelistet, Sprachen en/ja/pt/es/th, 'Retirement: usually three years after launch (estimated 2026)'.",
+      "Deutsch ist keine angebotene Prüfungssprache; UI-Sprache und Prüfungssprache werden getrennt behandelt (Detailplan §2.1).",
+      "Persönliche Buchungs-/Terminbestätigung ist ein offenes Learner-Item, kein Snapshot-Feld.",
+      "Ersetzt fachlich das ältere, in LAB_SOURCES['comptia-sy0-701-objectives'] registrierte Objectives-PDF (dort als historisch markiert)."
+    ]
+  }
+}

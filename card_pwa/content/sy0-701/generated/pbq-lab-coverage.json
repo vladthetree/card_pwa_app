@@ -1,0 +1,422 @@
+{
+  "schemaVersion": "sy0701-pbq-lab-coverage-1",
+  "manifestVersion": "2026-07-15.1",
+  "generatedAt": 1784148011211,
+  "sourceSnapshotId": "sy0701-v7-2026-07-15",
+  "pbqCards": [
+    {
+      "cardId": "1778313864610",
+      "deckId": "pbq-test-deck-001",
+      "deckName": "Interaktive Übungen",
+      "kind": "ordering",
+      "objective": null
+    },
+    {
+      "cardId": "1778313864611",
+      "deckId": "pbq-test-deck-001",
+      "deckName": "Interaktive Übungen",
+      "kind": "ordering",
+      "objective": null
+    },
+    {
+      "cardId": "1778313864612",
+      "deckId": "pbq-test-deck-001",
+      "deckName": "Interaktive Übungen",
+      "kind": "ordering",
+      "objective": null
+    },
+    {
+      "cardId": "1778313864613",
+      "deckId": "pbq-test-deck-001",
+      "deckName": "Interaktive Übungen",
+      "kind": "matching",
+      "objective": null
+    },
+    {
+      "cardId": "1778313864614",
+      "deckId": "pbq-test-deck-001",
+      "deckName": "Interaktive Übungen",
+      "kind": "matching",
+      "objective": null
+    },
+    {
+      "cardId": "1778313864615",
+      "deckId": "pbq-test-deck-001",
+      "deckName": "Interaktive Übungen",
+      "kind": "matching",
+      "objective": null
+    },
+    {
+      "cardId": "1779007738884",
+      "deckId": "sy0-701-objective-1-1",
+      "deckName": "1.1 Security Controls",
+      "kind": "matching",
+      "objective": "1.1"
+    },
+    {
+      "cardId": "1779095116170",
+      "deckId": "sy0-701-objective-5-5",
+      "deckName": "5.5 Audits and Assessments",
+      "kind": "ordering",
+      "objective": "5.5"
+    },
+    {
+      "cardId": "1779095116171",
+      "deckId": "sy0-701-objective-2-1",
+      "deckName": "2.1 Threat Actors",
+      "kind": "matching",
+      "objective": "2.1"
+    },
+    {
+      "cardId": "1779095116172",
+      "deckId": "sy0-701-objective-2-4",
+      "deckName": "2.4 Indicators of Malicious Activity",
+      "kind": "matching",
+      "objective": "2.4"
+    },
+    {
+      "cardId": "1779095116173",
+      "deckId": "sy0-701-objective-5-2",
+      "deckName": "5.2 Risk Management",
+      "kind": "matching",
+      "objective": "5.2"
+    },
+    {
+      "cardId": "1779095116174",
+      "deckId": "sy0-701-objective-3-4",
+      "deckName": "3.4 Resiliency and Recovery",
+      "kind": "matching",
+      "objective": "3.4"
+    },
+    {
+      "cardId": "1779095116175",
+      "deckId": "sy0-701-objective-3-3",
+      "deckName": "3.3 Protecting Data",
+      "kind": "matching",
+      "objective": "3.3"
+    },
+    {
+      "cardId": "1779669134167",
+      "deckId": "pbq-test-deck-001",
+      "deckName": "Interaktive Übungen",
+      "kind": "ordering",
+      "objective": null
+    },
+    {
+      "cardId": "1779669134168",
+      "deckId": "pbq-test-deck-001",
+      "deckName": "Interaktive Übungen",
+      "kind": "matching",
+      "objective": null
+    },
+    {
+      "cardId": "1779669134169",
+      "deckId": "pbq-test-deck-001",
+      "deckName": "Interaktive Übungen",
+      "kind": "matching",
+      "objective": null
+    },
+    {
+      "cardId": "1779724748973",
+      "deckId": "sy0-701-acronyms-bonus",
+      "deckName": "Acronym-Bonus (ABCD + PBQ)",
+      "kind": "matching",
+      "objective": null
+    },
+    {
+      "cardId": "1779724748974",
+      "deckId": "sy0-701-acronyms-bonus",
+      "deckName": "Acronym-Bonus (ABCD + PBQ)",
+      "kind": "matching",
+      "objective": null
+    },
+    {
+      "cardId": "1779724748975",
+      "deckId": "sy0-701-acronyms-bonus",
+      "deckName": "Acronym-Bonus (ABCD + PBQ)",
+      "kind": "matching",
+      "objective": null
+    },
+    {
+      "cardId": "1779724748976",
+      "deckId": "sy0-701-acronyms-bonus",
+      "deckName": "Acronym-Bonus (ABCD + PBQ)",
+      "kind": "matching",
+      "objective": null
+    },
+    {
+      "cardId": "1779724748977",
+      "deckId": "sy0-701-acronyms-bonus",
+      "deckName": "Acronym-Bonus (ABCD + PBQ)",
+      "kind": "matching",
+      "objective": null
+    },
+    {
+      "cardId": "1780262916267",
+      "deckId": "sy0-701-acronyms-bonus",
+      "deckName": "Acronym-Bonus (ABCD + PBQ)",
+      "kind": "ordering",
+      "objective": null
+    },
+    {
+      "cardId": "1780262916268",
+      "deckId": "sy0-701-acronyms-bonus",
+      "deckName": "Acronym-Bonus (ABCD + PBQ)",
+      "kind": "ordering",
+      "objective": null
+    }
+  ],
+  "pbqCardCount": 23,
+  "labScenarioCount": 100,
+  "labsByObjective": {
+    "1.1": [
+      "grundlagen-control-funktion",
+      "grundlagen-control-kategorie"
+    ],
+    "1.2": [
+      "grundlagen-schutzziel",
+      "grundlagen-zero-trust",
+      "grundlagen-deception-tech",
+      "firewalls-zero-trust-pep"
+    ],
+    "1.3": [
+      "grundlagen-standard-change",
+      "grundlagen-cab-freigabe"
+    ],
+    "Acronym-Bonus": [
+      "grundlagen-capability",
+      "grundlagen-shared-responsibility"
+    ],
+    "2.1": [
+      "bedrohungen-threat-actors"
+    ],
+    "2.2": [
+      "bedrohungen-social-engineering",
+      "bedrohungen-phishing-kette",
+      "bedrohungen-supply-chain-sbom"
+    ],
+    "2.4": [
+      "bedrohungen-malware",
+      "bedrohungen-indikatoren",
+      "bedrohungen-passwort-angriffe",
+      "bedrohungen-netzwerk-angriffe",
+      "bedrohungen-web-app-angriffe"
+    ],
+    "2.3": [
+      "bedrohungen-vuln-typen"
+    ],
+    "2.5": [
+      "bedrohungen-mitigation-mapping"
+    ],
+    "3.2": [
+      "firewalls-geo-block",
+      "firewalls-segmentierung",
+      "firewalls-east-west-microseg",
+      "architektur-container-hardening"
+    ],
+    "4.5": [
+      "firewalls-implicit-deny",
+      "firewalls-egress",
+      "firewalls-shadowed-rule",
+      "firewalls-nat-publishing",
+      "firewalls-waf-actions",
+      "firewalls-admin-access",
+      "firewalls-vpn-split-tunnel",
+      "firewalls-ids-ips-platzierung",
+      "firewalls-nac-8021x",
+      "betrieb-email-authentisierung"
+    ],
+    "4.9": [
+      "firewalls-log-triage",
+      "ir-log-quellen",
+      "ir-chain-of-custody",
+      "ir-forensic-volatility",
+      "ir-edr-timeline"
+    ],
+    "3.1": [
+      "architektur-cloud-modelle",
+      "architektur-shared-responsibility-matrix",
+      "architektur-ot-ics-iot",
+      "architektur-failure-modes"
+    ],
+    "3.3": [
+      "architektur-datenzustaende",
+      "architektur-data-sanitization",
+      "krypto-obfuskation"
+    ],
+    "3.4": [
+      "architektur-resilienz",
+      "architektur-backup-321",
+      "architektur-ha-failover"
+    ],
+    "4.6": [
+      "iam-aaa",
+      "iam-mfa-faktoren",
+      "iam-least-privilege",
+      "iam-access-control-modelle",
+      "iam-conditional-access",
+      "iam-pam-jit",
+      "iam-federation-flow",
+      "iam-sso-protokolle",
+      "iam-passwort-richtlinie"
+    ],
+    "5.1": [
+      "iam-offboarding",
+      "governance-policy-typen"
+    ],
+    "4.1": [
+      "betrieb-server-haertung",
+      "betrieb-wlan-sicherheit",
+      "betrieb-mobile-deployment"
+    ],
+    "4.2": [
+      "betrieb-asset-lifecycle"
+    ],
+    "4.3": [
+      "betrieb-vuln-priorisierung",
+      "betrieb-patch-notfall",
+      "betrieb-scan-arten"
+    ],
+    "4.4": [
+      "betrieb-siem-tuning",
+      "betrieb-monitoring-werkzeuge"
+    ],
+    "4.7": [
+      "betrieb-soar-playbook",
+      "betrieb-automation-usecases"
+    ],
+    "4.8": [
+      "ir-nist-phasen",
+      "ir-ransomware-first-response",
+      "ir-severity-triage",
+      "ir-containment-strategy",
+      "ir-communications-plan",
+      "ir-recovery-validation",
+      "ir-phishing-report-flow",
+      "ir-lessons-learned-actions",
+      "ir-uebungsformate",
+      "ir-threat-hunt-hypothese"
+    ],
+    "1.4": [
+      "krypto-bausteine",
+      "krypto-cert-lifecycle",
+      "krypto-tls-fehler",
+      "krypto-hash-einsatz",
+      "krypto-key-lifecycle",
+      "krypto-aead-hmac-signatur",
+      "krypto-pki-chain",
+      "krypto-secret-storage",
+      "krypto-zertifikatstypen"
+    ],
+    "5.2": [
+      "governance-risk-response",
+      "governance-quantitatives-risiko"
+    ],
+    "5.4": [
+      "governance-datenrollen",
+      "governance-datenschutz-rollen"
+    ],
+    "5.5": [
+      "governance-audit-ablauf",
+      "governance-audit-evidence"
+    ],
+    "5.3": [
+      "governance-third-party-risk",
+      "governance-vertragsdokumente"
+    ],
+    "5.6": [
+      "governance-awareness-plan"
+    ]
+  },
+  "scenarioObjectiveGate": [
+    {
+      "objective": "2.4",
+      "labScenarioIds": [
+        "bedrohungen-malware",
+        "bedrohungen-indikatoren",
+        "bedrohungen-passwort-angriffe",
+        "bedrohungen-netzwerk-angriffe",
+        "bedrohungen-web-app-angriffe"
+      ],
+      "pbqCardIds": [
+        "1779095116172"
+      ],
+      "ok": true
+    },
+    {
+      "objective": "3.2",
+      "labScenarioIds": [
+        "firewalls-geo-block",
+        "firewalls-segmentierung",
+        "firewalls-east-west-microseg",
+        "architektur-container-hardening"
+      ],
+      "pbqCardIds": [],
+      "ok": true
+    },
+    {
+      "objective": "4.1",
+      "labScenarioIds": [
+        "betrieb-server-haertung",
+        "betrieb-wlan-sicherheit",
+        "betrieb-mobile-deployment"
+      ],
+      "pbqCardIds": [],
+      "ok": true
+    },
+    {
+      "objective": "4.5",
+      "labScenarioIds": [
+        "firewalls-implicit-deny",
+        "firewalls-egress",
+        "firewalls-shadowed-rule",
+        "firewalls-nat-publishing",
+        "firewalls-waf-actions",
+        "firewalls-admin-access",
+        "firewalls-vpn-split-tunnel",
+        "firewalls-ids-ips-platzierung",
+        "firewalls-nac-8021x",
+        "betrieb-email-authentisierung"
+      ],
+      "pbqCardIds": [],
+      "ok": true
+    },
+    {
+      "objective": "4.6",
+      "labScenarioIds": [
+        "iam-aaa",
+        "iam-mfa-faktoren",
+        "iam-least-privilege",
+        "iam-access-control-modelle",
+        "iam-conditional-access",
+        "iam-pam-jit",
+        "iam-federation-flow",
+        "iam-sso-protokolle",
+        "iam-passwort-richtlinie"
+      ],
+      "pbqCardIds": [],
+      "ok": true
+    },
+    {
+      "objective": "4.9",
+      "labScenarioIds": [
+        "firewalls-log-triage",
+        "ir-log-quellen",
+        "ir-chain-of-custody",
+        "ir-forensic-volatility",
+        "ir-edr-timeline"
+      ],
+      "pbqCardIds": [],
+      "ok": true
+    },
+    {
+      "objective": "5.6",
+      "labScenarioIds": [
+        "governance-awareness-plan"
+      ],
+      "pbqCardIds": [],
+      "ok": true
+    }
+  ],
+  "note": "PBQ-Erkennung ausschließlich über den echten Kartenparser (OrderingParser/MatchingParser aus src/utils/cardTextParser.ts). Matching/Ordering deckt nicht das gesamte PBQ-Spektrum ab; fehlende Praxispfade siehe content-qa-report."
+}
