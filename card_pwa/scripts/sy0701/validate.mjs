@@ -445,6 +445,59 @@ writeArtifact('calibration-report.json', {
 })
 gate('kalibrierung', false, 'keine Kalibrierungsdaten vorhanden')
 
+// ── Generierte TS-Datenmodule (Plan §20: sy0701ContentMap.ts, sy0701Requirements.ts) ──
+const DATA_DIR = path.join(APP_ROOT, 'src', 'data')
+const genHeader = `/**
+ * AI_CONTEXT:
+ * Role: GENERATED data module of the dedicated SY0-701 learning-unit system — do not edit by hand.
+ * Used by: learning-unit builders/tests; regenerate via \`node scripts/sy0701/validate.mjs\`.
+ * Important: Derived from content/sy0-701/source/* (official V7 snapshot ${snapshot.sha256.slice(0, 12)}…, manifest ${MANIFEST_VERSION}).
+ */`
+
+const contentMapEntries = videoContentMap.map(v => ({
+  videoIndex: v.videoIndex,
+  objectiveId: v.objective,
+  requirementIds: [], // Leaf-Mapping ist offenes Phase-0-Item (OFFENE-PUNKTE.md #6)
+  courseCardIds: v.cardIds,
+  recallQuestionIds: v.recallQuestionIds,
+  recallCardIds: v.cardIds,
+  ...(v.cardIds.length === 0 ? { unmappedReason: 'keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)' } : {}),
+}))
+fs.writeFileSync(
+  path.join(DATA_DIR, 'sy0701ContentMap.ts'),
+  `${genHeader}
+import type { VideoContentMapEntry } from '../utils/learningUnits'
+
+export const SY0701_SOURCE_SNAPSHOT_ID = ${JSON.stringify(snapshot.snapshotId)}
+export const SY0701_CONTENT_MANIFEST_VERSION = ${JSON.stringify(MANIFEST_VERSION)}
+
+export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = ${JSON.stringify(contentMapEntries, null, 2)}
+
+export const SY0701_CONTENT_MAP_BY_VIDEO_INDEX: ReadonlyMap<number, VideoContentMapEntry> = new Map(
+  SY0701_CONTENT_MAP.map(entry => [entry.videoIndex, entry]),
+)
+`,
+)
+
+fs.writeFileSync(
+  path.join(DATA_DIR, 'sy0701Requirements.ts'),
+  `${genHeader}
+import type { ExamRequirementsManifest } from '../utils/learningUnits'
+
+export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = ${JSON.stringify(
+    {
+      sourceSnapshotId: snapshot.snapshotId,
+      manifestVersion: MANIFEST_VERSION,
+      requirements,
+      criticalErrorDefinitions: [],
+    },
+    null,
+    2,
+  )}
+`,
+)
+console.log('\nGeneriert: src/data/sy0701ContentMap.ts, src/data/sy0701Requirements.ts')
+
 // ── Gate-Zusammenfassung ────────────────────────────────────────────────────
 const failed = gates.filter(g => g.status === 'FAIL')
 console.log(`\nQuelle: ${snapshot.documentTitle} (${snapshot.documentRevision}, sha256 ${snapshot.sha256.slice(0, 12)}…)`)

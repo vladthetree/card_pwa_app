@@ -1,7 +1,7 @@
 {
   "schemaVersion": "sy0701-video-content-map-1",
   "manifestVersion": "2026-07-15.1",
-  "generatedAt": 1784148011208,
+  "generatedAt": 1784150417749,
   "sourceSnapshotId": "sy0701-v7-2026-07-15",
   "note": "Karten-IDs sind profilübergreifend identisch (verifiziert); Zuordnung über M-Frage-ID im Kartenfront + generierte Video-Titel-Map, nie über das Objective-Deck.",
   "videos": [
