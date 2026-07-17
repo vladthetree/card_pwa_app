@@ -229,6 +229,15 @@ export interface VideoRecallRun {
   completedAt: number
 }
 
+/** Ratio-Regel für Recall-Verdicts (identisch für Legacy-Import und neue Läufe):
+ *  „verstanden“ erfordert ≥ 80 % UND eine aussagekräftige Stichprobe (≥ 4). */
+export function computeRecallRunVerdict(correct: number, total: number): VideoRecallRun['verdict'] {
+  const ratio = total > 0 ? correct / total : 0
+  if (ratio >= 0.8 && total >= 4) return 'understood'
+  if (ratio >= 0.5) return 'almost'
+  return 'review'
+}
+
 // ── Konstanten ──────────────────────────────────────────────────────────────
 
 export const SY0701_OBJECTIVE_IDS: readonly string[] = [
@@ -588,6 +597,84 @@ export function computeCourseStepState(input: {
 
   const currentStep = !videoDone ? 'video' : !recallDone ? 'recall' : !cardsDone ? 'cards' : 'done'
   return { videoDone, recallDone, cardsDone, currentStep }
+}
+
+// ── Legacy-Pointer-Overlay (Übergang bis Phase-2-Verkabelung) ───────────────
+
+export interface LegacyCoursePointerSnapshot {
+  /** Playlist-Index des zuletzt abgeschlossenen Videos (0 = noch keins). */
+  lastCompletedIndex: number
+  lastCompletedAt: number
+  /** Playlist-Index des aktuell angebotenen Pakets (0 = keins aktiv). */
+  activeIndex: number
+  activeStartedAt: number
+}
+
+/**
+ * Read-only-Anzeige-Overlay: Solange die Heute-Paket-Mechanik der live
+ * fortschreitende Kurspfad ist, spiegeln die dedizierten Unit-States nur den
+ * einmaligen Legacy-Import wider. Diese Funktion legt den aktuellen Pointer
+ * über die persistierten States, damit Liste/Sheet nicht hinter der Kachel
+ * zurückbleiben. Sie schreibt nichts und wertet nur auf: fehlende/`notStarted`
+ * Course-States werden zu `completed` bzw. `inProgress`; persistierte
+ * `inProgress`-/`completed`-States bleiben unangetastet. Die synthetische
+ * `activeExecutionId` (`legacy:pointer:*`) markiert einen Legacy-Lauf und
+ * referenziert keine gespeicherte Ausführung.
+ */
+export function overlayLegacyCourseStates(input: {
+  states: readonly LearningUnitState[]
+  pointer: LegacyCoursePointerSnapshot | null
+  profileId: string
+  evidenceEpoch: number
+  now: number
+}): Map<string, LearningUnitState> {
+  const byUnitId = new Map(input.states.map(state => [state.unitId, state]))
+  const pointer = input.pointer
+  if (!pointer) return byUnitId
+
+  const lastCompleted = Math.min(Math.max(pointer.lastCompletedIndex, 0), COURSE_LAST_INDEX)
+  for (let index = COURSE_FIRST_INDEX; index <= lastCompleted; index++) {
+    const unitId = formatCourseUnitId(index)
+    const existing = byUnitId.get(unitId)
+    if (existing && existing.activityStatus !== 'notStarted') continue
+    const completedAt = pointer.lastCompletedAt > 0 ? pointer.lastCompletedAt : input.now
+    byUnitId.set(unitId, {
+      profileId: input.profileId,
+      evidenceEpoch: input.evidenceEpoch,
+      unitId,
+      activityStatus: 'completed',
+      currentStep: 'done',
+      completedAt,
+      lastCompletedAt: completedAt,
+      lastActivityAt: completedAt,
+      updatedAt: input.now,
+    })
+  }
+
+  if (
+    pointer.activeIndex >= COURSE_FIRST_INDEX &&
+    pointer.activeIndex <= COURSE_LAST_INDEX &&
+    pointer.activeIndex > lastCompleted &&
+    pointer.activeStartedAt > 0
+  ) {
+    const unitId = formatCourseUnitId(pointer.activeIndex)
+    const existing = byUnitId.get(unitId)
+    if (!existing || existing.activityStatus === 'notStarted') {
+      byUnitId.set(unitId, {
+        profileId: input.profileId,
+        evidenceEpoch: input.evidenceEpoch,
+        unitId,
+        activityStatus: 'inProgress',
+        currentStep: 'video',
+        activeExecutionId: `legacy:pointer:${pointer.activeIndex}`,
+        startedAt: pointer.activeStartedAt,
+        lastActivityAt: pointer.activeStartedAt,
+        updatedAt: input.now,
+      })
+    }
+  }
+
+  return byUnitId
 }
 
 // ── Leaf-Coverage (Vertrag §23.2, Abnahme §5.1) ─────────────────────────────

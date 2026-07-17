@@ -6,7 +6,7 @@
  */
 import { useEffect, useState } from 'react'
 import { Brain, Check, Eye, Loader2, RotateCcw, X } from 'lucide-react'
-import { listDeckCards } from '../../db/queries'
+import { listCardsByIds, listDeckCards } from '../../db/queries'
 import type { Card } from '../../types'
 import type { TranscriptQuestion } from '../../data/messerTranscriptQuestions'
 import {
@@ -128,8 +128,16 @@ interface Props {
   onStudyMissed?: (cards: Card[]) => void
   /** Bisherige Läufe dieses Videos (für die Verstanden-Empfehlung); beim Mount eingefroren. */
   previousRuns?: RecallRunResult[]
-  /** Wird bei jedem abgeschlossenen Durchlauf aufgerufen (Score-Historie). */
-  onResult?: (known: number, total: number) => void
+  /** Wird bei jedem abgeschlossenen Durchlauf aufgerufen (Score-Historie);
+   *  `questionIds` sind die gestellten Fragen in Abfragereihenfolge. */
+  onResult?: (known: number, total: number, questionIds: string[]) => void
+  /** Eingefrorene Fragen einer aktiven Kurs-Ausführung (§8.2): exakt diese IDs
+   *  in exakt dieser Reihenfolge stellen (M-IDs → Deck-Karten, T-IDs →
+   *  Transkriptfragen). Ohne Wert: freie Auswahl wie bisher. */
+  frozenQuestionIds?: readonly string[]
+  /** Karten-IDs der eingefrorenen M-Fragen — lädt sie deckunabhängig, damit
+   *  auch fehlplatzierte Karten (§8.1) auflösbar bleiben. */
+  frozenRecallCardIds?: readonly string[]
 }
 
 type Phase = 'loading' | 'empty' | 'quiz' | 'result'
@@ -273,6 +281,14 @@ export interface RecallQuizItem {
   view: RecallCardView
   /** Nur bei `source === 'deck'` gesetzt (für den Study-Handoff). */
   card?: Card
+  /** Stabile Fragen-ID (M-ID der Karte bzw. T-ID der Transkriptfrage). */
+  questionId?: string
+}
+
+/** T-ID einer Transkriptfrage: positional, 1-basiert (`T006-01` = erste Frage
+ *  von Video 006) — identisch zur Vergabe im Content-Map-Generator. */
+export function transcriptQuestionId(videoIndex: number, position: number): string {
+  return `T${String(videoIndex).padStart(3, '0')}-${String(position + 1).padStart(2, '0')}`
 }
 
 const CONFIDENCE_META: Record<VideoConfidence, { key: 'gaps' | 'ok' | 'solid'; cls: string; activeCls: string }> = {
@@ -293,7 +309,7 @@ const CONFIDENCE_META: Record<VideoConfidence, { key: 'gaps' | 'ok' | 'solid'; c
   },
 }
 
-export default function VideoRecallCheck({ deckId, objective, videoTitle, videoIndex, language, maxCards = DEFAULT_MAX_CARDS, onClose, onConfidence, onStudyMissed, previousRuns, onResult }: Props) {
+export default function VideoRecallCheck({ deckId, objective, videoTitle, videoIndex, language, maxCards = DEFAULT_MAX_CARDS, onClose, onConfidence, onStudyMissed, previousRuns, onResult, frozenQuestionIds, frozenRecallCardIds }: Props) {
   const copy = COPY[language]
   const [phase, setPhase] = useState<Phase>('loading')
   const [items, setItems] = useState<RecallQuizItem[]>([])
@@ -308,12 +324,20 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
   // lokal wächst sie mit jedem „Nochmal"-Durchlauf weiter.
   const [runHistory, setRunHistory] = useState<RecallRunResult[]>(() => previousRuns ?? [])
 
+  // Stabile Deps für die eingefrorene Auswahl (Array-Identität wechselt pro Render).
+  const frozenQuestionKey = frozenQuestionIds?.join('|') ?? ''
+  const frozenCardKey = frozenRecallCardIds?.join('|') ?? ''
+
   useEffect(() => {
     let cancelled = false
     setPhase('loading')
     const deckCardsPromise = listDeckCards(deckId)
       .then(all => all.filter(card => card.front?.trim() && isProfessorMesserRecallCard(card, objective, videoTitle)))
       .catch(() => [] as Card[])
+    // Eingefrorene M-Karten deckunabhängig nachladen (fehlplatzierte Decks, §8.1).
+    const frozenCardsPromise: Promise<Card[]> = frozenRecallCardIds && frozenRecallCardIds.length > 0
+      ? listCardsByIds([...frozenRecallCardIds]).catch(() => [] as Card[])
+      : Promise.resolve([] as Card[])
     // Kuratierte Transkript-Fragen lazy laden — hält sie aus dem Videos-Chunk heraus.
     const transcriptPromise: Promise<TranscriptQuestion[]> =
       videoIndex === null || videoIndex === undefined
@@ -321,16 +345,54 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
         : import('../../data/messerTranscriptQuestions')
             .then(mod => mod.MESSER_TRANSCRIPT_QUESTIONS[String(videoIndex).padStart(3, '0')] ?? [])
             .catch(() => [])
-    void Promise.all([deckCardsPromise, transcriptPromise]).then(([deckCards, transcriptQuestions]) => {
+    void Promise.all([deckCardsPromise, transcriptPromise, frozenCardsPromise]).then(([deckCards, transcriptQuestions, frozenCards]) => {
       if (cancelled) return
-      // Deck-Fragen haben Vorrang; Transkript-Fragen füllen bis maxCards auf.
-      const deckItems: RecallQuizItem[] = shuffle(deckCards)
-        .slice(0, maxCards)
-        .map(card => ({ source: 'deck', card, view: buildRecallCardView(card) }))
-      const transcriptItems: RecallQuizItem[] = shuffle(transcriptQuestions)
-        .slice(0, Math.max(0, maxCards - deckItems.length))
-        .map(question => ({ source: 'transcript', view: buildTranscriptQuestionView(question, shuffle([0, 1, 2, 3])) }))
-      const combined = [...deckItems, ...transcriptItems]
+      const questionIdOfCard = (card: Card) => MESSER_RECALL_QUESTION_PATTERN.exec(card.front.trim())?.[1]
+
+      let combined: RecallQuizItem[]
+      if (frozenQuestionIds && frozenQuestionIds.length > 0) {
+        // Ausführungsmodus (§8.2): exakt die eingefrorenen Fragen in ihrer
+        // Reihenfolge — keine freie Stichprobe, kein maxCards-Schnitt.
+        const cardByQuestionId = new Map<string, Card>()
+        for (const card of [...deckCards, ...frozenCards]) {
+          const id = questionIdOfCard(card)
+          if (id && !cardByQuestionId.has(id)) cardByQuestionId.set(id, card)
+        }
+        combined = []
+        for (const questionId of frozenQuestionIds) {
+          const card = cardByQuestionId.get(questionId)
+          if (card) {
+            combined.push({ source: 'deck', card, questionId, view: buildRecallCardView(card) })
+            continue
+          }
+          const match = /^T(\d{3})-(\d{2})$/.exec(questionId)
+          const question = match && Number(match[1]) === videoIndex
+            ? transcriptQuestions[Number(match[2]) - 1]
+            : undefined
+          if (question) {
+            combined.push({ source: 'transcript', questionId, view: buildTranscriptQuestionView(question, shuffle([0, 1, 2, 3])) })
+          }
+        }
+      } else {
+        // Freier Modus: Deck-Fragen haben Vorrang; Transkript-Fragen füllen bis maxCards auf.
+        const deckItems: RecallQuizItem[] = shuffle(deckCards)
+          .slice(0, maxCards)
+          .map(card => ({ source: 'deck', card, questionId: questionIdOfCard(card), view: buildRecallCardView(card) }))
+        const transcriptWithIds = transcriptQuestions.map((question, position) => ({
+          question,
+          questionId: videoIndex === null || videoIndex === undefined
+            ? undefined
+            : transcriptQuestionId(videoIndex, position),
+        }))
+        const transcriptItems: RecallQuizItem[] = shuffle(transcriptWithIds)
+          .slice(0, Math.max(0, maxCards - deckItems.length))
+          .map(entry => ({
+            source: 'transcript',
+            questionId: entry.questionId,
+            view: buildTranscriptQuestionView(entry.question, shuffle([0, 1, 2, 3])),
+          }))
+        combined = [...deckItems, ...transcriptItems]
+      }
       if (combined.length === 0) {
         setPhase('empty')
         return
@@ -346,7 +408,8 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
     return () => {
       cancelled = true
     }
-  }, [deckId, objective, videoTitle, videoIndex, maxCards])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deckId, objective, videoTitle, videoIndex, maxCards, frozenQuestionKey, frozenCardKey])
 
   const current = items[index]
   const view = current?.view ?? null
@@ -363,7 +426,11 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
     if (index + 1 >= total) {
       setKnownCount(nextKnown)
       setRunHistory(prev => [...prev, { known: nextKnown, total, at: Date.now() }])
-      onResult?.(nextKnown, total)
+      onResult?.(
+        nextKnown,
+        total,
+        items.map(item => item.questionId).filter((id): id is string => typeof id === 'string'),
+      )
       setPhase('result')
       return
     }

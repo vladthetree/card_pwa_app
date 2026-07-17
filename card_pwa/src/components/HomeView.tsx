@@ -27,9 +27,14 @@ import { useHomeStorageEstimate } from '../hooks/home/useHomeStorageEstimate'
 import { useHomeDerivedData } from '../hooks/home/useHomeDerivedData'
 import { useHomeViewController } from '../hooks/home/useHomeViewController'
 import { useTodayPackage } from '../hooks/home/useTodayPackage'
+import { useLearningUnits } from '../hooks/home/useLearningUnits'
+import { HomeLearningUnitList } from './home/HomeLearningUnitList'
 import { useDayStartMs } from '../hooks/useDayStartMs'
 import { computeExamDaysLeft } from '../utils/todayPackage'
-import { flattenDeckTree } from '../utils/securityDeckHierarchy'
+import { profileScopeId } from '../services/profileService'
+import { startOrResumeCourseUnit } from '../services/learningUnitRunner'
+import type { LearningUnitDefinition } from '../utils/learningUnits'
+import { flattenDeckTree, getSecurityObjectiveDeckId, getSecurityObjectiveDeckName } from '../utils/securityDeckHierarchy'
 import { isReviewDeck } from '../utils/reviewDecks'
 import { pickDailyQuestCards } from '../db/queries'
 
@@ -46,6 +51,7 @@ const HomeCreateDeckModal = lazy(() => import('./home/HomeCreateDeckModal').then
 const HomeExportModal = lazy(() => import('./home/HomeExportModal').then(module => ({ default: module.HomeExportModal })))
 const HomeDeckCardsModal = lazy(() => import('./home/HomeDeckCardsModal').then(module => ({ default: module.HomeDeckCardsModal })))
 const HomeShuffleCollectionModal = lazy(() => import('./home/HomeShuffleCollectionModal').then(module => ({ default: module.HomeShuffleCollectionModal })))
+const LearningUnitSheet = lazy(() => import('./home/LearningUnitSheet.tsx'))
 
 interface Props {
   mode?: 'default' | 'shuffle-manage'
@@ -90,7 +96,7 @@ export default function HomeView({
   const tagCardIndex = useTagCardIndex()
   const { decks, loading, error, reload } = useDecks()
   const { collections: shuffleCollections } = useShuffleCollections()
-  const { settings, profile } = useSettings()
+  const { settings, profile, isProfileHydrated } = useSettings()
   const prefersReducedMotion = useReducedMotion()
   const { stats } = useStats(settings.nextDayStartsAt, settings.studyCardLimit)
   const { profile: gamificationProfile } = useGamificationProfile(settings.nextDayStartsAt)
@@ -149,6 +155,65 @@ export default function HomeView({
     nextDayStartsAt: settings.nextDayStartsAt,
     packageCardLimit: settings.newCardsPerDay,
   })
+
+  // Lerneinheiten-Modul (dediziertes SY0-701-System): gleiche Katalogquelle wie
+  // das Heute-Paket, eigener profilfester Zustand — rein additiv zur Kachel.
+  // Vor der Profil-Hydration läuft nichts, sonst würde der einmalige
+  // Legacy-Import dem falschen Owner ('local') zugeordnet.
+  const learningUnitProfileId = isProfileHydrated ? profileScopeId(profile) : null
+  const learningUnits = useLearningUnits({
+    catalog: todayPackage.catalog,
+    catalogLoading: todayPackage.loading,
+    profileId: learningUnitProfileId,
+    examDateIso: settings.examDateIso,
+    nextDayStartsAt: settings.nextDayStartsAt,
+  })
+  const [showLearningUnitSheet, setShowLearningUnitSheet] = useState(false)
+  // Start/Fortsetzen einer Course-Unit: friert beim Erststart die Auswahl ein
+  // und öffnet danach exakt den offenen Schritt — Video, Abruf-Check oder die
+  // Karten-Session mit den verbleibenden eingefrorenen Karten (§7/§8.2).
+  const handleOpenLearningUnit = async (definition: LearningUnitDefinition) => {
+    if (definition.type !== 'course' || definition.videoIndex === undefined) return
+    const videoIndex = definition.videoIndex
+    if (learningUnitProfileId === null) {
+      onOpenVideoAtIndex?.(videoIndex, false)
+      return
+    }
+    try {
+      const launch = await startOrResumeCourseUnit({
+        profileId: learningUnitProfileId,
+        definition,
+        settings: {
+          packageCardLimit: settings.newCardsPerDay,
+          nextDayStartsAt: settings.nextDayStartsAt,
+          learnAheadMinutes: settings.learnAheadMinutes,
+          recallCheckSize: settings.recallCheckSize,
+          algorithm: settings.algorithm,
+        },
+      })
+      learningUnits.reload()
+      if (launch.step === 'cards' && launch.remainingCardIds.length > 0) {
+        const objectiveId = definition.objectiveIds[0]
+        onStartStudy(
+          {
+            id: getSecurityObjectiveDeckId(objectiveId),
+            name: getSecurityObjectiveDeckName(objectiveId),
+            total: launch.remainingCardIds.length,
+            new: 0,
+            learning: 0,
+            due: 0,
+          },
+          launch.remainingCardIds,
+        )
+        return
+      }
+      onOpenVideoAtIndex?.(videoIndex, launch.step === 'recall')
+    } catch (error) {
+      // Startfehler darf die Navigation nicht blockieren — Video read-only öffnen.
+      console.error('[HomeView] Lerneinheit-Start fehlgeschlagen', error)
+      onOpenVideoAtIndex?.(videoIndex, false)
+    }
+  }
   const activePackageCardIdsKey = todayPackage.activeCardIds.join('\u0000')
 
   // Daily Quest: Untertitel-Hinweis = Deck mit den meisten heute faelligen
@@ -217,23 +282,44 @@ export default function HomeView({
   // Heute-Paket: geführter Tagespfad (Kurs-Video → Abruf-Check → Karten der
   // Objective). Ohne erreichbare Videos fällt der Slide auf die Quest-Kachel zurück.
   const examDaysLeft = computeExamDaysLeft(settings.examDateIso)
-  const todayPackageTile = (todayPackage.loading || todayPackage.available)
+  // Kompakte Empfehlungsliste des Lerneinheiten-Moduls direkt unter der Kachel
+  // im selben Slide; das Sheet „Alle Lerneinheiten“ öffnet darüber.
+  const learningUnitList = learningUnits.available && learningUnits.ranked.length > 0
     ? (
-        <HomeTodayPackageTile
+        <HomeLearningUnitList
           language={settings.language}
-          loading={todayPackage.loading}
-          video={todayPackage.video}
-          videoNumber={todayPackage.videoNumber}
-          videoTotal={todayPackage.videoTotal}
-          steps={todayPackage.steps}
-          objectiveDeck={todayPackage.objectiveDeck}
-          remainingCards={todayPackage.remainingCards}
-          completedToday={todayPackage.completedToday}
-          onWatchVideo={(videoIndex, openRecall) => onOpenVideoAtIndex?.(videoIndex, openRecall)}
-          onStartCards={deckToStudy => onStartStudy(deckToStudy, todayPackage.remainingCardIds)}
+          phase={learningUnits.phase}
+          daysLeft={learningUnits.daysLeft}
+          readiness={learningUnits.readiness}
+          courseCompleted={learningUnits.courseCompleted}
+          courseTotal={learningUnits.courseTotal}
+          ranked={learningUnits.ranked}
+          stateByUnitId={learningUnits.stateByUnitId}
+          onOpenUnit={handleOpenLearningUnit}
+          onShowAll={() => setShowLearningUnitSheet(true)}
         />
       )
     : undefined
+  const todayPackageTile = (todayPackage.loading || todayPackage.available)
+    ? (
+        <>
+          <HomeTodayPackageTile
+            language={settings.language}
+            loading={todayPackage.loading}
+            video={todayPackage.video}
+            videoNumber={todayPackage.videoNumber}
+            videoTotal={todayPackage.videoTotal}
+            steps={todayPackage.steps}
+            objectiveDeck={todayPackage.objectiveDeck}
+            remainingCards={todayPackage.remainingCards}
+            completedToday={todayPackage.completedToday}
+            onWatchVideo={(videoIndex, openRecall) => onOpenVideoAtIndex?.(videoIndex, openRecall)}
+            onStartCards={deckToStudy => onStartStudy(deckToStudy, todayPackage.remainingCardIds)}
+          />
+          {learningUnitList}
+        </>
+      )
+    : learningUnitList
   // Offline ohne jemals gespeicherten Katalog: verstaendliche Meldung statt
   // stillem Verschwinden der Kachel — die Daily Quest bleibt darunter nutzbar.
   const todayPackageNotice = todayPackage.offlineNoData
@@ -596,6 +682,23 @@ export default function HomeView({
             />
           )}
         </AnimatePresence>
+
+        {showLearningUnitSheet && (
+          <LearningUnitSheet
+            language={settings.language}
+            readiness={learningUnits.readiness}
+            courseCompleted={learningUnits.courseCompleted}
+            courseTotal={learningUnits.courseTotal}
+            ranked={learningUnits.ranked}
+            stateByUnitId={learningUnits.stateByUnitId}
+            objectiveEvidence={learningUnits.objectiveEvidence}
+            onOpenUnit={definition => {
+              setShowLearningUnitSheet(false)
+              handleOpenLearningUnit(definition)
+            }}
+            onClose={() => setShowLearningUnitSheet(false)}
+          />
+        )}
 
         {controller.showCreateCard && <CreateCardModal onClose={controller.closeCreateCard} />}
         {controller.showSettings && <SettingsModal isOpen onClose={controller.closeSettings} />}

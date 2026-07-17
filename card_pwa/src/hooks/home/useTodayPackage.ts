@@ -46,6 +46,8 @@ export interface TodayPackageData {
   loading: boolean
   /** false = kein Videokatalog erreichbar UND keine lokalen Daten. */
   available: boolean
+  /** Vollständiger Videokatalog (auch Basis der Lerneinheiten-Liste). */
+  catalog: LocalVideoMeta[]
   /** true = Server nicht erreichbar UND noch nie ein Katalog lokal gespeichert
    *  (weder localStorage-Kopie noch Video-Downloads) → Meldung statt Kachel. */
   offlineNoData: boolean
@@ -126,6 +128,7 @@ export function useTodayPackage({ nextDayStartsAt, packageCardLimit }: Options):
   const [data, setData] = useState<Omit<TodayPackageData, 'reload'>>({
     loading: true,
     available: false,
+    catalog: [],
     offlineNoData: false,
     video: null,
     videoNumber: 0,
@@ -303,6 +306,7 @@ export function useTodayPackage({ nextDayStartsAt, packageCardLimit }: Options):
       setData({
         loading: false,
         available: true,
+        catalog,
         offlineNoData: false,
         video,
         videoNumber: video ? catalog.findIndex(entry => entry.index === video?.index) + 1 : 0,

@@ -37,6 +37,11 @@ import { useMesserVideoProgress, resolveVideoStatus, type MesserVideoProgress, t
 import { useVideoRecallScores, computeRecallVerdict, videoScoreKey, type VideoRecallVerdict } from '../../hooks/useVideoRecallScores'
 import { useLocalMesserVideos, useVideoSource, type LocalVideoItem, type LocalVideoObjectiveGroup } from '../../hooks/useLocalMesserVideos'
 import { summarizeDownloads } from '../../utils/videoDownloadQueue'
+import { markVideoOpened, markVideoWatched, setVideoConfidence } from '../../db/queries/learningUnits'
+import {
+  getActiveCourseExecutionForVideo,
+  recordCourseRecallRun,
+} from '../../services/learningUnitRunner'
 import MesserVideoPlayer from './MesserVideoPlayer'
 import VideoNotesPanel from './VideoNotesPanel'
 import VideoRecallCheck from './VideoRecallCheck'
@@ -591,6 +596,42 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
     () => groups.flatMap(group => group.videos).find(video => video.file === activeFile) ?? null,
     [groups, activeFile],
   )
+
+  // Aktive Kurs-Ausführung (Lerneinheiten-System) zum geöffneten Video: friert
+  // den Abruf-Check auf die Ausführungsfragen ein und bindet Läufe an sie.
+  type ActiveCourseExecution = NonNullable<Awaited<ReturnType<typeof getActiveCourseExecutionForVideo>>>
+  const [activeCourseExecution, setActiveCourseExecution] = useState<ActiveCourseExecution | null>(null)
+  const activeVideoIndex = activeItem?.index ?? null
+  useEffect(() => {
+    let cancelled = false
+    if (activeVideoIndex === null) {
+      setActiveCourseExecution(null)
+      return
+    }
+    getActiveCourseExecutionForVideo(profileId, activeVideoIndex)
+      .then(execution => {
+        if (!cancelled) setActiveCourseExecution(execution)
+      })
+      .catch(() => {
+        if (!cancelled) setActiveCourseExecution(null)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [profileId, activeVideoIndex])
+
+  /** Selbsteinschätzung: legacy objective-weit UND dediziert pro Profil/Video;
+   *  als expliziter Nutzerbefehl zählt sie zugleich als „gesehen“ (§8.2).
+   *  `null` (Abwahl) löscht nur legacy — watchedAt bleibt bewusst bestehen. */
+  const applyConfidence = (item: LocalVideoItem, next: VideoConfidence | null) => {
+    setConfidence(item.objective, next)
+    if (next === null) return
+    const now = Date.now()
+    void setVideoConfidence({ profileId, videoIndex: item.index, objectiveId: item.objective, confidence: next, now })
+      .catch(error => console.error('[VideosView] setVideoConfidence', error))
+    void markVideoWatched({ profileId, videoIndex: item.index, objectiveId: item.objective, method: 'manual', now })
+      .catch(error => console.error('[VideosView] markVideoWatched', error))
+  }
   const { src: videoSrc, resolving } = useVideoSource(activeItem?.file ?? null, activeItem?.downloaded ?? false)
   const noteStatsLabel = copy.noteStats
     .replace('{notes}', String(objectivesWithNotes.size))
@@ -614,6 +655,9 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
 
   const openVideo = (item: LocalVideoItem) => {
     markWatched(item.objective)
+    // Dediziert zählt Öffnen NICHT als gesehen (§8.2) — nur als openedAt.
+    void markVideoOpened({ profileId, videoIndex: item.index, objectiveId: item.objective, now: Date.now() })
+      .catch(error => console.error('[VideosView] markVideoOpened', error))
     setRecallOpen(false)
     setTranscriptOpen(false)
     setCurrentVideoTime(0)
@@ -737,6 +781,11 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
           pauseForKeyboardInput={compact && writingMode}
           onTimeChange={setCurrentVideoTime}
           seekRequest={seekRequest}
+          onEnded={() => {
+            // Zu Ende geschaut → dediziertes watchedAt (Methode 'ended', §8.2).
+            void markVideoWatched({ profileId, videoIndex: activeItem.index, objectiveId: activeItem.objective, method: 'ended', now: Date.now() })
+              .catch(error => console.error('[VideosView] markVideoWatched(ended)', error))
+          }}
           labels={{ fullscreen: copy.fullscreen, exitFullscreen: copy.exitFullscreen, speed: copy.speed }}
         />
       ) : resolving ? (
@@ -923,7 +972,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
         deckStats={deckSuccessRates[getSecurityObjectiveDeckId(activeItem.objective)] ?? null}
         onStartRecall={() => setRecallOpen(true)}
         onOpenTranscript={() => setTranscriptOpen(true)}
-        onSetConfidence={next => setConfidence(activeItem.objective, next)}
+        onSetConfidence={next => applyConfidence(activeItem, next)}
         copy={copy}
         compact={compact}
         open={studyBarOpen}
@@ -1178,10 +1227,30 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
           language={language}
           maxCards={settings.recallCheckSize}
           previousRuns={recallScores[videoScoreKey(activeItem.index)]}
-          onResult={(known, total) => recordRecallRun(activeItem.index, known, total)}
+          frozenQuestionIds={activeCourseExecution?.recallQuestionIds}
+          frozenRecallCardIds={activeCourseExecution?.recallCardIds}
+          onResult={(known, total, questionIds) => {
+            recordRecallRun(activeItem.index, known, total)
+            // Dedizierter Lauf (append-only): mit executionId nur, wenn er die
+            // eingefrorene Auswahl beantwortet hat — sonst freier Lauf.
+            const execution = activeCourseExecution
+            const matchesExecution = execution !== null && questionIds.length > 0
+            void recordCourseRecallRun({
+              profileId,
+              videoIndex: activeItem.index,
+              objectiveId: activeItem.objective,
+              executionId: matchesExecution ? execution.executionId : null,
+              questionIds,
+              questionVersionById: Object.fromEntries(
+                questionIds.map(id => [id, execution?.recallQuestionVersions[id] ?? 'v1']),
+              ),
+              correct: known,
+              total,
+            }).catch(error => console.error('[VideosView] recordCourseRecallRun', error))
+          }}
           onClose={() => setRecallOpen(false)}
           onConfidence={next => {
-            setConfidence(activeItem.objective, next)
+            applyConfidence(activeItem, next)
             setRecallOpen(false)
           }}
           onStudyMissed={onStartObjectiveStudy

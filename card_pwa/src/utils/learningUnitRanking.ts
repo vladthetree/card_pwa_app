@@ -83,6 +83,24 @@ export function resolveLearningPhase(input: {
   return progress >= 0.6 ? 'deepening' : 'foundation'
 }
 
+/**
+ * Draft-Pacing der Phase 1: Ohne bestätigten Lernplan und ohne
+ * Zeitschätzungen je Unit kann Machbarkeit weder belegt noch widerlegt
+ * werden — nur ein überschrittener Termin blockiert (`past-exam`).
+ * Die echte Kapazitätsrechnung (Wochenbudget, Puffertage) liefert Phase 3 (§12).
+ */
+export function computeDraftPacing(input: { daysLeft: number | null }): LearningPacingResult {
+  const base = {
+    requiredMinutes: 0,
+    availableMinutesAfterBuffer: 0,
+    requiredMinutesPerLearningDay: null,
+    missingEstimateUnitIds: [] as string[],
+  }
+  if (input.daysLeft === null) return { ...base, feasible: true, reason: 'missing-plan' }
+  if (input.daysLeft < 0) return { ...base, feasible: false, reason: 'past-exam' }
+  return { ...base, feasible: true, reason: 'missing-estimates' }
+}
+
 interface Prioritized {
   definition: LearningUnitDefinition
   priority: number

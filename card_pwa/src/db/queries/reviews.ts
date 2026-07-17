@@ -210,6 +210,23 @@ export async function listDeckCardIdsReviewedToday(deckId: string, nextDayStarts
  * bewertet wurden. So koennen mehrere Heute-Pakete am selben Tag dieselben
  * Objective-Decks verwenden, ohne Ergebnisse des vorigen Pakets mitzunehmen.
  */
+/**
+ * IDs aus einer festen Kartenmenge, die seit einem Zeitpunkt bewertet wurden.
+ * Deckunabhängig — misst den Karten-Schritt einer eingefrorenen
+ * Lerneinheiten-Ausführung, deren `cardIds` auch außerhalb des
+ * Objective-Decks liegen können (Fehlmappings, §8.1).
+ */
+export async function listCardIdsReviewedSince(cardIds: readonly string[], sinceMs: number): Promise<string[]> {
+  if (cardIds.length === 0) return []
+  const wanted = new Set(cardIds)
+  const reviews = await db.reviews.where('timestamp').aboveOrEqual(sinceMs).toArray()
+  const reviewed = new Set<string>()
+  for (const review of reviews) {
+    if (wanted.has(review.cardId)) reviewed.add(review.cardId)
+  }
+  return Array.from(reviewed)
+}
+
 export async function listDeckCardIdsReviewedSince(deckId: string, sinceMs: number): Promise<string[]> {
   const [todayReviews, deckCards] = await Promise.all([
     db.reviews.where('timestamp').aboveOrEqual(sinceMs).toArray(),

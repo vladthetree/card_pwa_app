@@ -17,7 +17,12 @@ import type {
   VideoProgressRecord,
   VideoRecallRun,
 } from '../../utils/learningUnits'
-import { COURSE_FIRST_INDEX, COURSE_LAST_INDEX, formatCourseUnitId } from '../../utils/learningUnits'
+import {
+  COURSE_FIRST_INDEX,
+  COURSE_LAST_INDEX,
+  computeRecallRunVerdict,
+  formatCourseUnitId,
+} from '../../utils/learningUnits'
 
 const LEGACY_LEARNING_MARKER = 'legacy-learning-v1'
 
@@ -386,13 +391,6 @@ export interface LegacyImportResult {
   draftPlanCreated: boolean
 }
 
-function legacyVerdict(known: number, total: number): VideoRecallRun['verdict'] {
-  const ratio = total > 0 ? known / total : 0
-  if (ratio >= 0.8 && total >= 4) return 'understood'
-  if (ratio >= 0.5) return 'almost'
-  return 'review'
-}
-
 /**
  * Ordnet die globalen Legacy-Signale genau einmal dem beim Upgrade aktiven
  * Profil zu. Der Marker `legacy-learning-v1` macht den Import idempotent;
@@ -542,7 +540,7 @@ export async function runLegacyLearningImport(
             questionVersionById: {},
             correct: run.known,
             total: run.total,
-            verdict: legacyVerdict(run.known, run.total),
+            verdict: computeRecallRunVerdict(run.known, run.total),
             completedAt: run.at,
           })
           recallRuns += 1
