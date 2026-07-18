@@ -35,8 +35,10 @@ import {
   abortReviewUnit,
   getActiveCourseExecutionForVideo,
   recordCourseRecallRun,
+  recordLabCheck,
   reconcileCourseUnitProgress,
   startOrResumeCourseUnit,
+  startOrResumeLabUnit,
   startOrResumeReviewUnit,
 } from '../../services/learningUnitRunner'
 
@@ -287,5 +289,48 @@ describe('startOrResumeReviewUnit / Review-Abschluss', () => {
     const resumed = await startReview()
     expect(resumed!.execution.executionId).toBe(launch!.execution.executionId)
     expect(resumed!.remainingCardIds).toEqual(['due-2'])
+  })
+})
+
+describe('startOrResumeLabUnit / recordLabCheck', () => {
+  const SCENARIO = { id: 'lab-42', title: 'ACL prüfen', objective: '4.5 Given a scenario …' }
+
+  it('startet Versuch + Unit atomar und resumt statt neu zu starten', async () => {
+    const first = await startOrResumeLabUnit({ profileId: PROFILE, scenario: SCENARIO, language: 'de' })
+    expect(first.state.activityStatus).toBe('inProgress')
+    expect(first.state.currentStep).toBe('lab')
+    expect(first.execution.labAttemptId).toBe(first.attempt.attemptId)
+
+    const second = await startOrResumeLabUnit({ profileId: PROFILE, scenario: SCENARIO, language: 'de' })
+    expect(second.execution.executionId).toBe(first.execution.executionId)
+    expect(second.attempt.attemptId).toBe(first.attempt.attemptId)
+  })
+
+  it('Fehlversuch aktualisiert den Versuch; volle Lösung gibt ab und schließt die Unit', async () => {
+    const launch = await startOrResumeLabUnit({ profileId: PROFILE, scenario: SCENARIO, language: 'de' })
+
+    await recordLabCheck({
+      profileId: PROFILE, scenarioId: SCENARIO.id,
+      answerByStepId: { main: { a: 'falsch' } }, score: 0.5,
+    })
+    const afterFail = await learningUnitsDb.labAttempts.get(launch.attempt.attemptId)
+    expect(afterFail?.status).toBe('inProgress')
+    expect(afterFail?.failedAttemptCount).toBe(1)
+    expect((await getLearningUnitState(PROFILE, 'unit:lab:lab-42'))?.activityStatus).toBe('inProgress')
+
+    await recordLabCheck({
+      profileId: PROFILE, scenarioId: SCENARIO.id,
+      answerByStepId: { main: { a: 'richtig' } }, score: 1,
+    })
+    const submitted = await learningUnitsDb.labAttempts.get(launch.attempt.attemptId)
+    expect(submitted?.status).toBe('submitted')
+    expect(submitted?.scoreEarned).toBe(1)
+    expect((await getLearningUnitState(PROFILE, 'unit:lab:lab-42'))?.activityStatus).toBe('completed')
+    expect(await getActiveExecution(PROFILE, 'unit:lab:lab-42')).toBeUndefined()
+  })
+
+  it('ohne laufenden Versuch ist recordLabCheck ein No-op', async () => {
+    await recordLabCheck({ profileId: PROFILE, scenarioId: 'nie-gestartet', answerByStepId: {}, score: 1 })
+    expect(await learningUnitsDb.labAttempts.count()).toBe(0)
   })
 })

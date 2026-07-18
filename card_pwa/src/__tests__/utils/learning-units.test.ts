@@ -13,6 +13,7 @@ import {
   formatCourseUnitId,
   normalizeRecallCheckSize,
   objectiveIdOfDeckId,
+  buildLabUnits,
   buildReviewUnits,
   buildReviewSelection,
   formatReviewUnitId,
@@ -511,6 +512,25 @@ describe('buildReviewUnits / buildReviewSelection', () => {
       limit: 2,
     })
     expect(limited.cardIds).toEqual(['due-1', 'due-2'])
+  })
+})
+
+describe('buildLabUnits', () => {
+  it('erzeugt je Szenario eine Unit mit Objective aus dem Label; Unparsebares fällt sichtbar heraus', () => {
+    const { units, skippedScenarioIds } = buildLabUnits({
+      scenarios: [
+        { id: 'fw-1', title: 'ACL-Regeln', objective: '4.5 Modify enterprise capabilities', minutes: 12 },
+        { id: 'ir-2', title: 'Incident-Ablauf', objective: '4.8 Incident response' },
+        { id: 'kaputt', title: 'Ohne Code', objective: 'Allgemein' },
+      ],
+      definitionVersion: 'v-test',
+    })
+    expect(units.map(unit => unit.unitId)).toEqual(['unit:lab:fw-1', 'unit:lab:ir-2'])
+    expect(units[0]).toMatchObject({
+      type: 'lab', objectiveIds: ['4.5'], labScenarioId: 'fw-1', estimatedMinutes: 12,
+    })
+    expect(units[1].estimatedMinutes).toBeUndefined()
+    expect(skippedScenarioIds).toEqual(['kaputt'])
   })
 })
 

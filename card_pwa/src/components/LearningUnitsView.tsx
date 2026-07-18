@@ -124,9 +124,11 @@ interface Props {
   onExit: () => void
   onStartStudy: (deck: Deck, cardIds?: string[], options?: { sessionId?: string; allowResume?: boolean }) => void
   onOpenVideoAtIndex: (videoIndex: number, openRecall: boolean) => void
+  /** Lab-Unit → Labs-Ansicht direkt beim Szenario (Deep Link, §13). */
+  onOpenLabScenario: (scenarioId: string) => void
 }
 
-export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtIndex }: Props) {
+export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtIndex, onOpenLabScenario }: Props) {
   const { settings, profile, isProfileHydrated } = useSettings()
   const copy = VIEW_COPY[settings.language]
   const listCopy = LEARNING_UNIT_COPY[settings.language]
@@ -184,6 +186,11 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
   }
 
   const handleOpenUnit = async (definition: LearningUnitDefinition) => {
+    if (definition.type === 'lab') {
+      // Versuch startet beim Öffnen des Szenarios in der Labs-Ansicht (§13.2).
+      if (definition.labScenarioId) onOpenLabScenario(definition.labScenarioId)
+      return
+    }
     if (definition.type === 'review') {
       if (profileId === null) return
       try {

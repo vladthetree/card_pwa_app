@@ -64,6 +64,41 @@ export interface MigrationMetaRecord {
   completedAt: number
 }
 
+/**
+ * Labversuch (Phase 4, Detailplan §13.2 in additiver Ausbaustufe): UUID-basiert,
+ * append-only; laufende Versuche sind aktualisierbar, abgegebene unveränderlich.
+ * `scenarioSnapshot` friert das Szenario beim Start vollständig ein — Rendering,
+ * Resume und Scoring lesen NIE die möglicherweise geänderte Registry.
+ */
+export interface LabAttemptRecord {
+  attemptId: string
+  profileId: string
+  evidenceEpoch: number
+  scenarioId: string
+  /** Content-Hash des eingefrorenen Szenarios (Registry hat keine Versionsfelder). */
+  scenarioVersion: string
+  sourceSnapshotId: string
+  contentManifestVersion: string
+  language: string
+  /** Eingefrorenes Szenario (tiefe Kopie der Registry beim Start); fehlt nur
+   *  bei `origin: 'legacy-completed'`-Zeilen ohne rekonstruierbaren Stand. */
+  scenarioSnapshot?: unknown
+  /** 'legacy-completed' = historischer Abschluss ohne Antworten/Rubrik —
+   *  Abschluss-, aber nie Score-/Mastery-Evidenz (§13.2). */
+  origin: 'attempt' | 'legacy-completed'
+  startedAt: number
+  updatedAt: number
+  revision: number
+  submittedAt?: number
+  abandonedAt?: number
+  status: 'inProgress' | 'submitted' | 'abandoned'
+  answerByStepId: Record<string, unknown>
+  scoreEarned?: number
+  scorePossible?: number
+  failedAttemptCount: number
+  elapsedMs: number
+}
+
 export class LearningUnitsDB extends Dexie {
   profileLearningState!: Table<ProfileLearningStateRecord, string>
   learningUnitState!: Table<LearningUnitState, [string, string]>
@@ -74,12 +109,13 @@ export class LearningUnitsDB extends Dexie {
   legacyAssessmentHints!: Table<LegacyAssessmentHintRecord, string>
   learnerExamPlans!: Table<DraftLearnerExamPlanRecord, [string, string]>
   migrationMeta!: Table<MigrationMetaRecord, string>
+  labAttempts!: Table<LabAttemptRecord, string>
 
   /** `name` nur für Tests überschreibbar (z. B. Quelle/Ziel eines Restores). */
   constructor(name = 'card-pwa-learning-units') {
     super(name)
     // Indizes nach Detailplan §16.1 (Teilmenge ohne Server-Receipt-Stores;
-    // assessment*/labAttempts/examAttempts folgen mit Phase 3–5).
+    // assessment*/examAttempts folgen mit Phase 5).
     this.version(1).stores({
       profileLearningState: 'profileId, updatedAt',
       learningUnitState: '[profileId+unitId], profileId, [profileId+activityStatus], lastActivityAt, updatedAt',
@@ -90,6 +126,10 @@ export class LearningUnitsDB extends Dexie {
       legacyAssessmentHints: 'hintId, profileId, importedAt',
       learnerExamPlans: '[profileId+examCode], profileId, examDateIso, updatedAt',
       migrationMeta: 'key, completedAt',
+    })
+    // v2 (Phase 4): Labversuche — das additive Äquivalent des Detailplan-v23.
+    this.version(2).stores({
+      labAttempts: 'attemptId, [profileId+scenarioId], [profileId+status], profileId, startedAt',
     })
   }
 }

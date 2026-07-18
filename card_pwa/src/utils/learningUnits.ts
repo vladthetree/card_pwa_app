@@ -291,6 +291,48 @@ export function buildReviewUnits(input: {
   }))
 }
 
+// ── Lab-Units (Phase 4, Detailplan §13) ────────────────────────────────────
+
+export function formatLabUnitId(scenarioId: string): string {
+  return `unit:lab:${scenarioId}`
+}
+
+/** Objective-Code aus dem Szenario-Label („1.1 Security Controls“ → „1.1“). */
+export function objectiveIdOfLabObjectiveLabel(label: string): string | null {
+  const match = /^(\d\.\d+)\b/.exec(label.trim())
+  return match ? match[1] : null
+}
+
+/** Eine `lab`-Einheit je Szenario (§13); Kategorien dienen nur der Gruppierung.
+ *  Szenarien ohne parsebaren Objective-Code fallen sichtbar heraus statt
+ *  falsch gruppiert zu werden. */
+export function buildLabUnits(input: {
+  scenarios: ReadonlyArray<{ id: string; title: string; objective: string; minutes?: number }>
+  definitionVersion: string
+}): { units: LearningUnitDefinition[]; skippedScenarioIds: string[] } {
+  const units: LearningUnitDefinition[] = []
+  const skippedScenarioIds: string[] = []
+  input.scenarios.forEach((scenario, index) => {
+    const objectiveId = objectiveIdOfLabObjectiveLabel(scenario.objective)
+    if (!objectiveId) {
+      skippedScenarioIds.push(scenario.id)
+      return
+    }
+    units.push({
+      unitId: formatLabUnitId(scenario.id),
+      type: 'lab',
+      title: `Lab · ${scenario.title}`,
+      objectiveIds: [objectiveId],
+      requirementIds: [],
+      order: 2000 + index,
+      labScenarioId: scenario.id,
+      ...(scenario.minutes !== undefined ? { estimatedMinutes: scenario.minutes } : {}),
+      definitionVersion: input.definitionVersion,
+    })
+  })
+  return { units, skippedScenarioIds }
+}
+
 export interface ReviewSelection {
   cardIds: string[]
   reasonByCardId: Record<string, 'due' | 'unresolved-error'>

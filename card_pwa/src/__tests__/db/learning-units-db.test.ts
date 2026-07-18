@@ -4,9 +4,11 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { LearningUnitsDB } from '../../db/learningUnitsDb'
 import type { LearningUnitExecution } from '../../utils/learningUnits'
 import {
+  abandonLabAttempt,
   abortUnitExecution,
   completeUnitExecution,
   getActiveExecution,
+  getActiveLabAttempt,
   getLearnerExamPlan,
   getLearningUnitState,
   getOrCreateProfileLearningState,
@@ -19,8 +21,12 @@ import {
   recordReviewUnitAttempt,
   recordVideoRecallRun,
   resetProfileLearningEvidence,
+  runLegacyLabsImport,
   runLegacyLearningImport,
+  startLabAttempt,
   startUnitExecution,
+  submitLabAttempt,
+  updateLabAttempt,
   type LegacyLearningSnapshot,
 } from '../../db/queries/learningUnits'
 
@@ -322,5 +328,94 @@ describe('listVideoRecallRunsForProfile (Epoch-Filter)', () => {
     await recordVideoRecallRun(recallRun({ runId: 'run-2', evidenceEpoch: 2, completedAt: NOW + 20 }), db)
     const current = await listVideoRecallRunsForProfile('profil-a', db)
     expect(current.map(run => run.runId)).toEqual(['run-2'])
+  })
+})
+
+describe('Labversuche (§13.2)', () => {
+  const startInput = (overrides: Partial<Parameters<typeof startLabAttempt>[0]> = {}) => ({
+    profileId: 'profil-a',
+    scenarioId: 'lab-1',
+    scenarioVersion: 'v-abc',
+    language: 'de',
+    sourceSnapshotId: 'snap',
+    contentManifestVersion: 'manifest',
+    scenarioSnapshot: { id: 'lab-1', title: 'Firewall-Regeln', nested: { value: 'original' } },
+    now: NOW,
+    ...overrides,
+  })
+
+  it('startet höchstens einen laufenden Versuch je Profil+Szenario (Resume)', async () => {
+    const first = await startLabAttempt(startInput(), db)
+    const second = await startLabAttempt(startInput(), db)
+    expect(second.attemptId).toBe(first.attemptId)
+    expect(first.status).toBe('inProgress')
+    expect(first.origin).toBe('attempt')
+  })
+
+  it('friert das Szenario ein: spätere Registry-Mutationen erreichen den Versuch nicht', async () => {
+    const registry = { id: 'lab-1', nested: { value: 'original' } }
+    const attempt = await startLabAttempt(startInput({ scenarioSnapshot: registry }), db)
+    registry.nested.value = 'MUTIERT'
+    const stored = await db.labAttempts.get(attempt.attemptId)
+    expect((stored?.scenarioSnapshot as { nested: { value: string } }).nested.value).toBe('original')
+  })
+
+  it('Update nur solange inProgress; Submit friert endgültig ein', async () => {
+    const attempt = await startLabAttempt(startInput(), db)
+    const updated = await updateLabAttempt({
+      profileId: 'profil-a', attemptId: attempt.attemptId,
+      answerByStepId: { main: { a: 'b' } }, failedAttemptCount: 1, elapsedMs: 5000, now: NOW + 5000,
+    }, db)
+    expect(updated.revision).toBe(1)
+
+    const submitted = await submitLabAttempt({
+      profileId: 'profil-a', attemptId: attempt.attemptId,
+      scoreEarned: 1, scorePossible: 1, elapsedMs: 9000, now: NOW + 9000,
+    }, db)
+    expect(submitted.status).toBe('submitted')
+    expect(submitted.answerByStepId).toEqual({ main: { a: 'b' } })
+
+    await expect(updateLabAttempt({
+      profileId: 'profil-a', attemptId: attempt.attemptId, answerByStepId: {}, now: NOW + 10_000,
+    }, db)).rejects.toThrow('unveränderlich')
+    await expect(submitLabAttempt({
+      profileId: 'profil-a', attemptId: attempt.attemptId, scoreEarned: 0, scorePossible: 1, now: NOW + 10_000,
+    }, db)).rejects.toThrow('unveränderlich')
+  })
+
+  it('nach Abbruch oder Abgabe startet ein Retry als neue UUID', async () => {
+    const first = await startLabAttempt(startInput(), db)
+    await abandonLabAttempt({ profileId: 'profil-a', attemptId: first.attemptId, now: NOW + 1 }, db)
+    expect(await getActiveLabAttempt('profil-a', 'lab-1', db)).toBeUndefined()
+    const retry = await startLabAttempt(startInput({ now: NOW + 2 }), db)
+    expect(retry.attemptId).not.toBe(first.attemptId)
+  })
+})
+
+describe('runLegacyLabsImport (§13.2)', () => {
+  it('wartet auf den v1-Owner-Marker, importiert dann genau einmal ohne Score', async () => {
+    // Ohne Owner-Marker: kein Import, kein Marker.
+    const early = await runLegacyLabsImport({ completedScenarioIds: ['lab-1'], now: NOW }, db)
+    expect(early.imported).toBe(false)
+    expect(early.ownerProfileId).toBeNull()
+
+    await db.migrationMeta.put({ key: 'legacy-learning-v1', ownerProfileId: 'profil-a', completedAt: NOW })
+    const result = await runLegacyLabsImport({ completedScenarioIds: ['lab-1', 'lab-2'], now: NOW + 1 }, db)
+    expect(result).toMatchObject({ imported: true, ownerProfileId: 'profil-a', attempts: 2 })
+
+    const attempts = await db.labAttempts.where('profileId').equals('profil-a').toArray()
+    expect(attempts).toHaveLength(2)
+    for (const attempt of attempts) {
+      expect(attempt.origin).toBe('legacy-completed')
+      expect(attempt.status).toBe('submitted')
+      expect(attempt.scoreEarned).toBeUndefined() // Abschluss-, keine Score-Evidenz
+    }
+    // Aktivitätsstatus der Lab-Units: bearbeitet.
+    expect((await getLearningUnitState('profil-a', 'unit:lab:lab-1', db))?.activityStatus).toBe('completed')
+
+    // Zweiter Lauf ist ein markergeschütztes No-op.
+    const repeat = await runLegacyLabsImport({ completedScenarioIds: ['lab-3'], now: NOW + 2 }, db)
+    expect(repeat.imported).toBe(false)
+    expect(await db.labAttempts.count()).toBe(2)
   })
 })

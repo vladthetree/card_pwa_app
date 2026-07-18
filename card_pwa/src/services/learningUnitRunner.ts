@@ -16,6 +16,7 @@ import {
   computeCourseStepState,
   createCourseExecution,
   formatCourseUnitId,
+  formatLabUnitId,
   selectCourseCardIds,
   selectRecallQuestionIds,
   computeRecallRunVerdict,
@@ -36,6 +37,7 @@ import {
   abortUnitExecution,
   completeUnitExecution,
   getActiveExecution,
+  getActiveLabAttempt,
   getLearningUnitState,
   getOrCreateProfileLearningState,
   getVideoProgress,
@@ -44,15 +46,21 @@ import {
   listReservedCardIds,
   recordReviewUnitAttempt,
   recordVideoRecallRun,
+  startLabAttempt,
   startUnitExecution,
+  submitLabAttempt,
   touchUnitActivity,
+  updateLabAttempt,
 } from '../db/queries/learningUnits'
+import type { LabAttemptRecord } from '../db/learningUnitsDb'
+import { fnv1a32 } from '../utils/hash'
 import { clearActiveSession, listCardsByDeckIdsDirect, listCardsByIds, listCardIdsReviewedSince } from '../db/queries'
 import { readTodayPackagePointer } from '../utils/todayPackage'
 import type { Algorithm } from '../contexts/SettingsContext'
 
 type CourseExecution = Extract<LearningUnitExecution, { type: 'course' }>
 type ReviewExecution = Extract<LearningUnitExecution, { type: 'review' }>
+type LabExecution = Extract<LearningUnitExecution, { type: 'lab' }>
 
 const M_ID_PREFIX = /^(M\d-\d{3}):/
 
@@ -335,6 +343,114 @@ export async function startOrResumeReviewUnit(input: {
   }
   const state = await startUnitExecution(execution, now)
   return { execution, state, remainingCardIds: [...selection.cardIds] }
+}
+
+/** Deterministische Versionskennung eines Registry-Szenarios (Content-Hash);
+ *  die Registry selbst trägt keine Versionsfelder. */
+export function computeLabScenarioVersion(scenario: unknown): string {
+  return `v-${fnv1a32(JSON.stringify(scenario)).toString(16)}`
+}
+
+export interface LabUnitLaunch {
+  execution: LabExecution
+  attempt: LabAttemptRecord
+  state: LearningUnitState
+}
+
+/**
+ * Startet eine Lab-Unit mit vollständig eingefrorenem Szenario-Versuch (§13.2)
+ * oder setzt den laufenden Versuch fort. Während des Versuchs werden keine
+ * Kartenreviews und kein XP geschrieben (§15).
+ */
+export async function startOrResumeLabUnit(input: {
+  profileId: string
+  scenario: { id: string }
+  language: string
+}): Promise<LabUnitLaunch> {
+  const { profileId, scenario } = input
+  const unitId = formatLabUnitId(scenario.id)
+  const now = Date.now()
+
+  const active = await getActiveExecution(profileId, unitId)
+  if (active && active.type === 'lab') {
+    const attempt = await getActiveLabAttempt(profileId, scenario.id)
+    if (attempt && attempt.attemptId === active.labAttemptId) {
+      const state = await getLearningUnitState(profileId, unitId)
+      if (!state) throw new Error(`startOrResumeLabUnit: Unit-State zu ${unitId} fehlt`)
+      return { execution: active, attempt, state }
+    }
+    // Inkonsistenter Rest (z. B. Versuch anderweitig beendet): Ausführung lösen.
+    await abortUnitExecution(profileId, active.executionId, now)
+  }
+
+  const profileState = await getOrCreateProfileLearningState(profileId, now)
+  const scenarioVersion = computeLabScenarioVersion(scenario)
+  const attempt = await startLabAttempt({
+    profileId,
+    scenarioId: scenario.id,
+    scenarioVersion,
+    language: input.language,
+    sourceSnapshotId: SY0701_SOURCE_SNAPSHOT_ID,
+    contentManifestVersion: SY0701_CONTENT_MANIFEST_VERSION,
+    scenarioSnapshot: scenario,
+    now,
+  })
+  const execution: LabExecution = {
+    executionId: crypto.randomUUID(),
+    unitId,
+    profileId,
+    evidenceEpoch: profileState.evidenceEpoch,
+    type: 'lab',
+    createdAt: now,
+    labAttemptId: attempt.attemptId,
+    scenarioVersion: attempt.scenarioVersion,
+  }
+  const state = await startUnitExecution(execution, now)
+  return { execution, attempt, state }
+}
+
+/**
+ * Persistiert das Ergebnis eines Lösungsversuchs im Lab: Fehlversuche als
+ * Resume-Update, die erste vollständige Lösung als endgültige Abgabe — die
+ * schließt zugleich die Lab-Unit ab. Ohne laufenden Versuch (z. B. Profil
+ * nicht hydratisiert) ist der Aufruf ein No-op.
+ */
+export async function recordLabCheck(input: {
+  profileId: string
+  scenarioId: string
+  answerByStepId: Record<string, unknown>
+  /** Anteil korrekt (0..1) aus der bestehenden Lab-Bewertung. */
+  score: number
+}): Promise<void> {
+  const attempt = await getActiveLabAttempt(input.profileId, input.scenarioId)
+  if (!attempt) return
+  const now = Date.now()
+  const elapsedMs = Math.max(0, now - attempt.startedAt)
+  if (input.score < 1) {
+    await updateLabAttempt({
+      profileId: input.profileId,
+      attemptId: attempt.attemptId,
+      answerByStepId: input.answerByStepId,
+      failedAttemptCount: attempt.failedAttemptCount + 1,
+      elapsedMs,
+      now,
+    })
+    return
+  }
+  await submitLabAttempt({
+    profileId: input.profileId,
+    attemptId: attempt.attemptId,
+    answerByStepId: input.answerByStepId,
+    scoreEarned: input.score,
+    scorePossible: 1,
+    elapsedMs,
+    now,
+  })
+  const unitId = formatLabUnitId(input.scenarioId)
+  const execution = await getActiveExecution(input.profileId, unitId)
+  if (execution?.type === 'lab' && execution.labAttemptId === attempt.attemptId) {
+    await completeUnitExecution(input.profileId, execution.executionId, now)
+  }
 }
 
 /**

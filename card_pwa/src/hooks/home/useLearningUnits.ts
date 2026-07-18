@@ -15,6 +15,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { LocalVideoMeta } from '../../utils/localVideoManifest'
 import {
   buildCourseUnits,
+  buildLabUnits,
   buildReviewUnits,
   formatReviewUnitId,
   objectiveIdOfDeckId,
@@ -51,8 +52,11 @@ import {
   getOrCreateProfileLearningState,
   listLearningUnitStates,
   listVideoRecallRunsForProfile,
+  runLegacyLabsImport,
   runLegacyLearningImport,
 } from '../../db/queries/learningUnits'
+import { LAB_SCENARIOS } from '../../data/labScenarios'
+import { readCompletedLabs } from '../../utils/labProgress'
 import { reconcileCourseUnitProgress } from '../../services/learningUnitRunner'
 import { readTodayPackagePointer } from '../../utils/todayPackage'
 import { readVideoProgress } from '../useMesserVideoProgress'
@@ -111,6 +115,13 @@ const EMPTY_RESULT = {
   plan: null as DraftLearnerExamPlanRecord | null,
   pacing: computeDraftPacing({ daysLeft: null }),
 }
+
+// Eine `lab`-Einheit je Registry-Szenario (§13); statisch, da rein aus der
+// Szenario-Registry abgeleitet. Nicht parsebare Objective-Labels fallen heraus.
+const LAB_DEFINITIONS = buildLabUnits({
+  scenarios: LAB_SCENARIOS,
+  definitionVersion: SY0701_CONTENT_MANIFEST_VERSION,
+}).units
 
 /** Lokales Lerntagsdatum (YYYY-MM-DD) des Tagesanfangs — nie UTC. */
 function formatLocalLearningDay(dayStartMs: number): string {
@@ -210,6 +221,14 @@ export function useLearningUnits({
         console.error('[useLearningUnits] Reconcile fehlgeschlagen', error)
       }
 
+      // Einmaliger Legacy-Labs-Import (§13.2): „geschafft“-Set → historische
+      // Abschlüsse des v1-Owners; markergeschützt idempotent.
+      try {
+        await runLegacyLabsImport({ completedScenarioIds: [...readCompletedLabs()], now })
+      } catch (error) {
+        console.error('[useLearningUnits] Legacy-Labs-Import fehlgeschlagen', error)
+      }
+
       const objectiveDeckIds = SY0_701_OBJECTIVES.map(objective => getSecurityObjectiveDeckId(objective.code))
       const [profileState, states, plan, recallRuns, objectiveCards, attemptsToday] = await Promise.all([
         getOrCreateProfileLearningState(profileId, now),
@@ -280,8 +299,8 @@ export function useLearningUnits({
           .map(definition => ({ unitId: definition.unitId, estimatedMinutes: definition.estimatedMinutes })),
       })
       const ranked = rankLearningUnits({
-        // Kurs- plus Review-Units; Lab-/Exam-Units folgen mit Phase 4/5.
-        definitions: [...definitions, ...reviewDefinitions],
+        // Kurs-, Review- und Lab-Units; Exam-Units folgen mit Phase 5.
+        definitions: [...definitions, ...reviewDefinitions, ...LAB_DEFINITIONS],
         stateByUnitId,
         phase,
         localLearningDay,

@@ -720,6 +720,16 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
     setView('learning-units')
   }
 
+  // Lab-Unit-Deep-Link: Labs-Ansicht direkt bei einem bestimmten Szenario öffnen.
+  const [labsInitialScenarioId, setLabsInitialScenarioId] = useState<string | null>(null)
+  const openLabScenario = (scenarioId: string) => {
+    setActiveDeck(null)
+    setActiveTagCards(null)
+    setActiveShuffleCollection(null)
+    setLabsInitialScenarioId(scenarioId)
+    setView('labs')
+  }
+
   const openVideos = () => {
     setActiveDeck(null)
     setActiveTagCards(null)
@@ -848,7 +858,14 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0 h-full"
               >
-                <LabsView language={settings.language} onExit={goHome} />
+                <LabsView
+                  language={settings.language}
+                  onExit={() => {
+                    setLabsInitialScenarioId(null)
+                    goHome()
+                  }}
+                  initialScenarioId={labsInitialScenarioId ?? undefined}
+                />
               </motion.div>
             )}
 
@@ -860,7 +877,12 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0 h-full"
               >
-                <LearningUnitsView onExit={goHome} onStartStudy={startStudy} onOpenVideoAtIndex={openVideoAtIndex} />
+                <LearningUnitsView
+                  onExit={goHome}
+                  onStartStudy={startStudy}
+                  onOpenVideoAtIndex={openVideoAtIndex}
+                  onOpenLabScenario={openLabScenario}
+                />
               </motion.div>
             )}
 

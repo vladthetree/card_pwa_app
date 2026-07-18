@@ -49,12 +49,15 @@ interface Props {
   scenario: LabScenario
   onBack: () => void
   onSolved: (scenarioId: string) => void
+  /** Jeder Lösungsversuch (auch fehlgeschlagene) mit Antworten und Score-Anteil
+   *  0..1 — additive Instrumentierung für das Lerneinheiten-Versuchsprotokoll. */
+  onCheck?: (detail: { scenarioId: string; score: number; answerByStepId: Record<string, unknown> }) => void
 }
 
 const SECTION_LABEL = 'mb-2 font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500'
 const MONO_BOX = 'whitespace-pre-wrap rounded-ds-xl border border-[#1f1f23] bg-[#0c0c0c] px-3.5 py-3 font-mono text-[13px] leading-[1.6] text-zinc-200'
 
-export default function LabScenarioView({ language, scenario, onBack, onSolved }: Props) {
+export default function LabScenarioView({ language, scenario, onBack, onSolved, onCheck }: Props) {
   const copy = COPY[language]
   const badge = LAB_DIFFICULTY_BADGE[scenario.difficulty]
   const interaction = scenario.interaction
@@ -90,6 +93,11 @@ export default function LabScenarioView({ language, scenario, onBack, onSolved }
     } else {
       score = computeOrderingScore(order, interaction.correctOrder, interaction.steps)
     }
+    onCheck?.({
+      scenarioId: scenario.id,
+      score,
+      answerByStepId: interaction.type === 'matching' ? { main: { ...selections } } : { main: [...order] },
+    })
     if (score === 1) {
       setResult('solved')
       onSolved(scenario.id)

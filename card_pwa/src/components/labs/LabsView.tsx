@@ -11,6 +11,9 @@ import { generateFreshLab, type GeneratedLab } from '../../utils/labGenerator'
 import { readTrainingSolved, persistTrainingSolved } from '../../utils/labTraining'
 import { LAB_DIFFICULTY_BADGE } from './labUi'
 import LabScenarioView from './LabScenarioView'
+import { useSettings } from '../../contexts/SettingsContext'
+import { profileScopeId } from '../../services/profileService'
+import { recordLabCheck, startOrResumeLabUnit } from '../../services/learningUnitRunner'
 
 /**
  * Labs — Liste "Interaktive Sicherheits-Szenarien", rekonstruiert aus dem
@@ -38,13 +41,19 @@ const COPY = {
 interface Props {
   language: 'de' | 'en'
   onExit: () => void
+  /** Deep Link aus dem Lerneinheiten-Screen: Szenario direkt öffnen. */
+  initialScenarioId?: string
 }
 
-export default function LabsView({ language, onExit }: Props) {
+export default function LabsView({ language, onExit, initialScenarioId }: Props) {
   const copy = COPY[language]
+  const { profile, isProfileHydrated } = useSettings()
+  const labProfileId = isProfileHydrated ? profileScopeId(profile) : null
   const [completed, setCompleted] = useState<Set<string>>(() => readCompletedLabs())
   const [trainingSolved, setTrainingSolved] = useState<Set<string>>(() => readTrainingSolved())
-  const [activeScenario, setActiveScenario] = useState<LabScenario | null>(null)
+  const [activeScenario, setActiveScenario] = useState<LabScenario | null>(
+    () => LAB_SCENARIOS.find(scenario => scenario.id === initialScenarioId) ?? null,
+  )
   const [activeTraining, setActiveTraining] = useState<GeneratedLab | null>(null)
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
 
@@ -87,6 +96,28 @@ export default function LabsView({ language, onExit }: Props) {
     setCompleted(persistCompletedLab(scenarioId))
   }
 
+  // Lerneinheiten-Instrumentierung (additiv, §13.2): Öffnen eines Registry-
+  // Szenarios startet/fortsetzt den eingefrorenen Labversuch samt Lab-Unit;
+  // Trainings-Labs (generiert) bleiben bewusst außen vor.
+  useEffect(() => {
+    if (!activeScenario || labProfileId === null) return
+    void startOrResumeLabUnit({
+      profileId: labProfileId,
+      scenario: activeScenario,
+      language,
+    }).catch(error => console.error('[LabsView] Lab-Unit-Start fehlgeschlagen', error))
+  }, [activeScenario, labProfileId, language])
+
+  const handleScenarioCheck = (detail: { scenarioId: string; score: number; answerByStepId: Record<string, unknown> }) => {
+    if (labProfileId === null) return
+    void recordLabCheck({
+      profileId: labProfileId,
+      scenarioId: detail.scenarioId,
+      answerByStepId: detail.answerByStepId,
+      score: detail.score,
+    }).catch(error => console.error('[LabsView] Lab-Versuch speichern fehlgeschlagen', error))
+  }
+
   const startTraining = (categoryId: string) => {
     const generated = generateFreshLab(categoryId, trainingSolved)
     if (generated) setActiveTraining(generated)
@@ -123,6 +154,7 @@ export default function LabsView({ language, onExit }: Props) {
         scenario={activeScenario}
         onBack={() => setActiveScenario(null)}
         onSolved={handleSolved}
+        onCheck={handleScenarioCheck}
       />
     )
   }

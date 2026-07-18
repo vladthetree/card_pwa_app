@@ -7,6 +7,7 @@
 import {
   learningUnitsDb as defaultDb,
   type DraftLearnerExamPlanRecord,
+  type LabAttemptRecord,
   type LearningUnitsDB,
   type LegacyAssessmentHintRecord,
   type MigrationMetaRecord,
@@ -24,6 +25,7 @@ import {
   COURSE_LAST_INDEX,
   computeRecallRunVerdict,
   formatCourseUnitId,
+  formatLabUnitId,
 } from '../../utils/learningUnits'
 
 const LEGACY_LEARNING_MARKER = 'legacy-learning-v1'
@@ -40,6 +42,7 @@ type Db = Pick<
   | 'learnerExamPlans'
   | 'legacyAssessmentHints'
   | 'migrationMeta'
+  | 'labAttempts'
   | 'transaction'
 >
 
@@ -435,6 +438,229 @@ export async function listVideoRecallRunsForProfile(
   return runs.filter(run => run.evidenceEpoch === epoch)
 }
 
+// ── Labversuche (Phase 4, §13.2) ────────────────────────────────────────────
+
+export async function getActiveLabAttempt(
+  profileId: string,
+  scenarioId: string,
+  db: Db = defaultDb,
+): Promise<LabAttemptRecord | undefined> {
+  const attempts = await db.labAttempts
+    .where('[profileId+scenarioId]')
+    .equals([profileId, scenarioId])
+    .toArray()
+  return attempts.find(attempt => attempt.status === 'inProgress')
+}
+
+export async function listLabAttempts(profileId: string, db: Db = defaultDb): Promise<LabAttemptRecord[]> {
+  return db.labAttempts.where('profileId').equals(profileId).toArray()
+}
+
+/** Startet einen Labversuch mit vollständig eingefrorenem Szenario oder liefert
+ *  den laufenden Versuch zurück (höchstens einer je Profil+Szenario). */
+export async function startLabAttempt(
+  input: {
+    profileId: string
+    scenarioId: string
+    scenarioVersion: string
+    language: string
+    sourceSnapshotId: string
+    contentManifestVersion: string
+    scenarioSnapshot: unknown
+    now: number
+  },
+  db: Db = defaultDb,
+): Promise<LabAttemptRecord> {
+  return db.transaction('rw', [db.labAttempts, db.profileLearningState], async () => {
+    const attempts = await db.labAttempts
+      .where('[profileId+scenarioId]')
+      .equals([input.profileId, input.scenarioId])
+      .toArray()
+    const active = attempts.find(attempt => attempt.status === 'inProgress')
+    if (active) return active
+
+    const epochState = await db.profileLearningState.get(input.profileId)
+    const record: LabAttemptRecord = {
+      attemptId: crypto.randomUUID(),
+      profileId: input.profileId,
+      evidenceEpoch: epochState?.evidenceEpoch ?? 1,
+      scenarioId: input.scenarioId,
+      scenarioVersion: input.scenarioVersion,
+      sourceSnapshotId: input.sourceSnapshotId,
+      contentManifestVersion: input.contentManifestVersion,
+      language: input.language,
+      scenarioSnapshot: JSON.parse(JSON.stringify(input.scenarioSnapshot)),
+      origin: 'attempt',
+      startedAt: input.now,
+      updatedAt: input.now,
+      revision: 0,
+      status: 'inProgress',
+      answerByStepId: {},
+      failedAttemptCount: 0,
+      elapsedMs: 0,
+    }
+    await db.labAttempts.put(record)
+    return record
+  })
+}
+
+/** Resume-Update eines laufenden Versuchs; abgegebene sind unveränderlich. */
+export async function updateLabAttempt(
+  input: {
+    profileId: string
+    attemptId: string
+    answerByStepId?: Record<string, unknown>
+    failedAttemptCount?: number
+    elapsedMs?: number
+    now: number
+  },
+  db: Db = defaultDb,
+): Promise<LabAttemptRecord> {
+  return db.transaction('rw', db.labAttempts, async () => {
+    const attempt = await db.labAttempts.get(input.attemptId)
+    if (!attempt || attempt.profileId !== input.profileId) {
+      throw new Error(`updateLabAttempt: Versuch ${input.attemptId} gehört nicht zu Profil ${input.profileId}`)
+    }
+    if (attempt.status !== 'inProgress') {
+      throw new Error(`updateLabAttempt: Versuch ${input.attemptId} ist ${attempt.status} und unveränderlich`)
+    }
+    const updated: LabAttemptRecord = {
+      ...attempt,
+      answerByStepId: input.answerByStepId ?? attempt.answerByStepId,
+      failedAttemptCount: input.failedAttemptCount ?? attempt.failedAttemptCount,
+      elapsedMs: input.elapsedMs ?? attempt.elapsedMs,
+      revision: attempt.revision + 1,
+      updatedAt: input.now,
+    }
+    await db.labAttempts.put(updated)
+    return updated
+  })
+}
+
+/** Abgabe: friert Antworten und Teilpunkte endgültig ein (§13.2). */
+export async function submitLabAttempt(
+  input: {
+    profileId: string
+    attemptId: string
+    answerByStepId?: Record<string, unknown>
+    scoreEarned: number
+    scorePossible: number
+    elapsedMs?: number
+    now: number
+  },
+  db: Db = defaultDb,
+): Promise<LabAttemptRecord> {
+  return db.transaction('rw', db.labAttempts, async () => {
+    const attempt = await db.labAttempts.get(input.attemptId)
+    if (!attempt || attempt.profileId !== input.profileId) {
+      throw new Error(`submitLabAttempt: Versuch ${input.attemptId} gehört nicht zu Profil ${input.profileId}`)
+    }
+    if (attempt.status !== 'inProgress') {
+      throw new Error(`submitLabAttempt: Versuch ${input.attemptId} ist ${attempt.status} und unveränderlich`)
+    }
+    const submitted: LabAttemptRecord = {
+      ...attempt,
+      answerByStepId: input.answerByStepId ?? attempt.answerByStepId,
+      scoreEarned: input.scoreEarned,
+      scorePossible: input.scorePossible,
+      elapsedMs: input.elapsedMs ?? attempt.elapsedMs,
+      revision: attempt.revision + 1,
+      status: 'submitted',
+      submittedAt: input.now,
+      updatedAt: input.now,
+    }
+    await db.labAttempts.put(submitted)
+    return submitted
+  })
+}
+
+export async function abandonLabAttempt(
+  input: { profileId: string; attemptId: string; now: number },
+  db: Db = defaultDb,
+): Promise<void> {
+  await db.transaction('rw', db.labAttempts, async () => {
+    const attempt = await db.labAttempts.get(input.attemptId)
+    if (!attempt || attempt.profileId !== input.profileId || attempt.status !== 'inProgress') return
+    await db.labAttempts.put({
+      ...attempt,
+      status: 'abandoned',
+      abandonedAt: input.now,
+      revision: attempt.revision + 1,
+      updatedAt: input.now,
+    })
+  })
+}
+
+const LEGACY_LABS_MARKER = 'legacy-labs-v1'
+
+/**
+ * Einmaliger Import der Legacy-„geschafft“-Sets (§13.2): konservativ als
+ * historische Abschlüsse in exakt das beim v1-Upgrade registrierte Ownerprofil.
+ * Ohne Antworten/Rubrik liefern sie Abschluss-, aber nie Score-/Mastery-Evidenz.
+ * Läuft erst, wenn der v1-Owner-Marker existiert; eigener v2-Marker.
+ */
+export async function runLegacyLabsImport(
+  input: { completedScenarioIds: readonly string[]; now: number },
+  db: Db = defaultDb,
+): Promise<{ imported: boolean; ownerProfileId: string | null; attempts: number }> {
+  return db.transaction('rw', [db.migrationMeta, db.labAttempts, db.profileLearningState, db.learningUnitState], async () => {
+    if (await db.migrationMeta.get(LEGACY_LABS_MARKER)) {
+      const marker = await db.migrationMeta.get(LEGACY_LABS_MARKER)
+      return { imported: false, ownerProfileId: marker?.ownerProfileId ?? null, attempts: 0 }
+    }
+    const ownerMarker = await db.migrationMeta.get(LEGACY_LEARNING_MARKER)
+    if (!ownerMarker) return { imported: false, ownerProfileId: null, attempts: 0 }
+    const owner = ownerMarker.ownerProfileId
+    const epoch = (await db.profileLearningState.get(owner))?.evidenceEpoch ?? 1
+
+    let attempts = 0
+    for (const scenarioId of input.completedScenarioIds) {
+      const existing = await db.labAttempts
+        .where('[profileId+scenarioId]')
+        .equals([owner, scenarioId])
+        .count()
+      if (existing > 0) continue
+      await db.labAttempts.put({
+        attemptId: crypto.randomUUID(),
+        profileId: owner,
+        evidenceEpoch: epoch,
+        scenarioId,
+        scenarioVersion: 'legacy',
+        sourceSnapshotId: 'legacy',
+        contentManifestVersion: 'legacy',
+        language: 'de',
+        origin: 'legacy-completed',
+        startedAt: input.now,
+        updatedAt: input.now,
+        revision: 0,
+        status: 'submitted',
+        submittedAt: input.now,
+        answerByStepId: {},
+        failedAttemptCount: 0,
+        elapsedMs: 0,
+      })
+      // Aktivitätsstatus der zugehörigen Lab-Unit: bearbeitet, nie Mastery.
+      const unitId = formatLabUnitId(scenarioId)
+      if (!(await db.learningUnitState.get([owner, unitId]))) {
+        await db.learningUnitState.put({
+          profileId: owner,
+          evidenceEpoch: epoch,
+          unitId,
+          activityStatus: 'completed',
+          currentStep: 'done',
+          completedAt: input.now,
+          lastCompletedAt: input.now,
+          lastActivityAt: input.now,
+          updatedAt: input.now,
+        })
+      }
+      attempts += 1
+    }
+    await db.migrationMeta.put({ key: LEGACY_LABS_MARKER, ownerProfileId: owner, completedAt: input.now })
+    return { imported: true, ownerProfileId: owner, attempts }
+  })
+}
+
 // ── Draft-Lernplan (bestätigter Plan folgt mit Phase 5/Server) ─────────────
 
 export async function getLearnerExamPlan(
@@ -693,6 +919,8 @@ export interface LearningUnitsBackupData {
   videoRecallRuns: VideoRecallRun[]
   learnerExamPlans: DraftLearnerExamPlanRecord[]
   legacyAssessmentHints: LegacyAssessmentHintRecord[]
+  /** Ab DB v2 (Phase 4); fehlt in älteren Backups. */
+  labAttempts?: LabAttemptRecord[]
 }
 
 export interface RestoreLearningUnitsResult {
@@ -714,6 +942,7 @@ export async function listLearningUnitsBackup(db: Db = defaultDb): Promise<Learn
     videoRecallRuns,
     learnerExamPlans,
     legacyAssessmentHints,
+    labAttempts,
   ] = await Promise.all([
     db.profileLearningState.toArray(),
     db.learningUnitState.toArray(),
@@ -723,6 +952,7 @@ export async function listLearningUnitsBackup(db: Db = defaultDb): Promise<Learn
     db.videoRecallRuns.toArray(),
     db.learnerExamPlans.toArray(),
     db.legacyAssessmentHints.toArray(),
+    db.labAttempts.toArray(),
   ])
   return {
     profileLearningState,
@@ -733,6 +963,7 @@ export async function listLearningUnitsBackup(db: Db = defaultDb): Promise<Learn
     videoRecallRuns,
     learnerExamPlans,
     legacyAssessmentHints,
+    labAttempts,
   }
 }
 
@@ -777,6 +1008,7 @@ export async function restoreLearningUnitsBackup(
       db.videoRecallRuns,
       db.learnerExamPlans,
       db.legacyAssessmentHints,
+      db.labAttempts,
     ],
     async () => {
       for (const row of rowsOf(data, 'profileLearningState')) {
@@ -866,6 +1098,15 @@ export async function restoreLearningUnitsBackup(
         if (typeof row.hintId !== 'string' || !row.hintId) { result.skipped += 1; continue }
         if (await db.legacyAssessmentHints.get(row.hintId)) { result.skipped += 1; continue }
         await db.legacyAssessmentHints.put(row as unknown as LegacyAssessmentHintRecord)
+        result.added += 1
+      }
+
+      // Labversuche sind append-only per UUID; abgegebene bleiben unveränderlich,
+      // deshalb wird nie gemergt oder überschrieben.
+      for (const row of rowsOf(data, 'labAttempts')) {
+        if (typeof row.attemptId !== 'string' || !row.attemptId) { result.skipped += 1; continue }
+        if (await db.labAttempts.get(row.attemptId)) { result.skipped += 1; continue }
+        await db.labAttempts.put(row as unknown as LabAttemptRecord)
         result.added += 1
       }
 

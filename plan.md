@@ -149,11 +149,14 @@ Daily Quest und alle Home-/Shortcut-Einstiege beziehen die Ausschlussmenge aus e
 
 Damit ist Phase 3 abgeschlossen bis auf das serverseitige Ledger (zweiter Punkt), das per Definition zu Phase 5 gehört.
 
+**Sechste Runde am 2026-07-19** (Working Tree, 817/817 Tests + Build grün): **Phase-4-Kern umgesetzt** — dedizierte DB v2 mit UUID-`labAttempts` (eingefrorener `scenarioSnapshot` + Content-Hash-Version, Update nur inProgress, Abgabe unveränderlich, Retry = neue UUID, Backup-fest), Legacy-„geschafft“-Import (`legacy-labs-v1`-Marker, Abschluss- ohne Score-Evidenz), eine `lab`-Einheit je Szenario im Ranking/Screen, Deep Link Lerneinheiten-Screen → LabsView-Szenario, additive Instrumentierung: Öffnen startet/fortsetzt den Versuch, jeder Lösungs-Check protokolliert (Fehlversuch → Update, Lösung → Abgabe + Unit-Abschluss). Offen in Phase 4: fachliche §13.2-Normalisierung aller Szenarien (Schritt-IDs, Teilpunkt-Rubriken) und darauf aufbauend verspätetes Feedback + Remediation-Links.
+
 **Nächste Schritte in Reihenfolge:**
 
 1. Working-Tree-Stand committen.
-2. Phase 4 (Labs) beginnen: Szenarien mit stabilen IDs/`objectiveIds`/Rubriken normalisieren, dedizierte `labAttempts`-Persistenz (UUID, Resume/Submit, versioniert eingefroren), Deep Link in `LabsView`, Legacy-„geschafft“-Import, Coverage-Gate für die sieben „Given a scenario“-Objectives.
-3. Nebenläufig offen: Puffertage im Plan-Editor pflegen (Nutzung), Baseline-Diagnostik klären (braucht Entscheidung), Phase-0-Content-Gates (Leaf-Mapping, Readiness-Formen, Kalibrierung).
+2. Phase-4-Rest (Content-lastig): §13.2-Normalisierung der Szenarien (Schritt-IDs, Teilpunkt-Rubriken, Pflichtkompetenzen über Matching/Ordering hinaus), dann verspätetes Feedback + Remediation-Links.
+3. Danach Phase 5 (Exam-Engine, serverseitig): `ExamView`, `examAttempts`, Blueprint/Holdouts, Readiness-Sync — größter verbleibender Block, braucht card-sync-server-Arbeit.
+4. Nebenläufig offen: Puffertage im Plan-Editor pflegen (Nutzung), Baseline-Diagnostik klären (braucht Entscheidung), Phase-0-Content-Gates (Leaf-Mapping, Readiness-Formen, Kalibrierung).
 
 ## Umsetzungsphasen
 
@@ -220,13 +223,13 @@ Exit: Empfehlungen sind mit einem deterministischen `reason` erklärbar; kleine 
 
 ### Phase 4 — Praktische Labs und PBQs
 
-- [ ] Szenarien erhalten stabile IDs, normalisierte `objectiveIds`/`requirementIds`, stabile Schritt-IDs und Rubriken.
-- [ ] Je Szenario eine `lab`-Einheit; Kategorien dienen nur der Gruppierung.
-- [ ] Dexie v23: UUID-basierte `labAttempts` mit Profil, Szenario-/Versions-ID, Antworten, Teilpunkten, Fehlversuchen, Dauer, Resume- und Abgabestatus; laufende Versuche sind aktualisierbar, abgegebene unveränderlich.
-- [ ] Szenario, Schritte und Rubrik beim Start vollständig versioniert einfrieren; Resume/Scoring darf nach Content-Updates nicht auf die neue Registry umspringen.
-- [ ] Legacy-„geschafft“-Sets mit separatem v23-Marker konservativ in exakt das in v22 gespeicherte Ownerprofil importieren; alte Einträge liefern Abschluss-, aber keine Score-/Mastery-Evidenz.
-- [ ] Deep Link in `LabsView`/`LabScenarioView`, Resume, verspätetes Feedback und Links zur normalen Remediation.
-- [ ] Szenario-Coverage-Gate für die sieben „Given a scenario“-Objectives 2.4, 3.2, 4.1, 4.5, 4.6, 4.9 und 5.6.
+- [ ] Szenarien erhalten stabile IDs, normalisierte `objectiveIds`/`requirementIds`, stabile Schritt-IDs und Rubriken. *(teilweise: stabile Szenario-IDs + Objective-Parsing + deterministische Versionskennung [Content-Hash] vorhanden; die volle §13.2-Normalisierung [Schritt-IDs, Teilpunkt-Rubriken, Assets] ist fachliche Content-Arbeit über alle 100 Szenarien und steht aus)*
+- [x] Je Szenario eine `lab`-Einheit; Kategorien dienen nur der Gruppierung. *(`buildLabUnits`: `unit:lab:{scenarioId}` mit Objective aus dem Label, `estimatedMinutes` aus der Registry; im Ranking und in der Vollliste des Screens)*
+- [x] Dexie v23: UUID-basierte `labAttempts` mit Profil, Szenario-/Versions-ID, Antworten, Teilpunkten, Fehlversuchen, Dauer, Resume- und Abgabestatus; laufende Versuche sind aktualisierbar, abgegebene unveränderlich. *(als v2 der dedizierten DB; Update/Submit auf abgegebene Versuche wirft, Retry = neue UUID; in Backup/Restore aufgenommen)*
+- [x] Szenario, Schritte und Rubrik beim Start vollständig versioniert einfrieren; Resume/Scoring darf nach Content-Updates nicht auf die neue Registry umspringen. *(`scenarioSnapshot` = tiefe Kopie beim Start + Content-Hash-Version; Registry-Mutationen erreichen den Versuch nachweislich nicht [Test])*
+- [x] Legacy-„geschafft“-Sets mit separatem v23-Marker konservativ in exakt das in v22 gespeicherte Ownerprofil importieren; alte Einträge liefern Abschluss-, aber keine Score-/Mastery-Evidenz. *(`runLegacyLabsImport` mit Marker `legacy-labs-v1`, wartet auf den v1-Owner-Marker; `origin: 'legacy-completed'` ohne Score, Unit-Status „bearbeitet“)*
+- [ ] Deep Link in `LabsView`/`LabScenarioView`, Resume, verspätetes Feedback und Links zur normalen Remediation. *(teilweise: Deep Link aus dem Lerneinheiten-Screen [`initialScenarioId`], Versuch startet/fortsetzt beim Öffnen, jeder Lösungs-Check wird protokolliert [Fehlversuch = Update, Lösung = Abgabe + Unit-Abschluss]; verspätetes Feedback und Remediation-Links setzen die §13.2-Rubrik-Normalisierung voraus)*
+- [x] Szenario-Coverage-Gate für die sieben „Given a scenario“-Objectives 2.4, 3.2, 4.1, 4.5, 4.6, 4.9 und 5.6. *(Generator-Gate `szenario-objectives-praxis` in validate.mjs, PASS: alle 7 mit Praxispfad)*
 
 Exit: Praxisleistung ist profilfest, nachvollziehbar und fließt nur mit hinreichender Rubrik in Mastery ein.
 
@@ -272,7 +275,7 @@ Exit: Readiness ist reproduzierbar und gegen Leakage geschützt. Bei nicht erfü
 
 - Aktueller Ausgangspunkt: Dexie v21.
 - v22: profilgescopte Core-Stores für Decks/Karten/Scheduler/Reviews/Stats/Progress/Sessions/Shuffle, Profil-Lernzustand/Evidence-Epoch, Unit-State/Executions, Migrationsmeta, profil- und execution-bezogener Video-/Recall-Zustand, Assessment-Proposals/Accepted-Events/Resets/Receipts, Reviewversuche, Restore-Reconciliation und `LearnerExamPlan`.
-- v23: Labversuche und generische serverseitige Assessment-Qualification-Receipts.
+- v23: Labversuche und generische serverseitige Assessment-Qualification-Receipts. *(Labversuche am 2026-07-19 als v2 der dedizierten DB umgesetzt; Qualification-Receipts folgen mit dem Phase-5-Server)*
 - v24: Examversuche, personenweite Exposition, Timing-/Readiness-Receipts, Lifecycle-Confirmations und redaktierte Readiness-Historie.
 - Keine neuen Runtime-Abhängigkeiten. `fake-indexeddb` ist als eine neue **Dev-Dependency** für deterministische Migrationstests erlaubt; alternativ müssen diese Tests in einem echten Browser laufen.
 - Neue Tabellen werden in Backup/Restore und später im Sync explizit berücksichtigt.
