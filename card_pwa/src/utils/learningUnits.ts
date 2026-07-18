@@ -734,3 +734,25 @@ export function buildRequirementCoverage(input: {
     generatedAt: input.now,
   }
 }
+
+export interface ObjectiveLeafCoverage {
+  totalLeafs: number
+  coveredLeafs: number
+}
+
+/** Leaf-Abdeckung je Objective aus dem Coverage-Report — sichtbare Gaps pro
+ *  kleinstem prüfbarem Pfad, keine Ressourcensummen (§5.1). */
+export function summarizeLeafCoverageByObjective(input: {
+  requirements: ExamRequirement[]
+  report: CoverageReport
+}): Map<string, ObjectiveLeafCoverage> {
+  const blocking = new Set(input.report.blockingRequirementIds)
+  const byObjective = new Map<string, ObjectiveLeafCoverage>()
+  for (const requirement of input.requirements) {
+    const entry = byObjective.get(requirement.objectiveId) ?? { totalLeafs: 0, coveredLeafs: 0 }
+    entry.totalLeafs += 1
+    if (!blocking.has(requirement.requirementId)) entry.coveredLeafs += 1
+    byObjective.set(requirement.objectiveId, entry)
+  }
+  return byObjective
+}

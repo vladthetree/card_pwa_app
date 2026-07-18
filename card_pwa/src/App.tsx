@@ -107,6 +107,12 @@ function buildSyntheticDeck(id: string, name: string, cards: Card[]): Deck {
 async function resolveSessionDeckName(sessionId: string): Promise<string> {
   if (sessionId === 'daily-quest') return 'Daily Quest'
   if (sessionId.startsWith('tag:')) return `#${sessionId.slice(4)}`
+  if (sessionId.startsWith('unit-exec:')) {
+    const { getExecution } = await import('./db/queries/learningUnits')
+    const execution = await getExecution(sessionId.slice('unit-exec:'.length))
+    const match = execution ? /^unit:course:(\d{3})$/.exec(execution.unitId) : null
+    return match ? `Lerneinheit ${match[1]}` : 'Lerneinheit'
+  }
   const names = await getDeckNameMap()
   return names[sessionId] ?? 'Deck'
 }
@@ -575,12 +581,19 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
     setView('home')
   }, [settings.shuffleModeEnabled, view])
 
-  const startStudy = async (deck: Deck, fixedCardIds?: string[]) => {
+  const startStudy = async (
+    deck: Deck,
+    fixedCardIds?: string[],
+    options?: { sessionId?: string; allowResume?: boolean },
+  ) => {
     if (fixedCardIds !== undefined) {
       const packageCards = await listCardsByIds(fixedCardIds)
       if (packageCards.length === 0) return
-      setAllowSessionResume(false)
-      setActiveDeck(buildSyntheticDeck(`today-package:${deck.id}`, deck.name, packageCards))
+      // Lerneinheiten übergeben eine eigene Session-ID (`unit-exec:{executionId}`):
+      // so kollidieren parallele Units desselben Objectives weder untereinander
+      // noch mit der Heute-Paket-Session, und die Session ist wiederaufnehmbar.
+      setAllowSessionResume(options?.allowResume ?? false)
+      setActiveDeck(buildSyntheticDeck(options?.sessionId ?? `today-package:${deck.id}`, deck.name, packageCards))
       setActiveTagCards(packageCards)
       setActiveShuffleCollection(null)
       setView('study')

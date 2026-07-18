@@ -56,7 +56,7 @@ const LearningUnitSheet = lazy(() => import('./home/LearningUnitSheet.tsx'))
 interface Props {
   mode?: 'default' | 'shuffle-manage'
   onBackHome?: () => void
-  onStartStudy: (deck: Deck, cardIds?: string[]) => void
+  onStartStudy: (deck: Deck, cardIds?: string[], options?: { sessionId?: string; allowResume?: boolean }) => void
   onStartTagStudy?: (tag: string, cards: Card[]) => void
   onStartShuffleStudy: (collection: ShuffleCollection) => void
   onOpenShuffleManager?: () => void
@@ -204,6 +204,9 @@ export default function HomeView({
             due: 0,
           },
           launch.remainingCardIds,
+          // Session per Execution persistieren (§16): parallele Units bleiben
+          // getrennt und eine unterbrochene Karten-Session ist wiederaufnehmbar.
+          { sessionId: `unit-exec:${launch.execution.executionId}`, allowResume: true },
         )
         return
       }
@@ -692,6 +695,7 @@ export default function HomeView({
             ranked={learningUnits.ranked}
             stateByUnitId={learningUnits.stateByUnitId}
             objectiveEvidence={learningUnits.objectiveEvidence}
+            formativeRecallByObjective={learningUnits.formativeRecallByObjective}
             onOpenUnit={definition => {
               setShowLearningUnitSheet(false)
               handleOpenLearningUnit(definition)

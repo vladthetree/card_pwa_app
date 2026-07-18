@@ -8,14 +8,31 @@ import { motion } from '../../ui/motion'
 import { X } from 'lucide-react'
 import { UI_TOKENS } from '../../constants/ui'
 import { SY0_701_OBJECTIVES, SY0_701_ROOT_DECKS } from '../../utils/securityDeckHierarchy'
-import type {
-  LearningUnitDefinition,
-  LearningUnitState,
-  ObjectiveEvidenceStatus,
-  ReadinessStatus,
+import {
+  buildRequirementCoverage,
+  summarizeLeafCoverageByObjective,
+  type LearningUnitDefinition,
+  type LearningUnitState,
+  type ObjectiveEvidenceStatus,
+  type ReadinessStatus,
 } from '../../utils/learningUnits'
+import { SY0701_REQUIREMENTS_MANIFEST } from '../../data/sy0701Requirements'
 import type { RankedLearningUnit } from '../../utils/learningUnitRanking'
 import { LEARNING_UNIT_COPY } from './HomeLearningUnitList'
+
+// Leaf-Coverage je Objective (§5.1): ohne fachlich freigegebene Coverage-
+// Einträge sind alle Leafs offen — die Zahlen zeigen ehrlich die Lücke,
+// keine Ressourcensummen. Statisch, da rein aus dem generierten Crosswalk.
+const LEAF_COVERAGE_BY_OBJECTIVE = summarizeLeafCoverageByObjective({
+  requirements: SY0701_REQUIREMENTS_MANIFEST.requirements,
+  report: buildRequirementCoverage({
+    sourceSnapshotId: SY0701_REQUIREMENTS_MANIFEST.sourceSnapshotId,
+    requirements: SY0701_REQUIREMENTS_MANIFEST.requirements,
+    criticalErrorDefinitions: [],
+    coverage: [],
+    now: 0,
+  }),
+})
 
 const SHEET_COPY = {
   de: {
@@ -28,6 +45,8 @@ const SHEET_COPY = {
       learning: 'Evidenz: im Aufbau',
       mastered: 'Evidenz: beherrscht',
     } satisfies Record<ObjectiveEvidenceStatus, string>,
+    leafLine: (covered: number, total: number, samples: number) =>
+      `Leafs ${covered}/${total} nachgewiesen · ${samples} formative Abrufe`,
     honesty: '„Abgeschlossen“ heißt bearbeitet — nicht beherrscht. Mastery entsteht erst aus geprüfter Abruf-Evidenz.',
     close: 'Schließen',
   },
@@ -41,6 +60,8 @@ const SHEET_COPY = {
       learning: 'Evidence: building',
       mastered: 'Evidence: mastered',
     } satisfies Record<ObjectiveEvidenceStatus, string>,
+    leafLine: (covered: number, total: number, samples: number) =>
+      `Leafs ${covered}/${total} evidenced · ${samples} formative recalls`,
     honesty: '"Completed" means worked through — not mastered. Mastery only comes from verified retrieval evidence.',
     close: 'Close',
   },
@@ -54,13 +75,15 @@ interface Props {
   ranked: RankedLearningUnit[]
   stateByUnitId: ReadonlyMap<string, LearningUnitState>
   objectiveEvidence: ReadonlyMap<string, ObjectiveEvidenceStatus>
+  /** Formative Recall-Läufe je Objective (aktuelle Epoch) — keine Mastery. */
+  formativeRecallByObjective: ReadonlyMap<string, number>
   onOpenUnit: (definition: LearningUnitDefinition) => void
   onClose: () => void
 }
 
 export function LearningUnitSheet({
   language, readiness, courseCompleted, courseTotal,
-  ranked, stateByUnitId, objectiveEvidence, onOpenUnit, onClose,
+  ranked, stateByUnitId, objectiveEvidence, formativeRecallByObjective, onOpenUnit, onClose,
 }: Props) {
   const copy = SHEET_COPY[language]
   const listCopy = LEARNING_UNIT_COPY[language]
@@ -128,6 +151,8 @@ export function LearningUnitSheet({
                     unit => stateByUnitId.get(unit.definition.unitId)?.activityStatus === 'completed',
                   ).length
                   const evidence = objectiveEvidence.get(objective.code) ?? 'insufficientEvidence'
+                  const leaf = LEAF_COVERAGE_BY_OBJECTIVE.get(objective.code)
+                  const samples = formativeRecallByObjective.get(objective.code) ?? 0
                   return (
                     <div key={objective.code} className="mb-2.5 last:mb-0">
                       <div className="flex min-w-0 items-baseline justify-between gap-2 px-0.5">
@@ -138,6 +163,9 @@ export function LearningUnitSheet({
                           <span>{copy.evidence[evidence]}</span>
                           <span className="tabular-nums">{copy.objectiveCount(done, units.length)}</span>
                         </div>
+                      </div>
+                      <div className="px-0.5 font-mono text-[10px] tabular-nums text-ds-muted">
+                        {copy.leafLine(leaf?.coveredLeafs ?? 0, leaf?.totalLeafs ?? 0, samples)}
                       </div>
                       <ul className="mt-1 grid min-w-0 gap-1">
                         {units.map(unit => {

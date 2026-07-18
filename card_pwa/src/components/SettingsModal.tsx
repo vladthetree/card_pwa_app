@@ -106,6 +106,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     setSm2Params,
     setFsrsParams,
     resetAlgorithmParams,
+    profile,
   } = useSettings()
   const { themeKey, setTheme } = useTheme()
   const t = STRINGS[settings.language]
@@ -429,13 +430,24 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     setConfirmModal({
       title: isDE ? 'Lernfortschritt zurücksetzen' : 'Reset learning progress',
       message: isDE
-        ? 'Alle Karten werden auf „neu“ zurückgesetzt und die komplette Review-Historie (Heatmap, Streak, Statistiken) wird gelöscht — auch auf dem Server und anderen Geräten. Decks, Karteninhalte und Notizen bleiben erhalten. Das kann nicht rückgängig gemacht werden.'
-        : 'All cards are reset to “new” and the entire review history (heatmap, streak, statistics) is deleted — including on the server and other devices. Decks, card content, and notes are kept. This cannot be undone.',
+        ? 'Alle Karten werden auf „neu“ zurückgesetzt und die komplette Review-Historie (Heatmap, Streak, Statistiken) wird gelöscht — auch auf dem Server und anderen Geräten. Offene Lerneinheiten werden abgebrochen und ihre Evidenz beginnt neu. Decks, Karteninhalte und Notizen bleiben erhalten. Das kann nicht rückgängig gemacht werden.'
+        : 'All cards are reset to “new” and the entire review history (heatmap, streak, statistics) is deleted — including on the server and other devices. Open learning units are aborted and their evidence starts over. Decks, card content, and notes are kept. This cannot be undone.',
       confirmLabel: isDE ? 'Fortschritt löschen' : 'Delete progress',
       variant: 'danger',
       onConfirm: async () => {
         const result = await resetLearningProgress()
         if (result.ok) {
+          // Dediziertes Lerneinheiten-System: Evidence-Epoch erhöhen und offene
+          // Ausführungen abbrechen (§16); Audit-Historie bleibt erhalten.
+          try {
+            const [{ resetProfileLearningEvidence }, { profileScopeId }] = await Promise.all([
+              import('../db/queries/learningUnits'),
+              import('../services/profileService'),
+            ])
+            await resetProfileLearningEvidence(profileScopeId(profile), Date.now())
+          } catch (error) {
+            console.error('[SettingsModal] Lerneinheiten-Reset fehlgeschlagen', error)
+          }
           localStorage.removeItem(STORAGE_KEYS.studySession)
           localStorage.removeItem(STORAGE_KEYS.legacyStudySession)
           setLocalDataStatus(isDE

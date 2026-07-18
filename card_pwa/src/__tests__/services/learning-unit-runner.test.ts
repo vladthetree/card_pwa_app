@@ -16,10 +16,12 @@ import type { LearningUnitDefinition } from '../../utils/learningUnits'
 const mocks = vi.hoisted(() => ({
   listCardsByIds: vi.fn<(ids: string[]) => Promise<Card[]>>(),
   listCardIdsReviewedSince: vi.fn<(cardIds: readonly string[], sinceMs: number) => Promise<string[]>>(),
+  clearActiveSession: vi.fn(async () => {}),
 }))
 vi.mock('../../db/queries', () => ({
   listCardsByIds: mocks.listCardsByIds,
   listCardIdsReviewedSince: mocks.listCardIdsReviewedSince,
+  clearActiveSession: mocks.clearActiveSession,
 }))
 
 import {

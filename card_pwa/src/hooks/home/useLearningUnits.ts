@@ -39,6 +39,7 @@ import {
   getLearnerExamPlan,
   getOrCreateProfileLearningState,
   listLearningUnitStates,
+  listVideoRecallRunsForProfile,
   runLegacyLearningImport,
 } from '../../db/queries/learningUnits'
 import { reconcileCourseUnitProgress } from '../../services/learningUnitRunner'
@@ -62,6 +63,9 @@ export interface LearningUnitsHomeData {
   ranked: RankedLearningUnit[]
   stateByUnitId: ReadonlyMap<string, LearningUnitState>
   objectiveEvidence: ReadonlyMap<string, ObjectiveEvidenceStatus>
+  /** Formative Recall-Läufe der aktuellen Evidence-Epoch je Objective —
+   *  Stichprobenanzeige, ausdrücklich keine Mastery-Evidenz (§8.2). */
+  formativeRecallByObjective: ReadonlyMap<string, number>
   reload: () => void
 }
 
@@ -86,6 +90,7 @@ const EMPTY_RESULT = {
   courseTotal: COURSE_UNIT_COUNT,
   ranked: [] as RankedLearningUnit[],
   stateByUnitId: new Map<string, LearningUnitState>(),
+  formativeRecallByObjective: new Map<string, number>(),
 }
 
 /** Lokales Lerntagsdatum (YYYY-MM-DD) des Tagesanfangs — nie UTC. */
@@ -183,12 +188,20 @@ export function useLearningUnits({
         console.error('[useLearningUnits] Reconcile fehlgeschlagen', error)
       }
 
-      const [profileState, states, plan] = await Promise.all([
+      const [profileState, states, plan, recallRuns] = await Promise.all([
         getOrCreateProfileLearningState(profileId, now),
         listLearningUnitStates(profileId),
         getLearnerExamPlan(profileId),
+        listVideoRecallRunsForProfile(profileId),
       ])
       if (computeVersionRef.current !== version) return
+
+      const formativeRecallByObjective = new Map<string, number>()
+      for (const run of recallRuns) {
+        const objectiveId = objectiveByVideoIndex.get(run.videoIndex)
+        if (!objectiveId) continue
+        formativeRecallByObjective.set(objectiveId, (formativeRecallByObjective.get(objectiveId) ?? 0) + 1)
+      }
 
       const stateByUnitId = overlayLegacyCourseStates({
         states,
@@ -232,6 +245,7 @@ export function useLearningUnits({
         courseTotal: COURSE_UNIT_COUNT,
         ranked,
         stateByUnitId,
+        formativeRecallByObjective,
       })
     } catch (error) {
       console.error('[useLearningUnits]', error)

@@ -41,7 +41,7 @@ import {
   startUnitExecution,
   touchUnitActivity,
 } from '../db/queries/learningUnits'
-import { listCardsByIds, listCardIdsReviewedSince } from '../db/queries'
+import { clearActiveSession, listCardsByIds, listCardIdsReviewedSince } from '../db/queries'
 import { readTodayPackagePointer } from '../utils/todayPackage'
 import type { Algorithm } from '../contexts/SettingsContext'
 
@@ -202,6 +202,8 @@ export async function reconcileCourseUnitProgress(profileId: string): Promise<{ 
     const snapshot = await computeStepSnapshot(execution)
     if (snapshot.step === 'done') {
       await completeUnitExecution(profileId, execution.executionId, Date.now())
+      // Persistierte Karten-Session der Ausführung ist mit dem Abschluss obsolet.
+      await clearActiveSession(`unit-exec:${execution.executionId}`)
       completedUnitIds.push(state.unitId)
     } else if (snapshot.step !== state.currentStep) {
       await touchUnitActivity(profileId, state.unitId, snapshot.step, Date.now())

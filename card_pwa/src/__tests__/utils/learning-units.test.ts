@@ -14,6 +14,7 @@ import {
   objectiveIdOfDeckId,
   selectCourseCardIds,
   selectRecallQuestionIds,
+  summarizeLeafCoverageByObjective,
   validateCourseCatalog,
   type LearningUnitExecution,
   type RequirementCoverage,
@@ -430,6 +431,41 @@ describe('buildRequirementCoverage', () => {
     }
     const present = buildRequirementCoverage({ sourceSnapshotId: 's', requirements: [critical], criticalErrorDefinitions: [definition], coverage, now: 1 })
     expect(present.coveredCount).toBe(1)
+  })
+})
+
+describe('summarizeLeafCoverageByObjective', () => {
+  const reqs = SY0701_REQUIREMENTS_MANIFEST.requirements
+
+  it('verteilt alle 655 Leafs auf die 28 Objectives; ohne Einträge ist nichts nachgewiesen', () => {
+    const report = buildRequirementCoverage({ sourceSnapshotId: 'snap', requirements: reqs, criticalErrorDefinitions: [], coverage: [], now: 1 })
+    const summary = summarizeLeafCoverageByObjective({ requirements: reqs, report })
+    expect(summary.size).toBe(28)
+    let total = 0
+    for (const entry of summary.values()) {
+      total += entry.totalLeafs
+      expect(entry.coveredLeafs).toBe(0)
+    }
+    expect(total).toBe(655)
+  })
+
+  it('zählt covered Leafs je Objective, nicht objektivübergreifend', () => {
+    const plain = reqs.filter(r => !r.scenarioRequired && r.criticality !== 'critical')
+    const covered = plain[0]
+    const coverage: RequirementCoverage[] = [{
+      requirementId: covered.requirementId,
+      learningAssetIds: ['video:2'],
+      assessmentItemIds: ['M1-001'],
+      practicalItemIds: [],
+      qaStatus: 'covered',
+      reviewer: 'vlad',
+    }]
+    const report = buildRequirementCoverage({ sourceSnapshotId: 'snap', requirements: reqs, criticalErrorDefinitions: [], coverage, now: 1 })
+    const summary = summarizeLeafCoverageByObjective({ requirements: reqs, report })
+    expect(summary.get(covered.objectiveId)?.coveredLeafs).toBe(1)
+    for (const [objectiveId, entry] of summary) {
+      if (objectiveId !== covered.objectiveId) expect(entry.coveredLeafs).toBe(0)
+    }
   })
 })
 

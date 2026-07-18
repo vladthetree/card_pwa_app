@@ -12,9 +12,11 @@ import {
   getOrCreateProfileLearningState,
   listRecentVideoRecallRuns,
   listReservedCardIds,
+  listVideoRecallRunsForProfile,
   markVideoOpened,
   markVideoWatched,
   recordVideoRecallRun,
+  resetProfileLearningEvidence,
   runLegacyLearningImport,
   startUnitExecution,
   type LegacyLearningSnapshot,
@@ -222,5 +224,73 @@ describe('getOrCreateProfileLearningState', () => {
     const second = await getOrCreateProfileLearningState('profil-a', NOW + 1, db)
     expect(first.evidenceEpoch).toBe(1)
     expect(second.updatedAt).toBe(NOW) // unverändert, kein Überschreiben
+  })
+})
+
+describe('resetProfileLearningEvidence (§16 Lernreset)', () => {
+  it('erhöht die Epoch atomar, bricht offene Units ab und löst Reservierungen', async () => {
+    await startUnitExecution(courseExecution(), NOW, db)
+    const result = await resetProfileLearningEvidence('profil-a', NOW + 10, db)
+    expect(result.evidenceEpoch).toBe(2)
+    expect(result.abortedUnits).toBe(1)
+    expect(result.resetEventId).toBeTruthy()
+
+    const state = await getLearningUnitState('profil-a', 'unit:course:002', db)
+    expect(state?.activityStatus).toBe('notStarted')
+    expect(state?.currentStep).toBe('video')
+    expect(state?.activeExecutionId).toBeUndefined()
+    // Ausführung bleibt als Audit-Historie, reserviert aber nichts mehr.
+    expect(await db.unitExecutions.get('exec-1')).toBeDefined()
+    expect((await listReservedCardIds('profil-a', db)).size).toBe(0)
+  })
+
+  it('abgeschlossene Units behalten ihren Aktivitätsstatus (Aktivität ≠ Evidenz)', async () => {
+    await startUnitExecution(courseExecution(), NOW, db)
+    await completeUnitExecution('profil-a', 'exec-1', NOW + 1, db)
+    const result = await resetProfileLearningEvidence('profil-a', NOW + 10, db)
+    expect(result.abortedUnits).toBe(0)
+    expect((await getLearningUnitState('profil-a', 'unit:course:002', db))?.activityStatus).toBe('completed')
+  })
+
+  it('wieder aktive Unit mit Abschlusshistorie fällt auf completed zurück', async () => {
+    await startUnitExecution(courseExecution(), NOW, db)
+    await completeUnitExecution('profil-a', 'exec-1', NOW + 1, db)
+    await startUnitExecution(courseExecution({ executionId: 'exec-2' }), NOW + 2, db)
+    await resetProfileLearningEvidence('profil-a', NOW + 10, db)
+    const state = await getLearningUnitState('profil-a', 'unit:course:002', db)
+    expect(state?.activityStatus).toBe('completed')
+    expect(state?.currentStep).toBe('done')
+    expect(state?.activeExecutionId).toBeUndefined()
+  })
+
+  it('trifft nur das angegebene Profil; neue Ausführungen starten in der neuen Epoch', async () => {
+    await startUnitExecution(courseExecution(), NOW, db)
+    await startUnitExecution(
+      courseExecution({ executionId: 'exec-b', profileId: 'profil-b', unitId: 'unit:course:003' }),
+      NOW,
+      db,
+    )
+    await resetProfileLearningEvidence('profil-a', NOW + 10, db)
+    expect((await getLearningUnitState('profil-b', 'unit:course:003', db))?.activityStatus).toBe('inProgress')
+
+    const restarted = await startUnitExecution(courseExecution({ executionId: 'exec-3' }), NOW + 20, db)
+    expect(restarted.evidenceEpoch).toBe(2)
+  })
+})
+
+describe('listVideoRecallRunsForProfile (Epoch-Filter)', () => {
+  it('liefert nur Läufe der aktuellen Evidence-Epoch', async () => {
+    await startUnitExecution(courseExecution(), NOW, db)
+    await recordVideoRecallRun(recallRun(), db)
+    expect((await listVideoRecallRunsForProfile('profil-a', db)).length).toBe(1)
+
+    await resetProfileLearningEvidence('profil-a', NOW + 10, db)
+    // Alter Lauf bleibt Audit, zählt aber nicht mehr als aktuelle Stichprobe.
+    expect((await listVideoRecallRunsForProfile('profil-a', db)).length).toBe(0)
+    expect(await db.videoRecallRuns.get('run-1')).toBeDefined()
+
+    await recordVideoRecallRun(recallRun({ runId: 'run-2', evidenceEpoch: 2, completedAt: NOW + 20 }), db)
+    const current = await listVideoRecallRunsForProfile('profil-a', db)
+    expect(current.map(run => run.runId)).toEqual(['run-2'])
   })
 })

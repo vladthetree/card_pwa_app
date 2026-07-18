@@ -28,6 +28,13 @@ Das Produktziel ist, die Wahrscheinlichkeit des Bestehens zu erhöhen. Die App d
 
 Für das Bestehensziel sind **Phase 0 bis 5 einschließlich Readiness-Gate Pflicht**. Phasen 1–3 allein sind nur ein Lernorganisations-MVP. Phase 6 ist Feinschliff, Phase 7 optionaler Komfort-Sync. Der für Holdout-Integrität nötige Readiness-Sync gehört bereits zu Phase 5.
 
+## Nutzerentscheidungen vom 2026-07-18
+
+- **Prüfungssprache: Englisch.** UI bleibt Deutsch; Vollsimulationen und bewertbare Übungen in Englisch.
+- **Prüfungstermin:** das in den App-Einstellungen hinterlegte `examDateIso` ist die Quelle (fließt per Legacy-Import als Draft-Plan des Owners ein).
+- **Wochenbudget: ca. 5 h/Woche** (~300 min). Puffertage und Baseline-Diagnostik weiter offen.
+- **Keine Mapping-Moves — endgültig.** Der Kartenbestand wird nicht angetastet; Lerneinheiten referenzieren Karten rein logisch über die Karten-ID (Content-Map erreicht alle 375 gemappten Recall-MCs), Metriken laufen wie gehabt über die Karten-ID. `mapping-decisions.json` bleibt Dokumentation, `apply_mapping_decisions.py` wird nicht ausgeführt.
+
 ## Verbindliche Prüfungsbasis
 
 Kanonischer Snapshot am 2026-07-15:
@@ -115,15 +122,19 @@ Daily Quest und alle Home-/Shortcut-Einstiege beziehen die Ausschlussmenge aus e
 - Phase 1: purer Kern ([learningUnits.ts](card_pwa/src/utils/learningUnits.ts)), Ranking/Phasen/Pacing ([learningUnitRanking.ts](card_pwa/src/utils/learningUnitRanking.ts)), generierte Content-Map ([sy0701ContentMap.ts](card_pwa/src/data/sy0701ContentMap.ts)), Home-Integration (HomeLearningUnitList, LearningUnitSheet, useLearningUnits) — mit Unit-Tests.
 - Phase 2 (Teil): dedizierte DB v1 + profilfeste Queries ([queries/learningUnits.ts](card_pwa/src/db/queries/learningUnits.ts)), eingefrorene Executions, einmaliger Legacy-Owner-Import, Draft-`LearnerExamPlan`, Runner mit exaktem Fortsetzen ([learningUnitRunner.ts](card_pwa/src/services/learningUnitRunner.ts)), execution-gebundene Recall-Läufe in VideosView.
 
-**Fertig, aber noch uncommittet (Working Tree, Stand 2026-07-18):** Backup/Restore v3 für das Lerneinheiten-System (dbBackup.ts, ImportModal.tsx, `listLearningUnitsBackup`/`restoreLearningUnitsBackup` + Tests). Am 2026-07-18 grün gemacht: Test-Setup nutzte für Quelle und Ziel dieselbe Default-DB statt der Namens-Parameter, Erwartung `added` auf 6 korrigiert (`startUnitExecution` legt den Profil-Lernzustand mit an), TS2352-Cast ersetzt, dedizierte DB in `db-backup.test.ts` gemockt, `meta.version`/`tableCounts` auf v3 nachgezogen. `npm run build` und `npm test -- --run` (789/789) grün — bereit zum Commit.
+**Erledigt am 2026-07-18** (Backup/Restore committet als `a812443`; Folgearbeit im Working Tree, 796/796 Tests + Build grün):
+
+- Backup/Restore v3 für das Lerneinheiten-System (alle Stores außer `migrationMeta`; Restore idempotent, LWW, Epoch nie autoritativ).
+- **Lernreset mit Evidence-Epoch:** `resetProfileLearningEvidence` (Epoch+1 atomar, offene Units abgebrochen, Executions/Läufe bleiben Audit, abgeschlossene Aktivität bleibt) — angebunden an „Lernfortschritt zurücksetzen“ in den Einstellungen.
+- **Session-Persistenz über `executionId`:** Karten-Schritt einer Unit persistiert unter `unit-exec:{executionId}` (wiederaufnehmbar, „Weiterlernen“-Kachel zeigt „Lerneinheit NNN“); keine Kollision mehr mit der Heute-Paket-Session desselben Objectives; Unit-Abschluss räumt die Session auf.
+- **Coverage-Zeile im Sheet:** je Objective „Leafs X/Y nachgewiesen · n formative Abrufe“ aus Crosswalk + epochgefilterten Recall-Läufen (`summarizeLeafCoverageByObjective`, `listVideoRecallRunsForProfile`).
 
 **Nächste Schritte in Reihenfolge:**
 
-1. ~~Backup/Restore-Baustelle grün machen~~ *(erledigt 2026-07-18, siehe oben)* — committen.
-2. Restliche Phase-2-Punkte entscheiden bzw. umsetzen: Study-Session-Persistenz über `executionId` (heute: Objective-Deck-ID + explizite Kartenliste), expliziter Lernreset mit Evidence-Epoch, `assessment.event`/Outbox-Anbindung in additiver Form.
-3. Nutzerentscheidungen aus OFFENE-PUNKTE.md Nr. 1–5 einholen (Termin, Prüfungssprache, Wochenbudget, Baseline-Diagnostik, Mapping-Freigabe) und in den Draft-Plan schreiben.
-4. Coverage-Ansicht um Leaf-Gaps und Stichprobengröße erweitern (Phase-1-Rest; `buildRequirementCoverage` existiert bereits pur).
-5. Phase 3 beginnen: `listAnswerStats`, Review-Units (Schema `reviewUnitAttempts` liegt schon in DB v1), Tageskappe, Abbruch-Handling.
+1. Working-Tree-Stand committen.
+2. Letzter Phase-2-Rest: `assessment.event` samt append-only Servertabelle und profilfeste Outbox-Erweiterung in additiver Form entwerfen (braucht card-sync-server-Arbeit) — oder begründet auf Phase 3 schieben.
+3. ~~Nutzerentscheidungen einholen~~ *(erledigt 2026-07-18: Sprache Englisch, Termin aus Settings, ~5 h/Woche, keine Mapping-Moves — siehe „Nutzerentscheidungen vom 2026-07-18“)*. Rest: Prüfungssprache/Wochenbudget in den Draft-`LearnerExamPlan` schreiben (kleine Settings-UI oder Plan-Editor), Baseline-Diagnostik und Puffertage klären.
+4. Phase 3 beginnen: `listAnswerStats`, Review-Units (Schema `reviewUnitAttempts` liegt schon in DB v1), Tageskappe, Abbruch-Handling.
 
 ## Umsetzungsphasen
 
@@ -132,14 +143,14 @@ Daily Quest und alle Home-/Shortcut-Einstiege beziehen die Ausschlussmenge aus e
 - [x] Offiziellen Source-Snapshot samt Hash, Dokumentrevision, Exam-Code, Sprache und Lifecycle-Gate speichern; altes im Repo registriertes Objectives-PDF ersetzen oder eindeutig als veraltet markieren. *(source/exam-source-snapshot.json; altes LAB_SOURCES-PDF als historisch dokumentiert)*
 - [x] Exakten Crosswalk für alle Objectives, Bullet-/Unter-Bullet-Pfade und Akronym-Bedeutungspaare erstellen. *(objectives-v7-extract.json: 28 Objectives, 655 Leafs, 336 Akronyme; generiert: sy0-701-requirements.json, sy0-701-acronyms.json)*
 - [ ] Für jeden Leaf-Pfad Lern-, Assessment- und bei Bedarf Praxisabdeckung samt QA/Provenienz dokumentieren. *(teilweise: Statusfelder generiert, aber 655 Leafs stehen auf `mapping-review`; QA/Provenienz offen)*
-- [ ] 31 falsche Video-/Deck-Mappings fachlich entscheiden und korrigieren; danach Generator und Audit reproduzierbar ausführen. *(teilweise: alle 31 entschieden in source/mapping-decisions.json — 24 behalten, 7 verschieben; Anwendung wartet auf Freigabe)*
+- [x] 31 falsche Video-/Deck-Mappings fachlich entscheiden und korrigieren; danach Generator und Audit reproduzierbar ausführen. *(alle 31 entschieden in source/mapping-decisions.json; Korrektur am 2026-07-18 endgültig als „keine physischen Moves“ beschlossen — Zuordnung rein logisch per Karten-ID, der Generator erreicht alle 375 M-Karten, Audit via validate.mjs reproduzierbar)*
 - [ ] Rohmaterial für 4.2 und 4.9 fachlich prüfen/importieren oder echte Content-Lücke markieren; dünne Objectives und etwa 16 Videos ohne Recall beheben. *(teilweise: Recall-Lücke behoben — 0 Videos ohne Recall via Transkriptfragen; 4.2/4.9-Karten weiter offen)*
 - [ ] Alle 23 parsererkannten PBQ-artigen Karten sowie alle Labs mit dem tatsächlichen Kartenparser inventarisieren, fachlich prüfen und Objective-/Requirement-IDs zuordnen. *(teilweise: Inventar mit echtem Parser in generated/pbq-lab-coverage.json; fachliche Prüfung/Requirement-Zuordnung offen)*
 - [ ] Inhalte in Course-/Practice-Kontexte sowie mindestens drei untereinander disjunkte Readiness-Full-Formen (zwei Nachweise + Reserve) partitionieren; Leakage-, historische Exposure- und Kalibrierungsreports erzeugen. *(teilweise: Pools + alle drei Reports generiert; Readiness-Formen 0/3, ganzer Bestand historisch exponiert)*
 - [ ] Für Readiness ausschließlich neu erstellte, noch nie ausgelieferte oder lückenlos als ungesehen belegte Items verwenden; alte zugängliche Karten, unsichere Legacy-Historie sowie vom Kandidaten erstellte/reviewte Items ausschließen.
 - [ ] Holdout-Prompts/Lösungen ausschließlich in einem kandidatenseitig unzugänglichen Serverstore verwalten; Client/Repo/Backup enthalten vor Lease nur Deskriptoren und Hashes. Local-only oder administrativer Kandidatenzugriff blockiert `examReady`.
 - [ ] Full-Blueprint unabhängig freigeben: initial 90 Items/90 Minuten, 4–6 PBQ-nahe Items mit mindestens 10 % der Punkte, alle 28 Objectives, Aufgabenverb-/Szenario-/Schwierigkeitsmix und Formäquivalenz; Änderungen nur versioniert nach Kalibrierung.
-- [ ] Baseline-Diagnostik, gebuchte Prüfungssprache, Termin, verfügbares Wochenbudget und Puffertage erfassen.
+- [ ] Baseline-Diagnostik, gebuchte Prüfungssprache, Termin, verfügbares Wochenbudget und Puffertage erfassen. *(teilweise, 2026-07-18: Sprache Englisch, Termin = Settings-`examDateIso`, Budget ~5 h/Woche; Baseline-Diagnostik und Puffertage offen)*
 - [ ] UI-Sprache und Prüfungssprache getrennt behandeln: Fachbegriffe und bewertbare Übungen von Beginn an auch in der gebuchten Prüfungssprache anbieten; Vollsimulationen ausschließlich in dieser Sprache durchführen.
 
 Exit: Kein offizieller Leaf-Pfad fehlt im Crosswalk; keine kritische Inhalts-, Mapping-, Lizenz- oder Assessment-Lücke ist ungeklärt. Andernfalls darf die App weder „vollständig abgedeckt“ noch `examReady` anzeigen.
@@ -152,7 +163,7 @@ Exit: Kein offizieller Leaf-Pfad fehlt im Crosswalk; keine kritische Inhalts-, M
 - [x] `LearningUnitDefinition` und `LearningUnitExecution` einführen; keine komplette Objective-Deck-Auswahl im Karten-Schritt. *(`createCourseExecution` lehnt nicht gemappte Karten ab)*
 - [x] bestehende Paketschritt-Logik als pure Funktion extrahieren und das Tageswechsel-Verhalten fixieren: eine gestartete Einheit überlebt unverändert über Mitternacht. *(additiv als `computeCourseStepState`; Heute-Paket unangetastet; Mitternachtstest vorhanden)*
 - [x] Kachel, kompakte Liste und Volllisten-Sheet in `HomeView` integrieren; Aktivitäts-, Evidenz- und Reifestatus visuell trennen. *(HomeLearningUnitList max. 5 Zeilen mit reason, LearningUnitSheet; Heute-Paket-Kachel bleibt die aktive Kachel, read-only überlagert)*
-- [ ] Coverage-Ansicht zeigt Leaf-Gaps, Stichprobengröße und `insufficientEvidence`, nicht nur Ressourcenzahlen. *(teilweise: `buildRequirementCoverage` pur + getestet, Sheet zeigt Objective-Evidenz; Leaf-Gaps/Stichprobengröße fehlen in der UI)*
+- [x] Coverage-Ansicht zeigt Leaf-Gaps, Stichprobengröße und `insufficientEvidence`, nicht nur Ressourcenzahlen. *(Sheet zeigt je Objective „Leafs X/Y nachgewiesen · n formative Abrufe“ + Evidenzstatus; Stichprobe = formative Recall-Läufe der aktuellen Epoch, bis das Assessment-Ledger in Phase 3 echte Mastery-Stichproben liefert)*
 
 Exit: 120 korrekte Kursdefinitionen, keine Kartenleckage zwischen Videos/Holdouts, bestehendes Kachelverhalten bleibt erhalten, Build und Tests grün.
 
@@ -166,8 +177,8 @@ Exit: 120 korrekte Kursdefinitionen, keine Kartenleckage zwischen Videos/Holdout
 - [x] Legacy-localStorage genau einmal dem beim Upgrade aktiven Profil zuordnen. Ein globaler Migrationsmarker verhindert Kopien in weitere Profile; Import atomar in einer Dexie-Transaktion. *(`runLegacyLearningImport` + Marker `legacy-learning-v1`, mit Tests)*
 - [x] Tageswechsel verändert `activeStartedAt`, Schrittstand und Ausführung nicht. *(Schrittstand hängt an `createdAt`, Test vorhanden)*
 - [x] Fortsetzen öffnet exakt Video, Recall, Karten oder den referenzierten Versuch. *(für Course-Units via `startOrResumeCourseUnit`; Lab-/Examversuche folgen Phase 4/5)*
-- [ ] Study-Sessions über `executionId` statt Objective-Deck-ID persistieren; mehrere vorgezogene aktive Units bleiben getrennt und reservieren gemeinsam ihre Karten. *(teilweise: gemeinsame Reservierung über `listReservedCardIds` + Heute-Paket-Ausschluss umgesetzt; Session-Persistenz läuft noch über Objective-Deck-ID + explizite Kartenliste)*
-- [ ] Profilwechsel ist ein atomarer Scope-Wechsel ohne Core-Store-Clear und muss Kartenfälligkeit, Reviews, Stats, Deckfortschritt sowie v6-Sessions/Ausführungen offline erhalten; ein expliziter Lernreset setzt nur den betroffenen Profil-Scheduler samt Reviews/Stats/Progress zurück, erhöht bei Schema v2 atomar die Evidence-Epoch, bricht offene Zustände ab und lässt Exposure-/Lease-Audit unverändert. *(teilweise: das dedizierte System ist per Compound-Keys profilfest, Profiltrennung getestet; Lernreset-Flow mit Epoch-Erhöhung fehlt noch)*
+- [x] Study-Sessions über `executionId` statt Objective-Deck-ID persistieren; mehrere vorgezogene aktive Units bleiben getrennt und reservieren gemeinsam ihre Karten. *(Session-Key `unit-exec:{executionId}`, wiederaufnehmbar inkl. „Weiterlernen“-Kachel; Abschluss räumt die Session auf; Reservierung über `listReservedCardIds` + Heute-Paket-Ausschluss)*
+- [ ] Profilwechsel ist ein atomarer Scope-Wechsel ohne Core-Store-Clear und muss Kartenfälligkeit, Reviews, Stats, Deckfortschritt sowie v6-Sessions/Ausführungen offline erhalten; ein expliziter Lernreset setzt nur den betroffenen Profil-Scheduler samt Reviews/Stats/Progress zurück, erhöht bei Schema v2 atomar die Evidence-Epoch, bricht offene Zustände ab und lässt Exposure-/Lease-Audit unverändert. *(teilweise: das dedizierte System ist per Compound-Keys profilfest, Profiltrennung getestet; Lernreset umgesetzt — `resetProfileLearningEvidence` erhöht atomar die Epoch, bricht offene Units ab, erhält das Audit und hängt am bestehenden „Lernfortschritt zurücksetzen“; Core-Store-Scoping der Haupt-DB bleibt bewusst offen)*
 - [ ] Alle neuen Study-Einstiege schreiben Review, profil-/session-/contentversioniertes Proposal und Outbox atomar. Nur der Server darf aus Rohantwort, kanonischem Inhalt und verifizierter Zeit ein masteryfähiges Event erzeugen; Legacy-Reviews bleiben reine Hints.
 - [ ] `assessment.event` samt append-only Servertabelle in derselben Phase einführen, damit keine unbekannte Outbox-Operation bis Phase 5 liegen bleibt.
 - [ ] Bestehende SyncQueueDB/transactionale Outbox profilfest erweitern, nicht ersetzen: Legacy-Operationen und Retry/Backoff erhalten, v1-`progress.reset {timestamp,due,dueAt}` weiterhin decodieren, abgelaufene In-Flight-Sendeleases nach Crash sicher übernehmen, v1→v2 bzw. Main-DB-Migration; ownerlose Altzeilen bleiben bis eindeutiger Zuordnung `deferred-auth`.

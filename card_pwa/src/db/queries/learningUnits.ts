@@ -204,6 +204,61 @@ export async function abortUnitExecution(
   })
 }
 
+export interface ResetLearningEvidenceResult {
+  evidenceEpoch: number
+  abortedUnits: number
+  resetEventId: string
+}
+
+/**
+ * Expliziter Lernreset des dedizierten Systems (§16): erhöht atomar die
+ * Evidence-Epoch und bricht offene Ausführungen ab. Executions, Recall-Läufe
+ * und Video-Fortschritt bleiben als append-only Audit-Historie erhalten —
+ * Zeilen alter Epochen zählen nur nicht mehr als Evidenz. Abgeschlossene
+ * Units behalten ihren Aktivitätsstatus: Aktivität ist keine Evidenz.
+ */
+export async function resetProfileLearningEvidence(
+  profileId: string,
+  now: number,
+  db: Db = defaultDb,
+): Promise<ResetLearningEvidenceResult> {
+  return db.transaction('rw', [db.profileLearningState, db.learningUnitState, db.unitExecutions], async () => {
+    const existing = await db.profileLearningState.get(profileId)
+    const resetEventId = crypto.randomUUID()
+    const next: ProfileLearningStateRecord = {
+      profileId,
+      evidenceEpoch: (existing?.evidenceEpoch ?? 1) + 1,
+      revision: (existing?.revision ?? 0) + 1,
+      lastResetEventId: resetEventId,
+      serverWatermark: existing?.serverWatermark,
+      updatedAt: now,
+    }
+    await db.profileLearningState.put(next)
+
+    const inProgress = await db.learningUnitState
+      .where('[profileId+activityStatus]')
+      .equals([profileId, 'inProgress'])
+      .toArray()
+    let abortedUnits = 0
+    for (const state of inProgress) {
+      const execution = state.activeExecutionId
+        ? await db.unitExecutions.get(state.activeExecutionId)
+        : undefined
+      await db.learningUnitState.put({
+        ...state,
+        activityStatus: state.lastCompletedAt ? 'completed' : 'notStarted',
+        currentStep: state.lastCompletedAt ? 'done' : execution?.type === 'course' ? 'video' : 'cards',
+        activeExecutionId: undefined,
+        lastActivityAt: now,
+        updatedAt: now,
+      })
+      abortedUnits += 1
+    }
+
+    return { evidenceEpoch: next.evidenceEpoch, abortedUnits, resetEventId }
+  })
+}
+
 /** IDs aller Karten, die aktive Ausführungen dieses Profils gerade reservieren
  *  (Ausschlussmenge für neue Auswahlen, §23.2). */
 export async function listReservedCardIds(profileId: string, db: Db = defaultDb): Promise<Set<string>> {
@@ -333,6 +388,21 @@ export async function listRecentVideoRecallRuns(
     .equals([profileId, videoIndex])
     .toArray()
   return runs.sort((a, b) => b.completedAt - a.completedAt).slice(0, limit)
+}
+
+/** Alle Recall-Läufe eines Profils in der aktuellen Evidence-Epoch — Basis der
+ *  formativen Stichprobenanzeige. Läufe alter Epochen bleiben Audit, zählen
+ *  aber nicht mehr. */
+export async function listVideoRecallRunsForProfile(
+  profileId: string,
+  db: Db = defaultDb,
+): Promise<VideoRecallRun[]> {
+  const [state, runs] = await Promise.all([
+    db.profileLearningState.get(profileId),
+    db.videoRecallRuns.where('profileId').equals(profileId).toArray(),
+  ])
+  const epoch = state?.evidenceEpoch ?? 1
+  return runs.filter(run => run.evidenceEpoch === epoch)
 }
 
 // ── Draft-Lernplan (bestätigter Plan folgt mit Phase 5/Server) ─────────────
