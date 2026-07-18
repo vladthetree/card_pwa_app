@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import type { LearningUnitDefinition, LearningUnitState } from '../../utils/learningUnits'
 import {
+  computeDraftPacing,
   computeExamTimeline,
   rankLearningUnits,
   resolveLearningPhase,
@@ -163,5 +164,56 @@ describe('rankLearningUnits', () => {
 
   it('ist deterministisch: gleiche Eingaben ergeben identische Reihenfolge', () => {
     expect(rank().map(r => r.definition.unitId)).toEqual(rank().map(r => r.definition.unitId))
+  })
+})
+
+describe('computeDraftPacing', () => {
+  const plan = { weeklyMinutesAvailable: 300, learningDaysPerWeek: 6, bufferDays: 2 }
+
+  it('ohne Termin oder Budget: missing-plan, ohne Machbarkeitsurteil', () => {
+    expect(computeDraftPacing({ daysLeft: null }).reason).toBe('missing-plan')
+    expect(computeDraftPacing({ daysLeft: 30 }).reason).toBe('missing-plan')
+    expect(computeDraftPacing({ daysLeft: 30, plan: { weeklyMinutesAvailable: 0 } }).reason).toBe('missing-plan')
+  })
+
+  it('überfälliger Termin: past-exam und nicht machbar', () => {
+    const result = computeDraftPacing({ daysLeft: -1, plan })
+    expect(result.reason).toBe('past-exam')
+    expect(result.feasible).toBe(false)
+  })
+
+  it('fehlende Schätzungen werden benannt statt als machbar auszugeben', () => {
+    const result = computeDraftPacing({
+      daysLeft: 30,
+      plan,
+      remainingUnits: [
+        { unitId: 'unit:course:002', estimatedMinutes: 40 },
+        { unitId: 'unit:course:003' },
+      ],
+    })
+    expect(result.reason).toBe('missing-estimates')
+    expect(result.missingEstimateUnitIds).toEqual(['unit:course:003'])
+    expect(result.requiredMinutes).toBe(40)
+  })
+
+  it('rechnet Budget nach Puffertagen und meldet capacity-shortfall ehrlich', () => {
+    // 30 Tage − 2 Puffer = 28 Tage · (300/7) = 1200 min verfügbar,
+    // 24 Lerntage → 50 min/Lerntag bei 1200 min Bedarf: genau machbar.
+    const onTrack = computeDraftPacing({
+      daysLeft: 30,
+      plan,
+      remainingUnits: [{ unitId: 'unit:course:002', estimatedMinutes: 1200 }],
+    })
+    expect(onTrack.reason).toBe('on-track')
+    expect(onTrack.availableMinutesAfterBuffer).toBe(1200)
+    expect(onTrack.requiredMinutesPerLearningDay).toBe(50)
+
+    const shortfall = computeDraftPacing({
+      daysLeft: 30,
+      plan,
+      remainingUnits: [{ unitId: 'unit:course:002', estimatedMinutes: 1201 }],
+    })
+    expect(shortfall.reason).toBe('capacity-shortfall')
+    expect(shortfall.feasible).toBe(false)
   })
 })

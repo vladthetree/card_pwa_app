@@ -29,8 +29,10 @@ import {
   computeExamTimeline,
   rankLearningUnits,
   resolveLearningPhase,
+  type LearningPacingResult,
   type RankedLearningUnit,
 } from '../../utils/learningUnitRanking'
+import type { DraftLearnerExamPlanRecord } from '../../db/learningUnitsDb'
 import {
   SY0701_CONTENT_MANIFEST_VERSION,
   SY0701_CONTENT_MAP_BY_VIDEO_INDEX,
@@ -66,6 +68,10 @@ export interface LearningUnitsHomeData {
   /** Formative Recall-Läufe der aktuellen Evidence-Epoch je Objective —
    *  Stichprobenanzeige, ausdrücklich keine Mastery-Evidenz (§8.2). */
   formativeRecallByObjective: ReadonlyMap<string, number>
+  /** Draft-Lernplan des Profils (null = noch keiner angelegt). */
+  plan: DraftLearnerExamPlanRecord | null
+  /** Draft-Pacing aus Termin, Budget und Dauerschätzungen (§12). */
+  pacing: LearningPacingResult
   reload: () => void
 }
 
@@ -91,6 +97,8 @@ const EMPTY_RESULT = {
   ranked: [] as RankedLearningUnit[],
   stateByUnitId: new Map<string, LearningUnitState>(),
   formativeRecallByObjective: new Map<string, number>(),
+  plan: null as DraftLearnerExamPlanRecord | null,
+  pacing: computeDraftPacing({ daysLeft: null }),
 }
 
 /** Lokales Lerntagsdatum (YYYY-MM-DD) des Tagesanfangs — nie UTC. */
@@ -220,6 +228,13 @@ export function useLearningUnits({
         daysLeft: timeline.daysLeft,
         courseProgressRatio: courseCompleted / COURSE_UNIT_COUNT,
       })
+      const pacing = computeDraftPacing({
+        daysLeft: timeline.daysLeft,
+        plan: plan ?? null,
+        remainingUnits: definitions
+          .filter(definition => stateByUnitId.get(definition.unitId)?.activityStatus !== 'completed')
+          .map(definition => ({ unitId: definition.unitId, estimatedMinutes: definition.estimatedMinutes })),
+      })
       const ranked = rankLearningUnits({
         definitions,
         stateByUnitId,
@@ -232,7 +247,7 @@ export function useLearningUnits({
         objectiveEvidence,
         readiness: 'notReady',
         daysLeft: timeline.daysLeft,
-        pacing: computeDraftPacing({ daysLeft: timeline.daysLeft }),
+        pacing,
       })
 
       setData({
@@ -246,6 +261,8 @@ export function useLearningUnits({
         ranked,
         stateByUnitId,
         formativeRecallByObjective,
+        plan: plan ?? null,
+        pacing,
       })
     } catch (error) {
       console.error('[useLearningUnits]', error)

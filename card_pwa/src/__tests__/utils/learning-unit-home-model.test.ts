@@ -57,12 +57,22 @@ describe('computeDraftPacing', () => {
     expect(pacing.reason).toBe('past-exam')
   })
 
-  it('meldet mit Termin fehlende Zeitschätzungen statt behaupteter Machbarkeitsrechnung', () => {
+  it('bleibt mit Termin, aber ohne Wochenbudget bei missing-plan (kein Machbarkeitsurteil)', () => {
     for (const daysLeft of [0, 1, 42]) {
       const pacing = computeDraftPacing({ daysLeft })
       expect(pacing.feasible).toBe(true)
-      expect(pacing.reason).toBe('missing-estimates')
+      expect(pacing.reason).toBe('missing-plan')
     }
+  })
+
+  it('meldet mit Termin und Budget fehlende Zeitschätzungen statt behaupteter Machbarkeit', () => {
+    const pacing = computeDraftPacing({
+      daysLeft: 42,
+      plan: { weeklyMinutesAvailable: 300 },
+      remainingUnits: [{ unitId: 'unit:course:002' }],
+    })
+    expect(pacing.feasible).toBe(true)
+    expect(pacing.reason).toBe('missing-estimates')
   })
 })
 

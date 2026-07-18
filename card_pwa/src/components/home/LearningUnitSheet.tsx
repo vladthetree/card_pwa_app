@@ -4,6 +4,7 @@
  * separate activity/evidence labels per §18. Read-only besides navigation —
  * tapping a unit opens its video (free Vorziehen), it never completes anything.
  */
+import { useState } from 'react'
 import { motion } from '../../ui/motion'
 import { X } from 'lucide-react'
 import { UI_TOKENS } from '../../constants/ui'
@@ -17,8 +18,19 @@ import {
   type ReadinessStatus,
 } from '../../utils/learningUnits'
 import { SY0701_REQUIREMENTS_MANIFEST } from '../../data/sy0701Requirements'
-import type { RankedLearningUnit } from '../../utils/learningUnitRanking'
+import type { LearningPacingResult, RankedLearningUnit } from '../../utils/learningUnitRanking'
+import type { DraftLearnerExamPlanRecord } from '../../db/learningUnitsDb'
 import { LEARNING_UNIT_COPY } from './HomeLearningUnitList'
+
+/** Offiziell gelistete SY0-701-Prüfungssprachen (Deutsch ist keine). */
+const EXAM_LANGUAGES = ['en', 'ja', 'pt', 'es', 'th'] as const
+
+export interface LearnerExamPlanDraftFields {
+  examLanguage: string
+  weeklyMinutesAvailable: number
+  learningDaysPerWeek: number
+  bufferDays: number
+}
 
 // Leaf-Coverage je Objective (§5.1): ohne fachlich freigegebene Coverage-
 // Einträge sind alle Leafs offen — die Zahlen zeigen ehrlich die Lücke,
@@ -49,6 +61,24 @@ const SHEET_COPY = {
       `Leafs ${covered}/${total} nachgewiesen · ${samples} formative Abrufe`,
     honesty: '„Abgeschlossen“ heißt bearbeitet — nicht beherrscht. Mastery entsteht erst aus geprüfter Abruf-Evidenz.',
     close: 'Schließen',
+    plan: {
+      title: 'Lernplan (Entwurf)',
+      examDate: (iso: string | null) => iso ? `Termin ${iso} — aus den Einstellungen` : 'Kein Termin — in den Einstellungen setzen',
+      language: 'Prüfungssprache',
+      weeklyHours: 'Stunden/Woche',
+      learningDays: 'Lerntage/Woche',
+      bufferDays: 'Puffertage',
+      save: 'Speichern',
+      saved: 'Gespeichert',
+      pacing: {
+        'missing-plan': 'Pacing: Termin oder Wochenbudget fehlt.',
+        'past-exam': 'Termin überschritten — Termin aktualisieren.',
+        'missing-estimates': 'Dauerschätzungen der Einheiten fehlen noch (Phase 6) — keine Machbarkeitsaussage.',
+        'capacity-shortfall': 'Budget reicht nicht — Termin verschieben oder Budget erhöhen.',
+        'on-track': 'Machbar im aktuellen Budget.',
+      } satisfies Record<LearningPacingResult['reason'], string>,
+      perDay: (minutes: number) => `~${minutes} min je Lerntag nötig`,
+    },
   },
   en: {
     title: 'All learning units',
@@ -64,6 +94,24 @@ const SHEET_COPY = {
       `Leafs ${covered}/${total} evidenced · ${samples} formative recalls`,
     honesty: '"Completed" means worked through — not mastered. Mastery only comes from verified retrieval evidence.',
     close: 'Close',
+    plan: {
+      title: 'Study plan (draft)',
+      examDate: (iso: string | null) => iso ? `Exam date ${iso} — from settings` : 'No exam date — set it in settings',
+      language: 'Exam language',
+      weeklyHours: 'Hours/week',
+      learningDays: 'Study days/week',
+      bufferDays: 'Buffer days',
+      save: 'Save',
+      saved: 'Saved',
+      pacing: {
+        'missing-plan': 'Pacing: exam date or weekly budget missing.',
+        'past-exam': 'Exam date passed — update it.',
+        'missing-estimates': 'Unit duration estimates still missing (phase 6) — no feasibility verdict.',
+        'capacity-shortfall': 'Budget insufficient — move the date or raise the budget.',
+        'on-track': 'Feasible within the current budget.',
+      } satisfies Record<LearningPacingResult['reason'], string>,
+      perDay: (minutes: number) => `~${minutes} min per study day needed`,
+    },
   },
 } as const
 
@@ -77,16 +125,46 @@ interface Props {
   objectiveEvidence: ReadonlyMap<string, ObjectiveEvidenceStatus>
   /** Formative Recall-Läufe je Objective (aktuelle Epoch) — keine Mastery. */
   formativeRecallByObjective: ReadonlyMap<string, number>
+  plan: DraftLearnerExamPlanRecord | null
+  pacing: LearningPacingResult
+  /** null = Profil nicht hydratisiert → Editor deaktiviert. */
+  onSavePlan: ((fields: LearnerExamPlanDraftFields) => Promise<void>) | null
   onOpenUnit: (definition: LearningUnitDefinition) => void
   onClose: () => void
 }
 
 export function LearningUnitSheet({
   language, readiness, courseCompleted, courseTotal,
-  ranked, stateByUnitId, objectiveEvidence, formativeRecallByObjective, onOpenUnit, onClose,
+  ranked, stateByUnitId, objectiveEvidence, formativeRecallByObjective,
+  plan, pacing, onSavePlan, onOpenUnit, onClose,
 }: Props) {
   const copy = SHEET_COPY[language]
   const listCopy = LEARNING_UNIT_COPY[language]
+
+  // Entwurfsfelder des Lernplans; Vorbelegung = gespeicherter Draft bzw. die
+  // Entscheidungen vom 2026-07-18 (Englisch, ~5 h/Woche).
+  const [examLanguage, setExamLanguage] = useState(plan?.examLanguage ?? 'en')
+  const [weeklyHours, setWeeklyHours] = useState(() => (plan?.weeklyMinutesAvailable ?? 300) / 60)
+  const [learningDays, setLearningDays] = useState(plan?.learningDaysPerWeek ?? 6)
+  const [bufferDays, setBufferDays] = useState(plan?.bufferDays ?? 0)
+  const [planSaveState, setPlanSaveState] = useState<'idle' | 'saving' | 'saved'>('idle')
+
+  const handleSavePlan = async () => {
+    if (!onSavePlan || planSaveState === 'saving') return
+    setPlanSaveState('saving')
+    try {
+      await onSavePlan({
+        examLanguage,
+        weeklyMinutesAvailable: Math.max(0, Math.round(weeklyHours * 60)),
+        learningDaysPerWeek: Math.min(7, Math.max(1, Math.round(learningDays))),
+        bufferDays: Math.max(0, Math.round(bufferDays)),
+      })
+      setPlanSaveState('saved')
+    } catch (error) {
+      console.error('[LearningUnitSheet] Plan speichern fehlgeschlagen', error)
+      setPlanSaveState('idle')
+    }
+  }
 
   const unitsByObjective = new Map<string, RankedLearningUnit[]>()
   for (const row of ranked) {
@@ -135,6 +213,67 @@ export function LearningUnitSheet({
         </div>
 
         <p className="mb-3 font-mono text-[11px] leading-relaxed text-ds-muted">{copy.honesty}</p>
+
+        <section className="mb-3 rounded-ds border border-ds-border bg-ds-floor p-2.5">
+          <div className="mb-1.5 flex min-w-0 items-baseline justify-between gap-2">
+            <h4 className="font-mono text-[11px] uppercase tracking-[0.14em] text-[--brand-primary]">{copy.plan.title}</h4>
+            <span className="min-w-0 truncate font-mono text-[10px] text-ds-muted">
+              {copy.plan.examDate(plan?.examDateIso ?? null)}
+            </span>
+          </div>
+          <div className="flex flex-wrap items-end gap-2">
+            <label className="grid gap-0.5 font-mono text-[10px] text-ds-muted">
+              {copy.plan.language}
+              <select
+                value={examLanguage}
+                onChange={event => setExamLanguage(event.target.value)}
+                className="rounded-ds border border-ds-border bg-transparent px-1.5 py-1 font-sans text-[12px] text-ds-fg"
+              >
+                {EXAM_LANGUAGES.map(code => (
+                  <option key={code} value={code}>{code}</option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-0.5 font-mono text-[10px] text-ds-muted">
+              {copy.plan.weeklyHours}
+              <input
+                type="number" min={0} max={80} step={0.5} value={weeklyHours}
+                onChange={event => setWeeklyHours(Number(event.target.value))}
+                className="w-20 rounded-ds border border-ds-border bg-transparent px-1.5 py-1 font-sans text-[12px] tabular-nums text-ds-fg"
+              />
+            </label>
+            <label className="grid gap-0.5 font-mono text-[10px] text-ds-muted">
+              {copy.plan.learningDays}
+              <input
+                type="number" min={1} max={7} step={1} value={learningDays}
+                onChange={event => setLearningDays(Number(event.target.value))}
+                className="w-16 rounded-ds border border-ds-border bg-transparent px-1.5 py-1 font-sans text-[12px] tabular-nums text-ds-fg"
+              />
+            </label>
+            <label className="grid gap-0.5 font-mono text-[10px] text-ds-muted">
+              {copy.plan.bufferDays}
+              <input
+                type="number" min={0} max={60} step={1} value={bufferDays}
+                onChange={event => setBufferDays(Number(event.target.value))}
+                className="w-16 rounded-ds border border-ds-border bg-transparent px-1.5 py-1 font-sans text-[12px] tabular-nums text-ds-fg"
+              />
+            </label>
+            <button
+              type="button"
+              disabled={!onSavePlan || planSaveState === 'saving'}
+              onClick={() => void handleSavePlan()}
+              className="ml-auto rounded-ds border border-ds-border px-2.5 py-1 font-sans text-[12px] text-ds-fg transition hover:border-[--brand-primary-50] disabled:opacity-50"
+            >
+              {planSaveState === 'saved' ? copy.plan.saved : copy.plan.save}
+            </button>
+          </div>
+          <p className="mt-1.5 font-mono text-[10px] leading-relaxed text-ds-muted">
+            {copy.plan.pacing[pacing.reason]}
+            {pacing.reason === 'on-track' && pacing.requiredMinutesPerLearningDay !== null
+              ? ` ${copy.plan.perDay(pacing.requiredMinutesPerLearningDay)}`
+              : ''}
+          </p>
+        </section>
 
         <div className="min-h-0 flex-1 overflow-y-auto pr-1">
           {domains.map(domainId => {

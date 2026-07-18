@@ -89,16 +89,64 @@ export function resolveLearningPhase(input: {
  * werden — nur ein überschrittener Termin blockiert (`past-exam`).
  * Die echte Kapazitätsrechnung (Wochenbudget, Puffertage) liefert Phase 3 (§12).
  */
-export function computeDraftPacing(input: { daysLeft: number | null }): LearningPacingResult {
+export interface DraftPacingPlanInput {
+  weeklyMinutesAvailable?: number
+  learningDaysPerWeek?: number
+  bufferDays?: number
+}
+
+/**
+ * Draft-Pacing aus Termin, Wochenbudget und Dauerschätzungen der offenen
+ * Units. Ehrlich statt geraten: ohne Termin oder Budget `missing-plan`,
+ * ohne (vollständige) Schätzungen `missing-estimates` — nie ein stilles
+ * „machbar“. `capacity-shortfall` ist der No-Go-Hinweis (§12).
+ */
+export function computeDraftPacing(input: {
+  daysLeft: number | null
+  plan?: DraftPacingPlanInput | null
+  /** Offene (nicht abgeschlossene) Units; ohne `estimatedMinutes` → missing-estimates. */
+  remainingUnits?: Array<{ unitId: string; estimatedMinutes?: number }>
+}): LearningPacingResult {
   const base = {
     requiredMinutes: 0,
     availableMinutesAfterBuffer: 0,
-    requiredMinutesPerLearningDay: null,
+    requiredMinutesPerLearningDay: null as number | null,
     missingEstimateUnitIds: [] as string[],
   }
   if (input.daysLeft === null) return { ...base, feasible: true, reason: 'missing-plan' }
   if (input.daysLeft < 0) return { ...base, feasible: false, reason: 'past-exam' }
-  return { ...base, feasible: true, reason: 'missing-estimates' }
+
+  const weeklyMinutes = input.plan?.weeklyMinutesAvailable ?? 0
+  if (weeklyMinutes <= 0) return { ...base, feasible: true, reason: 'missing-plan' }
+
+  const bufferDays = Math.max(0, input.plan?.bufferDays ?? 0)
+  const effectiveDays = Math.max(0, input.daysLeft - bufferDays)
+  const learningDaysPerWeek = Math.min(7, Math.max(1, input.plan?.learningDaysPerWeek ?? 7))
+  const availableMinutesAfterBuffer = Math.floor(effectiveDays * (weeklyMinutes / 7))
+  const remainingLearningDays = Math.floor(effectiveDays * (learningDaysPerWeek / 7))
+
+  const remaining = input.remainingUnits ?? []
+  const missingEstimateUnitIds = remaining
+    .filter(unit => unit.estimatedMinutes === undefined)
+    .map(unit => unit.unitId)
+  const requiredMinutes = remaining.reduce((sum, unit) => sum + (unit.estimatedMinutes ?? 0), 0)
+  const requiredMinutesPerLearningDay =
+    remainingLearningDays > 0 ? Math.ceil(requiredMinutes / remainingLearningDays) : null
+
+  const shared = {
+    requiredMinutes,
+    availableMinutesAfterBuffer,
+    requiredMinutesPerLearningDay,
+    missingEstimateUnitIds,
+  }
+  if (missingEstimateUnitIds.length > 0) {
+    // Unvollständige Schätzungen: keine Machbarkeitsaussage vortäuschen.
+    return { ...shared, feasible: true, reason: 'missing-estimates' }
+  }
+  if (requiredMinutes > availableMinutesAfterBuffer) {
+    return { ...shared, feasible: false, reason: 'capacity-shortfall' }
+  }
+  return { ...shared, feasible: true, reason: 'on-track' }
 }
 
 interface Prioritized {

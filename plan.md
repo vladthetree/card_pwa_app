@@ -129,12 +129,19 @@ Daily Quest und alle Home-/Shortcut-Einstiege beziehen die Ausschlussmenge aus e
 - **Session-Persistenz über `executionId`:** Karten-Schritt einer Unit persistiert unter `unit-exec:{executionId}` (wiederaufnehmbar, „Weiterlernen“-Kachel zeigt „Lerneinheit NNN“); keine Kollision mehr mit der Heute-Paket-Session desselben Objectives; Unit-Abschluss räumt die Session auf.
 - **Coverage-Zeile im Sheet:** je Objective „Leafs X/Y nachgewiesen · n formative Abrufe“ aus Crosswalk + epochgefilterten Recall-Läufen (`summarizeLeafCoverageByObjective`, `listVideoRecallRunsForProfile`).
 
+**Zweite Runde am 2026-07-18** (Working Tree, 805/805 Tests + Build grün):
+
+- `assessment.event`/Outbox begründet auf Phase 3+ verschoben (siehe Notiz am Phase-2-Punkt).
+- **Lernplan-Editor** im Lerneinheiten-Sheet: Prüfungssprache (en/ja/pt/es/th), Stunden/Woche, Lerntage/Woche, Puffertage → Draft-`LearnerExamPlan` (Vorbelegung = Entscheidungen vom 2026-07-18; Termin bleibt Settings-Sache).
+- **`computeDraftPacing` rechnet jetzt echt:** Budget nach Puffertagen vs. Dauerschätzungen der offenen Units — ehrlich `missing-plan`/`missing-estimates` statt Scheinurteil, `capacity-shortfall` als No-Go im Ranking und Hinweis im Sheet. Dauerschätzungen je Unit fehlen noch (Phase 6, `durationSec`).
+- **Phase-3-Start:** `computeAnswerStats` (pur) + `listAnswerStats` (Query) ersetzen die Wrong-only-Sicht — Hint-Qualität mit dokumentierten Grenzen, Mastery bleibt dem Ledger vorbehalten.
+
 **Nächste Schritte in Reihenfolge:**
 
 1. Working-Tree-Stand committen.
-2. Letzter Phase-2-Rest: `assessment.event` samt append-only Servertabelle und profilfeste Outbox-Erweiterung in additiver Form entwerfen (braucht card-sync-server-Arbeit) — oder begründet auf Phase 3 schieben.
-3. ~~Nutzerentscheidungen einholen~~ *(erledigt 2026-07-18: Sprache Englisch, Termin aus Settings, ~5 h/Woche, keine Mapping-Moves — siehe „Nutzerentscheidungen vom 2026-07-18“)*. Rest: Prüfungssprache/Wochenbudget in den Draft-`LearnerExamPlan` schreiben (kleine Settings-UI oder Plan-Editor), Baseline-Diagnostik und Puffertage klären.
-4. Phase 3 beginnen: `listAnswerStats`, Review-Units (Schema `reviewUnitAttempts` liegt schon in DB v1), Tageskappe, Abbruch-Handling.
+2. Phase 3 fortsetzen: Review-Units bauen (Fälligkeit über die Study-Eligibility-Logik + ungelöste Fehler aus `listAnswerStats` einfrieren, Tageskappe über `reviewUnitAttempts`, Abbruch-Handling), dann `rankLearningUnits` mit echten `reviewDueUnitIds`/Fehler-Signalen verdrahten.
+3. Beim Bau der Review-Units entscheiden, ob Assessment-Proposals lokal in der dedizierten DB mitgeschrieben werden (Vorstufe zu `assessment.event`, Server folgt gebündelt in Phase 5).
+4. Puffertage im Plan-Editor pflegen (erledigt sich mit Nutzung) und Baseline-Diagnostik klären; Dauerschätzungen (`durationSec`) aus Phase 6 vorziehen, sobald Pacing-Machbarkeit gebraucht wird.
 
 ## Umsetzungsphasen
 
@@ -172,7 +179,7 @@ Exit: 120 korrekte Kursdefinitionen, keine Kartenleckage zwischen Videos/Holdout
 *(Umsetzung additiv: dedizierte DB `card-pwa-learning-units` v1 statt v22-Migration der Haupt-DB — siehe Umsetzungsstatus oben.)*
 
 - [ ] Dexie v22: alle globalen Core-Lernstores atomar dem Legacy-Owner zuordnen und auf profilgescopte Deck-/Karten-/Scheduler-/Review-/Stats-/Progress-/Session-/Shuffle-Stores umstellen; zusätzlich `profileLearningState` mit monotoner Evidence-Epoch, `learningUnitState`, Unit-/Review-Ausführungen, execution-gebundene Recall-Läufe, Assessment-Proposals und serverakzeptierte Events/Resets/Receipts, Migrationsmetadaten sowie Video-Fortschritt mit `[profileId+videoIndex]`. *(teilweise: alle neuen Stores in der dedizierten DB v1 vorhanden [profileLearningState/Epoch, learningUnitState, Executions, Recall-Läufe, videoProgressByProfile, migrationMeta]; Core-Store-Migration bewusst NICHT ausgeführt — Bestand bleibt global; Assessment-Proposals/Receipts folgen)*
-- [x] Profilbezogenen `LearnerExamPlan` für Exam-Code, Termin, UI-/Prüfungssprache, Wochenbudget, Lerntage/Woche, Puffertage, Source-Snapshot und optionale Baseline-Diagnostik speichern. Legacy-`examDateIso` wird nur als unvollständiger Draft des Ownerprofils importiert; danach ist der Plan die einzige Schreibquelle. *(Draft-Ausbaustufe; serverbestätigter Plan ist Phase 5)*
+- [x] Profilbezogenen `LearnerExamPlan` für Exam-Code, Termin, UI-/Prüfungssprache, Wochenbudget, Lerntage/Woche, Puffertage, Source-Snapshot und optionale Baseline-Diagnostik speichern. Legacy-`examDateIso` wird nur als unvollständiger Draft des Ownerprofils importiert; danach ist der Plan die einzige Schreibquelle. *(Draft-Ausbaustufe; serverbestätigter Plan ist Phase 5. Seit 2026-07-18 editierbar im Lerneinheiten-Sheet: Prüfungssprache, Stunden/Woche, Lerntage/Woche, Puffertage — Termin bleibt in den Einstellungen)*
 - [x] Statische Definition und dynamische Ausführung trennen; aktive `cardIds` bleiben bis Abschluss/Abbruch eingefroren.
 - [x] Legacy-localStorage genau einmal dem beim Upgrade aktiven Profil zuordnen. Ein globaler Migrationsmarker verhindert Kopien in weitere Profile; Import atomar in einer Dexie-Transaktion. *(`runLegacyLearningImport` + Marker `legacy-learning-v1`, mit Tests)*
 - [x] Tageswechsel verändert `activeStartedAt`, Schrittstand und Ausführung nicht. *(Schrittstand hängt an `createdAt`, Test vorhanden)*
@@ -180,7 +187,7 @@ Exit: 120 korrekte Kursdefinitionen, keine Kartenleckage zwischen Videos/Holdout
 - [x] Study-Sessions über `executionId` statt Objective-Deck-ID persistieren; mehrere vorgezogene aktive Units bleiben getrennt und reservieren gemeinsam ihre Karten. *(Session-Key `unit-exec:{executionId}`, wiederaufnehmbar inkl. „Weiterlernen“-Kachel; Abschluss räumt die Session auf; Reservierung über `listReservedCardIds` + Heute-Paket-Ausschluss)*
 - [ ] Profilwechsel ist ein atomarer Scope-Wechsel ohne Core-Store-Clear und muss Kartenfälligkeit, Reviews, Stats, Deckfortschritt sowie v6-Sessions/Ausführungen offline erhalten; ein expliziter Lernreset setzt nur den betroffenen Profil-Scheduler samt Reviews/Stats/Progress zurück, erhöht bei Schema v2 atomar die Evidence-Epoch, bricht offene Zustände ab und lässt Exposure-/Lease-Audit unverändert. *(teilweise: das dedizierte System ist per Compound-Keys profilfest, Profiltrennung getestet; Lernreset umgesetzt — `resetProfileLearningEvidence` erhöht atomar die Epoch, bricht offene Units ab, erhält das Audit und hängt am bestehenden „Lernfortschritt zurücksetzen“; Core-Store-Scoping der Haupt-DB bleibt bewusst offen)*
 - [ ] Alle neuen Study-Einstiege schreiben Review, profil-/session-/contentversioniertes Proposal und Outbox atomar. Nur der Server darf aus Rohantwort, kanonischem Inhalt und verifizierter Zeit ein masteryfähiges Event erzeugen; Legacy-Reviews bleiben reine Hints.
-- [ ] `assessment.event` samt append-only Servertabelle in derselben Phase einführen, damit keine unbekannte Outbox-Operation bis Phase 5 liegen bleibt.
+- [ ] `assessment.event` samt append-only Servertabelle in derselben Phase einführen, damit keine unbekannte Outbox-Operation bis Phase 5 liegen bleibt. *(Entscheidung 2026-07-18: mit den beiden Nachbarpunkten auf Phase 3+ verschoben — im additiven System entstehen Proposals erst mit den neuen Review-Units und leben in der dedizierten DB statt in der Legacy-SyncQueue, es kann also keine unbekannte Outbox-Operation liegen bleiben; der produktive Sync-Server wird nur einmal, gebündelt mit dem Phase-5-Auth-/Receipt-Design, angefasst)*
 - [ ] Bestehende SyncQueueDB/transactionale Outbox profilfest erweitern, nicht ersetzen: Legacy-Operationen und Retry/Backoff erhalten, v1-`progress.reset {timestamp,due,dueAt}` weiterhin decodieren, abgelaufene In-Flight-Sendeleases nach Crash sicher übernehmen, v1→v2 bzw. Main-DB-Migration; ownerlose Altzeilen bleiben bis eindeutiger Zuordnung `deferred-auth`.
 - [x] Backup/Restore umfasst neue Zustände, Ausführungen, Resets/Evidence-Epoch und profilbezogene Signale, aber keine internen Migrationsmarker oder Queue/Outbox. Ein Auth-Bootstrap-Reconcile stellt fehlende Proposal-/Reset-/Attempt-Operationen anhand ihrer Original-ID idempotent wieder her; eine Backup-Epoch wird nicht ohne Serverbestätigung autoritativ. Offene Readiness-Versuche werden nicht exportiert; abgeschlossene nur redaktiert ohne Prompts, Optionen, Scoring oder rohe Antworten. *(Umgesetzt als Backup v3: alle Stores der dedizierten DB außer `migrationMeta`; Restore idempotent, States per updatedAt-LWW, Executions unveränderlich, Backup-Epoch nie autoritativ, Legacy-Import restore-fest. Auth-Bootstrap-Reconcile und Readiness-Redaktion folgen mit ihren Phasen — die betroffenen Stores existieren noch nicht.)*
 
@@ -188,14 +195,14 @@ Exit: Reload, Tageswechsel, Profilwechsel und Restore sind deterministisch; kein
 
 ### Phase 3 — Evidenzbasierte Reviews und Empfehlungen
 
-- [ ] `listAnswerStats` statt Wrong-only-Query: `scored`, `correct`, `wrong`, `unanswered`, eindeutige Items, Exposition, Zeit, erste/letzte Antwort, letzte Antwort und `resolvedAt`.
+- [x] `listAnswerStats` statt Wrong-only-Query: `scored`, `correct`, `wrong`, `unanswered`, eindeutige Items, Exposition, Zeit, erste/letzte Antwort, letzte Antwort und `resolvedAt`. *(als Hint-Aggregation über ReviewRecords: pure `computeAnswerStats` + Query `listAnswerStats`; `answerCorrect`-Vorrang mit rating≥3-Fallback, Auflösung nur durch strikt spätere korrekte Antwort, `masteryEligibleOnly` ⇒ leer und `independentSessionCount` 0, bis das Ledger existiert)*
 - [ ] Das autoritative AssessmentEvent-Ledger vollständig aggregieren; Legacy-Review-Hints dürfen Empfehlungen, aber wegen unsicherer Herkunft keine Mastery liefern.
 - [ ] Fälligkeit über dieselbe pure Eligibility-Logik wie die gewählte Study-Sortierung berechnen; direkte statt rekursive Deckquery verwenden.
 - [ ] Review-Ausführung aus fälligen Karten und ungelösten Fehlern einfrieren; ein später korrekt gelöstes Item bleibt nicht endlos falsch.
 - [ ] Reviewversuche separat protokollieren. Die Tageskappe nutzt Profil, lokales Lerntagsdatum und Abschlussverlauf.
 - [ ] Review-Abbruch explizit speichern, aktive Reservierung lösen und unerledigte/überhängende Karten weiter als `reviewDue` behandeln.
 - [ ] `rankLearningUnits` erhält Phase, Datum, heutige Reviews, Mastery und Readiness: Grundlagen priorisieren Kurs + fällige Reviews; Vertiefung Schwächen/Labs; Prüfungsphase Holdout-Drills; Abschlussphase kurze gezielte Remediation. *(teilweise: pures Grundgerüst mit `reason`, Phasenableitung und Draft-Pacing existiert und läuft auf Home; echte Mastery-/Review-Inputs fehlen bis `listAnswerStats`)*
-- [ ] Wenn Evidenz oder Zeit nicht reicht, zeigt das System einen klaren No-Go-/Terminverschiebungshinweis statt offene kritische Themen auszublenden.
+- [ ] Wenn Evidenz oder Zeit nicht reicht, zeigt das System einen klaren No-Go-/Terminverschiebungshinweis statt offene kritische Themen auszublenden. *(teilweise: Zeitseite umgesetzt — `capacity-shortfall` blockiert das Ranking und zeigt im Sheet „Termin verschieben oder Budget erhöhen“; Evidenzseite folgt mit dem Ledger)*
 
 Exit: Empfehlungen sind mit einem deterministischen `reason` erklärbar; kleine Stichproben werden nie als starke/beherrschte Objectives dargestellt.
 

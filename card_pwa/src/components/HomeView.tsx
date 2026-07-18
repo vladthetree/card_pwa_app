@@ -33,6 +33,7 @@ import { useDayStartMs } from '../hooks/useDayStartMs'
 import { computeExamDaysLeft } from '../utils/todayPackage'
 import { profileScopeId } from '../services/profileService'
 import { startOrResumeCourseUnit } from '../services/learningUnitRunner'
+import { saveDraftLearnerExamPlan } from '../db/queries/learningUnits'
 import type { LearningUnitDefinition } from '../utils/learningUnits'
 import { flattenDeckTree, getSecurityObjectiveDeckId, getSecurityObjectiveDeckName } from '../utils/securityDeckHierarchy'
 import { isReviewDeck } from '../utils/reviewDecks'
@@ -696,6 +697,16 @@ export default function HomeView({
             stateByUnitId={learningUnits.stateByUnitId}
             objectiveEvidence={learningUnits.objectiveEvidence}
             formativeRecallByObjective={learningUnits.formativeRecallByObjective}
+            plan={learningUnits.plan}
+            pacing={learningUnits.pacing}
+            onSavePlan={
+              learningUnitProfileId === null
+                ? null
+                : async fields => {
+                    await saveDraftLearnerExamPlan({ profileId: learningUnitProfileId, now: Date.now(), ...fields })
+                    learningUnits.reload()
+                  }
+            }
             onOpenUnit={definition => {
               setShowLearningUnitSheet(false)
               handleOpenLearningUnit(definition)
