@@ -12,6 +12,9 @@ import {
   formatCourseUnitId,
   normalizeRecallCheckSize,
   objectiveIdOfDeckId,
+  buildReviewUnits,
+  buildReviewSelection,
+  formatReviewUnitId,
   selectCourseCardIds,
   selectRecallQuestionIds,
   summarizeLeafCoverageByObjective,
@@ -466,6 +469,45 @@ describe('summarizeLeafCoverageByObjective', () => {
     for (const [objectiveId, entry] of summary) {
       if (objectiveId !== covered.objectiveId) expect(entry.coveredLeafs).toBe(0)
     }
+  })
+})
+
+describe('buildReviewUnits / buildReviewSelection', () => {
+  it('erzeugt genau eine Review-Unit je Objective mit stabiler ID hinter dem Kurs', () => {
+    const units = buildReviewUnits({
+      objectives: [
+        { objectiveId: '1.1', title: 'Security Controls' },
+        { objectiveId: '2.4', title: 'Indicators' },
+      ],
+      definitionVersion: 'v-test',
+    })
+    expect(units.map(unit => unit.unitId)).toEqual(['unit:review:1.1', 'unit:review:2.4'])
+    expect(units.every(unit => unit.type === 'review')).toBe(true)
+    expect(units[0].order).toBeGreaterThan(121) // hinter allen Course-Units
+    expect(formatReviewUnitId('5.6')).toBe('unit:review:5.6')
+  })
+
+  it('friert fällige Karten zuerst ein, hängt Fehler an und respektiert Reservierung/Limit', () => {
+    const selection = buildReviewSelection({
+      dueCardIds: ['due-b', 'due-a', 'reserved-1'],
+      unresolvedErrorCardIds: ['err-z', 'err-a', 'due-a'],
+      reservedCardIds: new Set(['reserved-1']),
+      limit: 0,
+    })
+    // Eligibility-Reihenfolge der fälligen Karten bleibt erhalten; Fehler
+    // deterministisch sortiert; Duplikate (due-a) und Reservierte fallen weg.
+    expect(selection.cardIds).toEqual(['due-b', 'due-a', 'err-a', 'err-z'])
+    expect(selection.reasonByCardId).toEqual({
+      'due-b': 'due', 'due-a': 'due', 'err-a': 'unresolved-error', 'err-z': 'unresolved-error',
+    })
+
+    const limited = buildReviewSelection({
+      dueCardIds: ['due-1', 'due-2', 'due-3'],
+      unresolvedErrorCardIds: ['err-1'],
+      reservedCardIds: new Set(),
+      limit: 2,
+    })
+    expect(limited.cardIds).toEqual(['due-1', 'due-2'])
   })
 })
 

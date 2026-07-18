@@ -34,6 +34,7 @@ Für das Bestehensziel sind **Phase 0 bis 5 einschließlich Readiness-Gate Pflic
 - **Prüfungstermin:** das in den App-Einstellungen hinterlegte `examDateIso` ist die Quelle (fließt per Legacy-Import als Draft-Plan des Owners ein).
 - **Wochenbudget: ca. 5 h/Woche** (~300 min). Puffertage und Baseline-Diagnostik weiter offen.
 - **Keine Mapping-Moves — endgültig.** Der Kartenbestand wird nicht angetastet; Lerneinheiten referenzieren Karten rein logisch über die Karten-ID (Content-Map erreicht alle 375 gemappten Recall-MCs), Metriken laufen wie gehabt über die Karten-ID. `mapping-decisions.json` bleibt Dokumentation, `apply_mapping_decisions.py` wird nicht ausgeführt.
+- **Eigener Screen statt Sheet:** Die Lerneinheiten bekommen eine eigene Vollbild-Ansicht (`LearningUnitsView`); das Dashboard trägt nur noch eine kompakte Referenz-Kachel darauf.
 
 ## Verbindliche Prüfungsbasis
 
@@ -136,12 +137,16 @@ Daily Quest und alle Home-/Shortcut-Einstiege beziehen die Ausschlussmenge aus e
 - **`computeDraftPacing` rechnet jetzt echt:** Budget nach Puffertagen vs. Dauerschätzungen der offenen Units — ehrlich `missing-plan`/`missing-estimates` statt Scheinurteil, `capacity-shortfall` als No-Go im Ranking und Hinweis im Sheet. Dauerschätzungen je Unit fehlen noch (Phase 6, `durationSec`).
 - **Phase-3-Start:** `computeAnswerStats` (pur) + `listAnswerStats` (Query) ersetzen die Wrong-only-Sicht — Hint-Qualität mit dokumentierten Grenzen, Mastery bleibt dem Ledger vorbehalten.
 
+**Dritte Runde am 2026-07-18** (Working Tree, 813/813 Tests + Build grün): **Review-Units komplett** — eine `unit:review:{objective}` je Objective ([buildReviewUnits](card_pwa/src/utils/learningUnits.ts)), Auswahl eingefroren aus fälligen Karten (Study-Eligibility, direkte Deckquery, keine neuen Karten) plus ungelösten Fehlern aus `listAnswerStats` ([startOrResumeReviewUnit](card_pwa/src/services/learningUnitRunner.ts)); Abschluss über Reconcile protokolliert den Versuch (`reviewUnitAttempts`), die Tageskappe begrenzt die Empfehlung auf eine Review pro Lerntag, und das Home-Ranking bekommt echte `reviewDueUnitIds`/`reviewCompletedToday`-Signale. Start aus Liste/Sheet öffnet die Karten-Session unter `unit-exec:{executionId}`.
+
+**Vierte Runde am 2026-07-18** (Working Tree, 813/813 Tests + Build grün): **Eigener Lerneinheiten-Screen** per Nutzerentscheidung — neue Vollbild-Ansicht [LearningUnitsView](card_pwa/src/components/LearningUnitsView.tsx) (View-Route `learning-units`, eigener Lazy-Chunk) mit Lernplan-Editor, Empfehlungsliste und der Vollliste Domain → Objective inkl. Leaf-Coverage; Unit-Start (Course/Review) läuft jetzt dort. Das Dashboard trägt nur noch die Referenz-Kachel [HomeLearningUnitsTile](card_pwa/src/components/home/HomeLearningUnitsTile.tsx) (Phase, Fortschritt, Termin, Top-Empfehlung → navigiert in den Screen); das Modal `LearningUnitSheet` ist ersetzt und entfernt.
+
 **Nächste Schritte in Reihenfolge:**
 
 1. Working-Tree-Stand committen.
-2. Phase 3 fortsetzen: Review-Units bauen (Fälligkeit über die Study-Eligibility-Logik + ungelöste Fehler aus `listAnswerStats` einfrieren, Tageskappe über `reviewUnitAttempts`, Abbruch-Handling), dann `rankLearningUnits` mit echten `reviewDueUnitIds`/Fehler-Signalen verdrahten.
-3. Beim Bau der Review-Units entscheiden, ob Assessment-Proposals lokal in der dedizierten DB mitgeschrieben werden (Vorstufe zu `assessment.event`, Server folgt gebündelt in Phase 5).
-4. Puffertage im Plan-Editor pflegen (erledigt sich mit Nutzung) und Baseline-Diagnostik klären; Dauerschätzungen (`durationSec`) aus Phase 6 vorziehen, sobald Pacing-Machbarkeit gebraucht wird.
+2. Phase-3-Rest: expliziter Review-Abbruch-Einstieg in der UI (Mechanik `abortUnitExecution` existiert); Entscheidung, ob Assessment-Proposals lokal in der dedizierten DB mitgeschrieben werden (Vorstufe zu `assessment.event`, Server folgt gebündelt in Phase 5).
+3. Puffertage im Plan-Editor pflegen (erledigt sich mit Nutzung) und Baseline-Diagnostik klären; Dauerschätzungen (`durationSec`) aus Phase 6 vorziehen, sobald Pacing-Machbarkeit gebraucht wird.
+4. Danach Phase 4 (Labs): Szenario-IDs/Rubriken normalisieren, `labAttempts`, Deep Links, Coverage-Gate für die sieben „Given a scenario“-Objectives.
 
 ## Umsetzungsphasen
 
@@ -169,7 +174,7 @@ Exit: Kein offizieller Leaf-Pfad fehlt im Crosswalk; keine kritische Inhalts-, M
 - [x] Generierte `cardIdsByVideoIndex`/`recallQuestionIdsByVideoIndex` verwenden; unmapped Objective-Karten bleiben im Objective-Practice-Pool. *(sy0701ContentMap.ts, generiert aus content/sy0-701; Test „lässt Unmapped im Practice-Pool“)*
 - [x] `LearningUnitDefinition` und `LearningUnitExecution` einführen; keine komplette Objective-Deck-Auswahl im Karten-Schritt. *(`createCourseExecution` lehnt nicht gemappte Karten ab)*
 - [x] bestehende Paketschritt-Logik als pure Funktion extrahieren und das Tageswechsel-Verhalten fixieren: eine gestartete Einheit überlebt unverändert über Mitternacht. *(additiv als `computeCourseStepState`; Heute-Paket unangetastet; Mitternachtstest vorhanden)*
-- [x] Kachel, kompakte Liste und Volllisten-Sheet in `HomeView` integrieren; Aktivitäts-, Evidenz- und Reifestatus visuell trennen. *(HomeLearningUnitList max. 5 Zeilen mit reason, LearningUnitSheet; Heute-Paket-Kachel bleibt die aktive Kachel, read-only überlagert)*
+- [x] Kachel, kompakte Liste und Volllisten-Sheet in `HomeView` integrieren; Aktivitäts-, Evidenz- und Reifestatus visuell trennen. *(Umgebaut per Nutzerentscheidung 2026-07-18: eigener Vollbild-Screen `LearningUnitsView` mit Lernplan-Editor, Empfehlungsliste und Vollliste; das Dashboard trägt nur die Referenz-Kachel `HomeLearningUnitsTile`; Heute-Paket-Kachel bleibt unangetastet)*
 - [x] Coverage-Ansicht zeigt Leaf-Gaps, Stichprobengröße und `insufficientEvidence`, nicht nur Ressourcenzahlen. *(Sheet zeigt je Objective „Leafs X/Y nachgewiesen · n formative Abrufe“ + Evidenzstatus; Stichprobe = formative Recall-Läufe der aktuellen Epoch, bis das Assessment-Ledger in Phase 3 echte Mastery-Stichproben liefert)*
 
 Exit: 120 korrekte Kursdefinitionen, keine Kartenleckage zwischen Videos/Holdouts, bestehendes Kachelverhalten bleibt erhalten, Build und Tests grün.
@@ -197,11 +202,11 @@ Exit: Reload, Tageswechsel, Profilwechsel und Restore sind deterministisch; kein
 
 - [x] `listAnswerStats` statt Wrong-only-Query: `scored`, `correct`, `wrong`, `unanswered`, eindeutige Items, Exposition, Zeit, erste/letzte Antwort, letzte Antwort und `resolvedAt`. *(als Hint-Aggregation über ReviewRecords: pure `computeAnswerStats` + Query `listAnswerStats`; `answerCorrect`-Vorrang mit rating≥3-Fallback, Auflösung nur durch strikt spätere korrekte Antwort, `masteryEligibleOnly` ⇒ leer und `independentSessionCount` 0, bis das Ledger existiert)*
 - [ ] Das autoritative AssessmentEvent-Ledger vollständig aggregieren; Legacy-Review-Hints dürfen Empfehlungen, aber wegen unsicherer Herkunft keine Mastery liefern.
-- [ ] Fälligkeit über dieselbe pure Eligibility-Logik wie die gewählte Study-Sortierung berechnen; direkte statt rekursive Deckquery verwenden.
-- [ ] Review-Ausführung aus fälligen Karten und ungelösten Fehlern einfrieren; ein später korrekt gelöstes Item bleibt nicht endlos falsch.
-- [ ] Reviewversuche separat protokollieren. Die Tageskappe nutzt Profil, lokales Lerntagsdatum und Abschlussverlauf.
-- [ ] Review-Abbruch explizit speichern, aktive Reservierung lösen und unerledigte/überhängende Karten weiter als `reviewDue` behandeln.
-- [ ] `rankLearningUnits` erhält Phase, Datum, heutige Reviews, Mastery und Readiness: Grundlagen priorisieren Kurs + fällige Reviews; Vertiefung Schwächen/Labs; Prüfungsphase Holdout-Drills; Abschlussphase kurze gezielte Remediation. *(teilweise: pures Grundgerüst mit `reason`, Phasenableitung und Draft-Pacing existiert und läuft auf Home; echte Mastery-/Review-Inputs fehlen bis `listAnswerStats`)*
+- [x] Fälligkeit über dieselbe pure Eligibility-Logik wie die gewählte Study-Sortierung berechnen; direkte statt rekursive Deckquery verwenden. *(`sortStudyCards` mit `maxNewCards: 0` — eine Wiederholung führt nie neue Karten ein — über `listCardsByDeckIdsDirect`)*
+- [x] Review-Ausführung aus fälligen Karten und ungelösten Fehlern einfrieren; ein später korrekt gelöstes Item bleibt nicht endlos falsch. *(`buildReviewSelection` + `startOrResumeReviewUnit`; Auflösung über die strikt-später-Regel aus `listAnswerStats`)*
+- [x] Reviewversuche separat protokollieren. Die Tageskappe nutzt Profil, lokales Lerntagsdatum und Abschlussverlauf. *(`reviewUnitAttempts` append-only via Reconcile-Abschluss; `countReviewUnitAttemptsForDay` speist `reviewCompletedToday` im Ranking — höchstens eine Empfehlung pro Lerntag)*
+- [ ] Review-Abbruch explizit speichern, aktive Reservierung lösen und unerledigte/überhängende Karten weiter als `reviewDue` behandeln. *(teilweise: `abortUnitExecution` löst Reservierung und erhält Historie, unbewertete Karten bleiben über die Scheduler-Fälligkeit `reviewDue`; ein expliziter Abbruch-Einstieg in der UI fehlt noch)*
+- [x] `rankLearningUnits` erhält Phase, Datum, heutige Reviews, Mastery und Readiness: Grundlagen priorisieren Kurs + fällige Reviews; Vertiefung Schwächen/Labs; Prüfungsphase Holdout-Drills; Abschlussphase kurze gezielte Remediation. *(seit 2026-07-18 mit echten Signalen verdrahtet: `reviewDueUnitIds` aus Eligibility + ungelösten Fehlern, `reviewCompletedToday` aus der Tageskappe; Mastery/Readiness bleiben bis Ledger/Phase 5 ehrliche `insufficientEvidence`/`notReady`-Defaults)*
 - [ ] Wenn Evidenz oder Zeit nicht reicht, zeigt das System einen klaren No-Go-/Terminverschiebungshinweis statt offene kritische Themen auszublenden. *(teilweise: Zeitseite umgesetzt — `capacity-shortfall` blockiert das Ranking und zeigt im Sheet „Termin verschieben oder Budget erhöhen“; Evidenzseite folgt mit dem Ledger)*
 
 Exit: Empfehlungen sind mit einem deterministischen `reason` erklärbar; kleine Stichproben werden nie als starke/beherrschte Objectives dargestellt.

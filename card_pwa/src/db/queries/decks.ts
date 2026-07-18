@@ -220,6 +220,19 @@ export async function listAllCards(): Promise<Card[]> {
   return rows.map(mapCard)
 }
 
+/** Karten exakt dieser Deck-IDs — bewusst DIREKT, ohne Unterdeck-Auflösung
+ *  (Lerneinheiten-Fälligkeit nach Detailplan §11: direkte statt rekursive
+ *  Deckquery). */
+export async function listCardsByDeckIdsDirect(deckIds: string[]): Promise<Card[]> {
+  if (deckIds.length === 0) return []
+  const rows = (
+    deckIds.length === 1
+      ? await db.cards.where('deckId').equals(deckIds[0]).toArray()
+      : await db.cards.where('deckId').anyOf(deckIds).toArray()
+  ).filter(r => !r.isDeleted)
+  return rows.map(mapCard)
+}
+
 /** Karten zu einer ID-Liste in deren Reihenfolge; gelöschte/fehlende fallen
  *  weg. Für die Wiederaufnahme persistierter Sessions (cardIds-Queue). */
 export async function listCardsByIds(ids: string[]): Promise<Card[]> {

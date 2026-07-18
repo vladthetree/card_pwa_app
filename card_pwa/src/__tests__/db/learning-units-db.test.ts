@@ -10,11 +10,13 @@ import {
   getLearnerExamPlan,
   getLearningUnitState,
   getOrCreateProfileLearningState,
+  countReviewUnitAttemptsForDay,
   listRecentVideoRecallRuns,
   listReservedCardIds,
   listVideoRecallRunsForProfile,
   markVideoOpened,
   markVideoWatched,
+  recordReviewUnitAttempt,
   recordVideoRecallRun,
   resetProfileLearningEvidence,
   runLegacyLearningImport,
@@ -275,6 +277,34 @@ describe('resetProfileLearningEvidence (§16 Lernreset)', () => {
 
     const restarted = await startUnitExecution(courseExecution({ executionId: 'exec-3' }), NOW + 20, db)
     expect(restarted.evidenceEpoch).toBe(2)
+  })
+})
+
+describe('recordReviewUnitAttempt / countReviewUnitAttemptsForDay (§11 Tageskappe)', () => {
+  const attempt = (attemptId: string, localLearningDay: string, profileId = 'profil-a') => ({
+    attemptId,
+    profileId,
+    unitId: 'unit:review:1.1',
+    executionId: 'exec-r1',
+    localLearningDay,
+    completedAt: NOW,
+  })
+
+  it('protokolliert append-only und zählt nur Profil + Lerntag', async () => {
+    await recordReviewUnitAttempt(attempt('a-1', '2026-07-18'), db)
+    await recordReviewUnitAttempt(attempt('a-2', '2026-07-18'), db)
+    await recordReviewUnitAttempt(attempt('a-3', '2026-07-19'), db)
+    await recordReviewUnitAttempt(attempt('a-4', '2026-07-18', 'profil-b'), db)
+
+    expect(await countReviewUnitAttemptsForDay('profil-a', '2026-07-18', db)).toBe(2)
+    expect(await countReviewUnitAttemptsForDay('profil-a', '2026-07-19', db)).toBe(1)
+    expect(await countReviewUnitAttemptsForDay('profil-b', '2026-07-18', db)).toBe(1)
+    expect(await countReviewUnitAttemptsForDay('profil-a', '2026-07-20', db)).toBe(0)
+  })
+
+  it('lehnt doppelte attemptIds ab (append-only)', async () => {
+    await recordReviewUnitAttempt(attempt('a-1', '2026-07-18'), db)
+    await expect(recordReviewUnitAttempt(attempt('a-1', '2026-07-19'), db)).rejects.toThrow('append-only')
   })
 })
 

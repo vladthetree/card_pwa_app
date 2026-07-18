@@ -4,7 +4,7 @@
  *       the 120 course definitions from the video catalog, runs the one-time
  *       legacy owner import, overlays the live legacy pointer (read-only) and
  *       ranks units with an explainable reason per row.
- * Used by: HomeView (HomeLearningUnitList + LearningUnitSheet).
+ * Used by: HomeView (Referenz-Kachel) und LearningUnitsView (eigener Screen).
  * Important: Purely additive to the Heute-Paket mechanic — it never writes the
  *            legacy pointer/progress and starts no executions (Phase-2 wiring).
  *            Evidence/readiness are honest Phase-1 defaults: without the
@@ -15,6 +15,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { LocalVideoMeta } from '../../utils/localVideoManifest'
 import {
   buildCourseUnits,
+  buildReviewUnits,
+  formatReviewUnitId,
+  objectiveIdOfDeckId,
   overlayLegacyCourseStates,
   COURSE_UNIT_COUNT,
   SY0701_OBJECTIVE_IDS,
@@ -24,6 +27,11 @@ import {
   type ObjectiveEvidenceStatus,
   type ReadinessStatus,
 } from '../../utils/learningUnits'
+import type { Card } from '../../types'
+import { sortStudyCards } from '../../services/studyCardOrdering'
+import { SY0_701_OBJECTIVES, getSecurityObjectiveDeckId } from '../../utils/securityDeckHierarchy'
+import { listCardsByDeckIdsDirect } from '../../db/queries'
+import { listAnswerStats } from '../../db/queries/answerStats'
 import {
   computeDraftPacing,
   computeExamTimeline,
@@ -38,6 +46,7 @@ import {
   SY0701_CONTENT_MAP_BY_VIDEO_INDEX,
 } from '../../data/sy0701ContentMap'
 import {
+  countReviewUnitAttemptsForDay,
   getLearnerExamPlan,
   getOrCreateProfileLearningState,
   listLearningUnitStates,
@@ -84,6 +93,8 @@ interface Options {
   /** Legacy-Settings-Termin als Fallback, solange kein Draft-Plan existiert. */
   examDateIso: string | null
   nextDayStartsAt: number
+  /** Learn-ahead-Fenster der Study-Eligibility (Review-Fälligkeit, §11). */
+  learnAheadMinutes: number
 }
 
 const EMPTY_RESULT = {
@@ -115,6 +126,7 @@ export function useLearningUnits({
   profileId,
   examDateIso,
   nextDayStartsAt,
+  learnAheadMinutes,
 }: Options): LearningUnitsHomeData {
   const [data, setData] = useState<Omit<LearningUnitsHomeData, 'objectiveEvidence' | 'reload'>>(EMPTY_RESULT)
   const computeVersionRef = useRef(0)
@@ -188,21 +200,53 @@ export function useLearningUnits({
         console.error('[useLearningUnits] Legacy-Import fehlgeschlagen', error)
       }
 
+      const localLearningDay = formatLocalLearningDay(todayStartMs)
+
       // Laufende Ausführungen mit den echten Signalen abgleichen (Schrittstand
       // nachziehen, vollständig erledigte Units abschließen), bevor gelistet wird.
       try {
-        await reconcileCourseUnitProgress(profileId)
+        await reconcileCourseUnitProgress(profileId, { localLearningDay })
       } catch (error) {
         console.error('[useLearningUnits] Reconcile fehlgeschlagen', error)
       }
 
-      const [profileState, states, plan, recallRuns] = await Promise.all([
+      const objectiveDeckIds = SY0_701_OBJECTIVES.map(objective => getSecurityObjectiveDeckId(objective.code))
+      const [profileState, states, plan, recallRuns, objectiveCards, attemptsToday] = await Promise.all([
         getOrCreateProfileLearningState(profileId, now),
         listLearningUnitStates(profileId),
         getLearnerExamPlan(profileId),
         listVideoRecallRunsForProfile(profileId),
+        listCardsByDeckIdsDirect(objectiveDeckIds),
+        countReviewUnitAttemptsForDay(profileId, localLearningDay),
       ])
+      const objectiveStats = await listAnswerStats({
+        groupBy: 'objective',
+        itemIds: objectiveCards.map(card => card.id),
+      })
       if (computeVersionRef.current !== version) return
+
+      // Review-Fälligkeit je Objective: dieselbe Eligibility wie die
+      // Study-Sortierung (ohne neue Karten) plus ungelöste Fehler (§11).
+      const cardsByObjective = new Map<string, Card[]>()
+      for (const card of objectiveCards) {
+        const objectiveId = objectiveIdOfDeckId(card.deckId)
+        if (!objectiveId) continue
+        const list = cardsByObjective.get(objectiveId) ?? []
+        list.push(card)
+        cardsByObjective.set(objectiveId, list)
+      }
+      const reviewDueUnitIds = new Set<string>()
+      for (const [objectiveId, cards] of cardsByObjective) {
+        const due = sortStudyCards(cards, { maxNewCards: 0, nextDayStartsAt, learnAheadMinutes, nowMs: now })
+        if (due.length > 0) reviewDueUnitIds.add(formatReviewUnitId(objectiveId))
+      }
+      for (const stat of objectiveStats) {
+        if (stat.unresolvedErrorItemIds.length > 0) reviewDueUnitIds.add(formatReviewUnitId(stat.scopeId))
+      }
+      const reviewDefinitions = buildReviewUnits({
+        objectives: SY0_701_OBJECTIVES.map(objective => ({ objectiveId: objective.code, title: objective.title })),
+        definitionVersion: SY0701_CONTENT_MANIFEST_VERSION,
+      })
 
       const formativeRecallByObjective = new Map<string, number>()
       for (const run of recallRuns) {
@@ -236,14 +280,13 @@ export function useLearningUnits({
           .map(definition => ({ unitId: definition.unitId, estimatedMinutes: definition.estimatedMinutes })),
       })
       const ranked = rankLearningUnits({
-        definitions,
+        // Kurs- plus Review-Units; Lab-/Exam-Units folgen mit Phase 4/5.
+        definitions: [...definitions, ...reviewDefinitions],
         stateByUnitId,
         phase,
-        localLearningDay: formatLocalLearningDay(todayStartMs),
-        // Review-/Lab-/Exam-Units existieren erst ab Phase 3–5; bis dahin gibt
-        // es weder Fälligkeits- noch Tageskappen-Signale für das Ranking.
-        reviewCompletedToday: false,
-        reviewDueUnitIds: new Set<string>(),
+        localLearningDay,
+        reviewCompletedToday: attemptsToday > 0,
+        reviewDueUnitIds,
         objectiveEvidence,
         readiness: 'notReady',
         daysLeft: timeline.daysLeft,

@@ -14,6 +14,7 @@ export {
   listDecks,
   listDeckCards,
   listAllCards,
+  listCardsByDeckIdsDirect,
   listCardsByIds,
   listCardsByTag,
   getDeckNameMap,

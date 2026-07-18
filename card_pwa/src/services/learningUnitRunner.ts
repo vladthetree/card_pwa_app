@@ -12,6 +12,7 @@
  *            button clicks. Nothing here writes reviews, XP, or the scheduler.
  */
 import {
+  buildReviewSelection,
   computeCourseStepState,
   createCourseExecution,
   formatCourseUnitId,
@@ -23,6 +24,9 @@ import {
   type LearningUnitState,
   type VideoRecallRun,
 } from '../utils/learningUnits'
+import { sortStudyCards } from './studyCardOrdering'
+import { getSecurityObjectiveDeckId } from '../utils/securityDeckHierarchy'
+import { listAnswerStats } from '../db/queries/answerStats'
 import {
   SY0701_CONTENT_MAP_BY_VIDEO_INDEX,
   SY0701_CONTENT_MANIFEST_VERSION,
@@ -37,15 +41,17 @@ import {
   listLearningUnitStates,
   listRecentVideoRecallRuns,
   listReservedCardIds,
+  recordReviewUnitAttempt,
   recordVideoRecallRun,
   startUnitExecution,
   touchUnitActivity,
 } from '../db/queries/learningUnits'
-import { clearActiveSession, listCardsByIds, listCardIdsReviewedSince } from '../db/queries'
+import { clearActiveSession, listCardsByDeckIdsDirect, listCardsByIds, listCardIdsReviewedSince } from '../db/queries'
 import { readTodayPackagePointer } from '../utils/todayPackage'
 import type { Algorithm } from '../contexts/SettingsContext'
 
 type CourseExecution = Extract<LearningUnitExecution, { type: 'course' }>
+type ReviewExecution = Extract<LearningUnitExecution, { type: 'review' }>
 
 const M_ID_PREFIX = /^(M\d-\d{3}):/
 
@@ -187,29 +193,146 @@ export async function startOrResumeCourseUnit(input: {
   return { execution, state, step: snapshot.step, remainingCardIds: snapshot.remainingCardIds }
 }
 
+/** Lokales Lerntagsdatum (YYYY-MM-DD) als Fallback, wenn der Aufrufer keins liefert. */
+function formatFallbackLearningDay(nowMs: number): string {
+  const date = new Date(nowMs)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+}
+
 /**
- * Gleicht alle laufenden Course-Ausführungen mit den echten Signalen ab:
- * Schrittstand nachziehen und vollständig erledigte Units abschließen.
- * Der Abschluss vergibt kein XP und schreibt keine Reviews (§15).
+ * Gleicht alle laufenden Course- und Review-Ausführungen mit den echten
+ * Signalen ab: Schrittstand nachziehen und vollständig erledigte Units
+ * abschließen. Review-Abschlüsse werden als Versuch protokolliert (§11,
+ * Tageskappe). Der Abschluss vergibt kein XP und schreibt keine Reviews (§15).
  */
-export async function reconcileCourseUnitProgress(profileId: string): Promise<{ completedUnitIds: string[] }> {
+export async function reconcileCourseUnitProgress(
+  profileId: string,
+  options: { localLearningDay?: string } = {},
+): Promise<{ completedUnitIds: string[] }> {
   const completedUnitIds: string[] = []
   const states = await listLearningUnitStates(profileId)
   for (const state of states) {
     if (state.activityStatus !== 'inProgress' || !state.activeExecutionId) continue
     const execution = await getActiveExecution(profileId, state.unitId)
-    if (!execution || execution.type !== 'course') continue
-    const snapshot = await computeStepSnapshot(execution)
-    if (snapshot.step === 'done') {
-      await completeUnitExecution(profileId, execution.executionId, Date.now())
-      // Persistierte Karten-Session der Ausführung ist mit dem Abschluss obsolet.
-      await clearActiveSession(`unit-exec:${execution.executionId}`)
-      completedUnitIds.push(state.unitId)
-    } else if (snapshot.step !== state.currentStep) {
-      await touchUnitActivity(profileId, state.unitId, snapshot.step, Date.now())
+    if (execution?.type === 'course') {
+      const snapshot = await computeStepSnapshot(execution)
+      if (snapshot.step === 'done') {
+        await completeUnitExecution(profileId, execution.executionId, Date.now())
+        // Persistierte Karten-Session der Ausführung ist mit dem Abschluss obsolet.
+        await clearActiveSession(`unit-exec:${execution.executionId}`)
+        completedUnitIds.push(state.unitId)
+      } else if (snapshot.step !== state.currentStep) {
+        await touchUnitActivity(profileId, state.unitId, snapshot.step, Date.now())
+      }
+    } else if (execution?.type === 'review') {
+      const reviewedIds = new Set(await listCardIdsReviewedSince(execution.cardIds, execution.createdAt))
+      if (execution.cardIds.every(cardId => reviewedIds.has(cardId))) {
+        const now = Date.now()
+        await completeUnitExecution(profileId, execution.executionId, now)
+        await recordReviewUnitAttempt({
+          attemptId: crypto.randomUUID(),
+          profileId,
+          unitId: state.unitId,
+          executionId: execution.executionId,
+          localLearningDay: options.localLearningDay ?? formatFallbackLearningDay(now),
+          completedAt: now,
+        })
+        await clearActiveSession(`unit-exec:${execution.executionId}`)
+        completedUnitIds.push(state.unitId)
+      }
     }
   }
   return { completedUnitIds }
+}
+
+export interface ReviewUnitStartSettings {
+  /** Obergrenze der eingefrorenen Auswahl; 0 = alle fälligen. */
+  reviewCardLimit: number
+  nextDayStartsAt: number
+  learnAheadMinutes: number
+}
+
+export interface ReviewUnitLaunch {
+  execution: ReviewExecution
+  state: LearningUnitState
+  /** Noch nicht bewertete Karten der eingefrorenen Auswahl. */
+  remainingCardIds: string[]
+}
+
+/**
+ * Startet eine Review-Unit mit eingefrorener Auswahl aus fälligen Karten
+ * (dieselbe Eligibility wie die Study-Sortierung, direkte Deckquery, keine
+ * neuen Karten) plus ungelösten Fehlern aus `listAnswerStats` — oder setzt
+ * die aktive Ausführung fort. Liefert null, wenn nichts zu wiederholen ist.
+ */
+export async function startOrResumeReviewUnit(input: {
+  profileId: string
+  definition: LearningUnitDefinition
+  settings: ReviewUnitStartSettings
+}): Promise<ReviewUnitLaunch | null> {
+  const { profileId, definition, settings } = input
+  if (definition.type !== 'review') {
+    throw new Error(`startOrResumeReviewUnit: ${definition.unitId} ist keine Review-Definition`)
+  }
+
+  const active = await getActiveExecution(profileId, definition.unitId)
+  if (active && active.type === 'review') {
+    const reviewedIds = new Set(await listCardIdsReviewedSince(active.cardIds, active.createdAt))
+    const state = await getLearningUnitState(profileId, definition.unitId)
+    if (!state) throw new Error(`startOrResumeReviewUnit: Unit-State zu ${definition.unitId} fehlt`)
+    return {
+      execution: active,
+      state,
+      remainingCardIds: active.cardIds.filter(cardId => !reviewedIds.has(cardId)),
+    }
+  }
+
+  const objectiveId = definition.objectiveIds[0]
+  const cards = await listCardsByDeckIdsDirect([getSecurityObjectiveDeckId(objectiveId)])
+  const executionId = crypto.randomUUID()
+
+  // Fälligkeit über dieselbe pure Eligibility-Logik wie die Study-Sortierung;
+  // maxNewCards 0: eine Wiederholung führt nie neue Karten ein (§11).
+  const dueCards = sortStudyCards(cards, {
+    maxNewCards: 0,
+    nextDayStartsAt: settings.nextDayStartsAt,
+    learnAheadMinutes: settings.learnAheadMinutes,
+    runSeed: executionId,
+  })
+  const stats = await listAnswerStats({ groupBy: 'item', itemIds: cards.map(card => card.id) })
+  const unresolvedErrorCardIds = stats
+    .filter(stat => stat.unresolvedErrorItemIds.length > 0)
+    .map(stat => stat.scopeId)
+
+  const reserved = await listReservedCardIds(profileId)
+  for (const cardId of readTodayPackagePointer().activeCardIds ?? []) reserved.add(cardId)
+
+  const selection = buildReviewSelection({
+    dueCardIds: dueCards.map(card => card.id),
+    unresolvedErrorCardIds,
+    reservedCardIds: reserved,
+    limit: settings.reviewCardLimit,
+  })
+  if (selection.cardIds.length === 0) return null
+
+  const now = Date.now()
+  const profileState = await getOrCreateProfileLearningState(profileId, now)
+  const execution: ReviewExecution = {
+    executionId,
+    unitId: definition.unitId,
+    profileId,
+    evidenceEpoch: profileState.evidenceEpoch,
+    type: 'review',
+    createdAt: now,
+    cardIds: selection.cardIds,
+    reasonByCardId: selection.reasonByCardId,
+    sourceSnapshotId: SY0701_SOURCE_SNAPSHOT_ID,
+    contentManifestVersion: SY0701_CONTENT_MANIFEST_VERSION,
+    contentVersions: {},
+  }
+  const state = await startUnitExecution(execution, now)
+  return { execution, state, remainingCardIds: [...selection.cardIds] }
 }
 
 /** Aktive Course-Ausführung zum Video dieses Profils (null = keine). */

@@ -288,6 +288,7 @@ const StudyView = lazy(() => import('./components/StudyView'))
 const ShuffleStudyView = lazy(() => import('./components/ShuffleStudyView'))
 const LabsView = lazy(() => import('./components/labs/LabsView'))
 const VideosView = lazy(() => import('./components/videos/VideosView'))
+const LearningUnitsView = lazy(() => import('./components/LearningUnitsView'))
 const UpdateBanner = lazy(() => import('./components/UpdateBanner'))
 const MetaBalls = lazy(() => import('./components/MetaBalls'))
 
@@ -711,6 +712,14 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
     setView('labs')
   }
 
+  // Lerneinheiten (SY0-701): eigener Screen; das Dashboard trägt nur die Referenz.
+  const openLearningUnits = () => {
+    setActiveDeck(null)
+    setActiveTagCards(null)
+    setActiveShuffleCollection(null)
+    setView('learning-units')
+  }
+
   const openVideos = () => {
     setActiveDeck(null)
     setActiveTagCards(null)
@@ -781,6 +790,7 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                   onOpenLabs={openLabs}
                   onOpenVideos={openVideos}
                   onOpenVideoAtIndex={openVideoAtIndex}
+                  onOpenLearningUnits={openLearningUnits}
                   resumeSession={resumeInfo}
                   onResumeSession={() => void resumeStudySession()}
                   importRequest={importRequest}
@@ -839,6 +849,18 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                 className="flex-1 min-h-0 h-full"
               >
                 <LabsView language={settings.language} onExit={goHome} />
+              </motion.div>
+            )}
+
+            {view === 'learning-units' && (
+              <motion.div
+                key="learning-units"
+                initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
+                animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+                transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
+                className="flex-1 min-h-0 h-full"
+              >
+                <LearningUnitsView onExit={goHome} onStartStudy={startStudy} onOpenVideoAtIndex={openVideoAtIndex} />
               </motion.div>
             )}
 

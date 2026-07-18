@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Home-screen React component of the dedicated SY0-701 learning-unit
  * module: compact ranked recommendation rows (max 5) with an explainable reason
- * each, plus the entry point to the full LearningUnitSheet. Activity, evidence,
+ * each, used inside the LearningUnitsView screen. Activity, evidence,
  * and readiness are labeled separately (§18) — "abgeschlossen" never reads as
  * "beherrscht".
  */
@@ -104,8 +104,9 @@ interface Props {
   stateByUnitId: ReadonlyMap<string, LearningUnitState>
   /** Öffnet die Einheit (Course → Video in der Lernvideos-Ansicht). */
   onOpenUnit: (definition: LearningUnitDefinition) => void
-  /** Öffnet das Sheet „Alle Lerneinheiten“. */
-  onShowAll: () => void
+  /** Öffnet die Vollliste; ohne Callback entfällt der Button (z. B. im
+   *  LearningUnitsView, wo die Vollliste direkt darunter steht). */
+  onShowAll?: () => void
 }
 
 function ActivityChip({ language, status }: { language: 'de' | 'en'; status: 'notStarted' | 'inProgress' | 'completed' }) {
@@ -157,15 +158,17 @@ export function HomeLearningUnitList({
             )}
           </div>
         </div>
-        <button
-          type="button"
-          data-testid="learning-unit-show-all"
-          onClick={onShowAll}
-          className="flex shrink-0 items-center gap-1 rounded-ds border border-ds-border px-2 py-1.5 font-mono text-[11px] text-ds-fg transition hover:border-[--brand-primary-50] hover:text-[--brand-primary]"
-        >
-          <ListChecks size={13} strokeWidth={1.75} />
-          {copy.showAll}
-        </button>
+        {onShowAll && (
+          <button
+            type="button"
+            data-testid="learning-unit-show-all"
+            onClick={onShowAll}
+            className="flex shrink-0 items-center gap-1 rounded-ds border border-ds-border px-2 py-1.5 font-mono text-[11px] text-ds-fg transition hover:border-[--brand-primary-50] hover:text-[--brand-primary]"
+          >
+            <ListChecks size={13} strokeWidth={1.75} />
+            {copy.showAll}
+          </button>
+        )}
       </div>
 
       {noGo && (
@@ -192,7 +195,7 @@ export function HomeLearningUnitList({
                 }`}
               >
                 <span className="shrink-0 font-mono text-[11px] tabular-nums text-ds-muted">
-                  {String(row.definition.order).padStart(3, '0')}
+                  {row.definition.type === 'review' ? 'REV' : String(row.definition.order).padStart(3, '0')}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-sans text-[13px] font-semibold leading-tight text-ds-fg">

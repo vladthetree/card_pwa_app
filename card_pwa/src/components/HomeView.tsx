@@ -28,14 +28,11 @@ import { useHomeDerivedData } from '../hooks/home/useHomeDerivedData'
 import { useHomeViewController } from '../hooks/home/useHomeViewController'
 import { useTodayPackage } from '../hooks/home/useTodayPackage'
 import { useLearningUnits } from '../hooks/home/useLearningUnits'
-import { HomeLearningUnitList } from './home/HomeLearningUnitList'
+import { HomeLearningUnitsTile } from './home/HomeLearningUnitsTile'
 import { useDayStartMs } from '../hooks/useDayStartMs'
 import { computeExamDaysLeft } from '../utils/todayPackage'
 import { profileScopeId } from '../services/profileService'
-import { startOrResumeCourseUnit } from '../services/learningUnitRunner'
-import { saveDraftLearnerExamPlan } from '../db/queries/learningUnits'
-import type { LearningUnitDefinition } from '../utils/learningUnits'
-import { flattenDeckTree, getSecurityObjectiveDeckId, getSecurityObjectiveDeckName } from '../utils/securityDeckHierarchy'
+import { flattenDeckTree } from '../utils/securityDeckHierarchy'
 import { isReviewDeck } from '../utils/reviewDecks'
 import { pickDailyQuestCards } from '../db/queries'
 
@@ -52,7 +49,6 @@ const HomeCreateDeckModal = lazy(() => import('./home/HomeCreateDeckModal').then
 const HomeExportModal = lazy(() => import('./home/HomeExportModal').then(module => ({ default: module.HomeExportModal })))
 const HomeDeckCardsModal = lazy(() => import('./home/HomeDeckCardsModal').then(module => ({ default: module.HomeDeckCardsModal })))
 const HomeShuffleCollectionModal = lazy(() => import('./home/HomeShuffleCollectionModal').then(module => ({ default: module.HomeShuffleCollectionModal })))
-const LearningUnitSheet = lazy(() => import('./home/LearningUnitSheet.tsx'))
 
 interface Props {
   mode?: 'default' | 'shuffle-manage'
@@ -69,6 +65,8 @@ interface Props {
   onOpenVideos?: () => void
   /** Heute-Paket: bestimmtes Kurs-Video direkt öffnen (openRecall = zum Check). */
   onOpenVideoAtIndex?: (videoIndex: number, openRecall: boolean) => void
+  /** Lerneinheiten-Screen (SY0-701) — das Dashboard trägt nur die Referenz. */
+  onOpenLearningUnits?: () => void
   /** Unterbrochene Session für die „Weiterlernen“-Kachel (null = keine). */
   resumeSession?: { deckName: string; remaining: number } | null
   onResumeSession?: () => void
@@ -89,6 +87,7 @@ export default function HomeView({
   onOpenLabs,
   onOpenVideos,
   onOpenVideoAtIndex,
+  onOpenLearningUnits,
   resumeSession,
   onResumeSession,
   importRequest,
@@ -168,56 +167,8 @@ export default function HomeView({
     profileId: learningUnitProfileId,
     examDateIso: settings.examDateIso,
     nextDayStartsAt: settings.nextDayStartsAt,
+    learnAheadMinutes: settings.learnAheadMinutes,
   })
-  const [showLearningUnitSheet, setShowLearningUnitSheet] = useState(false)
-  // Start/Fortsetzen einer Course-Unit: friert beim Erststart die Auswahl ein
-  // und öffnet danach exakt den offenen Schritt — Video, Abruf-Check oder die
-  // Karten-Session mit den verbleibenden eingefrorenen Karten (§7/§8.2).
-  const handleOpenLearningUnit = async (definition: LearningUnitDefinition) => {
-    if (definition.type !== 'course' || definition.videoIndex === undefined) return
-    const videoIndex = definition.videoIndex
-    if (learningUnitProfileId === null) {
-      onOpenVideoAtIndex?.(videoIndex, false)
-      return
-    }
-    try {
-      const launch = await startOrResumeCourseUnit({
-        profileId: learningUnitProfileId,
-        definition,
-        settings: {
-          packageCardLimit: settings.newCardsPerDay,
-          nextDayStartsAt: settings.nextDayStartsAt,
-          learnAheadMinutes: settings.learnAheadMinutes,
-          recallCheckSize: settings.recallCheckSize,
-          algorithm: settings.algorithm,
-        },
-      })
-      learningUnits.reload()
-      if (launch.step === 'cards' && launch.remainingCardIds.length > 0) {
-        const objectiveId = definition.objectiveIds[0]
-        onStartStudy(
-          {
-            id: getSecurityObjectiveDeckId(objectiveId),
-            name: getSecurityObjectiveDeckName(objectiveId),
-            total: launch.remainingCardIds.length,
-            new: 0,
-            learning: 0,
-            due: 0,
-          },
-          launch.remainingCardIds,
-          // Session per Execution persistieren (§16): parallele Units bleiben
-          // getrennt und eine unterbrochene Karten-Session ist wiederaufnehmbar.
-          { sessionId: `unit-exec:${launch.execution.executionId}`, allowResume: true },
-        )
-        return
-      }
-      onOpenVideoAtIndex?.(videoIndex, launch.step === 'recall')
-    } catch (error) {
-      // Startfehler darf die Navigation nicht blockieren — Video read-only öffnen.
-      console.error('[HomeView] Lerneinheit-Start fehlgeschlagen', error)
-      onOpenVideoAtIndex?.(videoIndex, false)
-    }
-  }
   const activePackageCardIdsKey = todayPackage.activeCardIds.join('\u0000')
 
   // Daily Quest: Untertitel-Hinweis = Deck mit den meisten heute faelligen
@@ -286,11 +237,11 @@ export default function HomeView({
   // Heute-Paket: geführter Tagespfad (Kurs-Video → Abruf-Check → Karten der
   // Objective). Ohne erreichbare Videos fällt der Slide auf die Quest-Kachel zurück.
   const examDaysLeft = computeExamDaysLeft(settings.examDateIso)
-  // Kompakte Empfehlungsliste des Lerneinheiten-Moduls direkt unter der Kachel
-  // im selben Slide; das Sheet „Alle Lerneinheiten“ öffnet darüber.
-  const learningUnitList = learningUnits.available && learningUnits.ranked.length > 0
+  // Lerneinheiten haben einen eigenen Screen (Nutzerentscheidung 2026-07-18);
+  // das Dashboard trägt nur die kompakte Referenz-Kachel darauf.
+  const learningUnitList = learningUnits.available && onOpenLearningUnits
     ? (
-        <HomeLearningUnitList
+        <HomeLearningUnitsTile
           language={settings.language}
           phase={learningUnits.phase}
           daysLeft={learningUnits.daysLeft}
@@ -298,9 +249,7 @@ export default function HomeView({
           courseCompleted={learningUnits.courseCompleted}
           courseTotal={learningUnits.courseTotal}
           ranked={learningUnits.ranked}
-          stateByUnitId={learningUnits.stateByUnitId}
-          onOpenUnit={handleOpenLearningUnit}
-          onShowAll={() => setShowLearningUnitSheet(true)}
+          onOpen={onOpenLearningUnits}
         />
       )
     : undefined
@@ -686,34 +635,6 @@ export default function HomeView({
             />
           )}
         </AnimatePresence>
-
-        {showLearningUnitSheet && (
-          <LearningUnitSheet
-            language={settings.language}
-            readiness={learningUnits.readiness}
-            courseCompleted={learningUnits.courseCompleted}
-            courseTotal={learningUnits.courseTotal}
-            ranked={learningUnits.ranked}
-            stateByUnitId={learningUnits.stateByUnitId}
-            objectiveEvidence={learningUnits.objectiveEvidence}
-            formativeRecallByObjective={learningUnits.formativeRecallByObjective}
-            plan={learningUnits.plan}
-            pacing={learningUnits.pacing}
-            onSavePlan={
-              learningUnitProfileId === null
-                ? null
-                : async fields => {
-                    await saveDraftLearnerExamPlan({ profileId: learningUnitProfileId, now: Date.now(), ...fields })
-                    learningUnits.reload()
-                  }
-            }
-            onOpenUnit={definition => {
-              setShowLearningUnitSheet(false)
-              handleOpenLearningUnit(definition)
-            }}
-            onClose={() => setShowLearningUnitSheet(false)}
-          />
-        )}
 
         {controller.showCreateCard && <CreateCardModal onClose={controller.closeCreateCard} />}
         {controller.showSettings && <SettingsModal isOpen onClose={controller.closeSettings} />}

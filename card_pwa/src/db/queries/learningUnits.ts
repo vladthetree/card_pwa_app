@@ -277,6 +277,34 @@ export async function listReservedCardIds(profileId: string, db: Db = defaultDb)
   return reserved
 }
 
+// ── Review-Versuche (Phase 3, §11: Protokoll + Tageskappe) ─────────────────
+
+/** Protokolliert einen abgeschlossenen Review-Durchlauf append-only. */
+export async function recordReviewUnitAttempt(
+  record: ReviewUnitAttemptRecord,
+  db: Db = defaultDb,
+): Promise<void> {
+  await db.transaction('rw', db.reviewUnitAttempts, async () => {
+    if (await db.reviewUnitAttempts.get(record.attemptId)) {
+      throw new Error(`recordReviewUnitAttempt: attemptId ${record.attemptId} existiert bereits (append-only)`)
+    }
+    await db.reviewUnitAttempts.put(record)
+  })
+}
+
+/** Abgeschlossene Review-Durchläufe eines Profils am lokalen Lerntag —
+ *  Grundlage der Tageskappe (höchstens eine Empfehlung pro Lerntag). */
+export async function countReviewUnitAttemptsForDay(
+  profileId: string,
+  localLearningDay: string,
+  db: Db = defaultDb,
+): Promise<number> {
+  return db.reviewUnitAttempts
+    .where('[profileId+localLearningDay]')
+    .equals([profileId, localLearningDay])
+    .count()
+}
+
 // ── Video-Fortschritt (pro Profil UND Video, §8.2) ──────────────────────────
 
 export async function markVideoOpened(

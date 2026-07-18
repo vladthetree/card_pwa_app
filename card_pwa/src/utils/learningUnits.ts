@@ -266,6 +266,65 @@ export function formatCourseUnitId(videoIndex: number): string {
   return `unit:course:${String(videoIndex).padStart(3, '0')}`
 }
 
+export function formatReviewUnitId(objectiveId: string): string {
+  return `unit:review:${objectiveId}`
+}
+
+// ── Review-Units (Phase 3, Detailplan §11) ─────────────────────────────────
+
+/** Eine `review`-Einheit je Objective; Reihenfolge hinter den Course-Units.
+ *  Ob eine Einheit empfohlen wird, entscheiden Fälligkeit/Fehler im Ranking. */
+export function buildReviewUnits(input: {
+  objectives: ReadonlyArray<{ objectiveId: string; title: string }>
+  definitionVersion: string
+}): LearningUnitDefinition[] {
+  return input.objectives.map((objective, index) => ({
+    unitId: formatReviewUnitId(objective.objectiveId),
+    type: 'review' as const,
+    title: `Wiederholung ${objective.objectiveId} · ${objective.title}`,
+    objectiveIds: [objective.objectiveId],
+    requirementIds: [],
+    order: 1000 + index,
+    definitionVersion: input.definitionVersion,
+  }))
+}
+
+export interface ReviewSelection {
+  cardIds: string[]
+  reasonByCardId: Record<string, 'due' | 'unresolved-error'>
+}
+
+/**
+ * Friert die Auswahl einer Review-Ausführung ein (§11): fällige Karten in
+ * ihrer Eligibility-Reihenfolge zuerst, danach ungelöste Fehler als klar
+ * bezeichneter Kontrollabruf nicht fälliger Karten. Reservierte Karten
+ * anderer Ausführungen bleiben draußen; `limit` 0 = alle.
+ */
+export function buildReviewSelection(input: {
+  dueCardIds: readonly string[]
+  unresolvedErrorCardIds: readonly string[]
+  reservedCardIds: ReadonlySet<string>
+  limit: number
+}): ReviewSelection {
+  const limit = Number.isFinite(input.limit) && input.limit > 0 ? Math.floor(input.limit) : Number.POSITIVE_INFINITY
+  const cardIds: string[] = []
+  const reasonByCardId: Record<string, 'due' | 'unresolved-error'> = {}
+
+  for (const cardId of input.dueCardIds) {
+    if (cardIds.length >= limit) break
+    if (input.reservedCardIds.has(cardId) || reasonByCardId[cardId]) continue
+    cardIds.push(cardId)
+    reasonByCardId[cardId] = 'due'
+  }
+  for (const cardId of [...input.unresolvedErrorCardIds].sort()) {
+    if (cardIds.length >= limit) break
+    if (input.reservedCardIds.has(cardId) || reasonByCardId[cardId]) continue
+    cardIds.push(cardId)
+    reasonByCardId[cardId] = 'unresolved-error'
+  }
+  return { cardIds, reasonByCardId }
+}
+
 // ── Deterministische Seeds (xmur3 + mulberry32, selbstenthalten) ───────────
 
 function xmur3(str: string): () => number {
