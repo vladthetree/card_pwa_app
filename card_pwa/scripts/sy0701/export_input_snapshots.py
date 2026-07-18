@@ -12,6 +12,7 @@ wenn sich Kartenbestand oder Videobestand ändern:
 import json
 import re
 import sqlite3
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -25,6 +26,19 @@ VIDEO_GLOB = "youtube-playlists/*SY0-701*"
 # Muss dem Parser in src/utils/localVideoManifest.ts entsprechen.
 FILENAME_PATTERN = re.compile(r"^(\d+)\s*-\s*([1-5]\.\d{1,2})\s*-\s*(.+?)\s*\.mp4$", re.I)
 COURSE_SUFFIX = re.compile(r"\s*-\s*CompTIA.*$", re.I)
+
+
+def probe_duration_sec(path: Path) -> int | None:
+    """Videodauer in Sekunden via ffprobe; None, wenn nicht ermittelbar."""
+    try:
+        out = subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+             "-of", "default=noprint_wrappers=1:nokey=1", str(path)],
+            capture_output=True, text=True, timeout=30, check=True,
+        ).stdout.strip()
+        return round(float(out))
+    except Exception:
+        return None
 
 
 def export_videos() -> dict:
@@ -48,6 +62,7 @@ def export_videos() -> dict:
             "objective": m.group(2),
             "title": title,
             "file": f.name,
+            "durationSec": probe_duration_sec(f),
         })
     return {
         "schemaVersion": "sy0701-videos-1",

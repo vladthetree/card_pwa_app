@@ -33,6 +33,7 @@ import {
   SY0701_SOURCE_SNAPSHOT_ID,
 } from '../data/sy0701ContentMap'
 import {
+  abortUnitExecution,
   completeUnitExecution,
   getActiveExecution,
   getLearningUnitState,
@@ -237,6 +238,7 @@ export async function reconcileCourseUnitProgress(
           executionId: execution.executionId,
           localLearningDay: options.localLearningDay ?? formatFallbackLearningDay(now),
           completedAt: now,
+          status: 'completed',
         })
         await clearActiveSession(`unit-exec:${execution.executionId}`)
         completedUnitIds.push(state.unitId)
@@ -333,6 +335,34 @@ export async function startOrResumeReviewUnit(input: {
   }
   const state = await startUnitExecution(execution, now)
   return { execution, state, remainingCardIds: [...selection.cardIds] }
+}
+
+/**
+ * Expliziter Review-Abbruch (§11): protokolliert einen `abandoned`-Versuch
+ * (zählt NICHT für die Tageskappe), löst die Kartenreservierung, behält die
+ * Ausführung als Historie und räumt die persistierte Session auf. Unbewertete
+ * Karten bleiben über die Scheduler-Fälligkeit weiter `reviewDue`.
+ */
+export async function abortReviewUnit(input: {
+  profileId: string
+  unitId: string
+  localLearningDay?: string
+}): Promise<boolean> {
+  const execution = await getActiveExecution(input.profileId, input.unitId)
+  if (!execution || execution.type !== 'review') return false
+  const now = Date.now()
+  await abortUnitExecution(input.profileId, execution.executionId, now)
+  await recordReviewUnitAttempt({
+    attemptId: crypto.randomUUID(),
+    profileId: input.profileId,
+    unitId: input.unitId,
+    executionId: execution.executionId,
+    localLearningDay: input.localLearningDay ?? formatFallbackLearningDay(now),
+    completedAt: now,
+    status: 'abandoned',
+  })
+  await clearActiveSession(`unit-exec:${execution.executionId}`)
+  return true
 }
 
 /** Aktive Course-Ausführung zum Video dieses Profils (null = keine). */

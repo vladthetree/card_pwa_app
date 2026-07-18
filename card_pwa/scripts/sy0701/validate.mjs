@@ -23,7 +23,7 @@ const APP_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 const SOURCE = path.join(APP_ROOT, 'content', 'sy0-701', 'source')
 const GENERATED = path.join(APP_ROOT, 'content', 'sy0-701', 'generated')
 
-const MANIFEST_VERSION = '2026-07-15.1'
+const MANIFEST_VERSION = '2026-07-19.1'
 const SCENARIO_OBJECTIVES = ['2.4', '3.2', '4.1', '4.5', '4.6', '4.9', '5.6']
 const REQUIRED_READINESS_FORMS = 3
 
@@ -275,6 +275,7 @@ const videoContentMap = videosManifest.videos.map(video => {
     objective: video.objective,
     title: video.title,
     file: video.file,
+    durationSec: Number.isFinite(video.durationSec) ? video.durationSec : null,
     cardIds: mapped.map(m => m.cardId),
     recallQuestionIds: [
       ...mapped.map(m => m.questionId),
@@ -282,6 +283,8 @@ const videoContentMap = videosManifest.videos.map(video => {
     ],
   }
 })
+const videosOhneDauer = videoContentMap.filter(v => v.durationSec === null)
+gate('video-dauern', videosOhneDauer.length === 0, videosOhneDauer.length ? `${videosOhneDauer.length} Videos ohne durationSec` : 'alle 120 Dauern vorhanden')
 const videosOhneRecall = videoContentMap.filter(v => v.recallQuestionIds.length === 0)
 writeArtifact('video-content-map.json', {
   sourceSnapshotId: snapshot.snapshotId,
@@ -461,6 +464,7 @@ const contentMapEntries = videoContentMap.map(v => ({
   courseCardIds: v.cardIds,
   recallQuestionIds: v.recallQuestionIds,
   recallCardIds: v.cardIds,
+  ...(v.durationSec !== null ? { durationSec: v.durationSec } : {}),
   ...(v.cardIds.length === 0 ? { unmappedReason: 'keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)' } : {}),
 }))
 fs.writeFileSync(

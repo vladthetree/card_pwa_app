@@ -29,6 +29,8 @@ export interface ReviewUnitAttemptRecord {
   executionId: string
   localLearningDay: string
   completedAt: number
+  /** Fehlt bei Altzeilen = 'completed'; 'abandoned' = expliziter Abbruch (§11). */
+  status?: 'completed' | 'abandoned'
 }
 
 export interface DraftLearnerExamPlanRecord {

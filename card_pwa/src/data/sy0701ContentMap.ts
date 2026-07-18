@@ -2,12 +2,12 @@
  * AI_CONTEXT:
  * Role: GENERATED data module of the dedicated SY0-701 learning-unit system — do not edit by hand.
  * Used by: learning-unit builders/tests; regenerate via `node scripts/sy0701/validate.mjs`.
- * Important: Derived from content/sy0-701/source/* (official V7 snapshot 95a2c7515792…, manifest 2026-07-15.1).
+ * Important: Derived from content/sy0-701/source/* (official V7 snapshot 95a2c7515792…, manifest 2026-07-19.1).
  */
 import type { VideoContentMapEntry } from '../utils/learningUnits'
 
 export const SY0701_SOURCE_SNAPSHOT_ID = "sy0701-v7-2026-07-15"
-export const SY0701_CONTENT_MANIFEST_VERSION = "2026-07-15.1"
+export const SY0701_CONTENT_MANIFEST_VERSION = "2026-07-19.1"
 
 export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
@@ -112,7 +112,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728578658721",
       "1728578702367",
       "1728578743324"
-    ]
+    ],
+    "durationSec": 709
   },
   {
     "videoIndex": 3,
@@ -138,7 +139,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728580721902",
       "1728580833593",
       "1728580937868"
-    ]
+    ],
+    "durationSec": 318
   },
   {
     "videoIndex": 4,
@@ -176,7 +178,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728581458148",
       "1728581782664",
       "1728582010811"
-    ]
+    ],
+    "durationSec": 478
   },
   {
     "videoIndex": 5,
@@ -202,7 +205,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728582379407",
       "1728582662217",
       "1728582727897"
-    ]
+    ],
+    "durationSec": 544
   },
   {
     "videoIndex": 6,
@@ -220,7 +224,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1728594503878"
-    ]
+    ],
+    "durationSec": 404
   },
   {
     "videoIndex": 7,
@@ -258,7 +263,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728596991068",
       "1728597125561",
       "1728597165153"
-    ]
+    ],
+    "durationSec": 604
   },
   {
     "videoIndex": 8,
@@ -278,7 +284,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728597672323",
       "1728598075567",
       "1728598202804"
-    ]
+    ],
+    "durationSec": 497
   },
   {
     "videoIndex": 9,
@@ -296,7 +303,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1728598803945"
-    ]
+    ],
+    "durationSec": 271
   },
   {
     "videoIndex": 10,
@@ -317,7 +325,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1728664841112",
       "1728665267982"
-    ]
+    ],
+    "durationSec": 681
   },
   {
     "videoIndex": 11,
@@ -338,7 +347,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1728665620599",
       "1728665665642"
-    ]
+    ],
+    "durationSec": 654
   },
   {
     "videoIndex": 12,
@@ -376,7 +386,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728668074719",
       "1728668229954",
       "1728668742654"
-    ]
+    ],
+    "durationSec": 548
   },
   {
     "videoIndex": 13,
@@ -408,7 +419,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728669781020",
       "1728669901392",
       "1728669937321"
-    ]
+    ],
+    "durationSec": 587
   },
   {
     "videoIndex": 14,
@@ -428,7 +440,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728675213140",
       "1728675511788",
       "1728675650498"
-    ]
+    ],
+    "durationSec": 219
   },
   {
     "videoIndex": 15,
@@ -454,7 +467,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728676495697",
       "1728676616843",
       "1728676658755"
-    ]
+    ],
+    "durationSec": 413
   },
   {
     "videoIndex": 16,
@@ -480,7 +494,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728677504907",
       "1728677849716",
       "1728678025496"
-    ]
+    ],
+    "durationSec": 480
   },
   {
     "videoIndex": 17,
@@ -506,7 +521,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728678954965",
       "1728679006387",
       "1728679028920"
-    ]
+    ],
+    "durationSec": 624
   },
   {
     "videoIndex": 18,
@@ -524,7 +540,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1728679899388"
-    ]
+    ],
+    "durationSec": 142
   },
   {
     "videoIndex": 19,
@@ -586,7 +603,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728834325821",
       "1728834357184",
       "1728834517490"
-    ]
+    ],
+    "durationSec": 878
   },
   {
     "videoIndex": 20,
@@ -615,7 +633,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728925920785",
       "1728926313614",
       "1728926473442"
-    ]
+    ],
+    "durationSec": 623
   },
   {
     "videoIndex": 21,
@@ -653,7 +672,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728935633818",
       "1728936074534",
       "1728936160805"
-    ]
+    ],
+    "durationSec": 1034
   },
   {
     "videoIndex": 22,
@@ -676,7 +696,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728936604868",
       "1728936658283",
       "1728937017632"
-    ]
+    ],
+    "durationSec": 391
   },
   {
     "videoIndex": 23,
@@ -694,7 +715,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729003025465"
-    ]
+    ],
+    "durationSec": 351
   },
   {
     "videoIndex": 24,
@@ -715,7 +737,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729003632035",
       "1729003938350"
-    ]
+    ],
+    "durationSec": 251
   },
   {
     "videoIndex": 25,
@@ -733,7 +756,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729004574263"
-    ]
+    ],
+    "durationSec": 209
   },
   {
     "videoIndex": 26,
@@ -753,7 +777,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729005007773",
       "1729005171342",
       "1729005242071"
-    ]
+    ],
+    "durationSec": 159
   },
   {
     "videoIndex": 27,
@@ -771,7 +796,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729005878634"
-    ]
+    ],
+    "durationSec": 216
   },
   {
     "videoIndex": 28,
@@ -792,7 +818,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729006621297",
       "1729007012771"
-    ]
+    ],
+    "durationSec": 297
   },
   {
     "videoIndex": 29,
@@ -810,7 +837,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729007731874"
-    ]
+    ],
+    "durationSec": 344
   },
   {
     "videoIndex": 30,
@@ -825,6 +853,7 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T030-05"
     ],
     "recallCardIds": [],
+    "durationSec": 249,
     "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
   },
   {
@@ -851,7 +880,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729009370356",
       "1729009525180",
       "1729009567783"
-    ]
+    ],
+    "durationSec": 309
   },
   {
     "videoIndex": 32,
@@ -877,7 +907,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729010808752",
       "1729010864188",
       "1729011152083"
-    ]
+    ],
+    "durationSec": 514
   },
   {
     "videoIndex": 33,
@@ -900,7 +931,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729016393818",
       "1729016466796",
       "1729016997815"
-    ]
+    ],
+    "durationSec": 387
   },
   {
     "videoIndex": 34,
@@ -920,7 +952,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729017742984",
       "1729017832455",
       "1729017946321"
-    ]
+    ],
+    "durationSec": 324
   },
   {
     "videoIndex": 35,
@@ -943,7 +976,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729018727159",
       "1729018813146",
       "1729019182230"
-    ]
+    ],
+    "durationSec": 245
   },
   {
     "videoIndex": 36,
@@ -969,7 +1003,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729019963492",
       "1729020064785",
       "1729020157178"
-    ]
+    ],
+    "durationSec": 552
   },
   {
     "videoIndex": 37,
@@ -995,7 +1030,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729094357667",
       "1729094464415",
       "1729094720670"
-    ]
+    ],
+    "durationSec": 429
   },
   {
     "videoIndex": 38,
@@ -1015,7 +1051,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729095666668",
       "1729095773945",
       "1729096077718"
-    ]
+    ],
+    "durationSec": 203
   },
   {
     "videoIndex": 39,
@@ -1033,7 +1070,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729096456640"
-    ]
+    ],
+    "durationSec": 182
   },
   {
     "videoIndex": 40,
@@ -1059,7 +1097,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729097293203",
       "1729097352286",
       "1729097429318"
-    ]
+    ],
+    "durationSec": 366
   },
   {
     "videoIndex": 41,
@@ -1079,7 +1118,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729097907113",
       "1729098014967",
       "1729098302259"
-    ]
+    ],
+    "durationSec": 353
   },
   {
     "videoIndex": 42,
@@ -1100,7 +1140,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729098545424",
       "1729098771491"
-    ]
+    ],
+    "durationSec": 260
   },
   {
     "videoIndex": 43,
@@ -1120,7 +1161,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729099376881",
       "1729099431734",
       "1729099804993"
-    ]
+    ],
+    "durationSec": 451
   },
   {
     "videoIndex": 44,
@@ -1140,7 +1182,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729103336431",
       "1729103461406",
       "1729103670834"
-    ]
+    ],
+    "durationSec": 244
   },
   {
     "videoIndex": 45,
@@ -1166,7 +1209,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729104422352",
       "1729104741764",
       "1729104839747"
-    ]
+    ],
+    "durationSec": 366
   },
   {
     "videoIndex": 46,
@@ -1184,7 +1228,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729105178993"
-    ]
+    ],
+    "durationSec": 537
   },
   {
     "videoIndex": 47,
@@ -1207,7 +1252,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729106340713",
       "1729106591299",
       "1729106782316"
-    ]
+    ],
+    "durationSec": 475
   },
   {
     "videoIndex": 48,
@@ -1227,7 +1273,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729107353631",
       "1729107583328",
       "1729107717300"
-    ]
+    ],
+    "durationSec": 330
   },
   {
     "videoIndex": 49,
@@ -1250,7 +1297,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729174445461",
       "1729174658387",
       "1729174805551"
-    ]
+    ],
+    "durationSec": 345
   },
   {
     "videoIndex": 50,
@@ -1268,7 +1316,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729175231855"
-    ]
+    ],
+    "durationSec": 220
   },
   {
     "videoIndex": 51,
@@ -1294,7 +1343,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729176350133",
       "1729176391515",
       "1729176558493"
-    ]
+    ],
+    "durationSec": 707
   },
   {
     "videoIndex": 52,
@@ -1317,7 +1367,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729178380874",
       "1729178403877",
       "1729178842874"
-    ]
+    ],
+    "durationSec": 570
   },
   {
     "videoIndex": 53,
@@ -1338,7 +1389,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729179162672",
       "1729180047821"
-    ]
+    ],
+    "durationSec": 435
   },
   {
     "videoIndex": 54,
@@ -1356,7 +1408,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729180535847"
-    ]
+    ],
+    "durationSec": 658
   },
   {
     "videoIndex": 55,
@@ -1382,7 +1435,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729182899508",
       "1729183258174",
       "1729183351572"
-    ]
+    ],
+    "durationSec": 366
   },
   {
     "videoIndex": 56,
@@ -1414,7 +1468,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729185023357",
       "1729185192740",
       "1729185236521"
-    ]
+    ],
+    "durationSec": 411
   },
   {
     "videoIndex": 57,
@@ -1443,7 +1498,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729186709321",
       "1729186723937",
       "1729187191969"
-    ]
+    ],
+    "durationSec": 730
   },
   {
     "videoIndex": 58,
@@ -1466,7 +1522,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729192837629",
       "1729192907745",
       "1729193133878"
-    ]
+    ],
+    "durationSec": 595
   },
   {
     "videoIndex": 59,
@@ -1498,7 +1555,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729194266296",
       "1729194357503",
       "1729194474927"
-    ]
+    ],
+    "durationSec": 416
   },
   {
     "videoIndex": 60,
@@ -1524,7 +1582,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729196140243",
       "1729196325940",
       "1729196548024"
-    ]
+    ],
+    "durationSec": 864
   },
   {
     "videoIndex": 61,
@@ -1547,7 +1606,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729198962970",
       "1729199602908",
       "1729199710866"
-    ]
+    ],
+    "durationSec": 828
   },
   {
     "videoIndex": 62,
@@ -1562,6 +1622,7 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T062-05"
     ],
     "recallCardIds": [],
+    "durationSec": 354,
     "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
   },
   {
@@ -1582,7 +1643,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729262665983",
       "1729263331128",
       "1729263374388"
-    ]
+    ],
+    "durationSec": 313
   },
   {
     "videoIndex": 64,
@@ -1614,7 +1676,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729265508608",
       "1729265956352",
       "1729266155183"
-    ]
+    ],
+    "durationSec": 715
   },
   {
     "videoIndex": 65,
@@ -1634,7 +1697,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729267472724",
       "1729267569310",
       "1729267646397"
-    ]
+    ],
+    "durationSec": 230
   },
   {
     "videoIndex": 66,
@@ -1655,7 +1719,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729268983360",
       "1729269602613"
-    ]
+    ],
+    "durationSec": 480
   },
   {
     "videoIndex": 67,
@@ -1670,6 +1735,7 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T067-05"
     ],
     "recallCardIds": [],
+    "durationSec": 594,
     "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
   },
   {
@@ -1685,6 +1751,7 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T068-05"
     ],
     "recallCardIds": [],
+    "durationSec": 354,
     "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
   },
   {
@@ -1705,7 +1772,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729276559590",
       "1729276746898",
       "1729276778013"
-    ]
+    ],
+    "durationSec": 367
   },
   {
     "videoIndex": 70,
@@ -1728,7 +1796,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729277680140",
       "1729277707224",
       "1729278256356"
-    ]
+    ],
+    "durationSec": 867
   },
   {
     "videoIndex": 71,
@@ -1748,7 +1817,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729280373313",
       "1729280425752",
       "1729280698248"
-    ]
+    ],
+    "durationSec": 581
   },
   {
     "videoIndex": 72,
@@ -1763,6 +1833,7 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T072-05"
     ],
     "recallCardIds": [],
+    "durationSec": 232,
     "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
   },
   {
@@ -1784,7 +1855,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729282747703",
       "1729435542513"
-    ]
+    ],
+    "durationSec": 318
   },
   {
     "videoIndex": 74,
@@ -1804,7 +1876,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729283435461",
       "1729283880472",
       "1729284162703"
-    ]
+    ],
+    "durationSec": 735
   },
   {
     "videoIndex": 75,
@@ -1822,7 +1895,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729285411849"
-    ]
+    ],
+    "durationSec": 241
   },
   {
     "videoIndex": 76,
@@ -1837,6 +1911,7 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T076-05"
     ],
     "recallCardIds": [],
+    "durationSec": 251,
     "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
   },
   {
@@ -1858,7 +1933,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729437834722",
       "1729438002934"
-    ]
+    ],
+    "durationSec": 610
   },
   {
     "videoIndex": 78,
@@ -1873,6 +1949,7 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T078-05"
     ],
     "recallCardIds": [],
+    "durationSec": 538,
     "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
   },
   {
@@ -1891,7 +1968,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729441416045"
-    ]
+    ],
+    "durationSec": 654
   },
   {
     "videoIndex": 80,
@@ -1911,7 +1989,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729443096377",
       "1729443455782",
       "1729443520771"
-    ]
+    ],
+    "durationSec": 506
   },
   {
     "videoIndex": 81,
@@ -1926,6 +2005,7 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T081-05"
     ],
     "recallCardIds": [],
+    "durationSec": 517,
     "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
   },
   {
@@ -1947,7 +2027,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729525570343",
       "1729525688307"
-    ]
+    ],
+    "durationSec": 465
   },
   {
     "videoIndex": 83,
@@ -1968,7 +2049,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729526448891",
       "1729526713518"
-    ]
+    ],
+    "durationSec": 286
   },
   {
     "videoIndex": 84,
@@ -1986,7 +2068,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729528034674"
-    ]
+    ],
+    "durationSec": 381
   },
   {
     "videoIndex": 85,
@@ -2006,7 +2089,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729528371221",
       "1729528670460",
       "1729529439876"
-    ]
+    ],
+    "durationSec": 629
   },
   {
     "videoIndex": 86,
@@ -2024,7 +2108,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729530986061"
-    ]
+    ],
+    "durationSec": 525
   },
   {
     "videoIndex": 87,
@@ -2042,7 +2127,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729540036900"
-    ]
+    ],
+    "durationSec": 627
   },
   {
     "videoIndex": 88,
@@ -2057,6 +2143,7 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T088-05"
     ],
     "recallCardIds": [],
+    "durationSec": 846,
     "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
   },
   {
@@ -2072,6 +2159,7 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T089-05"
     ],
     "recallCardIds": [],
+    "durationSec": 690,
     "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
   },
   {
@@ -2093,7 +2181,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729542531766",
       "1729542555582"
-    ]
+    ],
+    "durationSec": 600
   },
   {
     "videoIndex": 91,
@@ -2114,7 +2203,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729543018478",
       "1729543300068"
-    ]
+    ],
+    "durationSec": 201
   },
   {
     "videoIndex": 92,
@@ -2129,6 +2219,7 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T092-05"
     ],
     "recallCardIds": [],
+    "durationSec": 286,
     "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
   },
   {
@@ -2147,7 +2238,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729544236865"
-    ]
+    ],
+    "durationSec": 424
   },
   {
     "videoIndex": 94,
@@ -2168,7 +2260,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729544752114",
       "1729545172423"
-    ]
+    ],
+    "durationSec": 445
   },
   {
     "videoIndex": 95,
@@ -2186,7 +2279,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729545965530"
-    ]
+    ],
+    "durationSec": 564
   },
   {
     "videoIndex": 96,
@@ -2206,7 +2300,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729606385894",
       "1729606424320",
       "1729606994413"
-    ]
+    ],
+    "durationSec": 766
   },
   {
     "videoIndex": 97,
@@ -2226,7 +2321,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729609351815",
       "1729609553997",
       "1729609703139"
-    ]
+    ],
+    "durationSec": 469
   },
   {
     "videoIndex": 98,
@@ -2247,7 +2343,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729610407765",
       "1729610578431"
-    ]
+    ],
+    "durationSec": 269
   },
   {
     "videoIndex": 99,
@@ -2270,7 +2367,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729611036480",
       "1729611118404",
       "1729611199039"
-    ]
+    ],
+    "durationSec": 381
   },
   {
     "videoIndex": 100,
@@ -2290,7 +2388,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729612110305",
       "1729612337101",
       "1729612543398"
-    ]
+    ],
+    "durationSec": 500
   },
   {
     "videoIndex": 101,
@@ -2305,6 +2404,7 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T101-05"
     ],
     "recallCardIds": [],
+    "durationSec": 553,
     "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
   },
   {
@@ -2323,7 +2423,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729614400121"
-    ]
+    ],
+    "durationSec": 409
   },
   {
     "videoIndex": 103,
@@ -2344,7 +2445,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729614808452",
       "1729614972339"
-    ]
+    ],
+    "durationSec": 594
   },
   {
     "videoIndex": 104,
@@ -2359,6 +2461,7 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T104-05"
     ],
     "recallCardIds": [],
+    "durationSec": 820,
     "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
   },
   {
@@ -2380,7 +2483,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729622224382",
       "1729622405616"
-    ]
+    ],
+    "durationSec": 662
   },
   {
     "videoIndex": 106,
@@ -2398,7 +2502,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729699356554"
-    ]
+    ],
+    "durationSec": 336
   },
   {
     "videoIndex": 107,
@@ -2413,6 +2518,7 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T107-05"
     ],
     "recallCardIds": [],
+    "durationSec": 422,
     "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
   },
   {
@@ -2431,7 +2537,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729701252008"
-    ]
+    ],
+    "durationSec": 291
   },
   {
     "videoIndex": 109,
@@ -2446,6 +2553,7 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T109-05"
     ],
     "recallCardIds": [],
+    "durationSec": 147,
     "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
   },
   {
@@ -2464,7 +2572,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729705368991"
-    ]
+    ],
+    "durationSec": 209
   },
   {
     "videoIndex": 111,
@@ -2496,7 +2605,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729706988234",
       "1729707107108",
       "1729707523667"
-    ]
+    ],
+    "durationSec": 553
   },
   {
     "videoIndex": 112,
@@ -2517,7 +2627,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729708046154",
       "1729708108607"
-    ]
+    ],
+    "durationSec": 192
   },
   {
     "videoIndex": 113,
@@ -2538,7 +2649,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729708541619",
       "1729708787931"
-    ]
+    ],
+    "durationSec": 174
   },
   {
     "videoIndex": 114,
@@ -2556,7 +2668,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729709419932"
-    ]
+    ],
+    "durationSec": 696
   },
   {
     "videoIndex": 115,
@@ -2574,7 +2687,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729710310793"
-    ]
+    ],
+    "durationSec": 318
   },
   {
     "videoIndex": 116,
@@ -2594,7 +2708,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729783659515",
       "1729783723324",
       "1729783769844"
-    ]
+    ],
+    "durationSec": 485
   },
   {
     "videoIndex": 117,
@@ -2615,7 +2730,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729784557847",
       "1729784627980"
-    ]
+    ],
+    "durationSec": 321
   },
   {
     "videoIndex": 118,
@@ -2636,7 +2752,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallCardIds": [
       "1729785415964",
       "1729785486403"
-    ]
+    ],
+    "durationSec": 168
   },
   {
     "videoIndex": 119,
@@ -2668,7 +2785,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729786008395",
       "1729786075246",
       "1729786475642"
-    ]
+    ],
+    "durationSec": 328
   },
   {
     "videoIndex": 120,
@@ -2686,7 +2804,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "recallCardIds": [
       "1729786793022"
-    ]
+    ],
+    "durationSec": 405
   },
   {
     "videoIndex": 121,
@@ -2701,6 +2820,7 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T121-05"
     ],
     "recallCardIds": [],
+    "durationSec": 271,
     "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
   }
 ]

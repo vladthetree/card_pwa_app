@@ -128,6 +128,8 @@ export interface VideoContentMapEntry {
   courseCardIds: string[]
   recallQuestionIds: string[]
   recallCardIds: string[]
+  /** ffprobe-Videodauer aus dem Source-Snapshot; fehlt → keine Schätzung. */
+  durationSec?: number
   unmappedReason?: string
 }
 
@@ -422,9 +424,20 @@ export function buildCourseUnits(input: {
         requirementIds: entry ? [...entry.requirementIds] : [],
         order: video.index,
         videoIndex: video.index,
+        ...(entry?.durationSec !== undefined
+          ? { estimatedMinutes: computeCourseUnitEstimatedMinutes(entry.durationSec) }
+          : {}),
         definitionVersion: input.definitionVersion,
       }
     })
+}
+
+/** Kalibrierbarer Draft-Aufschlag je Course-Unit für Abruf-Check + Karten-Dosis
+ *  (Minuten); die Videodauer kommt exakt aus dem Source-Snapshot. */
+export const COURSE_UNIT_PRACTICE_OVERHEAD_MINUTES = 10
+
+export function computeCourseUnitEstimatedMinutes(durationSec: number): number {
+  return Math.ceil(durationSec / 60) + COURSE_UNIT_PRACTICE_OVERHEAD_MINUTES
 }
 
 // ── Video↔Karten-Index (Vertrag §23.2, Regel §8.1) ─────────────────────────

@@ -7,7 +7,7 @@
  * Course → Video/Recall/Karten, Review → eingefrorene Karten-Session.
  */
 import { useState } from 'react'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, X } from 'lucide-react'
 import { useSettings } from '../contexts/SettingsContext'
 import { profileScopeId } from '../services/profileService'
 import { useTodayPackage } from '../hooks/home/useTodayPackage'
@@ -22,7 +22,7 @@ import {
 } from '../utils/learningUnits'
 import { SY0701_REQUIREMENTS_MANIFEST } from '../data/sy0701Requirements'
 import type { LearningPacingResult, RankedLearningUnit } from '../utils/learningUnitRanking'
-import { startOrResumeCourseUnit, startOrResumeReviewUnit } from '../services/learningUnitRunner'
+import { abortReviewUnit, startOrResumeCourseUnit, startOrResumeReviewUnit } from '../services/learningUnitRunner'
 import { saveDraftLearnerExamPlan } from '../db/queries/learningUnits'
 import type { Deck } from '../types'
 
@@ -61,6 +61,7 @@ const VIEW_COPY = {
     leafLine: (covered: number, total: number, samples: number) =>
       `Leafs ${covered}/${total} nachgewiesen · ${samples} formative Abrufe`,
     honesty: '„Abgeschlossen“ heißt bearbeitet — nicht beherrscht. Mastery entsteht erst aus geprüfter Abruf-Evidenz.',
+    abortReview: 'Wiederholung abbrechen',
     plan: {
       title: 'Lernplan (Entwurf)',
       examDate: (iso: string | null) => iso ? `Termin ${iso} — aus den Einstellungen` : 'Kein Termin — in den Einstellungen setzen',
@@ -97,6 +98,7 @@ const VIEW_COPY = {
     leafLine: (covered: number, total: number, samples: number) =>
       `Leafs ${covered}/${total} evidenced · ${samples} formative recalls`,
     honesty: '"Completed" means worked through — not mastered. Mastery only comes from verified retrieval evidence.',
+    abortReview: 'Abort review',
     plan: {
       title: 'Study plan (draft)',
       examDate: (iso: string | null) => iso ? `Exam date ${iso} — from settings` : 'No exam date — set it in settings',
@@ -259,6 +261,16 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
     }
   }
 
+  const handleAbortReviewUnit = async (definition: LearningUnitDefinition) => {
+    if (profileId === null) return
+    try {
+      await abortReviewUnit({ profileId, unitId: definition.unitId })
+    } catch (error) {
+      console.error('[LearningUnitsView] Review-Abbruch fehlgeschlagen', error)
+    }
+    learningUnits.reload()
+  }
+
   const unitsByObjective = new Map<string, RankedLearningUnit[]>()
   for (const row of learningUnits.ranked) {
     const objectiveId = row.definition.objectiveIds[0]
@@ -410,12 +422,13 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
                           <ul className="mt-1 grid min-w-0 gap-1">
                             {units.map(unit => {
                               const activity = learningUnits.stateByUnitId.get(unit.definition.unitId)?.activityStatus ?? 'notStarted'
+                              const abortable = unit.definition.type === 'review' && activity === 'inProgress'
                               return (
-                                <li key={unit.definition.unitId} className="min-w-0">
+                                <li key={unit.definition.unitId} className="flex min-w-0 items-center gap-1">
                                   <button
                                     type="button"
                                     onClick={() => void handleOpenUnit(unit.definition)}
-                                    className="flex w-full min-w-0 items-center gap-2 rounded-ds border border-ds-border bg-ds-floor px-2 py-1.5 text-left transition hover:border-[--brand-primary-50]"
+                                    className="flex w-full min-w-0 flex-1 items-center gap-2 rounded-ds border border-ds-border bg-ds-floor px-2 py-1.5 text-left transition hover:border-[--brand-primary-50]"
                                   >
                                     <span className="shrink-0 font-mono text-[10px] tabular-nums text-ds-muted">
                                       {unit.definition.type === 'review' ? 'REV' : String(unit.definition.order).padStart(3, '0')}
@@ -435,6 +448,18 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
                                       {listCopy.activity[activity]}
                                     </span>
                                   </button>
+                                  {abortable && (
+                                    <button
+                                      type="button"
+                                      aria-label={copy.abortReview}
+                                      title={copy.abortReview}
+                                      data-testid={`learning-unit-abort-${unit.definition.unitId}`}
+                                      onClick={() => void handleAbortReviewUnit(unit.definition)}
+                                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-ds border border-ds-border text-ds-muted transition hover:border-red-400/50 hover:text-red-300"
+                                    >
+                                      <X size={13} strokeWidth={2} />
+                                    </button>
+                                  )}
                                 </li>
                               )
                             })}

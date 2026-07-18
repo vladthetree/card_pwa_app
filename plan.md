@@ -141,12 +141,19 @@ Daily Quest und alle Home-/Shortcut-Einstiege beziehen die Ausschlussmenge aus e
 
 **Vierte Runde am 2026-07-18** (Working Tree, 813/813 Tests + Build grün): **Eigener Lerneinheiten-Screen** per Nutzerentscheidung — neue Vollbild-Ansicht [LearningUnitsView](card_pwa/src/components/LearningUnitsView.tsx) (View-Route `learning-units`, eigener Lazy-Chunk) mit Lernplan-Editor, Empfehlungsliste und der Vollliste Domain → Objective inkl. Leaf-Coverage; Unit-Start (Course/Review) läuft jetzt dort. Das Dashboard trägt nur noch die Referenz-Kachel [HomeLearningUnitsTile](card_pwa/src/components/home/HomeLearningUnitsTile.tsx) (Phase, Fortschritt, Termin, Top-Empfehlung → navigiert in den Screen); das Modal `LearningUnitSheet` ist ersetzt und entfernt.
 
+**Fünfte Runde am 2026-07-19** (Working Tree, 814/814 Tests + Build grün):
+
+- **Review-Abbruch komplett** (letzter offener Kernpunkt der Phase 3): `abortReviewUnit` im Runner + Abbruch-Button an laufenden Review-Zeilen im Screen; `abandoned`-Versuche zählen nicht zur Tageskappe.
+- **Dauerschätzungen vorgezogen** (Phase-6-Punkt erledigt): ffprobe-Dauern aller 120 Videos → Content-Map (Manifest `2026-07-19.1`, neues Gate `video-dauern`) → `estimatedMinutes` je Course-Unit → das Pacing liefert erstmals echte `on-track`/`capacity-shortfall`-Urteile.
+- **Entscheidung lokale Assessment-Proposals: NEIN, erst mit dem Server (Phase 5).** Begründung: Ein Proposal ohne Server-Acceptance ist per §10 keine Evidenz und dürfte weder Response noch Punkte festlegen — lokal wäre es totes Gewicht mit Pflege-/Migrationskosten. Die ReviewRecords tragen bereits `opId`, `answerCorrect`, Zeit und Timestamp, sodass Proposals beim Phase-5-Serverstart idempotent aus der bestehenden Historie rekonstruiert werden können. Der §10-Wrapper (Review + Proposal + Outbox atomar) kommt zusammen mit der Server-Acceptance.
+
+Damit ist Phase 3 abgeschlossen bis auf das serverseitige Ledger (zweiter Punkt), das per Definition zu Phase 5 gehört.
+
 **Nächste Schritte in Reihenfolge:**
 
 1. Working-Tree-Stand committen.
-2. Phase-3-Rest: expliziter Review-Abbruch-Einstieg in der UI (Mechanik `abortUnitExecution` existiert); Entscheidung, ob Assessment-Proposals lokal in der dedizierten DB mitgeschrieben werden (Vorstufe zu `assessment.event`, Server folgt gebündelt in Phase 5).
-3. Puffertage im Plan-Editor pflegen (erledigt sich mit Nutzung) und Baseline-Diagnostik klären; Dauerschätzungen (`durationSec`) aus Phase 6 vorziehen, sobald Pacing-Machbarkeit gebraucht wird.
-4. Danach Phase 4 (Labs): Szenario-IDs/Rubriken normalisieren, `labAttempts`, Deep Links, Coverage-Gate für die sieben „Given a scenario“-Objectives.
+2. Phase 4 (Labs) beginnen: Szenarien mit stabilen IDs/`objectiveIds`/Rubriken normalisieren, dedizierte `labAttempts`-Persistenz (UUID, Resume/Submit, versioniert eingefroren), Deep Link in `LabsView`, Legacy-„geschafft“-Import, Coverage-Gate für die sieben „Given a scenario“-Objectives.
+3. Nebenläufig offen: Puffertage im Plan-Editor pflegen (Nutzung), Baseline-Diagnostik klären (braucht Entscheidung), Phase-0-Content-Gates (Leaf-Mapping, Readiness-Formen, Kalibrierung).
 
 ## Umsetzungsphasen
 
@@ -205,7 +212,7 @@ Exit: Reload, Tageswechsel, Profilwechsel und Restore sind deterministisch; kein
 - [x] Fälligkeit über dieselbe pure Eligibility-Logik wie die gewählte Study-Sortierung berechnen; direkte statt rekursive Deckquery verwenden. *(`sortStudyCards` mit `maxNewCards: 0` — eine Wiederholung führt nie neue Karten ein — über `listCardsByDeckIdsDirect`)*
 - [x] Review-Ausführung aus fälligen Karten und ungelösten Fehlern einfrieren; ein später korrekt gelöstes Item bleibt nicht endlos falsch. *(`buildReviewSelection` + `startOrResumeReviewUnit`; Auflösung über die strikt-später-Regel aus `listAnswerStats`)*
 - [x] Reviewversuche separat protokollieren. Die Tageskappe nutzt Profil, lokales Lerntagsdatum und Abschlussverlauf. *(`reviewUnitAttempts` append-only via Reconcile-Abschluss; `countReviewUnitAttemptsForDay` speist `reviewCompletedToday` im Ranking — höchstens eine Empfehlung pro Lerntag)*
-- [ ] Review-Abbruch explizit speichern, aktive Reservierung lösen und unerledigte/überhängende Karten weiter als `reviewDue` behandeln. *(teilweise: `abortUnitExecution` löst Reservierung und erhält Historie, unbewertete Karten bleiben über die Scheduler-Fälligkeit `reviewDue`; ein expliziter Abbruch-Einstieg in der UI fehlt noch)*
+- [x] Review-Abbruch explizit speichern, aktive Reservierung lösen und unerledigte/überhängende Karten weiter als `reviewDue` behandeln. *(2026-07-19: `abortReviewUnit` protokolliert einen `abandoned`-Versuch — zählt NICHT zur Tageskappe —, löst die Reservierung, behält die Ausführung als Audit und räumt die Session auf; Abbruch-Button an laufenden Review-Zeilen im LearningUnitsView)*
 - [x] `rankLearningUnits` erhält Phase, Datum, heutige Reviews, Mastery und Readiness: Grundlagen priorisieren Kurs + fällige Reviews; Vertiefung Schwächen/Labs; Prüfungsphase Holdout-Drills; Abschlussphase kurze gezielte Remediation. *(seit 2026-07-18 mit echten Signalen verdrahtet: `reviewDueUnitIds` aus Eligibility + ungelösten Fehlern, `reviewCompletedToday` aus der Tageskappe; Mastery/Readiness bleiben bis Ledger/Phase 5 ehrliche `insufficientEvidence`/`notReady`-Defaults)*
 - [ ] Wenn Evidenz oder Zeit nicht reicht, zeigt das System einen klaren No-Go-/Terminverschiebungshinweis statt offene kritische Themen auszublenden. *(teilweise: Zeitseite umgesetzt — `capacity-shortfall` blockiert das Ranking und zeigt im Sheet „Termin verschieben oder Budget erhöhen“; Evidenzseite folgt mit dem Ledger)*
 
@@ -250,7 +257,7 @@ Exit: Readiness ist reproduzierbar und gegen Leakage geschützt. Bei nicht erfü
 
 ### Phase 6 — Feinschliff
 
-- [ ] Manifestgenerator um `durationSec` erweitern; UI-Fallback ohne Dauer.
+- [x] Manifestgenerator um `durationSec` erweitern; UI-Fallback ohne Dauer. *(vorgezogen am 2026-07-19: ffprobe-Dauern aller 120 Videos im Source-Snapshot + Content-Map [Manifest 2026-07-19.1, Gate `video-dauern`]; `estimatedMinutes` = Videodauer + 10 min Draft-Overhead → Pacing rechnet echt [voller Kurs ≈ 15 h Video + 20 h Overhead]; ohne Dauer bleibt der ehrliche `missing-estimates`-Fallback)*
 - [ ] Filter, mobile Darstellung, Tastaturbedienung, Screenreader-Texte und kein horizontaler Overflow.
 - [ ] Persönliche Exam-Day-Checkliste: Sprache, Ausweis/Check-in, Systemtest, Zeitstrategie und genehmigte Accessibility-Vorkehrungen.
 

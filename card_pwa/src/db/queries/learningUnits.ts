@@ -293,7 +293,8 @@ export async function recordReviewUnitAttempt(
 }
 
 /** Abgeschlossene Review-Durchläufe eines Profils am lokalen Lerntag —
- *  Grundlage der Tageskappe (höchstens eine Empfehlung pro Lerntag). */
+ *  Grundlage der Tageskappe (höchstens eine Empfehlung pro Lerntag).
+ *  Abgebrochene Versuche zählen nicht: die Kappe hängt am Abschlussverlauf. */
 export async function countReviewUnitAttemptsForDay(
   profileId: string,
   localLearningDay: string,
@@ -302,6 +303,7 @@ export async function countReviewUnitAttemptsForDay(
   return db.reviewUnitAttempts
     .where('[profileId+localLearningDay]')
     .equals([profileId, localLearningDay])
+    .filter(attempt => attempt.status !== 'abandoned')
     .count()
 }
 

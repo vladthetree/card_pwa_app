@@ -32,6 +32,7 @@ vi.mock('../../db/queries/answerStats', () => ({
 }))
 
 import {
+  abortReviewUnit,
   getActiveCourseExecutionForVideo,
   recordCourseRecallRun,
   reconcileCourseUnitProgress,
@@ -255,6 +256,25 @@ describe('startOrResumeReviewUnit / Review-Abschluss', () => {
     expect(await countReviewUnitAttemptsForDay(PROFILE, '2026-07-18')).toBe(1)
     expect(await countReviewUnitAttemptsForDay(PROFILE, '2026-07-19')).toBe(0)
     expect(mocks.clearActiveSession).toHaveBeenCalledWith(`unit-exec:${first!.execution.executionId}`)
+  })
+
+  it('expliziter Abbruch: abandoned zählt nicht zur Tageskappe, Neustart friert frisch ein', async () => {
+    mocks.listCardsByDeckIdsDirect.mockResolvedValue([dueReviewCard('due-1')])
+    const launch = await startReview()
+    const aborted = await abortReviewUnit({
+      profileId: PROFILE,
+      unitId: REVIEW_DEFINITION.unitId,
+      localLearningDay: '2026-07-19',
+    })
+    expect(aborted).toBe(true)
+    expect((await getLearningUnitState(PROFILE, REVIEW_DEFINITION.unitId))?.activityStatus).toBe('notStarted')
+    // Abgebrochene Versuche zählen nicht als Abschluss (§11 Tageskappe).
+    expect(await countReviewUnitAttemptsForDay(PROFILE, '2026-07-19')).toBe(0)
+    expect(mocks.clearActiveSession).toHaveBeenCalledWith(`unit-exec:${launch!.execution.executionId}`)
+    // Ausführung bleibt Audit-Historie; ein Neustart erzeugt eine frische Auswahl.
+    expect(await learningUnitsDb.unitExecutions.get(launch!.execution.executionId)).toBeDefined()
+    const restart = await startReview()
+    expect(restart!.execution.executionId).not.toBe(launch!.execution.executionId)
   })
 
   it('unvollständig bewertete Wiederholungen bleiben inProgress und reserviert', async () => {

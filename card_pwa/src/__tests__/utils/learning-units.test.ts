@@ -3,6 +3,7 @@ import type { Card } from '../../types'
 import type { LocalVideoMeta } from '../../utils/localVideoManifest'
 import {
   COURSE_UNIT_COUNT,
+  COURSE_UNIT_PRACTICE_OVERHEAD_MINUTES,
   SY0701_OBJECTIVE_IDS,
   buildCourseUnits,
   buildRequirementCoverage,
@@ -161,6 +162,8 @@ describe('validateCourseCatalog / buildCourseUnits', () => {
     for (const unit of units) {
       expect(unit.type).toBe('course')
       expect(unit.videoIndex).toBe(unit.order)
+      // Dauerschätzung = ffprobe-Videodauer + Draft-Overhead (Pacing-Grundlage).
+      expect(unit.estimatedMinutes).toBeGreaterThan(COURSE_UNIT_PRACTICE_OVERHEAD_MINUTES)
       expect(unit.labScenarioId).toBeUndefined()
       expect(unit.examLaunch).toBeUndefined()
     }
