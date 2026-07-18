@@ -73,8 +73,9 @@ export class LearningUnitsDB extends Dexie {
   learnerExamPlans!: Table<DraftLearnerExamPlanRecord, [string, string]>
   migrationMeta!: Table<MigrationMetaRecord, string>
 
-  constructor() {
-    super('card-pwa-learning-units')
+  /** `name` nur für Tests überschreibbar (z. B. Quelle/Ziel eines Restores). */
+  constructor(name = 'card-pwa-learning-units') {
+    super(name)
     // Indizes nach Detailplan §16.1 (Teilmenge ohne Server-Receipt-Stores;
     // assessment*/labAttempts/examAttempts folgen mit Phase 3–5).
     this.version(1).stores({

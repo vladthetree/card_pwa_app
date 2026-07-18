@@ -47,6 +47,22 @@ vi.mock('../../db', () => ({
   },
 }))
 
+// Dediziertes Lerneinheiten-System: hier nur leer stubben — der echte
+// Roundtrip läuft in __tests__/db/learning-units-backup.test.ts.
+vi.mock('../../db/queries/learningUnits', () => ({
+  listLearningUnitsBackup: vi.fn(async () => ({
+    profileLearningState: [],
+    learningUnitState: [],
+    unitExecutions: [],
+    reviewUnitAttempts: [],
+    videoProgress: [],
+    videoRecallRuns: [],
+    learnerExamPlans: [],
+    legacyAssessmentHints: [],
+  })),
+  restoreLearningUnitsBackup: vi.fn(async () => ({ added: 0, updated: 0, skipped: 0 })),
+}))
+
 function createDeck(partial: Partial<DeckRecord>): DeckRecord {
   return {
     id: partial.id ?? 'deck-1',
@@ -142,7 +158,7 @@ describe('dbBackup', () => {
     expect(payload.data.decks.map(deck => deck.id)).toEqual(['deck-active'])
     expect(payload.data.cards.map(card => card.id)).toEqual(['card-active'])
     expect(payload.data.reviews.map(review => review.cardId)).toEqual(['card-active'])
-    expect(payload.meta.tableCounts).toEqual({ decks: 1, cards: 1, reviews: 1, videoNotes: 0 })
+    expect(payload.meta.tableCounts).toEqual({ decks: 1, cards: 1, reviews: 1, videoNotes: 0, learningUnits: 0 })
     expect(payload.data.videoNotes).toEqual([])
   })
 
@@ -162,7 +178,7 @@ describe('dbBackup', () => {
 
     const payload = await buildDbBackupPayload()
 
-    expect(payload.meta.version).toBe(2)
+    expect(payload.meta.version).toBe(3)
     expect(payload.meta.tableCounts.videoNotes).toBe(1)
     expect(payload.data.videoNotes).toEqual(mockedDb.state.videoNotes)
   })

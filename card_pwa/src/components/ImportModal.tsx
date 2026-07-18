@@ -69,9 +69,14 @@ export default function ImportModal({ isOpen, onClose, initialFile = null }: Pro
     const payload = backupExtrasRef.current
     if (!payload) return
     backupExtrasRef.current = null
-    const { restoreReviewsFromBackupPayload, restoreVideoNotesFromBackupPayload } = await import('../utils/dbBackup')
+    const {
+      restoreReviewsFromBackupPayload,
+      restoreVideoNotesFromBackupPayload,
+      restoreLearningUnitsFromBackupPayload,
+    } = await import('../utils/dbBackup')
     await restoreReviewsFromBackupPayload(payload)
     await restoreVideoNotesFromBackupPayload(payload)
+    await restoreLearningUnitsFromBackupPayload(payload)
   }, [])
 
   // Reset state while closed so a previous success/error screen does not flash

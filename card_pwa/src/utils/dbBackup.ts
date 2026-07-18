@@ -6,6 +6,12 @@
  */
 import { db } from '../db'
 import type { CardRecord, DeckRecord, ReviewRecord, VideoNoteRecord } from '../db'
+import {
+  listLearningUnitsBackup,
+  restoreLearningUnitsBackup,
+  type LearningUnitsBackupData,
+  type RestoreLearningUnitsResult,
+} from '../db/queries/learningUnits'
 import { BACKUP_METADATA, STORAGE_KEYS } from '../constants/appIdentity'
 import { extractTags } from './videoTags'
 import { normalizeTagId } from './tagIdentity'
@@ -16,13 +22,15 @@ const META_PREFIX = BACKUP_METADATA.prefix
 
 interface BackupMeta {
   app: 'card-pwa'
-  version: 1 | 2
+  version: 1 | 2 | 3
   exportedAt: number
   tableCounts: {
     decks: number
     cards: number
     reviews: number
     videoNotes?: number
+    /** Summe aller Zeilen des dedizierten Lerneinheiten-Systems (ab Version 3). */
+    learningUnits?: number
   }
 }
 
@@ -34,6 +42,8 @@ export interface DbBackupPayload {
     cards: CardRecord[]
     reviews: ReviewRecord[]
     videoNotes: VideoNoteRecord[]
+    /** Dediziertes Lerneinheiten-System (§16.3); fehlt in Backups vor Version 3. */
+    learningUnits?: LearningUnitsBackupData
   }
 }
 
@@ -87,6 +97,8 @@ export async function buildDbBackupPayload(options: ExportOptions = {}): Promise
   const reviewsAll = await db.reviews.toArray()
   const reviews = reviewsAll.filter(review => cardIdSet.has(review.cardId))
   const videoNotes = await db.videoNotes2.toArray()
+  const learningUnits = await listLearningUnitsBackup()
+  const learningUnitsCount = Object.values(learningUnits).reduce((sum, rows) => sum + rows.length, 0)
 
   const settingsRaw = localStorage.getItem(SETTINGS_STORAGE_KEY)
   const parsedSettings = settingsRaw ? JSON.parse(settingsRaw) as Record<string, unknown> : null
@@ -100,13 +112,14 @@ export async function buildDbBackupPayload(options: ExportOptions = {}): Promise
   return {
     meta: {
       app: BACKUP_METADATA.app,
-      version: 2,
+      version: 3,
       exportedAt: Date.now(),
       tableCounts: {
         decks: decks.length,
         cards: cards.length,
         reviews: reviews.length,
         videoNotes: videoNotes.length,
+        learningUnits: learningUnitsCount,
       },
     },
     settings,
@@ -115,8 +128,18 @@ export async function buildDbBackupPayload(options: ExportOptions = {}): Promise
       cards,
       reviews,
       videoNotes,
+      learningUnits,
     },
   }
+}
+
+/** Stellt das dedizierte Lerneinheiten-System aus einem Backup wieder her;
+ *  Backups vor Version 3 (ohne `learningUnits`) sind ein No-op. */
+export async function restoreLearningUnitsFromBackupPayload(
+  payload: Pick<DbBackupPayload, 'data'>,
+): Promise<RestoreLearningUnitsResult> {
+  if (!payload.data?.learningUnits) return { added: 0, updated: 0, skipped: 0 }
+  return restoreLearningUnitsBackup(payload.data.learningUnits)
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
