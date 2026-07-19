@@ -406,8 +406,20 @@ export async function startOrResumeLabUnit(input: {
     labAttemptId: attempt.attemptId,
     scenarioVersion: attempt.scenarioVersion,
   }
-  const state = await startUnitExecution(execution, now)
-  return { execution, attempt, state }
+  try {
+    const state = await startUnitExecution(execution, now)
+    return { execution, attempt, state }
+  } catch (error) {
+    // Paralleler Start desselben Szenarios (z. B. React-StrictMode-Doppeleffekt
+    // beim Öffnen): startLabAttempt ist idempotent, beide Aufrufer teilen sich
+    // denselben Versuch — der Verlierer übernimmt die gewonnene Ausführung.
+    const raced = await getActiveExecution(profileId, unitId)
+    if (raced?.type === 'lab' && raced.labAttemptId === attempt.attemptId) {
+      const racedState = await getLearningUnitState(profileId, unitId)
+      if (racedState) return { execution: raced, attempt, state: racedState }
+    }
+    throw error
+  }
 }
 
 /**

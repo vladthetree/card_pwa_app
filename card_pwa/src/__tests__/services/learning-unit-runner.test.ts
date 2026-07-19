@@ -327,6 +327,18 @@ describe('startOrResumeLabUnit / recordLabCheck', () => {
     expect(second.attempt.attemptId).toBe(first.attempt.attemptId)
   })
 
+  it('paralleler Doppelstart (StrictMode-Doppeleffekt) teilt sich Versuch und Ausführung statt zu werfen', async () => {
+    const [a, b] = await Promise.all([
+      startOrResumeLabUnit({ profileId: PROFILE, scenario: SCENARIO, language: 'de' }),
+      startOrResumeLabUnit({ profileId: PROFILE, scenario: SCENARIO, language: 'de' }),
+    ])
+    expect(a.attempt.attemptId).toBe(b.attempt.attemptId)
+    expect(a.execution.executionId).toBe(b.execution.executionId)
+    const attempts = await learningUnitsDb.labAttempts
+      .where('[profileId+scenarioId]').equals([PROFILE, SCENARIO.id]).toArray()
+    expect(attempts.filter(attempt => attempt.status === 'inProgress')).toHaveLength(1)
+  })
+
   it('Teilversuch wird gegen die eingefrorene Rubrik bewertet; volle Punktzahl gibt ab und schließt die Unit', async () => {
     const launch = await startOrResumeLabUnit({ profileId: PROFILE, scenario: SCENARIO, language: 'de' })
 

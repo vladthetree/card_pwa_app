@@ -38,9 +38,9 @@ Für das Bestehensziel sind **Phase 0 bis 5 einschließlich Readiness-Gate Pflic
 
 ## Nutzerentscheidungen vom 2026-07-19
 
-- **Home-Modi unter „Ansicht":** Dashboard, Decks, Nach Tags und Lerneinheiten sind Modi des Home-Screens; Labs und Lernvideos bleiben als Absprungziele im selben Menü. Die **Homebar bleibt auf dem Handy unverändert** (links Prüfungstage, dann Ansichten, Einstellungen, Karten-Plus) und steht in allen Modi obendrüber — nur Karten-Session, Videos und Labs sind Vollbild.
-- **Lerneinheiten als Home-Modus:** `LearningUnitsView` rendert eingebettet unter der Homebar (kein eigener Header/Zurück-Pfeil); die eigene View-Route `learning-units` entfällt. Desktop erreicht den Modus über dasselbe „Ansicht"-Menü der Deck-Toolbar.
-- **Dashboard als eigene Ansicht:** alle Dashboard-Widgets (Heute-Paket, Lerneinheiten-Kachel, Daily Quest, KPIs, Quests, Heatmap) untereinander zum Scrollen statt des Swipe-Karussells mit einem Slide zurzeit.
+- **Home-Modi unter „Ansicht", zwei Sektionen:** „Ansicht" (Dashboard, Nach Tags, Shuffle-Decks, Lernvideos) und „Modus" (Daily Quest, Lerneinheiten, Decks, Labs). Die **Homebar bleibt auf dem Handy unverändert** (links Prüfungstage, dann Ansichten, Einstellungen, Karten-Plus) und steht in allen Modi obendrüber — nur Karten-Session und Lernvideos sind Vollbild.
+- **Lerneinheiten und Labs als Home-Modi:** `LearningUnitsView` und `LabsView` rendern eingebettet unter der Homebar (kein eigener Zurück-Pfeil); die View-Routen `learning-units` und `labs` entfallen. Desktop erreicht die Modi über dasselbe „Ansicht"-Menü der Deck-Toolbar.
+- **Dashboard = reine Statistik:** nur KPIs, Quests-Panel und Heatmap, untereinander scrollbar. Heute-Paket-Kachel, Lerneinheiten-Kachel und Daily-Quest-Kachel sind bewusst raus („das braucht man da nicht"); Daily Quest hat einen eigenen Modus, die Heute-Paket-Kachel ist ersatzlos aus der UI (die Mechanik bleibt im Code; den geführten Tagespfad decken die Lerneinheiten ab).
 - **Rückweg-Kontrakt:** Aus dem Lerneinheiten-Modus geöffnete Videos, Labs und Karten-Sessions kehren beim Schließen/Zurück exakt in den Modus zurück — nie in die Lernvideos-/Labs-Liste oder auf das leere Home.
 
 ## Verbindliche Prüfungsbasis
@@ -168,6 +168,13 @@ Damit ist Phase 3 abgeschlossen bis auf das serverseitige Ledger (zweiter Punkt)
 - **Rücknavigations-Bug behoben:** App verfolgt die Herkunft (`videos/labs/studyReturnToUnits`); Header-Zurück in Videos/Labs, das Schließen des per Unit geöffneten Videos (mobiler Player-X), Zurück aus dem deep-verlinkten Lab-Szenario und der Study-Exit einer Unit-Session kehren in den Lerneinheiten-Modus zurück statt auf Lernvideos-/Labs-Liste oder Home.
 - **REV-Bug behoben:** `startOrResumeReviewUnit` liefert bei leerer Auswahl `null` — der Tap wirkte „tot" (z. B. „Wiederholung 1.2", wenn nichts fällig/kein Fehler ungelöst). Jetzt Info-Toast mit Begründung; Startfehler zeigen einen Error-Toast.
 - **Test-Reparatur:** `labs-view.test.tsx` scheiterte seit der Lab-Instrumentierung auf Suite-Ebene (useSettings ohne Provider) und wurde von der Testzahl verdeckt; mit Settings-Mock laufen real 828 Tests (statt 822 + 1 kaputte Suite).
+
+**Neunte Runde am 2026-07-19** (Working Tree; 829/829 Tests + Build grün; Smoke per Driver): **Home-Modi finalisiert** —
+
+- **Dashboard entschlackt:** `HomeStatsSection layout="stack"` zeigt nur noch KPIs, Quests-Panel und Heatmap; Heute-Paket-, Lerneinheiten- und Daily-Quest-Kachel entfernt (Heute-Paket-Kachel damit ersatzlos aus der UI, Mechanik/Kartenreservierung bleibt).
+- **Neue Modi:** `daily-quest` (Quest-Kachel als eigener Reiter) und `labs` (`LabsView` mit `embedded`-Modus unter der Homebar; App-Route `labs` entfernt, Lab-Unit-Deep-Link läuft jetzt HomeView-intern: Lerneinheiten → Szenario → Zurück → Lerneinheiten).
+- **Menüs zweigeteilt:** „Ansicht" (Dashboard, Nach Tags, Shuffle-Decks, Lernvideos) / „Modus" (Daily Quest, Lerneinheiten, Decks, Labs) in HomeBottomBar-Sheet und Desktop-Toolbar; Homebar-Zeile unverändert.
+- **Race-Fix Lab-Start:** paralleler Doppelstart (StrictMode-Doppeleffekt beim Öffnen) teilt sich jetzt Versuch + Ausführung statt `startUnitExecution`-Fehler zu werfen (`startOrResumeLabUnit`, mit Test).
 
 **Nächste Schritte in Reihenfolge:**
 
