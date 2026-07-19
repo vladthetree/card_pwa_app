@@ -865,6 +865,10 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                     goHome()
                   }}
                   initialScenarioId={labsInitialScenarioId ?? undefined}
+                  onOpenLearningUnits={() => {
+                    setLabsInitialScenarioId(null)
+                    openLearningUnits()
+                  }}
                 />
               </motion.div>
             )}

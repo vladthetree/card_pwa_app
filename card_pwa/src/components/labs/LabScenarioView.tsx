@@ -29,6 +29,7 @@ const COPY = {
     failed: 'Noch nicht richtig — korrigiere die markierten Stellen.',
     retry: 'Nochmal versuchen',
     back: 'Zurück',
+    remediate: 'Objective vertiefen (Lerneinheiten)',
   },
   en: {
     matchPrompt: 'Match each element to its counterpart',
@@ -41,6 +42,7 @@ const COPY = {
     failed: 'Not correct yet — fix the highlighted parts.',
     retry: 'Try again',
     back: 'Back',
+    remediate: 'Deepen this objective (learning units)',
   },
 } as const
 
@@ -52,12 +54,14 @@ interface Props {
   /** Jeder Lösungsversuch (auch fehlgeschlagene) mit Antworten und Score-Anteil
    *  0..1 — additive Instrumentierung für das Lerneinheiten-Versuchsprotokoll. */
   onCheck?: (detail: { scenarioId: string; score: number; answerByStepId: Record<string, unknown> }) => void
+  /** Nach der Abgabe: Link zur normalen Remediation (Lerneinheiten-Screen, §13.2). */
+  onRemediate?: () => void
 }
 
 const SECTION_LABEL = 'mb-2 font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500'
 const MONO_BOX = 'whitespace-pre-wrap rounded-ds-xl border border-[#1f1f23] bg-[#0c0c0c] px-3.5 py-3 font-mono text-[13px] leading-[1.6] text-zinc-200'
 
-export default function LabScenarioView({ language, scenario, onBack, onSolved, onCheck }: Props) {
+export default function LabScenarioView({ language, scenario, onBack, onSolved, onCheck, onRemediate }: Props) {
   const copy = COPY[language]
   const badge = LAB_DIFFICULTY_BADGE[scenario.difficulty]
   const interaction = scenario.interaction
@@ -96,7 +100,8 @@ export default function LabScenarioView({ language, scenario, onBack, onSolved, 
     onCheck?.({
       scenarioId: scenario.id,
       score,
-      answerByStepId: interaction.type === 'matching' ? { main: { ...selections } } : { main: [...order] },
+      // 'step-1' = kanonische Schritt-ID des §13.2-Snapshots (labSnapshot.ts).
+      answerByStepId: interaction.type === 'matching' ? { 'step-1': { ...selections } } : { 'step-1': [...order] },
     })
     if (score === 1) {
       setResult('solved')
@@ -237,8 +242,19 @@ export default function LabScenarioView({ language, scenario, onBack, onSolved, 
 
           {/* Ergebnis-Feedback (⚠️ neu generiert, kein Screenshot des gelösten Zustands) */}
           {result === 'solved' && (
-            <div className="mt-4 flex items-center gap-2 rounded-ds-xl border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-3 font-mono text-[13px] text-emerald-300">
-              <Check size={15} strokeWidth={2} /> {copy.solved}
+            <div className="mt-4 rounded-ds-xl border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-3">
+              <p className="flex items-center gap-2 font-mono text-[13px] text-emerald-300">
+                <Check size={15} strokeWidth={2} /> {copy.solved}
+              </p>
+              {onRemediate && (
+                <button
+                  type="button"
+                  onClick={onRemediate}
+                  className="mt-2 rounded-ds-lg border border-[#27272a] bg-[#0a0a0a] px-3 py-2 font-mono text-[12px] text-zinc-300 transition-colors hover:border-[#3f3f46] hover:text-white"
+                >
+                  {copy.remediate}
+                </button>
+              )}
             </div>
           )}
           {result === 'failed' && (

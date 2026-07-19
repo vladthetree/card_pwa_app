@@ -53,7 +53,13 @@ import {
   updateLabAttempt,
 } from '../db/queries/learningUnits'
 import type { LabAttemptRecord } from '../db/learningUnitsDb'
-import { fnv1a32 } from '../utils/hash'
+import type { LabScenario } from '../data/labScenarios'
+import {
+  buildLabScenarioSnapshot,
+  scoreLabAnswers,
+  type LabScenarioSnapshot,
+  type LabScoreResult,
+} from '../utils/labSnapshot'
 import { clearActiveSession, listCardsByDeckIdsDirect, listCardsByIds, listCardIdsReviewedSince } from '../db/queries'
 import { readTodayPackagePointer } from '../utils/todayPackage'
 import type { Algorithm } from '../contexts/SettingsContext'
@@ -345,12 +351,6 @@ export async function startOrResumeReviewUnit(input: {
   return { execution, state, remainingCardIds: [...selection.cardIds] }
 }
 
-/** Deterministische Versionskennung eines Registry-Szenarios (Content-Hash);
- *  die Registry selbst trägt keine Versionsfelder. */
-export function computeLabScenarioVersion(scenario: unknown): string {
-  return `v-${fnv1a32(JSON.stringify(scenario)).toString(16)}`
-}
-
 export interface LabUnitLaunch {
   execution: LabExecution
   attempt: LabAttemptRecord
@@ -358,13 +358,14 @@ export interface LabUnitLaunch {
 }
 
 /**
- * Startet eine Lab-Unit mit vollständig eingefrorenem Szenario-Versuch (§13.2)
- * oder setzt den laufenden Versuch fort. Während des Versuchs werden keine
- * Kartenreviews und kein XP geschrieben (§15).
+ * Startet eine Lab-Unit mit vollständig eingefrorenem, §13.2-normalisiertem
+ * Szenario-Snapshot (stabile Schritt-IDs + Teilpunkt-Rubrik) oder setzt den
+ * laufenden Versuch fort. Während des Versuchs werden keine Kartenreviews und
+ * kein XP geschrieben (§15).
  */
 export async function startOrResumeLabUnit(input: {
   profileId: string
-  scenario: { id: string }
+  scenario: LabScenario
   language: string
 }): Promise<LabUnitLaunch> {
   const { profileId, scenario } = input
@@ -384,15 +385,15 @@ export async function startOrResumeLabUnit(input: {
   }
 
   const profileState = await getOrCreateProfileLearningState(profileId, now)
-  const scenarioVersion = computeLabScenarioVersion(scenario)
+  const snapshot = buildLabScenarioSnapshot(scenario)
   const attempt = await startLabAttempt({
     profileId,
     scenarioId: scenario.id,
-    scenarioVersion,
+    scenarioVersion: snapshot.scenarioVersion,
     language: input.language,
     sourceSnapshotId: SY0701_SOURCE_SNAPSHOT_ID,
     contentManifestVersion: SY0701_CONTENT_MANIFEST_VERSION,
-    scenarioSnapshot: scenario,
+    scenarioSnapshot: snapshot,
     now,
   })
   const execution: LabExecution = {
@@ -410,23 +411,37 @@ export async function startOrResumeLabUnit(input: {
 }
 
 /**
- * Persistiert das Ergebnis eines Lösungsversuchs im Lab: Fehlversuche als
- * Resume-Update, die erste vollständige Lösung als endgültige Abgabe — die
- * schließt zugleich die Lab-Unit ab. Ohne laufenden Versuch (z. B. Profil
- * nicht hydratisiert) ist der Aufruf ein No-op.
+ * Persistiert das Ergebnis eines Lösungsversuchs im Lab und bewertet dabei
+ * ausschließlich gegen die EINGEFRORENE Rubrik des Versuchs (§13.2):
+ * Fehl-/Teilversuche als Resume-Update mit Fehlversuchszähler, die volle
+ * Punktzahl als endgültige Abgabe mit Teilpunkten — die schließt zugleich die
+ * Lab-Unit ab. Liefert das Rubrik-Ergebnis fürs (verspätete) Feedback; ohne
+ * laufenden Versuch ist der Aufruf ein No-op (null).
  */
 export async function recordLabCheck(input: {
   profileId: string
   scenarioId: string
   answerByStepId: Record<string, unknown>
-  /** Anteil korrekt (0..1) aus der bestehenden Lab-Bewertung. */
+  /** Anteil korrekt (0..1) aus der Alt-Bewertung — nur Fallback für Versuche,
+   *  deren Snapshot noch keine Rubrik trägt. */
   score: number
-}): Promise<void> {
+}): Promise<LabScoreResult | null> {
   const attempt = await getActiveLabAttempt(input.profileId, input.scenarioId)
-  if (!attempt) return
+  if (!attempt) return null
   const now = Date.now()
   const elapsedMs = Math.max(0, now - attempt.startedAt)
-  if (input.score < 1) {
+
+  const snapshot = attempt.scenarioSnapshot as Partial<LabScenarioSnapshot> | undefined
+  const result: LabScoreResult = Array.isArray(snapshot?.rubric)
+    ? scoreLabAnswers({ rubric: snapshot.rubric }, input.answerByStepId)
+    : {
+        earnedPoints: input.score,
+        possiblePoints: 1,
+        solved: input.score >= 1,
+        byCriterionId: {},
+      }
+
+  if (!result.solved) {
     await updateLabAttempt({
       profileId: input.profileId,
       attemptId: attempt.attemptId,
@@ -435,14 +450,14 @@ export async function recordLabCheck(input: {
       elapsedMs,
       now,
     })
-    return
+    return result
   }
   await submitLabAttempt({
     profileId: input.profileId,
     attemptId: attempt.attemptId,
     answerByStepId: input.answerByStepId,
-    scoreEarned: input.score,
-    scorePossible: 1,
+    scoreEarned: result.earnedPoints,
+    scorePossible: result.possiblePoints,
     elapsedMs,
     now,
   })
@@ -451,6 +466,7 @@ export async function recordLabCheck(input: {
   if (execution?.type === 'lab' && execution.labAttemptId === attempt.attemptId) {
     await completeUnitExecution(input.profileId, execution.executionId, now)
   }
+  return result
 }
 
 /**

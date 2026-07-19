@@ -293,44 +293,73 @@ describe('startOrResumeReviewUnit / Review-Abschluss', () => {
 })
 
 describe('startOrResumeLabUnit / recordLabCheck', () => {
-  const SCENARIO = { id: 'lab-42', title: 'ACL prüfen', objective: '4.5 Given a scenario …' }
+  const SCENARIO = {
+    id: 'lab-42',
+    categoryId: 'firewalls',
+    title: 'ACL prüfen',
+    objective: '4.5 Given a scenario …',
+    difficulty: 'einsteiger' as const,
+    minutes: 10,
+    description: 'Regeln den richtigen Wirkungen zuordnen.',
+    interaction: {
+      type: 'matching' as const,
+      items: [
+        { left: 'deny tcp any any eq 23', right: 'Telnet blockieren' },
+        { left: 'permit tcp any host 10.0.0.5 eq 443', right: 'HTTPS zum Webserver erlauben' },
+      ],
+      options: ['Telnet blockieren', 'HTTPS zum Webserver erlauben', 'DNS umleiten'],
+    },
+  }
 
-  it('startet Versuch + Unit atomar und resumt statt neu zu starten', async () => {
+  it('startet Versuch + Unit atomar mit §13.2-Snapshot und resumt statt neu zu starten', async () => {
     const first = await startOrResumeLabUnit({ profileId: PROFILE, scenario: SCENARIO, language: 'de' })
     expect(first.state.activityStatus).toBe('inProgress')
     expect(first.state.currentStep).toBe('lab')
     expect(first.execution.labAttemptId).toBe(first.attempt.attemptId)
+    // Eingefroren ist der normalisierte Snapshot mit Schritt-IDs und Rubrik.
+    const snapshot = first.attempt.scenarioSnapshot as { steps: Array<{ stepId: string }>; rubric: unknown[] }
+    expect(snapshot.steps[0].stepId).toBe('step-1')
+    expect(snapshot.rubric).toHaveLength(1)
+    expect(first.attempt.scenarioVersion).toMatch(/^v-/)
 
     const second = await startOrResumeLabUnit({ profileId: PROFILE, scenario: SCENARIO, language: 'de' })
     expect(second.execution.executionId).toBe(first.execution.executionId)
     expect(second.attempt.attemptId).toBe(first.attempt.attemptId)
   })
 
-  it('Fehlversuch aktualisiert den Versuch; volle Lösung gibt ab und schließt die Unit', async () => {
+  it('Teilversuch wird gegen die eingefrorene Rubrik bewertet; volle Punktzahl gibt ab und schließt die Unit', async () => {
     const launch = await startOrResumeLabUnit({ profileId: PROFILE, scenario: SCENARIO, language: 'de' })
 
-    await recordLabCheck({
+    const partial = await recordLabCheck({
       profileId: PROFILE, scenarioId: SCENARIO.id,
-      answerByStepId: { main: { a: 'falsch' } }, score: 0.5,
+      answerByStepId: { 'step-1': { 'deny tcp any any eq 23': 'Telnet blockieren' } },
+      score: 0.5,
     })
+    expect(partial).toMatchObject({ earnedPoints: 1, possiblePoints: 2, solved: false })
     const afterFail = await learningUnitsDb.labAttempts.get(launch.attempt.attemptId)
     expect(afterFail?.status).toBe('inProgress')
     expect(afterFail?.failedAttemptCount).toBe(1)
     expect((await getLearningUnitState(PROFILE, 'unit:lab:lab-42'))?.activityStatus).toBe('inProgress')
 
-    await recordLabCheck({
+    const full = await recordLabCheck({
       profileId: PROFILE, scenarioId: SCENARIO.id,
-      answerByStepId: { main: { a: 'richtig' } }, score: 1,
+      answerByStepId: { 'step-1': {
+        'deny tcp any any eq 23': 'Telnet blockieren',
+        'permit tcp any host 10.0.0.5 eq 443': 'HTTPS zum Webserver erlauben',
+      } },
+      score: 1,
     })
+    expect(full).toMatchObject({ earnedPoints: 2, possiblePoints: 2, solved: true })
     const submitted = await learningUnitsDb.labAttempts.get(launch.attempt.attemptId)
     expect(submitted?.status).toBe('submitted')
-    expect(submitted?.scoreEarned).toBe(1)
+    expect(submitted?.scoreEarned).toBe(2)
+    expect(submitted?.scorePossible).toBe(2)
     expect((await getLearningUnitState(PROFILE, 'unit:lab:lab-42'))?.activityStatus).toBe('completed')
     expect(await getActiveExecution(PROFILE, 'unit:lab:lab-42')).toBeUndefined()
   })
 
   it('ohne laufenden Versuch ist recordLabCheck ein No-op', async () => {
-    await recordLabCheck({ profileId: PROFILE, scenarioId: 'nie-gestartet', answerByStepId: {}, score: 1 })
+    expect(await recordLabCheck({ profileId: PROFILE, scenarioId: 'nie-gestartet', answerByStepId: {}, score: 1 })).toBeNull()
     expect(await learningUnitsDb.labAttempts.count()).toBe(0)
   })
 })

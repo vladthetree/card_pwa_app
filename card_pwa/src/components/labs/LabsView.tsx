@@ -43,9 +43,11 @@ interface Props {
   onExit: () => void
   /** Deep Link aus dem Lerneinheiten-Screen: Szenario direkt öffnen. */
   initialScenarioId?: string
+  /** Remediation nach der Abgabe: zurück in den Lerneinheiten-Screen (§13.2). */
+  onOpenLearningUnits?: () => void
 }
 
-export default function LabsView({ language, onExit, initialScenarioId }: Props) {
+export default function LabsView({ language, onExit, initialScenarioId, onOpenLearningUnits }: Props) {
   const copy = COPY[language]
   const { profile, isProfileHydrated } = useSettings()
   const labProfileId = isProfileHydrated ? profileScopeId(profile) : null
@@ -155,6 +157,7 @@ export default function LabsView({ language, onExit, initialScenarioId }: Props)
         onBack={() => setActiveScenario(null)}
         onSolved={handleSolved}
         onCheck={handleScenarioCheck}
+        onRemediate={onOpenLearningUnits}
       />
     )
   }

@@ -151,12 +151,13 @@ Damit ist Phase 3 abgeschlossen bis auf das serverseitige Ledger (zweiter Punkt)
 
 **Sechste Runde am 2026-07-19** (Working Tree, 817/817 Tests + Build grün): **Phase-4-Kern umgesetzt** — dedizierte DB v2 mit UUID-`labAttempts` (eingefrorener `scenarioSnapshot` + Content-Hash-Version, Update nur inProgress, Abgabe unveränderlich, Retry = neue UUID, Backup-fest), Legacy-„geschafft“-Import (`legacy-labs-v1`-Marker, Abschluss- ohne Score-Evidenz), eine `lab`-Einheit je Szenario im Ranking/Screen, Deep Link Lerneinheiten-Screen → LabsView-Szenario, additive Instrumentierung: Öffnen startet/fortsetzt den Versuch, jeder Lösungs-Check protokolliert (Fehlversuch → Update, Lösung → Abgabe + Unit-Abschluss). Offen in Phase 4: fachliche §13.2-Normalisierung aller Szenarien (Schritt-IDs, Teilpunkt-Rubriken) und darauf aufbauend verspätetes Feedback + Remediation-Links.
 
+**Siebte Runde am 2026-07-19** (Working Tree, 822/822 Tests + Build grün): **Phase 4 softwareseitig abgeschlossen** — §13.2-Normalisierung als deterministische Ableitung ([labSnapshot.ts](card_pwa/src/utils/labSnapshot.ts): stabile Schritt-IDs, Teilpunkt-Rubrik mit Feedback, Content-Hash-Version; alle 100 Szenarien belegt), Versuche frieren den normalisierten Snapshot ein, jeder Lösungs-Check wird ausschließlich gegen die eingefrorene Rubrik bewertet (echte Teilpunkte statt UI-Anteil), nach der Abgabe Remediation-Link ins Lerneinheiten-Modul. Verbleibende Phase-4-Arbeit ist Content: Aufgabentypen über Matching/Ordering hinaus (§13.1-Pflichtkompetenzen) und `requirementIds` nach dem Phase-0-Leaf-Mapping.
+
 **Nächste Schritte in Reihenfolge:**
 
 1. Working-Tree-Stand committen.
-2. Phase-4-Rest (Content-lastig): §13.2-Normalisierung der Szenarien (Schritt-IDs, Teilpunkt-Rubriken, Pflichtkompetenzen über Matching/Ordering hinaus), dann verspätetes Feedback + Remediation-Links.
-3. Danach Phase 5 (Exam-Engine, serverseitig): `ExamView`, `examAttempts`, Blueprint/Holdouts, Readiness-Sync — größter verbleibender Block, braucht card-sync-server-Arbeit.
-4. Nebenläufig offen: Puffertage im Plan-Editor pflegen (Nutzung), Baseline-Diagnostik klären (braucht Entscheidung), Phase-0-Content-Gates (Leaf-Mapping, Readiness-Formen, Kalibrierung).
+2. Phase 5 (Exam-Engine): clientseitig beginnen mit `ExamView`-Grundgerüst, `examAttempts` (dedizierte DB v3) und Practice-Drills aus dem geprüften Inventar; alles Readiness-/Server-gebundene (Holdouts, Lease, Receipts) folgt gebündelt mit der card-sync-server-Arbeit.
+3. Nebenläufig offen: Content-Arbeit (neue Lab-Aufgabentypen, Leaf-Mapping, Readiness-Formen, Kalibrierung — `OFFENE-PUNKTE.md`), Puffertage im Plan-Editor, Baseline-Diagnostik-Entscheidung.
 
 ## Umsetzungsphasen
 
@@ -223,12 +224,12 @@ Exit: Empfehlungen sind mit einem deterministischen `reason` erklärbar; kleine 
 
 ### Phase 4 — Praktische Labs und PBQs
 
-- [ ] Szenarien erhalten stabile IDs, normalisierte `objectiveIds`/`requirementIds`, stabile Schritt-IDs und Rubriken. *(teilweise: stabile Szenario-IDs + Objective-Parsing + deterministische Versionskennung [Content-Hash] vorhanden; die volle §13.2-Normalisierung [Schritt-IDs, Teilpunkt-Rubriken, Assets] ist fachliche Content-Arbeit über alle 100 Szenarien und steht aus)*
+- [x] Szenarien erhalten stabile IDs, normalisierte `objectiveIds`/`requirementIds`, stabile Schritt-IDs und Rubriken. *(2026-07-19: deterministische §13.2-Normalisierung `buildLabScenarioSnapshot` — stabile Schritt-IDs, Teilpunkt-Rubrik [1 Punkt je Paar bzw. exakt platzierter Position] mit Feedback-Texten, Content-Hash-Version; per Test über alle 100 Registry-Szenarien belegt. `requirementIds` folgen dem offenen Phase-0-Leaf-Mapping; Aufgabentypen über Matching/Ordering hinaus [Logs, IAM, Härtung — §13.1-Pflichtkompetenzen] bleiben fachliche Content-Arbeit)*
 - [x] Je Szenario eine `lab`-Einheit; Kategorien dienen nur der Gruppierung. *(`buildLabUnits`: `unit:lab:{scenarioId}` mit Objective aus dem Label, `estimatedMinutes` aus der Registry; im Ranking und in der Vollliste des Screens)*
 - [x] Dexie v23: UUID-basierte `labAttempts` mit Profil, Szenario-/Versions-ID, Antworten, Teilpunkten, Fehlversuchen, Dauer, Resume- und Abgabestatus; laufende Versuche sind aktualisierbar, abgegebene unveränderlich. *(als v2 der dedizierten DB; Update/Submit auf abgegebene Versuche wirft, Retry = neue UUID; in Backup/Restore aufgenommen)*
 - [x] Szenario, Schritte und Rubrik beim Start vollständig versioniert einfrieren; Resume/Scoring darf nach Content-Updates nicht auf die neue Registry umspringen. *(`scenarioSnapshot` = tiefe Kopie beim Start + Content-Hash-Version; Registry-Mutationen erreichen den Versuch nachweislich nicht [Test])*
 - [x] Legacy-„geschafft“-Sets mit separatem v23-Marker konservativ in exakt das in v22 gespeicherte Ownerprofil importieren; alte Einträge liefern Abschluss-, aber keine Score-/Mastery-Evidenz. *(`runLegacyLabsImport` mit Marker `legacy-labs-v1`, wartet auf den v1-Owner-Marker; `origin: 'legacy-completed'` ohne Score, Unit-Status „bearbeitet“)*
-- [ ] Deep Link in `LabsView`/`LabScenarioView`, Resume, verspätetes Feedback und Links zur normalen Remediation. *(teilweise: Deep Link aus dem Lerneinheiten-Screen [`initialScenarioId`], Versuch startet/fortsetzt beim Öffnen, jeder Lösungs-Check wird protokolliert [Fehlversuch = Update, Lösung = Abgabe + Unit-Abschluss]; verspätetes Feedback und Remediation-Links setzen die §13.2-Rubrik-Normalisierung voraus)*
+- [x] Deep Link in `LabsView`/`LabScenarioView`, Resume, verspätetes Feedback und Links zur normalen Remediation. *(Deep Link `initialScenarioId`, Resume über den eingefrorenen Versuch, Bewertung jedes Checks ausschließlich gegen die eingefrorene Rubrik [`recordLabCheck` liefert Teilpunkte + Kriterien-Feedback], nach der Abgabe Remediation-Link zurück in den Lerneinheiten-Screen; die Bestandsansicht deckt weiterhin keine Lösungen vor der Abgabe auf — eine eigene Feedback-Detailansicht folgt mit den neuen Aufgabentypen)*
 - [x] Szenario-Coverage-Gate für die sieben „Given a scenario“-Objectives 2.4, 3.2, 4.1, 4.5, 4.6, 4.9 und 5.6. *(Generator-Gate `szenario-objectives-praxis` in validate.mjs, PASS: alle 7 mit Praxispfad)*
 
 Exit: Praxisleistung ist profilfest, nachvollziehbar und fließt nur mit hinreichender Rubrik in Mastery ein.
