@@ -15,7 +15,7 @@ import {
 } from '../MobileBottomSheet'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 
-type HomeTab = 'decks' | 'tags'
+type HomeTab = 'dashboard' | 'decks' | 'tags' | 'learning-units' | 'daily-quest' | 'labs'
 import { UI_TOKENS } from '../../constants/ui'
 
 interface Props {
@@ -39,8 +39,6 @@ interface Props {
   onExport: () => void
   onShowSettings: () => void
   onInstall: () => void
-  /** Labs im ANSICHT-Menü (Beleg `…23.40.53.jpeg`). */
-  onOpenLabs?: () => void
   /** Lernvideos (Professor Messer) im ANSICHT-Menü. */
   onOpenVideos?: () => void
 }
@@ -66,7 +64,6 @@ export function HomeBottomBar({
   onExport,
   onShowSettings,
   onInstall,
-  onOpenLabs,
   onOpenVideos,
 }: Props) {
   const [filterOpen,  setFilterOpen]  = useState(false)
@@ -161,9 +158,9 @@ export function HomeBottomBar({
         ariaLabel={language === 'de' ? 'Filter & Sortierung' : 'Filter & sort'}
       >
         <MobileBottomSheetLabel>{language === 'de' ? 'Ansicht' : 'View'}</MobileBottomSheetLabel>
-        <MobileBottomSheetItem onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('decks'); closeFilter() }}>
-          <span>{language === 'de' ? 'Decks' : 'Decks'}</span>
-          {!showShuffleOnly && homeTab === 'decks' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
+        <MobileBottomSheetItem onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('dashboard'); closeFilter() }}>
+          <span>Dashboard</span>
+          {!showShuffleOnly && homeTab === 'dashboard' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
         </MobileBottomSheetItem>
         <MobileBottomSheetItem onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('tags'); closeFilter() }}>
           <span>{language === 'de' ? 'Nach Tags' : 'By tags'}</span>
@@ -175,18 +172,32 @@ export function HomeBottomBar({
             {showShuffleOnly && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
           </MobileBottomSheetItem>
         )}
-        {onOpenLabs && (
-          <MobileBottomSheetItem onClick={() => { closeFilter(); onOpenLabs() }}>
-            <span>Labs</span>
-          </MobileBottomSheetItem>
-        )}
         {onOpenVideos && (
           <MobileBottomSheetItem onClick={() => { closeFilter(); onOpenVideos() }}>
             <span>{language === 'de' ? 'Lernvideos' : 'Videos'}</span>
           </MobileBottomSheetItem>
         )}
 
-        {!showShuffleOnly && (
+        <MobileBottomSheetDivider />
+        <MobileBottomSheetLabel>{language === 'de' ? 'Modus' : 'Mode'}</MobileBottomSheetLabel>
+        <MobileBottomSheetItem onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('daily-quest'); closeFilter() }}>
+          <span>Daily Quest</span>
+          {!showShuffleOnly && homeTab === 'daily-quest' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
+        </MobileBottomSheetItem>
+        <MobileBottomSheetItem onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('learning-units'); closeFilter() }}>
+          <span>{language === 'de' ? 'Lerneinheiten' : 'Learning units'}</span>
+          {!showShuffleOnly && homeTab === 'learning-units' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
+        </MobileBottomSheetItem>
+        <MobileBottomSheetItem onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('decks'); closeFilter() }}>
+          <span>{language === 'de' ? 'Decks' : 'Decks'}</span>
+          {!showShuffleOnly && homeTab === 'decks' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
+        </MobileBottomSheetItem>
+        <MobileBottomSheetItem onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('labs'); closeFilter() }}>
+          <span>Labs</span>
+          {!showShuffleOnly && homeTab === 'labs' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
+        </MobileBottomSheetItem>
+
+        {!showShuffleOnly && (homeTab === 'decks' || homeTab === 'tags') && (
           <>
             <MobileBottomSheetDivider />
             <MobileBottomSheetLabel>{language === 'de' ? 'Sortierung' : 'Sort'}</MobileBottomSheetLabel>

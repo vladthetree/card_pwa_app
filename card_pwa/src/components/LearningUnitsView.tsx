@@ -24,6 +24,7 @@ import { SY0701_REQUIREMENTS_MANIFEST } from '../data/sy0701Requirements'
 import type { LearningPacingResult, RankedLearningUnit } from '../utils/learningUnitRanking'
 import { abortReviewUnit, startOrResumeCourseUnit, startOrResumeReviewUnit } from '../services/learningUnitRunner'
 import { saveDraftLearnerExamPlan } from '../db/queries/learningUnits'
+import { toast } from '../hooks/useToast'
 import type { Deck } from '../types'
 
 /** Offiziell gelistete SY0-701-Prüfungssprachen (Deutsch ist keine). */
@@ -62,6 +63,8 @@ const VIEW_COPY = {
       `Leafs ${covered}/${total} nachgewiesen · ${samples} formative Abrufe`,
     honesty: '„Abgeschlossen“ heißt bearbeitet — nicht beherrscht. Mastery entsteht erst aus geprüfter Abruf-Evidenz.',
     abortReview: 'Wiederholung abbrechen',
+    reviewEmpty: 'Nichts zu wiederholen — in diesem Objective sind keine Karten fällig und keine Fehler ungelöst.',
+    reviewStartFailed: 'Wiederholung konnte nicht gestartet werden.',
     plan: {
       title: 'Lernplan (Entwurf)',
       examDate: (iso: string | null) => iso ? `Termin ${iso} — aus den Einstellungen` : 'Kein Termin — in den Einstellungen setzen',
@@ -99,6 +102,8 @@ const VIEW_COPY = {
       `Leafs ${covered}/${total} evidenced · ${samples} formative recalls`,
     honesty: '"Completed" means worked through — not mastered. Mastery only comes from verified retrieval evidence.',
     abortReview: 'Abort review',
+    reviewEmpty: 'Nothing to review — no cards due and no unresolved errors in this objective.',
+    reviewStartFailed: 'Could not start the review.',
     plan: {
       title: 'Study plan (draft)',
       examDate: (iso: string | null) => iso ? `Exam date ${iso} — from settings` : 'No exam date — set it in settings',
@@ -121,14 +126,18 @@ const VIEW_COPY = {
 } as const
 
 interface Props {
-  onExit: () => void
-  onStartStudy: (deck: Deck, cardIds?: string[], options?: { sessionId?: string; allowResume?: boolean }) => void
+  /** Nur im Vollbild-Modus (mit eigenem Header) nötig. */
+  onExit?: () => void
+  onStartStudy: (deck: Deck, cardIds?: string[], options?: { sessionId?: string; allowResume?: boolean; returnToUnits?: boolean }) => void
   onOpenVideoAtIndex: (videoIndex: number, openRecall: boolean) => void
   /** Lab-Unit → Labs-Ansicht direkt beim Szenario (Deep Link, §13). */
   onOpenLabScenario: (scenarioId: string) => void
+  /** Als Home-Modus unter der Homebar gerendert: kein eigener Header/Zurück-
+   *  Pfeil, kompakte Titelzeile im Inhalt (Nutzerentscheidung 2026-07-19). */
+  embedded?: boolean
 }
 
-export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtIndex, onOpenLabScenario }: Props) {
+export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtIndex, onOpenLabScenario, embedded = false }: Props) {
   const { settings, profile, isProfileHydrated } = useSettings()
   const copy = VIEW_COPY[settings.language]
   const listCopy = LEARNING_UNIT_COPY[settings.language]
@@ -204,7 +213,12 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
           },
         })
         learningUnits.reload()
-        if (!launch || launch.remainingCardIds.length === 0) return
+        if (!launch || launch.remainingCardIds.length === 0) {
+          // Ohne Feedback wirkte der Tap „tot" — ehrlich sagen, dass die
+          // eingefrorene Auswahl leer wäre (nichts fällig, keine Fehler offen).
+          toast.show(copy.reviewEmpty, 'info')
+          return
+        }
         const objectiveId = definition.objectiveIds[0]
         onStartStudy(
           {
@@ -216,10 +230,11 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
             due: 0,
           },
           launch.remainingCardIds,
-          { sessionId: `unit-exec:${launch.execution.executionId}`, allowResume: true },
+          { sessionId: `unit-exec:${launch.execution.executionId}`, allowResume: true, returnToUnits: true },
         )
       } catch (error) {
         console.error('[LearningUnitsView] Review-Unit-Start fehlgeschlagen', error)
+        toast.error(copy.reviewStartFailed)
       }
       return
     }
@@ -256,7 +271,7 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
           launch.remainingCardIds,
           // Session per Execution persistieren (§16): parallele Units bleiben
           // getrennt und eine unterbrochene Karten-Session ist wiederaufnehmbar.
-          { sessionId: `unit-exec:${launch.execution.executionId}`, allowResume: true },
+          { sessionId: `unit-exec:${launch.execution.executionId}`, allowResume: true, returnToUnits: true },
         )
         return
       }
@@ -293,22 +308,29 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="shrink-0 border-b border-ds-border px-4 pb-3 pt-safe-2">
-        <div className="flex items-center gap-3">
-          <button type="button" onClick={onExit} className="ds-icon-button flex h-11 w-11 shrink-0" aria-label={copy.back}>
-            <ArrowLeft size={16} />
-          </button>
-          <div className="min-w-0 flex-1">
-            <div className="font-mono text-[22px] font-bold leading-tight text-ds-fg">{copy.title}</div>
-            <div className="truncate font-mono text-[12px] text-ds-muted">
-              {copy.subtitle(learningUnits.courseCompleted, learningUnits.courseTotal)} · {listCopy.readiness[learningUnits.readiness]}
+      {!embedded && (
+        <div className="shrink-0 border-b border-ds-border px-4 pb-3 pt-safe-2">
+          <div className="flex items-center gap-3">
+            <button type="button" onClick={onExit} className="ds-icon-button flex h-11 w-11 shrink-0" aria-label={copy.back}>
+              <ArrowLeft size={16} />
+            </button>
+            <div className="min-w-0 flex-1">
+              <div className="font-mono text-[22px] font-bold leading-tight text-ds-fg">{copy.title}</div>
+              <div className="truncate font-mono text-[12px] text-ds-muted">
+                {copy.subtitle(learningUnits.courseCompleted, learningUnits.courseTotal)} · {listCopy.readiness[learningUnits.readiness]}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3" data-study-scroll="allow">
+      <div className={`min-h-0 flex-1 overflow-y-auto ${embedded ? 'px-0 py-1' : 'px-4 py-3'}`} data-study-scroll="allow">
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-3 pb-safe-2">
+          {embedded && (
+            <div className="truncate px-0.5 font-mono text-[12px] text-ds-muted" data-testid="learning-units-embedded-subtitle">
+              {copy.subtitle(learningUnits.courseCompleted, learningUnits.courseTotal)} · {listCopy.readiness[learningUnits.readiness]}
+            </div>
+          )}
           <p className="font-mono text-[11px] leading-relaxed text-ds-muted">{copy.honesty}</p>
 
           <section className="rounded-ds border border-ds-border bg-ds-floor p-2.5">

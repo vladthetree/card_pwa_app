@@ -286,9 +286,7 @@ function SafeAreaDebugOverlay() {
 const HomeView = lazy(() => import('./components/HomeView'))
 const StudyView = lazy(() => import('./components/StudyView'))
 const ShuffleStudyView = lazy(() => import('./components/ShuffleStudyView'))
-const LabsView = lazy(() => import('./components/labs/LabsView'))
 const VideosView = lazy(() => import('./components/videos/VideosView'))
-const LearningUnitsView = lazy(() => import('./components/LearningUnitsView'))
 const UpdateBanner = lazy(() => import('./components/UpdateBanner'))
 const MetaBalls = lazy(() => import('./components/MetaBalls'))
 
@@ -404,6 +402,10 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
   )
   // Heute-Paket-Sprungziel für die Lernvideos-Ansicht (null = normale Öffnung).
   const [videosInitialTarget, setVideosInitialTarget] = useState<{ videoIndex: number; openRecall: boolean } | null>(null)
+  // Herkunft „Lerneinheiten-Modus": aus ihm geöffnete Videos/Karten-Sessions
+  // kehren beim Schließen dorthin zurück statt auf Home bzw. in die Listenansicht.
+  const [videosReturnToUnits, setVideosReturnToUnits] = useState(false)
+  const [studyReturnToUnits, setStudyReturnToUnits] = useState(false)
   const [updateInstalledNotice, setUpdateInstalledNotice] = useState(false)
   const [pendingReloadAfterStudy, setPendingReloadAfterStudy] = useState(false)
   const [showInitialSplash, setShowInitialSplash] = useState(true)
@@ -585,8 +587,9 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
   const startStudy = async (
     deck: Deck,
     fixedCardIds?: string[],
-    options?: { sessionId?: string; allowResume?: boolean },
+    options?: { sessionId?: string; allowResume?: boolean; returnToUnits?: boolean },
   ) => {
+    setStudyReturnToUnits(options?.returnToUnits ?? false)
     if (fixedCardIds !== undefined) {
       const packageCards = await listCardsByIds(fixedCardIds)
       if (packageCards.length === 0) return
@@ -609,6 +612,7 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
   }
 
   const startTagStudy = (tag: string, cards: Card[]) => {
+    setStudyReturnToUnits(false)
     setAllowSessionResume(false)
     setActiveDeck(buildSyntheticDeck(`tag:${tag}`, `#${tag}`, cards))
     setActiveTagCards(cards)
@@ -620,6 +624,7 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
   // die Tag-Session ein synthetisches Deck mit vorab geladenen Karten; Reviews
   // fließen über die deckId der Karten weiter in die Ursprungsdecks.
   const startDailyQuest = (cards: Card[]) => {
+    setStudyReturnToUnits(false)
     setAllowSessionResume(false)
     setActiveDeck(buildSyntheticDeck('daily-quest', 'Daily Quest', cards))
     setActiveTagCards(cards)
@@ -630,6 +635,7 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
   // Abruf-Check-Handoff: „Nicht gewusst“-Fragen des Videos als reguläre,
   // planungswirksame Mini-Session des Objective-Decks lernen.
   const startObjectiveStudy = (input: { deckId: string; deckName: string; cards: Card[] }) => {
+    setStudyReturnToUnits(false)
     setAllowSessionResume(false)
     setActiveDeck(buildSyntheticDeck(input.deckId, input.deckName, input.cards))
     setActiveTagCards(input.cards)
@@ -647,6 +653,7 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
       return false
     }
     const deckName = await resolveSessionDeckName(resumable.sessionId)
+    setStudyReturnToUnits(false)
     setAllowSessionResume(true)
     setActiveDeck(buildSyntheticDeck(resumable.sessionId, deckName, cards))
     setActiveTagCards(cards)
@@ -705,29 +712,17 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
     setView('shuffle-manage')
   }
 
-  const openLabs = () => {
-    setActiveDeck(null)
-    setActiveTagCards(null)
-    setActiveShuffleCollection(null)
-    setView('labs')
-  }
-
-  // Lerneinheiten (SY0-701): eigener Screen; das Dashboard trägt nur die Referenz.
+  // Lerneinheiten (SY0-701) sind ein Home-Modus unter der Homebar
+  // (Nutzerentscheidung 2026-07-19): App fordert den Modus per Token an —
+  // genutzt von der Rücknavigation aus Video-/Karten-Session einer Unit.
+  // Labs sind seitdem ebenfalls ein Home-Modus und laufen komplett in HomeView.
+  const [homeTabRequest, setHomeTabRequest] = useState<{ tab: 'learning-units'; token: number } | null>(null)
   const openLearningUnits = () => {
     setActiveDeck(null)
     setActiveTagCards(null)
     setActiveShuffleCollection(null)
-    setView('learning-units')
-  }
-
-  // Lab-Unit-Deep-Link: Labs-Ansicht direkt bei einem bestimmten Szenario öffnen.
-  const [labsInitialScenarioId, setLabsInitialScenarioId] = useState<string | null>(null)
-  const openLabScenario = (scenarioId: string) => {
-    setActiveDeck(null)
-    setActiveTagCards(null)
-    setActiveShuffleCollection(null)
-    setLabsInitialScenarioId(scenarioId)
-    setView('labs')
+    setHomeTabRequest(prev => ({ tab: 'learning-units', token: (prev?.token ?? 0) + 1 }))
+    setView('home')
   }
 
   const openVideos = () => {
@@ -735,17 +730,42 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
     setActiveTagCards(null)
     setActiveShuffleCollection(null)
     setVideosInitialTarget(null)
+    setVideosReturnToUnits(false)
     setView('videos')
   }
 
-  // Heute-Paket: Lernvideos-Ansicht direkt bei einem bestimmten Kurs-Video
-  // öffnen (optional gleich mit Abruf-Check) — ein Tap vom Home zum Inhalt.
-  const openVideoAtIndex = (videoIndex: number, openRecall: boolean) => {
+  // Heute-Paket und Lerneinheiten: Lernvideos-Ansicht direkt bei einem
+  // bestimmten Kurs-Video öffnen (optional gleich mit Abruf-Check).
+  const openVideoAtIndex = (
+    videoIndex: number,
+    openRecall: boolean,
+    options?: { fromLearningUnits?: boolean },
+  ) => {
     setActiveDeck(null)
     setActiveTagCards(null)
     setActiveShuffleCollection(null)
     setVideosInitialTarget({ videoIndex, openRecall })
+    setVideosReturnToUnits(options?.fromLearningUnits ?? false)
     setView('videos')
+  }
+
+  const exitVideos = () => {
+    setVideosInitialTarget(null)
+    if (videosReturnToUnits) {
+      setVideosReturnToUnits(false)
+      openLearningUnits()
+      return
+    }
+    goHome()
+  }
+
+  const exitStudy = () => {
+    if (studyReturnToUnits) {
+      setStudyReturnToUnits(false)
+      openLearningUnits()
+      return
+    }
+    goHome()
   }
 
   const goHome = () => {
@@ -797,13 +817,12 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                   onStartShuffleStudy={startShuffleStudy}
                   onOpenShuffleManager={openShuffleManager}
                   onStartDailyQuest={startDailyQuest}
-                  onOpenLabs={openLabs}
                   onOpenVideos={openVideos}
                   onOpenVideoAtIndex={openVideoAtIndex}
-                  onOpenLearningUnits={openLearningUnits}
                   resumeSession={resumeInfo}
                   onResumeSession={() => void resumeStudySession()}
                   importRequest={importRequest}
+                  homeTabRequest={homeTabRequest}
                 />
               </motion.div>
             )}
@@ -834,7 +853,7 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0 h-full study-view"
               >
-                <StudyView deck={activeDeck} preloadedCards={activeTagCards ?? undefined} allowResume={allowSessionResume} onExit={goHome} />
+                <StudyView deck={activeDeck} preloadedCards={activeTagCards ?? undefined} allowResume={allowSessionResume} onExit={exitStudy} />
               </motion.div>
             )}
 
@@ -850,46 +869,6 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
               </motion.div>
             )}
 
-            {view === 'labs' && (
-              <motion.div
-                key="labs"
-                initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
-                animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-                transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
-                className="flex-1 min-h-0 h-full"
-              >
-                <LabsView
-                  language={settings.language}
-                  onExit={() => {
-                    setLabsInitialScenarioId(null)
-                    goHome()
-                  }}
-                  initialScenarioId={labsInitialScenarioId ?? undefined}
-                  onOpenLearningUnits={() => {
-                    setLabsInitialScenarioId(null)
-                    openLearningUnits()
-                  }}
-                />
-              </motion.div>
-            )}
-
-            {view === 'learning-units' && (
-              <motion.div
-                key="learning-units"
-                initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
-                animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-                transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
-                className="flex-1 min-h-0 h-full"
-              >
-                <LearningUnitsView
-                  onExit={goHome}
-                  onStartStudy={startStudy}
-                  onOpenVideoAtIndex={openVideoAtIndex}
-                  onOpenLabScenario={openLabScenario}
-                />
-              </motion.div>
-            )}
-
             {view === 'videos' && (
               <motion.div
                 key="videos"
@@ -900,10 +879,11 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
               >
                 <VideosView
                   language={settings.language}
-                  onExit={goHome}
+                  onExit={exitVideos}
                   onStartObjectiveStudy={startObjectiveStudy}
                   initialVideoIndex={videosInitialTarget?.videoIndex ?? null}
                   initialRecallOpen={videosInitialTarget?.openRecall ?? false}
+                  onCloseInitialVideo={videosReturnToUnits ? exitVideos : undefined}
                 />
               </motion.div>
             )}

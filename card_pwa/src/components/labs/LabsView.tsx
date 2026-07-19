@@ -40,14 +40,21 @@ const COPY = {
 
 interface Props {
   language: 'de' | 'en'
-  onExit: () => void
-  /** Deep Link aus dem Lerneinheiten-Screen: Szenario direkt öffnen. */
+  /** Nur im Vollbild-Modus (mit eigenem Zurück-Pfeil) nötig. */
+  onExit?: () => void
+  /** Deep Link aus dem Lerneinheiten-Modus: Szenario direkt öffnen. */
   initialScenarioId?: string
-  /** Remediation nach der Abgabe: zurück in den Lerneinheiten-Screen (§13.2). */
+  /** Zurück aus dem deep-verlinkten Szenario: zum Aufrufer (Lerneinheiten-
+   *  Modus) statt in die Labs-Liste. */
+  onBackFromInitialScenario?: () => void
+  /** Remediation nach der Abgabe: zurück in den Lerneinheiten-Modus (§13.2). */
   onOpenLearningUnits?: () => void
+  /** Als Home-Modus unter der Homebar gerendert: Header ohne Zurück-Pfeil
+   *  (Nutzerentscheidung 2026-07-19). */
+  embedded?: boolean
 }
 
-export default function LabsView({ language, onExit, initialScenarioId, onOpenLearningUnits }: Props) {
+export default function LabsView({ language, onExit, initialScenarioId, onBackFromInitialScenario, onOpenLearningUnits, embedded = false }: Props) {
   const copy = COPY[language]
   const { profile, isProfileHydrated } = useSettings()
   const labProfileId = isProfileHydrated ? profileScopeId(profile) : null
@@ -154,7 +161,15 @@ export default function LabsView({ language, onExit, initialScenarioId, onOpenLe
       <LabScenarioView
         language={language}
         scenario={activeScenario}
-        onBack={() => setActiveScenario(null)}
+        onBack={() => {
+          // Deep-Link aus dem Lerneinheiten-Screen: Zurück führt dorthin,
+          // nicht in die Labs-Liste. Selbst gewählte Szenarien bleiben normal.
+          if (onBackFromInitialScenario && activeScenario.id === initialScenarioId) {
+            onBackFromInitialScenario()
+            return
+          }
+          setActiveScenario(null)
+        }}
         onSolved={handleSolved}
         onCheck={handleScenarioCheck}
         onRemediate={onOpenLearningUnits}
@@ -167,9 +182,11 @@ export default function LabsView({ language, onExit, initialScenarioId, onOpenLe
       {/* Header */}
       <div className="shrink-0 border-b border-[#18181b] bg-[#050505] px-4 pb-3 pt-safe-2">
         <div className="flex items-center gap-3">
-          <button type="button" onClick={onExit} className="ds-icon-button flex h-11 w-11 shrink-0" aria-label={copy.back}>
-            <ArrowLeft size={16} />
-          </button>
+          {!embedded && (
+            <button type="button" onClick={onExit} className="ds-icon-button flex h-11 w-11 shrink-0" aria-label={copy.back}>
+              <ArrowLeft size={16} />
+            </button>
+          )}
           <div className="min-w-0 flex-1">
             <div className="font-mono text-[22px] font-bold leading-tight text-white">{copy.title}</div>
             <div className="truncate font-mono text-[12px] text-zinc-500">{copy.subtitle}</div>

@@ -368,6 +368,7 @@ describe('HomeView shell wiring', () => {
       <HomeView
         onStartStudy={() => undefined}
         onStartShuffleStudy={() => undefined}
+        initialHomeTab="decks"
       />,
     )
 

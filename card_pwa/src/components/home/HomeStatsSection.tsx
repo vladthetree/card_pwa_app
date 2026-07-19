@@ -16,6 +16,10 @@ export type HomeDashboardMode = 'today' | 'kpi' | 'heatmap' | 'pilot' | 'quests'
 interface Props {
   t: Record<string, string>
   language: 'de' | 'en'
+  /** 'carousel' = ein Slide zurzeit (historisch); 'stack' = eigener Dashboard-
+   *  Modus mit ALLEN Widgets untereinander, scrollbar (Nutzerentscheidung
+   *  2026-07-19). */
+  layout?: 'carousel' | 'stack'
   mode: HomeDashboardMode
   stats: {
     total: number
@@ -190,6 +194,7 @@ function DashboardModeCarousel({
 export function HomeStatsSection({
   t,
   language,
+  layout = 'carousel',
   mode,
   stats,
   gamificationProfile,
@@ -232,6 +237,20 @@ export function HomeStatsSection({
       />
     </motion.div>
   ) : null
+
+  // Dashboard als eigene Ansicht: reine Statistik-Widgets untereinander zum
+  // Scrollen — KPIs, Quests, Heatmap. Heute-Paket, Lerneinheiten und Daily
+  // Quest haben eigene Modi bzw. sind bewusst nicht mehr hier (2026-07-19).
+  if (layout === 'stack') {
+    return (
+      <div className="grid w-full min-w-0 gap-2 pb-2 sm:gap-3" data-testid="dashboard-stack">
+        {statGrid}
+        <HomeQuestsPanel t={t} profile={gamificationProfile} />
+        <ReviewHeatmap />
+      </div>
+    )
+  }
+
   let dashboardContent: ReactNode = null
 
   if (mode === 'kpi') {

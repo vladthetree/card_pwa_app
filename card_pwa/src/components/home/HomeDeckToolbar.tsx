@@ -4,11 +4,11 @@
 import { useCallback, useState, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from '../../ui/motion'
-import { Check, ChevronDown, Download, FlaskConical, FolderPlus, Loader2, Plus, RefreshCw, Search, Shuffle, Upload, Video, X } from 'lucide-react'
+import { Check, ChevronDown, Dices, Download, FlaskConical, FolderPlus, GraduationCap, LayoutDashboard, Loader2, Plus, RefreshCw, Search, Shuffle, Upload, Video, X } from 'lucide-react'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 import { useFloatingMenu } from '../../hooks/useFloatingMenu'
 
-type HomeTab = 'decks' | 'tags'
+type HomeTab = 'dashboard' | 'decks' | 'tags' | 'learning-units' | 'daily-quest' | 'labs'
 
 interface Props {
   t: Record<string, string>
@@ -32,8 +32,6 @@ interface Props {
   onImport: () => void
   onExport: () => void
   onInstall: () => void
-  /** Labs-Ansicht (Professor Messer / Übungen) — im Aktionsmenü. */
-  onOpenLabs?: () => void
   /** Lernvideos-Ansicht — im Aktionsmenü. */
   onOpenVideos?: () => void
 }
@@ -60,7 +58,6 @@ export function HomeDeckToolbar({
   onImport,
   onExport,
   onInstall,
-  onOpenLabs,
   onOpenVideos,
 }: Props) {
   const [showActionsMenu, setShowActionsMenu] = useState(false)
@@ -124,10 +121,22 @@ export function HomeDeckToolbar({
   }, [showFilterMenu, updateFilterPosition, closeActionsMenu])
 
   const filterLabel = language === 'de' ? 'Ansicht' : 'View'
+  const dashboardLabel = 'Dashboard'
   const decksLabel = language === 'de' ? 'Decks' : 'Decks'
   const tagsLabel = language === 'de' ? 'Nach Tags' : 'By tags'
+  const unitsLabel = language === 'de' ? 'Lerneinheiten' : 'Learning units'
   const shuffleDecksLabel = language === 'de' ? 'Shuffle-Decks' : 'Shuffle decks'
-  const activeFilterValue = showShuffleOnly ? shuffleDecksLabel : homeTab === 'tags' ? tagsLabel : decksLabel
+  const questLabel = 'Daily Quest'
+  const labsLabel = 'Labs'
+  const tabLabels: Record<HomeTab, string> = {
+    dashboard: dashboardLabel,
+    decks: decksLabel,
+    tags: tagsLabel,
+    'learning-units': unitsLabel,
+    'daily-quest': questLabel,
+    labs: labsLabel,
+  }
+  const activeFilterValue = showShuffleOnly ? shuffleDecksLabel : tabLabels[homeTab]
 
   return (
     <div className="sticky top-0 z-[90] mb-2 mt-2 flex-shrink-0 sm:mb-3 sm:mt-4">
@@ -192,14 +201,14 @@ export function HomeDeckToolbar({
                   type="button"
                   onClick={() => {
                     if (showShuffleOnly) onToggleShuffleOnly()
-                    onHomeTabChange('decks')
+                    onHomeTabChange('dashboard')
                     closeFilterMenu()
                   }}
                   className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
                   role="menuitem"
                 >
-                  <span>{decksLabel}</span>
-                  {!showShuffleOnly && homeTab === 'decks' && <Check size={14} strokeWidth={1.5} />}
+                  <span className="inline-flex items-center gap-2"><LayoutDashboard size={13} strokeWidth={1.5} /> {dashboardLabel}</span>
+                  {!showShuffleOnly && homeTab === 'dashboard' && <Check size={14} strokeWidth={1.5} />}
                 </button>
                 <button
                   type="button"
@@ -229,19 +238,6 @@ export function HomeDeckToolbar({
                     {showShuffleOnly && <Check size={14} strokeWidth={1.5} />}
                   </button>
                 )}
-                {onOpenLabs && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      closeFilterMenu()
-                      onOpenLabs()
-                    }}
-                    className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
-                    role="menuitem"
-                  >
-                    <span className="inline-flex items-center gap-2"><FlaskConical size={13} strokeWidth={1.5} /> Labs</span>
-                  </button>
-                )}
                 {onOpenVideos && (
                   <button
                     type="button"
@@ -256,7 +252,62 @@ export function HomeDeckToolbar({
                   </button>
                 )}
 
-                {!showShuffleOnly && (
+                <div className="border-t border-ds-border px-4 pb-1 pt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
+                  {language === 'de' ? 'Modus' : 'Mode'}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (showShuffleOnly) onToggleShuffleOnly()
+                    onHomeTabChange('daily-quest')
+                    closeFilterMenu()
+                  }}
+                  className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
+                  role="menuitem"
+                >
+                  <span className="inline-flex items-center gap-2"><Dices size={13} strokeWidth={1.5} /> {questLabel}</span>
+                  {!showShuffleOnly && homeTab === 'daily-quest' && <Check size={14} strokeWidth={1.5} />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (showShuffleOnly) onToggleShuffleOnly()
+                    onHomeTabChange('learning-units')
+                    closeFilterMenu()
+                  }}
+                  className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
+                  role="menuitem"
+                >
+                  <span className="inline-flex items-center gap-2"><GraduationCap size={13} strokeWidth={1.5} /> {unitsLabel}</span>
+                  {!showShuffleOnly && homeTab === 'learning-units' && <Check size={14} strokeWidth={1.5} />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (showShuffleOnly) onToggleShuffleOnly()
+                    onHomeTabChange('decks')
+                    closeFilterMenu()
+                  }}
+                  className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
+                  role="menuitem"
+                >
+                  <span>{decksLabel}</span>
+                  {!showShuffleOnly && homeTab === 'decks' && <Check size={14} strokeWidth={1.5} />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (showShuffleOnly) onToggleShuffleOnly()
+                    onHomeTabChange('labs')
+                    closeFilterMenu()
+                  }}
+                  className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
+                  role="menuitem"
+                >
+                  <span className="inline-flex items-center gap-2"><FlaskConical size={13} strokeWidth={1.5} /> {labsLabel}</span>
+                  {!showShuffleOnly && homeTab === 'labs' && <Check size={14} strokeWidth={1.5} />}
+                </button>
+                {!showShuffleOnly && (homeTab === 'decks' || homeTab === 'tags') && (
                   <>
                     <div className="border-t border-ds-border px-4 pb-1 pt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
                       {language === 'de' ? 'Sortierung' : 'Sort'}

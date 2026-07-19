@@ -11,6 +11,12 @@ import { renderToStaticMarkup } from 'react-dom/server'
  * (Detail). Wie bei den anderen Komponenten-Tests: kein jsdom → SSR-Markup.
  */
 
+// LabsView nutzt useSettings (Profil für die Lab-Versuchs-Instrumentierung);
+// im SSR-Struktur-Test genügt ein nicht-hydriertes Profil ohne Provider.
+vi.mock('../../contexts/SettingsContext', () => ({
+  useSettings: () => ({ profile: null, isProfileHydrated: false }),
+}))
+
 vi.mock('framer-motion', () => {
   const FRAMER_ONLY = new Set([
     'drag', 'dragSnapToOrigin', 'dragConstraints', 'whileDrag', 'whileTap', 'whileHover',

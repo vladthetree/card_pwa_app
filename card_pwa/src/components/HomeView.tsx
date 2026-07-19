@@ -4,7 +4,7 @@
  * Used by: App.tsx for the home and shuffle-management modes.
  * Important: Most state is delegated to hooks/home/*; keep this file as orchestration/glue, not raw data-query logic.
  */
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { ArrowLeft, Play } from 'lucide-react'
 import { useDecks, useGamificationProfile, useShuffleCollections, useStats } from '../hooks/useCardDb'
@@ -20,22 +20,23 @@ import { HomeDeckListSection } from './home/HomeDeckListSection'
 import { HomeShuffleSection } from './home/HomeShuffleSection'
 import { HomeBottomBar } from './home/HomeBottomBar'
 import { HomeTagBrowseSection } from './home/HomeTagBrowseSection'
-import { HomeTodayPackageTile, TodayPackageOfflineNotice } from './home/HomeTodayPackageTile'
+import { HomeDailyQuestTile } from './home/HomeDailyQuestTile'
 import { useTagCardIndex } from '../hooks/home/useTagCardIndex'
 import { useHomeDeckFilters } from '../hooks/home/useHomeDeckFilters'
 import { useHomeStorageEstimate } from '../hooks/home/useHomeStorageEstimate'
 import { useHomeDerivedData } from '../hooks/home/useHomeDerivedData'
 import { useHomeViewController } from '../hooks/home/useHomeViewController'
 import { useTodayPackage } from '../hooks/home/useTodayPackage'
-import { useLearningUnits } from '../hooks/home/useLearningUnits'
-import { HomeLearningUnitsTile } from './home/HomeLearningUnitsTile'
 import { useDayStartMs } from '../hooks/useDayStartMs'
 import { computeExamDaysLeft } from '../utils/todayPackage'
-import { profileScopeId } from '../services/profileService'
 import { flattenDeckTree } from '../utils/securityDeckHierarchy'
 import { isReviewDeck } from '../utils/reviewDecks'
 import { pickDailyQuestCards } from '../db/queries'
 
+// Lerneinheiten und Labs als Home-Modi (Nutzerentscheidung 2026-07-19): die
+// Inhalte rendern unter der Homebar; die Chunks laden weiterhin lazy.
+const LearningUnitsView = lazy(() => import('./LearningUnitsView'))
+const LabsView = lazy(() => import('./labs/LabsView'))
 const CreateCardModal = lazy(() => import('./CreateCardModal.tsx'))
 const SettingsModal = lazy(() => import('./SettingsModal.tsx'))
 const FaqModal = lazy(() => import('./FaqModal.tsx'))
@@ -50,31 +51,48 @@ const HomeExportModal = lazy(() => import('./home/HomeExportModal').then(module 
 const HomeDeckCardsModal = lazy(() => import('./home/HomeDeckCardsModal').then(module => ({ default: module.HomeDeckCardsModal })))
 const HomeShuffleCollectionModal = lazy(() => import('./home/HomeShuffleCollectionModal').then(module => ({ default: module.HomeShuffleCollectionModal })))
 
+/** Home-Modi unter „Ansichten": Dashboard (Statistik-Widgets scrollbar),
+ *  Deckliste, Tag-Ansicht, Daily Quest sowie die eingebetteten Lerneinheiten-
+ *  und Labs-Bereiche. Die Homebar bleibt in allen Modi unverändert obendrüber;
+ *  nur Karten-Session und Lernvideos sind Vollbild. */
+export type HomeTab = 'dashboard' | 'decks' | 'tags' | 'learning-units' | 'daily-quest' | 'labs'
+
+const HOME_TAB_STORAGE_KEY = 'card-pwa-home-tab'
+
+const HOME_TABS: readonly HomeTab[] = ['dashboard', 'decks', 'tags', 'learning-units', 'daily-quest', 'labs']
+
+function readInitialHomeTab(): HomeTab {
+  try {
+    const raw = localStorage.getItem(HOME_TAB_STORAGE_KEY)
+    if ((HOME_TABS as readonly string[]).includes(raw ?? '')) return raw as HomeTab
+  } catch { /* SSR/privater Modus — Default gilt */ }
+  return 'dashboard'
+}
+
 interface Props {
   mode?: 'default' | 'shuffle-manage'
   onBackHome?: () => void
-  onStartStudy: (deck: Deck, cardIds?: string[], options?: { sessionId?: string; allowResume?: boolean }) => void
+  onStartStudy: (deck: Deck, cardIds?: string[], options?: { sessionId?: string; allowResume?: boolean; returnToUnits?: boolean }) => void
   onStartTagStudy?: (tag: string, cards: Card[]) => void
   onStartShuffleStudy: (collection: ShuffleCollection) => void
   onOpenShuffleManager?: () => void
   /** Daily Quest (Pilot-Kachel): gemischte Session über mehrere Decks. */
   onStartDailyQuest?: (cards: Card[]) => void
-  /** Labs (Ansichten-Menü, Beleg `…23.40.53.jpeg`). */
-  onOpenLabs?: () => void
-  /** Lernvideos (Professor Messer) — eigene Ansicht, im Ansichten-Menü. */
+  /** Lernvideos (Professor Messer) — eigene Vollbild-Ansicht, im Ansichten-Menü. */
   onOpenVideos?: () => void
-  /** Heute-Paket: bestimmtes Kurs-Video direkt öffnen (openRecall = zum Check). */
-  onOpenVideoAtIndex?: (videoIndex: number, openRecall: boolean) => void
-  /** Lerneinheiten-Screen (SY0-701) — das Dashboard trägt nur die Referenz. */
-  onOpenLearningUnits?: () => void
+  /** Lerneinheiten: bestimmtes Kurs-Video direkt öffnen
+   *  (openRecall = zum Check; fromLearningUnits = Rückweg in den Units-Modus). */
+  onOpenVideoAtIndex?: (videoIndex: number, openRecall: boolean, options?: { fromLearningUnits?: boolean }) => void
   /** Unterbrochene Session für die „Weiterlernen“-Kachel (null = keine). */
   resumeSession?: { deckName: string; remaining: number } | null
   onResumeSession?: () => void
   /** ?view=import / launchQueue: öffnet das ImportModal (file = vorgeladene Datei). */
   importRequest?: { token: number; file: File | null } | null
+  /** Startmodus erzwingen (Tests/Sonderfälle); sonst letzter gespeicherter Modus. */
+  initialHomeTab?: HomeTab
+  /** App-Rücknavigation: Modus-Wechselwunsch (z. B. zurück zu Lerneinheiten). */
+  homeTabRequest?: { tab: HomeTab; token: number } | null
 }
-
-type HomeTab = 'decks' | 'tags'
 
 export default function HomeView({
   mode = 'default',
@@ -84,19 +102,36 @@ export default function HomeView({
   onStartShuffleStudy,
   onOpenShuffleManager,
   onStartDailyQuest,
-  onOpenLabs,
   onOpenVideos,
   onOpenVideoAtIndex,
-  onOpenLearningUnits,
   resumeSession,
   onResumeSession,
   importRequest,
+  initialHomeTab,
+  homeTabRequest,
 }: Props) {
-  const [homeTab, setHomeTab] = useState<HomeTab>('decks')
+  const [homeTab, setHomeTab] = useState<HomeTab>(() => initialHomeTab ?? readInitialHomeTab())
+  // Lab-Unit-Deep-Link (§13): Lerneinheiten-Modus → Labs-Modus direkt beim
+  // Szenario; Zurück aus genau diesem Szenario führt in die Units zurück.
+  const [labsInitialScenarioId, setLabsInitialScenarioId] = useState<string | null>(null)
+  useEffect(() => {
+    try {
+      localStorage.setItem(HOME_TAB_STORAGE_KEY, homeTab)
+    } catch { /* best effort */ }
+  }, [homeTab])
+  // Rücknavigation aus Vollbild-Views (Video/Lab/Study einer Lerneinheit):
+  // App fordert den Modus an; der Token verhindert Doppel-Anwendung.
+  const appliedTabTokenRef = useRef(0)
+  useEffect(() => {
+    if (!homeTabRequest) return
+    if (homeTabRequest.token === appliedTabTokenRef.current) return
+    appliedTabTokenRef.current = homeTabRequest.token
+    setHomeTab(homeTabRequest.tab)
+  }, [homeTabRequest])
   const tagCardIndex = useTagCardIndex()
   const { decks, loading, error, reload } = useDecks()
   const { collections: shuffleCollections } = useShuffleCollections()
-  const { settings, profile, isProfileHydrated } = useSettings()
+  const { settings, profile } = useSettings()
   const prefersReducedMotion = useReducedMotion()
   const { stats } = useStats(settings.nextDayStartsAt, settings.studyCardLimit)
   const { profile: gamificationProfile } = useGamificationProfile(settings.nextDayStartsAt)
@@ -156,19 +191,6 @@ export default function HomeView({
     packageCardLimit: settings.newCardsPerDay,
   })
 
-  // Lerneinheiten-Modul (dediziertes SY0-701-System): gleiche Katalogquelle wie
-  // das Heute-Paket, eigener profilfester Zustand — rein additiv zur Kachel.
-  // Vor der Profil-Hydration läuft nichts, sonst würde der einmalige
-  // Legacy-Import dem falschen Owner ('local') zugeordnet.
-  const learningUnitProfileId = isProfileHydrated ? profileScopeId(profile) : null
-  const learningUnits = useLearningUnits({
-    catalog: todayPackage.catalog,
-    catalogLoading: todayPackage.loading,
-    profileId: learningUnitProfileId,
-    examDateIso: settings.examDateIso,
-    nextDayStartsAt: settings.nextDayStartsAt,
-    learnAheadMinutes: settings.learnAheadMinutes,
-  })
   const activePackageCardIdsKey = todayPackage.activeCardIds.join('\u0000')
 
   // Daily Quest: Untertitel-Hinweis = Deck mit den meisten heute faelligen
@@ -234,50 +256,7 @@ export default function HomeView({
     }
   }
 
-  // Heute-Paket: geführter Tagespfad (Kurs-Video → Abruf-Check → Karten der
-  // Objective). Ohne erreichbare Videos fällt der Slide auf die Quest-Kachel zurück.
   const examDaysLeft = computeExamDaysLeft(settings.examDateIso)
-  // Lerneinheiten haben einen eigenen Screen (Nutzerentscheidung 2026-07-18);
-  // das Dashboard trägt nur die kompakte Referenz-Kachel darauf.
-  const learningUnitList = learningUnits.available && onOpenLearningUnits
-    ? (
-        <HomeLearningUnitsTile
-          language={settings.language}
-          phase={learningUnits.phase}
-          daysLeft={learningUnits.daysLeft}
-          readiness={learningUnits.readiness}
-          courseCompleted={learningUnits.courseCompleted}
-          courseTotal={learningUnits.courseTotal}
-          ranked={learningUnits.ranked}
-          onOpen={onOpenLearningUnits}
-        />
-      )
-    : undefined
-  const todayPackageTile = (todayPackage.loading || todayPackage.available)
-    ? (
-        <>
-          <HomeTodayPackageTile
-            language={settings.language}
-            loading={todayPackage.loading}
-            video={todayPackage.video}
-            videoNumber={todayPackage.videoNumber}
-            videoTotal={todayPackage.videoTotal}
-            steps={todayPackage.steps}
-            objectiveDeck={todayPackage.objectiveDeck}
-            remainingCards={todayPackage.remainingCards}
-            completedToday={todayPackage.completedToday}
-            onWatchVideo={(videoIndex, openRecall) => onOpenVideoAtIndex?.(videoIndex, openRecall)}
-            onStartCards={deckToStudy => onStartStudy(deckToStudy, todayPackage.remainingCardIds)}
-          />
-          {learningUnitList}
-        </>
-      )
-    : learningUnitList
-  // Offline ohne jemals gespeicherten Katalog: verstaendliche Meldung statt
-  // stillem Verschwinden der Kachel — die Daily Quest bleibt darunter nutzbar.
-  const todayPackageNotice = todayPackage.offlineNoData
-    ? <TodayPackageOfflineNotice language={settings.language} />
-    : undefined
 
   const renderHeaderBar = () => (
     <HomeHeaderBar
@@ -330,7 +309,6 @@ export default function HomeView({
               onExport={controller.openExport}
               onShowSettings={controller.openSettings}
               onInstall={() => { void controller.handleInstall() }}
-              onOpenLabs={onOpenLabs}
               onOpenVideos={onOpenVideos}
             />
           </div>
@@ -371,23 +349,6 @@ export default function HomeView({
               </motion.button>
             )}
 
-            <HomeStatsSection
-              t={t}
-              language={settings.language}
-              mode={controller.dashboardMode}
-              stats={stats}
-              gamificationProfile={gamificationProfile}
-              onOpenFutureForecast={controller.openFutureForecast}
-              onModeChange={controller.setDashboardMode}
-              questSize={questSize}
-              questLoading={questLoading}
-              questTopDeckName={questTopDeckName}
-              questHasDecks={decks.length > 0}
-              questStarting={questStarting}
-              onStartDailyQuest={() => { void handleStartDailyQuest() }}
-              todayPackageTile={todayPackageTile}
-              todayPackageNotice={todayPackageNotice}
-            />
           </div>
         </div>
       </div>
@@ -417,7 +378,6 @@ export default function HomeView({
               onImport={controller.openImport}
               onExport={controller.openExport}
               onInstall={() => { void controller.handleInstall() }}
-              onOpenLabs={onOpenLabs}
               onOpenVideos={onOpenVideos}
             />
           </div>
@@ -490,6 +450,87 @@ export default function HomeView({
 
         {!isShuffleManageMode && (
           <>
+            {/* Dashboard-Modus: reine Statistik-Widgets (KPIs, Quests, Heatmap)
+                untereinander, nach unten scrollbar. Heute-Paket, Lerneinheiten
+                und Daily Quest sind hier bewusst NICHT mehr enthalten
+                (Nutzerentscheidung 2026-07-19) — sie haben eigene Modi. */}
+            {homeTab === 'dashboard' && (
+              <div className="min-h-0 flex-1 overflow-y-auto pb-safe-2" data-study-scroll="allow">
+                <HomeStatsSection
+                  t={t}
+                  language={settings.language}
+                  layout="stack"
+                  mode={controller.dashboardMode}
+                  stats={stats}
+                  gamificationProfile={gamificationProfile}
+                  onOpenFutureForecast={controller.openFutureForecast}
+                  onModeChange={controller.setDashboardMode}
+                  questSize={questSize}
+                  questLoading={questLoading}
+                  questTopDeckName={questTopDeckName}
+                  questHasDecks={decks.length > 0}
+                  questStarting={questStarting}
+                  onStartDailyQuest={() => { void handleStartDailyQuest() }}
+                />
+              </div>
+            )}
+
+            {/* Daily-Quest-Modus: eigener Reiter unter „Modus" im Ansicht-Menü. */}
+            {homeTab === 'daily-quest' && (
+              <div className="min-h-0 flex-1 overflow-y-auto pb-safe-2" data-study-scroll="allow">
+                <HomeDailyQuestTile
+                  language={settings.language}
+                  questSize={questSize}
+                  loading={questLoading}
+                  dueTodayTotal={stats?.nowDue ?? 0}
+                  topDeckName={questTopDeckName}
+                  hasDecks={decks.length > 0}
+                  starting={questStarting}
+                  onStart={() => { void handleStartDailyQuest() }}
+                />
+              </div>
+            )}
+
+            {/* Lerneinheiten-Modus: der volle Bereich rendert unter der Homebar. */}
+            {homeTab === 'learning-units' && (
+              <div className="min-h-0 flex-1 overflow-hidden">
+                <Suspense fallback={null}>
+                  <LearningUnitsView
+                    embedded
+                    onStartStudy={onStartStudy}
+                    onOpenVideoAtIndex={(videoIndex, openRecall) =>
+                      onOpenVideoAtIndex?.(videoIndex, openRecall, { fromLearningUnits: true })}
+                    onOpenLabScenario={scenarioId => {
+                      setLabsInitialScenarioId(scenarioId)
+                      setHomeTab('labs')
+                    }}
+                  />
+                </Suspense>
+              </div>
+            )}
+
+            {/* Labs-Modus: Liste und Szenario unter der Homebar (2026-07-19);
+                Deep-Link aus den Lerneinheiten führt per Zurück dorthin zurück. */}
+            {homeTab === 'labs' && (
+              <div className="min-h-0 flex-1 overflow-hidden">
+                <Suspense fallback={null}>
+                  <LabsView
+                    embedded
+                    language={settings.language}
+                    initialScenarioId={labsInitialScenarioId ?? undefined}
+                    onBackFromInitialScenario={() => {
+                      setLabsInitialScenarioId(null)
+                      setHomeTab('learning-units')
+                    }}
+                    onOpenLearningUnits={() => {
+                      setLabsInitialScenarioId(null)
+                      setHomeTab('learning-units')
+                    }}
+                  />
+                </Suspense>
+              </div>
+            )}
+
             {homeTab === 'decks' && (
               <HomeDeckListSection
                 t={t}

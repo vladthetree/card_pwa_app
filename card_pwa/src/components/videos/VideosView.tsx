@@ -207,6 +207,9 @@ interface Props {
   initialVideoIndex?: number | null
   /** Heute-Paket: zusätzlich direkt den Abruf-Check zum Video öffnen. */
   initialRecallOpen?: boolean
+  /** Lerneinheiten-Deep-Link: Schließen des direkt geöffneten Videos kehrt zum
+   *  Aufrufer (Lerneinheiten-Screen) zurück statt in die Videoliste. */
+  onCloseInitialVideo?: () => void
 }
 
 function formatBytes(n: number): string {
@@ -550,7 +553,7 @@ function ChapterDownloadButton({
   )
 }
 
-export default function VideosView({ language, onExit, onStartObjectiveStudy, initialVideoIndex = null, initialRecallOpen = false }: Props) {
+export default function VideosView({ language, onExit, onStartObjectiveStudy, initialVideoIndex = null, initialRecallOpen = false, onCloseInitialVideo }: Props) {
   const copy = COPY[language]
   const { isHandsetLayout } = useHandsetLayout()
   const isDesktop = !isHandsetLayout
@@ -1143,7 +1146,15 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
             ) : (
               <button
                 type="button"
-                onClick={() => setActiveFile(null)}
+                onClick={() => {
+                  // Deep-Link aus dem Lerneinheiten-Screen: Schließen des dafür
+                  // geöffneten Videos kehrt dorthin zurück, nicht in die Liste.
+                  if (onCloseInitialVideo && activeItem.index === initialVideoIndex) {
+                    onCloseInitialVideo()
+                    return
+                  }
+                  setActiveFile(null)
+                }}
                 className="ds-icon-button flex h-11 w-11 shrink-0"
                 aria-label={copy.close}
                 data-testid="messer-player-close"

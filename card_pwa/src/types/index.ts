@@ -184,4 +184,6 @@ export interface ReviewUndoToken {
   previous: CardSchedulingState
 }
 
-export type View = 'home' | 'study' | 'shuffle-study' | 'shuffle-manage' | 'labs' | 'videos' | 'learning-units'
+// 'learning-units' und 'labs' sind seit 2026-07-19 keine eigenen Views mehr,
+// sondern Home-Modi (HomeTab in HomeView) unter der unveränderten Homebar.
+export type View = 'home' | 'study' | 'shuffle-study' | 'shuffle-manage' | 'videos'

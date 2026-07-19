@@ -34,7 +34,14 @@ Für das Bestehensziel sind **Phase 0 bis 5 einschließlich Readiness-Gate Pflic
 - **Prüfungstermin:** das in den App-Einstellungen hinterlegte `examDateIso` ist die Quelle (fließt per Legacy-Import als Draft-Plan des Owners ein).
 - **Wochenbudget: ca. 5 h/Woche** (~300 min). Puffertage und Baseline-Diagnostik weiter offen.
 - **Keine Mapping-Moves — endgültig.** Der Kartenbestand wird nicht angetastet; Lerneinheiten referenzieren Karten rein logisch über die Karten-ID (Content-Map erreicht alle 375 gemappten Recall-MCs), Metriken laufen wie gehabt über die Karten-ID. `mapping-decisions.json` bleibt Dokumentation, `apply_mapping_decisions.py` wird nicht ausgeführt.
-- **Eigener Screen statt Sheet:** Die Lerneinheiten bekommen eine eigene Vollbild-Ansicht (`LearningUnitsView`); das Dashboard trägt nur noch eine kompakte Referenz-Kachel darauf.
+- **Eigener Screen statt Sheet:** Die Lerneinheiten bekommen eine eigene Vollbild-Ansicht (`LearningUnitsView`); das Dashboard trägt nur noch eine kompakte Referenz-Kachel darauf. *(Am 2026-07-19 revidiert: Home-Modus statt Vollbild-Route, siehe unten.)*
+
+## Nutzerentscheidungen vom 2026-07-19
+
+- **Home-Modi unter „Ansicht":** Dashboard, Decks, Nach Tags und Lerneinheiten sind Modi des Home-Screens; Labs und Lernvideos bleiben als Absprungziele im selben Menü. Die **Homebar bleibt auf dem Handy unverändert** (links Prüfungstage, dann Ansichten, Einstellungen, Karten-Plus) und steht in allen Modi obendrüber — nur Karten-Session, Videos und Labs sind Vollbild.
+- **Lerneinheiten als Home-Modus:** `LearningUnitsView` rendert eingebettet unter der Homebar (kein eigener Header/Zurück-Pfeil); die eigene View-Route `learning-units` entfällt. Desktop erreicht den Modus über dasselbe „Ansicht"-Menü der Deck-Toolbar.
+- **Dashboard als eigene Ansicht:** alle Dashboard-Widgets (Heute-Paket, Lerneinheiten-Kachel, Daily Quest, KPIs, Quests, Heatmap) untereinander zum Scrollen statt des Swipe-Karussells mit einem Slide zurzeit.
+- **Rückweg-Kontrakt:** Aus dem Lerneinheiten-Modus geöffnete Videos, Labs und Karten-Sessions kehren beim Schließen/Zurück exakt in den Modus zurück — nie in die Lernvideos-/Labs-Liste oder auf das leere Home.
 
 ## Verbindliche Prüfungsbasis
 
@@ -152,6 +159,15 @@ Damit ist Phase 3 abgeschlossen bis auf das serverseitige Ledger (zweiter Punkt)
 **Sechste Runde am 2026-07-19** (Working Tree, 817/817 Tests + Build grün): **Phase-4-Kern umgesetzt** — dedizierte DB v2 mit UUID-`labAttempts` (eingefrorener `scenarioSnapshot` + Content-Hash-Version, Update nur inProgress, Abgabe unveränderlich, Retry = neue UUID, Backup-fest), Legacy-„geschafft“-Import (`legacy-labs-v1`-Marker, Abschluss- ohne Score-Evidenz), eine `lab`-Einheit je Szenario im Ranking/Screen, Deep Link Lerneinheiten-Screen → LabsView-Szenario, additive Instrumentierung: Öffnen startet/fortsetzt den Versuch, jeder Lösungs-Check protokolliert (Fehlversuch → Update, Lösung → Abgabe + Unit-Abschluss). Offen in Phase 4: fachliche §13.2-Normalisierung aller Szenarien (Schritt-IDs, Teilpunkt-Rubriken) und darauf aufbauend verspätetes Feedback + Remediation-Links.
 
 **Siebte Runde am 2026-07-19** (Working Tree, 822/822 Tests + Build grün): **Phase 4 softwareseitig abgeschlossen** — §13.2-Normalisierung als deterministische Ableitung ([labSnapshot.ts](card_pwa/src/utils/labSnapshot.ts): stabile Schritt-IDs, Teilpunkt-Rubrik mit Feedback, Content-Hash-Version; alle 100 Szenarien belegt), Versuche frieren den normalisierten Snapshot ein, jeder Lösungs-Check wird ausschließlich gegen die eingefrorene Rubrik bewertet (echte Teilpunkte statt UI-Anteil), nach der Abgabe Remediation-Link ins Lerneinheiten-Modul. Verbleibende Phase-4-Arbeit ist Content: Aufgabentypen über Matching/Ordering hinaus (§13.1-Pflichtkompetenzen) und `requirementIds` nach dem Phase-0-Leaf-Mapping.
+
+**Achte Runde am 2026-07-19** (Working Tree; 828/828 Tests + Build grün; E2E-Smoke per Driver belegt): **Navigation/Desktop-Ausbau nach Nutzerentscheidungen vom 2026-07-19** —
+
+- **Home-Modi:** `HomeTab = dashboard | decks | tags | learning-units` (persistiert, Default Dashboard) mit Auswahl unter „Ansicht" in Handy-Sheet ([HomeBottomBar](card_pwa/src/components/home/HomeBottomBar.tsx)) und Desktop-Menü ([HomeDeckToolbar](card_pwa/src/components/home/HomeDeckToolbar.tsx)) — damit sind die Lerneinheiten auch auf dem Desktop erreichbar. Homebar-Zeile unverändert (Tage · Ansichten · Einstellungen · Plus).
+- **Lerneinheiten eingebettet:** `LearningUnitsView` bekam einen `embedded`-Modus und rendert als Home-Modus unter der Homebar; die App-Route `learning-units` und der View-Union-Eintrag sind entfernt. Rücksprünge laufen über einen `homeTabRequest`-Token an HomeView.
+- **Dashboard-Stack:** `HomeStatsSection layout="stack"` zeigt alle Widgets untereinander scrollbar als eigenen Modus; das Karussell aus dem Kopfbereich der Deckliste ist dorthin umgezogen.
+- **Rücknavigations-Bug behoben:** App verfolgt die Herkunft (`videos/labs/studyReturnToUnits`); Header-Zurück in Videos/Labs, das Schließen des per Unit geöffneten Videos (mobiler Player-X), Zurück aus dem deep-verlinkten Lab-Szenario und der Study-Exit einer Unit-Session kehren in den Lerneinheiten-Modus zurück statt auf Lernvideos-/Labs-Liste oder Home.
+- **REV-Bug behoben:** `startOrResumeReviewUnit` liefert bei leerer Auswahl `null` — der Tap wirkte „tot" (z. B. „Wiederholung 1.2", wenn nichts fällig/kein Fehler ungelöst). Jetzt Info-Toast mit Begründung; Startfehler zeigen einen Error-Toast.
+- **Test-Reparatur:** `labs-view.test.tsx` scheiterte seit der Lab-Instrumentierung auf Suite-Ebene (useSettings ohne Provider) und wurde von der Testzahl verdeckt; mit Settings-Mock laufen real 828 Tests (statt 822 + 1 kaputte Suite).
 
 **Nächste Schritte in Reihenfolge:**
 
