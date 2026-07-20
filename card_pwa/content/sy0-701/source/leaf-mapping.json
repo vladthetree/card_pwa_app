@@ -2086,33 +2086,41 @@
    "learningAssetIds": [
     "video:58"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T058-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:hybrid-considerations": {
    "learningAssetIds": [
     "video:58"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T058-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:third-party-vendors": {
    "learningAssetIds": [
     "video:58"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T058-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:infrastructure-as-code-iac": {
    "learningAssetIds": [
     "video:58"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T058-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:serverless": {
    "learningAssetIds": [
@@ -2128,49 +2136,61 @@
    "learningAssetIds": [
     "video:58"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T058-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:physical-isolation:air-gapped": {
    "learningAssetIds": [
     "video:59"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T059-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:logical-segmentation": {
    "learningAssetIds": [
     "video:59"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T059-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:software-defined-networking-sdn": {
    "learningAssetIds": [
     "video:59"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T059-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:on-premises": {
    "learningAssetIds": [
     "video:60"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T060-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:centralized-vs-decentralized": {
    "learningAssetIds": [
     "video:60"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T060-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:containerization": {
    "learningAssetIds": [
@@ -2198,9 +2218,11 @@
    "learningAssetIds": [
     "video:60"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T060-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:industrial-control-systems-ics-supervisory-contr": {
    "learningAssetIds": [
@@ -2216,113 +2238,141 @@
    "learningAssetIds": [
     "video:60"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T060-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:embedded-systems": {
    "learningAssetIds": [
     "video:60"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T060-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:high-availability": {
    "learningAssetIds": [
     "video:60"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T060-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:considerations:availability": {
    "learningAssetIds": [
     "video:61"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T061-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:considerations:resilience": {
    "learningAssetIds": [
     "video:61"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T061-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:considerations:cost": {
    "learningAssetIds": [
     "video:61"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T061-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:considerations:responsiveness": {
    "learningAssetIds": [
     "video:61"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T061-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:considerations:scalability": {
    "learningAssetIds": [
     "video:61"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T061-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:considerations:ease-of-deployment": {
    "learningAssetIds": [
     "video:61"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T061-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:considerations:risk-transference": {
    "learningAssetIds": [
     "video:61"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T061-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:considerations:ease-of-recovery": {
    "learningAssetIds": [
     "video:61"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T061-08"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:considerations:patch-availability": {
    "learningAssetIds": [
     "video:61"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T061-09"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:considerations:inability-to-patch": {
    "learningAssetIds": [
     "video:61"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T061-10"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:considerations:power": {
    "learningAssetIds": [
     "video:61"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T061-11"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:considerations:compute": {
    "learningAssetIds": [
@@ -2339,9 +2389,11 @@
    "learningAssetIds": [
     "video:62"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T062-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.2:infrastructure-considerations:security-zones": {
    "learningAssetIds": [
@@ -2367,41 +2419,51 @@
    "learningAssetIds": [
     "video:62"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T062-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-open": {
    "learningAssetIds": [
     "video:63"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T063-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-closed": {
    "learningAssetIds": [
     "video:63"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T063-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:active-vs-passive": {
    "learningAssetIds": [
     "video:63"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T063-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:inline-vs-tap-monitor": {
    "learningAssetIds": [
     "video:63"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T063-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:jump-server": {
    "learningAssetIds": [
@@ -2427,9 +2489,11 @@
    "learningAssetIds": [
     "video:64"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T064-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:load-balancer": {
    "learningAssetIds": [
@@ -2500,7 +2564,8 @@
    ],
    "assessmentItemIds": [
     "tq:T066-01",
-    "tq:T066-03"
+    "tq:T066-03",
+    "tq:T066-05"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -2509,18 +2574,20 @@
    "learningAssetIds": [
     "video:66"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T066-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.2:secure-communication-access:virtual-private-network-vpn": {
    "learningAssetIds": [
     "video:67"
    ],
    "assessmentItemIds": [
+    "tq:T067-06",
     "tq:T067-01",
-    "tq:T067-02",
-    "tq:T067-04"
+    "tq:T067-02"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -2529,15 +2596,18 @@
    "learningAssetIds": [
     "video:67"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T067-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.2:secure-communication-access:tunneling:transport-layer-security-tls": {
    "learningAssetIds": [
     "video:67"
    ],
    "assessmentItemIds": [
+    "tq:T067-06",
     "tq:T067-02"
    ],
    "practicalItemIds": [],
@@ -2557,9 +2627,11 @@
    "learningAssetIds": [
     "video:67"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T067-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.2:secure-communication-access:secure-access-service-edge-sase": {
    "learningAssetIds": [
@@ -2575,9 +2647,11 @@
    "learningAssetIds": [
     "video:62"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T062-08"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing",
+   "status": "covered",
    "note": "Sammel-Bullet; Kontrollauswahl zieht sich durch alle 3.2-Videos"
   },
   "req:sy0701:v7:3.3:data-types:regulated": {
@@ -2594,9 +2668,11 @@
    "learningAssetIds": [
     "video:68"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T068-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:data-types:intellectual-property": {
    "learningAssetIds": [
@@ -2612,17 +2688,21 @@
    "learningAssetIds": [
     "video:68"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T068-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:data-types:financial-information": {
    "learningAssetIds": [
     "video:68"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T068-08"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:data-types:humanand-non-human-readable": {
    "learningAssetIds": [
@@ -2638,41 +2718,51 @@
    "learningAssetIds": [
     "video:68"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T068-09"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:data-classifications:confidential": {
    "learningAssetIds": [
     "video:68"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T068-10"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:data-classifications:public": {
    "learningAssetIds": [
     "video:68"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T068-11"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:data-classifications:restricted": {
    "learningAssetIds": [
     "video:68"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T068-12"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:data-classifications:private": {
    "learningAssetIds": [
     "video:68"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T068-13"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:data-classifications:critical": {
    "learningAssetIds": [
@@ -2688,16 +2778,19 @@
    "learningAssetIds": [
     "video:69"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T069-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-transit": {
    "learningAssetIds": [
     "video:69"
    ],
    "assessmentItemIds": [
-    "mc:M3-037"
+    "mc:M3-037",
+    "tq:T069-02"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -2706,9 +2799,11 @@
    "learningAssetIds": [
     "video:69"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T069-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:general-data-considerations:data-sovereignty": {
    "learningAssetIds": [
@@ -2724,9 +2819,11 @@
    "learningAssetIds": [
     "video:69"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T069-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:methods-to-secure-data:geographic-restrictions": {
    "learningAssetIds": [
@@ -2742,72 +2839,89 @@
    "learningAssetIds": [
     "video:70"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T070-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:methods-to-secure-data:hashing": {
    "learningAssetIds": [
     "video:70"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T070-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:methods-to-secure-data:masking": {
    "learningAssetIds": [
     "video:70"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T070-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:methods-to-secure-data:tokenization": {
    "learningAssetIds": [
     "video:70"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T070-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:methods-to-secure-data:obfuscation": {
    "learningAssetIds": [
     "video:70"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T070-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:methods-to-secure-data:segmentation": {
    "learningAssetIds": [
     "video:70"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T070-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.3:methods-to-secure-data:permission-restrictions": {
    "learningAssetIds": [
     "video:70"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T070-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.4:high-availability:load-balancing-vs-clustering": {
    "learningAssetIds": [
     "video:71"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T071-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.4:site-considerations:hot": {
    "learningAssetIds": [
     "video:71"
    ],
    "assessmentItemIds": [
-    "mc:M3-045"
+    "mc:M3-045",
+    "tq:T071-02"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -2817,7 +2931,8 @@
     "video:71"
    ],
    "assessmentItemIds": [
-    "mc:M3-043"
+    "mc:M3-043",
+    "tq:T071-02"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -2826,17 +2941,21 @@
    "learningAssetIds": [
     "video:71"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T071-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.4:site-considerations:geographic-dispersion": {
    "learningAssetIds": [
     "video:71"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T071-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.4:platform-diversity": {
    "learningAssetIds": [
@@ -2852,17 +2971,21 @@
    "learningAssetIds": [
     "video:71"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T071-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.4:continuity-of-operations": {
    "learningAssetIds": [
     "video:71"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T071-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.4:capacity-planning:people": {
    "learningAssetIds": [
@@ -2878,17 +3001,21 @@
    "learningAssetIds": [
     "video:72"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T072-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.4:capacity-planning:infrastructure": {
    "learningAssetIds": [
     "video:72"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T072-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.4:testing:tabletop-exercises": {
    "learningAssetIds": [
@@ -2905,9 +3032,11 @@
    "learningAssetIds": [
     "video:73"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T073-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.4:testing:simulation": {
    "learningAssetIds": [
@@ -2934,41 +3063,51 @@
    "learningAssetIds": [
     "video:74"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T074-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.4:backups:frequency": {
    "learningAssetIds": [
     "video:74"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T074-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.4:backups:encryption": {
    "learningAssetIds": [
     "video:74"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T074-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.4:backups:snapshots": {
    "learningAssetIds": [
     "video:74"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T074-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.4:backups:recovery": {
    "learningAssetIds": [
     "video:74"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T074-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.4:backups:replication": {
    "learningAssetIds": [
@@ -2984,9 +3123,11 @@
    "learningAssetIds": [
     "video:74"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T074-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.4:power:generators": {
    "learningAssetIds": [

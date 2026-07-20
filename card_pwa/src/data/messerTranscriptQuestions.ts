@@ -142,6 +142,39 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 3,
       why: 'Verschlüsselung auf Anwendungsebene plus IPsec-Tunnel zwischen Standorten sorgen dafür, dass abgegriffene Pakete unlesbar bleiben.',
     },
+    {
+      q: 'What determines where a security device such as a firewall or IPS should be placed on the network?',
+      options: [
+        'Placement is irrelevant as long as the device is powered on',
+        'The zones and traffic flows it needs to control, e.g. between untrusted and trusted or screened segments',
+        'Devices must always be placed physically next to the internet router',
+        'Only cost determines placement',
+      ],
+      correct: 1,
+      why: 'Laut Video richtet sich die Platzierung nach den Zonen (trusted/untrusted/screened) und den Traffic-Flows, die kontrolliert werden sollen.',
+    },
+    {
+      q: 'Why does the video emphasize securing network connectivity, such as cabling?',
+      options: [
+        'Cabling never needs any protection',
+        'Because every device is connected to every other device, and someone tapping the cabling can watch all traversing traffic',
+        'Because connectivity only matters for wireless networks',
+        'Because connectivity is managed exclusively by the ISP',
+      ],
+      correct: 1,
+      why: 'Da alle Geräte über das Netz verbunden sind, kann laut Video ein Tap an der Verkabelung sämtlichen Datenverkehr mitlesen — Verkabelungssicherheit und Verschlüsselung schließen diese Lücke.',
+    },
+    {
+      q: 'What guides the selection of effective controls for a network, per the video?',
+      options: [
+        'Choosing the cheapest available device regardless of function',
+        'Thinking like an attacker: where could someone get in (code, open ports, authentication, human error) and minimizing that attack surface',
+        'Installing every possible security product at once',
+        'Selecting controls at random and testing which ones work',
+      ],
+      correct: 1,
+      why: 'Das Video rät, die eigene Angriffsfläche wie ein Angreifer zu betrachten (Anwendungscode, offene Ports, Authentifizierung, menschlicher Fehler) und Kontrollen gezielt dagegen auszuwählen.',
+    },
   ],
 
   // 067 — 3.2 Secure Communication
@@ -200,6 +233,28 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 0,
       why: 'SASE verlagert die Sicherheitstechnologien in die Cloud, direkt neben die genutzten Dienste; Clients verbinden sich sicher dorthin — im Video als „next generation of VPN" beschrieben (ergänzend zu SD-WAN).',
+    },
+    {
+      q: 'What best describes a remote access (SSL/TLS) VPN, per the video?',
+      options: [
+        'A site-to-site tunnel that never touches an individual device',
+        'A connection typically used by a single device over TCP port 443, easily passing through existing firewalls',
+        'A protocol that only works over port 22',
+        'A method that requires no login credentials at all',
+      ],
+      correct: 1,
+      why: 'SSL/TLS-VPNs laufen laut Video über TCP 443 wie normaler HTTPS-Verkehr, passieren daher leicht bestehende Firewalls und werden meist für einzelne Remote-Geräte genutzt.',
+    },
+    {
+      q: 'What problem was SD-WAN specifically designed to address, per the video?',
+      options: [
+        'The inefficiency of routing all remote-site traffic through a central data center before reaching cloud applications',
+        'The need to eliminate all VPN technology',
+        'The lack of physical cabling in remote offices',
+        'The cost of firewalls in a data center',
+      ],
+      correct: 0,
+      why: 'Da Anwendungen zunehmend in der Cloud liegen, adressiert SD-WAN laut Video die Ineffizienz, jeden Remote-Standort erst über das zentrale Rechenzentrum zu leiten, bevor die Cloud erreicht wird.',
     },
   ],
 
@@ -260,6 +315,94 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 1,
       why: '„Critical" heißt: Diese Daten müssen immer verfügbar sein — es braucht Prozesse und Verfahren, die Uptime und Verfügbarkeit sicherstellen.',
     },
+    {
+      q: 'Why does the video emphasize protecting trade secrets?',
+      options: [
+        'They are always publicly published by law',
+        'They are processes and information known only to the organization, which competitors would like to obtain',
+        'They only apply to government agencies',
+        'They lose value the more they are protected',
+      ],
+      correct: 1,
+      why: 'Trade Secrets sind laut Video organisationseigene Prozesse/Informationen, die andere gerne hätten — entsprechend braucht diese Datenart besonderen Schutz.',
+    },
+    {
+      q: 'What challenge does legal information present, according to the video?',
+      options: [
+        'It is always fully private and never public',
+        'Legal records are often public, but details like PII within them must still be protected differently',
+        'It never needs to be stored in any system',
+        'Only judges may ever view legal data',
+      ],
+      correct: 1,
+      why: 'Gerichtsakten sind laut Video oft öffentlich einsehbar, enthalten aber teils private Details (PII), die gesondert geschützt werden müssen.',
+    },
+    {
+      q: 'Which examples of financial information does the video mention as sensitive?',
+      options: [
+        'Only publicly traded stock prices',
+        'A company’s internal financial details as well as an individual’s bank account and payment information',
+        'Financial information is never considered sensitive',
+        'Only cryptocurrency wallet addresses',
+      ],
+      correct: 1,
+      why: 'Das Video nennt sowohl interne Firmenfinanzen als auch persönliche Bankdaten/Zahlungen als schützenswerte Finanzinformationen.',
+    },
+    {
+      q: 'Which category of data does the video place under the "sensitive" classification?',
+      options: [
+        'Data with no restrictions at all',
+        'Data that may include intellectual property, PII, or PHI',
+        'Only expired documents',
+        'Only data older than 10 years',
+      ],
+      correct: 1,
+      why: 'Laut Video kann „sensitive" u. a. geistiges Eigentum, PII oder PHI umfassen.',
+    },
+    {
+      q: 'How does "confidential" data differ from "sensitive" data in the classification scheme the video describes?',
+      options: [
+        'Confidential data requires additional access beyond the sensitive level',
+        'Confidential data is always less protected than sensitive data',
+        'Confidential and sensitive are exactly the same classification',
+        'Confidential data may be freely shared externally',
+      ],
+      correct: 0,
+      why: 'Confidential steht laut Video eine Stufe strenger als Sensitive — es braucht zusätzliche Zugriffsrechte, um es einzusehen.',
+    },
+    {
+      q: 'What does the "public" (or unclassified) data classification mean, per the video?',
+      options: [
+        'Only executives may view it',
+        'It requires a signed non-disclosure agreement',
+        'Anyone should be able to view this information',
+        'It is the most sensitive classification available',
+      ],
+      correct: 2,
+      why: 'Public/Unclassified beschreibt laut Video Informationen, die grundsätzlich jeder einsehen darf.',
+    },
+    {
+      q: 'What extra requirement does the video associate with restricted/private/classified data?',
+      options: [
+        'No special access is needed at all',
+        'It must always be published for transparency',
+        'Additional rights/permissions or a signed non-disclosure agreement may be required to view it',
+        'It can only be stored on paper',
+      ],
+      correct: 2,
+      why: 'Für restricted/private/classified verlangt das Video zusätzliche Rechte oder eine unterschriebene NDA, bevor jemand Zugriff bekommt.',
+    },
+    {
+      q: 'Which classification does the video contrast directly with "public" data?',
+      options: [
+        'Private/classified/restricted data needing extra rights, permissions, or an NDA',
+        'Archived data with no owner',
+        'Temporary data deleted after 24 hours',
+        'Data that is identical to public data but stored differently',
+      ],
+      correct: 0,
+      why: 'Dem Video zufolge steht der Klassifizierung „public" die Stufe „private/classified/restricted" gegenüber — mit zusätzlichen Zugriffsanforderungen.',
+    },
   ],
 
   // 072 — 3.4 Capacity Planning
@@ -318,6 +461,28 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 1,
       why: 'Cloud-Anbieter bieten scheinbar unbegrenzte Ressourcen per Klick — ohne Hardware-Beschaffung. Der Preis: Jede zusätzlich genutzte Ressource kostet; danach wird „rightsized".',
+    },
+    {
+      q: 'Why must the chosen technology be able to scale for capacity planning, per the video?',
+      options: [
+        'Not all technologies can grow and shrink with demand, so scalability must be considered early in the design',
+        'Technology choice has no effect on capacity',
+        'All technologies scale identically by default',
+        'Scalability is only relevant for hardware, never software',
+      ],
+      correct: 0,
+      why: 'Laut Video kann nicht jede Technologie problemlos mit- oder zurückwachsen — das muss schon beim Design berücksichtigt werden (z. B. Load Balancer + mehrere Server).',
+    },
+    {
+      q: 'How does deploying new infrastructure capacity differ between an on-premises data center and the cloud, per the video?',
+      options: [
+        'Both require identical multi-week procurement processes',
+        'On-premises requires purchasing, shipping, unboxing, and racking hardware; in the cloud you can create an instance with a few clicks',
+        'Cloud infrastructure cannot be scaled at all',
+        'On-premises infrastructure scales automatically without any purchase',
+      ],
+      correct: 1,
+      why: 'On-Premises-Kapazität braucht laut Video Beschaffung, Versand, Einbau und Konfiguration von Hardware; in der Cloud reichen wenige Klicks für eine neue Instanz.',
     },
   ],
 
@@ -2074,6 +2239,17 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 2,
       why: 'Ein WAF prüft die Eingaben in Web-Apps (HTTP/HTTPS) und blockt z. B. SQL-Injections vor dem Applikationsserver — PCI DSS schreibt WAFs für Kreditkarten-Anwendungen vor; oft läuft er neben einem NGFW.',
     },
+    {
+      q: 'What is the key difference between traditional and next-generation firewalls in terms of OSI layers?',
+      options: [
+        'Traditional firewalls filter at layer 4 (ports); next-generation firewalls can filter at layer 7 (application)',
+        'Both operate exclusively at layer 2',
+        'Next-generation firewalls only work at layer 1 (physical)',
+        'Layer 4 firewalls can identify individual applications by name',
+      ],
+      correct: 0,
+      why: 'Traditionelle Firewalls arbeiten laut Video auf Layer 4 (TCP/UDP-Port), Next-Gen-Firewalls zusätzlich auf Layer 7 (Anwendungsebene) — sie erkennen z. B. Twitter vs. YouTube unabhängig vom Port.',
+    },
   ],
 
   // 073 — 3.4 Recovery Testing
@@ -2121,6 +2297,17 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 2,
       why: 'Mehrere Kerne oder Rechner teilen sich die Transaktionen: schneller im Normalbetrieb, und beim Ausfall eines Prozessors übernehmen die verbleibenden.',
+    },
+    {
+      q: 'What does an ideal failover test look like, per the video?',
+      options: [
+        'Users notice the switch and must manually reconnect',
+        'The failover happens automatically and users are redirected behind the scenes without noticing',
+        'The test requires shutting down the entire production network for a week',
+        'Failover tests are never performed on live redundant systems',
+      ],
+      correct: 1,
+      why: 'Ein idealer Failover-Test läuft laut Video automatisch ab — Nutzer werden im Hintergrund umgeleitet, ohne etwas zu bemerken.',
     },
   ],
 
@@ -3782,6 +3969,587 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 3,
       why: 'Laut Video ändern sich Betriebssysteme und Sprachversionen um das Skript herum — jemand muss die Skripte fortlaufend pflegen und aktualisieren.',
+    },
+  ],
+  '058': [
+    {
+      q: 'What does a cloud responsibility matrix describe?',
+      options: [
+        'Which security tasks the customer versus the provider handles, varying by service model',
+        'How much the cloud subscription costs per month',
+        'Which employees are allowed to log into the cloud console',
+        'The physical location of the provider’s data centers',
+      ],
+      correct: 0,
+      why: 'Laut Video zeigt die Responsibility Matrix, wer für welchen Bereich zuständig ist — je nach SaaS/PaaS/IaaS/On-Prem verschiebt sich die Grenze zwischen Kunde und Anbieter.',
+    },
+    {
+      q: 'Why is managing security across a hybrid (multi-provider) cloud more complex?',
+      options: [
+        'Hybrid clouds cannot use encryption at all',
+        'Providers rarely talk to each other directly, so settings, logs, and terminology must be reconciled manually across each one',
+        'Hybrid clouds are always cheaper than a single provider',
+        'Only one provider may be used for production data',
+      ],
+      correct: 1,
+      why: 'Das Video nennt fehlende direkte Kommunikation zwischen Providern, unterschiedliche Log-Formate/Terminologie und manuell abzugleichende Konfigurationen als Kernprobleme des Hybrid-Cloud-Managements.',
+    },
+    {
+      q: 'What does the video recommend for managing third-party cloud technologies (e.g., a firewall vendor in front of your app)?',
+      options: [
+        'Avoid third parties entirely in the cloud',
+        'Let the cloud provider handle all third-party incidents automatically',
+        'A vendor risk management policy, plus including third parties in incident response and monitoring',
+        'Give every third party full administrative access',
+      ],
+      correct: 2,
+      why: 'Laut Video braucht es eine Vendor-Risk-Management-Policy und die Einbindung der Drittanbieter in Incident Response und laufendes Monitoring.',
+    },
+    {
+      q: 'What is the key advantage of infrastructure as code described in the video?',
+      options: [
+        'It eliminates the need for any cloud provider',
+        'It only works for database servers',
+        'It requires manual reconfiguration on every rebuild',
+        'The infrastructure definition lives in code, so the exact same instance can be rebuilt on any provider at any time',
+      ],
+      correct: 3,
+      why: 'IaC beschreibt Hosts, Webserver und Datenbanken als Code — dieselbe „perfekte" Instanz lässt sich laut Video jederzeit auf jedem Cloud-Anbieter neu aufbauen.',
+    },
+    {
+      q: 'How does a microservice architecture change application security compared to a monolith?',
+      options: [
+        'Security is applied once for the entire application, identical everywhere',
+        'Security no longer matters since users only talk to the API gateway',
+        'Every microservice needs the exact same permissions as every other one',
+        'Each microservice can have security appropriate to its own function, e.g. authentication vs. database access',
+      ],
+      correct: 3,
+      why: 'Laut Video läuft jeder Funktionsteil als eigener Service mit eigenem Sicherheitsprozess — ein Auth-Microservice braucht andere Kontrollen als ein DB-lesender Microservice.',
+    },
+  ],
+  '059': [
+    {
+      q: 'What does an air gap between two switches guarantee?',
+      options: [
+        'Faster data transfer between the switches',
+        'An attacker on one switch has no way to reach devices on the physically isolated other switch',
+        'Both switches automatically encrypt all traffic',
+        'The switches share a single power supply for redundancy',
+      ],
+      correct: 1,
+      why: 'Beim Air Gap gibt es laut Video keinerlei physische Verbindung — ein Angreifer auf Switch A kommt ohne explizite Verbindung nicht auf Switch B.',
+    },
+    {
+      q: 'How do VLANs achieve the same isolation as physically separate switches?',
+      options: [
+        'By assigning interfaces to different VLANs on the same physical switch, which cannot communicate directly with each other',
+        'By running two independent power cables to the switch',
+        'By encrypting traffic between every port',
+        'By requiring a password for every VLAN',
+      ],
+      correct: 0,
+      why: 'VLANs trennen laut Video Interfaces logisch auf demselben physischen Switch; VLANs können nicht direkt miteinander kommunizieren — wie zwei separate Switches, aber mit weniger Hardware.',
+    },
+    {
+      q: 'Which three planes does SDN separate a network device into?',
+      options: [
+        'Data plane, control plane, and management plane',
+        'Physical plane, virtual plane, and cloud plane',
+        'Input plane, output plane, and error plane',
+        'Encryption plane, routing plane, and logging plane',
+      ],
+      correct: 0,
+      why: 'SDN teilt Geräte laut Video in Data Plane (Forwarding), Control Plane (Routing-/Sitzungstabellen) und Management Plane (Konfiguration, z. B. per SSH) — dadurch lassen sich diese Funktionen als Software in der Cloud abbilden.',
+    },
+  ],
+  '060': [
+    {
+      q: 'What is a key security trade-off of on-premises infrastructure compared to the cloud, according to the video?',
+      options: [
+        'Complete control over decisions and systems, but the organization bears the full support cost',
+        'No IT staff is needed to run on-premises systems',
+        'On-premises systems cannot be secured at all',
+        'The attacker cares whether security is on-premises or in the cloud',
+      ],
+      correct: 0,
+      why: 'Laut Video bedeutet On-Premises volle Kontrolle über Entscheidungen und Systeme — aber auch die volle Kostenlast für gut ausgebildetes eigenes Personal.',
+    },
+    {
+      q: 'Why do many organizations build a single consolidated management console for decentralized systems?',
+      options: [
+        'To eliminate the need for any monitoring',
+        'To reduce the number of employees needed to zero',
+        'Because decentralized systems (multiple sites, clouds, OSes) are hard to secure individually, so a single console gives consolidated visibility — at the cost of a single point of failure',
+        'Because decentralized systems are always more secure by default',
+      ],
+      correct: 2,
+      why: 'Das Video nennt konsolidierte Alerts/Logs/Updates als Antwort auf verteilte Systeme — mit der Kehrseite, dass der Verlust dieser einen Konsole die gesamte Sichtbarkeit kostet.',
+    },
+    {
+      q: 'Why does the video flag IoT devices as a particular security concern?',
+      options: [
+        'IoT devices cannot connect to a network at all',
+        'Their manufacturers are good at the device’s core function but not necessarily security, and one exploited device can expose the whole network',
+        'IoT devices are immune to exploitation',
+        'IoT devices always use stronger encryption than servers',
+      ],
+      correct: 1,
+      why: 'Laut Video sind Hersteller von Thermostaten, Türklingeln & Co. gut in ihrem Kerngeschäft, aber nicht zwingend Sicherheitsexperten — ein einziges kompromittiertes Gerät reicht als Einstieg ins Netz.',
+    },
+    {
+      q: 'Why does an RTOS (e.g., in a car’s anti-lock brakes) need to be deterministic?',
+      options: [
+        'So the system can wait for antivirus scans before responding',
+        'A critical process must be able to immediately take priority over everything else — there is no time to wait',
+        'So multiple unrelated apps can share resources fairly',
+        'Determinism only matters for desktop operating systems',
+      ],
+      correct: 1,
+      why: 'Ein RTOS muss laut Video sofort und garantiert reagieren können (z. B. ABS-Bremsung) — ein nicht-deterministisches System wie Windows/Linux kann das nicht zusichern.',
+    },
+    {
+      q: 'What characterizes an embedded system according to the video?',
+      options: [
+        'It runs a general-purpose OS with an app store',
+        'It is a self-contained, purpose-built combination of hardware and software designed for one single function',
+        'It requires constant internet connectivity to function',
+        'It is always the most powerful component in a larger system',
+      ],
+      correct: 1,
+      why: 'Beispiele im Video: Ampeln, Digitaluhren, medizinische Überwachungsgeräte — jeweils zweckgebunden gebaut, ohne offenen Zugriff auf ein Allzweck-Betriebssystem.',
+    },
+    {
+      q: 'How does high availability differ from simple redundancy, according to the video?',
+      options: [
+        'HA components sit ready and always-on, taking over immediately, while a merely redundant spare may need to be unboxed and configured first',
+        'HA means having exactly one device with no backup',
+        'Redundancy is always more expensive than HA',
+        'HA only applies to power supplies',
+      ],
+      correct: 0,
+      why: 'Redundanz allein heißt laut Video u. U. Ersatzgerät auspacken/einbauen/konfigurieren; HA-Systeme laufen bereits parallel und übernehmen sofort bei einem Ausfall.',
+    },
+  ],
+  '061': [
+    {
+      q: 'How is availability commonly reported as a metric, according to the video?',
+      options: [
+        'As an uptime percentage, e.g. 99.999% over the last 12 months',
+        'As a single yes/no flag with no history',
+        'Only as the number of support tickets filed',
+        'Only as total revenue generated',
+      ],
+      correct: 0,
+      why: 'Laut Video ist Uptime eine so wichtige Kennzahl, dass Erfolg oft direkt als Prozentsatz beschrieben wird, z. B. „99,999 % Verfügbarkeit über 12 Monate".',
+    },
+    {
+      q: 'Which metric does the video use to describe resilience after an outage?',
+      options: [
+        'MTTR (mean time to repair) — how long it takes to replace what’s unavailable with something available',
+        'The number of firewalls installed',
+        'The color-coding of the network diagram',
+        'The age of the hardware',
+      ],
+      correct: 0,
+      why: 'MTTR beschreibt laut Video, wie lange der Ersatz eines ausgefallenen Bauteils dauert — eine zentrale Resilienz-Kennzahl.',
+    },
+    {
+      q: 'Why is calculating the true cost of an infrastructure decision difficult, per the video?',
+      options: [
+        'Cost is only ever a one-time installation fee',
+        'It combines installation, ongoing maintenance, depreciation, operational costs, and tax implications',
+        'Accounting never gets involved in IT cost decisions',
+        'Cloud services have no associated cost',
+      ],
+      correct: 1,
+      why: 'Das Video nennt Installations-, Wartungs- und Ersatzkosten plus Abschreibung, Betriebskosten und Steuerfolgen — Cost ist kein einzelner Wert.',
+    },
+    {
+      q: 'Why can responsiveness be hard to quantify for a single application, according to the video?',
+      options: [
+        'Responsiveness is identical for every function of an app',
+        'A transaction may involve multiple steps, so some functions respond quickly while others take longer',
+        'Responsiveness is only measured once a year',
+        'Users never notice response delays',
+      ],
+      correct: 1,
+      why: 'Laut Video variiert die Antwortzeit je nach Funktion innerhalb derselben Anwendung — manche Schritte sind schnell, andere brauchen mehr Verarbeitung.',
+    },
+    {
+      q: 'What does "elasticity" describe in the context of scalability?',
+      options: [
+        'How quickly an application’s footprint can expand and contract with demand',
+        'The physical flexibility of network cabling',
+        'How many users are allowed to register per day',
+        'The encryption strength used by the application',
+      ],
+      correct: 0,
+      why: 'Elastizität beschreibt laut Video, wie schnell die Kapazität einer Anwendung mit der Last mitwachsen und wieder schrumpfen kann — oft automatisch im Hintergrund.',
+    },
+    {
+      q: 'What must be planned alongside the technical infrastructure when deploying an application, per the video?',
+      options: [
+        'Nothing — cloud deployments require no planning',
+        'Hardware resources, budget, and change control processes',
+        'Only the marketing launch date',
+        'The application’s logo design',
+      ],
+      correct: 1,
+      why: 'Das Video nennt Hardware-Ressourcen, Budget und Change-Control-Prozesse als Teile der Deployment-Planung — fehlt einer davon, verzögert sich die gesamte Umsetzung.',
+    },
+    {
+      q: 'How does cybersecurity insurance provide risk transference, per the video?',
+      options: [
+        'It prevents ransomware attacks from happening',
+        'It automatically patches vulnerable systems',
+        'It can help recoup financial losses and legal costs from an incident such as ransomware, without stopping the attack itself',
+        'It replaces the need for backups',
+      ],
+      correct: 2,
+      why: 'Cyber-Versicherung verhindert laut Video keinen Angriff, kann aber finanzielle Verluste und Rechtskosten nach einem Vorfall wie Ransomware abfedern.',
+    },
+    {
+      q: 'Which recovery approach does the video call much faster and cheaper after a malware infection?',
+      options: [
+        'Reloading the OS from original installation media, which can take about an hour',
+        'Restoring from an image backup, which can take about 10 minutes',
+        'Calling the vendor and waiting for a replacement device',
+        'Manually reviewing every file for infection',
+      ],
+      correct: 1,
+      why: 'Beide Wege führen laut Video zum selben sauberen System, aber die Wiederherstellung aus einem Image-Backup (≈10 Minuten) ist deutlich schneller und billiger als die Neuinstallation von Medien (≈1 Stunde).',
+    },
+    {
+      q: 'What does the video describe as normal practice for patch availability at most organizations?',
+      options: [
+        'Patches are installed exactly once per device, forever',
+        'Regular patches (e.g., monthly from Microsoft) are tested, then deployed to production as quickly as possible',
+        'Patching is skipped unless a breach has already occurred',
+        'Only the operating system vendor may install patches',
+      ],
+      correct: 1,
+      why: 'Laut Video ist regelmäßiges Patchen (monatlich u. a. von Microsoft) Standard-IT-Prozess: erst testen, dann so schnell wie möglich ausrollen.',
+    },
+    {
+      q: 'Which type of systems does the video give as an example of devices that often cannot be patched?',
+      options: [
+        'Cloud-based web applications',
+        'Purpose-built embedded systems like HVAC controls or time clocks with no internet connectivity',
+        'Standard Windows desktops',
+        'Virtual machines running in a data center',
+      ],
+      correct: 1,
+      why: 'Embedded Systeme wie HVAC-Steuerungen oder Stechuhren haben laut Video oft keine Konnektivität und keinen Patch-Prozess — zusätzliche Absicherung (z. B. eine vorgelagerte Firewall) wird dann nötig.',
+    },
+    {
+      q: 'What does the video recommend for planning an organization’s power infrastructure?',
+      options: [
+        'Ignoring power planning since it rarely causes issues',
+        'Bringing in a licensed electrician to assess current usage and plan for future needs, since requirements differ (e.g., data center vs. office)',
+        'Using only battery power for all systems',
+        'Relying solely on a single wall outlet per rack',
+      ],
+      correct: 1,
+      why: 'Laut Video ist Strom eine oft unterschätzte, aber zentrale Komponente — ein Elektriker sollte den Bedarf einschätzen, der je nach Standort (Rechenzentrum vs. Büro) stark variiert.',
+    },
+  ],
+  '063': [
+    {
+      q: 'What happens to network traffic when a fail-open security device crashes?',
+      options: [
+        'Traffic continues to flow with no security inspection',
+        'All traffic is immediately blocked',
+        'The device automatically reboots and traffic waits',
+        'Traffic is rerouted to a cloud backup',
+      ],
+      correct: 0,
+      why: 'Bei Fail-open läuft laut Video der Verkehr beim Ausfall weiter durch — ohne Sicherheitsprüfung, aber das Netz bleibt erreichbar.',
+    },
+    {
+      q: 'What happens to network traffic when a fail-closed security device crashes?',
+      options: [
+        'Traffic continues to flow normally',
+        'Only encrypted traffic is allowed through',
+        'Not only does security stop working, the connection itself is severed and communication stops',
+        'The device switches to passive monitoring automatically',
+      ],
+      correct: 2,
+      why: 'Bei Fail-closed wird laut Video die Verbindung beim Ausfall komplett unterbrochen — sicherer gegen Bedrohungen, aber es entsteht ein Netzausfall.',
+    },
+    {
+      q: 'What is the key difference between active (inline) and passive monitoring, per the video?',
+      options: [
+        'Passive monitoring uses more bandwidth than active monitoring',
+        'Active monitoring can block malicious traffic in real time; passive monitoring only inspects a copy and cannot stop it',
+        'Active monitoring never sees encrypted traffic',
+        'There is no functional difference between them',
+      ],
+      correct: 1,
+      why: 'Inline/aktives Monitoring kann laut Video Traffic in Echtzeit blockieren; passives Monitoring erhält nur eine Kopie und kann nichts direkt verhindern.',
+    },
+    {
+      q: 'How does a passive IPS deployment typically receive a copy of network traffic?',
+      options: [
+        'Through a port mirror/SPAN on the switch, or a physical network tap',
+        'By directly rewriting the destination IP of every packet',
+        'By requesting it manually from each device once a day',
+        'Passive deployments cannot receive traffic at all',
+      ],
+      correct: 0,
+      why: 'Laut Video liefert ein Port-Mirror/SPAN am Switch oder ein physischer Netzwerk-Tap dem passiv angeschlossenen Gerät eine Kopie des Traffics, ohne im Pfad zu liegen.',
+    },
+  ],
+  '064': [
+    {
+      q: 'What distinguishes an IPS from an IDS, according to the video overview of network appliances?',
+      options: [
+        'An IDS can block traffic but an IPS cannot',
+        'An IPS can block dangerous traffic in real time; an IDS can only alert on it',
+        'They are two names for exactly the same capability',
+        'An IDS only works on wireless networks',
+      ],
+      correct: 1,
+      why: 'Ein IPS blockt laut Video gefährlichen Traffic in Echtzeit, ein IDS kann nur alarmieren, nicht verhindern.',
+    },
+  ],
+  '069': [
+    {
+      q: 'Is unencrypted data on a storage device still considered "data at rest"?',
+      options: [
+        'No, only encrypted data on disk counts as data at rest',
+        'Yes — any data saved on a storage device is data at rest, regardless of encryption',
+        'Only if the device is powered off',
+        'Only cloud storage counts as data at rest',
+      ],
+      correct: 1,
+      why: 'Laut Video ist jede auf einem Speichergerät abgelegte Information Data at Rest — Verschlüsselung ist eine zusätzliche, aber keine notwendige Bedingung für diese Einstufung.',
+    },
+    {
+      q: 'Why did attackers in the 2013 Target breach target data in use rather than data at rest or in transit?',
+      options: [
+        'Target had no encryption anywhere in their network',
+        'Data in memory/CPU is almost always decrypted so it can be processed, making it easy to read once accessed',
+        'Data in use is always encrypted, making it a challenge attackers enjoy',
+        'Target stored no data in RAM at all',
+      ],
+      correct: 1,
+      why: 'Target verschlüsselte laut Video Data at Rest und in Transit — aber die Kreditkartendaten lagen im RAM der POS-Terminals unverschlüsselt vor (Data in Use), weil sie dort verarbeitet werden mussten.',
+    },
+    {
+      q: 'Which technologies does the video mention as sources for geolocation?',
+      options: [
+        'Only manual self-reported addresses',
+        'GPS, 802.11 wireless information, and mobile provider details',
+        'Only the device’s MAC address',
+        'Only credit card billing addresses',
+      ],
+      correct: 1,
+      why: 'Das Video nennt GPS, 802.11-Informationen und Mobilfunkanbieter-Daten als Bausteine der Geolokalisierung.',
+    },
+  ],
+  '070': [
+    {
+      q: 'What does the video call the property where encrypted data looks dramatically different from the original?',
+      options: [
+        'Confusion',
+        'Compression',
+        'Collision',
+        'Correlation',
+      ],
+      correct: 0,
+      why: 'Das Video nennt diese dramatische Veränderung zwischen Klartext und Chiffretext „confusion" — ein Kernziel guter Verschlüsselung.',
+    },
+    {
+      q: 'Why can’t you recreate the original data from its hash, per the video’s fingerprint analogy?',
+      options: [
+        'A hash is just as reversible as encryption',
+        'Like a fingerprint identifies a person without recreating the whole person, a hash identifies data without allowing reconstruction of it',
+        'Hashes only work on numeric data',
+        'Hashes are always shorter than the encryption key',
+      ],
+      correct: 1,
+      why: 'Ein Fingerabdruck identifiziert laut Video eine Person, ohne die Person daraus zu rekonstruieren — genauso identifiziert ein Hash Daten, ohne sie umkehrbar zu machen.',
+    },
+    {
+      q: 'What does data masking typically show on a receipt, per the video example?',
+      options: [
+        'The full, unaltered card number',
+        'Only the last four digits, with the rest hidden by asterisks',
+        'A completely different randomly generated number',
+        'No card information at all',
+      ],
+      correct: 1,
+      why: 'Auf der Quittung zeigt Masking laut Video nur die letzten vier Ziffern der Karte, der Rest wird mit Sternchen verdeckt — im Hintergrund kennt der Zahlungsdienstleister die volle Nummer.',
+    },
+    {
+      q: 'Why can a captured mobile-payment token not be reused by an attacker, per the video?',
+      options: [
+        'Because the token is a one-time-use value that becomes invalid after its first use',
+        'Because tokens are always sent in plaintext but ignored by the store',
+        'Because the token contains the customer’s real card number in disguise',
+        'Because tokens never leave the phone',
+      ],
+      correct: 0,
+      why: 'Der Token beim mobilen Bezahlen ist laut Video ein Einmalwert — einmal benutzt, kann er nicht erneut eingesetzt werden (kein Replay möglich).',
+    },
+    {
+      q: 'What does obfuscating a line of code accomplish, per the video?',
+      options: [
+        'It changes what the code does when executed',
+        'It makes the code run faster',
+        'It makes the code produce a different output than the original',
+        'The obfuscated code produces the exact same output but is much harder for a human to read',
+      ],
+      correct: 3,
+      why: 'Das PHP-Beispiel im Video liefert nach der Obfuskierung exakt dieselbe Ausgabe „Hello, world" — nur der Quellcode ist für Menschen kaum noch lesbar.',
+    },
+    {
+      q: 'Why does splitting data across multiple smaller databases (segmentation) help security, per the video?',
+      options: [
+        'It makes backups unnecessary',
+        'An attacker who breaches one database does not automatically gain access to all the data — each database can also get its own security level',
+        'It removes the need for any authentication',
+        'It automatically encrypts the data in each database',
+      ],
+      correct: 1,
+      why: 'Laut Video verhindert Segmentierung, dass ein einziger Einbruch gleich den kompletten Datenbestand offenlegt, und erlaubt gestaffelte Sicherheitsstufen je nach Inhalt.',
+    },
+    {
+      q: 'Where do permission restrictions start, according to the video?',
+      options: [
+        'With the encryption algorithm used for backups',
+        'With the authentication process itself — safe login, minimum password policy, and possibly additional factors',
+        'Only after a user has already been granted full access',
+        'With the physical security of the building',
+      ],
+      correct: 1,
+      why: 'Permission Restrictions beginnen laut Video schon beim Login-Prozess (Passwortrichtlinie, ggf. weitere Faktoren) und setzen sich in Gruppen-/Dateirechten nach der Anmeldung fort.',
+    },
+  ],
+  '071': [
+    {
+      q: 'What is the key structural difference between server clustering and load balancing, per the video?',
+      options: [
+        'In a cluster, each server knows about the others and shares storage; with load balancing, servers have no knowledge of each other and the load balancer manages distribution',
+        'Clustering requires a load balancer, but load balancing does not',
+        'Load balancing only works with a single server',
+        'Clustering and load balancing are exactly the same technique',
+      ],
+      correct: 0,
+      why: 'Im Cluster kennen sich die Server laut Video gegenseitig und teilen sich Storage; beim Load Balancing wissen die Server nichts voneinander — der Load Balancer verteilt die Last zentral.',
+    },
+    {
+      q: 'How does a warm site differ from a hot and a cold site, per the video?',
+      options: [
+        'A warm site has some equipment and possibly some data on-site, unlike a cold site’s empty building or a hot site’s exact replica',
+        'A warm site is always more expensive than a hot site',
+        'A warm site has no equipment at all, like a cold site',
+        'A warm site is an exact live replica of the primary data center',
+      ],
+      correct: 0,
+      why: 'Der Warm Site liegt laut Video zwischen Cold (leeres Gebäude) und Hot (exakte, laufend synchronisierte Kopie) — teilweise Ausstattung/Daten sind vorhanden, der Rest muss mitgebracht werden.',
+    },
+    {
+      q: 'Why does the video recommend placing a recovery site far from the primary location?',
+      options: [
+        'So a regional disaster like a hurricane is unlikely to affect both sites simultaneously',
+        'Distance has no effect on disaster recovery',
+        'To reduce the electricity bill',
+        'To make transporting equipment easier',
+      ],
+      correct: 0,
+      why: 'Ein weit entferntes Recovery-Standort schützt laut Video davor, dass ein regionales Ereignis (Sturm, Flut) beide Standorte gleichzeitig trifft — bringt aber mehr Logistikaufwand mit sich.',
+    },
+    {
+      q: 'What resilience benefit does using multiple cloud providers offer, per the video?',
+      options: [
+        'An outage or security concern with one provider does not automatically take down services hosted with another',
+        'Multi-cloud eliminates the need for any redundancy planning',
+        'It guarantees lower costs than a single provider',
+        'It removes the need for platform diversity',
+      ],
+      correct: 0,
+      why: 'Laut Video beeinträchtigt ein Ausfall oder Sicherheitsvorfall bei einem Cloud-Anbieter nicht automatisch die bei einem anderen Anbieter gehosteten Dienste.',
+    },
+    {
+      q: 'What is Continuity of Operations Planning (COOP) about, per the video?',
+      options: [
+        'Automatically failing over to a hot site within seconds',
+        'Nontechnical fallback processes (e.g., manual paper transactions) for when no technology is available at all',
+        'A type of encryption used for backups',
+        'A cloud provider’s uptime guarantee',
+      ],
+      correct: 1,
+      why: 'COOP beschreibt laut Video den nicht-technischen Rückfall (z. B. manuelle Papierprozesse), wenn gar keine Technik verfügbar ist — muss vorab geplant sein, damit er im Ernstfall funktioniert.',
+    },
+  ],
+  '074': [
+    {
+      q: 'What is the main trade-off between onsite and offsite backups, per the video?',
+      options: [
+        'Onsite backups are immediately available and cheaper; offsite backups add cost but survive a local disaster',
+        'Offsite backups are always immediately available at zero cost',
+        'Onsite backups can never be restored',
+        'There is no difference between the two',
+      ],
+      correct: 0,
+      why: 'Onsite-Backups sind laut Video sofort verfügbar und günstiger, kosten aber im Katastrophenfall den Standort mit; Offsite-Backups sind teurer, aber vom lokalen Ereignis unabhängig.',
+    },
+    {
+      q: 'What determines how often a system should be backed up, per the video?',
+      options: [
+        'Every system must be backed up exactly once per year',
+        'The total amount of data and how often that data actually changes on that particular system',
+        'Backup frequency is fixed by law for all systems',
+        'Frequency has no relation to how much data changes',
+      ],
+      correct: 1,
+      why: 'Laut Video richtet sich das Intervall nach Datenmenge und Änderungshäufigkeit — ein selten geändertes System braucht kein stündliches Backup.',
+    },
+    {
+      q: 'Why does the video stress encrypting backup data, especially in the cloud?',
+      options: [
+        'Backup tapes can be physically lost or stolen (as in a real incident described), and cloud-stored backups are accessible to unknown third parties without it',
+        'Encryption makes backups faster to restore',
+        'Unencrypted backups cannot be written to tape',
+        'Encryption is only relevant for backups stored onsite',
+      ],
+      correct: 0,
+      why: 'Das Video erzählt vom Diebstahl unverschlüsselter Backup-Bänder aus einem Auto — und betont, dass Cloud-Backups ohne Verschlüsselung für unbekannte Dritte einsehbar wären.',
+    },
+    {
+      q: 'How do daily VM snapshots behave like incremental backups, per the video?',
+      options: [
+        'Each snapshot re-copies the entire virtual disk from scratch every time',
+        'Each new snapshot only needs to save the changes since the previous one, not the whole VM again',
+        'Snapshots can only be taken once per month',
+        'Snapshots cannot be rolled back to a previous state',
+      ],
+      correct: 1,
+      why: 'Im Beispiel (Montag 100 GB, Dienstag 40 GB geändert) speichert laut Video jeder Snapshot nur die Änderungen seit dem letzten — wie ein inkrementelles Backup.',
+    },
+    {
+      q: 'Why does the video insist that a backup strategy include recovery testing?',
+      options: [
+        'Because writing a backup automatically guarantees a successful restore',
+        'Restoring the data is only half the test — applications must also be verified to properly use the restored data',
+        'Recovery testing is optional and rarely worth the effort',
+        'Recovery only needs to be tested once, at initial setup',
+      ],
+      correct: 1,
+      why: 'Laut Video ist das Wiederherstellen der Daten erst die halbe Miete — man muss auch prüfen, dass Anwendungen mit den wiederhergestellten Daten tatsächlich funktionieren.',
+    },
+    {
+      q: 'How does journaling protect against corruption from a power loss during a write, per the video?',
+      options: [
+        'Data is first written to a journal; if power fails before the journal is committed to the database, the database itself stays uncorrupted',
+        'Journaling prevents power outages from occurring',
+        'Journaling encrypts all data before writing it',
+        'Journaling replaces the need for any backup',
+      ],
+      correct: 0,
+      why: 'Beim Journaling wird laut Video zuerst in ein Journal geschrieben; geht der Strom vor dem Commit in die Datenbank aus, verliert man nur den Journal-Eintrag — die Datenbank bleibt konsistent, notfalls per Journal-Nachvollzug beim Neustart repariert.',
     },
   ],
 }
