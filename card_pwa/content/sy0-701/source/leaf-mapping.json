@@ -1002,7 +1002,9 @@
     "video:20"
    ],
    "assessmentItemIds": [
-    "mc:M2-002"
+    "mc:M2-002",
+    "tq:T020-03",
+    "tq:T020-13"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -1012,7 +1014,9 @@
     "video:20"
    ],
    "assessmentItemIds": [
-    "mc:M2-003"
+    "tq:T020-03",
+    "mc:M2-003",
+    "tq:T020-04"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -1031,16 +1035,19 @@
    "learningAssetIds": [
     "video:20"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T020-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.1:threat-actors:organized-crime": {
    "learningAssetIds": [
     "video:20"
    ],
    "assessmentItemIds": [
-    "mc:M2-005"
+    "mc:M2-005",
+    "tq:T020-10"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -1059,57 +1066,71 @@
    "learningAssetIds": [
     "video:20"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T020-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.1:attributes-of-actors:resources-funding": {
    "learningAssetIds": [
     "video:20"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T020-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.1:attributes-of-actors:level-of-sophistication-capability": {
    "learningAssetIds": [
     "video:20"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T020-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.1:motivations:data-exfiltration": {
    "learningAssetIds": [
     "video:20"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T020-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.1:motivations:espionage": {
    "learningAssetIds": [
     "video:20"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T020-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.1:motivations:service-disruption": {
    "learningAssetIds": [
     "video:20"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T020-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.1:motivations:blackmail": {
    "learningAssetIds": [
     "video:20"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T020-08"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.1:motivations:financial-gain": {
    "learningAssetIds": [
@@ -1125,49 +1146,61 @@
    "learningAssetIds": [
     "video:20"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T020-09"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.1:motivations:ethical": {
    "learningAssetIds": [
     "video:20"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T020-10"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.1:motivations:revenge": {
    "learningAssetIds": [
     "video:20"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T020-11"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.1:motivations:disruption-chaos": {
    "learningAssetIds": [
     "video:20"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T020-12"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.1:motivations:war": {
    "learningAssetIds": [
     "video:20"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T020-13"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.2:message-based:email": {
    "learningAssetIds": [
     "video:21"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T021-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.2:message-based:short-message-service-sms": {
    "learningAssetIds": [
@@ -1183,33 +1216,41 @@
    "learningAssetIds": [
     "video:21"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T021-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.2:image-based": {
    "learningAssetIds": [
     "video:21"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T021-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.2:file-based": {
    "learningAssetIds": [
     "video:21"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T021-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.2:voice-call": {
    "learningAssetIds": [
     "video:21"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T021-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.2:removable-device": {
    "learningAssetIds": [
@@ -1225,9 +1266,11 @@
    "learningAssetIds": [
     "video:21"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T021-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.2:unsupported-systems-and-applications": {
    "learningAssetIds": [
@@ -1243,33 +1286,41 @@
    "learningAssetIds": [
     "video:21"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T021-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.2:unsecure-networks:wired": {
    "learningAssetIds": [
     "video:21"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T021-08"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.2:unsecure-networks:bluetooth": {
    "learningAssetIds": [
     "video:21"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T021-09"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.2:open-service-ports": {
    "learningAssetIds": [
     "video:21"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T021-10"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.2:default-credentials": {
    "learningAssetIds": [
@@ -1295,17 +1346,21 @@
    "learningAssetIds": [
     "video:21"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T021-11"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.2:supply-chain:suppliers": {
    "learningAssetIds": [
     "video:21"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T021-12"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.2:human-vectors-social-engineering:phishing": {
    "learningAssetIds": [
@@ -1313,7 +1368,8 @@
    ],
    "assessmentItemIds": [
     "mc:M2-016",
-    "mc:M2-018"
+    "mc:M2-018",
+    "tq:T021-02"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -1354,6 +1410,7 @@
     "video:23"
    ],
    "assessmentItemIds": [
+    "tq:T025-05",
     "mc:M2-020"
    ],
    "practicalItemIds": [],
@@ -1363,9 +1420,11 @@
    "learningAssetIds": [
     "video:23"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T023-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.2:human-vectors-social-engineering:pretexting": {
    "learningAssetIds": [
@@ -1393,9 +1452,11 @@
    "learningAssetIds": [
     "video:25"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T025-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.2:human-vectors-social-engineering:typosquatting": {
    "learningAssetIds": [
@@ -1411,9 +1472,11 @@
    "learningAssetIds": [
     "video:26"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T026-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.3:application:buffer-overflow": {
    "learningAssetIds": [
@@ -1431,17 +1494,21 @@
    "learningAssetIds": [
     "video:28"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T028-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.3:application:race-conditions:time-of-use-tou": {
    "learningAssetIds": [
     "video:28"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T028-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.3:application:malicious-update": {
    "learningAssetIds": [
@@ -1467,9 +1534,11 @@
    "learningAssetIds": [
     "video:31"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T031-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.3:web-based:cross-site-scripting-xss": {
    "learningAssetIds": [
@@ -1508,9 +1577,11 @@
    "learningAssetIds": [
     "video:33"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T033-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.3:virtualization:virtual-machine-vm-escape": {
    "learningAssetIds": [
@@ -1536,9 +1607,11 @@
    "learningAssetIds": [
     "video:35"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T035-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.3:supply-chain:service-provider": {
    "learningAssetIds": [
@@ -1566,42 +1639,52 @@
    "learningAssetIds": [
     "video:36"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T036-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.3:cryptographic": {
    "learningAssetIds": [
     "video:52"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T052-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing",
+   "status": "covered",
    "note": "Krypto-Schwächen im 2.4-Video „Cryptographic Attacks“"
   },
   "req:sy0701:v7:2.3:misconfiguration": {
    "learningAssetIds": [
     "video:37"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T037-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.3:mobile-device:side-loading": {
    "learningAssetIds": [
     "video:38"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T038-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.3:mobile-device:jailbreaking": {
    "learningAssetIds": [
     "video:38"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T038-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.3:zero-day": {
    "learningAssetIds": [
@@ -1716,9 +1799,11 @@
    "learningAssetIds": [
     "video:44"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T044-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.4:physical-attacks:radio-frequency-identification-rfid-cloning": {
    "learningAssetIds": [
@@ -1754,9 +1839,11 @@
    "learningAssetIds": [
     "video:45"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T045-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.4:network-attacks:domain-name-system-dns-attacks": {
    "learningAssetIds": [
@@ -1797,9 +1884,11 @@
    "learningAssetIds": [
     "video:49"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T049-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.4:network-attacks:malicious-code": {
    "learningAssetIds": [
@@ -1827,9 +1916,11 @@
    "learningAssetIds": [
     "video:51"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T051-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.4:application-attacks:replay": {
    "learningAssetIds": [
@@ -1846,9 +1937,11 @@
    "learningAssetIds": [
     "video:51"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T051-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.4:application-attacks:forgery": {
    "learningAssetIds": [
@@ -1864,9 +1957,11 @@
    "learningAssetIds": [
     "video:51"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T051-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.4:cryptographic-attacks:downgrade": {
    "learningAssetIds": [
@@ -1915,6 +2010,7 @@
     "video:53"
    ],
    "assessmentItemIds": [
+    "tq:T044-01",
     "tq:T053-04"
    ],
    "practicalItemIds": [],
@@ -1924,32 +2020,39 @@
    "learningAssetIds": [
     "video:54"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T054-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.4:indicators:concurrent-session-usage": {
    "learningAssetIds": [
     "video:54"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T054-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.4:indicators:blocked-content": {
    "learningAssetIds": [
     "video:54"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T054-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.4:indicators:impossible-travel": {
    "learningAssetIds": [
     "video:54"
    ],
    "assessmentItemIds": [
-    "tq:T054-03"
+    "tq:T054-03",
+    "tq:T054-06"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -1958,41 +2061,51 @@
    "learningAssetIds": [
     "video:54"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T054-08"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.4:indicators:resource-inaccessibility": {
    "learningAssetIds": [
     "video:54"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T054-09"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.4:indicators:out-of-cycle-logging": {
    "learningAssetIds": [
     "video:54"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T054-10"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.4:indicators:published-documented": {
    "learningAssetIds": [
     "video:54"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T054-11"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.4:indicators:missing-logs": {
    "learningAssetIds": [
     "video:54"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T054-12"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.5:segmentation": {
    "learningAssetIds": [
@@ -2009,7 +2122,8 @@
     "video:55"
    ],
    "assessmentItemIds": [
-    "mc:M2-114"
+    "mc:M2-114",
+    "tq:T055-01"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -2018,9 +2132,11 @@
    "learningAssetIds": [
     "video:55"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T055-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.5:application-allow-list": {
    "learningAssetIds": [
@@ -2036,17 +2152,21 @@
    "learningAssetIds": [
     "video:56"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T056-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.5:patching": {
    "learningAssetIds": [
     "video:56"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T056-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.5:encryption": {
    "learningAssetIds": [
@@ -2083,17 +2203,21 @@
    "learningAssetIds": [
     "video:56"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T056-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.5:decommissioning": {
    "learningAssetIds": [
     "video:56"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T056-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.5:hardening-techniques:encryption": {
    "learningAssetIds": [
@@ -2110,9 +2234,11 @@
    "learningAssetIds": [
     "video:57"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T057-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.5:hardening-techniques:host-based-firewall": {
    "learningAssetIds": [
@@ -2138,25 +2264,31 @@
    "learningAssetIds": [
     "video:57"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T057-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.5:hardening-techniques:default-password-changes": {
    "learningAssetIds": [
     "video:57"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T057-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.5:hardening-techniques:removal-of-unnecessary-software": {
    "learningAssetIds": [
     "video:57"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T057-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:responsibility-matrix": {
    "learningAssetIds": [

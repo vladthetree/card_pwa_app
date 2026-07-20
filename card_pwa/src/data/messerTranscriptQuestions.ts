@@ -1817,6 +1817,17 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 2,
       why: 'Der Support braucht nie das Nutzerpasswort. Grundregeln: keine Informationen freiwillig herausgeben, keine persönlichen Daten am Telefon, und Anrufer eigenständig über eine öffentliche Nummer verifizieren.',
     },
+    {
+      q: 'The video’s example of an attacker claiming to be the "vice president for finance" illustrates the technique behind business email compromise. What is the attacker exploiting?',
+      options: [
+        'The victim’s assumption that someone introducing themselves as a higher-ranking employee should be trusted without question',
+        'A software vulnerability in the email server',
+        'A weak Wi-Fi password',
+        'An outdated antivirus signature',
+      ],
+      correct: 0,
+      why: 'Das Video zeigt Impersonation eines ranghöheren Mitarbeiters (z. B. VP Finance), damit das Opfer ohne Nachzudenken Informationen preisgibt — genau dieses Muster nutzt Business Email Compromise per E-Mail aus.',
+    },
   ],
 
   // 024 — 2.2 Watering Hole Attacks
@@ -1913,6 +1924,17 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 1,
       why: 'Die angebotene Software ist Malware: Sie zeigt Werbung, verfolgt besuchte Seiten oder schleust Daten zum Angreifer aus.',
     },
+    {
+      q: 'How does brand impersonation work as a social engineering technique, per the video?',
+      options: [
+        'Attackers create many sites using a recognizable brand name so search engines index them, redirecting searchers to malicious lookalike sites',
+        'Attackers only impersonate government agencies, never companies',
+        'Brand impersonation requires physical access to the brand’s headquarters',
+        'Brand impersonation is limited to television advertisements',
+      ],
+      correct: 0,
+      why: 'Laut Video erstellen Angreifer massenhaft Seiten mit bekannten Markennamen, die von Google indexiert werden — Suchende landen so auf gefälschten Seiten mit Schadsoftware.',
+    },
   ],
 
   // 027 — 2.3 Buffer Overflows
@@ -2008,6 +2030,28 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 0,
       why: 'Spirit hing 2004 wegen eines Dateisystemfehlers in einer Reboot-Schleife; beim Pwn2Own 2023 brachte ein TOCTOU-Angriff über Bluetooth Root-Rechte auf dem Tesla-Infotainment — 100.000 $ Prämie plus Auto.',
+    },
+    {
+      q: 'What does the "time-of-check" step in a TOCTOU vulnerability involve, per the video?',
+      options: [
+        'The application checks the system to retrieve a stored value',
+        'The application immediately deletes the value',
+        'The application encrypts the value before use',
+        'The application ignores the value entirely',
+      ],
+      correct: 0,
+      why: 'Time-of-Check ist laut Video der Moment, in dem die Anwendung einen gespeicherten Wert abfragt — bevor sie ihn tatsächlich verwendet.',
+    },
+    {
+      q: 'Why does the gap between time-of-check and time-of-use cause a race condition, per the video’s bank account example?',
+      options: [
+        'Because the value may change between the check and its actual use, and the app doesn’t account for that (e.g., a withdrawal not yet reflected)',
+        'Because encryption always fails during time-of-use',
+        'Because the CPU cannot process two requests at once, ever',
+        'Because time-of-use only applies to physical hardware',
+      ],
+      correct: 0,
+      why: 'Im Bankbeispiel des Videos wird ein Kontostand geprüft, bevor eine spätere Abbuchung berücksichtigt ist — der Wert ändert sich zwischen Prüfung und Nutzung, was zur Race Condition führt.',
     },
   ],
 
@@ -2344,6 +2388,94 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 0,
       why: 'Wer nicht mehr auf Security-Seiten kommt oder keine Signaturen laden kann, hat ein Alarmzeichen: Malware verhindert Updates, damit die Lücke offen bleibt. Auch fehlende Logeinträge und Datenauftauchen im Netz sind starke IOCs.',
+    },
+    {
+      q: 'What makes an account lockout a strong indicator of compromise, per the video?',
+      options: [
+        'It occurs even though the account owner made no login attempts, or was administratively disabled by someone else',
+        'Account lockouts always happen once a year automatically',
+        'Account lockouts never involve the help desk',
+        'Locked accounts are always immediately deleted',
+      ],
+      correct: 0,
+      why: 'Besonders verdächtig ist es laut Video, wenn eine Sperre eintritt, obwohl der Nutzer selbst keine Anmeldeversuche unternommen hat — oder wenn das Konto administrativ deaktiviert wurde, ohne dass jemand intern dafür verantwortlich war.',
+    },
+    {
+      q: 'What does the video’s "impossible travel" example illustrate about concurrent session usage?',
+      options: [
+        'A login from Nebraska followed minutes later by a login from Australia for the same account is physically implausible and worth alerting on',
+        'Concurrent logins from different devices are always malicious',
+        'Impossible travel only applies to physical security badges',
+        'Concurrent sessions are impossible to detect in logs',
+      ],
+      correct: 0,
+      why: 'Das Video beschreibt einen Login aus Nebraska, gefolgt von einem Login aus Australien wenige Minuten später — physikalisch nicht plausibel und ein klarer Alarmgrund.',
+    },
+    {
+      q: 'How can blocked content be an indicator of compromise, per the video?',
+      options: [
+        'Malware often disables updates, so being unable to reach security websites or download patches can signal an active infection',
+        'Blocked content always means the firewall is working perfectly with no concerns',
+        'Blocked content only ever refers to parental controls',
+        'Blocked content cannot be logged or investigated',
+      ],
+      correct: 0,
+      why: 'Laut Video deaktiviert Malware oft Updates — kannst du plötzlich keine Security-Websites oder Patches mehr erreichen, kann das ein Hinweis auf eine aktive Infektion sein.',
+    },
+    {
+      q: 'What unusual pattern in resource consumption does the video flag as an indicator of compromise?',
+      options: [
+        'A sudden spike in network traffic at an unusual time, such as 3 a.m., possibly indicating data exfiltration',
+        'Consistent, predictable resource usage throughout business hours',
+        'Resource consumption is never useful for detecting compromise',
+        'Only CPU temperature counts as a resource consumption indicator',
+      ],
+      correct: 0,
+      why: 'Laut Video kann ein plötzlicher Traffic-Anstieg zu unüblichen Zeiten (z. B. 3 Uhr morgens) auf Datenexfiltration hindeuten.',
+    },
+    {
+      q: 'Which scenarios does the video give as resource inaccessibility potentially indicating compromise?',
+      options: [
+        'A server crashing while an attacker probes for a vulnerability, or files suddenly encrypted by ransomware',
+        'A server being rebooted for scheduled monthly patching',
+        'Resource inaccessibility is always harmless and needs no investigation',
+        'A printer running out of paper',
+      ],
+      correct: 0,
+      why: 'Beispiele im Video: Ein Server stürzt ab, während ein Angreifer nach einer Schwachstelle sucht, oder Dateien sind plötzlich durch Ransomware verschlüsselt und unzugänglich.',
+    },
+    {
+      q: 'What is out-of-cycle logging, per the video?',
+      options: [
+        'Log entries showing activity (e.g., patch installs) occurring outside the normal, expected schedule',
+        'Logs that are rotated every 24 hours automatically',
+        'Logging that only occurs during business hours',
+        'A log format that uses a different character encoding',
+      ],
+      correct: 0,
+      why: 'Out-of-Cycle Logging bedeutet laut Video, dass Log-Einträge (z. B. Patch-Installationen) zu Zeiten auftauchen, die außerhalb des bekannten, erwarteten Zeitplans liegen.',
+    },
+    {
+      q: 'What does the video describe as one of the clearest indicators of compromise?',
+      options: [
+        'Private organizational data suddenly appearing publicly available on the internet',
+        'An employee publishing an internal newsletter',
+        'A vendor documenting their own product roadmap',
+        'A server publishing its uptime statistics internally',
+      ],
+      correct: 0,
+      why: 'Laut Video ist es ein sehr klarer Kompromittierungshinweis, wenn private Unternehmensdaten plötzlich öffentlich im Internet auftauchen — oft im Zusammenhang mit Ransomware-Erpressung.',
+    },
+    {
+      q: 'Why do attackers often delete log entries, per the video?',
+      options: [
+        'To hide the fact that they were ever on that system, which is why missing logs themselves become a suspicious signal',
+        'Deleting logs improves system performance with no security relevance',
+        'Log deletion is a routine, scheduled maintenance task with no security meaning',
+        'Attackers cannot access or modify logs',
+      ],
+      correct: 0,
+      why: 'Angreifer löschen laut Video Log-Einträge, um ihre Spuren zu verwischen — deshalb sind fehlende, erwartete Logs selbst ein Alarmsignal, das man aktiv überwachen sollte.',
     },
   ],
 
@@ -4958,6 +5090,579 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 1,
       why: 'Ein Wildcard-Zertifikat mit z. B. *.birdfeeder.live deckt laut Video beliebige Subdomains derselben Domain ab (www, ftp, mail, …) — praktisch für viele Geräte mit einem einzigen Zertifikat.',
+    },
+  ],
+  '020': [
+    {
+      q: 'Where do the resources used by an insider threat actor come from, per the video?',
+      options: [
+        'They must be imported from outside contractors',
+        'They already exist within the organization, which the individual simply takes advantage of',
+        'Insider threats never have access to any organizational resources',
+        'They are always purchased from a nation-state sponsor',
+      ],
+      correct: 1,
+      why: 'Laut Video nutzt ein Insider-Threat bereits vorhandene Ressourcen der Organisation selbst — daher die Bedeutung sorgfältigen Vettings beim Einstellungsprozess.',
+    },
+    {
+      q: 'Which threat actor types does the video classify as commonly internal rather than external?',
+      options: [
+        'Nation-state and organized crime',
+        'Insider threat and shadow IT',
+        'Hacktivists and unskilled attackers',
+        'Only nation-state actors',
+      ],
+      correct: 1,
+      why: 'Laut Video sind Insider Threats und Shadow IT typischerweise intern, während Nation-State, Unskilled, Hacktivist und Organized Crime meist von außen kommen.',
+    },
+    {
+      q: 'How does the video contrast the resources of a nation-state actor with those of an unskilled attacker?',
+      options: [
+        'Both have identical, unlimited resources',
+        'A nation-state has enormous resources for constant, multi-target attacks, while an unskilled attacker typically has very limited resources',
+        'Unskilled attackers always have more funding than nation-states',
+        'Resources/funding is not a meaningful attribute for threat actors',
+      ],
+      correct: 1,
+      why: 'Laut Video verfügt ein Nationalstaat über enorme Ressourcen für dauerhafte Mehrfachangriffe, während unskilled Attacker meist kaum Mittel haben.',
+    },
+    {
+      q: 'What distinguishes a highly sophisticated threat actor from an unskilled one, per the video?',
+      options: [
+        'Sophistication is only measured by the amount of money spent on hardware',
+        'A sophisticated actor can build their own tools and capabilities, while an unskilled one runs scripts without understanding what they do',
+        'Sophistication has nothing to do with technical capability',
+        'Unskilled attackers are always more dangerous than sophisticated ones',
+      ],
+      correct: 1,
+      why: 'Laut Video reicht die Bandbreite von Angreifern, die eigene Tools bauen können, bis zu unskilled Attackers, die Skripte laufen lassen, ohne die Funktionsweise zu verstehen.',
+    },
+    {
+      q: 'Which motivation does the video associate with attackers who want to find and remove data from an organization?',
+      options: [
+        'Data exfiltration',
+        'Service disruption only',
+        'War',
+        'Ethical hacking',
+      ],
+      correct: 0,
+      why: 'Datenexfiltration ist laut Video eine der genannten Motivationen — der Angreifer will Daten finden und aus der Organisation herausschaffen.',
+    },
+    {
+      q: 'What example of espionage motivation does the video give?',
+      options: [
+        'A competitor wanting to know what another company is working on',
+        'An employee requesting a raise',
+        'A customer filing a complaint',
+        'A vendor renewing a support contract',
+      ],
+      correct: 0,
+      why: 'Als Beispiel für Spionage nennt das Video einen Wettbewerber, der herausfinden will, woran ein anderes Unternehmen arbeitet.',
+    },
+    {
+      q: 'What is the goal of an attacker motivated by service disruption, per the video?',
+      options: [
+        'To create problems for an organization’s customers by disrupting the service they provide',
+        'To improve the target’s uptime',
+        'To sell the target company’s stock short legally',
+        'To become an employee of the target organization',
+      ],
+      correct: 0,
+      why: 'Laut Video will ein auf Service Disruption fokussierter Angreifer gezielt Probleme für die Kunden der Organisation schaffen, indem er den Dienst stört.',
+    },
+    {
+      q: 'How does the ransomware-related motivation described in the video connect to blackmail?',
+      options: [
+        'Attackers encrypt or steal data and then demand payment under threat of exposure or continued unavailability',
+        'Blackmail never involves any technical attack',
+        'Blackmail is exclusively used by nation-states',
+        'Blackmail requires physical access to the target',
+      ],
+      correct: 0,
+      why: 'Das Video beschreibt Angreifer, die Daten verschlüsseln oder stehlen und dann mit Zahlung oder Veröffentlichung drohen — der Kern von Erpressung/Blackmail-Motivation.',
+    },
+    {
+      q: 'Which threat actor type does the video most closely associate with philosophical or political motivation?',
+      options: [
+        'Hacktivists, motivated by political reasons or philosophical differences',
+        'Organized crime, motivated purely by profit',
+        'Shadow IT, motivated by convenience',
+        'Insider threats, always motivated by revenge only',
+      ],
+      correct: 0,
+      why: 'Hacktivisten handeln laut Video aus politischen Gründen oder philosophischen Differenzen, um eine Organisation zu stören oder zu schädigen.',
+    },
+    {
+      q: 'Which motivation does the video contrast with organized crime’s purely profit-driven behavior?',
+      options: [
+        'A sense of what the actor believes is right, distinct from a financial motive',
+        'Ethical motivation is identical to financial gain',
+        'Ethics never factor into threat actor behavior',
+        'Only unskilled attackers can have ethical motivations',
+      ],
+      correct: 0,
+      why: 'Organisiertes Verbrechen handelt laut Video rein profitorientiert — andere Akteure können dagegen aus einem persönlichen Gerechtigkeits-/Ethikempfinden heraus handeln, unabhängig vom finanziellen Gewinn.',
+    },
+    {
+      q: 'Which threat actor does the video specifically link to revenge as a motivation?',
+      options: [
+        'An insider threat, who may be out for revenge or financial gain against the organization',
+        'A nation-state acting on behalf of its government',
+        'An unskilled attacker running a downloaded script',
+        'A hardware vendor shipping counterfeit switches',
+      ],
+      correct: 0,
+      why: 'Laut Video kann ein Insider Threat aus Rache oder finanziellem Interesse gegen die eigene Organisation handeln.',
+    },
+    {
+      q: 'How does the video describe a threat actor motivated purely by disruption/chaos?',
+      options: [
+        'They aim to create problems or damage an organization without necessarily needing financial gain',
+        'They only ever target government agencies',
+        'They are exclusively insiders',
+        'They always demand a ransom payment',
+      ],
+      correct: 0,
+      why: 'Laut Video kann die Motivation schlicht sein, eine Organisation zu stören oder zu schädigen — ohne dass finanzieller Gewinn im Vordergrund steht.',
+    },
+    {
+      q: 'What extreme motivation does the video mention regarding nation-state attacks?',
+      options: [
+        'Trying to pull a target country into a war',
+        'Improving diplomatic relations',
+        'Winning a marketing competition',
+        'Reducing a competitor’s advertising budget',
+      ],
+      correct: 0,
+      why: 'Als eine der Motivationen für Nation-State-Angriffe nennt das Video den Versuch, ein Land in einen Krieg zu ziehen.',
+    },
+  ],
+  '021': [
+    {
+      q: 'Why does the video call email such a common threat vector?',
+      options: [
+        'Because it is a place attackers can send malicious links or phishing pages that most people already use daily',
+        'Because email cannot carry any attachments',
+        'Because email is never scanned by security tools',
+        'Because email addresses are always kept secret',
+      ],
+      correct: 0,
+      why: 'E-Mail ist laut Video ein beliebter Vektor, weil praktisch jeder eine Adresse nutzt und Angreifer darüber Links oder Phishing-Seiten direkt zustellen können.',
+    },
+    {
+      q: 'Why are instant/direct messages a good vector for phishing, per the video?',
+      options: [
+        'They let the attacker talk to you directly, trying to get you to click links you normally would not',
+        'Instant messages cannot contain links',
+        'Instant messages are always encrypted end-to-end against phishing',
+        'Instant messaging apps block all external contacts by default',
+      ],
+      correct: 0,
+      why: 'Laut Video kann der Angreifer über IM/Direktnachrichten direkt mit dem Opfer kommunizieren und es zum Klicken verleiten.',
+    },
+    {
+      q: 'How can an SVG image be used as an attack vector, per the video?',
+      options: [
+        'SVG is an XML file that can embed HTML or JavaScript, which can run when the browser renders the "image"',
+        'SVG files can never contain any code',
+        'SVG images can only be opened by dedicated desktop software, never a browser',
+        'SVG is a compression format unrelated to images',
+      ],
+      correct: 0,
+      why: 'Laut Video ist SVG eigentlich eine XML-Datei — Angreifer können darin HTML oder JavaScript einbetten, das beim Rendern im Browser ausgeführt wird.',
+    },
+    {
+      q: 'Which file types does the video mention as good hiding places for malicious content?',
+      options: [
+        'PDFs, compressed archives (zip/rar), and Office documents with macros',
+        'Only plain .txt files',
+        'Only files larger than 1 GB',
+        'File-based attacks are impossible on modern systems',
+      ],
+      correct: 0,
+      why: 'Das Video nennt PDFs (können Skripte enthalten), komprimierte Archive (verstecken schädliche Dateien) und Office-Makros als typische datei-basierte Vektoren.',
+    },
+    {
+      q: 'What voice-based threat vectors does the video describe?',
+      options: [
+        'Vishing calls to extract information, spam over VoIP, and war dialing for unpublished numbers',
+        'Voice calls are never used as an attack vector',
+        'Only text messages, never actual phone calls',
+        'Voice calls can only be used for legitimate customer support',
+      ],
+      correct: 0,
+      why: 'Das Video nennt Vishing (Voice-Phishing), Spam over IP und War Dialing als telefonbasierte Bedrohungsvektoren.',
+    },
+    {
+      q: 'What is the security implication of an "agentless" (browser-based) application compared to installed client software, per the video?',
+      options: [
+        'If the attacker infects the central server, every connecting client can be infected too, since nothing is installed locally',
+        'Agentless applications are immune to attack',
+        'Agentless applications always require local administrator rights',
+        'There is no difference between agentless and client-based software',
+      ],
+      correct: 0,
+      why: 'Bei agentenlosen (browserbasierten) Anwendungen infiziert ein kompromittierter zentraler Server laut Video potenziell jeden verbundenen Client — jeder Login läuft über eine neue Serverinstanz.',
+    },
+    {
+      q: 'What does the video recommend regarding outdated wireless security protocols?',
+      options: [
+        'Updating from WEP, WPA, or WPA2 to WPA3',
+        'Disabling wireless security entirely for compatibility',
+        'Wireless protocols never need updating',
+        'Only WEP is considered secure today',
+      ],
+      correct: 0,
+      why: 'Das Video empfiehlt, veraltete Protokolle wie WEP/WPA/WPA2 auf WPA3 zu aktualisieren, um die Funknetz-Sicherheit zu verbessern.',
+    },
+    {
+      q: 'What authentication protocol does the video recommend enabling for both wired and wireless networks?',
+      options: [
+        '802.1X, to prevent access without proper credentials',
+        'Telnet, for simple compatibility',
+        'FTP, for encrypted transfers',
+        'SNMP version 1',
+      ],
+      correct: 0,
+      why: 'Laut Video sollte 802.1X sowohl in kabelgebundenen als auch drahtlosen Netzen aktiviert werden, um unautorisierten Zugriff zu verhindern.',
+    },
+    {
+      q: 'How can Bluetooth be used as a threat vector, per the video?',
+      options: [
+        'For reconnaissance to locate a system, or exploiting weak security in a device’s Bluetooth implementation',
+        'Bluetooth cannot be exploited under any circumstances',
+        'Bluetooth only works within the same building and is therefore inherently safe',
+        'Bluetooth automatically encrypts all traffic with no vulnerabilities',
+      ],
+      correct: 0,
+      why: 'Laut Video kann Bluetooth zur Aufklärung (Standortbestimmung) genutzt werden oder eine unzureichend abgesicherte Implementierung als Einfallstor dienen.',
+    },
+    {
+      q: 'Why does the video say more open ports mean less security?',
+      options: [
+        'Each installed service opens its own port, giving a third party a potential way into that portion of the system',
+        'Open ports have no relationship to security at all',
+        'Open ports automatically close themselves after 24 hours',
+        'Only port 443 can ever be exploited',
+      ],
+      correct: 0,
+      why: 'Jeder installierte Dienst öffnet laut Video einen eigenen Port — je mehr Dienste, desto mehr potenzielle Eintrittspunkte für Angreifer.',
+    },
+    {
+      q: 'How did the Target breach in 2013 illustrate a supply chain vendor risk, per the video?',
+      options: [
+        'Attackers compromised an HVAC contractor (a vendor) and used that access to reach Target’s point-of-sale network',
+        'Target was attacked directly with no third party involved',
+        'The vendor risk had nothing to do with network access',
+        'The breach involved only Target’s own employees',
+      ],
+      correct: 0,
+      why: 'Laut Video kompromittierten Angreifer zunächst den HVAC-Dienstleister von Target (einen Vendor) und sprangen von dort ins POS-Netzwerk.',
+    },
+    {
+      q: 'Why does the video recommend an ongoing security audit built into supplier contracts?',
+      options: [
+        'Because organizations work with numerous suppliers who may have access to sensitive systems, and contracts should guarantee audit rights',
+        'Suppliers never need any security oversight',
+        'Audits of suppliers are illegal in most jurisdictions',
+        'Supplier security is solely the supplier’s legal problem, never the customer’s',
+      ],
+      correct: 0,
+      why: 'Da Organisationen laut Video mit zahlreichen Zulieferern arbeiten, die teils sensible Zugänge haben, wird ein vertraglich verankertes Audit-Recht empfohlen.',
+    },
+  ],
+  '026': [
+    {
+      q: 'Why does malware benefit from injecting itself into an existing process rather than running as its own process, per the video?',
+      options: [
+        'It avoids detection by anti-malware looking for a malicious process, and gains the same rights/permissions as the process it injects into',
+        'Injected malware runs slower than a standalone process',
+        'It has no functional benefit at all',
+        'It only works if the target process is already malicious',
+      ],
+      correct: 0,
+      why: 'Laut Video umgeht injizierter Code die Erkennung durch Anti-Malware, die nach eigenständigen bösartigen Prozessen sucht, und erbt die Rechte des Zielprozesses — ein einfacher Weg zur Rechteausweitung.',
+    },
+  ],
+  '031': [
+    {
+      q: 'What common pattern in a database query indicates a likely SQL injection attempt, per the video?',
+      options: [
+        'A condition like "1 equals 1" appended to the query to force it to return everything',
+        'A query that only ever returns exactly one row',
+        'A query written entirely in uppercase letters',
+        'A query that takes longer than one second to run',
+      ],
+      correct: 0,
+      why: 'Laut Video ist ein angehängtes „... OR 1=1" ein klassisches Muster, mit dem SQL-Injection den gesamten Datensatz statt nur die erwartete Zeile zurückgibt.',
+    },
+  ],
+  '033': [
+    {
+      q: 'What is the main risk of legacy hardware devices at remote sites, per the video?',
+      options: [
+        'They often run outdated operating systems or applications that have reached end of life/service life, with no active security patching',
+        'Legacy devices are always immune to attacks due to their age',
+        'Legacy devices automatically upgrade themselves',
+        'Legacy hardware has no relationship to software vulnerabilities',
+      ],
+      correct: 0,
+      why: 'Laut Video laufen Legacy-Geräte oft mit veralteten, nicht mehr gepatchten Betriebssystemen — man muss das Risiko des Weiterbetriebs gegen den Aufwand einer Ablösung abwägen.',
+    },
+  ],
+  '035': [
+    {
+      q: 'Which statistic does the video cite about cloud security practices?',
+      options: [
+        'An estimated 76% of organizations aren’t using multifactor authentication for their cloud console',
+        'All cloud providers enforce MFA by default with no exceptions',
+        'Cloud code is always fully patched within 24 hours',
+        'Cloud vulnerabilities cannot have a high CVSS score',
+      ],
+      correct: 0,
+      why: 'Das Video nennt die Schätzung, dass rund 76 % der Organisationen keine Multi-Faktor-Authentifizierung für ihre Cloud-Konsole nutzen.',
+    },
+  ],
+  '036': [
+    {
+      q: 'What made the SolarWinds Orion attack a software supply chain vulnerability, per the video?',
+      options: [
+        'Attackers inserted malicious code into the vendor’s own software, which was then digitally signed and distributed to about 18,000 trusting customers',
+        'Attackers directly hacked each of the 18,000 customer networks individually',
+        'The vulnerability existed only in customers’ own custom code',
+        'No digital signature was ever involved',
+      ],
+      correct: 0,
+      why: 'Laut Video schleusten Angreifer Code direkt in die SolarWinds-Infrastruktur ein; das infizierte Update wurde digital signiert und an rund 18.000 vertrauende Kunden verteilt.',
+    },
+  ],
+  '037': [
+    {
+      q: 'What common misconfiguration does the video illustrate with the 2017 Verizon records incident?',
+      options: [
+        'A cloud storage repository (Amazon S3) was left open to the internet without any password protection',
+        'A firewall blocked all legitimate traffic',
+        'An employee used too strong a password',
+        'A server was physically unplugged from the network',
+      ],
+      correct: 0,
+      why: 'Im Beispiel des Videos lag ein Amazon-S3-Speicher ohne jeden Passwortschutz offen im Internet — eine klassische Fehlkonfiguration.',
+    },
+  ],
+  '038': [
+    {
+      q: 'What is sideloading, per the video?',
+      options: [
+        'Installing applications outside the scope of official app stores',
+        'Charging a mobile device using a side-mounted USB port',
+        'Automatically updating apps in the background',
+        'Restricting an app to a single user account',
+      ],
+      correct: 0,
+      why: 'Sideloading beschreibt laut Video das Installieren von Apps außerhalb der offiziellen App-Stores — nach einem Jailbreak/Root meist uneingeschränkt möglich.',
+    },
+    {
+      q: 'What security consequence does jailbreaking/rooting a mobile device have, per the video?',
+      options: [
+        'It replaces the OS/firmware with a third-party version, circumventing all MDM-enforced security restrictions',
+        'It has no effect on device security whatsoever',
+        'It automatically increases the device’s built-in encryption strength',
+        'It only affects the device’s battery life',
+      ],
+      correct: 0,
+      why: 'Laut Video ersetzt Jailbreaking/Rooting die Firmware durch eine Drittanbieter-Version und hebelt damit alle vom MDM durchgesetzten Sicherheitsvorgaben aus.',
+    },
+  ],
+  '044': [
+    {
+      q: 'How does the video describe brute force as a physical attack, not just a password attack?',
+      options: [
+        'Forcing open a locked door or window to gain physical access',
+        'Repeatedly guessing passwords over a network connection only',
+        'Overloading a web server with traffic',
+        'Cloning an RFID badge remotely',
+      ],
+      correct: 0,
+      why: 'Das Video erweitert den Begriff Brute Force über Passwörter hinaus: Auch das gewaltsame Aufbrechen einer Tür oder eines Fensters zählt dazu.',
+    },
+  ],
+  '045': [
+    {
+      q: 'How does reflected DNS amplification achieve a large DDoS impact from a small request, per the video?',
+      options: [
+        'A tiny spoofed DNS query is sent to open resolvers, which send a much larger response to the spoofed (victim) address',
+        'The attacker sends the same volume of data they receive back',
+        'It requires the attacker to control the victim’s DNS server directly',
+        'It only works over encrypted HTTPS traffic',
+      ],
+      correct: 0,
+      why: 'Im Video sendet der Bot eine winzige, gefälschte DNS-Anfrage an offene Resolver — die viel größere Antwort geht an die gefälschte (Opfer-)Adresse zurück, ca. 86-fach verstärkt im Beispiel.',
+    },
+  ],
+  '049': [
+    {
+      q: 'What is "pass the hash," per the video?',
+      options: [
+        'Capturing a username and hashed password, then replaying it directly to the server to authenticate as the victim',
+        'Cracking a password hash offline before ever contacting the server',
+        'Hashing a password twice for extra security',
+        'A method to generate new random passwords automatically',
+      ],
+      correct: 0,
+      why: 'Pass the Hash bedeutet laut Video, einen abgefangenen Benutzernamen samt gehashtem Passwort direkt an den Server zu senden, um sich als Opfer zu authentifizieren — ohne das Passwort je zu entschlüsseln.',
+    },
+  ],
+  '051': [
+    {
+      q: 'What happens in a buffer overflow, per the video?',
+      options: [
+        'More data is written into a memory variable than it can hold, and the extra data spills into adjacent memory',
+        'A buffer is deliberately left empty to save memory',
+        'The application refuses all input larger than one byte',
+        'The CPU automatically compresses oversized input',
+      ],
+      correct: 0,
+      why: 'Beim Buffer Overflow wird laut Video mehr Information in eine reservierte Speichervariable geschrieben, als sie fassen kann — der Überschuss läuft in den benachbarten Speicherbereich über.',
+    },
+    {
+      q: 'What is horizontal privilege escalation, as distinguished from vertical, per the video?',
+      options: [
+        'Moving from one regular user’s access (user A) to another regular user’s access (user B), rather than to administrator rights',
+        'Gaining physical access to a horizontal server rack',
+        'A privilege escalation that only affects mobile devices',
+        'Escalating privileges by changing your screen resolution',
+      ],
+      correct: 0,
+      why: 'Horizontale Rechteausweitung bedeutet laut Video, von den Rechten des Nutzers A zu denen des Nutzers B zu wechseln — anders als die vertikale Eskalation zu Administratorrechten.',
+    },
+    {
+      q: 'Which character sequence in a URL is a giveaway for a directory traversal attempt, per the video?',
+      options: [
+        '../ used to move backward out of the intended web directory',
+        'A trailing question mark with no parameters',
+        'The letters "www" repeated three times',
+        'An all-lowercase domain name',
+      ],
+      correct: 0,
+      why: 'Die Zeichenfolge „../" bewegt sich laut Video ein Verzeichnis nach oben — taucht sie in Zugriffs-URLs auf, deutet das auf einen Directory-Traversal-Versuch hin.',
+    },
+  ],
+  '052': [
+    {
+      q: 'Why did the industry stop trusting MD5, per the video?',
+      options: [
+        'Researchers found hash collisions, and in 2008 created a fraudulent CA-signed-looking certificate exploiting this weakness',
+        'MD5 was too slow for modern hardware',
+        'MD5 was replaced purely for licensing reasons',
+        'MD5 never had any documented weakness',
+      ],
+      correct: 0,
+      why: 'Laut Video fanden Forscher Kollisionen in MD5, und 2008 gelang es, ein scheinbar gültiges, CA-signiertes Zertifikat zu erzeugen — ein Vertrauensbruch, der MD5 als Hash-Algorithmus disqualifizierte.',
+    },
+  ],
+  '055': [
+    {
+      q: 'What granularity of control does an ACL provide, per the video’s example rules?',
+      options: [
+        'Very specific rules, e.g. one user may access a particular subnet only over specific TCP ports',
+        'ACLs can only allow or deny entire networks, never individual ports',
+        'ACLs cannot reference usernames, only IP addresses',
+        'ACL rules apply identically to every user with no customization',
+      ],
+      correct: 0,
+      why: 'Das Beispiel im Video zeigt sehr granulare Regeln — etwa ein Nutzer darf ein bestimmtes Subnetz nur über die Ports 80, 443 und 8088 erreichen.',
+    },
+  ],
+  '056': [
+    {
+      q: 'What does the video mean by isolation as a mitigation technique?',
+      options: [
+        'Quarantining a system into a private VLAN when a posture assessment finds it out of compliance',
+        'Physically disconnecting all systems from the network permanently',
+        'Isolation refers only to isolating individual database rows',
+        'Isolation means giving every device full network access',
+      ],
+      correct: 0,
+      why: 'Laut Video wird ein System bei einer fehlgeschlagenen Posture-Prüfung in ein privates VLAN isoliert/quarantänisiert, bis es aktualisiert ist.',
+    },
+    {
+      q: 'How does the video contrast home patching with patching in a large organization?',
+      options: [
+        'Home systems often patch automatically; large organizations typically test patches first, then push them out once verified',
+        'Large organizations never test patches before deployment',
+        'Home systems never receive patches automatically',
+        'Patching is identical in every environment with no testing anywhere',
+      ],
+      correct: 0,
+      why: 'Laut Video patchen Heimsysteme oft automatisch, während größere Organisationen Patches zunächst testen, bevor sie sie unternehmensweit ausrollen.',
+    },
+    {
+      q: 'What does a posture assessment check during login, per the video?',
+      options: [
+        'Whether the OS/patches are current, antivirus/EDR is up to date, and the local firewall is properly configured',
+        'Only the user’s typing speed',
+        'Only whether the device has a webcam',
+        'Posture assessments only check hardware manufacturer information',
+      ],
+      correct: 0,
+      why: 'Die Posture Assessment prüft laut Video u. a. aktuelle Patches, EDR-/Antivirus-Status und ob die lokale Firewall korrekt konfiguriert ist, bevor Netzzugriff gewährt wird.',
+    },
+    {
+      q: 'What does the video recommend before decommissioning a storage drive with potentially sensitive data?',
+      options: [
+        'Removing/deleting the data, or physically destroying the drive if it will no longer be reused',
+        'Simply throwing the drive in a public recycling bin',
+        'Leaving the data intact since decommissioned devices are never accessed',
+        'Selling the drive as-is on the open market',
+      ],
+      correct: 0,
+      why: 'Laut Video sollte man Daten vor der Außerbetriebnahme entfernen oder das Laufwerk physisch zerstören, wenn es nicht wiederverwendet wird.',
+    },
+  ],
+  '057': [
+    {
+      q: 'What role does an EDR play beyond traditional antivirus, per the video?',
+      options: [
+        'It adds behavioral analysis, machine learning, and can autonomously isolate/quarantine a system when it detects malicious activity',
+        'EDR is functionally identical to signature-only antivirus',
+        'EDR requires manual technician approval before it can take any action',
+        'EDR only works on mobile devices',
+      ],
+      correct: 0,
+      why: 'Laut Video geht EDR über reine Signaturerkennung hinaus: Verhaltensanalyse, maschinelles Lernen und die Fähigkeit, autonom zu isolieren/quarantänisieren, sobald etwas Bösartiges erkannt wird.',
+    },
+    {
+      q: 'Why does the video recommend closing as many ports as possible on a server or workstation?',
+      options: [
+        'Every open port is an opportunity for an attacker to find a vulnerability that grants access',
+        'Closing ports has no effect on security',
+        'Open ports automatically encrypt all traffic passing through them',
+        'Only wireless devices have ports that need closing',
+      ],
+      correct: 0,
+      why: 'Laut Video ist jeder offene Port eine potenzielle Angriffsfläche — möglichst viele nicht benötigte Ports sollten geschlossen werden.',
+    },
+    {
+      q: 'What does the video recommend for management interfaces on routers, switches, and firewalls?',
+      options: [
+        'Manually changing default credentials, since not every device prompts you to do so automatically',
+        'Leaving default credentials in place for easier support access',
+        'Publishing default credentials internally for convenience',
+        'Default credentials are never a security concern for management interfaces',
+      ],
+      correct: 0,
+      why: 'Laut Video fragen nicht alle Geräte automatisch nach einer Passwortänderung — man muss die Standardzugangsdaten von Management-Oberflächen manuell ändern.',
+    },
+    {
+      q: 'Why does the video suggest deleting unused applications as a hardening technique?',
+      options: [
+        'Every installed application has its own separate update process, so removing unused ones reduces the security maintenance burden',
+        'Removing applications always breaks the operating system',
+        'Unused applications never contain vulnerabilities',
+        'Application removal is purely a performance, not a security, technique',
+      ],
+      correct: 0,
+      why: 'Da jede installierte Anwendung laut Video einen eigenen Update-Prozess hat, verringert das Entfernen ungenutzter Software den Pflegeaufwand und die Angriffsfläche.',
     },
   ],
 }
