@@ -1366,6 +1366,50 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 2,
       why: 'Das Board (z. B. Board of Directors) gibt breite Ziele vor; das Committee aus Fachexperten erarbeitet die Umsetzung und legt Ergebnisse dem Board zur Freigabe vor. Governance kann dabei zentral oder dezentral organisiert sein.',
     },
+    {
+      q: 'What does the video recommend doing with a departing user’s account during offboarding, rather than deleting it immediately?',
+      options: [
+        'Disabling it, in case encrypted files or other data need to be retrieved later',
+        'Deleting it immediately with no further consideration',
+        'Leaving it fully active indefinitely for convenience',
+        'Transferring it automatically to a random other employee',
+      ],
+      correct: 0,
+      why: 'Laut Video sollte ein Konto beim Offboarding deaktiviert, nicht sofort gelöscht werden — sonst könnten wichtige Entschlüsselungsschlüssel oder Daten verloren gehen.',
+    },
+    {
+      q: 'How does governance differ for a public-sector (government) organization, per the video?',
+      options: [
+        'Legal, administrative, and political issues dominate, and meetings tend to be open to the public since the agency serves the public',
+        'Government entities have no governance requirements at all',
+        'Government governance is identical to private-sector governance in every respect',
+        'Government agencies never need committees or boards',
+      ],
+      correct: 0,
+      why: 'Bei Behörden dominieren laut Video rechtliche, administrative und politische Fragen, und Sitzungen sind meist öffentlich, da die Behörde im Dienst der Bürger steht.',
+    },
+    {
+      q: 'What is the difference between centralized and decentralized governance, per the video?',
+      options: [
+        'Centralized governance has one group making decisions for the whole organization; decentralized spreads decisions to others, including those doing the actual work',
+        'Centralized governance means no decisions are ever documented',
+        'Decentralized governance requires a single board with absolute authority',
+        'There is no meaningful difference between the two models',
+      ],
+      correct: 0,
+      why: 'Bei zentralisierter Governance trifft laut Video eine Gruppe die Entscheidungen für die ganze Organisation; bei dezentralisierter Governance verteilen sich Entscheidungen auf mehr Personen, teils bis zur ausführenden Ebene.',
+    },
+    {
+      q: 'Why does the video say playbooks and processes must be continuously monitored and revised?',
+      options: [
+        'Attackers constantly find new ways in, so playbooks, processes, and procedures need to account for emerging threats and new technology',
+        'Once written, playbooks never need to change again',
+        'Monitoring and revision only applies once every ten years',
+        'Revision is unnecessary as long as no incident has occurred yet',
+      ],
+      correct: 0,
+      why: 'Da Angreifer laut Video ständig neue Wege finden, müssen Playbooks, Prozesse und Verfahren fortlaufend überwacht und an neue Bedrohungen/Technologien angepasst werden.',
+    },
   ],
 
   // 109 — 5.1 Data Roles and Responsibilities
@@ -1483,6 +1527,116 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 0,
       why: 'Remote-Arbeit erfordert: kein Zugriff durch Familie/Freunde auf Arbeitsgeräte, zusätzliche Endpoint-Security außerhalb des Büros und verstärkte Absicherung des VPN-Zugangs.',
+    },
+    {
+      q: 'Where does the video recommend making security policies accessible to users?',
+      options: [
+        'On the intranet and in every employee handbook',
+        'Policies should be kept secret from regular employees',
+        'Only posted once on a single bulletin board and never referenced again',
+        'Only shared verbally during onboarding, never in writing',
+      ],
+      correct: 0,
+      why: 'Laut Video sollten Sicherheitsrichtlinien im Intranet und im Mitarbeiterhandbuch dokumentiert und für alle zugänglich sein.',
+    },
+    {
+      q: 'How can organizations administratively enforce password requirements, per the video’s Windows example?',
+      options: [
+        'Using group policy to force minimum length and complexity requirements',
+        'Password requirements cannot be enforced technically, only requested verbally',
+        'Only individual users can decide their own password rules',
+        'Group policy has no relationship to password enforcement',
+      ],
+      correct: 0,
+      why: 'In einer Windows-Umgebung lassen sich laut Video Mindestlänge und Komplexität per Gruppenrichtlinie technisch erzwingen.',
+    },
+    {
+      q: 'What does the video warn about regarding cables when working remotely?',
+      options: [
+        'Users should not use any random cable found to charge a mobile device, since it could be a security risk',
+        'Cables pose no security risk of any kind',
+        'Only USB drives are a risk, cables are always safe',
+        'Charging cables cannot transmit data under any circumstances',
+      ],
+      correct: 0,
+      why: 'Laut Video sollten Nutzer außerhalb des Büros keine beliebig gefundenen Kabel zum Laden nutzen — ein bekanntes Risiko für Datenabgriff/Malware.',
+    },
+    {
+      q: 'What should user training accomplish regarding social engineering, per the video?',
+      options: [
+        'Familiarize users with common techniques so they can identify, understand, and report social engineering to IT security',
+        'Training should convince users that social engineering never happens',
+        'Only IT staff need social engineering training, never other employees',
+        'Social engineering awareness has no reporting component',
+      ],
+      correct: 0,
+      why: 'Laut Video sollen Nutzer gängige Social-Engineering-Techniken erkennen, verstehen und dem IT-Sicherheitsteam melden können.',
+    },
+    {
+      q: 'What does the video mean by encouraging users to have "operational security" awareness?',
+      options: [
+        'Interpreting security from the attacker’s perspective and understanding what data is sensitive',
+        'Operational security only concerns physical building locks',
+        'It means users should ignore all security training',
+        'It only applies to system administrators, never regular users',
+      ],
+      correct: 0,
+      why: 'Operational Security bedeutet laut Video, Sicherheit aus Angreiferperspektive zu betrachten und zu wissen, welche Daten besonders schützenswert sind.',
+    },
+    {
+      q: 'What additional security concerns does the video mention for remote/hybrid workers?',
+      options: [
+        'Ensuring family/friends don’t access work systems, adding endpoint security, and increasing VPN security',
+        'Remote work introduces no additional security concerns',
+        'Remote workers should never use a VPN',
+        'Only office-based employees need any security training',
+      ],
+      correct: 0,
+      why: 'Laut Video braucht Remote-/Hybridarbeit zusätzliche Vorkehrungen: kein Familienzugriff auf Arbeitsgeräte, mehr Endpoint-Sicherheit und stärkere VPN-Absicherung.',
+    },
+    {
+      q: 'What does the video describe as the first response when a user clicks a phishing link or shows risky behavior for the first time?',
+      options: [
+        'Address it with user training to make them aware, so the issue doesn’t recur',
+        'Immediately terminate the employee',
+        'Ignore the first occurrence entirely with no action',
+        'Disable all of their accounts permanently',
+      ],
+      correct: 0,
+      why: 'Beim ersten Vorfall setzt das Video auf gezieltes Nutzertraining, damit das Problem sich nicht wiederholt.',
+    },
+    {
+      q: 'What does the video suggest if monitoring shows the same security event recurring for a user?',
+      options: [
+        'It points toward the need for extended training or changed security configurations for that user',
+        'Recurring events should always be ignored as statistical noise',
+        'Only a single training session is ever offered, regardless of recurrence',
+        'Recurring events automatically result in immediate account deletion',
+      ],
+      correct: 0,
+      why: 'Wiederholte Vorfälle deuten laut Video darauf hin, dass zusätzliches Training oder angepasste Sicherheitseinstellungen für diesen Nutzer nötig sind.',
+    },
+    {
+      q: 'What is the security awareness team responsible for developing, per the video?',
+      options: [
+        'Training materials for IT security, including customized training for specific job functions or compliance needs',
+        'Only the company’s annual budget',
+        'The awareness team never creates any training content',
+        'Only hardware procurement plans',
+      ],
+      correct: 0,
+      why: 'Das Security-Awareness-Team entwickelt laut Video Schulungsmaterialien — teils individuell zugeschnitten auf Jobfunktion oder Compliance-Anforderungen.',
+    },
+    {
+      q: 'How does the security awareness team execute and evaluate its training, per the video?',
+      options: [
+        'They present training online or in person and track detailed metrics to correlate training efforts with overall security',
+        'Training is presented once with no follow-up metrics ever collected',
+        'Execution only means printing posters, with no measurement of effect',
+        'Metrics are never tied back to the organization’s overall security',
+      ],
+      correct: 0,
+      why: 'Laut Video wird Training online oder vor Ort durchgeführt und mit Metriken verknüpft, um den Effekt auf die Gesamtsicherheit nachvollziehen zu können.',
     },
   ],
 
@@ -3993,6 +4147,28 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 3,
       why: 'Change Management dokumentiert Häufigkeit, Dauer und Installationsprozess einer Änderung — und vor allem eine Fallback-Prozedur, falls sie schiefgeht. So werden Änderungen mit geringstem Risiko umgesetzt.',
     },
+    {
+      q: 'What role do security policies play, per the video?',
+      options: [
+        'They tell everyone what should be done and why, while technical controls handle the actual administration',
+        'Guidelines replace the need for any technical security controls',
+        'Guidelines are only relevant to the finance department',
+        'Guidelines are optional suggestions with no organizational weight',
+      ],
+      correct: 0,
+      why: 'Laut Video legen Policies fest, was zu tun ist und warum — die technische Umsetzung/Durchsetzung übernehmen die technischen Kontrollen aus vorherigen Videos.',
+    },
+    {
+      q: 'What does the master information security policy document define, per the video?',
+      options: [
+        'All the policies to follow for uptime/security, plus roles and responsibilities for who to contact with security questions',
+        'Only the company’s marketing strategy',
+        'Nothing beyond a list of employee names',
+        'Information security policies apply only to the IT department, never other staff',
+      ],
+      correct: 0,
+      why: 'Das Master-Dokument für Informationssicherheits-Policies listet laut Video alle zu befolgenden Regeln sowie Rollen/Zuständigkeiten für Sicherheitsfragen.',
+    },
   ],
 
   // 106 — 5.1 Security Standards
@@ -4040,6 +4216,17 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 0,
       why: 'Je nach Datenzustand können unterschiedliche Verschlüsselungsanforderungen gelten: Data at Rest anders als Data in Transit — Standards regeln auch, wie z. B. Passwörter (gesalzener Hash, festgelegter Algorithmus) gespeichert werden.',
+    },
+    {
+      q: 'What examples of physical security standards does the video give?',
+      options: [
+        'Requiring an ID badge for door access, possibly with biometrics, and different rules for employees vs. contractors or guests',
+        'Physical security standards only apply to server rooms, never building entrances',
+        'Physical security standards are identical across every organization with no customization',
+        'Physical security has no relationship to standards, only to policies',
+      ],
+      correct: 0,
+      why: 'Laut Video können Standards ein Badge mit ggf. Biometrie für den Türzugang vorschreiben, mit unterschiedlichen Regeln für Mitarbeitende, Auftragnehmer und Gäste.',
     },
   ],
 
@@ -4089,6 +4276,61 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 1,
       why: 'Öffentliche Versorger und Stromerzeugung unterliegen sehr strengen Zugriffsvorgaben — ihre Steuerungstechnik wird deshalb oft per Air-Gap vom restlichen Netz getrennt.',
     },
+    {
+      q: 'Which regulatory examples does the video give for external compliance considerations?',
+      options: [
+        'Sarbanes-Oxley (SOX) for financial data and HIPAA for healthcare information',
+        'Only local traffic laws',
+        'Regulatory considerations never affect IT security decisions',
+        'Only building fire codes',
+      ],
+      correct: 0,
+      why: 'Das Video nennt SOX für Finanzdaten und HIPAA für Gesundheitsdaten als Beispiele regulatorischer externer Vorgaben.',
+    },
+    {
+      q: 'How does the video contrast security considerations between power generation and medical industries?',
+      options: [
+        'Power generation systems are often air-gapped with strict access limits, while medical environments need highly available but heavily encrypted access',
+        'Both industries have identical security requirements',
+        'Only the medical industry has any compliance requirements',
+        'Power generation requires no security since it has no valuable data',
+      ],
+      correct: 0,
+      why: 'Energieerzeugung wird laut Video oft komplett air-gapped mit strengen Zugriffsbeschränkungen betrieben, während medizinische Umgebungen Verfügbarkeit mit starker Verschlüsselung kombinieren müssen.',
+    },
+    {
+      q: 'What kind of data does the video associate with a local/regional security scope?',
+      options: [
+        'Records collected by a city or state government to help manage that specific area',
+        'Only data relevant to entire continents',
+        'Local/regional considerations never involve any government data',
+        'Only data collected by international corporations',
+      ],
+      correct: 0,
+      why: 'Auf lokaler/regionaler Ebene sind laut Video z. B. Aufzeichnungen von Stadt- oder Bundesstaatsregierungen zur Verwaltung eines bestimmten Gebiets relevant.',
+    },
+    {
+      q: 'What additional concerns arise at the national level of security scope, per the video?',
+      options: [
+        'Federal government issues like national defense and communication across multiple states, often requiring stronger encryption',
+        'National scope never requires any additional technology',
+        'National-level considerations are identical to local considerations',
+        'National scope only applies to private companies, never government',
+      ],
+      correct: 0,
+      why: 'Auf nationaler Ebene kommen laut Video Themen wie nationale Verteidigung und länderübergreifende Kommunikation hinzu — oft mit stärkerer Verschlüsselung.',
+    },
+    {
+      q: 'What complexity does a global company face, per the video?',
+      options: [
+        'Different data protection and security laws apply depending on which country an office is located in',
+        'Global companies are exempt from all national laws',
+        'Global scope has no additional legal complexity compared to local scope',
+        'Global companies only need to comply with one universal law',
+      ],
+      correct: 0,
+      why: 'Ein globales Unternehmen muss laut Video je nach Standort unterschiedliche nationale Datenschutz- und Sicherheitsgesetze beachten — das macht es komplexer als lokale Aufstellungen.',
+    },
   ],
 
   // 110 — 5.2 Risk Management
@@ -4137,6 +4379,28 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 0,
       why: 'Das einmalige Assessment hängt meist an einem konkreten Projekt — etwa einer Firmenübernahme oder der Einführung neuer Hard-/Software, um deren Risiken zu verstehen.',
     },
+    {
+      q: 'What is the purpose of risk management in an organization, per the video?',
+      options: [
+        'To identify and manage potential threats from inside or outside the organization before they become bigger problems',
+        'To eliminate the need for any security controls',
+        'To only track risks that have already caused an incident',
+        'Risk identification only applies to financial risks, never security risks',
+      ],
+      correct: 0,
+      why: 'Risikomanagement soll laut Video interne wie externe Bedrohungen identifizieren und einordnen, bevor sie zu größeren Problemen werden.',
+    },
+    {
+      q: 'What example does the video give of a recurring risk assessment schedule?',
+      options: [
+        'Internal teams performing an assessment every three, six, or twelve months on a standard schedule',
+        'A single assessment performed once and never repeated',
+        'Recurring assessments only happen after a breach occurs',
+        'Recurring assessments are always mandated by a single global law',
+      ],
+      correct: 0,
+      why: 'Laut Video führen manche Organisationen interne Risikoanalysen auf einem festen Zeitplan durch, z. B. alle drei, sechs oder zwölf Monate.',
+    },
   ],
 
   // 112 — 5.2 Risk Management Strategies
@@ -4184,6 +4448,61 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 3,
       why: 'Das Risk Reporting/Register listet alle verfolgten Risiken mit Beschreibung und Umgang — ein ständig aktualisiertes Dokument (kritische und aufkommende Risiken), auf das das Management seine Entscheidungen stützt.',
+    },
+    {
+      q: 'What is a good example of risk transfer, per the video?',
+      options: [
+        'Purchasing cybersecurity insurance to move the risk to a different party',
+        'Ignoring the risk entirely',
+        'Fixing the underlying vulnerability directly',
+        'Publishing the risk publicly to shame the vendor',
+      ],
+      correct: 0,
+      why: 'Der Kauf einer Cyber-Versicherung verschiebt laut Video das Risiko auf einen Dritten — ein klassisches Beispiel für Risk Transfer.',
+    },
+    {
+      q: 'What does the video’s unpatchable manufacturing equipment example illustrate about an exemption?',
+      options: [
+        'Management approves skipping a security policy entirely for that device (e.g., no patching), provided compensating conditions like no network connection are met',
+        'An exemption means the policy is simply ignored with no approval needed',
+        'Exemptions can only ever be granted to brand-new equipment',
+        'An exemption automatically removes the device from the network permanently',
+      ],
+      correct: 0,
+      why: 'Da die Fertigungsanlage laut Video keine Patches unterstützt, genehmigt das Management eine Ausnahme von der Patch-Policy — unter der Bedingung, dass das Gerät nicht am Netz hängt.',
+    },
+    {
+      q: 'How does the video’s patch-conflict example illustrate an exception versus an exemption?',
+      options: [
+        'A temporary exception extends the patch deadline because the update breaks critical software, unlike a permanent exemption from the policy entirely',
+        'Exception and exemption always mean the exact same thing',
+        'An exception permanently removes the requirement forever',
+        'Exceptions can never be approved by management',
+      ],
+      correct: 0,
+      why: 'Beim Patch-Konflikt gewährt das Video eine befristete Ausnahme (mehr Zeit), bis die Software kompatibel gemacht ist — anders als eine dauerhafte Exemption von der Regel selbst.',
+    },
+    {
+      q: 'What does risk avoidance mean, per the video?',
+      options: [
+        'Completely removing the risk from the organization so no further risk management for it is needed',
+        'Purchasing insurance to cover the risk',
+        'Accepting the risk and doing nothing further',
+        'Reducing but not eliminating the risk',
+      ],
+      correct: 0,
+      why: 'Risk Avoidance bedeutet laut Video, das Risiko vollständig aus der Organisation zu entfernen — danach ist kein weiteres Risikomanagement dafür nötig.',
+    },
+    {
+      q: 'What example of risk mitigation does the video give?',
+      options: [
+        'Investing in a next-generation firewall to reduce risk associated with internet connectivity',
+        'Buying insurance instead of addressing the underlying issue',
+        'Removing internet connectivity entirely',
+        'Doing nothing and hoping the risk does not materialize',
+      ],
+      correct: 0,
+      why: 'Als Beispiel für Mitigation nennt das Video die Investition in eine Next-Generation-Firewall, um das Risiko der Internet-Konnektivität zu reduzieren.',
     },
   ],
 
@@ -4281,6 +4600,83 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 3,
       why: 'Angreifer schleusten Schadcode in ein signiertes SolarWinds-Update; von rund 300.000 potenziell betroffenen Kunden installierten mindestens 18.000 die Malware — ein Weckruf für gründliche Supply-Chain-Analyse.',
     },
+    {
+      q: 'How can penetration testing be part of a third-party vendor risk assessment, per the video?',
+      options: [
+        'The contract can mandate that the vendor and customer execute penetration tests at regular intervals, sometimes via a shared third party',
+        'Penetration testing is never relevant to vendor relationships',
+        'Vendors are legally prohibited from ever being penetration tested',
+        'Only internal systems can be penetration tested, never vendor systems',
+      ],
+      correct: 0,
+      why: 'Ein Vertrag kann laut Video regelmäßige Pentests bei Kunde und Zulieferer vorschreiben, teils über denselben spezialisierten Drittanbieter.',
+    },
+    {
+      q: 'What contract clause does the video mention that formalizes an organization’s right to review a vendor’s security?',
+      options: [
+        'A "right to audit" clause built into the contract',
+        'A clause that forbids any review of the vendor ever',
+        'Only verbal agreements, never written into contracts',
+        'A clause requiring the vendor to audit the customer instead',
+      ],
+      correct: 0,
+      why: 'Das Video nennt die vertragliche „Right to Audit"-Klausel, die regelmäßige Prüfungen der Vendor-Sicherheit formalisiert.',
+    },
+    {
+      q: 'What benefit does bringing in an independent third party for assessment provide, per the video?',
+      options: [
+        'A different, broader perspective gathered across many organizations that internal staff might not have',
+        'Independent assessments are always less accurate than internal ones',
+        'Independent assessors cannot legally review vendor security',
+        'They eliminate the need for any contract with the vendor',
+      ],
+      correct: 0,
+      why: 'Ein unabhängiger Dritter bringt laut Video eine breitere Perspektive aus vielen Organisationen mit, die intern oft fehlt.',
+    },
+    {
+      q: 'What did the SolarWinds incident illustrate about supply chain analysis, per the video?',
+      options: [
+        'A compromised update from one vendor spread malware, with a validly signed update, to roughly 18,000 of 300,000 potentially affected customers',
+        'Supply chain analysis is unnecessary if a vendor digitally signs their updates',
+        'SolarWinds only affected a handful of small businesses',
+        'The incident had nothing to do with the software supply chain',
+      ],
+      correct: 0,
+      why: 'Beim SolarWinds-Vorfall verbreitete sich laut Video Schadsoftware über ein gültig signiertes Update — rund 18.000 von potenziell 300.000 Kunden waren betroffen.',
+    },
+    {
+      q: 'What ongoing activities does the video describe as part of vendor monitoring after a contract is signed?',
+      options: [
+        'Financial health checks, IT security reviews, and monitoring news/social media about the partner',
+        'Vendor monitoring ends the moment the contract is signed',
+        'Only a single one-time review is ever performed',
+        'Vendor monitoring is solely the vendor’s own responsibility',
+      ],
+      correct: 0,
+      why: 'Laut Video umfasst laufendes Vendor-Monitoring Finanz-Checks, IT-Sicherheitsprüfungen und die Beobachtung von Nachrichten/Social Media über den Partner.',
+    },
+    {
+      q: 'What kind of information does a vendor questionnaire gather, per the video?',
+      options: [
+        'Details on the vendor’s due diligence process, disaster recovery plans, and how they store/protect data',
+        'Only the vendor’s office address',
+        'Questionnaires can only be used once per vendor relationship, ever',
+        'Only pricing information, never security details',
+      ],
+      correct: 0,
+      why: 'Ein Fragebogen fragt laut Video z. B. den Due-Diligence-Prozess, Disaster-Recovery-Pläne und Datenspeicherung/-schutz des Anbieters ab.',
+    },
+    {
+      q: 'What parameters does a rules of engagement document set for a third-party penetration test, per the video?',
+      options: [
+        'Scope of testing, timing, IP address ranges, emergency contacts, and handling of sensitive information found',
+        'Rules of engagement only define the invoice amount',
+        'They are unnecessary if the vendor already trusts the tester',
+        'They apply only to internal, never third-party, testing',
+      ],
+      correct: 0,
+      why: 'Laut Video legen Rules of Engagement u. a. Testumfang, Zeitfenster, IP-Bereiche, Notfallkontakte und den Umgang mit gefundenen sensiblen Daten fest.',
+    },
   ],
 
   // 115 — 5.3 Agreement Types
@@ -4329,6 +4725,28 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 3,
       why: 'Beim unilateralen (einseitigen) NDA muss nur eine Partei vertraulich bleiben; beim bilateralen/mutual NDA beide — bei mehr als zwei Parteien spricht man von multilateral.',
     },
+    {
+      q: 'How does an MOA differ from an MOU, per the video?',
+      options: [
+        'An MOA is one step more detailed than an MOU and may include some legally binding information, though it is still not a full contract',
+        'An MOA and MOU are identical documents with different names',
+        'An MOA is always a fully binding legal contract with penalties',
+        'An MOU is more detailed and binding than an MOA',
+      ],
+      correct: 0,
+      why: 'Ein MOA geht laut Video über das MOU hinaus und kann teils rechtlich bindende Elemente enthalten — ein vollwertiger Vertrag ist es aber immer noch nicht.',
+    },
+    {
+      q: 'What does a Business Partners Agreement (BPA) document, per the video?',
+      options: [
+        'Financial details, ownership stakes, decision-making authority, and what happens if the partnership runs into problems',
+        'Only the logo design shared between partners',
+        'A BPA only covers marketing collaboration, never finances',
+        'A BPA replaces the need for any other agreement type',
+      ],
+      correct: 0,
+      why: 'Eine BPA regelt laut Video finanzielle Details, Eigentumsanteile, Entscheidungsbefugnisse und den Umgang mit Problemen in der Partnerschaft.',
+    },
   ],
 
   // 117 — 5.4 Privacy
@@ -4376,6 +4794,61 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 3,
       why: 'Das Data Inventory listet alle gesammelten und gespeicherten Daten — mit Eigentümer, Aktualisierungshäufigkeit und Format —, um die Datenschutzfolgen zu verstehen, besonders beim Teilen mit Dritten.',
+    },
+    {
+      q: 'What kind of privacy-relevant data does the video associate with local/state government collection?',
+      options: [
+        'Information about homes, vehicles, and medical licensing',
+        'Only data about international trade agreements',
+        'Local governments never collect any personal data',
+        'Only data related to national defense',
+      ],
+      correct: 0,
+      why: 'Auf lokaler/staatlicher Ebene nennt das Video Daten zu Wohneigentum, Fahrzeugen und medizinischer Zulassung als Beispiele.',
+    },
+    {
+      q: 'Which national-level privacy law example does the video give?',
+      options: [
+        'HIPAA, protecting healthcare privacy across an entire country',
+        'GDPR, which the video describes as purely local',
+        'National laws never address healthcare privacy',
+        'Only laws governing international shipping',
+      ],
+      correct: 0,
+      why: 'Als nationales Beispiel nennt das Video HIPAA, das Gesundheitsdaten-Privatsphäre landesweit in den USA schützt.',
+    },
+    {
+      q: 'How does the video describe GDPR’s scope as a global/multi-country privacy consideration?',
+      options: [
+        'It is an EU regulation affecting privacy for everyone living in the EU, with countries working together on citizen privacy',
+        'GDPR applies only within a single country and nowhere else',
+        'GDPR has no effect on how companies handle personal data',
+        'GDPR only regulates government agencies, never private companies',
+      ],
+      correct: 0,
+      why: 'Die DSGVO ist laut Video eine EU-weite Regelung, die die Privatsphäre aller EU-Bürger betrifft — ein Beispiel länderübergreifender Zusammenarbeit beim Datenschutz.',
+    },
+    {
+      q: 'How does the video’s payroll example distinguish a data controller from a data processor?',
+      options: [
+        'The payroll department (controller) decides how much/when people get paid; the third-party payroll company (processor) actually processes the paychecks',
+        'The controller and processor are always the exact same entity',
+        'The processor decides policy, while the controller executes it',
+        'Only external vendors can ever be data controllers',
+      ],
+      correct: 0,
+      why: 'Im Gehaltsabrechnungs-Beispiel legt die Fachabteilung (Controller) laut Video fest, wie/wann bezahlt wird — der externe Dienstleister (Processor) führt die eigentliche Verarbeitung aus.',
+    },
+    {
+      q: 'How does the video define a "data owner"?',
+      options: [
+        'An individual with overall responsibility for a specific type of data, e.g. the VP of Sales for customer relationship data',
+        'Data ownership always belongs to the IT department regardless of data type',
+        'A data owner is the same role as a data processor',
+        'Data ownership has no relevance to GDPR-style privacy laws',
+      ],
+      correct: 0,
+      why: 'Der Data Owner trägt laut Video die Gesamtverantwortung für eine bestimmte Datenart — etwa der VP Sales für Kundenbeziehungsdaten.',
     },
   ],
 
@@ -4447,6 +4920,61 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 0,
       why: 'Laut Video ist die Attestierung eine Wahrheitsaussage über die Ergebnisse eines durchgeführten Audits — Audit und Attestierung gehören zusammen.',
     },
+    {
+      q: 'What question does an internal audit typically help answer, per the video?',
+      options: [
+        'Whether the organization is meeting its own compliance requirements',
+        'Only whether office furniture needs replacing',
+        'Internal audits never address compliance',
+        'Only questions about competitor pricing',
+      ],
+      correct: 0,
+      why: 'Ein internes Audit klärt laut Video u. a., ob die Organisation ihre eigenen Compliance-Anforderungen erfüllt.',
+    },
+    {
+      q: 'How does a self-assessment feed into an organization’s internal audit process, per the video?',
+      options: [
+        'Organizations look at their own processes/procedures and compare them to requirements; the audit committee compiles these to gauge overall compliance',
+        'Self-assessments are never used by an audit committee',
+        'Self-assessments replace the need for any audit committee',
+        'Self-assessments can only be performed by external auditors',
+      ],
+      correct: 0,
+      why: 'Audits beginnen laut Video oft mit einer Selbstbewertung, die das Audit-Komitee zu einem Gesamtbild der Compliance zusammenführt.',
+    },
+    {
+      q: 'When does the video say organizations bring in a third party specifically for an audit?',
+      options: [
+        'When compliance regulations require it',
+        'Third parties are never used for audits under any regulation',
+        'External audits are always optional with no regulatory driver',
+        'Only when the organization has no internal audit team at all',
+      ],
+      correct: 0,
+      why: 'Manche Compliance-Vorschriften verlangen laut Video ausdrücklich, dass eine externe Gruppe das Audit durchführt.',
+    },
+    {
+      q: 'What does an external auditor typically do once brought into an organization, per the video?',
+      options: [
+        'Find desks, look through records, and compile information/details specific to that audit',
+        'They only interview the CEO and no one else',
+        'External examiners never review any company records',
+        'They immediately publish findings with no internal review process',
+      ],
+      correct: 0,
+      why: 'Ein externer Prüfer sichtet laut Video Unterlagen vor Ort und sammelt gezielt Informationen für die konkrete Prüfung.',
+    },
+    {
+      q: 'What does the result of an external audit typically show, per the video?',
+      options: [
+        'Where the company stands today with compliance and where there is room for improvement',
+        'Only a pass/fail grade with no further detail',
+        'External assessments never produce any usable output',
+        'Only financial statements, never security posture',
+      ],
+      correct: 0,
+      why: 'Das Ergebnis eines externen Audits zeigt laut Video den aktuellen Compliance-Stand und mögliche Verbesserungsbereiche auf.',
+    },
   ],
 
   // 120 — 5.6 Security Awareness
@@ -4494,6 +5022,61 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 3,
       why: 'Das Security-Awareness-Team überwacht, berichtet und schult: Es erstellt Trainingsmaterial (auch rollen-/compliance-spezifisch), Poster und Mails und verfolgt Metriken (Phishing-Klickrate, MFA-Nutzung), um die Wirkung zu belegen.',
+    },
+    {
+      q: 'Which signs should users look for to recognize a phishing attempt, per the video?',
+      options: [
+        'Spelling/grammar errors, suspicious domain names, unusual attachments, and requests for personal information or credentials',
+        'Phishing emails are always perfectly written with no errors',
+        'Only emails from unknown senders can ever be phishing',
+        'Legitimate emails never ask for any information at all',
+      ],
+      correct: 0,
+      why: 'Laut Video sollten Nutzer auf Rechtschreibfehler, verdächtige Domains, ungewöhnliche Anhänge und Anfragen nach persönlichen Daten/Zugangsdaten achten.',
+    },
+    {
+      q: 'What should happen when a user suspects they have received a phishing email, per the video?',
+      options: [
+        'There should be a well-known process for reporting it to the IT security team',
+        'The user should simply delete it and never mention it to anyone',
+        'The user should reply directly to the sender asking if it’s legitimate',
+        'Reporting suspicious emails is discouraged to avoid burdening IT',
+      ],
+      correct: 0,
+      why: 'Laut Video braucht es einen bekannten Meldeweg an das IT-Sicherheitsteam, sobald jemand eine verdächtige Nachricht erhält.',
+    },
+    {
+      q: 'Which example of "risky" behavior does the video give?',
+      options: [
+        'Modifying a host file or replacing a core operating system file',
+        'Logging in at the exact same time every day',
+        'Risky behavior only refers to physical building access',
+        'Using the same password as last month',
+      ],
+      correct: 0,
+      why: 'Als riskantes Verhalten nennt das Video u. a. das Verändern einer Host-Datei oder das Ersetzen einer Kern-Betriebssystemdatei.',
+    },
+    {
+      q: 'Which example of "unexpected" behavior does the video give?',
+      options: [
+        'Someone logging in from another country, or an unusual increase in data transfers',
+        'A user logging in during normal business hours',
+        'Unexpected behavior only applies to hardware failures',
+        'A scheduled monthly patch installation',
+      ],
+      correct: 0,
+      why: 'Als unerwartetes Verhalten nennt das Video z. B. eine Anmeldung aus einem anderen Land oder einen ungewöhnlichen Anstieg der Datenübertragung.',
+    },
+    {
+      q: 'Which example of "unintentional" behavior does the video give?',
+      options: [
+        'A user typing the wrong domain name, misplacing a USB drive, or misconfiguring security settings by mistake',
+        'A deliberate attempt to steal company data',
+        'Unintentional behavior always indicates a malicious insider',
+        'It only refers to failures caused by hardware age',
+      ],
+      correct: 0,
+      why: 'Unbeabsichtigtes Verhalten sind laut Video menschliche Fehler wie eine falsch getippte Domain, ein verlegter USB-Stick oder eine versehentliche Fehlkonfiguration.',
     },
   ],
   '100': [
@@ -6508,6 +7091,287 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 0,
       why: 'Ephemere Zugangsdaten sind laut Video nur temporär zugewiesen und können nach der Sitzung gelöscht werden — für den nächsten Bedarf wird ein neuer Satz erzeugt.',
+    },
+  ],
+  '111': [
+    {
+      q: 'How does the video’s traffic-light grid represent a qualitative risk assessment?',
+      options: [
+        'It rates factors like impact, rate of occurrence, and cost of controls as low/medium/high rather than exact numbers',
+        'It calculates an exact dollar figure for every risk',
+        'It only ever produces a single overall percentage',
+        'Qualitative assessment requires no evaluation of individual factors',
+      ],
+      correct: 0,
+      why: 'Die Ampel-Darstellung im Video bewertet Faktoren wie Impact, Häufigkeit und Kontrollkosten als niedrig/mittel/hoch, statt exakte Zahlen zu berechnen.',
+    },
+    {
+      q: 'How does the video distinguish likelihood from probability?',
+      options: [
+        'Likelihood is typically a qualitative value (rare, possible, almost certain), while probability is a quantitative statistic',
+        'Likelihood and probability are always calculated with the exact same formula',
+        'Likelihood only applies to financial risks',
+        'Probability is always a qualitative label, never a number',
+      ],
+      correct: 0,
+      why: 'Likelihood ist laut Video meist ein qualitativer Wert (selten, möglich, fast sicher), während Probability eine quantitative Kennzahl ist — beide werden oft parallel verwendet.',
+    },
+    {
+      q: 'How does the video define exposure factor (EF) in quantitative risk analysis?',
+      options: [
+        'The percentage of an asset’s value that would be lost due to a particular risk (e.g., 1.0 if the entire asset is lost)',
+        'The total number of assets owned by the company',
+        'A fixed constant that never changes between risks',
+        'The exact dollar cost of a security control',
+      ],
+      correct: 0,
+      why: 'Der Exposure Factor gibt laut Video den prozentualen Wertverlust eines Assets bei Eintritt eines Risikos an — 1,0 bedeutet Totalverlust.',
+    },
+    {
+      q: 'Which impact category does the video place above all others in risk calculations?',
+      options: [
+        'Life — safety of people is prioritized above property and financial impact, since people cannot be replaced',
+        'Financial impact is always the single highest priority',
+        'Property impact always outweighs every other consideration',
+        'Impact categories are never ranked in any order',
+      ],
+      correct: 0,
+      why: 'Laut Video steht „Life" (Sicherheit von Menschen) an oberster Stelle der Impact-Kategorien — Vermögenswerte lassen sich ersetzen, Menschen nicht.',
+    },
+    {
+      q: 'What role does the video assign to whoever is listed against a key risk indicator in the risk register?',
+      options: [
+        'They manage or are responsible for that particular risk',
+        'They are automatically blamed if the risk is realized',
+        'The risk owner has no defined responsibility at all',
+        'Risk owners are only ever external auditors, never internal staff',
+      ],
+      correct: 0,
+      why: 'Für jeden Key Risk Indicator im Risikoregister wird laut Video ein Owner benannt, der für dieses Risiko verantwortlich ist bzw. es steuert.',
+    },
+    {
+      q: 'What balance does determining a risk threshold in the register involve, per the video?',
+      options: [
+        'Balancing how much time/money is spent resolving a risk against how much that risk would actually cost the company',
+        'The threshold is always set at zero risk tolerance',
+        'Risk thresholds are set randomly with no analysis',
+        'Threshold only concerns the calendar date of the assessment',
+      ],
+      correct: 0,
+      why: 'Laut Video muss der Risiko-Schwellenwert eine Balance finden zwischen Aufwand für die Risikominderung und den tatsächlichen Kosten, die das Risiko verursachen würde.',
+    },
+    {
+      q: 'What does an "expansionary" risk appetite posture indicate, per the video’s qualitative categories?',
+      options: [
+        'A qualitative label an organization might assign when they are more willing to take on a given type of risk',
+        'It means the organization refuses to accept any risk whatsoever',
+        'Expansionary applies only to physical, not IT, risks',
+        'It is a purely quantitative dollar figure, not a qualitative label',
+      ],
+      correct: 0,
+      why: 'Risk-Appetite-Posture ist laut Video ein qualitatives Etikett (z. B. conservative, neutral, expansionary), das die grundsätzliche Risikobereitschaft für eine Risikoart beschreibt.',
+    },
+    {
+      q: 'How does a "conservative" risk appetite posture differ from "expansionary," per the video?',
+      options: [
+        'A conservative posture reflects a lower willingness to take on that risk type, opposite to a more risk-tolerant expansionary stance',
+        'Conservative and expansionary mean exactly the same thing',
+        'Conservative only applies to financial risks',
+        'A conservative posture is always assigned to a numeric value of zero',
+      ],
+      correct: 0,
+      why: 'Eine „conservative"-Haltung bedeutet laut Video eine geringere Risikobereitschaft — das Gegenteil einer „expansionary"-Haltung.',
+    },
+    {
+      q: 'Where does a "neutral" risk appetite posture sit relative to conservative and expansionary, per the video?',
+      options: [
+        'It represents a middle ground qualitative posture between a low and a high willingness to accept that risk type',
+        'Neutral always equals a risk tolerance of exactly zero',
+        'Neutral is not a valid risk appetite posture in this model',
+        'Neutral only applies when no risk analysis has been done yet',
+      ],
+      correct: 0,
+      why: 'Neutral steht laut Video als mittlere Einstufung zwischen conservative und expansionary innerhalb der qualitativen Risk-Appetite-Postures.',
+    },
+  ],
+  '116': [
+    {
+      q: 'Who commonly oversees internal compliance checks within an organization, per the video?',
+      options: [
+        'A Chief Compliance Officer (CCO), responsible for ensuring the organization meets state, local, federal, and other requirements',
+        'Internal compliance is always outsourced entirely to a third party',
+        'No individual role is ever responsible for internal compliance',
+        'Only the CEO personally checks compliance with no delegation',
+      ],
+      correct: 0,
+      why: 'Interne Compliance wird laut Video oft von einem Chief Compliance Officer verantwortet, der die Einhaltung staatlicher, lokaler und föderaler Vorgaben sicherstellt.',
+    },
+    {
+      q: 'What does external compliance reporting typically require, per the video?',
+      options: [
+        'Ongoing reports at intervals set by the external requirement, with penalties for missed or incorrect reporting',
+        'External reporting is a one-time event with no recurring obligation',
+        'External compliance never applies to third-party relationships',
+        'External reports are never reviewed by anyone outside the company',
+      ],
+      correct: 0,
+      why: 'Externe Compliance-Berichte müssen laut Video in festgelegten Intervallen erstellt werden — verpasste oder falsche Meldungen können Strafen nach sich ziehen.',
+    },
+    {
+      q: 'What financial penalty range does the video cite for HIPAA non-compliance?',
+      options: [
+        'Up to $50,000 for basic violations, rising to $250,000 for intentional misuse for commercial gain',
+        'A flat $10 fine regardless of the violation',
+        'HIPAA violations never carry any financial penalty',
+        'Fines are capped at exactly $1,000 in every case',
+      ],
+      correct: 0,
+      why: 'Laut Video reichen HIPAA-Strafen von bis zu 50.000 $ bei einfachen Verstößen bis zu 250.000 $ bei vorsätzlichem Missbrauch zu kommerziellen Zwecken.',
+    },
+    {
+      q: 'Besides fines, what other formal penalty does the video mention for HIPAA non-compliance?',
+      options: [
+        'Imprisonment, up to 10 years for the most serious violations',
+        'A mandatory public apology with no other consequence',
+        'Sanctions never accompany HIPAA violations',
+        'Only a warning letter with no further action',
+      ],
+      correct: 0,
+      why: 'Neben Geldstrafen nennt das Video bei schweren HIPAA-Verstößen auch Haftstrafen von bis zu 10 Jahren.',
+    },
+    {
+      q: 'How did the Uber breach disclosure delay illustrate reputational damage, per the video?',
+      options: [
+        'Uber hid a breach for over a year and paid hackers to stay quiet, resulting in massive fines and lasting reputational harm once discovered',
+        'Uber disclosed the breach immediately with no consequences',
+        'Reputational damage only affects small companies, never large ones',
+        'The delay had no measurable financial impact on Uber',
+      ],
+      correct: 0,
+      why: 'Uber verschwieg den Breach laut Video über ein Jahr und zahlte die Angreifer für ihr Schweigen — als es herauskam, folgten hohe Strafen und Reputationsschaden.',
+    },
+    {
+      q: 'What business impact does the video describe from losing a required license due to non-compliance?',
+      options: [
+        'It can be a significant economic hit, especially if that license is required to sell the company’s product',
+        'Losing a license has no impact on a company’s ability to operate',
+        'Licenses are automatically reinstated the next day for free',
+        'Loss of license only affects individual employees, never the company',
+      ],
+      correct: 0,
+      why: 'Der Verlust einer nötigen Lizenz kann laut Video die Fähigkeit, ein Produkt überhaupt zu verkaufen, empfindlich treffen — mit erheblichem wirtschaftlichem Schaden.',
+    },
+    {
+      q: 'What happens contractually when a company falls out of compliance with an agreement between two private organizations, per the video?',
+      options: [
+        'The contract is considered breached, though it may be resolved between the two organizations without a legal proceeding',
+        'Contractual non-compliance always requires a court case',
+        'Contracts have no relationship to compliance requirements',
+        'Contractual breaches are automatically void with no resolution process',
+      ],
+      correct: 0,
+      why: 'Bei vertraglich geregelter Compliance zwischen zwei privaten Organisationen gilt der Vertrag laut Video als gebrochen — die Klärung kann aber auch ohne Gerichtsverfahren erfolgen.',
+    },
+    {
+      q: 'How does the video distinguish "due care" from "due diligence"?',
+      options: [
+        'Due care refers to internal activities acting in good faith; due diligence refers to those same good-faith activities performed with a third party',
+        'Due care and due diligence are identical terms used interchangeably with no distinction',
+        'Due diligence only applies to internal activities, never third parties',
+        'Due care only applies after a breach has already occurred',
+      ],
+      correct: 0,
+      why: 'Laut Video bezeichnet Due Care interne Aktivitäten in gutem Glauben, während Due Diligence dieselbe Sorgfalt gegenüber Dritten beschreibt.',
+    },
+    {
+      q: 'Who typically signs off to confirm compliance is in good standing, per the video?',
+      options: [
+        'The executive in charge of the compliance process, through attestation and acknowledgment',
+        'Any random employee can provide this attestation',
+        'Attestation is never required for compliance monitoring',
+        'Only external auditors may ever attest to compliance status',
+      ],
+      correct: 0,
+      why: 'Laut Video ist es meist die zuständige Führungskraft, die per Attestierung/Bestätigung den guten Compliance-Stand offiziell bescheinigt.',
+    },
+    {
+      q: 'What combination of sources does compliance monitoring often draw on, per the video?',
+      options: [
+        'Internal tools plus interaction with third parties to gather enough information to confirm compliance',
+        'Only external sources, never any internal tools',
+        'Compliance monitoring never involves any third-party interaction',
+        'Only a single annual manual review with no tools involved',
+      ],
+      correct: 0,
+      why: 'Compliance-Monitoring nutzt laut Video sowohl interne Tools als auch den Austausch mit Dritten, um den tatsächlichen Compliance-Status zu bestätigen.',
+    },
+    {
+      q: 'Why do many organizations automate compliance monitoring, per the video?',
+      options: [
+        'There is a large amount of compliance data to collect from people, third parties, and the organization, which automated systems compile into reports',
+        'Automation is only used for marketing analytics, not compliance',
+        'Manual monitoring is always sufficient and automation is discouraged',
+        'Automated compliance monitoring is illegal in most jurisdictions',
+      ],
+      correct: 0,
+      why: 'Da laut Video sehr viele Compliance-Daten aus verschiedenen Quellen zusammenkommen, automatisieren viele Organisationen die Sammlung und Reporterstellung.',
+    },
+  ],
+  '119': [
+    {
+      q: 'What does a physical penetration test attempt, per the video?',
+      options: [
+        'Gaining access to the facility itself — through doors, windows, elevators, or any physical entry point',
+        'Only testing password strength remotely',
+        'Physical testing only occurs against cloud infrastructure',
+        'It never involves attempting building entry',
+      ],
+      correct: 0,
+      why: 'Ein physischer Pentest versucht laut Video, über Türen, Fenster, Aufzüge oder andere Wege tatsächlich ins Gebäude zu gelangen.',
+    },
+    {
+      q: 'What role does the "red team" play in penetration testing, per the video?',
+      options: [
+        'They attack systems, look for vulnerabilities, and attempt to exploit them',
+        'They only monitor traffic passively with no attacks',
+        'The red team writes the final compliance report only',
+        'Red teams never interact with the blue team',
+      ],
+      correct: 0,
+      why: 'Das Red Team greift laut Video aktiv an, sucht Schwachstellen und versucht, diese auszunutzen.',
+    },
+    {
+      q: 'What role does the "blue team" play, per the video?',
+      options: [
+        'They identify incoming attacks in real time and block them',
+        'They perform the attacks against the organization',
+        'The blue team has no role in penetration testing at all',
+        'Blue team members only write documentation, never respond to attacks',
+      ],
+      correct: 0,
+      why: 'Das Blue Team erkennt laut Video Angriffe in Echtzeit und blockiert sie — das defensive Gegenstück zum Red Team.',
+    },
+    {
+      q: 'What is the benefit of integrating red and blue teams, per the video?',
+      options: [
+        'The red team constantly attacks, and findings are passed to the blue team to patch and better detect next time, creating continuous feedback',
+        'Integration means only one team is needed and the other is disbanded',
+        'Integrated testing removes the need for any patching afterward',
+        'Red and blue teams cannot be integrated under any circumstances',
+      ],
+      correct: 0,
+      why: 'Die Integration schafft laut Video einen kontinuierlichen Feedback-Kreislauf: Das Red Team findet Lücken, das Blue Team patcht und erkennt sie künftig besser.',
+    },
+    {
+      q: 'What is an "unknown environment" (blind) test, per the video?',
+      options: [
+        'No information is provided to the pen tester, who must find everything on their own',
+        'The tester receives full documentation of every system in advance',
+        'It is identical to a known environment test',
+        'Unknown environment tests are never used in practice',
+      ],
+      correct: 0,
+      why: 'Bei einem Unknown-Environment- bzw. Blind-Test erhält der Tester laut Video keinerlei Vorabinformationen und muss alles selbst herausfinden.',
     },
   ],
 }
