@@ -4,11 +4,11 @@
 import { useCallback, useState, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from '../../ui/motion'
-import { Check, ChevronDown, Dices, Download, FlaskConical, FolderPlus, GraduationCap, LayoutDashboard, Loader2, Plus, RefreshCw, Search, Shuffle, Upload, Video, X } from 'lucide-react'
+import { Check, ChevronDown, Dices, Download, FlaskConical, FolderPlus, GraduationCap, Hash, LayoutDashboard, Loader2, Plus, RefreshCw, Search, Shuffle, Upload, Video, X } from 'lucide-react'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 import { useFloatingMenu } from '../../hooks/useFloatingMenu'
 
-type HomeTab = 'dashboard' | 'decks' | 'tags' | 'learning-units' | 'daily-quest' | 'labs'
+type HomeTab = 'dashboard' | 'decks' | 'tags' | 'learning-units' | 'daily-quest' | 'labs' | 'acronyms'
 
 interface Props {
   t: Record<string, string>
@@ -128,6 +128,7 @@ export function HomeDeckToolbar({
   const shuffleDecksLabel = language === 'de' ? 'Shuffle-Decks' : 'Shuffle decks'
   const questLabel = 'Daily Quest'
   const labsLabel = 'Labs'
+  const acronymsLabel = language === 'de' ? 'Akronyme' : 'Acronyms'
   const tabLabels: Record<HomeTab, string> = {
     dashboard: dashboardLabel,
     decks: decksLabel,
@@ -135,6 +136,7 @@ export function HomeDeckToolbar({
     'learning-units': unitsLabel,
     'daily-quest': questLabel,
     labs: labsLabel,
+    acronyms: acronymsLabel,
   }
   const activeFilterValue = showShuffleOnly ? shuffleDecksLabel : tabLabels[homeTab]
 
@@ -306,6 +308,19 @@ export function HomeDeckToolbar({
                 >
                   <span className="inline-flex items-center gap-2"><FlaskConical size={13} strokeWidth={1.5} /> {labsLabel}</span>
                   {!showShuffleOnly && homeTab === 'labs' && <Check size={14} strokeWidth={1.5} />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (showShuffleOnly) onToggleShuffleOnly()
+                    onHomeTabChange('acronyms')
+                    closeFilterMenu()
+                  }}
+                  className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
+                  role="menuitem"
+                >
+                  <span className="inline-flex items-center gap-2"><Hash size={13} strokeWidth={1.5} /> {acronymsLabel}</span>
+                  {!showShuffleOnly && homeTab === 'acronyms' && <Check size={14} strokeWidth={1.5} />}
                 </button>
                 {!showShuffleOnly && (homeTab === 'decks' || homeTab === 'tags') && (
                   <>

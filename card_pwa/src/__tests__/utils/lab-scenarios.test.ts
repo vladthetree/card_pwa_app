@@ -21,9 +21,9 @@ import { STORAGE_KEYS } from '../../constants/appIdentity'
  */
 
 describe('Labs — Inventar-Integrität', () => {
-  it('Inventar ist auf den 100er-Zielstand ausgebaut (Ausbau ueber den belegten 71er-Stand hinaus)', () => {
+  it('Inventar ist auf den 110er-Zielstand ausgebaut (100er-Stand + 10 Entscheidungs-Szenarien §13.1)', () => {
     expect(LAB_SCENARIOS.length).toBe(LAB_TARGET_INVENTORY)
-    expect(LAB_TARGET_INVENTORY).toBe(100)
+    expect(LAB_TARGET_INVENTORY).toBe(110)
   })
 
   it('alle Szenario-IDs sind eindeutig', () => {
@@ -50,9 +50,9 @@ describe('Labs — Inventar-Integrität', () => {
   it('Zielverteilung deckt alle Kategorien ab und betont Firewalls/Incident Response', () => {
     const counts = new Map<string, number>()
     for (const scenario of LAB_SCENARIOS) counts.set(scenario.categoryId, (counts.get(scenario.categoryId) ?? 0) + 1)
-    expect(counts.get('firewalls')).toBe(14)
-    expect(counts.get('incident-response')).toBe(14)
-    expect(counts.get('betrieb')).toBe(12)
+    expect(counts.get('firewalls')).toBe(16)
+    expect(counts.get('incident-response')).toBe(16)
+    expect(counts.get('betrieb')).toBe(16)
     for (const category of LAB_CATEGORIES) {
       expect(counts.get(category.id) ?? 0, category.id).toBeGreaterThanOrEqual(9)
     }

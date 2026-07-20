@@ -11,7 +11,7 @@
  * on the critical path for determining whether a card re-enters the study queue.
  */
 import { describe, expect, it } from 'vitest'
-import { computeOrderingScore, computeMatchingScore } from '../../utils/pbqScoring'
+import { computeOrderingScore, computeMatchingScore, computeDecisionScore } from '../../utils/pbqScoring'
 
 // ─── UC-1: Ordering card ─────────────────────────────────────────────────────
 
@@ -104,5 +104,44 @@ describe('UC-2  Matching card scoring (computeMatchingScore)', () => {
   it('UC-2g: matching is exact-value — close but wrong right-side is not credited', () => {
     const connections = { '22': 'ssh' }   // lowercase — case-sensitive
     expect(computeMatchingScore(connections, [{ left: '22', right: 'SSH' }])).toBe(0)
+  })
+})
+
+describe('UC-3  Decision card scoring (computeDecisionScore)', () => {
+  it('UC-3a: single-select — correct pick gives full credit', () => {
+    expect(computeDecisionScore(['b'], ['b'])).toBe(1)
+  })
+
+  it('UC-3b: single-select — wrong pick gives zero, not negative', () => {
+    expect(computeDecisionScore(['a'], ['b'])).toBe(0)
+  })
+
+  it('UC-3c: multi-select — all correct options picked gives full credit', () => {
+    expect(computeDecisionScore(['a', 'c'], ['a', 'c'])).toBe(1)
+  })
+
+  it('UC-3d: multi-select — partial pick gives proportional credit', () => {
+    expect(computeDecisionScore(['a'], ['a', 'c'])).toBe(0.5)
+  })
+
+  it('UC-3e: multi-select — an incorrect extra pick is penalized, not just ignored', () => {
+    // 2 of 2 correct picked, but 1 wrong extra also picked: (2-1)/2
+    expect(computeDecisionScore(['a', 'c', 'x'], ['a', 'c'])).toBe(0.5)
+  })
+
+  it('UC-3f: penalty cannot push the score below 0', () => {
+    expect(computeDecisionScore(['x', 'y', 'z'], ['a'])).toBe(0)
+  })
+
+  it('UC-3g: no selection gives zero', () => {
+    expect(computeDecisionScore([], ['a', 'b'])).toBe(0)
+  })
+
+  it('UC-3h: empty correct-id list returns 0 (no division by zero)', () => {
+    expect(computeDecisionScore(['a'], [])).toBe(0)
+  })
+
+  it('UC-3i: duplicate selections do not inflate the score', () => {
+    expect(computeDecisionScore(['a', 'a'], ['a', 'b'])).toBe(0.5)
   })
 })

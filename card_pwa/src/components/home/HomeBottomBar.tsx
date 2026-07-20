@@ -15,7 +15,7 @@ import {
 } from '../MobileBottomSheet'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 
-type HomeTab = 'dashboard' | 'decks' | 'tags' | 'learning-units' | 'daily-quest' | 'labs'
+type HomeTab = 'dashboard' | 'decks' | 'tags' | 'learning-units' | 'daily-quest' | 'labs' | 'acronyms'
 import { UI_TOKENS } from '../../constants/ui'
 
 interface Props {
@@ -195,6 +195,10 @@ export function HomeBottomBar({
         <MobileBottomSheetItem onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('labs'); closeFilter() }}>
           <span>Labs</span>
           {!showShuffleOnly && homeTab === 'labs' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
+        </MobileBottomSheetItem>
+        <MobileBottomSheetItem onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('acronyms'); closeFilter() }}>
+          <span>{language === 'de' ? 'Akronyme' : 'Acronyms'}</span>
+          {!showShuffleOnly && homeTab === 'acronyms' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
         </MobileBottomSheetItem>
 
         {!showShuffleOnly && (homeTab === 'decks' || homeTab === 'tags') && (

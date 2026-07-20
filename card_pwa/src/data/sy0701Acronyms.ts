@@ -1,0 +1,1703 @@
+/**
+ * AI_CONTEXT:
+ * Role: GENERATED data module of the dedicated SY0-701 learning-unit system — do not edit by hand.
+ * Used by: learning-unit builders/tests; regenerate via `node scripts/sy0701/validate.mjs`.
+ * Important: Derived from content/sy0-701/source/* (official V7 snapshot 95a2c7515792…, manifest 2026-07-19.2).
+ */
+
+export interface AcronymMeaning {
+  acronymMeaningId: string
+  abbr: string
+  meaning: string
+}
+
+export const SY0701_ACRONYMS: readonly AcronymMeaning[] = [
+  {
+    "acronymMeaningId": "acr:sy0701:v7:2fa:two-factor-authentication",
+    "abbr": "2FA",
+    "meaning": "Two-factor Authentication"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:3des:triple-data-encryption-standard",
+    "abbr": "3DES",
+    "meaning": "Triple Data Encryption Standard"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:aaa:authentication-authorization-and-accounting",
+    "abbr": "AAA",
+    "meaning": "Authentication, Authorization, and Accounting"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:acl:access-control-list",
+    "abbr": "ACL",
+    "meaning": "Access Control List"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:aes:advanced-encryption-standard",
+    "abbr": "AES",
+    "meaning": "Advanced Encryption Standard"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:aes-256:advanced-encryption-standards-256-bit",
+    "abbr": "AES-256",
+    "meaning": "Advanced Encryption Standards 256-bit"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ah:authentication-header",
+    "abbr": "AH",
+    "meaning": "Authentication Header"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ai:artificial-intelligence",
+    "abbr": "AI",
+    "meaning": "Artificial Intelligence"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ais:automated-indicator-sharing",
+    "abbr": "AIS",
+    "meaning": "Automated Indicator Sharing"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ale:annualized-loss-expectancy",
+    "abbr": "ALE",
+    "meaning": "Annualized Loss Expectancy"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ap:access-point",
+    "abbr": "AP",
+    "meaning": "Access Point"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:api:application-programming-interface",
+    "abbr": "API",
+    "meaning": "Application Programming Interface"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:apt:advanced-persistent-threat",
+    "abbr": "APT",
+    "meaning": "Advanced Persistent Threat"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:aro:annualized-rate-of-occurrence",
+    "abbr": "ARO",
+    "meaning": "Annualized Rate of Occurrence"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:arp:address-resolution-protocol",
+    "abbr": "ARP",
+    "meaning": "Address Resolution Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:aslr:address-space-layout-randomization",
+    "abbr": "ASLR",
+    "meaning": "Address Space Layout Randomization"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:att-ck:adversarial-tactics-techniques-and-common-knowle",
+    "abbr": "ATT&CK",
+    "meaning": "Adversarial Tactics, Techniques, and Common Knowledge"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:aup:acceptable-use-policy",
+    "abbr": "AUP",
+    "meaning": "Acceptable Use Policy"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:av:antivirus",
+    "abbr": "AV",
+    "meaning": "Antivirus"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:bash:bourne-again-shell",
+    "abbr": "BASH",
+    "meaning": "Bourne Again Shell"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:bcp:business-continuity-planning",
+    "abbr": "BCP",
+    "meaning": "Business Continuity Planning"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:bgp:border-gateway-protocol",
+    "abbr": "BGP",
+    "meaning": "Border Gateway Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:bia:business-impact-analysis",
+    "abbr": "BIA",
+    "meaning": "Business Impact Analysis"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:bios:basic-input-output-system",
+    "abbr": "BIOS",
+    "meaning": "Basic Input/Output System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:bpa:business-partners-agreement",
+    "abbr": "BPA",
+    "meaning": "Business Partners Agreement"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:bpdu:bridge-protocol-data-unit",
+    "abbr": "BPDU",
+    "meaning": "Bridge Protocol Data Unit"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:byod:bring-your-own-device",
+    "abbr": "BYOD",
+    "meaning": "Bring Your Own Device"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ca:certificate-authority",
+    "abbr": "CA",
+    "meaning": "Certificate Authority"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:captcha:completely-automated-public-turing-test-to-tell",
+    "abbr": "CAPTCHA",
+    "meaning": "Completely Automated Public Turing Test to Tell Computers and Humans Apart"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:car:corrective-action-report",
+    "abbr": "CAR",
+    "meaning": "Corrective Action Report"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:casb:cloud-access-security-broker",
+    "abbr": "CASB",
+    "meaning": "Cloud Access Security Broker"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:cbc:cipher-block-chaining",
+    "abbr": "CBC",
+    "meaning": "Cipher Block Chaining"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ccmp:counter-mode-cbc-mac-protocol",
+    "abbr": "CCMP",
+    "meaning": "Counter Mode/CBC-MAC Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:cctv:closed-circuit-television",
+    "abbr": "CCTV",
+    "meaning": "Closed-circuit Television"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:cert:computer-emergency-response-team",
+    "abbr": "CERT",
+    "meaning": "Computer Emergency Response Team"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:cfb:cipher-feedback",
+    "abbr": "CFB",
+    "meaning": "Cipher Feedback"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:chap:challenge-handshake-authentication-protocol",
+    "abbr": "CHAP",
+    "meaning": "Challenge Handshake Authentication Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:cia:confidentiality-integrity-availability",
+    "abbr": "CIA",
+    "meaning": "Confidentiality, Integrity, Availability"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:cio:chief-information-officer",
+    "abbr": "CIO",
+    "meaning": "Chief Information Officer"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:cirt:computer-incident-response-team",
+    "abbr": "CIRT",
+    "meaning": "Computer Incident Response Team"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:cms:content-management-system",
+    "abbr": "CMS",
+    "meaning": "Content Management System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:cobo:corporate-owned-business-only",
+    "abbr": "COBO",
+    "meaning": "Corporate-owned, Business-only"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:coop:continuity-of-operation-planning",
+    "abbr": "COOP",
+    "meaning": "Continuity of Operation Planning"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:cope:corporate-owned-personally-enabled",
+    "abbr": "COPE",
+    "meaning": "Corporate Owned, Personally Enabled"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:cp:contingency-planning",
+    "abbr": "CP",
+    "meaning": "Contingency Planning"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:crc:cyclical-redundancy-check",
+    "abbr": "CRC",
+    "meaning": "Cyclical Redundancy Check"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:crl:certificate-revocation-list",
+    "abbr": "CRL",
+    "meaning": "Certificate Revocation List"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:cso:chief-security-officer",
+    "abbr": "CSO",
+    "meaning": "Chief Security Officer"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:csp:cloud-service-provider",
+    "abbr": "CSP",
+    "meaning": "Cloud Service Provider"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:csr:certificate-signing-request",
+    "abbr": "CSR",
+    "meaning": "Certificate Signing Request"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:csrf:cross-site-request-forgery",
+    "abbr": "CSRF",
+    "meaning": "Cross-site Request Forgery"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:csu:channel-service-unit",
+    "abbr": "CSU",
+    "meaning": "Channel Service Unit"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ctm:counter-mode",
+    "abbr": "CTM",
+    "meaning": "Counter Mode"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:cto:chief-technology-officer",
+    "abbr": "CTO",
+    "meaning": "Chief Technology Officer"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:cve:common-vulnerability-enumeration",
+    "abbr": "CVE",
+    "meaning": "Common Vulnerability Enumeration"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:cvss:common-vulnerability-scoring-system",
+    "abbr": "CVSS",
+    "meaning": "Common Vulnerability Scoring System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:cyod:choose-your-own-device",
+    "abbr": "CYOD",
+    "meaning": "Choose Your Own Device"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:dac:discretionary-access-control",
+    "abbr": "DAC",
+    "meaning": "Discretionary Access Control"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:dba:database-administrator",
+    "abbr": "DBA",
+    "meaning": "Database Administrator"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ddos:distributed-denial-of-service",
+    "abbr": "DDoS",
+    "meaning": "Distributed Denial of Service"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:dep:data-execution-prevention",
+    "abbr": "DEP",
+    "meaning": "Data Execution Prevention"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:des:digital-encryption-standard",
+    "abbr": "DES",
+    "meaning": "Digital Encryption Standard"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:dhcp:dynamic-host-configuration-protocol",
+    "abbr": "DHCP",
+    "meaning": "Dynamic Host Configuration Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:dhe:diffie-hellman-ephemeral",
+    "abbr": "DHE",
+    "meaning": "Diffie-Hellman Ephemeral"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:dkim:domainkeys-identified-mail",
+    "abbr": "DKIM",
+    "meaning": "DomainKeys Identified Mail"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:dll:dynamic-link-library",
+    "abbr": "DLL",
+    "meaning": "Dynamic Link Library"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:dlp:data-loss-prevention",
+    "abbr": "DLP",
+    "meaning": "Data Loss Prevention"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:dmarc:domain-message-authentication-reporting-and-conf",
+    "abbr": "DMARC",
+    "meaning": "Domain Message Authentication Reporting and Conformance"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:dnat:destination-network-address-translation",
+    "abbr": "DNAT",
+    "meaning": "Destination Network Address Translation"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:dns:domain-name-system",
+    "abbr": "DNS",
+    "meaning": "Domain Name System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:dnssec:domain-name-system-security-extensions",
+    "abbr": "DNSSEC",
+    "meaning": "Domain Name System Security Extensions"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:dos:denial-of-service",
+    "abbr": "DoS",
+    "meaning": "Denial of Service"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:dpo:data-privacy-officer",
+    "abbr": "DPO",
+    "meaning": "Data Privacy Officer"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:drp:disaster-recovery-plan",
+    "abbr": "DRP",
+    "meaning": "Disaster Recovery Plan"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:dsa:digital-signature-algorithm",
+    "abbr": "DSA",
+    "meaning": "Digital Signature Algorithm"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:dsl:digital-subscriber-line",
+    "abbr": "DSL",
+    "meaning": "Digital Subscriber Line"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:eap:extensible-authentication-protocol",
+    "abbr": "EAP",
+    "meaning": "Extensible Authentication Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ecb:electronic-code-book",
+    "abbr": "ECB",
+    "meaning": "Electronic Code Book"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ecc:elliptic-curve-cryptography",
+    "abbr": "ECC",
+    "meaning": "Elliptic Curve Cryptography"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ecdhe:elliptic-curve-diffie-hellman-ephemeral",
+    "abbr": "ECDHE",
+    "meaning": "Elliptic Curve Diffie-Hellman Ephemeral"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ecdsa:elliptic-curve-digital-signature-algorithm",
+    "abbr": "ECDSA",
+    "meaning": "Elliptic Curve Digital Signature Algorithm"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:edr:endpoint-detection-and-response",
+    "abbr": "EDR",
+    "meaning": "Endpoint Detection and Response"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:efs:encrypted-file-system",
+    "abbr": "EFS",
+    "meaning": "Encrypted File System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:erp:enterprise-resource-planning",
+    "abbr": "ERP",
+    "meaning": "Enterprise Resource Planning"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:esn:electronic-serial-number",
+    "abbr": "ESN",
+    "meaning": "Electronic Serial Number"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:esp:encapsulated-security-payload",
+    "abbr": "ESP",
+    "meaning": "Encapsulated Security Payload"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:eula:end-user-license-agreement",
+    "abbr": "EULA",
+    "meaning": "End User License Agreement"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:facl:file-system-access-control-list",
+    "abbr": "FACL",
+    "meaning": "File System Access Control List"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:fde:full-disk-encryption",
+    "abbr": "FDE",
+    "meaning": "Full Disk Encryption"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:fim:file-integrity-management",
+    "abbr": "FIM",
+    "meaning": "File Integrity Management"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:fpga:field-programmable-gate-array",
+    "abbr": "FPGA",
+    "meaning": "Field Programmable Gate Array"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:frr:false-rejection-rate",
+    "abbr": "FRR",
+    "meaning": "False Rejection Rate"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ftp:file-transfer-protocol",
+    "abbr": "FTP",
+    "meaning": "File Transfer Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ftps:secured-file-transfer-protocol",
+    "abbr": "FTPS",
+    "meaning": "Secured File Transfer Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:gcm:galois-counter-mode",
+    "abbr": "GCM",
+    "meaning": "Galois Counter Mode"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:gdpr:general-data-protection-regulation",
+    "abbr": "GDPR",
+    "meaning": "General Data Protection Regulation"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:gpg:gnu-privacy-guard",
+    "abbr": "GPG",
+    "meaning": "Gnu Privacy Guard"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:gpo:group-policy-object",
+    "abbr": "GPO",
+    "meaning": "Group Policy Object"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:gps:global-positioning-system",
+    "abbr": "GPS",
+    "meaning": "Global Positioning System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:gpu:graphics-processing-unit",
+    "abbr": "GPU",
+    "meaning": "Graphics Processing Unit"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:gre:generic-routing-encapsulation",
+    "abbr": "GRE",
+    "meaning": "Generic Routing Encapsulation"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ha:high-availability",
+    "abbr": "HA",
+    "meaning": "High Availability"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:hdd:hard-disk-drive",
+    "abbr": "HDD",
+    "meaning": "Hard Disk Drive"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:hids:host-based-intrusion-detection-system",
+    "abbr": "HIDS",
+    "meaning": "Host-based Intrusion Detection System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:hips:host-based-intrusion-prevention-system",
+    "abbr": "HIPS",
+    "meaning": "Host-based Intrusion Prevention System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:hmac:hashed-message-authentication-code",
+    "abbr": "HMAC",
+    "meaning": "Hashed Message Authentication Code"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:hotp:hmac-based-one-time-password",
+    "abbr": "HOTP",
+    "meaning": "HMAC-based One-time Password"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:hsm:hardware-security-module",
+    "abbr": "HSM",
+    "meaning": "Hardware Security Module"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:html:hypertext-markup-language",
+    "abbr": "HTML",
+    "meaning": "Hypertext Markup Language"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:http:hypertext-transfer-protocol",
+    "abbr": "HTTP",
+    "meaning": "Hypertext Transfer Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:https:hypertext-transfer-protocol-secure",
+    "abbr": "HTTPS",
+    "meaning": "Hypertext Transfer Protocol Secure"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:hvac:heating-ventilation-air-conditioning",
+    "abbr": "HVAC",
+    "meaning": "Heating, Ventilation Air Conditioning"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:iaas:infrastructure-as-a-service",
+    "abbr": "IaaS",
+    "meaning": "Infrastructure as a Service"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:iac:infrastructure-as-code",
+    "abbr": "IaC",
+    "meaning": "Infrastructure as Code"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:iam:identity-and-access-management",
+    "abbr": "IAM",
+    "meaning": "Identity and Access Management"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:icmp:internet-control-message-protocol",
+    "abbr": "ICMP",
+    "meaning": "Internet Control Message Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ics:industrial-control-systems",
+    "abbr": "ICS",
+    "meaning": "Industrial Control Systems"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:idea:international-data-encryption-algorithm",
+    "abbr": "IDEA",
+    "meaning": "International Data Encryption Algorithm"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:idf:intermediate-distribution-frame",
+    "abbr": "IDF",
+    "meaning": "Intermediate Distribution Frame"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:idp:identity-provider",
+    "abbr": "IdP",
+    "meaning": "Identity Provider"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ids:intrusion-detection-system",
+    "abbr": "IDS",
+    "meaning": "Intrusion Detection System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ieee:institute-of-electrical-and-electronics-engineer",
+    "abbr": "IEEE",
+    "meaning": "Institute of Electrical and Electronics Engineers"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ike:internet-key-exchange",
+    "abbr": "IKE",
+    "meaning": "Internet Key Exchange"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:im:instant-messaging",
+    "abbr": "IM",
+    "meaning": "Instant Messaging"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:imap:internet-message-access-protocol",
+    "abbr": "IMAP",
+    "meaning": "Internet Message Access Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ioc:indicators-of-compromise",
+    "abbr": "IoC",
+    "meaning": "Indicators of Compromise"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:iot:internet-of-things",
+    "abbr": "IoT",
+    "meaning": "Internet of Things"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ip:internet-protocol",
+    "abbr": "IP",
+    "meaning": "Internet Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ips:intrusion-prevention-system",
+    "abbr": "IPS",
+    "meaning": "Intrusion Prevention System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ipsec:internet-protocol-security",
+    "abbr": "IPSec",
+    "meaning": "Internet Protocol Security"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ir:incident-response",
+    "abbr": "IR",
+    "meaning": "Incident Response"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:irc:internet-relay-chat",
+    "abbr": "IRC",
+    "meaning": "Internet Relay Chat"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:irp:incident-response-plan",
+    "abbr": "IRP",
+    "meaning": "Incident Response Plan"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:iso:international-standards-organization",
+    "abbr": "ISO",
+    "meaning": "International Standards Organization"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:isp:internet-service-provider",
+    "abbr": "ISP",
+    "meaning": "Internet Service Provider"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:isso:information-systems-security-officer",
+    "abbr": "ISSO",
+    "meaning": "Information Systems Security Officer"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:iv:initialization-vector",
+    "abbr": "IV",
+    "meaning": "Initialization Vector"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:kdc:key-distribution-center",
+    "abbr": "KDC",
+    "meaning": "Key Distribution Center"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:kek:key-encryption-key",
+    "abbr": "KEK",
+    "meaning": "Key Encryption Key"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:l2tp:layer-2-tunneling-protocol",
+    "abbr": "L2TP",
+    "meaning": "Layer 2 Tunneling Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:lan:local-area-network",
+    "abbr": "LAN",
+    "meaning": "Local Area Network"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ldap:lightweight-directory-access-protocol",
+    "abbr": "LDAP",
+    "meaning": "Lightweight Directory Access Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:leap:lightweight-extensible-authentication-protocol",
+    "abbr": "LEAP",
+    "meaning": "Lightweight Extensible Authentication Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:maas:monitoring-as-a-service",
+    "abbr": "MaaS",
+    "meaning": "Monitoring as a Service"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mac:mandatory-access-control",
+    "abbr": "MAC",
+    "meaning": "Mandatory Access Control"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mac:media-access-control",
+    "abbr": "MAC",
+    "meaning": "Media Access Control"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mac:message-authentication-code",
+    "abbr": "MAC",
+    "meaning": "Message Authentication Code"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:man:metropolitan-area-network",
+    "abbr": "MAN",
+    "meaning": "Metropolitan Area Network"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mbr:master-boot-record",
+    "abbr": "MBR",
+    "meaning": "Master Boot Record"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:md5:message-digest-5",
+    "abbr": "MD5",
+    "meaning": "Message Digest 5"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mdf:main-distribution-frame",
+    "abbr": "MDF",
+    "meaning": "Main Distribution Frame"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mdm:mobile-device-management",
+    "abbr": "MDM",
+    "meaning": "Mobile Device Management"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mfa:multifactor-authentication",
+    "abbr": "MFA",
+    "meaning": "Multifactor Authentication"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mfd:multifunction-device",
+    "abbr": "MFD",
+    "meaning": "Multifunction Device"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mfp:multifunction-printer",
+    "abbr": "MFP",
+    "meaning": "Multifunction Printer"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ml:machine-learning",
+    "abbr": "ML",
+    "meaning": "Machine Learning"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mms:multimedia-message-service",
+    "abbr": "MMS",
+    "meaning": "Multimedia Message Service"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:moa:memorandum-of-agreement",
+    "abbr": "MOA",
+    "meaning": "Memorandum of Agreement"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mou:memorandum-of-understanding",
+    "abbr": "MOU",
+    "meaning": "Memorandum of Understanding"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mpls:multi-protocol-label-switching",
+    "abbr": "MPLS",
+    "meaning": "Multi-protocol Label Switching"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:msa:master-service-agreement",
+    "abbr": "MSA",
+    "meaning": "Master Service Agreement"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mschap:microsoft-challenge-handshake-authentication-pro",
+    "abbr": "MSCHAP",
+    "meaning": "Microsoft Challenge Handshake Authentication Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:msp:managed-service-provider",
+    "abbr": "MSP",
+    "meaning": "Managed Service Provider"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mssp:managed-security-service-provider",
+    "abbr": "MSSP",
+    "meaning": "Managed Security Service Provider"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mtbf:mean-time-between-failures",
+    "abbr": "MTBF",
+    "meaning": "Mean Time Between Failures"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mttf:mean-time-to-failure",
+    "abbr": "MTTF",
+    "meaning": "Mean Time to Failure"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mttr:mean-time-to-recover",
+    "abbr": "MTTR",
+    "meaning": "Mean Time to Recover"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mtu:maximum-transmission-unit",
+    "abbr": "MTU",
+    "meaning": "Maximum Transmission Unit"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:mx:mail-exchange",
+    "abbr": "MX",
+    "meaning": "Mail Exchange"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:nac:network-access-control",
+    "abbr": "NAC",
+    "meaning": "Network Access Control"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:nat:network-address-translation",
+    "abbr": "NAT",
+    "meaning": "Network Address Translation"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:nda:non-disclosure-agreement",
+    "abbr": "NDA",
+    "meaning": "Non-disclosure Agreement"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:nfc:near-field-communication",
+    "abbr": "NFC",
+    "meaning": "Near Field Communication"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ngfw:next-generation-firewall",
+    "abbr": "NGFW",
+    "meaning": "Next-generation Firewall"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:nids:network-based-intrusion-detection-system",
+    "abbr": "NIDS",
+    "meaning": "Network-based Intrusion Detection System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:nips:network-based-intrusion-prevention-system",
+    "abbr": "NIPS",
+    "meaning": "Network-based Intrusion Prevention System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:nist:national-institute-of-standards-technology",
+    "abbr": "NIST",
+    "meaning": "National Institute of Standards & Technology"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ntfs:new-technology-file-system",
+    "abbr": "NTFS",
+    "meaning": "New Technology File System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ntlm:new-technology-lan-manager",
+    "abbr": "NTLM",
+    "meaning": "New Technology LAN Manager"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ntp:network-time-protocol",
+    "abbr": "NTP",
+    "meaning": "Network Time Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:oauth:open-authorization",
+    "abbr": "OAUTH",
+    "meaning": "Open Authorization"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ocsp:online-certificate-status-protocol",
+    "abbr": "OCSP",
+    "meaning": "Online Certificate Status Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:oid:object-identifier",
+    "abbr": "OID",
+    "meaning": "Object Identifier"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:os:operating-system",
+    "abbr": "OS",
+    "meaning": "Operating System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:osint:open-source-intelligence",
+    "abbr": "OSINT",
+    "meaning": "Open-source Intelligence"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ospf:open-shortest-path-first",
+    "abbr": "OSPF",
+    "meaning": "Open Shortest Path First"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ot:operational-technology",
+    "abbr": "OT",
+    "meaning": "Operational Technology"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ota:over-the-air",
+    "abbr": "OTA",
+    "meaning": "Over the Air"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:oval:open-vulnerability-assessment-language",
+    "abbr": "OVAL",
+    "meaning": "Open Vulnerability Assessment Language"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:owasp:open-worldwide-application-security-project",
+    "abbr": "OWASP",
+    "meaning": "Open Worldwide Application Security Project"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:p12:pkcs-12",
+    "abbr": "P12",
+    "meaning": "PKCS #12"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:p2p:peer-to-peer",
+    "abbr": "P2P",
+    "meaning": "Peer to Peer"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:paas:platform-as-a-service",
+    "abbr": "PaaS",
+    "meaning": "Platform as a Service"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pac:proxy-auto-configuration",
+    "abbr": "PAC",
+    "meaning": "Proxy Auto Configuration"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pam:privileged-access-management",
+    "abbr": "PAM",
+    "meaning": "Privileged Access Management"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pam:pluggable-authentication-modules",
+    "abbr": "PAM",
+    "meaning": "Pluggable Authentication Modules"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pap:password-authentication-protocol",
+    "abbr": "PAP",
+    "meaning": "Password Authentication Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pat:port-address-translation",
+    "abbr": "PAT",
+    "meaning": "Port Address Translation"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pbkdf2:password-based-key-derivation-function-2",
+    "abbr": "PBKDF2",
+    "meaning": "Password-based Key Derivation Function 2"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pbx:private-branch-exchange",
+    "abbr": "PBX",
+    "meaning": "Private Branch Exchange"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pcap:packet-capture",
+    "abbr": "PCAP",
+    "meaning": "Packet Capture"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pci-dss:payment-card-industry-data-security-standard",
+    "abbr": "PCI DSS",
+    "meaning": "Payment Card Industry Data Security Standard"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pdu:power-distribution-unit",
+    "abbr": "PDU",
+    "meaning": "Power Distribution Unit"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:peap:protected-extensible-authentication-protocol",
+    "abbr": "PEAP",
+    "meaning": "Protected Extensible Authentication Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ped:personal-electronic-device",
+    "abbr": "PED",
+    "meaning": "Personal Electronic Device"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pem:privacy-enhanced-mail",
+    "abbr": "PEM",
+    "meaning": "Privacy Enhanced Mail"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pfs:perfect-forward-secrecy",
+    "abbr": "PFS",
+    "meaning": "Perfect Forward Secrecy"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pgp:pretty-good-privacy",
+    "abbr": "PGP",
+    "meaning": "Pretty Good Privacy"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:phi:personal-health-information",
+    "abbr": "PHI",
+    "meaning": "Personal Health Information"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pii:personally-identifiable-information",
+    "abbr": "PII",
+    "meaning": "Personally Identifiable Information"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:piv:personal-identity-verification",
+    "abbr": "PIV",
+    "meaning": "Personal Identity Verification"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pkcs:public-key-cryptography-standards",
+    "abbr": "PKCS",
+    "meaning": "Public Key Cryptography Standards"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pki:public-key-infrastructure",
+    "abbr": "PKI",
+    "meaning": "Public Key Infrastructure"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pop:post-office-protocol",
+    "abbr": "POP",
+    "meaning": "Post Office Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pots:plain-old-telephone-service",
+    "abbr": "POTS",
+    "meaning": "Plain Old Telephone Service"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ppp:point-to-point-protocol",
+    "abbr": "PPP",
+    "meaning": "Point-to-Point Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pptp:point-to-point-tunneling-protocol",
+    "abbr": "PPTP",
+    "meaning": "Point-to-Point Tunneling Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:psk:pre-shared-key",
+    "abbr": "PSK",
+    "meaning": "Pre-shared Key"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ptz:pan-tilt-zoom",
+    "abbr": "PTZ",
+    "meaning": "Pan-tilt-zoom"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:pup:potentially-unwanted-program",
+    "abbr": "PUP",
+    "meaning": "Potentially Unwanted Program"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ra:recovery-agent",
+    "abbr": "RA",
+    "meaning": "Recovery Agent"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ra:registration-authority",
+    "abbr": "RA",
+    "meaning": "Registration Authority"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:race:research-and-development-in-advanced-communicati",
+    "abbr": "RACE",
+    "meaning": "Research and Development in Advanced Communications Technologies in Europe"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:rad:rapid-application-development",
+    "abbr": "RAD",
+    "meaning": "Rapid Application Development"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:radius:remote-authentication-dial-in-user-service",
+    "abbr": "RADIUS",
+    "meaning": "Remote Authentication Dial-in User Service"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:raid:redundant-array-of-inexpensive-disks",
+    "abbr": "RAID",
+    "meaning": "Redundant Array of Inexpensive Disks"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ras:remote-access-server",
+    "abbr": "RAS",
+    "meaning": "Remote Access Server"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:rat:remote-access-trojan",
+    "abbr": "RAT",
+    "meaning": "Remote Access Trojan"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:rbac:role-based-access-control",
+    "abbr": "RBAC",
+    "meaning": "Role-based Access Control"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:rbac:rule-based-access-control",
+    "abbr": "RBAC",
+    "meaning": "Rule-based Access Control"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:rc4:rivest-cipher-version-4",
+    "abbr": "RC4",
+    "meaning": "Rivest Cipher version 4"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:rdp:remote-desktop-protocol",
+    "abbr": "RDP",
+    "meaning": "Remote Desktop Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:rfid:radio-frequency-identifier",
+    "abbr": "RFID",
+    "meaning": "Radio Frequency Identifier"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ripemd:race-integrity-primitives-evaluation-message-dig",
+    "abbr": "RIPEMD",
+    "meaning": "RACE Integrity Primitives Evaluation Message Digest"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:roi:return-on-investment",
+    "abbr": "ROI",
+    "meaning": "Return on Investment"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:rpo:recovery-point-objective",
+    "abbr": "RPO",
+    "meaning": "Recovery Point Objective"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:rsa:rivest-shamir-adleman",
+    "abbr": "RSA",
+    "meaning": "Rivest, Shamir, & Adleman"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:rtbh:remotely-triggered-black-hole",
+    "abbr": "RTBH",
+    "meaning": "Remotely Triggered Black Hole"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:rto:recovery-time-objective",
+    "abbr": "RTO",
+    "meaning": "Recovery Time Objective"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:rtos:real-time-operating-system",
+    "abbr": "RTOS",
+    "meaning": "Real-time Operating System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:rtp:real-time-transport-protocol",
+    "abbr": "RTP",
+    "meaning": "Real-time Transport Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:s-mime:secure-multipurpose-internet-mail-extensions",
+    "abbr": "S/MIME",
+    "meaning": "Secure/Multipurpose Internet Mail Extensions"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:saas:software-as-a-service",
+    "abbr": "SaaS",
+    "meaning": "Software as a Service"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sae:simultaneous-authentication-of-equals",
+    "abbr": "SAE",
+    "meaning": "Simultaneous Authentication of Equals"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:saml:security-assertions-markup-language",
+    "abbr": "SAML",
+    "meaning": "Security Assertions Markup Language"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:san:storage-area-network",
+    "abbr": "SAN",
+    "meaning": "Storage Area Network"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:san:subject-alternative-name",
+    "abbr": "SAN",
+    "meaning": "Subject Alternative Name"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sase:secure-access-service-edge",
+    "abbr": "SASE",
+    "meaning": "Secure Access Service Edge"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:scada:supervisory-control-and-data-acquisition",
+    "abbr": "SCADA",
+    "meaning": "Supervisory Control and Data Acquisition"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:scap:security-content-automation-protocol",
+    "abbr": "SCAP",
+    "meaning": "Security Content Automation Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:scep:simple-certificate-enrollment-protocol",
+    "abbr": "SCEP",
+    "meaning": "Simple Certificate Enrollment Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sd-wan:software-defined-wide-area-network",
+    "abbr": "SD-WAN",
+    "meaning": "Software-defined Wide Area Network"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sdk:software-development-kit",
+    "abbr": "SDK",
+    "meaning": "Software Development Kit"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sdlc:software-development-lifecycle",
+    "abbr": "SDLC",
+    "meaning": "Software Development Lifecycle"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sdlm:software-development-lifecycle-methodology",
+    "abbr": "SDLM",
+    "meaning": "Software Development Lifecycle Methodology"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sdn:software-defined-networking",
+    "abbr": "SDN",
+    "meaning": "Software-defined Networking"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:se-linux:security-enhanced-linux",
+    "abbr": "SE Linux",
+    "meaning": "Security-enhanced Linux"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sed:self-encrypting-drives",
+    "abbr": "SED",
+    "meaning": "Self-encrypting Drives"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:seh:structured-exception-handler",
+    "abbr": "SEH",
+    "meaning": "Structured Exception Handler"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sftp:secured-file-transfer-protocol",
+    "abbr": "SFTP",
+    "meaning": "Secured File Transfer Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sha:secure-hashing-algorithm",
+    "abbr": "SHA",
+    "meaning": "Secure Hashing Algorithm"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:shttp:secure-hypertext-transfer-protocol",
+    "abbr": "SHTTP",
+    "meaning": "Secure Hypertext Transfer Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:siem:security-information-and-event-management",
+    "abbr": "SIEM",
+    "meaning": "Security Information and Event Management"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sim:subscriber-identity-module",
+    "abbr": "SIM",
+    "meaning": "Subscriber Identity Module"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sla:service-level-agreement",
+    "abbr": "SLA",
+    "meaning": "Service-level Agreement"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sle:single-loss-expectancy",
+    "abbr": "SLE",
+    "meaning": "Single Loss Expectancy"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:smb:server-message-block",
+    "abbr": "SMB",
+    "meaning": "Server Message Block"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sms:short-message-service",
+    "abbr": "SMS",
+    "meaning": "Short Message Service"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:smtp:simple-mail-transfer-protocol",
+    "abbr": "SMTP",
+    "meaning": "Simple Mail Transfer Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:smtps:simple-mail-transfer-protocol-secure",
+    "abbr": "SMTPS",
+    "meaning": "Simple Mail Transfer Protocol Secure"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:snmp:simple-network-management-protocol",
+    "abbr": "SNMP",
+    "meaning": "Simple Network Management Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:soap:simple-object-access-protocol",
+    "abbr": "SOAP",
+    "meaning": "Simple Object Access Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:soar:security-orchestration-automation-response",
+    "abbr": "SOAR",
+    "meaning": "Security Orchestration, Automation, Response"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:soc:system-on-chip",
+    "abbr": "SoC",
+    "meaning": "System on Chip"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:soc:security-operations-center",
+    "abbr": "SOC",
+    "meaning": "Security Operations Center"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sow:statement-of-work",
+    "abbr": "SOW",
+    "meaning": "Statement of Work"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:spf:sender-policy-framework",
+    "abbr": "SPF",
+    "meaning": "Sender Policy Framework"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:spim:spam-over-internet-messaging",
+    "abbr": "SPIM",
+    "meaning": "Spam over Internet Messaging"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sql:structured-query-language",
+    "abbr": "SQL",
+    "meaning": "Structured Query Language"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sqli:sql-injection",
+    "abbr": "SQLi",
+    "meaning": "SQL Injection"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:srtp:secure-real-time-protocol",
+    "abbr": "SRTP",
+    "meaning": "Secure Real-Time Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ssd:solid-state-drive",
+    "abbr": "SSD",
+    "meaning": "Solid State Drive"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ssh:secure-shell",
+    "abbr": "SSH",
+    "meaning": "Secure Shell"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ssl:secure-sockets-layer",
+    "abbr": "SSL",
+    "meaning": "Secure Sockets Layer"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:sso:single-sign-on",
+    "abbr": "SSO",
+    "meaning": "Single Sign-on"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:stix:structured-threat-information-exchange",
+    "abbr": "STIX",
+    "meaning": "Structured Threat Information eXchange"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:swg:secure-web-gateway",
+    "abbr": "SWG",
+    "meaning": "Secure Web Gateway"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:tacacs:terminal-access-controller-access-control-system",
+    "abbr": "TACACS+",
+    "meaning": "Terminal Access Controller Access Control System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:taxii:trusted-automated-exchange-of-indicator-informat",
+    "abbr": "TAXII",
+    "meaning": "Trusted Automated eXchange of Indicator Information"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:tcp-ip:transmission-control-protocol-internet-protocol",
+    "abbr": "TCP/IP",
+    "meaning": "Transmission Control Protocol/Internet Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:tgt:ticket-granting-ticket",
+    "abbr": "TGT",
+    "meaning": "Ticket Granting Ticket"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:tkip:temporal-key-integrity-protocol",
+    "abbr": "TKIP",
+    "meaning": "Temporal Key Integrity Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:tls:transport-layer-security",
+    "abbr": "TLS",
+    "meaning": "Transport Layer Security"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:toc:time-of-check",
+    "abbr": "TOC",
+    "meaning": "Time-of-check"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:totp:time-based-one-time-password",
+    "abbr": "TOTP",
+    "meaning": "Time-based One-time Password"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:tou:time-of-use",
+    "abbr": "TOU",
+    "meaning": "Time-of-use"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:tpm:trusted-platform-module",
+    "abbr": "TPM",
+    "meaning": "Trusted Platform Module"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ttp:tactics-techniques-and-procedures",
+    "abbr": "TTP",
+    "meaning": "Tactics, Techniques, and Procedures"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:tsig:transaction-signature",
+    "abbr": "TSIG",
+    "meaning": "Transaction Signature"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:uat:user-acceptance-testing",
+    "abbr": "UAT",
+    "meaning": "User Acceptance Testing"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:uav:unmanned-aerial-vehicle",
+    "abbr": "UAV",
+    "meaning": "Unmanned Aerial Vehicle"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:uba:user-behavior-analytics",
+    "abbr": "UBA",
+    "meaning": "User Behavior Analytics"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:udp:user-datagram-protocol",
+    "abbr": "UDP",
+    "meaning": "User Datagram Protocol"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:uefi:unified-extensible-firmware-interface",
+    "abbr": "UEFI",
+    "meaning": "Unified Extensible Firmware Interface"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:uem:unified-endpoint-management",
+    "abbr": "UEM",
+    "meaning": "Unified Endpoint Management"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:ups:uninterruptible-power-supply",
+    "abbr": "UPS",
+    "meaning": "Uninterruptible Power Supply"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:uri:uniform-resource-identifier",
+    "abbr": "URI",
+    "meaning": "Uniform Resource Identifier"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:url:universal-resource-locator",
+    "abbr": "URL",
+    "meaning": "Universal Resource Locator"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:usb:universal-serial-bus",
+    "abbr": "USB",
+    "meaning": "Universal Serial Bus"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:usb-otg:usb-on-the-go",
+    "abbr": "USB OTG",
+    "meaning": "USB On the Go"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:utm:unified-threat-management",
+    "abbr": "UTM",
+    "meaning": "Unified Threat Management"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:utp:unshielded-twisted-pair",
+    "abbr": "UTP",
+    "meaning": "Unshielded Twisted Pair"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:vba:visual-basic",
+    "abbr": "VBA",
+    "meaning": "Visual Basic"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:vde:virtual-desktop-environment",
+    "abbr": "VDE",
+    "meaning": "Virtual Desktop Environment"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:vdi:virtual-desktop-infrastructure",
+    "abbr": "VDI",
+    "meaning": "Virtual Desktop Infrastructure"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:vlan:virtual-local-area-network",
+    "abbr": "VLAN",
+    "meaning": "Virtual Local Area Network"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:vlsm:variable-length-subnet-masking",
+    "abbr": "VLSM",
+    "meaning": "Variable Length Subnet Masking"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:vm:virtual-machine",
+    "abbr": "VM",
+    "meaning": "Virtual Machine"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:voip:voice-over-ip",
+    "abbr": "VoIP",
+    "meaning": "Voice over IP"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:vpc:virtual-private-cloud",
+    "abbr": "VPC",
+    "meaning": "Virtual Private Cloud"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:vpn:virtual-private-network",
+    "abbr": "VPN",
+    "meaning": "Virtual Private Network"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:vtc:video-teleconferencing",
+    "abbr": "VTC",
+    "meaning": "Video Teleconferencing"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:waf:web-application-firewall",
+    "abbr": "WAF",
+    "meaning": "Web Application Firewall"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:wap:wireless-access-point",
+    "abbr": "WAP",
+    "meaning": "Wireless Access Point"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:wep:wired-equivalent-privacy",
+    "abbr": "WEP",
+    "meaning": "Wired Equivalent Privacy"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:wids:wireless-intrusion-detection-system",
+    "abbr": "WIDS",
+    "meaning": "Wireless Intrusion Detection System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:wips:wireless-intrusion-prevention-system",
+    "abbr": "WIPS",
+    "meaning": "Wireless Intrusion Prevention System"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:wo:work-order",
+    "abbr": "WO",
+    "meaning": "Work Order"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:wpa:wi-fi-protected-access",
+    "abbr": "WPA",
+    "meaning": "Wi-Fi Protected Access"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:wps:wi-fi-protected-setup",
+    "abbr": "WPS",
+    "meaning": "Wi-Fi Protected Setup"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:wtls:wireless-tls",
+    "abbr": "WTLS",
+    "meaning": "Wireless TLS"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:xdr:extended-detection-and-response",
+    "abbr": "XDR",
+    "meaning": "Extended Detection and Response"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:xml:extensible-markup-language",
+    "abbr": "XML",
+    "meaning": "Extensible Markup Language"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:xor:exclusive-or",
+    "abbr": "XOR",
+    "meaning": "Exclusive Or"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:xsrf:cross-site-request-forgery",
+    "abbr": "XSRF",
+    "meaning": "Cross-site Request Forgery"
+  },
+  {
+    "acronymMeaningId": "acr:sy0701:v7:xss:cross-site-scripting",
+    "abbr": "XSS",
+    "meaning": "Cross-site Scripting"
+  }
+]
+
+export const SY0701_AMBIGUOUS_ABBRS: readonly string[] = [
+  "MAC",
+  "PAM",
+  "RA",
+  "RBAC",
+  "SAN"
+]

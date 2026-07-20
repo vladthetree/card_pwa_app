@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react'
 import { ArrowLeft, Check, GripVertical, Shield, X } from 'lucide-react'
 import { Reorder } from 'framer-motion'
 import type { LabScenario } from '../../data/labScenarios'
-import { computeMatchingScore, computeOrderingScore } from '../../utils/pbqScoring'
+import { computeDecisionScore, computeMatchingScore, computeOrderingScore } from '../../utils/pbqScoring'
 import { LAB_DIFFICULTY_BADGE } from './labUi'
 
 /**
@@ -21,6 +21,8 @@ const COPY = {
   de: {
     matchPrompt: 'Ordne jedem Element rechts das richtige Pendant zu',
     orderPrompt: 'Ziehe die Regeln in die richtige Reihenfolge',
+    decisionPromptSingle: 'Wähle die richtige Option',
+    decisionPromptMultiple: 'Wähle alle zutreffenden Optionen',
     select: '– auswählen –',
     check: 'Antwort prüfen',
     evidence: 'Beweismaterial',
@@ -34,6 +36,8 @@ const COPY = {
   en: {
     matchPrompt: 'Match each element to its counterpart',
     orderPrompt: 'Drag the rules into the correct order',
+    decisionPromptSingle: 'Choose the correct option',
+    decisionPromptMultiple: 'Choose all options that apply',
     select: '– select –',
     check: 'Check answer',
     evidence: 'Evidence',
@@ -84,24 +88,49 @@ export default function LabScenarioView({ language, scenario, onBack, onSolved, 
     interaction.type === 'ordering' ? interaction.steps : [],
   )
 
+  // Decision-Zustand: gewählte Options-IDs.
+  const [decisionSelected, setDecisionSelected] = useState<string[]>([])
+
   const [result, setResult] = useState<'idle' | 'solved' | 'failed'>('idle')
 
-  const allSelected = interaction.type !== 'matching'
-    || interaction.items.every(item => Boolean(selections[item.left]))
+  const allSelected = interaction.type === 'matching'
+    ? interaction.items.every(item => Boolean(selections[item.left]))
+    : interaction.type === 'decision'
+    ? decisionSelected.length > 0
+    : true
+
+  const toggleDecisionOption = (optionId: string) => {
+    if (result === 'solved') return
+    if (result === 'failed') setResult('idle')
+    if (interaction.type !== 'decision') return
+    if (interaction.selectionMode === 'single') {
+      setDecisionSelected([optionId])
+      return
+    }
+    setDecisionSelected(prev => (
+      prev.includes(optionId) ? prev.filter(id => id !== optionId) : [...prev, optionId]
+    ))
+  }
 
   const handleCheck = () => {
     if (result === 'solved') return
     let score = 0
     if (interaction.type === 'matching') {
       score = computeMatchingScore(selections, interaction.items)
-    } else {
+    } else if (interaction.type === 'ordering') {
       score = computeOrderingScore(order, interaction.correctOrder, interaction.steps)
+    } else {
+      score = computeDecisionScore(decisionSelected, interaction.correctIds)
     }
     onCheck?.({
       scenarioId: scenario.id,
       score,
       // 'step-1' = kanonische Schritt-ID des §13.2-Snapshots (labSnapshot.ts).
-      answerByStepId: interaction.type === 'matching' ? { 'step-1': { ...selections } } : { 'step-1': [...order] },
+      answerByStepId: interaction.type === 'matching'
+        ? { 'step-1': { ...selections } }
+        : interaction.type === 'ordering'
+        ? { 'step-1': [...order] }
+        : { 'step-1': [...decisionSelected] },
     })
     if (score === 1) {
       setResult('solved')
@@ -114,6 +143,7 @@ export default function LabScenarioView({ language, scenario, onBack, onSolved, 
   const handleRetry = () => {
     setResult('idle')
     if (interaction.type === 'matching') setSelections({})
+    if (interaction.type === 'decision') setDecisionSelected([])
   }
 
   const matchingFeedback = (left: string, right: string): 'none' | 'ok' | 'wrong' => {
@@ -169,7 +199,13 @@ export default function LabScenarioView({ language, scenario, onBack, onSolved, 
 
           {/* Interaktion */}
           <p className={`${SECTION_LABEL} mt-6`}>
-            {interaction.type === 'matching' ? copy.matchPrompt : copy.orderPrompt}
+            {interaction.type === 'matching'
+              ? copy.matchPrompt
+              : interaction.type === 'ordering'
+              ? copy.orderPrompt
+              : interaction.selectionMode === 'single'
+              ? copy.decisionPromptSingle
+              : copy.decisionPromptMultiple}
           </p>
 
           {interaction.type === 'matching' && (
@@ -238,6 +274,41 @@ export default function LabScenarioView({ language, scenario, onBack, onSolved, 
                 )
               })}
             </Reorder.Group>
+          )}
+
+          {interaction.type === 'decision' && (
+            <div className="flex flex-col gap-2" role={interaction.selectionMode === 'single' ? 'radiogroup' : 'group'}>
+              {interaction.options.map(option => {
+                const isPicked = decisionSelected.includes(option.id)
+                const isCorrect = interaction.correctIds.includes(option.id)
+                const highlight = result !== 'idle' && isPicked && isCorrect
+                const missedCorrect = result !== 'idle' && !isPicked && isCorrect
+                const wrongPick = result !== 'idle' && isPicked && !isCorrect
+                const borderCls = highlight || missedCorrect
+                  ? 'border-emerald-500/50'
+                  : wrongPick
+                  ? 'border-rose-500/60'
+                  : isPicked
+                  ? 'border-[--brand-secondary-50]'
+                  : 'border-[#1f1f23]'
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    role={interaction.selectionMode === 'single' ? 'radio' : 'checkbox'}
+                    aria-checked={isPicked}
+                    disabled={result === 'solved'}
+                    onClick={() => toggleDecisionOption(option.id)}
+                    className={`flex items-start justify-between gap-2.5 rounded-ds-2xl border ${borderCls} bg-[#0c0c0c] px-3.5 py-3 text-left transition-colors`}
+                  >
+                    <span className="min-w-0 flex-1 font-mono text-[14px] leading-snug text-zinc-100">{option.text}</span>
+                    {highlight && <Check size={15} className="mt-0.5 shrink-0 text-emerald-400" strokeWidth={2} />}
+                    {missedCorrect && <Check size={15} className="mt-0.5 shrink-0 text-emerald-400/50" strokeWidth={2} />}
+                    {wrongPick && <X size={15} className="mt-0.5 shrink-0 text-rose-400" strokeWidth={2} />}
+                  </button>
+                )
+              })}
+            </div>
           )}
 
           {/* Ergebnis-Feedback (⚠️ neu generiert, kein Screenshot des gelösten Zustands) */}

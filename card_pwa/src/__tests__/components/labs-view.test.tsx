@@ -37,7 +37,7 @@ vi.mock('framer-motion', () => {
 
 import LabsView from '../../components/labs/LabsView'
 import LabScenarioView from '../../components/labs/LabScenarioView'
-import { LAB_SCENARIOS, LAB_TARGET_INVENTORY } from '../../data/labScenarios'
+import { LAB_SCENARIOS, LAB_TARGET_INVENTORY, type LabScenario } from '../../data/labScenarios'
 
 describe('LabsView — Liste (Beleg …23.38.26.jpeg)', () => {
   const html = renderToStaticMarkup(
@@ -96,5 +96,60 @@ describe('LabScenarioView — Detail', () => {
     expect(html).toContain('185.204.0.0/16')
     expect(html).toContain('Geo-Block vor Web-Allow')
     expect(html).toContain('Experte')
+  })
+
+  it('Decision-Detail zeigt Multi-Select-Prompt, alle Optionen und Checkbox-Rollen', () => {
+    const scenario: LabScenario = {
+      id: 'test-decision',
+      categoryId: 'iam',
+      title: 'Least-Privilege-Entscheidung',
+      objective: '4.6 Identity and access management',
+      difficulty: 'fortgeschritten',
+      minutes: 6,
+      description: 'Welche Rechte darf der Helpdesk-Account bekommen?',
+      interaction: {
+        type: 'decision',
+        selectionMode: 'multiple',
+        options: [
+          { id: 'reset-pw', text: 'Passwörter zurücksetzen' },
+          { id: 'domain-admin', text: 'Domain-Admin-Rechte' },
+        ],
+        correctIds: ['reset-pw'],
+      },
+    }
+    const html = renderToStaticMarkup(
+      createElement(LabScenarioView, { language: 'de', scenario, onBack: () => {}, onSolved: () => {} }),
+    )
+    expect(html).toContain('Wähle alle zutreffenden Optionen')
+    expect(html).toContain('Passwörter zurücksetzen')
+    expect(html).toContain('Domain-Admin-Rechte')
+    expect(html).toContain('role="checkbox"')
+  })
+
+  it('Decision-Detail mit Single-Select zeigt Radio-Rollen und den Single-Prompt', () => {
+    const scenario: LabScenario = {
+      id: 'test-decision-single',
+      categoryId: 'iam',
+      title: 'MFA-Faktor-Entscheidung',
+      objective: '4.6 Multifactor authentication',
+      difficulty: 'einsteiger',
+      minutes: 4,
+      description: 'Welcher Faktor ist "something you have"?',
+      interaction: {
+        type: 'decision',
+        selectionMode: 'single',
+        options: [
+          { id: 'token', text: 'Hardware-Token' },
+          { id: 'password', text: 'Passwort' },
+        ],
+        correctIds: ['token'],
+      },
+    }
+    const html = renderToStaticMarkup(
+      createElement(LabScenarioView, { language: 'de', scenario, onBack: () => {}, onSolved: () => {} }),
+    )
+    expect(html).toContain('Wähle die richtige Option')
+    expect(html).toContain('role="radio"')
+    expect(html).toContain('role="radiogroup"')
   })
 })

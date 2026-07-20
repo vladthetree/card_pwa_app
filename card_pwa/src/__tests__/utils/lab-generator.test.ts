@@ -163,7 +163,7 @@ describe('Lab-Generator — Instanzen', () => {
           expect(options.length, bp.id).toBeGreaterThan(items.length) // mind. 1 Distraktor
           const correct = Object.fromEntries(items.map(i => [i.left, i.right]))
           expect(computeMatchingScore(correct, items), `${bp.id}@${seed}`).toBe(1)
-        } else {
+        } else if (scenario.interaction.type === 'ordering') {
           const { steps, correctOrder } = scenario.interaction
           expect(new Set(steps).size, bp.id).toBe(steps.length)
           expect(correctOrder.length, bp.id).toBe(steps.length)

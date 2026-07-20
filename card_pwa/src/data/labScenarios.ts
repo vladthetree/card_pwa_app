@@ -30,7 +30,22 @@ export interface LabOrderingInteraction {
   correctOrder: number[]
 }
 
-export type LabInteraction = LabMatchingInteraction | LabOrderingInteraction
+/**
+ * Entscheidungs-Interaktion (§13.1 der Umsetzungsplan-Doku: "Matching/Ordering
+ * allein erfüllt dieses Gate nicht") — deckt Log-Analyse, Firewall/ACL-Regeln,
+ * IAM-, Härtungs- und Incident-Response-Entscheidungen ab, die sich nicht als
+ * Zuordnung oder Reihenfolge modellieren lassen. Leichtgewichtig gehalten wie
+ * matching/ordering: reine Selbstbewertung, keine Rubrik-/Attempt-Persistenz.
+ */
+export interface LabDecisionInteraction {
+  type: 'decision'
+  selectionMode: 'single' | 'multiple'
+  options: Array<{ id: string; text: string }>
+  /** IDs aus `options`, die als richtig zählen. */
+  correctIds: string[]
+}
+
+export type LabInteraction = LabMatchingInteraction | LabOrderingInteraction | LabDecisionInteraction
 
 export interface LabScenario {
   id: string
@@ -48,6 +63,10 @@ export interface LabScenario {
   /** "Ziel:"-Callout (amber). */
   goal?: string
   interaction: LabInteraction
+  /** Requirement-IDs aus dem kuratierten Leaf-Mapping (content/sy0-701/source/leaf-mapping.json),
+   *  die dieses Szenario praktisch übt. Optional — Backfill für den bestehenden 100er-Bestand
+   *  ist noch offen (OFFENE-PUNKTE.md #14), neue Szenarien tragen es von Anfang an. */
+  requirementIds?: string[]
 }
 
 export interface LabCategory {
@@ -2705,13 +2724,273 @@ export const LAB_SCENARIOS: LabScenario[] = [
       ],
     },
   },
+
+  // ── Entscheidungs-Szenarien (2026-07-20) ────────────────────────────────
+  // §13.1 der Umsetzungsplan-Doku: "Matching/Ordering allein erfüllt dieses
+  // Gate nicht" — Log-Analyse, Firewall/ACL, IAM, Härtung und Incident
+  // Response brauchen echte Entscheidungen statt Zuordnung/Reihenfolge.
+  // Jedes Szenario im Original-Messer-Transkript verankert (siehe requirementIds).
+  {
+    id: 'betrieb-firewall-log-triage',
+    categoryId: 'betrieb',
+    title: 'Firewall-Log: Welche Zeile ist verdächtig?',
+    objective: '4.9 Security data sources (log data)',
+    difficulty: 'fortgeschritten',
+    minutes: 6,
+    description:
+      'Ein Next-Generation-Firewall-Log zeigt vier Verbindungen von derselben Workstation. Welche Zeile rechtfertigt eine genauere Untersuchung?',
+    evidence:
+      '14:02:11  10.0.4.22:51230 -> 8.8.8.8:53          UDP  ALLOWED  app=dns\n' +
+      '14:02:14  10.0.4.22:51231 -> 185.220.101.7:4444   TCP  ALLOWED  app=unknown\n' +
+      '14:02:20  10.0.4.22:51244 -> 172.217.16.14:443    TCP  ALLOWED  app=https-google\n' +
+      '14:02:33  10.0.4.22:51235 -> 45.33.32.156:22       TCP  BLOCKED  app=ssh',
+    goal: 'Ziel: unterscheide normalen Traffic von einer Zeile, die auf ein kompromittiertes System hindeuten könnte.',
+    requirementIds: ['req:sy0701:v7:4.9:log-data:firewall-logs'],
+    interaction: {
+      type: 'decision',
+      selectionMode: 'single',
+      options: [
+        { id: 'dns', text: '14:02:11 — DNS-Anfrage an 8.8.8.8, erlaubt' },
+        { id: 'unknown-4444', text: '14:02:14 — TCP-Verbindung auf Port 4444 zu unbekannter IP, App "unknown", erlaubt' },
+        { id: 'https', text: '14:02:20 — HTTPS zu Google, erlaubt' },
+        { id: 'ssh-blocked', text: '14:02:33 — SSH-Versuch nach außen, vom Firewall bereits blockiert' },
+      ],
+      correctIds: ['unknown-4444'],
+    },
+  },
+  {
+    id: 'betrieb-ips-alert-eskalation',
+    categoryId: 'betrieb',
+    title: 'IPS-Alerts: Was geht sofort ans SOC?',
+    objective: '4.9 Security data sources (log data)',
+    difficulty: 'fortgeschritten',
+    minutes: 7,
+    description:
+      'Vier Snort-Alerts aus deinem IPS-Log (Priority 1 = am dringendsten). Welche verdienen sofortige Eskalation, welche reicht reine Beobachtung?',
+    evidence:
+      '[1:2400012:3] ET POLICY Executable served from Webroot   Priority: 1   10.0.4.5 -> 198.51.100.9:80\n' +
+      '[1:2010935:8] ET DOS Possible SYN Flood                  Priority: 2   203.0.113.44 -> 10.0.4.5:443\n' +
+      '[1:2013028:5] ET INFO DNS Query for suspicious .top TLD  Priority: 2   10.0.4.77 -> 8.8.8.8:53\n' +
+      '[1:2001219:20] ET SCAN Potential SSH Scan                Priority: 3   10.0.4.9 -> 10.0.4.5:22',
+    goal: 'Ziel: markiere alle Alerts, die sofortige Eskalation verdienen (nicht nur den dringendsten).',
+    requirementIds: ['req:sy0701:v7:4.9:log-data:ips-ids-logs'],
+    interaction: {
+      type: 'decision',
+      selectionMode: 'multiple',
+      options: [
+        { id: 'webroot-exec', text: 'Executable served from Webroot (Priority 1)' },
+        { id: 'syn-flood', text: 'Possible SYN Flood gegen Port 443 (Priority 2)' },
+        { id: 'suspicious-dns', text: 'DNS-Anfrage an verdächtige .top-Domain (Priority 2)' },
+        { id: 'ssh-scan', text: 'Interner SSH-Scan (Priority 3)' },
+      ],
+      correctIds: ['webroot-exec', 'syn-flood', 'suspicious-dns'],
+    },
+  },
+  {
+    id: 'firewalls-acl-implicit-deny',
+    categoryId: 'firewalls',
+    title: 'ACL mit Implicit Deny: Was kommt durch?',
+    objective: '4.5 Enterprise security (firewall)',
+    difficulty: 'einsteiger',
+    minutes: 5,
+    description:
+      'Diese Firewall wertet die Regelbasis von oben nach unten aus und endet mit einem Implicit Deny. Welche Verbindungsversuche werden durchgelassen?',
+    evidence:
+      'Regel  Remote-IP  Remote-Port  Lokaler Port  Protokoll  Aktion\n' +
+      '1      any        any          22            TCP        ALLOW  (SSH)\n' +
+      '2      any        any          80            TCP        ALLOW  (HTTP)\n' +
+      '3      any        any          443           TCP        ALLOW  (HTTPS)\n' +
+      '4      any        any          3389          TCP        ALLOW  (RDP)\n' +
+      '5      any        53           any           UDP        ALLOW  (DNS-Antworten)\n' +
+      '—      *          *            *             *          IMPLICIT DENY',
+    goal: 'Ziel: wähle alle Verbindungen, die eine passende ALLOW-Regel treffen.',
+    requirementIds: ['req:sy0701:v7:4.5:firewall:rules', 'req:sy0701:v7:4.5:firewall:access-lists'],
+    interaction: {
+      type: 'decision',
+      selectionMode: 'multiple',
+      options: [
+        { id: 'ssh-in', text: 'Externer Client → lokaler Port 22 (SSH)' },
+        { id: 'mysql-in', text: 'Externer Client → lokaler Port 3306 (MySQL)' },
+        { id: 'rdp-in', text: 'Externer Client → lokaler Port 3389 (RDP)' },
+        { id: 'smb-in', text: 'Externer Client → lokaler Port 445 (SMB)' },
+      ],
+      correctIds: ['ssh-in', 'rdp-in'],
+    },
+  },
+  {
+    id: 'firewalls-screened-subnet-platzierung',
+    categoryId: 'firewalls',
+    title: 'Wohin mit dem öffentlichen Webserver?',
+    objective: '4.5 Enterprise security (screened subnet)',
+    difficulty: 'einsteiger',
+    minutes: 4,
+    description:
+      'Ein neuer Webserver soll aus dem Internet erreichbar sein. Die Firewall hat zwei interne Netze: das interne Netz mit den vertraulichen Daten und ein separates Netz für Internet-Dienste.',
+    topology: 'Internet -> [Firewall] -> Internes Netz (vertrauliche Daten)\n                       -> Screened Subnet (öffentliche Dienste)',
+    goal: 'Ziel: entscheide, in welches Netz der neue öffentliche Webserver gehört.',
+    requirementIds: ['req:sy0701:v7:4.5:firewall:screened-subnets'],
+    interaction: {
+      type: 'decision',
+      selectionMode: 'single',
+      options: [
+        { id: 'internal', text: 'Ins interne Netz, direkt neben den vertraulichen Daten' },
+        { id: 'screened-subnet', text: 'In den Screened Subnet, getrennt vom internen Netz' },
+        { id: 'no-firewall', text: 'Direkt ans Internet, ohne Firewall dazwischen' },
+        { id: 'dc-vlan', text: 'In dasselbe VLAN wie die Domain-Controller' },
+      ],
+      correctIds: ['screened-subnet'],
+    },
+  },
+  {
+    id: 'iam-least-privilege-helpdesk',
+    categoryId: 'iam',
+    title: 'Least Privilege für den Helpdesk-Account',
+    objective: '4.6 Identity and access management',
+    difficulty: 'fortgeschritten',
+    minutes: 5,
+    description:
+      'Ein neuer Helpdesk-Mitarbeiter soll Nutzerkonten unterstützen können. Welche Rechte passen zum Prinzip der geringsten Rechte?',
+    goal: 'Ziel: wähle nur die Rechte, die für die Aufgabe tatsächlich nötig sind.',
+    requirementIds: ['req:sy0701:v7:4.6:permission-assignments-and-implications'],
+    interaction: {
+      type: 'decision',
+      selectionMode: 'multiple',
+      options: [
+        { id: 'reset-pw', text: 'Passwörter anderer Nutzer zurücksetzen' },
+        { id: 'unlock-acct', text: 'Gesperrte Konten entsperren' },
+        { id: 'domain-admin', text: 'Domain-Admin-Rechte auf allen Servern' },
+        { id: 'delete-logs', text: 'Audit-Logs löschen dürfen' },
+      ],
+      correctIds: ['reset-pw', 'unlock-acct'],
+    },
+  },
+  {
+    id: 'iam-sso-protokollwahl',
+    categoryId: 'iam',
+    title: 'SAML oder OAuth?',
+    objective: '4.6 Identity and access management (SSO)',
+    difficulty: 'fortgeschritten',
+    minutes: 5,
+    description:
+      'Ein Team baut eine mobile App, mit der sich Nutzer über ihr Google-Konto anmelden und gezielt nur Zugriff auf ihr Google Drive gewähren — ohne eigenes zentrales Nutzerverzeichnis.',
+    goal: 'Ziel: wähle das Protokoll, das für mobile, autorisierungsbasierte Zugriffe entwickelt wurde.',
+    requirementIds: [
+      'req:sy0701:v7:4.6:single-sign-on-sso:security-assertions-markup-language-saml',
+      'req:sy0701:v7:4.6:single-sign-on-sso:open-authorization-oauth',
+    ],
+    interaction: {
+      type: 'decision',
+      selectionMode: 'single',
+      options: [
+        { id: 'saml', text: 'SAML — für klassische Browser-Anmeldung an einem zentralen Identity Provider' },
+        { id: 'oauth', text: 'OAuth (meist mit OpenID) — Autorisierungs-Framework, für mobile/moderne Apps entwickelt' },
+        { id: 'kerberos', text: 'Kerberos — Ticket-basierte Authentifizierung im internen Windows-Netz' },
+        { id: 'ldap', text: 'LDAP — Verzeichnisabfrage gegen einen internen Verzeichnisdienst' },
+      ],
+      correctIds: ['oauth'],
+    },
+  },
+  {
+    id: 'betrieb-baseline-haertung-server',
+    categoryId: 'betrieb',
+    title: 'Security-Baseline für einen neuen Anwendungsserver',
+    objective: '4.1 Security techniques (secure baselines)',
+    difficulty: 'einsteiger',
+    minutes: 5,
+    description:
+      'Ein neuer Anwendungsserver soll produktiv gehen. Welche Schritte gehören zum Aufbau und Rollout der Security-Baseline?',
+    goal: 'Ziel: wähle alle Schritte, die zur Best Practice gehören.',
+    requirementIds: ['req:sy0701:v7:4.1:secure-baselines:establish', 'req:sy0701:v7:4.1:secure-baselines:deploy'],
+    interaction: {
+      type: 'decision',
+      selectionMode: 'multiple',
+      options: [
+        { id: 'vendor-baseline', text: 'Vorlage des Betriebssystem-/Anwendungsherstellers als Ausgangspunkt nutzen' },
+        { id: 'automated-deploy', text: 'Einstellungen automatisiert ausrollen (z. B. Gruppenrichtlinie/MDM)' },
+        { id: 'set-and-forget', text: 'Baseline einmalig einspielen und danach nie wieder prüfen' },
+        { id: 'reinvent', text: 'Eigene Baseline komplett neu erfinden, ohne Hersteller-Vorlage' },
+      ],
+      correctIds: ['vendor-baseline', 'automated-deploy'],
+    },
+  },
+  {
+    id: 'betrieb-switch-haertung',
+    categoryId: 'betrieb',
+    title: 'Neuer Switch: erste Härtungsschritte',
+    objective: '4.1 Security techniques (hardening targets)',
+    difficulty: 'einsteiger',
+    minutes: 5,
+    description:
+      'Ein neuer Layer-3-Switch wird ins Netz gebracht. Was gehört zu den ersten Härtungsschritten, bevor er produktiv geht?',
+    goal: 'Ziel: wähle alle zutreffenden Schritte.',
+    requirementIds: ['req:sy0701:v7:4.1:hardening-targets:switches'],
+    interaction: {
+      type: 'decision',
+      selectionMode: 'multiple',
+      options: [
+        { id: 'change-creds', text: 'Standard-Zugangsdaten sofort ändern' },
+        { id: 'configure-auth', text: 'Lokale oder zentrale Authentifizierung konfigurieren' },
+        { id: 'check-vendor-patches', text: 'Beim Hersteller nach verfügbaren Patches fragen' },
+        { id: 'install-desktop-os', text: 'Ein Standard-Desktop-Betriebssystem (Windows/Linux) aufspielen' },
+      ],
+      correctIds: ['change-creds', 'configure-auth', 'check-vendor-patches'],
+    },
+  },
+  {
+    id: 'incident-response-sofortmassnahme-ransomware',
+    categoryId: 'incident-response',
+    title: 'Aktive Ransomware: was zuerst?',
+    objective: '4.8 Incident response process',
+    difficulty: 'fortgeschritten',
+    minutes: 6,
+    description:
+      'Ein Server zeigt laufende Ransomware-Verschlüsselung. Was ist die richtige Sofort-Maßnahme, bevor irgendetwas anderes passiert?',
+    goal: 'Ziel: die dringendste, richtige Handlung wählen — nicht die langfristige Aufräumarbeit.',
+    requirementIds: ['req:sy0701:v7:4.8:process:containment'],
+    interaction: {
+      type: 'decision',
+      selectionMode: 'single',
+      options: [
+        { id: 'isolate', text: 'System sofort vom Netzwerk isolieren' },
+        { id: 'reimage', text: 'Server sofort neu aufsetzen/reimagen' },
+        { id: 'wait', text: 'Abwarten und beobachten, was als Nächstes passiert' },
+        { id: 'restore-backup', text: 'Direkt das letzte Backup zurückspielen' },
+      ],
+      correctIds: ['isolate'],
+    },
+  },
+  {
+    id: 'incident-response-chain-of-custody',
+    categoryId: 'incident-response',
+    title: 'Chain of Custody: was gehört ins Protokoll?',
+    objective: '4.8 Digital forensics',
+    difficulty: 'fortgeschritten',
+    minutes: 5,
+    description:
+      'Du sicherst eine Festplatte als Beweismittel. Was muss dokumentiert werden, damit die Daten später als unverändert gelten?',
+    goal: 'Ziel: wähle alle Angaben, die tatsächlich Teil der Chain of Custody sind.',
+    requirementIds: ['req:sy0701:v7:4.8:digital-forensics:chain-of-custody'],
+    interaction: {
+      type: 'decision',
+      selectionMode: 'multiple',
+      options: [
+        { id: 'who-accessed', text: 'Wer wann Zugriff auf das Beweismittel hatte' },
+        { id: 'hash', text: 'Hash-Wert der Daten zum Zeitpunkt der Sicherung' },
+        { id: 'suspicion', text: 'Persönliche Verdachtsmomente des Ermittlers gegen einzelne Mitarbeiter' },
+        { id: 'marketing-tag', text: 'Marketing-Klassifizierung der betroffenen Kundendaten' },
+      ],
+      correctIds: ['who-accessed', 'hash'],
+    },
+  },
 ]
 
 /**
- * Ziel-Inventar: 100 Szenarien — Ausbau vom belegten 71er-Handy-Stand
- * (Pill "4 / 71") auf volle SY0-701-Objective-Abdeckung; siehe docs/labs.md.
+ * Ziel-Inventar: 110 Szenarien — Ausbau vom belegten 71er-Handy-Stand
+ * (Pill "4 / 71") auf volle SY0-701-Objective-Abdeckung inkl. 10
+ * Entscheidungs-Szenarien über Matching/Ordering hinaus (2026-07-20,
+ * §13.1); siehe docs/labs.md.
  */
-export const LAB_TARGET_INVENTORY = 100
+export const LAB_TARGET_INVENTORY = 110
 
 const SY0_701 = 'comptia-sy0-701-objectives'
 
@@ -2752,6 +3031,8 @@ export const LAB_SCENARIO_SOURCE_REFS: Record<string, string[]> = {
   'firewalls-zero-trust-pep': [SY0_701, 'nist-sp-800-207', 'cisa-zero-trust-maturity-model'],
   'firewalls-ids-ips-platzierung': [SY0_701, 'nist-sp-800-94'],
   'firewalls-nac-8021x': [SY0_701, 'nist-sp-800-97'],
+  'firewalls-acl-implicit-deny': [SY0_701, 'cisco-acl'],
+  'firewalls-screened-subnet-platzierung': [SY0_701, 'paloalto-security-policy-rules', 'nist-sp-800-207'],
 
   'architektur-cloud-modelle': [SY0_701, 'aws-shared-responsibility'],
   'architektur-datenzustaende': [SY0_701, 'nist-encryption-basics'],
@@ -2774,6 +3055,8 @@ export const LAB_SCENARIO_SOURCE_REFS: Record<string, string[]> = {
   'iam-federation-flow': [SY0_701, 'nist-sp-800-63b'],
   'iam-sso-protokolle': [SY0_701, 'nist-sp-800-63c'],
   'iam-passwort-richtlinie': [SY0_701, 'nist-sp-800-63b'],
+  'iam-least-privilege-helpdesk': [SY0_701, 'nist-csf-2'],
+  'iam-sso-protokollwahl': [SY0_701, 'nist-sp-800-63c'],
 
   'betrieb-server-haertung': [SY0_701, 'cis-benchmarks', 'nist-sp-800-40r4'],
   'betrieb-wlan-sicherheit': [SY0_701, 'wifi-alliance-security', 'nist-sp-800-97'],
@@ -2787,6 +3070,10 @@ export const LAB_SCENARIO_SOURCE_REFS: Record<string, string[]> = {
   'betrieb-email-authentisierung': [SY0_701, 'nist-sp-800-177r1'],
   'betrieb-soar-playbook': [SY0_701, 'nist-sp-800-61r3', 'cisa-phishing-social-engineering'],
   'betrieb-automation-usecases': [SY0_701, 'nist-sp-800-61r3'],
+  'betrieb-firewall-log-triage': [SY0_701, 'nist-sp-800-92'],
+  'betrieb-ips-alert-eskalation': [SY0_701, 'nist-sp-800-94'],
+  'betrieb-baseline-haertung-server': [SY0_701, 'cis-benchmarks'],
+  'betrieb-switch-haertung': [SY0_701, 'cis-benchmarks', 'nist-sp-800-40r4'],
 
   'ir-nist-phasen': [SY0_701, 'nist-sp-800-61r2'],
   'ir-ransomware-first-response': [SY0_701, 'nist-sp-800-61r2', 'cisa-stopransomware-guide'],
@@ -2802,6 +3089,8 @@ export const LAB_SCENARIO_SOURCE_REFS: Record<string, string[]> = {
   'ir-lessons-learned-actions': [SY0_701, 'nist-sp-800-61r2', 'nist-csf-2'],
   'ir-uebungsformate': [SY0_701, 'nist-sp-800-84', 'nist-sp-800-61r2'],
   'ir-threat-hunt-hypothese': [SY0_701, 'mitre-attack-enterprise', 'nist-sp-800-61r3'],
+  'incident-response-sofortmassnahme-ransomware': [SY0_701, 'nist-sp-800-61r2', 'cisa-stopransomware-guide'],
+  'incident-response-chain-of-custody': [SY0_701, 'nist-sp-800-61r2'],
 
   'krypto-bausteine': [SY0_701, 'nist-encryption-basics', 'nist-sp-800-57r5'],
   'krypto-cert-lifecycle': [SY0_701, 'nist-sp-800-57r5'],

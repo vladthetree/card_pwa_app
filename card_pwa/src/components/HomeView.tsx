@@ -37,6 +37,7 @@ import { pickDailyQuestCards } from '../db/queries'
 // Inhalte rendern unter der Homebar; die Chunks laden weiterhin lazy.
 const LearningUnitsView = lazy(() => import('./LearningUnitsView'))
 const LabsView = lazy(() => import('./labs/LabsView'))
+const AcronymPracticeView = lazy(() => import('./acronyms/AcronymPracticeView'))
 const CreateCardModal = lazy(() => import('./CreateCardModal.tsx'))
 const SettingsModal = lazy(() => import('./SettingsModal.tsx'))
 const FaqModal = lazy(() => import('./FaqModal.tsx'))
@@ -55,11 +56,11 @@ const HomeShuffleCollectionModal = lazy(() => import('./home/HomeShuffleCollecti
  *  Deckliste, Tag-Ansicht, Daily Quest sowie die eingebetteten Lerneinheiten-
  *  und Labs-Bereiche. Die Homebar bleibt in allen Modi unverändert obendrüber;
  *  nur Karten-Session und Lernvideos sind Vollbild. */
-export type HomeTab = 'dashboard' | 'decks' | 'tags' | 'learning-units' | 'daily-quest' | 'labs'
+export type HomeTab = 'dashboard' | 'decks' | 'tags' | 'learning-units' | 'daily-quest' | 'labs' | 'acronyms'
 
 const HOME_TAB_STORAGE_KEY = 'card-pwa-home-tab'
 
-const HOME_TABS: readonly HomeTab[] = ['dashboard', 'decks', 'tags', 'learning-units', 'daily-quest', 'labs']
+const HOME_TABS: readonly HomeTab[] = ['dashboard', 'decks', 'tags', 'learning-units', 'daily-quest', 'labs', 'acronyms']
 
 function readInitialHomeTab(): HomeTab {
   try {
@@ -527,6 +528,15 @@ export default function HomeView({
                       setHomeTab('learning-units')
                     }}
                   />
+                </Suspense>
+              </div>
+            )}
+
+            {/* Akronyme-Modus: Übungsrunde unter der Homebar (2026-07-20). */}
+            {homeTab === 'acronyms' && (
+              <div className="min-h-0 flex-1 overflow-hidden">
+                <Suspense fallback={null}>
+                  <AcronymPracticeView embedded language={settings.language} />
                 </Suspense>
               </div>
             )}

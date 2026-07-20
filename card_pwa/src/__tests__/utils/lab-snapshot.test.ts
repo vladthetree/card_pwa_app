@@ -38,6 +38,27 @@ const ORDERING: LabScenario = {
   },
 }
 
+const DECISION: LabScenario = {
+  id: 'iam-1',
+  categoryId: 'iam',
+  title: 'Least-Privilege-Entscheidung',
+  objective: '4.6 Identity and access management',
+  difficulty: 'fortgeschritten',
+  minutes: 6,
+  description: 'Welche Rechte darf der Helpdesk-Account bekommen?',
+  interaction: {
+    type: 'decision',
+    selectionMode: 'multiple',
+    options: [
+      { id: 'reset-pw', text: 'Passwörter zurücksetzen' },
+      { id: 'domain-admin', text: 'Domain-Admin-Rechte' },
+      { id: 'unlock-acct', text: 'Konten entsperren' },
+      { id: 'delete-logs', text: 'Audit-Logs löschen' },
+    ],
+    correctIds: ['reset-pw', 'unlock-acct'],
+  },
+}
+
 describe('buildLabScenarioSnapshot', () => {
   it('normalisiert deterministisch: stabile Schritt-ID, Rubrik und Content-Hash-Version', () => {
     const first = buildLabScenarioSnapshot(MATCHING)
@@ -67,6 +88,16 @@ describe('buildLabScenarioSnapshot', () => {
     if (criterion.comparison === 'order-equal') {
       expect(criterion.expectedOrder).toEqual(['Preparation', 'Detection', 'Containment', 'Recovery'])
       expect(criterion.points).toBe(4)
+    }
+  })
+
+  it('leitet die Decision-Rubrik als set-equal mit einem Punkt je korrekter Option ab', () => {
+    const snapshot = buildLabScenarioSnapshot(DECISION)
+    const criterion = snapshot.rubric[0]
+    expect(criterion.comparison).toBe('set-equal')
+    if (criterion.comparison === 'set-equal') {
+      expect(criterion.expectedIds).toEqual(['reset-pw', 'unlock-acct'])
+      expect(criterion.points).toBe(2)
     }
   })
 
@@ -110,5 +141,21 @@ describe('scoreLabAnswers', () => {
     expect(solved).toMatchObject({ earnedPoints: 4, possiblePoints: 4, solved: true })
     expect(solved.byCriterionId['step-1:order'].outcome).toBe('success')
     expect(solved.byCriterionId['step-1:order'].feedback).toBeTruthy()
+  })
+
+  it('Decision: falsche Zusatzauswahl mindert Teilpunkte, kann aber nicht unter 0 fallen', () => {
+    const snapshot = buildLabScenarioSnapshot(DECISION)
+    const partial = scoreLabAnswers(snapshot, { 'step-1': ['reset-pw'] })
+    expect(partial).toMatchObject({ earnedPoints: 1, possiblePoints: 2, solved: false })
+
+    const solved = scoreLabAnswers(snapshot, { 'step-1': ['reset-pw', 'unlock-acct'] })
+    expect(solved).toMatchObject({ earnedPoints: 2, possiblePoints: 2, solved: true })
+
+    const overselected = scoreLabAnswers(snapshot, { 'step-1': ['reset-pw', 'domain-admin', 'unlock-acct'] })
+    expect(overselected.earnedPoints).toBe(1) // (2 Treffer - 1 Fehlgriff) / 2 * 2 Punkte
+    expect(overselected.solved).toBe(false)
+
+    const empty = scoreLabAnswers(snapshot, {})
+    expect(empty).toMatchObject({ earnedPoints: 0, possiblePoints: 2, solved: false })
   })
 })

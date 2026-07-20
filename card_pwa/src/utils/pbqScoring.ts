@@ -39,3 +39,24 @@ export function computeMatchingScore(
   }
   return correct / correctPairs.length
 }
+
+/**
+ * Decision score: fraction of correct options selected, penalized by wrong
+ * selections (so "select everything" doesn't game a multi-select question).
+ * Returns a value in [0, 1], clamped at 0.
+ */
+export function computeDecisionScore(
+  selectedIds: string[],
+  correctIds: string[],
+): number {
+  if (correctIds.length === 0) return 0
+  const selected = new Set(selectedIds)
+  const correctSet = new Set(correctIds)
+  let hits = 0
+  let misses = 0
+  for (const id of selected) {
+    if (correctSet.has(id)) hits++
+    else misses++
+  }
+  return Math.max(0, (hits - misses) / correctIds.length)
+}

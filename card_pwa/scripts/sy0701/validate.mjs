@@ -606,7 +606,22 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = ${JSON.str
   )}
 `,
 )
-console.log('\nGeneriert: src/data/sy0701ContentMap.ts, src/data/sy0701Requirements.ts')
+fs.writeFileSync(
+  path.join(DATA_DIR, 'sy0701Acronyms.ts'),
+  `${genHeader}
+
+export interface AcronymMeaning {
+  acronymMeaningId: string
+  abbr: string
+  meaning: string
+}
+
+export const SY0701_ACRONYMS: readonly AcronymMeaning[] = ${JSON.stringify(acronyms, null, 2)}
+
+export const SY0701_AMBIGUOUS_ABBRS: readonly string[] = ${JSON.stringify(ambiguousAbbrs, null, 2)}
+`,
+)
+console.log('Generiert: src/data/sy0701ContentMap.ts, src/data/sy0701Requirements.ts, src/data/sy0701Acronyms.ts')
 
 // ── Gate-Zusammenfassung ────────────────────────────────────────────────────
 const failed = gates.filter(g => g.status === 'FAIL')

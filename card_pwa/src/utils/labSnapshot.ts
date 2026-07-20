@@ -11,6 +11,7 @@
  */
 import type { LabScenario } from '../data/labScenarios'
 import { fnv1a32 } from './hash'
+import { computeDecisionScore } from './pbqScoring'
 
 export interface LabRubricFeedback {
   success: string
@@ -35,6 +36,13 @@ export type LabStepSnapshot =
       /** Schritte in initialer (gemischter) Anzeige-Reihenfolge. */
       itemIds: string[]
     }
+  | {
+      stepId: string
+      kind: 'decision'
+      prompt: string
+      /** Alle wählbaren Options-IDs (korrekte + Distraktoren). */
+      optionIds: string[]
+    }
 
 export type LabRubricCriterionSnapshot =
   | {
@@ -51,6 +59,14 @@ export type LabRubricCriterionSnapshot =
       comparison: 'order-equal'
       expectedOrder: string[]
       partialCreditRule: 'exact-position'
+      points: number
+      feedback: LabRubricFeedback
+    }
+  | {
+      criterionId: string
+      stepId: string
+      comparison: 'set-equal'
+      expectedIds: string[]
       points: number
       feedback: LabRubricFeedback
     }
@@ -106,7 +122,7 @@ export function buildLabScenarioSnapshot(scenario: LabScenario): LabScenarioSnap
       pointsByLeftId,
       feedback: FEEDBACK,
     }
-  } else {
+  } else if (interaction.type === 'ordering') {
     const expectedOrder = interaction.correctOrder.map(index => interaction.steps[index])
     step = {
       stepId,
@@ -121,6 +137,21 @@ export function buildLabScenarioSnapshot(scenario: LabScenario): LabScenarioSnap
       expectedOrder,
       partialCreditRule: 'exact-position',
       points: expectedOrder.length,
+      feedback: FEEDBACK,
+    }
+  } else {
+    step = {
+      stepId,
+      kind: 'decision',
+      prompt: scenario.goal ?? scenario.description,
+      optionIds: interaction.options.map(option => option.id),
+    }
+    criterion = {
+      criterionId: `${stepId}:decision`,
+      stepId,
+      comparison: 'set-equal',
+      expectedIds: [...interaction.correctIds],
+      points: interaction.correctIds.length,
       feedback: FEEDBACK,
     }
   }
@@ -172,7 +203,7 @@ export function scoreLabAnswers(
         possible += points
         if (chosen[leftId] === criterion.expectedRightIdByLeftId[leftId]) earned += points
       }
-    } else {
+    } else if (criterion.comparison === 'order-equal') {
       possible = criterion.points
       const givenOrder = Array.isArray(answer) ? (answer as unknown[]) : []
       const pointsPerPosition = criterion.points / criterion.expectedOrder.length
@@ -180,6 +211,10 @@ export function scoreLabAnswers(
         if (givenOrder[index] === itemId) earned += pointsPerPosition
       })
       earned = Math.round(earned)
+    } else {
+      possible = criterion.points
+      const chosen = Array.isArray(answer) ? (answer as string[]) : []
+      earned = Math.round(computeDecisionScore(chosen, criterion.expectedIds) * possible)
     }
 
     const outcome: LabCriterionResult['outcome'] =
