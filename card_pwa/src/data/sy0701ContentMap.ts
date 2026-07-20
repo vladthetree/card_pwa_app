@@ -216,7 +216,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "M1-047",
       "M1-048",
       "M1-049",
-      "M1-050"
+      "M1-050",
+      "T005-01",
+      "T005-02",
+      "T005-03"
     ],
     "recallCardIds": [
       "1728582261940",
@@ -281,7 +284,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "M1-057",
       "M1-058",
       "M1-059",
-      "M1-060"
+      "M1-060",
+      "T007-01",
+      "T007-02"
     ],
     "recallCardIds": [
       "1728595373661",
@@ -320,7 +325,15 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallQuestionIds": [
       "M1-061",
       "M1-062",
-      "M1-063"
+      "M1-063",
+      "T008-01",
+      "T008-02",
+      "T008-03",
+      "T008-04",
+      "T008-05",
+      "T008-06",
+      "T008-07",
+      "T008-08"
     ],
     "recallCardIds": [
       "1728597672323",
@@ -376,7 +389,13 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T010-01",
       "T010-02",
       "T010-03",
-      "T010-04"
+      "T010-04",
+      "T010-05",
+      "T010-06",
+      "T010-07",
+      "T010-08",
+      "T010-09",
+      "T010-10"
     ],
     "recallCardIds": [
       "1728664841112",
@@ -409,7 +428,14 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T011-01",
       "T011-02",
       "T011-03",
-      "T011-04"
+      "T011-04",
+      "T011-05",
+      "T011-06",
+      "T011-07",
+      "T011-08",
+      "T011-09",
+      "T011-10",
+      "T011-11"
     ],
     "recallCardIds": [
       "1728665620599",
@@ -492,7 +518,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "M1-081",
       "M1-082",
       "M1-083",
-      "M1-084"
+      "M1-084",
+      "T013-01",
+      "T013-02",
+      "T013-03",
+      "T013-04",
+      "T013-05"
     ],
     "recallCardIds": [
       "1728669078281",
@@ -549,7 +580,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "M1-089",
       "M1-090",
       "M1-091",
-      "M1-092"
+      "M1-092",
+      "T015-01"
     ],
     "recallCardIds": [
       "1728675746261",
@@ -638,7 +670,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T018-01",
       "T018-02",
       "T018-03",
-      "T018-04"
+      "T018-04",
+      "T018-05"
     ],
     "recallCardIds": [
       "1728679899388"
@@ -694,7 +727,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "M1-117",
       "M1-118",
       "M1-119",
-      "M1-120"
+      "M1-120",
+      "T019-01",
+      "T019-02",
+      "T019-03"
     ],
     "recallCardIds": [
       "1728832173306",

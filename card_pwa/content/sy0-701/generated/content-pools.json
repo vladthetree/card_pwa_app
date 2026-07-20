@@ -1,13 +1,13 @@
 {
   "schemaVersion": "sy0701-content-pools-1",
   "manifestVersion": "2026-07-19.2",
-  "generatedAt": 1784565785035,
+  "generatedAt": 1784566314655,
   "sourceSnapshotId": "sy0701-v7-2026-07-15",
   "pools": {
     "course": {
       "videoUnits": 120,
       "mappedCardCount": 375,
-      "transcriptQuestionCount": 387
+      "transcriptQuestionCount": 423
     },
     "practice": {
       "rootDeckScenarioCards": 339,

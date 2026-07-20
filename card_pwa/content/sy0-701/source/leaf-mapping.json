@@ -151,25 +151,31 @@
    "learningAssetIds": [
     "video:5"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T005-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.2:authentication-authorization-and-accounting-aaa:authenticating-systems": {
    "learningAssetIds": [
     "video:5"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T005-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.2:authentication-authorization-and-accounting-aaa:authorization-models": {
    "learningAssetIds": [
     "video:5"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T005-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.2:gap-analysis": {
    "learningAssetIds": [
@@ -240,17 +246,21 @@
    "learningAssetIds": [
     "video:7"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T007-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.2:zero-trust:data-plane:subject-system": {
    "learningAssetIds": [
     "video:7"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T007-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.2:zero-trust:data-plane:policy-enforcement-point": {
    "learningAssetIds": [
@@ -258,7 +268,8 @@
    ],
    "assessmentItemIds": [
     "mc:M1-058",
-    "mc:M1-060"
+    "mc:M1-060",
+    "tq:T007-02"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -267,9 +278,11 @@
    "learningAssetIds": [
     "video:8"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T008-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.2:physical-security:access-control-vestibule": {
    "learningAssetIds": [
@@ -285,9 +298,11 @@
    "learningAssetIds": [
     "video:8"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T008-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.2:physical-security:video-surveillance": {
    "learningAssetIds": [
@@ -313,49 +328,61 @@
    "learningAssetIds": [
     "video:8"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T008-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.2:physical-security:lighting": {
    "learningAssetIds": [
     "video:8"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T008-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.2:physical-security:sensors:infrared": {
    "learningAssetIds": [
     "video:8"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T008-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.2:physical-security:sensors:pressure": {
    "learningAssetIds": [
     "video:8"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T008-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.2:physical-security:sensors:microwave": {
    "learningAssetIds": [
     "video:8"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T008-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.2:physical-security:sensors:ultrasonic": {
    "learningAssetIds": [
     "video:8"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T008-08"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.2:deception-and-disruption-technology:honeypot": {
    "learningAssetIds": [
@@ -402,17 +429,21 @@
    "learningAssetIds": [
     "video:10"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T010-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.3:business-processes-impacting-security-operation:ownership": {
    "learningAssetIds": [
     "video:10"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T010-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.3:business-processes-impacting-security-operation:stakeholders": {
    "learningAssetIds": [
@@ -428,17 +459,21 @@
    "learningAssetIds": [
     "video:10"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T010-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.3:business-processes-impacting-security-operation:test-results": {
    "learningAssetIds": [
     "video:10"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T010-08"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.3:business-processes-impacting-security-operation:backout-plan": {
    "learningAssetIds": [
@@ -454,17 +489,21 @@
    "learningAssetIds": [
     "video:10"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T010-09"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.3:business-processes-impacting-security-operation:standard-operating-procedure": {
    "learningAssetIds": [
     "video:10"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T010-10"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.3:technical-implications:allow-lists-deny-lists": {
    "learningAssetIds": [
@@ -472,7 +511,8 @@
    ],
    "assessmentItemIds": [
     "mc:M1-068",
-    "tq:T011-01"
+    "tq:T011-01",
+    "tq:T011-05"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -481,9 +521,11 @@
    "learningAssetIds": [
     "video:11"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T011-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.3:technical-implications:downtime": {
    "learningAssetIds": [
@@ -499,25 +541,31 @@
    "learningAssetIds": [
     "video:11"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T011-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.3:technical-implications:application-restart": {
    "learningAssetIds": [
     "video:11"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T011-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.3:technical-implications:legacy-applications": {
    "learningAssetIds": [
     "video:11"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T011-08"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.3:technical-implications:dependencies": {
    "learningAssetIds": [
@@ -533,25 +581,31 @@
    "learningAssetIds": [
     "video:11"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T011-09"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.3:documentation:updating-policies-procedures": {
    "learningAssetIds": [
     "video:11"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T011-10"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.3:version-control": {
    "learningAssetIds": [
     "video:11"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T011-11"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.4:public-key-infrastructure-pki:public-key": {
    "learningAssetIds": [
@@ -593,40 +647,49 @@
    "learningAssetIds": [
     "video:13"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T013-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.4:encryption:level:partition": {
    "learningAssetIds": [
     "video:13"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T013-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.4:encryption:level:file": {
    "learningAssetIds": [
     "video:13"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T013-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.4:encryption:level:volume": {
    "learningAssetIds": [
     "video:13"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T013-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.4:encryption:level:database": {
    "learningAssetIds": [
     "video:13"
    ],
    "assessmentItemIds": [
-    "mc:M1-078"
+    "mc:M1-078",
+    "tq:T013-04"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -691,9 +754,11 @@
    "learningAssetIds": [
     "video:13"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T013-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.4:encryption:key-length": {
    "learningAssetIds": [
@@ -701,7 +766,8 @@
    ],
    "assessmentItemIds": [
     "mc:M1-082",
-    "mc:M1-078"
+    "mc:M1-078",
+    "tq:T013-04"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -742,9 +808,11 @@
    "learningAssetIds": [
     "video:15"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T015-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.4:obfuscation:steganography": {
    "learningAssetIds": [
@@ -838,17 +906,21 @@
    "learningAssetIds": [
     "video:18"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T018-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.4:certificates:certificate-authorities": {
    "learningAssetIds": [
     "video:19"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T019-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.4:certificates:certificate-revocation-lists-crls": {
    "learningAssetIds": [
@@ -878,9 +950,9 @@
     "video:19"
    ],
    "assessmentItemIds": [
+    "tq:T019-02",
     "mc:M1-112",
-    "mc:M1-106",
-    "mc:M1-108"
+    "mc:M1-106"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -889,9 +961,11 @@
    "learningAssetIds": [
     "video:19"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T019-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:1.4:certificates:root-of-trust": {
    "learningAssetIds": [
@@ -917,9 +991,11 @@
    "learningAssetIds": [
     "video:19"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T019-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:2.1:threat-actors:nation-state": {
    "learningAssetIds": [

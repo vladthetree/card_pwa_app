@@ -1519,6 +1519,72 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 3,
       why: 'Änderungsfenster hängen vom Geschäft ab: Im Weihnachtsgeschäft frieren Retailer ihre Systeme komplett ein; Änderungen laufen sonst in Randzeiten (nachts, Wochenende, Wartungsfenster).',
     },
+    {
+      q: 'Who makes the final decision on whether a proposed change is allowed, per the video?',
+      options: [
+        'The end user requesting the change',
+        'The change control board, after analyzing the risk of making versus not making the change',
+        'Whoever submits the change control form first',
+        'The IT help desk automatically approves all requests',
+      ],
+      correct: 1,
+      why: 'Laut Video wägt das Change-Control-Board das Risiko einer Änderung gegen das Risiko des Nichthandelns ab und trifft dann die Freigabeentscheidung.',
+    },
+    {
+      q: 'What role does the "owner" of an application or data play in the change process, per the video?',
+      options: [
+        'They personally write and deploy the technical change',
+        'They initiate and manage the process, stay informed, and test the result — without necessarily making the change themselves',
+        'They have no role once the change request is submitted',
+        'They approve every other department’s changes as well',
+      ],
+      correct: 1,
+      why: 'Der Owner stößt laut Video den Change an und verwaltet den Prozess, macht die technische Änderung aber meist nicht selbst — und testet hinterher, ob alles funktioniert.',
+    },
+    {
+      q: 'What must a change control board weigh according to the video’s impact analysis step?',
+      options: [
+        'Only the cost of the change itself',
+        'The risks of making the change (e.g., breaking something) against the risks of not making it (e.g., an unpatched vulnerability)',
+        'Whether the change is popular with employees',
+        'Nothing — impact analysis is optional',
+      ],
+      correct: 1,
+      why: 'Laut Video muss abgewogen werden: Risiko durch die Änderung (z. B. Systemausfall) gegen Risiko durch Unterlassen (z. B. offene Schwachstelle bleibt ausnutzbar).',
+    },
+    {
+      q: 'What does the video recommend doing once a change has been implemented?',
+      options: [
+        'Immediately move on to the next change without checking',
+        'Have users try their systems and confirm the change works without problems',
+        'Delete the change documentation',
+        'Wait exactly one year before verifying anything',
+      ],
+      correct: 1,
+      why: 'Nach der Umsetzung sollen laut Video Nutzer ihre Systeme testen und bestätigen, dass die Änderung ohne Probleme funktioniert.',
+    },
+    {
+      q: 'Why do organizations schedule changes for specific maintenance windows, per the video?',
+      options: [
+        'To make changes during non-production hours and minimize impact on active users',
+        'Maintenance windows are purely a legal requirement with no operational purpose',
+        'To guarantee that changes never cause any downtime',
+        'Because change control boards only meet once a year',
+      ],
+      correct: 0,
+      why: 'Laut Video werden Änderungen bevorzugt außerhalb der Hauptnutzungszeiten geplant — teils sind Systeme in Stoßzeiten (z. B. Einzelhandel um die Feiertage) sogar komplett eingefroren.',
+    },
+    {
+      q: 'How does the video describe the change control process’s relationship to standard operating procedure?',
+      options: [
+        'It is undocumented and known only to senior IT staff',
+        'It should be well documented, readable by anyone in the company on the intranet, and updated over time as the organization improves it',
+        'It never changes once written',
+        'It applies only to the IT department, not other business units',
+      ],
+      correct: 1,
+      why: 'Laut Video ist der Change-Control-Prozess dokumentierter Standard, den jeder im Unternehmen einsehen kann — und er wird laufend an die Bedürfnisse der Organisation angepasst.',
+    },
   ],
 
   // 011 — 1.3 Technical Change Management
@@ -1567,6 +1633,83 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 0,
       why: 'Abhängigkeiten verketten Änderungen: Erst muss Dienst/Version A aktualisiert sein, dann funktioniert Update B — auch systemübergreifend (erst alle Firewalls, dann die Managementsoftware).',
     },
+    {
+      q: 'What is the difference between an allow list and a deny list, per the video?',
+      options: [
+        'An allow list permits only named applications to run; a deny list permits everything except the named applications',
+        'They are two names for exactly the same restriction',
+        'A deny list only applies to network traffic, never applications',
+        'An allow list blocks every application without exception',
+      ],
+      correct: 0,
+      why: 'Eine Allow-Liste lässt laut Video ausschließlich benannte Anwendungen zu; eine Deny-Liste (z. B. Antivirus) blockiert nur die explizit genannten und erlaubt sonst alles.',
+    },
+    {
+      q: 'How can a technician restart just a service instead of rebooting the whole system, per the video?',
+      options: [
+        'It is never possible to restart just a service',
+        'Via Windows Services/Task Manager on Windows, or restarting a daemon on Linux',
+        'Only by physically powering the device off and on',
+        'By reinstalling the entire operating system',
+      ],
+      correct: 1,
+      why: 'Laut Video reicht oft ein Neustart über Windows-Dienste/Task-Manager oder eines Linux-Daemons — schneller als ein kompletter Systemneustart.',
+    },
+    {
+      q: 'Why might users need to fully log out and restart an application after an update, per the video?',
+      options: [
+        'Because updated executables only take effect once the app is closed and reopened',
+        'Restarting an application is never required after an update',
+        'Because the operating system must always be reinstalled first',
+        'Because passwords automatically expire after updates',
+      ],
+      correct: 0,
+      why: 'Wird eine ausführbare Datei aktualisiert, muss die Anwendung laut Video komplett geschlossen und neu gestartet werden, damit die neue Version greift.',
+    },
+    {
+      q: 'What challenge does the video highlight about changing legacy applications?',
+      options: [
+        'Legacy applications are always trivial to update',
+        'They often run on unsupported vendor code with nobody in the organization understanding how they work, making documentation essential before changing them',
+        'Legacy applications never need any change control',
+        'Legacy applications are automatically replaced every year',
+      ],
+      correct: 1,
+      why: 'Legacy-Apps laufen laut Video oft ohne Herstellersupport und ohne internes Know-how — erst Dokumentation bringt sie in den normalen Support-Zyklus zurück.',
+    },
+    {
+      q: 'Why must network diagrams be updated as part of the change process, per the video?',
+      options: [
+        'Diagrams are purely decorative and rarely referenced',
+        'Frequent changes make existing documentation quickly outdated without an ongoing update process',
+        'Diagrams only need updating once, at initial network setup',
+        'Diagrams are automatically generated and never need manual updates',
+      ],
+      correct: 1,
+      why: 'Da Änderungen laut Video oft wöchentlich oder täglich vorkommen, veraltet Dokumentation schnell — Diagramme müssen laufend aktualisiert werden.',
+    },
+    {
+      q: 'What kind of documentation update does the video mention alongside diagrams?',
+      options: [
+        'Listing new processes or procedures for a newly upgraded application',
+        'Deleting all previous procedure documents',
+        'Only updating the company logo',
+        'Documentation of procedures is never required',
+      ],
+      correct: 0,
+      why: 'Neben Diagrammen nennt das Video auch neue Prozess-/Verfahrensbeschreibungen für neu aktualisierte Anwendungen als Teil der Doku-Pflicht.',
+    },
+    {
+      q: 'What does version control let IT teams do, per the video?',
+      options: [
+        'Track changes such as router configs or registry changes over time, and revert to a previous version if there are problems',
+        'Automatically approve every change without review',
+        'Delete all history of previous configurations',
+        'Replace the need for a change control board entirely',
+      ],
+      correct: 0,
+      why: 'Versionskontrolle erlaubt laut Video, Änderungen (Router-Configs, Patches, Registry) nachzuvollziehen und bei Problemen zu einer vorherigen Version zurückzukehren.',
+    },
   ],
 
   // 018 — 1.4 Blockchain Technology
@@ -1614,6 +1757,17 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 0,
       why: 'Nach einer Manipulation stimmt der Hash nicht mehr; die anderen Teilnehmer erkennen den ungültigen Block und verwerfen ihn — genau das macht die Blockchain manipulationssicher.',
+    },
+    {
+      q: 'What makes blockchain an "open public ledger," according to the video?',
+      options: [
+        'Only one central server maintains the ledger',
+        'Everyone participating maintains their own copy of the ledger, and changes are distributed to all participants',
+        'The ledger is deleted after every transaction',
+        'Only government agencies may view the ledger',
+      ],
+      correct: 1,
+      why: 'Laut Video führt jeder Teilnehmer eine eigene Kopie des Ledgers, und Änderungen werden an alle Teilnehmer verteilt — daher „öffentlich verteilt".',
     },
   ],
 
@@ -4550,6 +4704,260 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 0,
       why: 'Beim Journaling wird laut Video zuerst in ein Journal geschrieben; geht der Strom vor dem Commit in die Datenbank aus, verliert man nur den Journal-Eintrag — die Datenbank bleibt konsistent, notfalls per Journal-Nachvollzug beim Neustart repariert.',
+    },
+  ],
+  '005': [
+    {
+      q: 'What does the "authentication" step in AAA prove about a person?',
+      options: [
+        'That they know the secret password or hold the additional factors that prove they are who they claim to be',
+        'That they are part of a particular department',
+        'That their login attempt has been logged for accounting',
+        'That they have physical access to the building',
+      ],
+      correct: 0,
+      why: 'Authentication ist laut Video der Nachweis, dass jemand wirklich die Person ist, die er behauptet zu sein — belegt durch Passwort und ggf. weitere Faktoren.',
+    },
+    {
+      q: 'How can a device (not a person) prove it is authorized to connect to the network, per the video?',
+      options: [
+        'By typing a password like a human would',
+        'Devices cannot be authenticated at all',
+        'By presenting a digitally signed certificate issued by a trusted certificate authority',
+        'By simply having a known IP address',
+      ],
+      correct: 2,
+      why: 'Ein System kann kein Passwort eintippen — laut Video übernimmt ein von der eigenen CA digital signiertes Zertifikat auf dem Gerät diese Rolle.',
+    },
+    {
+      q: 'Why does the video recommend an authorization model (e.g., groups) instead of assigning rights user by user?',
+      options: [
+        'Individual rights per user scale poorly with hundreds or thousands of users and resources; a group-based abstraction scales easily',
+        'Individual rights are always more secure than groups',
+        'Authorization models remove the need for authentication',
+        'Groups can only be used for shipping and receiving departments',
+      ],
+      correct: 0,
+      why: 'Das Video zeigt: Rechte einzeln pro Nutzer zu vergeben skaliert nicht — eine Gruppen-Abstraktion erlaubt es, tausende Nutzer mit einer Zuweisung zu verwalten.',
+    },
+  ],
+  '007': [
+    {
+      q: 'What is an implicit trust zone in the zero trust model described in the video?',
+      options: [
+        'A zone where no security policy ever applies at all',
+        'A policy that treats trusted-to-internal traffic as already trusted for that segment',
+        'A zone reserved exclusively for unmanaged guest devices',
+        'A zone where multi-factor authentication is always disabled',
+      ],
+      correct: 1,
+      why: 'Laut Video kann man festlegen, dass Kommunikation von der Trusted- in die Internal-Zone auf diesem Abschnitt implizit vertraut wird — eine bewusste Policy-Entscheidung, kein Standardzustand.',
+    },
+    {
+      q: 'What counts as a "subject" or "system" that the Policy Enforcement Point evaluates, per the video?',
+      options: [
+        'Only human administrators',
+        'Only network cables',
+        'Users, individual processes running on a system, and applications in use',
+        'Only physical security guards',
+      ],
+      correct: 2,
+      why: 'Subjects/Systems sind laut Video Nutzer, laufende Prozesse und Anwendungen — jeder Traffic von ihnen muss den Policy Enforcement Point passieren.',
+    },
+  ],
+  '008': [
+    {
+      q: 'What is the main purpose of bollards, per the video?',
+      options: [
+        'To encrypt data as it enters the building lobby',
+        'To block vehicles while still letting pedestrians pass, channeling foot traffic',
+        'To detect nighttime motion using infrared sensors',
+        'To completely replace security guards on site',
+      ],
+      correct: 1,
+      why: 'Bollards/Barrikaden lassen laut Video Fußgänger durch, verhindern aber, dass Autos oder Lastwagen in den Bereich gelangen, und kanalisieren so den Zugang.',
+    },
+    {
+      q: 'What design choices does the video mention for making a fence more secure?',
+      options: [
+        'Making the fence opaque only, never transparent',
+        'A very high fence with razor wire to prevent climbing, built robust enough that it cannot be bent or knocked down',
+        'Fences never need any additional reinforcement',
+        'Only the color of the fence matters for security',
+      ],
+      correct: 1,
+      why: 'Laut Video sollen Zäune robust sein, damit sie nicht verbogen/eingedrückt werden können — in hochsicheren Bereichen zusätzlich sehr hoch mit Stacheldraht gegen Überklettern.',
+    },
+    {
+      q: 'What does the video say happens each time you badge into a room?',
+      options: [
+        'Nothing is recorded',
+        'The badge event is logged to a central database, often integrated with the electronic door locks',
+        'The badge is automatically deactivated',
+        'A new badge is issued',
+      ],
+      correct: 1,
+      why: 'Zutrittsbadges sind laut Video mit elektronischen Türschlössern integriert — jedes Badgen wird in einer zentralen Datenbank protokolliert.',
+    },
+    {
+      q: 'Why does the video say lighting angle matters, not just brightness?',
+      options: [
+        'Angle has no effect, only total brightness matters',
+        'Lighting is purely decorative and has no security value',
+        'Proper angles matter especially for cameras doing facial recognition, and full-area illumination discourages someone trying to sneak in unseen',
+        'Lighting only matters indoors, never in parking lots',
+      ],
+      correct: 2,
+      why: 'Laut Video muss Beleuchtung den ganzen Bereich ausleuchten, und der Lichtwinkel ist besonders für Gesichtserkennungskameras wichtig — mehr Licht erschwert unbemerktes Eindringen.',
+    },
+    {
+      q: 'What can infrared sensors detect, per the video?',
+      options: [
+        'Only visible light changes during the day',
+        'Sound wave reflections over a large area',
+        'Infrared radiation in both light and dark areas, commonly used in motion detectors over a relatively limited area',
+        'Only barcode scans',
+      ],
+      correct: 2,
+      why: 'Infrarotsensoren erkennen laut Video Wärmestrahlung bei Tag und Nacht und eignen sich gut für Bewegungsmelder in begrenzten Bereichen.',
+    },
+    {
+      q: 'How does a pressure sensor detect an intrusion, per the video?',
+      options: [
+        'By measuring air temperature changes',
+        'By detecting a change in force when someone moves across the monitored area',
+        'By scanning for Bluetooth signals',
+        'By reading badge RFID chips remotely',
+      ],
+      correct: 1,
+      why: 'Drucksensoren registrieren laut Video die Kraftänderung, wenn jemand über den überwachten Bereich läuft, und lösen dann einen Alarm aus.',
+    },
+    {
+      q: 'Why would you choose microwave sensors over infrared, per the video?',
+      options: [
+        'Microwave sensors only work indoors',
+        'Microwave sensors are designed to detect movement over a much larger area than infrared',
+        'Microwave sensors cannot detect movement at all',
+        'Microwave sensors require direct sunlight to function',
+      ],
+      correct: 1,
+      why: 'Laut Video eignen sich Mikrowellensensoren für deutlich größere Überwachungsflächen als Infrarot, das eher begrenzte Bereiche abdeckt.',
+    },
+    {
+      q: 'How does ultrasonic detection work, according to the video?',
+      options: [
+        'By sending ultrasonic signals and analyzing the reflection of sound waves to detect motion, e.g. for collision detection in a parking lot',
+        'By reading heat signatures like an infrared sensor',
+        'By scanning fingerprints at a distance',
+        'By measuring the weight distributed on a floor plate',
+      ],
+      correct: 0,
+      why: 'Ultraschallsensoren senden laut Video Signale aus und werten die Reflexion der Schallwellen aus — nutzbar für Bewegungs- und Kollisionserkennung, etwa in Parkbereichen.',
+    },
+  ],
+  '013': [
+    {
+      q: 'Which Windows and macOS technologies does the video name for full-disk encryption?',
+      options: [
+        'BitLocker on Windows and FileVault on macOS',
+        'EFS on both Windows and macOS',
+        'TLS on Windows and IPsec on macOS',
+        'SHA-256 on both platforms',
+      ],
+      correct: 0,
+      why: 'Für Full-Disk-/Volume-Verschlüsselung nennt das Video BitLocker (Windows) und FileVault (macOS).',
+    },
+    {
+      q: 'What does the video mean by encrypting at the volume/partition level rather than a single file?',
+      options: [
+        'Only the file name is encrypted, not its content',
+        'Everything on that specific volume or partition is encrypted, not just individual files',
+        'Partition-level encryption is identical to database column encryption',
+        'It encrypts data only while it travels across the network',
+      ],
+      correct: 1,
+      why: 'Volume-/Partitionsverschlüsselung deckt laut Video den gesamten Datenträgerbereich ab — mehr als eine einzelne Datei, aber im Kern dieselbe Full-Disk-Technik wie BitLocker/FileVault.',
+    },
+    {
+      q: 'What does EFS provide, according to the video?',
+      options: [
+        'Network-level encryption for VPN tunnels',
+        'File-level encryption built into the NTFS file system, for encrypting individual files rather than an entire volume',
+        'A hashing algorithm for passwords',
+        'Full-disk encryption identical to BitLocker',
+      ],
+      correct: 1,
+      why: 'EFS (Encrypting File System) verschlüsselt laut Video gezielt einzelne Dateien in NTFS, statt das ganze Volume wie BitLocker.',
+    },
+    {
+      q: 'What database encryption approach does the video describe as encrypting "everything" with one symmetric key?',
+      options: [
+        'Column-level encryption',
+        'Transparent encryption',
+        'Record-level encryption',
+        'Tokenization',
+      ],
+      correct: 1,
+      why: 'Transparent Encryption verschlüsselt laut Video die gesamte Datenbank mit einem symmetrischen Schlüssel — im Gegensatz zur gezielteren Spaltenverschlüsselung.',
+    },
+    {
+      q: 'Why must both sides of an encrypted conversation use the same algorithm, per the video’s DES/AES comparison?',
+      options: [
+        'You cannot encrypt with one algorithm (e.g., DES) and decrypt with an incompatible one (e.g., AES)',
+        'Algorithm choice never matters as long as a key is used',
+        'DES and AES are interchangeable at the bit level',
+        'Only the receiving side needs to know the algorithm',
+      ],
+      correct: 0,
+      why: 'DES und AES arbeiten laut Video grundlegend unterschiedlich — beide Seiten müssen dasselbe kompatible Verfahren nutzen, sonst lässt sich die Verschlüsselung nicht rückgängig machen.',
+    },
+  ],
+  '015': [
+    {
+      q: 'What distinguishes a secure enclave from the main CPU, per the video?',
+      options: [
+        'It is the exact same processor, just renamed',
+        'It is a separate dedicated security processor with its own boot ROM, true random number generator, and built-in unchangeable cryptographic keys',
+        'It only exists in cloud servers, never on phones or laptops',
+        'It replaces the need for a TPM entirely',
+      ],
+      correct: 1,
+      why: 'Laut Video ist der Secure Enclave ein eigener, vom Haupt-CPU getrennter Sicherheitsprozessor mit eigenem Boot-ROM, echtem Zufallsgenerator und unveränderlichen Krypto-Schlüsseln.',
+    },
+  ],
+  '019': [
+    {
+      q: 'What is the role of a certificate authority, per the video?',
+      options: [
+        'It stores unencrypted user passwords for websites',
+        'It digitally signs certificates, so anyone who trusts the CA can also trust the certificate holder',
+        'It only issues certificates for internal networks, never public websites',
+        'It replaces the need for HTTPS',
+      ],
+      correct: 1,
+      why: 'Eine Zertifizierungsstelle signiert laut Video Zertifikate digital — vertraut der Browser der CA, vertraut er automatisch dem Zertifikatsinhaber.',
+    },
+    {
+      q: 'What distinguishes a third-party-issued certificate from a self-signed one, per the video?',
+      options: [
+        'A third-party certificate is validated and digitally signed by an external CA that browsers already trust, unlike a self-signed certificate',
+        'Third-party certificates never expire',
+        'Self-signed certificates are always more trusted than third-party ones',
+        'There is no practical difference between the two',
+      ],
+      correct: 0,
+      why: 'Ein Drittanbieter-Zertifikat wird laut Video von einer externen, im Browser bereits vertrauten CA geprüft und signiert — im Gegensatz zu einem selbstsignierten Zertifikat ohne diese Prüfung.',
+    },
+    {
+      q: 'What does a wildcard certificate’s Subject Alternative Name allow, per the video?',
+      options: [
+        'It only works for exactly one specific subdomain',
+        'It can be used for any device sharing the domain, e.g. *.example.com covers www, ftp, and mail subdomains',
+        'It removes the need for a certificate authority',
+        'It only applies to internal certificate authorities',
+      ],
+      correct: 1,
+      why: 'Ein Wildcard-Zertifikat mit z. B. *.birdfeeder.live deckt laut Video beliebige Subdomains derselben Domain ab (www, ftp, mail, …) — praktisch für viele Geräte mit einem einzigen Zertifikat.',
     },
   ],
 }
