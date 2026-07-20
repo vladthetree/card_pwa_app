@@ -7,7 +7,7 @@
     "C": "Air Gap",
     "D": "Orchestration",
     "correct": "B",
-    "explanation_de": "Serverless Architecture ist der passende Security+-Begriff für diese Beschreibung: Serverless Architecture refers to breaking an application down into individual functions which are called upon as needed, rather than having the entire application running all the time. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Serverless Architecture = dieser genaue Prüfbegriff.",
+    "explanation_de": "Serverless Architecture zerlegt eine Anwendung in einzelne Funktionen, die nur bei Bedarf aufgerufen werden, statt sie dauerhaft laufen zu lassen — dabei spielt das darunterliegende Betriebssystem kaum eine Rolle, und nicht mehr benötigte Funktionen werden aus der Cloud entfernt, bis sie erneut gebraucht werden.",
     "delete_duplicates": [
       "1729192837630",
       "1729192837628"
@@ -128,7 +128,7 @@
     "C": "Orchestration",
     "D": "Data Plane",
     "correct": "B",
-    "explanation_de": "Hybrid Cloud ist der passende Security+-Begriff für diese Beschreibung: Using mutliple cloud services across different public or private providers is called Hybrid Cloud. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Hybrid Cloud = dieser genaue Prüfbegriff.",
+    "explanation_de": "Nutzt eine Organisation mehrere Clouds unterschiedlicher Anbieter parallel, spricht man von Hybrid Cloud — das bringt mehr Flexibilität, aber auch zusätzliche Komplexität, etwa weil Authentifizierung, Firewall-Konfiguration und Logs zwischen den Providern manuell abgeglichen werden müssen, da die Anbieter nicht direkt miteinander kommunizieren.",
     "delete_duplicates": [
       "1729192290035"
     ]
@@ -155,7 +155,7 @@
     "C": "Compute Engine",
     "D": "Data Plane",
     "correct": "B",
-    "explanation_de": "Monolithic Architecture ist der passende Security+-Begriff für diese Beschreibung: A Monolithic Architecture is one where the entire application is run at once via a single executable. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Monolithic Architecture = dieser genaue Prüfbegriff.",
+    "explanation_de": "Bei einer Monolithic Architecture läuft die gesamte Anwendung — Benutzeroberfläche, Login und Geschäftslogik — als eine einzige ausführbare Datei auf dem Client; jede Änderung erfordert deshalb ein komplettes Update dieser einen Datei.",
     "delete_duplicates": [
       "1729192907744",
       "1729192907743"
@@ -180,7 +180,7 @@
     "C": "Hybrid Cloud",
     "D": "Microservice",
     "correct": "D",
-    "explanation_de": "Microservice ist der passende Security+-Begriff für diese Beschreibung: A Microservice is a piece of an application that is called on an as-needed basis. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Microservice = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Microservice ist ein einzelner Anwendungsteil, der über ein API-Gateway bei Bedarf aufgerufen wird, statt als ein großes Programm zu laufen — das erhöht Skalierbarkeit und Ausfallsicherheit, denn fällt ein Microservice aus, funktioniert der Rest der Anwendung weiter.",
     "delete_duplicates": [
       "1729193133877"
     ]
@@ -193,7 +193,7 @@
     "C": "Data Plane",
     "D": "Management Plane",
     "correct": "C",
-    "explanation_de": "Data Plane ist der passende Security+-Begriff für diese Beschreibung: The Data Plane refers to the actual movement of data through the network. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Data Plane = dieser genaue Prüfbegriff.",
+    "explanation_de": "Die Data Plane wird auch als Infrastructure Layer bezeichnet und übernimmt die eigentliche Weiterleitung von Daten von einem Gerät zum anderen — hier passieren auch Network Address Translation, Verschlüsselung und Trunking.",
     "delete_duplicates": [
       "1729194200066"
     ]
@@ -206,7 +206,7 @@
     "C": "Virtualization",
     "D": "Hypervisor",
     "correct": "A",
-    "explanation_de": "Virtual Local Area Network ist der passende Security+-Begriff für diese Beschreibung: A VLAN is a Virtual Local Area Network. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Virtual Local Area Network = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein VLAN (Virtual Local Area Network) trennt Geräte logisch auf einem einzigen physischen Switch, sodass sie sich wie auf getrennten Switches verhalten und nicht direkt kommunizieren können — so lässt sich dieselbe Segmentierung erreichen wie mit vielen physischen Switches, nur ohne deren Skalierungsproblem.",
     "delete_duplicates": [
       "1729193933000"
     ]
@@ -227,7 +227,7 @@
     "C": "Management Plane",
     "D": "Monolithic Architecture",
     "correct": "C",
-    "explanation_de": "Management Plane ist der passende Security+-Begriff für diese Beschreibung: The Management Plane refers to the ways in which the network is administered, including dictating logic for the Control Plane. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Management Plane = dieser genaue Prüfbegriff.",
+    "explanation_de": "Die Management Plane umfasst die Konfiguration eines Geräts, etwa Änderungen per SSH, SNMP oder API — diese Änderungen legen fest, wie die Control Plane anschließend ihre Routing- und Sitzungstabellen verwaltet.",
     "delete_duplicates": [
       "1729194266295"
     ]
@@ -255,7 +255,7 @@
     "C": "Air Gap",
     "D": "Serverless Architecture",
     "correct": "B",
-    "explanation_de": "Control Plane ist der passende Security+-Begriff für diese Beschreibung: The Control Plane is where Routing Tables, network address tables, Dynamic Routing Protocols and anything else that tells the data plane how to get from point A to point B come in. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Control Plane = dieser genaue Prüfbegriff.",
+    "explanation_de": "Die Control Plane verwaltet Routing-Tabellen, dynamische Routing-Updates und Adresstabellen — sie legt fest, wie die Data Plane Daten von Punkt A nach Punkt B weiterleiten soll.",
     "delete_duplicates": [
       "1729194474926",
       "1729194474928",
@@ -270,7 +270,7 @@
     "C": "Supervisory Control and Data Acquisition System",
     "D": "Hybrid Cloud",
     "correct": "B",
-    "explanation_de": "Data Plane ist der passende Security+-Begriff für diese Beschreibung: The Data Plane is also known as the Infrastructure Layer. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Data Plane = dieser genaue Prüfbegriff.",
+    "explanation_de": "Die Data Plane wird auch Infrastructure Layer genannt, weil sie die eigentliche 'Handarbeit' des Weiterleitens von Traffic erledigt, während Control Plane und Management Plane nur die Regeln bzw. die Konfiguration dafür liefern.",
     "delete_duplicates": [
       "1729194357504"
     ]
@@ -298,7 +298,7 @@
     "C": "Control Plane",
     "D": "Air Gap",
     "correct": "D",
-    "explanation_de": "Air Gap ist der passende Security+-Begriff für diese Beschreibung: An Air Gap is when a device or system is physically separated from another system. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Air Gap = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Air Gap bedeutet physische Trennung zweier Geräte oder Netzsegmente, etwa getrennte Switches für Web- und Datenbankserver oder für verschiedene Kunden eines Managed Service Providers — wer Zugriff auf die eine Seite erlangt, kommt dadurch nicht automatisch auf die andere.",
     "delete_duplicates": [
       "1729193807210"
     ]
@@ -348,7 +348,7 @@
     "C": "Docker",
     "D": "Control Plane",
     "correct": "D",
-    "explanation_de": "Control Plane ist der passende Security+-Begriff für diese Beschreibung: The Control Plane refers to the logic controlling *how* data is moved through the network. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Control Plane = dieser genaue Prüfbegriff.",
+    "explanation_de": "Die Control Plane bestimmt die Logik, nach der Daten durchs Netzwerk bewegt werden — etwa über Routing-Tabellen und dynamische Routing-Protokolle —, während die tatsächliche Weiterleitung dann auf der Data Plane stattfindet.",
     "delete_duplicates": [
       "1729194220598"
     ]
@@ -372,7 +372,7 @@
     "C": "Supervisory Control and Data Acquisition System",
     "D": "Orchestration",
     "correct": "C",
-    "explanation_de": "Supervisory Control and Data Acquisition System ist der passende Security+-Begriff für diese Beschreibung: SCADA is the Supervisory Control and Data Acquisition System. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Supervisory Control and Data Acquisition System = dieser genaue Prüfbegriff.",
+    "explanation_de": "SCADA steht für Supervisory Control and Data Acquisition System, manchmal auch Industrial Control System (ICS) genannt — damit vernetzen etwa Fertigungsbetriebe oder Kraftwerke ihre Maschinen und überwachen sie zentral von einem Kontrollraum aus; solche Systeme werden meist komplett von der Außenwelt abgeschottet.",
     "delete_duplicates": [
       "1729196548025"
     ]
@@ -385,7 +385,7 @@
     "C": "Data Plane",
     "D": "Hybrid Cloud",
     "correct": "A",
-    "explanation_de": "Docker ist der passende Security+-Begriff für diese Beschreibung: One of the most popular Containerization software options is called Docker. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Docker = dieser genaue Prüfbegriff.",
+    "explanation_de": "Docker ist laut Messer eine der populärsten Containerization-Software-Lösungen — sie läuft auf dem Host-Betriebssystem und verwaltet die Anwendungen, die in den einzelnen Containern arbeiten.",
     "delete_duplicates": []
   },
   {
@@ -404,7 +404,7 @@
     "C": "Docker",
     "D": "Compute Engine",
     "correct": "A",
-    "explanation_de": "Hypervisor ist der passende Security+-Begriff für diese Beschreibung: A Hypervisor is software which manages resources between multiple virtual machines. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Hypervisor = dieser genaue Prüfbegriff.",
+    "explanation_de": "Der Hypervisor sitzt zwischen der physischen Infrastruktur und den virtuellen Maschinen und verwaltet die Ressourcenverteilung zwischen ihnen; jede VM benötigt dabei trotzdem ihr eigenes Gastbetriebssystem.",
     "delete_duplicates": [
       "1729196035331",
       "1729196035329"
@@ -485,7 +485,7 @@
     "C": "Hypervisor",
     "D": "Supervisory Control and Data Acquisition System",
     "correct": "B",
-    "explanation_de": "Virtualization ist der passende Security+-Begriff für diese Beschreibung: Virtualization is the process of running multiple instances of potentially varied operating systems on a single physical device. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Virtualization = dieser genaue Prüfbegriff.",
+    "explanation_de": "Virtualization erlaubt es, mehrere — auch unterschiedliche — Betriebssysteme gleichzeitig auf einem physischen Gerät laufen zu lassen; jede virtuelle Maschine braucht dabei ein eigenes Gastbetriebssystem, was ineffizient wird, wenn mehrere VMs dasselbe OS mehrfach vorhalten.",
     "delete_duplicates": [
       "1729195941440",
       "1729195941441"
@@ -576,7 +576,7 @@
     "C": "Elasticity",
     "D": "Virtual Local Area Network",
     "correct": "B",
-    "explanation_de": "Containerization ist der passende Security+-Begriff für diese Beschreibung: Containerization is similar to Virtualization, except that each container contains only what is needed to run the particular application, rather than an entire operating system with an application running inside of it. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Containerization = dieser genaue Prüfbegriff.",
+    "explanation_de": "Containerization ähnelt der Virtualization, aber jeder Container enthält nur das, was die jeweilige Anwendung zum Laufen braucht — kein komplettes Betriebssystem; stattdessen teilen sich alle Container das eine Host-Betriebssystem.",
     "delete_duplicates": [
       "1729196140244",
       "1729196140245"
@@ -749,7 +749,7 @@
     "C": "Compute Engine",
     "D": "Hybrid Cloud",
     "correct": "C",
-    "explanation_de": "Compute Engine ist der passende Security+-Begriff für diese Beschreibung: A Compute Engine is a term for any number of physical processors handling a task in a cloud environment. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Compute Engine = dieser genaue Prüfbegriff.",
+    "explanation_de": "Was allgemein als Compute Component bezeichnet wird, heißt in der Cloud meist Compute Engine — das kann ein einzelner Prozessor oder eine beliebige Anzahl über die Cloud verteilter Prozessoren sein, die je nach Bedarf skaliert werden.",
     "delete_duplicates": [
       "1729199710864",
       "1729199710865"
@@ -763,7 +763,7 @@
     "C": "Supervisory Control and Data Acquisition System",
     "D": "Hybrid Cloud",
     "correct": "A",
-    "explanation_de": "Compute Component ist der passende Security+-Begriff für diese Beschreibung: The Compute Component is the part of a system that does the actual processing of data. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Compute Component = dieser genaue Prüfbegriff.",
+    "explanation_de": "Die Compute Component ist der Teil eines Systems, der die eigentliche Verarbeitung der Daten übernimmt — mehr als nur eine einzelne CPU, oft mehrere verteilte Prozessoren, die je nach Rechenbedarf skaliert werden.",
     "delete_duplicates": [
       "1729199602909"
     ]
@@ -776,7 +776,7 @@
     "C": "Hybrid Cloud",
     "D": "Microservice",
     "correct": "B",
-    "explanation_de": "Orchestration ist der passende Security+-Begriff für diese Beschreibung: Orchestration means building out a cloud based infrastructure automatically on demand. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Orchestration = dieser genaue Prüfbegriff.",
+    "explanation_de": "Orchestration bezeichnet den automatisierten Aufbau einer Cloud-Infrastruktur auf Abruf — das macht Deployment und Change Control in der Cloud besonders schnell, weil man nicht jede Komponente manuell einrichten muss.",
     "delete_duplicates": [
       "1729198962969"
     ]
@@ -789,7 +789,7 @@
     "C": "Supervisory Control and Data Acquisition System",
     "D": "Elasticity",
     "correct": "D",
-    "explanation_de": "Elasticity ist der passende Security+-Begriff für diese Beschreibung: Allocating additional resources to a system to improve response times during high-use times, and then scaling that back when usage goes down, is called Elasticity. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Elasticity = dieser genaue Prüfbegriff.",
+    "explanation_de": "Elasticity beschreibt, wie schnell sich der Ressourcen-Footprint einer Anwendung vergrößern oder verkleinern lässt — etwa um bei hoher Auslastung automatisch mehr Kapazität bereitzustellen und sie danach wieder zurückzufahren, um Kosten zu sparen.",
     "delete_duplicates": [
       "1729198761984",
       "1729198761985"
@@ -907,7 +907,7 @@
     "C": "Active/Passive",
     "D": "Extensible Authentication Protocol",
     "correct": "A",
-    "explanation_de": "Active monitoring ist der passende Security+-Begriff für diese Beschreibung: Active monitoring is the process of using a security device to evaluate and block traffic as it travels in real-time. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Active monitoring = dieser genaue Prüfbegriff.",
+    "explanation_de": "Active Monitoring bedeutet, dass ein Sicherheitsgerät wie ein IPS inline im Datenpfad sitzt, den Traffic in Echtzeit prüft und als schädlich erkannten Verkehr direkt selbst blockieren kann — deshalb ist entscheidend, ob das Gerät bei einem Ausfall fail-open oder fail-closed reagiert.",
     "delete_duplicates": [
       "1729263331127"
     ]
@@ -920,7 +920,7 @@
     "C": "Collector",
     "D": "Web Security Gatewa",
     "correct": "A",
-    "explanation_de": "Passive Monitoring ist der passende Security+-Begriff für diese Beschreibung: Passive Monitoring refers to sending a copy of network traffic to a security device for evaluation and reporting, but not blocking. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Passive Monitoring = dieser genaue Prüfbegriff.",
+    "explanation_de": "Bei Passive Monitoring erhält das Sicherheitsgerät über einen Port-Mirror/SPAN oder einen Netzwerk-TAP nur eine Kopie des Traffics — der Originalverkehr läuft normal weiter, sodass kein Ausfallrisiko besteht, aber auch kein Blockieren in Echtzeit möglich ist (faktisch ein IDS-Verhalten, selbst wenn die Hardware ein IPS ist).",
     "delete_duplicates": [
       "1729263374389"
     ]
@@ -987,7 +987,7 @@
     "C": "Web Security Gatewa",
     "D": "Intrusion Prevention System",
     "correct": "D",
-    "explanation_de": "Intrusion Prevention System ist der passende Security+-Begriff für diese Beschreibung: An Intrusion Prevention System is designed to watch traffic traverse the network in real time, and then block any traffic that it interprets as dangerous. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Intrusion Prevention System = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Intrusion Prevention System beobachtet den Netzwerkverkehr in Echtzeit und kann als gefährlich erkannten Traffic — etwa bekannte Exploits, Buffer Overflows oder SQL-Injections — sofort blockieren, im Unterschied zu einem IDS, das nur alarmiert, aber nichts blockiert.",
     "delete_duplicates": [
       "1729262665984",
       "1729262665982"
@@ -1109,7 +1109,7 @@
     "C": "Active monitoring",
     "D": "Collector",
     "correct": "D",
-    "explanation_de": "Collector ist der passende Security+-Begriff für diese Beschreibung: A Collector is a device which, as the name implies, collects logging data from Sensors and network traffic into one place. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Collector = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Collector ist die zentrale Datenbank, in der Sensoren von Switches, Routern, Firewalls oder IPS ihre gesammelten Statistiken und Logs zusammenführen — ein SIEM kann diese Daten aus vielen unterschiedlichen Gerätetypen konsolidieren und gemeinsam auswerten.",
     "delete_duplicates": [
       "1729266155184"
     ]
@@ -1122,7 +1122,7 @@
     "C": "Forward Proxy",
     "D": "Load Balancers",
     "correct": "C",
-    "explanation_de": "Forward Proxy ist der passende Security+-Begriff für diese Beschreibung: A Forward Proxy is sometimes referred to as an Internal Proxy. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Forward Proxy = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Forward Proxy steuert ausgehenden Traffic von innen nach außen und wird manchmal auch Internal Proxy genannt — interne Nutzer schicken ihre Anfragen an den Proxy, der sie stellvertretend ins Internet weiterleitet und die Antwort prüft, bevor sie zurückkommt.",
     "delete_duplicates": [
       "1729265068836"
     ]
@@ -1135,7 +1135,7 @@
     "C": "Load Balancers",
     "D": "Forward Proxy",
     "correct": "C",
-    "explanation_de": "Load Balancers ist der passende Security+-Begriff für diese Beschreibung: Load Balancers are used in large-scale implementations to distribute traffic over multiple services. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Load Balancers = dieser genaue Prüfbegriff.",
+    "explanation_de": "Load Balancer verteilen eingehenden Traffic auf mehrere Server und werden vor allem in großen Umgebungen mit Web- oder Datenbank-Server-Farmen eingesetzt, um die Last gleichmäßig zu halten und bei Serverausfall automatisch umzuverteilen.",
     "delete_duplicates": [
       "1729265508609"
     ]
@@ -1170,7 +1170,7 @@
     "C": "Transparent Proxy",
     "D": "Active/Passive",
     "correct": "C",
-    "explanation_de": "Transparent Proxy ist der passende Security+-Begriff für diese Beschreibung: A Transparent Proxy is just that, not visible to end users, because it sits inline with communication and does not need to be configured on the end devices. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Transparent Proxy = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Transparent Proxy sitzt unsichtbar im Datenpfad und muss auf den Endgeräten nicht konfiguriert werden — die Nutzer merken nicht, dass ihre Anfragen über den Proxy laufen, im Gegensatz zum Explicit Proxy, der im System ausdrücklich eingetragen werden muss.",
     "delete_duplicates": [
       "1729264760995",
       "1729264760997"
@@ -1209,7 +1209,7 @@
     "C": "Port Security",
     "D": "NAC, or Port-based Network Access Control",
     "correct": "A",
-    "explanation_de": "Jump Server ist der passende Security+-Begriff für diese Beschreibung: A Jump Server is a device on the inside of your network that is accessible from the outside.. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Jump Server = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Jump Server ist ein gehärtetes Gerät im internen Netz, das von außen erreichbar ist — externe Clients verbinden sich zuerst zum Jump Server und von dort per SSH weiter zu den eigentlichen internen Systemen, weshalb er besonders gut abgesichert sein muss.",
     "delete_duplicates": [
       "1729264182196",
       "1729264182197"
@@ -1250,7 +1250,7 @@
     "C": "Load Balancers",
     "D": "Active/Passive",
     "correct": "D",
-    "explanation_de": "Active/Passive ist der passende Security+-Begriff für diese Beschreibung: If servers are standing by waiting to be used by a Load Balancer if an active server fails, this is known as an Active/Passive configuration. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Active/Passive = dieser genaue Prüfbegriff.",
+    "explanation_de": "In einer Active/Passive-Konfiguration stehen manche Server als Standby bereit, ohne aktiv Anfragen zu bedienen — fällt ein aktiver Server aus, erkennt der Load Balancer das automatisch und leitet den Traffic auf die passiven Server um.",
     "delete_duplicates": [
       "1729265956353",
       "1729265956351"
@@ -1271,7 +1271,7 @@
     "C": "Active monitoring",
     "D": "Intrusion Prevention System",
     "correct": "A",
-    "explanation_de": "Open Proxy ist der passende Security+-Begriff für diese Beschreibung: An Open Proxy is a publicly available proxy server that may or may not be safe to use. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Open Proxy = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Open Proxy ist öffentlich für jeden im Internet nutzbar und wird oft benutzt, um bestehende Sicherheitskontrollen zu umgehen — der unbekannte Betreiber könnte dabei Werbung oder sogar Schadcode in den durchgeleiteten Traffic einschleusen, weshalb viele Organisationen Open Proxies blockieren.",
     "delete_duplicates": [
       "1729265371259",
       "1729265371260"
@@ -1335,7 +1335,7 @@
     "C": "NAC, or Port-based Network Access Control",
     "D": "Passive Monitoring",
     "correct": "C",
-    "explanation_de": "NAC, or Port-based Network Access Control ist der passende Security+-Begriff für diese Beschreibung: 802.1X is sometimes referred to as NAC, or Port-based Network Access Control. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: NAC, or Port-based Network Access Control = dieser genaue Prüfbegriff.",
+    "explanation_de": "802.1X wird manchmal auch als NAC bzw. Port-based Network Access Control bezeichnet — erst nach erfolgreicher Authentifizierung über EAP erhält ein Gerät Zugriff auf das Netzwerk am jeweiligen Switch-Port.",
     "delete_duplicates": [
       "1729267646398"
     ]
@@ -1369,7 +1369,7 @@
     "C": "Active monitoring",
     "D": "Port Security",
     "correct": "D",
-    "explanation_de": "Port Security ist der passende Security+-Begriff für diese Beschreibung: Port Security refers to the security on the individual interfaces that are on a switch or connections to a wireless access point. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Port Security = dieser genaue Prüfbegriff.",
+    "explanation_de": "Port Security bezeichnet die Absicherung einzelner Switch-Interfaces bzw. der Verbindungen zu einem WLAN-Access-Point — man nutzt sie oft unbemerkt, etwa wenn man sich mit Benutzername und Passwort an einem Netzwerk anmelden muss.",
     "delete_duplicates": [
       "1729267472725",
       "1729267472726"
@@ -1399,7 +1399,7 @@
     "C": "Transparent Proxy",
     "D": "Extensible Authentication Protocol",
     "correct": "D",
-    "explanation_de": "Extensible Authentication Protocol ist der passende Security+-Begriff für diese Beschreibung: Extensible Authentication Protocol is a framework for authentication that can be applied to many different types of networks and connections. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Extensible Authentication Protocol = dieser genaue Prüfbegriff.",
+    "explanation_de": "EAP (Extensible Authentication Protocol) ist ein Authentifizierungs-Framework, das Hersteller für unterschiedliche Netzwerktypen implementieren können — am gebräuchlichsten ist die Kombination mit 802.1X, die den Zugriff auf Switch- oder WLAN-Ports erst nach erfolgreicher Anmeldung freigibt.",
     "delete_duplicates": [
       "1729267569311",
       "1729267569309"
@@ -1435,7 +1435,7 @@
     "C": "Passive Monitoring",
     "D": "Web Application Firewall",
     "correct": "D",
-    "explanation_de": "Web Application Firewall ist der passende Security+-Begriff für diese Beschreibung: A type of firewall which analyzes input from web-based applications to identify injections, for example, is called a Web Application Firewall. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Web Application Firewall = dieser genaue Prüfbegriff.",
+    "explanation_de": "Eine Web Application Firewall analysiert Eingaben in webbasierte Anwendungen und kann so z. B. SQL-Injections erkennen und blockieren, bevor sie den Anwendungsserver erreichen — sie wird oft zusätzlich zu einer Next-Generation Firewall eingesetzt und ist unter anderem durch den PCI-DSS-Standard für Kreditkartenzahlungen vorgeschrieben.",
     "delete_duplicates": [
       "1729269602614"
     ]
@@ -1510,7 +1510,7 @@
     "C": "Port Security",
     "D": "Web Security Gatewa",
     "correct": "D",
-    "explanation_de": "Web Security Gatewa ist der passende Security+-Begriff für diese Beschreibung: UTMs may also be referred to as a Web Security Gateway, or an All-in-One Security Appliance. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Web Security Gatewa = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein UTM (Unified Threat Management) wird manchmal auch Web Security Gateway oder All-in-One Security Appliance genannt, da es viele Funktionen wie URL-Filterung, Malware-Erkennung, Spam-Filter und IDS/IPS in einem einzigen Gerät bündelt.",
     "delete_duplicates": [
       "1729268983361",
       "1729268983362"
@@ -1823,7 +1823,7 @@
     "C": "Confusion",
     "D": "Data Sovereignty",
     "correct": "A",
-    "explanation_de": "The General Data Protection Regulation ist der passende Security+-Begriff für diese Beschreibung: The General Data Protection Regulation requires that any data collected on EU citizens must be stored within the EU. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: The General Data Protection Regulation = dieser genaue Prüfbegriff.",
+    "explanation_de": "Die General Data Protection Regulation (GDPR/DSGVO) ist eine EU-Verordnung, die laut Messer vorschreibt, dass Daten von EU-Bürgern innerhalb der EU gespeichert werden müssen.",
     "delete_duplicates": [
       "1729276778014"
     ]
@@ -1836,7 +1836,7 @@
     "C": "Data Sovereignty",
     "D": "Geographic Restrictions",
     "correct": "B",
-    "explanation_de": "Data in Motion, or Data in Transit ist der passende Security+-Begriff für diese Beschreibung: Data that is moving from one point to another is called Data in Motion, or Data in Transit. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Data in Motion, or Data in Transit = dieser genaue Prüfbegriff.",
+    "explanation_de": "Daten, die gerade über das Netzwerk übertragen werden, heißen Data in Transit bzw. Data in Motion — sind sie dabei unverschlüsselt, kann sie jeder mit Zugriff auf die Leitung mitlesen, weshalb Technologien wie TLS oder ein IPsec-VPN zum Schutz eingesetzt werden.",
     "delete_duplicates": [
       "1729276559589"
     ]
@@ -1860,7 +1860,7 @@
     "C": "Geofencing",
     "D": "Confusion",
     "correct": "A",
-    "explanation_de": "Data Sovereignty ist der passende Security+-Begriff für diese Beschreibung: Data Sovereignty refers to the rules and laws which apply to data, depending on where in the world it is being stored. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Data Sovereignty = dieser genaue Prüfbegriff.",
+    "explanation_de": "Data Sovereignty besagt, dass für gespeicherte Daten die Gesetze des Landes gelten, in dem sie physisch liegen — bei rechtlichen Verfahren oder Gerichtsbeschlüssen greift also das Recht des Speicherorts.",
     "delete_duplicates": [
       "1729276746899"
     ]
@@ -1913,7 +1913,7 @@
     "C": "Geographic Restrictions",
     "D": "The General Data Protection Regulation",
     "correct": "C",
-    "explanation_de": "Geographic Restrictions ist der passende Security+-Begriff für diese Beschreibung: Policies determining access to data based on the geographical locations of the data and the user are known as Geographic Restrictions. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Geographic Restrictions = dieser genaue Prüfbegriff.",
+    "explanation_de": "Geographic Restrictions sind Zugriffsrichtlinien, die sich sowohl am Standort der Daten als auch am Standort des Nutzers orientieren — der Standort lässt sich z. B. über die IP-Subnetz-Zuordnung oder per Geolocation via GPS und 802.11-Datenbanken bestimmen.",
     "delete_duplicates": [
       "1729277620813"
     ]
@@ -1945,7 +1945,7 @@
     "C": "Protecting data",
     "D": "Confusion",
     "correct": "C",
-    "explanation_de": "Protecting data ist der passende Security+-Begriff für diese Beschreibung: Protecting data is one of the primary goals of any IT professional. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Protecting data = dieser genaue Prüfbegriff.",
+    "explanation_de": "Datenschutz zählt laut Messer zu den wichtigsten Zielen jeder IT-Fachkraft — verliert eine Organisation ihre Daten, ist sie faktisch geschäftsunfähig, weshalb Daten an allen Orten geschützt werden müssen: auf Speichermedien, im Netzwerk und im Arbeitsspeicher.",
     "delete_duplicates": [
       "1729277707223"
     ]
@@ -1958,7 +1958,7 @@
     "C": "The General Data Protection Regulation",
     "D": "Data Sovereignty",
     "correct": "B",
-    "explanation_de": "Geofencing ist der passende Security+-Begriff für diese Beschreibung: Geofencing is the process of limiting access to data based on the device's physical location. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Geofencing = dieser genaue Prüfbegriff.",
+    "explanation_de": "Geofencing schränkt den Zugriff auf Daten anhand des physischen Standorts eines Geräts ein — etwa dürfen bestimmte Daten nur innerhalb eines Firmengebäudes abgerufen werden, ermittelt über Netzwerkstandort oder Geolocation.",
     "delete_duplicates": [
       "1729277680141"
     ]
@@ -1971,7 +1971,7 @@
     "C": "Protecting data",
     "D": "Confusion",
     "correct": "D",
-    "explanation_de": "Confusion ist der passende Security+-Begriff für diese Beschreibung: Confusion refers to the drastic difference between the encrypted form of data, and the original form. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Confusion = dieser genaue Prüfbegriff.",
+    "explanation_de": "Confusion bezeichnet den drastischen Unterschied zwischen Klartext und Chiffretext nach der Verschlüsselung — im Beispiel wird der Satz 'Hello, world' nach PGP-Verschlüsselung zu einer völlig unkenntlichen PGP-Nachricht.",
     "delete_duplicates": [
       "1729278256357"
     ]
@@ -2005,7 +2005,7 @@
     "C": "Incremental Backup",
     "D": "Cold Site",
     "correct": "D",
-    "explanation_de": "Cold Site ist der passende Security+-Begriff für diese Beschreibung: A Cold Site is essentially an empty building ready to bring in backup systems, but not necessarily standing by ready to take over. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Cold Site = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Cold Site ist im Wesentlichen ein leeres Gebäude mit Strom und Beleuchtung, aber ohne vorbereitete Systeme — Daten, Hardware und Personal müssen im Ernstfall erst noch dorthin gebracht werden, es steht also nicht sofort einsatzbereit zur Verfügung.",
     "delete_duplicates": [
       "1729280425751",
       "1729280425753"
@@ -2050,7 +2050,7 @@
     "C": "Incremental Backup",
     "D": "Platform Diversity",
     "correct": "D",
-    "explanation_de": "Platform Diversity ist der passende Security+-Begriff für diese Beschreibung: Using varied operating systems to provide services in the case of a vulnerability with a particular one is known as Platform Diversity. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Platform Diversity = dieser genaue Prüfbegriff.",
+    "explanation_de": "Platform Diversity bedeutet, für unterschiedliche Zwecke unterschiedliche Betriebssysteme einzusetzen, etwa Linux und Windows im Rechenzentrum und macOS und Windows bei den Clients — so betrifft eine OS-spezifische Schwachstelle nie das gesamte Unternehmen gleichzeitig.",
     "delete_duplicates": [
       "1729280698246",
       "1729280698247"
@@ -2064,7 +2064,7 @@
     "C": "Hot Site",
     "D": "Incremental Backup",
     "correct": "C",
-    "explanation_de": "Hot Site ist der passende Security+-Begriff für diese Beschreibung: A Hot Site is one that exactly mirrors the provisioning, configuration, and data of the main site, and can take over at a moment's notice. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Hot Site = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Hot Site ist eine exakte Kopie des Hauptrechenzentrums mit identischer Hardware und ständig synchronisierten Daten — sie kann im Ernstfall praktisch sofort die Produktion übernehmen, ist dafür aber auch die teuerste der Recovery-Site-Varianten.",
     "delete_duplicates": [
       "1729280373312",
       "1729280373314"
@@ -2180,7 +2180,7 @@
     "C": "Platform Diversity",
     "D": "Structured Walkthrough",
     "correct": "D",
-    "explanation_de": "Structured Walkthrough ist der passende Security+-Begriff für diese Beschreibung: A Tabletop Exercise may also be called a Structured Walkthrough. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Structured Walkthrough = dieser genaue Prüfbegriff.",
+    "explanation_de": "Bei einem Tabletop Exercise geht eine Gruppe die Schritte des Wiederherstellungsplans nur gedanklich am Konferenztisch durch, statt tatsächlich an einen Recovery-Standort umzuziehen — das spart Kosten und deckt trotzdem Lücken im Plan auf; deshalb wird diese Testform auch als Structured Walkthrough bezeichnet.",
     "delete_duplicates": []
   },
   {
@@ -2202,7 +2202,7 @@
     "C": "Generator",
     "D": "Cold Site",
     "correct": "A",
-    "explanation_de": "Parallel Processing ist der passende Security+-Begriff für diese Beschreibung: Distributing computing tasks across multiple processors, whether within the same device or across multiple devices, is called Parallel Processing. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Parallel Processing = dieser genaue Prüfbegriff.",
+    "explanation_de": "Parallel Processing verteilt Transaktionen auf mehrere CPUs oder Prozesse gleichzeitig — einzelne Geräte mit mehreren Kernen oder ganze Infrastrukturen mit mehreren Rechnern —, was die Verarbeitung beschleunigt und die Resilienz erhöht, weil bei Ausfall eines Prozessors die übrigen die Last weitertragen.",
     "delete_duplicates": [
       "1729282747702",
       "1729282747701"
@@ -2264,7 +2264,7 @@
     "C": "Replication",
     "D": "Structured Walkthrough",
     "correct": "C",
-    "explanation_de": "Replication ist der passende Security+-Begriff für diese Beschreibung: Copying data in real-time to one or more additional locations as it is written to the local location is known as Replication. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Replication = dieser genaue Prüfbegriff.",
+    "explanation_de": "Replication kopiert Daten nahezu in Echtzeit an einen oder mehrere weitere Standorte — ändert sich das Original, werden die Kopien innerhalb von Sekunden bis Minuten nachgezogen, was z. B. bei einem Hot Site für aktuelle Daten im Ernstfall sorgt.",
     "delete_duplicates": [
       "1729284162705",
       "1729284162704",
@@ -2323,7 +2323,7 @@
     "C": "Cold Site",
     "D": "Hot Site",
     "correct": "A",
-    "explanation_de": "Incremental Backup ist der passende Security+-Begriff für diese Beschreibung: An Incremental Backup is one that only saves the changes made since the previous backup. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Incremental Backup = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Incremental Backup sichert nur die Änderungen seit der letzten Sicherung — im Video funktionieren tägliche VM-Snapshots nach demselben Prinzip: Nur die geänderten Daten (im Beispiel z. B. 40 von 100 GB) landen im nächsten Snapshot.",
     "delete_duplicates": [
       "1729283880473"
     ]
@@ -2347,7 +2347,7 @@
     "C": "Cold Site",
     "D": "Off-site backup",
     "correct": "D",
-    "explanation_de": "Off-site backup ist der passende Security+-Begriff für diese Beschreibung: Storing backups in another location, whether via network transfer or by physically transferring backup media, is known as an Off-site backup. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Off-site backup = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Off-site Backup speichert die Sicherung an einem anderen Standort — per Netzwerkübertragung oder durch physischen Transport der Backup-Medien; es eignet sich vor allem für die langfristige Aufbewahrung, während On-site-Backups schneller verfügbar sind.",
     "delete_duplicates": [
       "1729283435462",
       "1729283435463",
@@ -2450,7 +2450,7 @@
     "C": "Off-site backup",
     "D": "Generator",
     "correct": "D",
-    "explanation_de": "Generator ist der passende Security+-Begriff für diese Beschreibung: A Generator is typically seen as a long-term backup power solution. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Generator = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Generator liefert langfristige Notstromversorgung, solange Treibstoff vorhanden ist — anders als die USV, die nur kurzzeitig überbrückt; typischerweise übernimmt die USV die Anlaufzeit, bis der Generator läuft und die Stromversorgung übernimmt.",
     "delete_duplicates": [
       "1729285411850"
     ]

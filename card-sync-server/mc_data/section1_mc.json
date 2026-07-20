@@ -15,7 +15,7 @@
     "C": "Technical",
     "D": "Physical",
     "correct": "C",
-    "explanation_de": "Technische Controls sind softwarebasierte oder hardwarebasierte Maßnahmen — AV-Software ist ein klassisches Beispiel.\n\n \n\n Merkhilfe: Technical = Technologie.",
+    "explanation_de": "Technische Controls sind laut Messer Controls, die über ein technisches System umgesetzt werden — Firewalls und Antivirensoftware nennt er als direktes Beispiel dafür.",
     "delete_duplicates": []
   },
   {
@@ -26,7 +26,7 @@
     "C": "Operational",
     "D": "Technical",
     "correct": "D",
-    "explanation_de": "OS-Richtlinien (z.B. GPO, SELinux) sind technische Kontrollmechanismen. Technical Controls wirken direkt auf Systeme und Software.\n\n \n\n Merkhilfe: Technical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Berechtigungsrichtlinien, die direkt im Betriebssystem konfiguriert werden, zählen laut Messer zu den technischen Controls, da sie technisch innerhalb der Software durchgesetzt werden, nicht per Dokument oder Wachpersonal.",
     "delete_duplicates": []
   },
   {
@@ -37,7 +37,7 @@
     "C": "Operational",
     "D": "Managerial",
     "correct": "D",
-    "explanation_de": "Managerial Controls umfassen administrative Maßnahmen wie Richtlinien, Prozesse und Dokumentation.\n\n \n\n Merkhilfe: Management = Papierwelt.",
+    "explanation_de": "Schriftliche Sicherheitsrichtlinien und offizielle Policy-Dokumentation ordnet Messer den Managerial Controls zu — diese werden in der zentralen Sicherheitsrichtlinie und in Standard-Betriebsverfahren festgehalten.",
     "delete_duplicates": []
   },
   {
@@ -48,7 +48,7 @@
     "C": "Physical",
     "D": "Operational",
     "correct": "D",
-    "explanation_de": "Operational Controls sind personenbezogen und prozessorientiert — Schulungen, Awareness-Programme und tägliche Sicherheitspraktiken gehören dazu.\n\n \n\n Merkhilfe: Operational ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Lunch-and-Learn-Programme zur Security Awareness zählen laut Messer zu den Operational Controls, weil sie von Menschen durchgeführt werden statt durch Technik oder Dokumente.",
     "delete_duplicates": [
       "1728576891031"
     ]
@@ -60,8 +60,8 @@
     "B": "Managerial",
     "C": "Operational",
     "D": "Physical",
-    "correct": "D",
-    "explanation_de": "Physical Controls betreffen die physische Welt — Wachposten, Schlösser und Barrieren. Preventiv = blockiert den Zugang proaktiv.\n\n \n\n Merkhilfe: Physical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "correct": "C",
+    "explanation_de": "Messer nennt das Wachhäuschen (Ausweiskontrolle) bei der konkreten Durchsprache der Preventive Controls ausdrücklich als Beispiel für die Kategorie Operational, weil die Kontrolle von einer Person durchgeführt wird.",
     "delete_duplicates": []
   },
   {
@@ -72,7 +72,7 @@
     "C": "Technical",
     "D": "Physical",
     "correct": "D",
-    "explanation_de": "Physische Barrieren wie Zäune und Schlösser sind Physical Controls. Sie verhindern physischen Zugang — daher Preventive Control Type.\n\n \n\n Merkhilfe: Physical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Zäune und abgeschlossene Türen verhindern physischen Zutritt und gehören laut Messer klar zur Kategorie Physical — genau wie Türschlösser, die er als physisches Beispiel für Preventive Controls nennt.",
     "delete_duplicates": [
       "1728576962692"
     ]
@@ -85,7 +85,7 @@
     "C": "Managerial",
     "D": "Physical",
     "correct": "D",
-    "explanation_de": "Badge-Reader kontrollieren physischen Zutritt — Physical Control. Da sie Zugang aktiv einschränken: Preventive Control Type.\n\n \n\n Merkhilfe: Physical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Badge-Reader begrenzt den physischen Zugang zu einem Bereich und fällt laut Messer daher in die Kategorie Physical, gemeinsam mit Wachhäuschen und Zäunen.",
     "delete_duplicates": []
   },
   {
@@ -96,7 +96,7 @@
     "C": "Authoritative",
     "D": "Directive",
     "correct": "C",
-    "explanation_de": "Die sechs Control Types sind: Preventive, Deterrent, Detective, Corrective, Compensating, Directive. 'Authoritative' ist kein definierter Control Type.\n\n \n\n Merkhilfe: Authoritative ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer nennt im Video genau sechs Control-Typen: Preventive, Deterrent, Detective, Corrective, Compensating und Directive — 'Authoritative' taucht in dieser Liste nicht auf.",
     "delete_duplicates": [
       "1728576145578",
       "1728576145579",
@@ -113,7 +113,7 @@
     "C": "Deterrent",
     "D": "Preventive",
     "correct": "D",
-    "explanation_de": "Preventive Controls blockieren Ereignisse, bevor sie eintreten. Eine Firewall-Regel verhindert unerlaubten Zugriff aktiv — klassisches Preventive-Beispiel.\n\n \n\n Merkhilfe: Preventive ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Firewall-Regel, die unautorisierten Traffic blockiert, verhindert den Zugriff von vornherein und ist damit laut Messer ein klassisches Beispiel für einen Preventive Control.",
     "delete_duplicates": []
   },
   {
@@ -124,7 +124,7 @@
     "C": "Preventive",
     "D": "Corrective",
     "correct": "C",
-    "explanation_de": "Die Identitätsprüfung verhindert unbefugten Zugang — Preventive. Der Kontext ist Operational, da Menschen (kein technisches System) die Kontrolle ausüben.\n\n \n\n Merkhilfe: Preventive ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Das Prüfen von Ausweisen am Eingang verhindert unautorisierten Zutritt, bevor er stattfindet — Messer ordnet dies daher explizit als Preventive Control ein, umgesetzt durch das Wachpersonal (operational).",
     "delete_duplicates": [
       "1728576827809"
     ]
@@ -137,7 +137,7 @@
     "C": "Corrective",
     "D": "Deterrent",
     "correct": "D",
-    "explanation_de": "Deterrent Controls schrecken durch Warnung ab, ohne direkt zu blockieren. Ein Splash-Screen-Warning ist Technical und Deterrent — er warnt, sperrt aber nicht.\n\n \n\n Merkhilfe: Deterrent ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Warnhinweis-Bildschirm beim Programmstart schreckt unautorisierte Nutzer ab, verhindert den Zugriff aber nicht zwingend — Messer nennt diesen Splash Screen ausdrücklich als Beispiel für einen technischen Deterrent.",
     "delete_duplicates": [
       "1728577166288"
     ]
@@ -150,7 +150,7 @@
     "C": "Managerial",
     "D": "Operational",
     "correct": "C",
-    "explanation_de": "Onboarding-Policies sind administrative (Managerial) Maßnahmen. Sie definieren Zugriffsrechte schriftlich — Preventive, weil sie vorab Schaden verhindern.\n\n \n\n Merkhilfe: Managerial ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Onboarding-Policy, die Zugriffsrechte neuer Mitarbeiter festlegt, ist laut Messer ein Beispiel für einen Preventive Control der Kategorie Managerial, da sie als Richtlinie beim Einstellungsprozess greift.",
     "delete_duplicates": [
       "1728576798859"
     ]
@@ -163,7 +163,7 @@
     "C": "Deterrent",
     "D": "Detective",
     "correct": "C",
-    "explanation_de": "Deterrent Controls schrecken durch potenzielle Konsequenzen ab. Kündigungsandrohung ist ein klassisches Deterrent im Managerial-Bereich.\n\n \n\n Merkhilfe: Deterrent ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Die Androhung von Degradierung oder Kündigung bei Sicherheitsverstößen soll laut Messer abschrecken, bevor ein Verstoß passiert — deshalb ordnet er sie als Deterrent Control der Kategorie Managerial ein.",
     "delete_duplicates": [
       "1728577258424"
     ]
@@ -176,7 +176,7 @@
     "C": "Preventive",
     "D": "Deterrent",
     "correct": "D",
-    "explanation_de": "Ein Empfangsschalter schreckt unbefugte Besucher ab (Deterrent) ohne sie physisch aufzuhalten — Operational, da Menschen involviert sind.\n\n \n\n Merkhilfe: Deterrent ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Empfangstresen, der Besucher begrüßt und lenkt, wirkt laut Messer abschreckend auf mögliche Angreifer und ist damit ein Deterrent Control der Kategorie Operational.",
     "delete_duplicates": [
       "1728577295127"
     ]
@@ -189,7 +189,7 @@
     "C": "Managerial",
     "D": "Physical",
     "correct": "D",
-    "explanation_de": "Warnschilder auf dem Gelände sind Physical Controls — sie befinden sich in der physischen Welt und schrecken potenzielle Eindringlinge ab.\n\n \n\n Merkhilfe: Physical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Warnschilder, die mit Strafverfolgung drohen, sind laut Messer ein physisches Beispiel für Deterrent Controls — sie schrecken ab, verhindern den Zutritt aber nicht technisch.",
     "delete_duplicates": [
       "1728577400035"
     ]
@@ -202,7 +202,7 @@
     "C": "Compensating",
     "D": "Detective",
     "correct": "D",
-    "explanation_de": "Detective Controls identifizieren Sicherheitsereignisse, nachdem sie eingetreten sind. Log-Sammlung ist ein klassisches Technical Detective Control.\n\n \n\n Merkhilfe: Detective ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein System, das automatisch Logs sammelt und auswertet, erkennt Vorfälle erst im Nachhinein statt sie zu verhindern — Messer ordnet solche Systemlogs daher als Detective Control der Kategorie Technical ein.",
     "delete_duplicates": [
       "1728577609189"
     ]
@@ -215,7 +215,7 @@
     "C": "Preventive",
     "D": "Compensating",
     "correct": "B",
-    "explanation_de": "Regelmäßige Login-Berichte analysieren, was passiert ist — Detective. Managerial, weil es ein administrativer Prozess ist.\n\n \n\n Merkhilfe: Detective ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Die regelmäßige Durchsicht von Login-Berichten durch Mitarbeiter nennt Messer als Beispiel für einen Detective Control der Kategorie Managerial — im Gegensatz zum automatisierten Systemlog, das technisch ist.",
     "delete_duplicates": [
       "1728577652642"
     ]
@@ -228,7 +228,7 @@
     "C": "Detective",
     "D": "Corrective",
     "correct": "C",
-    "explanation_de": "Patrouillen erkennen Sicherheitsvorfälle durch Beobachtung — Detective. Operational, da Menschen die Maßnahme durchführen.\n\n \n\n Merkhilfe: Detective ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Regelmäßige Kontrollgänge über das Firmengelände nennt Messer als Beispiel für einen Detective Control der Kategorie Operational, da hier Personen aktiv nach Einbruchsspuren suchen.",
     "delete_duplicates": [
       "1728577684599"
     ]
@@ -241,7 +241,7 @@
     "C": "Managerial",
     "D": "Physical",
     "correct": "D",
-    "explanation_de": "Bewegungsmelder sind physische Geräte in der realen Welt — Physical Control. Sie erkennen Eindringlinge (Detective), verhindern sie aber nicht aktiv.\n\n \n\n Merkhilfe: Physical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Bewegungsmelder, die bei ungewöhnlicher Bewegung automatisch alarmieren, sind laut Messer ein physisches Beispiel für Detective Controls.",
     "delete_duplicates": [
       "1728577715501"
     ]
@@ -254,7 +254,7 @@
     "C": "Managerial",
     "D": "Technical",
     "correct": "D",
-    "explanation_de": "Backup-Wiederherstellung ist ein technischer Vorgang — Technical. Corrective, weil es den Schaden eines aufgetretenen Vorfalls behebt.\n\n \n\n Merkhilfe: Technical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Die Wiederherstellung verschlüsselter Backups nach einem Ransomware-Angriff stellt den Zustand vor dem Vorfall wieder her — Messer ordnet dies als Corrective Control der Kategorie Technical ein.",
     "delete_duplicates": [
       "1728577866478"
     ]
@@ -267,7 +267,7 @@
     "C": "Corrective",
     "D": "Preventive",
     "correct": "C",
-    "explanation_de": "Meldeprozesse korrigieren die Reaktion auf Vorfälle — Corrective. Managerial, da es sich um administrative Richtlinien handelt.\n\n \n\n Merkhilfe: Corrective ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Richtlinien, die festlegen, wie Sicherheitsvorfälle gemeldet werden, greifen laut Messer erst nach einem Ereignis und zählen daher zu den Corrective Controls der Kategorie Managerial.",
     "delete_duplicates": [
       "1728577900190"
     ]
@@ -280,7 +280,7 @@
     "C": "Detective",
     "D": "Corrective",
     "correct": "D",
-    "explanation_de": "Strafverfolgungsbehörden einzuschalten reagiert auf einen eingetretenen Vorfall — Corrective. Operational, da Menschen die Handlung ausführen.\n\n \n\n Merkhilfe: Corrective ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Nach einem Einbruch die Polizei zu kontaktieren, korrigiert die Folgen eines bereits eingetretenen Vorfalls — Messer nennt dies als Beispiel für einen Corrective Control der Kategorie Operational.",
     "delete_duplicates": [
       "1728577946939"
     ]
@@ -293,7 +293,7 @@
     "C": "Operational",
     "D": "Physical",
     "correct": "D",
-    "explanation_de": "Ein Feuerlöscher ist ein physisches Gerät — Physical Control. Er korrigiert (Corrective) einen aktiven Schadensfall.\n\n \n\n Merkhilfe: Physical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Feuerlöscher wird eingesetzt, nachdem ein Feuer bereits ausgebrochen ist, um den Schaden zu begrenzen — Messer ordnet ihn deshalb als Corrective Control der Kategorie Physical ein.",
     "delete_duplicates": [
       "1728577973553"
     ]
@@ -314,7 +314,7 @@
     "C": "Operational",
     "D": "Technical",
     "correct": "D",
-    "explanation_de": "Die Firewall-Regel ist eine technische Maßnahme — Technical. Compensating, weil sie eine fehlende Kontrolle (noch nicht gepatchtes System) vorübergehend ersetzt.\n\n \n\n Merkhilfe: Technical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Solange kein Patch verfügbar ist, blockiert eine Firewall-Regel den Zugriff auf die verwundbare Anwendung als Übergangslösung — Messer nennt genau dieses Beispiel für einen Compensating Control der Kategorie Technical.",
     "delete_duplicates": [
       "1728578225453"
     ]
@@ -327,7 +327,7 @@
     "C": "Physical",
     "D": "Managerial",
     "correct": "D",
-    "explanation_de": "Aufgabentrennung (Separation of Duties) ist eine administrative Maßnahme — Managerial. Compensating, weil sie das Risiko durch alternative Kontrolle reduziert.\n\n \n\n Merkhilfe: Managerial ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Aufgabentrennung zwischen Personen begrenzt den Schaden, den eine einzelne Person anrichten kann, falls keine direkte Lösung verfügbar ist — Messer ordnet Separation of Duties als Compensating Control der Kategorie Managerial ein.",
     "delete_duplicates": [
       "1728578357453"
     ]
@@ -340,7 +340,7 @@
     "C": "Operational",
     "D": "Technical",
     "correct": "C",
-    "explanation_de": "Mehrere Sicherheitsmitarbeiter einzusetzen ist ein menschlicher Prozess — Operational. Compensating, weil fehlende Einzelkontrolle durch Team-Überwachung ausgeglichen wird.\n\n \n\n Merkhilfe: Operational ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Mehrere Sicherheitsmitarbeiter gleichzeitig einzusetzen, damit niemand alleinigen Zugriff auf alles hat, nennt Messer als Beispiel für einen Compensating Control der Kategorie Operational.",
     "delete_duplicates": [
       "1728578398809"
     ]
@@ -353,7 +353,7 @@
     "C": "Technical",
     "D": "Physical",
     "correct": "D",
-    "explanation_de": "Ein Generator ist ein physisches Gerät — Physical Control. Er kompensiert (Compensating) den Ausfall der primären Stromversorgung.\n\n \n\n Merkhilfe: Physical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Notstromgenerator kompensiert einen Stromausfall, bis die Hauptversorgung wiederhergestellt ist — Messer nennt ihn ausdrücklich als Compensating Control der Kategorie Physical.",
     "delete_duplicates": [
       "1728578427114"
     ]
@@ -370,7 +370,7 @@
     "C": "Preventive",
     "D": "Directive",
     "correct": "D",
-    "explanation_de": "Directive Controls lenken Benutzer zu sichererem Verhalten. Die Anweisung ist Technical (Passwortschutz), Directive (es gibt eine Verhaltensrichtlinie).\n\n \n\n Merkhilfe: Directive ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Mitarbeiter anzuweisen, sensible Dateien in verschlüsselten Ordnern abzulegen, ist laut Messer ein eher schwacher Control, da er auf die richtige Entscheidung der Nutzer angewiesen ist — er nennt dies als Directive Control der Kategorie Technical.",
     "delete_duplicates": [
       "1728578626915"
     ]
@@ -383,7 +383,7 @@
     "C": "Compensating",
     "D": "Directive",
     "correct": "D",
-    "explanation_de": "Compliance-Richtlinien weisen Mitarbeiter auf gewünschtes Verhalten hin — Directive. Managerial, da sie administrative Dokumente sind.\n\n \n\n Merkhilfe: Directive ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Compliance-Richtlinien und -Verfahren sollen Mitarbeiter zum richtigen Verhalten anleiten — Messer ordnet sie als Directive Control der Kategorie Managerial ein.",
     "delete_duplicates": [
       "1728578658722"
     ]
@@ -396,7 +396,7 @@
     "C": "Directive",
     "D": "Corrective",
     "correct": "C",
-    "explanation_de": "Schulungen leiten Mitarbeiter zu sicherem Verhalten an — Directive. Operational, da es sich um eine menschliche, prozessorientierte Maßnahme handelt.\n\n \n\n Merkhilfe: Directive ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Sicherheitsschulung leitet Mitarbeiter an, Richtlinien einzuhalten, statt den Zugriff technisch zu erzwingen — Messer nennt Trainingskurse als Directive Control der Kategorie Operational.",
     "delete_duplicates": [
       "1728578702368"
     ]
@@ -409,7 +409,7 @@
     "C": "Operational",
     "D": "Physical",
     "correct": "D",
-    "explanation_de": "Ein physisches Schild in der realen Umgebung ist Physical Control. Es weist an (Directive), ohne aktiv zu sperren.\n\n \n\n Merkhilfe: Physical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Schild 'Nur autorisiertes Personal' an einer Tür ohne Schloss weist Personen lediglich an, nicht einzutreten, verhindert den Zutritt aber nicht technisch — Messer nennt genau dieses Beispiel für einen Directive Control der Kategorie Physical.",
     "delete_duplicates": [
       "1728578743323"
     ]
@@ -426,7 +426,7 @@
     "C": "Encryption",
     "D": "Tokenization",
     "correct": "C",
-    "explanation_de": "Verschlüsselung macht Daten für Unbefugte unlesbar — primäre Methode für Confidentiality. Hashing dient der Integrität, nicht der Vertraulichkeit.\n\n \n\n Merkhilfe: Encryption ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Encryption verwandelt Daten in einen für Unbefugte unlesbaren Ciphertext; nur wer den Schlüssel besitzt, kann sie wieder entschlüsseln — Messer nennt sie als Hauptmethode für Confidentiality.",
     "delete_duplicates": [
       "1728580217216"
     ]
@@ -443,7 +443,7 @@
     "C": "Confidentiality",
     "D": "Non-repudiation",
     "correct": "C",
-    "explanation_de": "Access Controls schränken ein, wer Daten sehen darf — das ist Confidentiality. Integrität betrifft Unverändertheit, Availability betrifft Erreichbarkeit.\n\n \n\n Merkhilfe: Confidentiality ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Access Controls begrenzen, wer bestimmte Daten überhaupt sehen darf — laut Messers Beispiel darf die Marketingabteilung ihre Präsentationen einsehen, aber keinen Zugriff auf die Buchhaltung haben. Das ist Confidentiality.",
     "delete_duplicates": [
       "1728580341003"
     ]
@@ -468,7 +468,7 @@
     "C": "Certificates",
     "D": "Salting",
     "correct": "C",
-    "explanation_de": "Zertifikate binden eine Public Key an eine Identität und ergänzen die digitale Signatur zur Identitätsverifikation. Ausgestellt von einer Certificate Authority.\n\n \n\n Merkhilfe: Certificates ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Zertifikate dienen laut Messer dazu, Geräte oder Personen zu identifizieren, besonders bei der Datenübertragung zwischen Systemen — in Kombination mit einer digitalen Signatur liefern sie zusätzliche Integrity.",
     "delete_duplicates": [
       "1728580721901",
       "1728580721903"
@@ -482,7 +482,7 @@
     "C": "Encryption",
     "D": "Tokenization",
     "correct": "B",
-    "explanation_de": "Redundanz = Doppelauslegung kritischer Komponenten, um Ausfälle zu verhindern. Unterstützt Availability im CIA-Triad.\n\n \n\n Merkhilfe: Redundanz = immer ein Backup.",
+    "explanation_de": "Fault-Tolerance-Systeme mit mehreren Komponenten sorgen dafür, dass bei Ausfall einer Komponente eine andere übernimmt — Messer beschreibt dieses Prinzip als Redundanz zur Sicherstellung der Availability.",
     "delete_duplicates": [
       "1728580833594"
     ]
@@ -495,7 +495,7 @@
     "C": "Patching",
     "D": "Tokenization",
     "correct": "C",
-    "explanation_de": "Patching hält Systeme stabil und sicher, indem bekannte Schwachstellen geschlossen werden — direkte Unterstützung von Availability und Integrity.\n\n \n\n Merkhilfe: Patching ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Regelmäßiges Patching schließt laut Messer bestehende Sicherheitslücken und verhindert, dass Angreifer über einen Exploit eindringen — so bleiben Systeme stabil und verfügbar.",
     "delete_duplicates": [
       "1728580937866",
       "1728580937867",
@@ -510,7 +510,7 @@
     "C": "Integrity",
     "D": "Non-repudiation",
     "correct": "D",
-    "explanation_de": "Non-repudiation = Unleugbarkeit. Der Sender kann nicht abstreiten, eine Nachricht gesendet zu haben, da seine digitale Signatur beweisbar ist.\n\n \n\n Merkhilfe: Non-repudiation ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Non-repudiation sorgt laut Messer dafür, dass ein Absender die Urheberschaft einer gesendeten Nachricht nicht abstreiten kann — vergleichbar mit einer Unterschrift unter einem Vertrag.",
     "delete_duplicates": [
       "1728581032044",
       "1728581817114"
@@ -524,7 +524,7 @@
     "C": "Non-repudiation",
     "D": "Access Control",
     "correct": "C",
-    "explanation_de": "Non-repudiation entspricht einer Unterschrift: beweisbar, nicht abstreitbar. Digitale Signaturen sind die technische Umsetzung in der IT.\n\n \n\n Merkhilfe: Non-repudiation ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer vergleicht Non-repudiation direkt mit einer handschriftlichen Unterschrift auf einem Vertrag: Sie liefert den Beweis, dass eine bestimmte Partei einer Sache zugestimmt hat.",
     "delete_duplicates": [
       "1728581130348",
       "1728581130349",
@@ -539,7 +539,7 @@
     "C": "Redundancy",
     "D": "Authenticity",
     "correct": "D",
-    "explanation_de": "Authentizität stellt sicher, dass Daten wirklich vom angegebenen Sender stammen. Non-repudiation kombiniert Integrität + Herkunftsbeweis + Authentizität.\n\n \n\n Merkhilfe: Authenticity ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer erklärt Non-repudiation als Kombination aus Proof of Integrity und Proof of Origin, die zusammen eine hohe Sicherheit für Authenticity liefern — die Daten sind unverändert und stammen wirklich vom angegebenen Absender.",
     "delete_duplicates": [
       "1728581175476",
       "1728581175477",
@@ -554,7 +554,7 @@
     "C": "Proof of Integrity",
     "D": "Proof of Access",
     "correct": "C",
-    "explanation_de": "Proof of Integrity = Nachweis, dass Daten unverändert sind. Realisiert durch Hashing. Proof of Origin = wer es gesendet hat (anderer Aspekt).\n\n \n\n Merkhilfe: Proof of Integrity ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Proof of Integrity bestätigt laut Messer, dass empfangene Daten exakt mit den ursprünglich gesendeten übereinstimmen — in der Praxis über einen Hash-Vergleich.",
     "delete_duplicates": [
       "1728581211818"
     ]
@@ -567,7 +567,7 @@
     "C": "Proof of Encryption",
     "D": "Proof of Origin",
     "correct": "D",
-    "explanation_de": "Proof of Origin = Herkunftsnachweis. Digitale Signaturen mit asymmetrischer Kryptografie ermöglichen den Nachweis, wer Daten gesendet hat.\n\n \n\n Merkhilfe: Proof of Origin ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Proof of Origin erlaubt es dem Empfänger laut Messer zu verifizieren, von wem die Daten tatsächlich stammen — dafür wird eine digitale Signatur eingesetzt.",
     "delete_duplicates": [
       "1728581264272"
     ]
@@ -580,7 +580,7 @@
     "C": "Digital certificate",
     "D": "Hash",
     "correct": "D",
-    "explanation_de": "Hashes erzeugen einen Fingerabdruck der Daten. Jede Änderung führt zu einem anderen Hash — damit wird Integrität nachgewiesen.\n\n \n\n Merkhilfe: Hash ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Hash erzeugt aus beliebig langen Daten einen kurzen 'Fingerabdruck' — ändert sich auch nur ein Zeichen der Eingabe, ändert sich laut Messer der gesamte Hashwert, wodurch sich Integrity prüfen lässt.",
     "delete_duplicates": [
       "1728581355780"
     ]
@@ -593,7 +593,7 @@
     "C": "Digital signature",
     "D": "Hash",
     "correct": "D",
-    "explanation_de": "Ein Hash ist eine kryptografische Prüfsumme fester Länge. Unabhängig von der Eingabegröße ist die Ausgabe immer gleich lang (z.B. SHA-256 = 256 Bit).\n\n \n\n Merkhilfe: Hash ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer beschreibt den Hash als kurzen, festen Wert aus beliebig langen Eingabedaten und nennt ihn ausdrücklich 'message digest' oder 'fingerprint' — sein Beispiel: 8,1 MB Encyclopedia-Text ergeben einen einzigen kompakten Hashwert.",
     "delete_duplicates": [
       "1728581458149",
       "1728581458150",
@@ -624,7 +624,7 @@
     "C": "Authentication",
     "D": "Availability",
     "correct": "C",
-    "explanation_de": "Authentication = Nachweis der Identität des Senders. Im Non-repudiation-Kontext ist Proof of Origin gleichbedeutend mit Authentication — wer hat es wirklich gesendet?\n\n \n\n Merkhilfe: Authentication ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Proof of Origin wird laut Messer auch als Authentication bezeichnet, wenn es um die Quelle einer Nachricht geht.",
     "delete_duplicates": [
       "1728581782663"
     ]
@@ -637,7 +637,7 @@
     "C": "Session key",
     "D": "Sender's public key",
     "correct": "D",
-    "explanation_de": "Der Sender signiert mit seinem Private Key. Der Empfänger verifiziert mit dem Public Key des Senders. Public Key kann von jedem genutzt werden — daher öffentlich.\n\n \n\n Merkhilfe: Sender's public key ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Im Beispiel von Alice und Bob verschlüsselt Alice den Hash mit ihrem privaten Schlüssel; Bob entschlüsselt die Signatur anschließend mit Alice' öffentlichem Schlüssel, um Hash und Absender zu prüfen.",
     "delete_duplicates": [
       "1728582010810",
       "1728582010812"
@@ -651,7 +651,7 @@
     "C": "Accounting",
     "D": "Assurance",
     "correct": "C",
-    "explanation_de": "AAA = Authentication (Wer bist du?), Authorization (Was darfst du?), Accounting (Was hast du getan?). Accounting = Protokollierung aller Aktivitäten.\n\n \n\n Merkhilfe: Accounting ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer erklärt AAA als Authentication (wer bist du), Authorization (was darfst du) und Accounting (was hast du getan) — das vollständige Log jeder Sitzung.",
     "delete_duplicates": [
       "1728582261941",
       "1728582261942"
@@ -665,7 +665,7 @@
     "C": "Auditing",
     "D": "Authorization",
     "correct": "D",
-    "explanation_de": "Authorization = Berechtigungsprüfung nach der Identifikation. Erst Authentication (Wer bist du?), dann Authorization (Was darfst du?). Accounting protokolliert das Ergebnis.\n\n \n\n Merkhilfe: Authorization ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Nach der Authentifizierung legt die Authorization laut Messer fest, auf welche Ressourcen der Nutzer zugreifen darf — zum Beispiel darf die Versandabteilung nur auf ihre eigenen Systeme zugreifen, nicht auf die Finanzabteilung.",
     "delete_duplicates": [
       "1728582344237"
     ]
@@ -678,7 +678,7 @@
     "C": "Accounting",
     "D": "Access Control",
     "correct": "C",
-    "explanation_de": "Accounting (auch Auditing) protokolliert, was ein Benutzer getan hat. Dient der Nachvollziehbarkeit und Forensik.\n\n \n\n Merkhilfe: Accounting = Protokollbuch.",
+    "explanation_de": "Accounting protokolliert laut Messer, wann sich jemand ein- und ausgeloggt hat und wie viele Daten dabei übertragen wurden — das vollständige Aktivitätslog eines Nutzers.",
     "delete_duplicates": [
       "1728582379406"
     ]
@@ -691,7 +691,7 @@
     "C": "Biometric scan",
     "D": "Digitally signed certificate",
     "correct": "D",
-    "explanation_de": "Geräte-Authentifizierung erfolgt über digitale Zertifikate, die von einer CA ausgestellt werden. Username/Passwort und Biometrie sind Methoden für Benutzer.\n\n \n\n Merkhilfe: Digitally signed certificate ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Da ein Gerät selbst kein Passwort eingeben kann, verwendet man laut Messer ein digital signiertes Zertifikat auf dem Gerät, um es beim Login gegenüber dem Netzwerk zu authentifizieren.",
     "delete_duplicates": []
   },
   {
@@ -702,7 +702,7 @@
     "C": "LDAP directory",
     "D": "Key escrow service",
     "correct": "B",
-    "explanation_de": "Eine Certificate Authority (CA) signiert und verwaltet Zertifikate. Ohne vertrauenswürdige CA keine vertrauenswürdigen Zertifikate.\n\n \n\n Merkhilfe: Certificate Authority ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Damit ein Gerätezertifikat als vertrauenswürdig gilt, muss es laut Messer von einer Certificate Authority (CA) digital signiert worden sein — nur so lässt sich später verifizieren, dass es wirklich vom eigenen CA stammt.",
     "delete_duplicates": []
   },
   {
@@ -733,7 +733,7 @@
     "C": "Policies and Procedures",
     "D": "Networks and Applications",
     "correct": "B",
-    "explanation_de": "Gap Analysis betrachtet sowohl People (Qualifikationen, Training) als auch Processes (bestehende IT-Systeme, Sicherheitsrichtlinien) um den aktuellen Stand zu ermitteln.\n\n \n\n Merkhilfe: People and Processes ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer beschreibt Gap-Analyse-Baselines als Bewertung von People (Erfahrung, Training, Kenntnis der Policies) und Processes (bestehende Systeme im Abgleich mit den formalen Sicherheitsrichtlinien).",
     "delete_duplicates": [
       "1728594503877"
     ]
@@ -762,7 +762,7 @@
     "C": "Need to Know",
     "D": "Least Privilege",
     "correct": "B",
-    "explanation_de": "Zero Trust = 'Vertraue niemandem, verifiziere alles'. Kein implizites Vertrauen aufgrund von Netzwerkzugehörigkeit. Jeder Zugriff wird neu geprüft.\n\n \n\n Merkhilfe: Zero Trust ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Zero Trust bedeutet laut Messer, dass nichts automatisch vertraut wird — jeder Nutzer, jedes Gerät und jeder Prozess muss sich bei jeder einzelnen Ressourcenanfrage neu authentifizieren, unabhängig vom Standort im Netzwerk.",
     "delete_duplicates": [
       "1728595373659",
       "1728595373660"
@@ -776,7 +776,7 @@
     "C": "Control domains",
     "D": "Functional planes",
     "correct": "D",
-    "explanation_de": "Zero Trust teilt Sicherheitsfunktionen in 'functional planes' auf — primär Data Plane (Datenverarbeitung) und Control Plane (Richtlinienverwaltung).\n\n \n\n Merkhilfe: Functional planes ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer beschreibt, wie Zero-Trust-Sicherheitsfunktionen in kleinere Komponenten zerlegt werden — diese nennt er 'functional planes of operation', konkret die Data Plane und die Control Plane.",
     "delete_duplicates": []
   },
   {
@@ -787,7 +787,7 @@
     "C": "Policy Plane",
     "D": "Data Plane",
     "correct": "D",
-    "explanation_de": "Data Plane = Geräte, die Daten tatsächlich verarbeiten und weiterleiten (Switches, Router). Control Plane = Verwaltung der Weiterleitungsregeln.\n\n \n\n Merkhilfe: Data Plane ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Die Data Plane ist laut Messer der Teil eines Switches, Routers oder einer Firewall, der tatsächlich Pakete verarbeitet und weiterleitet — also Forwarding, NAT und Routing in Echtzeit.",
     "delete_duplicates": [
       "1728595624205"
     ]
@@ -808,7 +808,7 @@
     "C": "Threat Scope Reduction",
     "D": "Policy-Driven Access Control",
     "correct": "C",
-    "explanation_de": "Threat Scope Reduction = Angriffsfläche verkleinern. Weniger Einstiegspunkte = weniger Angriffsmöglichkeiten. Direkt verknüpft mit dem Zero Trust Prinzip.\n\n \n\n Merkhilfe: Threat Scope Reduction ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer beschreibt, wie man Vertrauen kontrolliert, indem man die Anzahl möglicher Zugangspunkte ins Netzwerk begrenzt — etwa nur über das Gebäude selbst oder per VPN — und minimiert damit die Angriffsfläche (Threat Scope Reduction).",
     "delete_duplicates": [
       "1728596210595"
     ]
@@ -821,7 +821,7 @@
     "C": "Threat Scope Reduction",
     "D": "Adaptive Identity",
     "correct": "D",
-    "explanation_de": "Adaptive Identity berücksichtigt viele Kontextfaktoren bei der Identitätsprüfung — IP-Adresse, Standort, Verbindungstyp, Beziehung zur Ressource etc.\n\n \n\n Merkhilfe: Adaptive Identity ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Adaptive Identity bewertet laut Messer nicht nur die Anmeldedaten selbst, sondern zusätzlichen Kontext wie Standort, Verbindungstyp und das Verhältnis der Person zur Organisation, um die Authentifizierung bei Bedarf zu verstärken.",
     "delete_duplicates": []
   },
   {
@@ -832,7 +832,7 @@
     "C": "Policy Administrator",
     "D": "Policy Enforcement Point",
     "correct": "B",
-    "explanation_de": "Policy-Driven Access Control kombiniert Adaptive Identity mit Regelwerk — es entscheidet, welche Authentifizierungsmethode für einen bestimmten Kontext notwendig ist.\n\n \n\n Merkhilfe: Policy-Driven Access Control ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Die Policy-Driven Access Control fasst laut Messer alle Datenpunkte der Adaptive Identity zusammen und entscheidet anhand vordefinierter Regeln, welche Authentifizierungsmethode im konkreten Fall nötig ist.",
     "delete_duplicates": []
   },
   {
@@ -843,7 +843,7 @@
     "C": "Policy Decision Point (PDP)",
     "D": "Authentication Server",
     "correct": "C",
-    "explanation_de": "PEP = Türsteher, der den Zugang kontrolliert. PDP = Entscheidungsinstanz. PEP leitet Anfragen an PDP weiter, der Policy Engine + Policy Administrator umfasst.\n\n \n\n Merkhilfe: Policy Decision Point (PDP) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Der Policy Enforcement Point trifft laut Messer selbst keine Entscheidung — er sammelt die Informationen über den Traffic und leitet sie an den Policy Decision Point weiter.",
     "delete_duplicates": [
       "1728596991067"
     ]
@@ -856,7 +856,7 @@
     "C": "Policy Engine",
     "D": "Authentication Proxy",
     "correct": "C",
-    "explanation_de": "Policy Engine = Regelbasis des Zero Trust Systems. Enthält alle Richtlinien. Sendet Entscheidungen an den Policy Administrator weiter.\n\n \n\n Merkhilfe: Policy Engine ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Die Policy Engine prüft laut Messer jede Anfrage gegen vordefinierte Sicherheitsrichtlinien und entscheidet, ob Zugriff gewährt, verweigert oder widerrufen wird.",
     "delete_duplicates": []
   },
   {
@@ -867,7 +867,7 @@
     "C": "Policy Decision Point",
     "D": "Trust Broker",
     "correct": "B",
-    "explanation_de": "Policy Administrator kommuniziert die Entscheidungen des Policy Engine an den PEP. Er ist die 'Ausführungsinstanz' zwischen Regelwerk und Durchsetzungspunkt.\n\n \n\n Merkhilfe: Policy Administrator ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Der Policy Administrator übernimmt laut Messer die Entscheidung der Policy Engine (inklusive erzeugter Tokens/Credentials) und übergibt sie an den Policy Enforcement Point.",
     "delete_duplicates": []
   },
   {
@@ -894,7 +894,7 @@
     "C": "Access Control Vestibule",
     "D": "Faraday cage",
     "correct": "C",
-    "explanation_de": "Access Control Vestibule (auch Mantrap) = Schleuse mit zwei Türen. Nur wenn die erste Tür geschlossen ist, öffnet die zweite. Verhindert Tailgating.\n\n \n\n Merkhilfe: Access Control Vestibule ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Access Control Vestibule ist laut Messer ein Raum, den man durchqueren muss, bevor man ins restliche Gebäude gelangt — je nach Konfiguration bleibt die zweite Tür verriegelt, solange die erste offen ist.",
     "delete_duplicates": []
   },
   {
@@ -925,7 +925,7 @@
     "C": "Motion detection",
     "D": "RF triangulation",
     "correct": "C",
-    "explanation_de": "Bewegungserkennung (Motion Detection) ist eine verbreitete CCTV-Funktion. Löst Alarme aus, wenn Bewegung im gesicherten Bereich erkannt wird.\n\n \n\n Merkhilfe: Motion detection ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Moderne Überwachungskameras erkennen laut Messer automatisch Bewegung (Motion Detection) und können zusätzlich Objekte erkennen oder Gesichter beziehungsweise Kennzeichen lesen.",
     "delete_duplicates": [
       "1728598075566"
     ]
@@ -946,7 +946,7 @@
     "C": "Two-person Integrity",
     "D": "Need to Know",
     "correct": "C",
-    "explanation_de": "Two-person Integrity (auch Two-person Control oder Dual Control) = Vier-Augen-Prinzip für physische Assets. Verhindert unbefugte Einzelperson-Handlungen.\n\n \n\n Merkhilfe: Two-person Integrity ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Wenn zwei oder mehr Wachleute gleichzeitig im Dienst sind, spricht Messer von Two-Person Integrity — so kann keine einzelne Person die Sicherheitsrichtlinie allein umgehen.",
     "delete_duplicates": [
       "1728598202802",
       "1728598202803"
@@ -980,7 +980,7 @@
     "C": "Honeyfiles",
     "D": "Honeytokens",
     "correct": "C",
-    "explanation_de": "Honeyfiles = Lockdateien mit gefälschtem Inhalt. Werden sie geöffnet oder kopiert, lösen sie Alarm aus. Honeypots = gefälschte Systeme, Honeynets = gefälschte Netzwerke.\n\n \n\n Merkhilfe: Honeyfiles ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Honeyfiles sind laut Messer Dateien mit gefälschten, verlockend klingenden Inhalten (Beispiel: passwords.txt) — niemand sollte in der Produktivumgebung darauf zugreifen, ein Zugriff löst daher einen Alarm aus.",
     "delete_duplicates": [
       "1728598803946",
       "1728598803947"
@@ -1002,7 +1002,7 @@
     "C": "Stakeholders",
     "D": "Risk Committee",
     "correct": "C",
-    "explanation_de": "Stakeholders = betroffene Parteien, die Einfluss auf oder Interesse an der Änderung haben. Change Owner = verwaltet den Prozess. CAB = genehmigt Änderungen.\n\n \n\n Merkhilfe: Stakeholders ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Stakeholder sind laut Messer die Personen oder Abteilungen, die von einer geplanten Änderung betroffen sind — sein Beispiel: Ein Upgrade der Versandetiketten-Software betrifft nicht nur Shipping, sondern auch Accounting und letztlich sogar den CEO.",
     "delete_duplicates": [
       "1728664841113"
     ]
@@ -1015,7 +1015,7 @@
     "C": "Rollback Procedure",
     "D": "Backout Plan",
     "correct": "D",
-    "explanation_de": "Backout Plan = Rücknahmeplan für Änderungen, die schiefgehen. Vor jeder Änderung erstellt, um schnelles Rollback zu ermöglichen. Auch 'Rollback Plan' genannt.\n\n \n\n Merkhilfe: Backout Plan ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Der Backout Plan beschreibt laut Messer die dokumentierten Schritte, um ein System nach einer fehlgeschlagenen Änderung wieder in den ursprünglichen Zustand zu versetzen — deshalb testet man ihn schon vor der eigentlichen Änderung.",
     "delete_duplicates": [
       "1728665267981"
     ]
@@ -1036,7 +1036,7 @@
     "C": "Allowlist",
     "D": "Greylist",
     "correct": "C",
-    "explanation_de": "Allowlist (früher Whitelist) = ausschließlich genehmigte Programme dürfen ausgeführt werden. Blockiert standardmäßig alles Unbekannte — sicherster Ansatz.\n\n \n\n Merkhilfe: Allowlist ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Bei einer Allowlist ist laut Messer alles gesperrt außer den explizit freigegebenen Anwendungen — das restriktivste der beiden Modelle.",
     "delete_duplicates": [
       "1728665620598"
     ]
@@ -1049,7 +1049,7 @@
     "C": "Greylist",
     "D": "Deny List",
     "correct": "D",
-    "explanation_de": "Deny List (früher Blacklist) = alles erlaubt, außer explizit blockierten Elementen. Weniger sicher als Allowlist, da unbekannte Bedrohungen durchgelassen werden.\n\n \n\n Merkhilfe: Deny List ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Deny List erlaubt laut Messer alles außer den explizit gesperrten Anwendungen — Messer nennt Antiviren-Software als klassisches Beispiel für eine sehr große Deny List.",
     "delete_duplicates": [
       "1728665665641"
     ]
@@ -1082,7 +1082,7 @@
     "C": "Protected Key Interface",
     "D": "Privileged Key Inventory",
     "correct": "B",
-    "explanation_de": "PKI = Public Key Infrastructure. Ein System zur Verwaltung digitaler Zertifikate und öffentlicher Schlüssel. Grundlage für SSL/TLS, digitale Signaturen usw.\n\n \n\n Merkhilfe: Public Key Infrastructure ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "PKI steht laut Messer für Public Key Infrastructure — die Gesamtheit aus Richtlinien, Prozessen und oft auch Hard-/Software rund um digitale Zertifikate.",
     "delete_duplicates": [
       "1728666406965"
     ]
@@ -1095,7 +1095,7 @@
     "C": "Digital Certificates",
     "D": "VPN tunnels",
     "correct": "C",
-    "explanation_de": "PKI = System zur Erstellung, Verteilung, Speicherung und Widerrufung digitaler Zertifikate. Zertifikate binden Public Keys an Identitäten.\n\n \n\n Merkhilfe: Digital Certificates ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine PKI ist laut Messer verantwortlich für das Erstellen, Verteilen, Verwalten, Speichern und Widerrufen digitaler Zertifikate.",
     "delete_duplicates": [
       "1728666452658"
     ]
@@ -1108,7 +1108,7 @@
     "C": "A trusted status within the PKI",
     "D": "A dedicated HSM",
     "correct": "C",
-    "explanation_de": "Eine CA muss als vertrauenswürdig eingestuft sein, bevor ihre Zertifikate anerkannt werden. Vertrauen wird in Browsern und Betriebssystemen vorinstalliert.\n\n \n\n Merkhilfe: A trusted status within the PKI ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer beschreibt PKI als das Vertrauensmodell rund um die Certificate Authority (CA): Nur wenn die CA selbst als vertrauenswürdig gilt, kann sie glaubwürdig bestätigen, dass eine Person oder ein Gerät wirklich die ist, die sie vorgibt zu sein.",
     "delete_duplicates": [
       "1728666527083",
       "1728666527084"
@@ -1126,7 +1126,7 @@
     "C": "Hash Algorithm",
     "D": "Secret Key Algorithm",
     "correct": "D",
-    "explanation_de": "Symmetrische Verschlüsselung = Secret Key Algorithm oder Shared Secret Algorithm, weil beide Seiten denselben geheimen Schlüssel verwenden.\n\n \n\n Merkhilfe: Secret Key Algorithm ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Symmetrische Verschlüsselung nutzt für Ver- und Entschlüsselung denselben Schlüssel — Messer nennt sie deshalb auch Secret Key Algorithm oder 'shared secret'.",
     "delete_duplicates": [
       "1728666620097"
     ]
@@ -1139,7 +1139,7 @@
     "C": "Symmetric encryption is faster than asymmetric",
     "D": "Speed depends only on key length",
     "correct": "C",
-    "explanation_de": "Symmetrische Verschlüsselung ist deutlich schneller als asymmetrische. Deshalb wird in der Praxis oft asymmetrisch der Session-Key ausgetauscht, dann symmetrisch verschlüsselt.\n\n \n\n Merkhilfe: Symmetric encryption is faster than asymmetric ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Symmetrische Verschlüsselung ist laut Messer deutlich schneller und hat viel weniger Overhead als asymmetrische Verschlüsselung — deshalb wird sie trotz ihrer Schlüsselverteilungsprobleme weiterhin viel eingesetzt.",
     "delete_duplicates": []
   },
   {
@@ -1150,7 +1150,7 @@
     "C": "Both can be used together for security and speed",
     "D": "Asymmetric encryption makes symmetric redundant",
     "correct": "C",
-    "explanation_de": "Hybrid-Verschlüsselung = asymmetrisch für Schlüsselaustausch, dann symmetrisch für die eigentlichen Daten. TLS verwendet genau dieses Prinzip.\n\n \n\n Merkhilfe: Both can be used together for security and speed ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer betont, dass man in der Praxis meist beide Verfahren kombiniert — asymmetrische Verschlüsselung für bestimmte Funktionen und symmetrische für andere, weil Letztere viel schneller ist.",
     "delete_duplicates": []
   },
   {
@@ -1161,7 +1161,7 @@
     "C": "Master key",
     "D": "Public key",
     "correct": "D",
-    "explanation_de": "Public Key und Private Key sind mathematisch verknüpft. Der Public Key kann frei verteilt werden; nur der Private Key muss geheim bleiben.\n\n \n\n Merkhilfe: Public key ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Der Public Key ist laut Messer mathematisch mit dem Private Key verknüpft, kann aber im Gegensatz dazu frei verteilt werden — jeder kann ihn nutzen, um Daten zu verschlüsseln, die nur der zugehörige Private Key wieder entschlüsseln kann.",
     "delete_duplicates": [
       "1728668074718",
       "1728668074720"
@@ -1175,7 +1175,7 @@
     "C": "Certificate Authority key",
     "D": "Sender's private key",
     "correct": "D",
-    "explanation_de": "Digitale Signaturen werden mit dem Private Key des Senders erstellt. Nur der Sender kennt seinen Private Key — daher beweist die Signatur seine Identität.\n\n \n\n Merkhilfe: Sender's private key ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine digitale Signatur wird laut Messer mit dem privaten Schlüssel des Absenders erzeugt — nur dieser Schlüssel ist ausschließlich ihm bekannt, wodurch die Signatur seine Identität bestätigt.",
     "delete_duplicates": [
       "1728668229955"
     ]
@@ -1196,7 +1196,7 @@
     "C": "Key Rotation",
     "D": "OCSP Stapling",
     "correct": "B",
-    "explanation_de": "Key Escrow = Drittpartei verwahrt Private Keys (z.B. für behördliche Zugriffe oder Recovery). Ermöglicht Zugriff auf verschlüsselte Daten bei Schlüsselverlust.\n\n \n\n Merkhilfe: Key Escrow ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Beim Key Escrow übergibt man laut Messer seinen privaten Schlüssel an einen vertrauenswürdigen Dritten, der ihn verwahrt — etwa damit ein Unternehmen weiterhin auf verschlüsselte Daten zugreifen kann, wenn ein Mitarbeiter die Firma verlässt.",
     "delete_duplicates": [
       "1728668742655"
     ]
@@ -1220,8 +1220,8 @@
     "B": "Field-level encryption",
     "C": "Full-disk encryption",
     "D": "Record-level encryption",
-    "correct": "D",
-    "explanation_de": "Record-level (Column-level) Encryption verschlüsselt einzelne Spalten mit eigenen Schlüsseln. Selective: nur sensible Felder (SSN, Kreditkartennummer) werden verschlüsselt.\n\n \n\n Merkhilfe: Record-level encryption ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "correct": "B",
+    "explanation_de": "Beim Column-/Field-Level Encryption werden laut Messer nur bestimmte sensible Spalten wie die Sozialversicherungsnummer verschlüsselt, während andere Spalten wie ID oder Name im Klartext durchsuchbar bleiben.",
     "delete_duplicates": [
       "1728669078282",
       "1728669078283"
@@ -1235,7 +1235,7 @@
     "C": "Transport encryption",
     "D": "File-level encryption",
     "correct": "C",
-    "explanation_de": "Transport Encryption (z.B. TLS/SSL, IPsec) schützt Daten während der Übertragung (Data in Transit). Full-disk und File-level schützen Data at Rest.\n\n \n\n Merkhilfe: Transport encryption ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Wenn Daten das Netzwerk zwischen zwei Endpunkten durchqueren — etwa per HTTPS im Browser —, spricht Messer von Transport-Verschlüsselung: Die Daten sind unterwegs geschützt, selbst wenn jemand die Verbindung abhört.",
     "delete_duplicates": [
       "1728669233799"
     ]
@@ -1248,7 +1248,7 @@
     "C": "All traffic is encrypted end-to-end",
     "D": "Encryption is optional per session",
     "correct": "C",
-    "explanation_de": "VPNs verschlüsseln den gesamten Datenverkehr in einem sicheren Tunnel. Alle Pakete zwischen Client und VPN-Gateway sind verschlüsselt.\n\n \n\n Merkhilfe: All traffic is encrypted end-to-end ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein VPN baut laut Messer einen verschlüsselten Tunnel auf — alles, was durch diesen Tunnel gesendet wird, ist verschlüsselt, egal ob per SSL/TLS (Client-VPN) oder IPsec (Site-to-Site).",
     "delete_duplicates": []
   },
   {
@@ -1259,7 +1259,7 @@
     "C": "SSL",
     "D": "DTLS",
     "correct": "C",
-    "explanation_de": "SSL (Secure Sockets Layer) ist der Vorläufer von TLS. SSL ist veraltet und unsicher — TLS 1.2/1.3 hat es ersetzt. SSH ist für Remote-Zugriff, nicht primär für Web.\n\n \n\n Merkhilfe: SSL ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "SSL wurde laut Messer ursprünglich neben TLS und IPsec zur Verschlüsselung von VPN-Verbindungen eingesetzt, gilt heute aber als veraltet und wurde durch TLS ersetzt.",
     "delete_duplicates": [
       "1728669344785",
       "1728669344786"
@@ -1285,7 +1285,7 @@
     "C": "Longer keys are more secure",
     "D": "Security depends on algorithm only",
     "correct": "C",
-    "explanation_de": "Längere Schlüssel erhöhen den Aufwand für Brute-Force-Angriffe exponentiell. AES-256 ist sicherer als AES-128, weil 2^256 mögliche Schlüssel existieren.\n\n \n\n Merkhilfe: Longer keys are more secure ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Je länger der Schlüssel, desto mehr mögliche Kombinationen muss ein Angreifer bei einem Brute-Force-Angriff durchprobieren — Messer nennt 128 Bit bei symmetrischen und bis zu 3072 Bit bei asymmetrischen Schlüsseln als heute übliche, sichere Längen.",
     "delete_duplicates": []
   },
   {
@@ -1296,7 +1296,7 @@
     "C": "Salting",
     "D": "Key stretching",
     "correct": "D",
-    "explanation_de": "Key Stretching (z.B. PBKDF2, bcrypt) erhöht den Aufwand pro Angriff durch viele Iterationen. Auch als Key Strengthening bekannt.\n\n \n\n Merkhilfe: Key stretching ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Key Stretching bedeutet laut Messer, einen Hash mehrfach hintereinander zu hashen (Hash des Hashes des Hashes ...) — das macht Brute-Force-Angriffe deutlich rechenintensiver.",
     "delete_duplicates": [
       "1728669901393",
       "1728669901394"
@@ -1310,7 +1310,7 @@
     "C": "Key stretching",
     "D": "Salting alone",
     "correct": "C",
-    "explanation_de": "Key Stretching passt den Rechenaufwand dynamisch an. Durch mehr Iterationen bleibt das Knacken teuer, auch wenn Hardware schneller wird.\n\n \n\n Merkhilfe: Key stretching ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Da Angreifer-Hardware mit der Zeit leistungsfähiger wird, hält Key Stretching laut Messer Passwort-Hashes langfristig widerstandsfähig, indem der Hashing-Vorgang künstlich mehrfach wiederholt wird.",
     "delete_duplicates": [
       "1728669937322"
     ]
@@ -1323,7 +1323,7 @@
     "C": "Out-of-band key exchange",
     "D": "Session key rotation",
     "correct": "C",
-    "explanation_de": "Out-of-Band = anderer Kanal als der gesicherte. Z.B. USB-Stick, Telefon oder persönlich übergeben, statt über das gleiche Netzwerk, das verschlüsselt werden soll.\n\n \n\n Merkhilfe: Out-of-band key exchange ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Beim Out-of-Band Key Exchange wird der Schlüssel laut Messer über einen ganz anderen Kanal übertragen als das eigentliche Netzwerk, das gesichert werden soll — sein Bild dafür: der Kurier mit dem angeketteten Koffer.",
     "delete_duplicates": [
       "1728675213139"
     ]
@@ -1340,7 +1340,7 @@
     "C": "Shared pre-master key",
     "D": "Server's public key",
     "correct": "D",
-    "explanation_de": "Der Client verschlüsselt den Session-Key mit dem Public Key des Servers. Nur der Server kann ihn mit seinem Private Key entschlüsseln — sicherer Schlüsselaustausch.\n\n \n\n Merkhilfe: Server's public key ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Der Client verschlüsselt den Sitzungsschlüssel laut Messer mit dem öffentlichen Schlüssel des Servers; nur der Server kann ihn anschließend mit seinem privaten Schlüssel wieder entschlüsseln.",
     "delete_duplicates": [
       "1728675511787"
     ]
@@ -1353,7 +1353,7 @@
     "C": "Symmetric key",
     "D": "Session certificate",
     "correct": "C",
-    "explanation_de": "Algorithmen wie Diffie-Hellman erzeugen aus zwei asymmetrischen Schlüsselpaaren einen gemeinsamen symmetrischen Schlüssel, ohne ihn jemals über das Netzwerk zu senden.\n\n \n\n Merkhilfe: Symmetric key ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Bei einem Key-Exchange-Algorithmus kombiniert laut Messer jede Seite den eigenen privaten Schlüssel mit dem öffentlichen Schlüssel der Gegenseite — durch die mathematische Beziehung entsteht auf beiden Seiten derselbe symmetrische Schlüssel, ohne ihn je über das Netzwerk zu senden.",
     "delete_duplicates": [
       "1728675650497"
     ]
@@ -1366,7 +1366,7 @@
     "C": "Trusted Platform Module (TPM)",
     "D": "Key Management System",
     "correct": "C",
-    "explanation_de": "TPM = Chip auf dem Motherboard für kryptografische Operationen und sichere Schlüsselspeicherung. Unterschied zu HSM: TPM ist gerätegebunden, HSM ist ein eigenständiges Gerät.\n\n \n\n Merkhilfe: Trusted Platform Module (TPM) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Das TPM sitzt laut Messer als eigener Chip auf dem Mainboard, erzeugt Zufallszahlen und Schlüssel und speichert sie fest verbaut und gerätegebunden — zum Beispiel für BitLocker-Schlüssel.",
     "delete_duplicates": [
       "1728675746260"
     ]
@@ -1379,7 +1379,7 @@
     "C": "TPMs store keys in plaintext, enabling easy extraction",
     "D": "Brute-force attacks are the primary threat to TPMs",
     "correct": "B",
-    "explanation_de": "TPMs implementieren Anti-Hammering-Schutz — nach mehreren Fehlversuchen wird der Chip gesperrt. Das macht Brute-Force praktisch unmöglich.\n\n \n\n Merkhilfe: TPMs lock after repeated failed attempts, preventing brute-force ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Der Zugriff auf ein TPM ist laut Messer passwortgeschützt, und es gibt laut Messer keine Möglichkeit, per Brute-Force- oder Dictionary-Angriff an die gespeicherten Informationen zu gelangen.",
     "delete_duplicates": []
   },
   {
@@ -1390,7 +1390,7 @@
     "C": "Key Management System",
     "D": "Hardware Security Module (HSM)",
     "correct": "D",
-    "explanation_de": "HSM = eigenständiges, gehärtetes Gerät für kryptografische Schlüsselverwaltung in großem Maßstab. Verwendet in Banken, CAs und Rechenzentren.\n\n \n\n Merkhilfe: Hardware Security Module (HSM) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein HSM ist laut Messer für großflächige Kryptografie ausgelegt — etwa um die Schlüssel für tausend Webserver zentral und sicher zu speichern — und wird in Rechenzentren meist redundant im Cluster betrieben.",
     "delete_duplicates": [
       "1728676495698"
     ]
@@ -1403,7 +1403,7 @@
     "C": "Hardware Security Module",
     "D": "OCSP Responder",
     "correct": "B",
-    "explanation_de": "Key Management System (KMS) = zentrale Verwaltung aller kryptografischen Schlüssel. Unterstützt Rotation, Ablauf und Auditing. Unterschied zu HSM: KMS ist Software/Service.\n\n \n\n Merkhilfe: Key Management System ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Key Management System bündelt laut Messer ganz unterschiedliche Schlüssel (SSL/TLS, SSH, Active Directory, BitLocker) an einer zentralen Stelle, getrennt von den eigentlichen Daten.",
     "delete_duplicates": []
   },
   {
@@ -1414,7 +1414,7 @@
     "C": "Key rotation",
     "D": "Key derivation",
     "correct": "C",
-    "explanation_de": "Key Rotation = regelmäßiger automatischer Schlüsselwechsel. Begrenzt das Risiko: selbst wenn ein Schlüssel kompromittiert wurde, ist er bald ungültig.\n\n \n\n Merkhilfe: Key rotation ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Key Rotation bedeutet laut Messer, dass das Key Management System Schlüssel automatisch und regelmäßig gegen neue austauscht, statt sie dauerhaft unverändert zu lassen.",
     "delete_duplicates": [
       "1728676658756"
     ]
@@ -1435,7 +1435,7 @@
     "C": "Obfuscation",
     "D": "Tokenization",
     "correct": "C",
-    "explanation_de": "Obfuskation = absichtliche Verschleierung von Code oder Daten. Unterschied zu Verschlüsselung: Obfuskation macht schwer verständlich, nicht unlesbar.\n\n \n\n Merkhilfe: Obfuscation ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Obfuscation versteckt Informationen laut Messer offen sichtbar, aber unverständlich — nur wer den Verschleierungsprozess kennt, kann die Daten wieder zurückverwandeln.",
     "delete_duplicates": [
       "1728677282631",
       "1728677282632"
@@ -1449,7 +1449,7 @@
     "C": "Obfuscation is vulnerable to reverse engineering",
     "D": "Reverse engineering requires physical access",
     "correct": "C",
-    "explanation_de": "Obfuskation erhöht die Schwierigkeit, verhindert Reverse Engineering aber nicht vollständig. Mit ausreichend Zeit und Ressourcen kann obfuskierter Code analysiert werden.\n\n \n\n Merkhilfe: Obfuscation is vulnerable to reverse engineering ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer nennt Obfuscation ausdrücklich eine Form von 'security through obscurity': Kennt jemand das Verfahren, mit dem Daten versteckt wurden, kann er sie leicht wiederherstellen — echte Sicherheit ist das nicht.",
     "delete_duplicates": []
   },
   {
@@ -1460,7 +1460,7 @@
     "C": "Watermarking",
     "D": "Steganography",
     "correct": "D",
-    "explanation_de": "Steganographie = Verstecken von Daten in anderen Dateiformaten. Z.B. geheime Nachricht in den LSBs (Least Significant Bits) eines Bildes. Kein Schlüssel sichtbar.\n\n \n\n Merkhilfe: Steganography ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Steganografie versteckt laut Messer Daten in einer unauffälligen Trägerdatei wie einem Bild (dem 'Covertext'), aber auch in Audio- und Video-Dateien oder sogar im Netzwerkverkehr selbst.",
     "delete_duplicates": [
       "1728677504908"
     ]
@@ -1477,7 +1477,7 @@
     "C": "Tokenization",
     "D": "Data masking",
     "correct": "C",
-    "explanation_de": "Tokenization = Austausch sensibler Daten durch Token. Kreditkartennummern werden durch Tokens ersetzt, die nur im Zahlungssystem zurückkonvertiert werden können.\n\n \n\n Merkhilfe: Tokenization ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Bei der Tokenisierung wird laut Messer eine sensible Zahl (z. B. die Kreditkartennummer) durch ein bedeutungsloses Token ersetzt, das für die Übertragung genutzt wird — die eigentliche Nummer bleibt sicher beim Token-Service-Server und wird erst dort wieder zugeordnet.",
     "delete_duplicates": [
       "1728677849715"
     ]
@@ -1498,7 +1498,7 @@
     "C": "Encryption",
     "D": "Data masking",
     "correct": "D",
-    "explanation_de": "Data Masking = sichtbarer Teil wird durch Platzhalter ersetzt (z.B. ****-****-****-1234). Daten bleiben nutzbar, aber sensible Teile werden verborgen.\n\n \n\n Merkhilfe: Data masking ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Data Masking zeigt laut Messer nur einen Teil der sensiblen Daten an, etwa die letzten vier Ziffern einer Kreditkartennummer auf einem Kassenbon, während der Rest durch Sternchen ersetzt wird.",
     "delete_duplicates": [
       "1728678025497"
     ]
@@ -1511,7 +1511,7 @@
     "C": "Hash collision",
     "D": "Salt reuse",
     "correct": "C",
-    "explanation_de": "Hash Collision = zwei unterschiedliche Eingaben ergeben denselben Hash-Wert. Gefährlich in digitalen Signaturen — MD5 und SHA-1 sind kollisionsanfällig.\n\n \n\n Merkhilfe: Hash collision ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Wenn zwei unterschiedliche Eingaben denselben Hashwert erzeugen, spricht Messer von einer Kollision — sein Beispiel ist MD5, bei dem 1996 genau dieses Problem entdeckt wurde, weshalb der Algorithmus heute nicht mehr empfohlen wird.",
     "delete_duplicates": [
       "1728678521197"
     ]
@@ -1532,7 +1532,7 @@
     "C": "As a hashed value with added salt",
     "D": "Tokenized and stored in a separate vault",
     "correct": "C",
-    "explanation_de": "Passwörter werden als Hash + Salt gespeichert. Niemand außer dem Benutzer kennt das Klartext-Passwort. Deshalb kann man Passwörter nur zurücksetzen, nicht abrufen.\n\n \n\n Merkhilfe: As a hashed value with added salt ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Passwörter werden laut Messer nie im Klartext und nie nur verschlüsselt gespeichert, sondern als 'salted hash' — ein Hash plus zusätzliche Zufallsdaten.",
     "delete_duplicates": []
   },
   {
@@ -1543,7 +1543,7 @@
     "C": "Random data appended to a password before hashing",
     "D": "The output length of a hashing algorithm",
     "correct": "C",
-    "explanation_de": "Salt = zufällige Zeichenfolge, die vor dem Hashing zum Passwort hinzugefügt wird. Jedes Konto hat eigenes Salt, verhindert Rainbow-Table-Angriffe.\n\n \n\n Merkhilfe: Random data appended to a password before hashing ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Salt ist laut Messer zufällige Information, die man vor dem eigentlichen Hashing zum Passwort hinzufügt, damit selbst identische Passwörter am Ende völlig unterschiedliche Hashwerte ergeben.",
     "delete_duplicates": [
       "1728678954964"
     ]
@@ -1556,7 +1556,7 @@
     "C": "Rainbow table",
     "D": "Brute-force dictionary",
     "correct": "C",
-    "explanation_de": "Rainbow Table = vorberechnete Tabelle aller möglichen Passwort-Hashes. Salting macht Rainbow Tables unwirksam, weil jedes Passwort ein einzigartiges Salt hat.\n\n \n\n Merkhilfe: Rainbow table ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Rainbow Table ist laut Messer eine vorab berechnete Sammlung von Eingaben und den dazugehörigen Hashwerten — damit lässt sich ein ungesalzener Hash in Sekunden zurückverfolgen.",
     "delete_duplicates": [
       "1728679006388"
     ]
@@ -1569,7 +1569,7 @@
     "C": "Salting makes rainbow table attacks impractical",
     "D": "Rainbow tables bypass salt by targeting the algorithm",
     "correct": "C",
-    "explanation_de": "Salt macht Rainbow Tables unwirksam: da jedes Passwort ein eigenes Salt hat, müsste für jedes Salt eine neue Tabelle erstellt werden — nicht praktikabel.\n\n \n\n Merkhilfe: Salting makes rainbow table attacks impractical ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Sobald jedes Passwort seinen eigenen zufälligen Salt bekommt, funktionieren Rainbow Tables laut Messer nicht mehr — ein Angreifer muss dann auf deutlich langsamere Brute-Force-Verfahren ausweichen, die Tage oder Wochen dauern können.",
     "delete_duplicates": []
   },
   {
@@ -1580,7 +1580,7 @@
     "C": "Blockchain",
     "D": "Distributed Hash Table",
     "correct": "C",
-    "explanation_de": "Blockchain = verteiltes, unveränderliches Transaktionsbuch. Jeder Knoten hält eine Kopie. Manipulation erfordert Änderung aller Kopien gleichzeitig — praktisch unmöglich.\n\n \n\n Merkhilfe: Blockchain ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Blockchain ist laut Messer ein verteiltes Ledger, das jeder Teilnehmer als eigene Kopie führt — Änderungen werden per Hash abgesichert; ändert jemand eine Transaktion nachträglich, wird der Hash ungültig und der Block von den anderen Teilnehmern verworfen.",
     "delete_duplicates": [
       "1728679899389"
     ]
@@ -1605,7 +1605,7 @@
     "C": "Private key",
     "D": "Public key",
     "correct": "D",
-    "explanation_de": "Ein digitales Zertifikat enthält den Public Key des Inhabers plus eine digitale Signatur der CA. Private Keys werden nie in Zertifikaten gespeichert.\n\n \n\n Merkhilfe: Public key ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein digitales Zertifikat enthält laut Messer sowohl eine digitale Signatur als auch den öffentlichen Schlüssel — quasi einen digitalen Ausweis samt Beglaubigung.",
     "delete_duplicates": [
       "1728832173307",
       "1728832173308"
@@ -1619,7 +1619,7 @@
     "C": "The private key is stored at the CA",
     "D": "The certificate is valid for 10 years",
     "correct": "B",
-    "explanation_de": "CA-Vertrauen ist transitiv: wenn der Browser der CA vertraut und die CA dem Zertifikat, vertraut der Browser dem Zertifikat. Grundlage der PKI-Vertrauenskette.\n\n \n\n Merkhilfe: The entity has passed the CA's validation and can be trusted ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Wenn man ein Zertifikat kauft, kauft man laut Messer eigentlich den Validierungsprozess der CA: Sie prüft, dass der Antragsteller wirklich Eigentümer der Website ist, bevor sie signiert — genau das begründet das Vertrauen.",
     "delete_duplicates": []
   },
   {
@@ -1630,7 +1630,7 @@
     "C": "Web of Trust",
     "D": "Root CA model",
     "correct": "C",
-    "explanation_de": "Web of Trust = dezentrales Vertrauensmodell (z.B. PGP). Benutzer signieren gegenseitig Zertifikate. Kein Hierarchiemodell wie bei PKI.\n\n \n\n Merkhilfe: Web of Trust ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Beim Web of Trust gibt es laut Messer keine zentrale CA — stattdessen signieren sich mehrere Personen gegenseitig die Zertifikate: Vertraut man einem Freund, der wiederum das Zertifikat eines Dritten signiert hat, vertraut man transitiv auch dem Dritten.",
     "delete_duplicates": [
       "1728832318151"
     ]
@@ -1643,7 +1643,7 @@
     "C": "X.509",
     "D": "ASN.1",
     "correct": "C",
-    "explanation_de": "X.509 ist der ISO/ITU-Standard für digitale Zertifikate. Enthält Serial Number, Issuer, Subject, Public Key, Gültigkeitszeitraum und Signatur der CA.\n\n \n\n Merkhilfe: X.509 ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "X.509 ist laut Messer das standardisierte Zertifikatsformat, das jeder Browser lesen kann — deshalb zeigt der Browser die Zertifikatsdetails egal welche Website man besucht.",
     "delete_duplicates": []
   },
   {
@@ -1654,7 +1654,7 @@
     "C": "Public Key",
     "D": "Issuer",
     "correct": "D",
-    "explanation_de": "Das Issuer-Feld des X.509-Zertifikats nennt die ausstellende CA. Subject = Zertifikatsinhaber. Serial Number = eindeutige Identifikation des Zertifikats bei der CA.\n\n \n\n Merkhilfe: Issuer ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein X.509-Zertifikat listet laut Messer unter anderem, wer das Zertifikat ausgestellt hat — dieses Feld heißt Issuer und identifiziert die signierende CA.",
     "delete_duplicates": [
       "1728832486333",
       "1728832486335",
@@ -1671,7 +1671,7 @@
     "C": "Root of Trust",
     "D": "Certificate chain",
     "correct": "C",
-    "explanation_de": "Root of Trust = der ultimative Vertrauensanker. Alles andere vertraut darauf. Beispiele: Root CA in PKI, TPM-Chip für Secure Boot, HSM für Schlüsselerzeugung.\n\n \n\n Merkhilfe: Root of Trust ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer nennt das inhärent vertrauenswürdige Fundament eines Systems ausdrücklich Root of Trust — das kann eine Hardware Security Module, ein Secure Enclave oder eine Certificate Authority sein.",
     "delete_duplicates": [
       "1728832628956"
     ]
@@ -1692,7 +1692,7 @@
     "C": "Certificate Signing Request (CSR)",
     "D": "Online Certificate Status Protocol (OCSP) request",
     "correct": "C",
-    "explanation_de": "CSR = Certificate Signing Request. Enthält den Public Key und Identitätsinformationen des Antragstellers. Die CA prüft den CSR und stellt das Zertifikat aus.\n\n \n\n Merkhilfe: Certificate Signing Request (CSR) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Für ein neues Zertifikat kombiniert man laut Messer den öffentlichen Schlüssel mit den Identifizierungsdaten des Servers bzw. der Organisation zu einer Certificate Signing Request (CSR), die man bei der CA einreicht.",
     "delete_duplicates": []
   },
   {
@@ -1703,7 +1703,7 @@
     "C": "The government root CA",
     "D": "Microsoft's enterprise CA",
     "correct": "B",
-    "explanation_de": "Interne CAs müssen auf allen unternehmenseigenen Geräten als vertrauenswürdig konfiguriert sein. Externe CAs sind für interne Zertifikate nicht erforderlich.\n\n \n\n Merkhilfe: The organization's own internal CA ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Betreibt eine Organisation ihre eigene interne CA, muss laut Messer deren öffentliches Zertifikat auf allen internen Geräten installiert werden, damit diese Geräte der internen CA genauso vertrauen wie einer öffentlichen.",
     "delete_duplicates": []
   },
   {
@@ -1714,7 +1714,7 @@
     "C": "They do not need to be signed by a public CA for internal use",
     "D": "They are invalid without a third-party audit",
     "correct": "C",
-    "explanation_de": "Interne Zertifikate müssen nur von der internen CA signiert sein. Es besteht kein Bedarf, für interne Verwendung Vertrauen von kommerziellen CAs zu kaufen.\n\n \n\n Merkhilfe: They do not need to be signed by a public CA for internal use ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Interne, selbst ausgestellte Zertifikate müssen laut Messer nicht von einer öffentlichen CA signiert werden — die eigene interne CA reicht aus, solange alle Geräte im Unternehmen ihr vertrauen.",
     "delete_duplicates": []
   },
   {
@@ -1729,7 +1729,7 @@
     "C": "Certificate Pinning",
     "D": "Subject Alternative Name (SAN)",
     "correct": "D",
-    "explanation_de": "SAN (Subject Alternative Name) = Zertifikatserweiterung, die mehrere FQDNs in einem Zertifikat abdeckt. Wildcard (*.) deckt alle Subdomains einer Ebene ab — beide sind verschieden.\n\n \n\n Merkhilfe: Subject Alternative Name (SAN) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Im Zertifikat findet sich laut Messer die Erweiterung Subject Alternative Name — sie kann mehrere Domainnamen (auch mit Wildcard wie *.birdfeeder.live) in einem einzigen Zertifikat abdecken.",
     "delete_duplicates": [
       "1728833822184",
       "1728833822185"
@@ -1743,7 +1743,7 @@
     "C": "Certificate suspension",
     "D": "Key revocation",
     "correct": "D",
-    "explanation_de": "Key/Certificate Revocation = vorzeitige Ungültigkeitserklärung. Notwendig z.B. bei Schlüsselkompromittierung oder Serverdekommissionierung. Erfasst in der CRL.\n\n \n\n Merkhilfe: Key revocation ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer beschreibt, wie man nach dem Heartbleed-Vorfall 2014 alle betroffenen Zertifikate widerrufen musste, bevor sie regulär abgelaufen wären — dieses vorzeitige Ungültigmachen ist die Revocation.",
     "delete_duplicates": [
       "1728833850611"
     ]
@@ -1756,7 +1756,7 @@
     "C": "Trust Store",
     "D": "Certificate Transparency Log",
     "correct": "B",
-    "explanation_de": "CRL (Certificate Revocation List) = von der CA veröffentlichte Liste widerrufener Zertifikate. Clients prüfen die CRL, um zu verifizieren ob ein Zertifikat noch gültig ist.\n\n \n\n Merkhilfe: Certificate Revocation List (CRL) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Die CRL ist laut Messer die Liste aller widerrufenen Zertifikate, die direkt bei der Certificate Authority geführt wird — der Browser lädt sie über die im Zertifikat hinterlegten CRL Distribution Points.",
     "delete_duplicates": [
       "1728833900980"
     ]
@@ -1773,7 +1773,7 @@
     "C": "Online Certificate Status Protocol (OCSP)",
     "D": "OCSP Stapling",
     "correct": "D",
-    "explanation_de": "OCSP Stapling = der Server (nicht der Client) fragt die CA nach dem OCSP-Status und fügt die signierte Antwort dem Zertifikat bei. Effizienter als Client-seitige OCSP-Anfragen.\n\n \n\n Merkhilfe: OCSP Stapling ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "OCSP Stapling bettet laut Messer den Status eines Zertifikats direkt in den TLS-Handshake mit dem Webserver ein, statt dass der Browser separat bei der CA nachfragen muss.",
     "delete_duplicates": [
       "1728834227763"
     ]
@@ -1786,7 +1786,7 @@
     "C": "OCSP Stapling requires client-side software",
     "D": "OCSP Stapling only works with EV certificates",
     "correct": "B",
-    "explanation_de": "Standard OCSP: Client fragt CA direkt. OCSP Stapling: Server fragt CA, heftet die signierte Antwort ans Zertifikat — spart Latenz und schützt Privatsphäre des Clients.\n\n \n\n Merkhilfe: OCSP Stapling embeds the CA's revocation response in the TLS handshake rather than requiring the client to query the CA ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Der Unterschied zu normalem OCSP ist laut Messer, dass beim Stapling der Webserver selbst die von der CA signierte Statusantwort im Handshake mitliefert — der Client muss die CA nicht mehr selbst kontaktieren.",
     "delete_duplicates": [
       "1728834287548"
     ]
@@ -1799,7 +1799,7 @@
     "C": "Online Certificate Status Protocol",
     "D": "Offline Certificate Security Protocol",
     "correct": "C",
-    "explanation_de": "OCSP = Online Certificate Status Protocol. Ermöglicht Echtzeit-Prüfung ob ein Zertifikat widerrufen wurde — Alternative zur CRL.\n\n \n\n Merkhilfe: Online Certificate Status Protocol ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "OCSP steht laut Messer für Online Certificate Status Protocol.",
     "delete_duplicates": [
       "1728834325822"
     ]
@@ -1812,7 +1812,7 @@
     "C": "Certificate Revocation List",
     "D": "Central Registration Ledger",
     "correct": "C",
-    "explanation_de": "CRL = Certificate Revocation List. Von der CA veröffentlicht und enthält alle vor Ablauf widerrufenen Zertifikate. Clients können diese Liste regelmäßig herunterladen.\n\n \n\n Merkhilfe: Certificate Revocation List ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "CRL steht laut Messer für Certificate Revocation List — die Liste aller widerrufenen Zertifikate.",
     "delete_duplicates": [
       "1728834357185"
     ]
@@ -1825,7 +1825,7 @@
     "C": "OCSP support is inconsistent — some browsers claim support but do not perform checks properly",
     "D": "OCSP has replaced CRL in all browsers",
     "correct": "C",
-    "explanation_de": "OCSP-Unterstützung ist inkonsistent: veraltete Browser unterstützen es gar nicht, manche modernen Browser melden Unterstützung, führen aber keine echten Prüfungen durch.\n\n \n\n Merkhilfe: OCSP support is inconsistent — some browsers claim support but do not perform checks properly ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer weist ausdrücklich darauf hin, dass zwar die meisten modernen Browser OCSP unterstützen, manche aber angeben, es zu unterstützen, die Prüfung dann aber nicht korrekt durchführen.",
     "delete_duplicates": []
   },
   {

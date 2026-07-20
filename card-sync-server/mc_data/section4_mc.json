@@ -123,7 +123,7 @@
     "C": "Sandboxing",
     "D": "Fuzzing",
     "correct": "A",
-    "explanation_de": "Hardening ist der passende Security+-Begriff für diese Beschreibung: The process of configuring a system to provide only required services in order to reduce its vulnerability is called Hardening. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Hardening = dieser genaue Prüfbegriff.",
+    "explanation_de": "Hardening bedeutet, ein System so zu konfigurieren, dass nur die tatsächlich benötigten Dienste laufen — jede zusätzliche Software ist laut Messer ein potenzielles Einfallstor für eine Schwachstelle, deshalb sollte ungenutzte Software immer entfernt werden.",
     "delete_duplicates": [
       "1729437834723"
     ]
@@ -157,7 +157,7 @@
     "C": "Code Signing",
     "D": "Fuzzing",
     "correct": "A",
-    "explanation_de": "Data Segmentation ist der passende Security+-Begriff für diese Beschreibung: A Hardening technique that creates a logical separation between different types or sets of data is called Data Segmentation. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Data Segmentation = dieser genaue Prüfbegriff.",
+    "explanation_de": "Data Segmentation trennt auf Mobilgeräten die Firmendaten logisch von den privaten Nutzerdaten — verschafft sich ein Angreifer Zugriff auf ein Segment, kommt er laut Messer nicht automatisch an die Daten im anderen Segment.",
     "delete_duplicates": [
       "1729438002933"
     ]
@@ -508,7 +508,7 @@
     "C": "Hardening",
     "D": "Sandboxing",
     "correct": "B",
-    "explanation_de": "Message Integrity Check ist der passende Security+-Begriff für diese Beschreibung: The process of checking that the data received is exactly the same as the data was sent, and has not been modified in transit, is called a Message Integrity Check. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Message Integrity Check = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Message Integrity Check (MIC) stellt sicher, dass die vom Sender abgeschickten Daten exakt so beim Empfänger ankommen, wie sie gesendet wurden — bei WPA3 ist dieser Check laut Messer über den Galois Message Authentication Code Teil von GCMP.",
     "delete_duplicates": [
       "1729441416046"
     ]
@@ -594,7 +594,7 @@
     "C": "Sandboxing",
     "D": "Fuzzing",
     "correct": "C",
-    "explanation_de": "Sandboxing ist der passende Security+-Begriff für diese Beschreibung: Sandboxing is the process of only allowing an application access to the data it needs to operate. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Sandboxing = dieser genaue Prüfbegriff.",
+    "explanation_de": "Sandboxing sorgt dafür, dass eine App beim Ausführen nur auf die Daten zugreifen kann, die sie wirklich braucht — Messer nennt als Beispiel den mobilen Browser, der zwar Lesezeichen anzeigt, aber standardmäßig keinen Zugriff auf die Kamerarolle des Telefons hat.",
     "delete_duplicates": [
       "1729443520770"
     ]
@@ -614,7 +614,7 @@
     "C": "Sandboxing",
     "D": "Data Segmentation",
     "correct": "B",
-    "explanation_de": "Code Signing ist der passende Security+-Begriff für diese Beschreibung: Code Signing provides a guarantee that the code has not changed in transit to the end host, and that was actually sent by the listed developer. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Code Signing = dieser genaue Prüfbegriff.",
+    "explanation_de": "Code Signing nutzt asymmetrische Verschlüsselung: Eine Zertifizierungsstelle signiert den Schlüssel des Entwicklers, damit das Betriebssystem beim Installieren prüfen kann, ob der Code wirklich vom angegebenen Entwickler stammt und unterwegs nicht verändert wurde.",
     "delete_duplicates": [
       "1729443455784",
       "1729443455783"
@@ -660,7 +660,7 @@
     "C": "Sandboxing",
     "D": "Fuzzing",
     "correct": "D",
-    "explanation_de": "Fuzzing ist der passende Security+-Begriff für diese Beschreibung: The process of providing different types of input for an application to see what it does with the input is called Fuzzing. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Fuzzing = dieser genaue Prüfbegriff.",
+    "explanation_de": "Beim Fuzzing füttert man eine Anwendung automatisiert mit zufälligen Eingabedaten und beobachtet, wie sie reagiert — einer der ersten Fuzzer entstand laut Messer 1988 als Studienprojekt an der University of Wisconsin.",
     "delete_duplicates": [
       "1729443096379",
       "1729443096378"
@@ -770,7 +770,7 @@
     "C": "Port Scan",
     "D": "False Positive",
     "correct": "C",
-    "explanation_de": "Port Scan ist der passende Security+-Begriff für diese Beschreibung: A Port Scan is a simple type of Vulnerability Scan which shows all open ports on a device. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Port Scan = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Port Scan ist die einfachste Form eines Vulnerability Scans und zeigt lediglich, welche Ports auf einem Gerät offen oder geschlossen sind — ein offener Port bedeutet dabei nicht automatisch eine ausnutzbare Schwachstelle.",
     "delete_duplicates": [
       "1729525688308"
     ]
@@ -812,7 +812,7 @@
     "C": "Dark Web",
     "D": "False Negative",
     "correct": "A",
-    "explanation_de": "Vulnerability Scans ist der passende Security+-Begriff für diese Beschreibung: Vulnerability Scans are used to determine if a system may be susceptible to a type of attack. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Vulnerability Scans = dieser genaue Prüfbegriff.",
+    "explanation_de": "Vulnerability Scans prüfen laut Messer nur, ob ein System potenziell für einen Angriff anfällig ist, ohne den Angriff selbst durchzuführen — würde tatsächlich angegriffen, wäre es ein Penetrationstest.",
     "delete_duplicates": [
       "1729525570342"
     ]
@@ -872,7 +872,7 @@
     "C": "Risk Tolerance",
     "D": "Vulnerability Scans",
     "correct": "B",
-    "explanation_de": "Government ist der passende Security+-Begriff für diese Beschreibung: The Government is a good source of information about threats via various reports or public hearings. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Government = dieser genaue Prüfbegriff.",
+    "explanation_de": "Regierungsstellen sind eine ergiebige Quelle für Threat Intelligence, weil ihre Berichte und öffentlichen Anhörungen frei zugänglich sind — Messer nennt das als Beispiel für praktisch komplett offenes, öffentlich einsehbares Material.",
     "delete_duplicates": [
       "1729526448892"
     ]
@@ -899,7 +899,7 @@
     "C": "Vulnerability Scans",
     "D": "False Positive",
     "correct": "A",
-    "explanation_de": "Dark Web ist der passende Security+-Begriff für diese Beschreibung: The Dark Web is an overlay network that uses the internet for transport which is only accessible by using specialized software.. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Dark Web = dieser genaue Prüfbegriff.",
+    "explanation_de": "Das Dark Web ist ein Overlay-Netzwerk, das zwar das Internet als Transportweg nutzt, aber nur mit spezieller Software erreichbar ist — dort finden sich laut Messer auch Marktplätze, auf denen gestohlene Kreditkartendaten verkauft werden.",
     "delete_duplicates": [
       "1729526713519",
       "1729526713520"
@@ -981,7 +981,7 @@
     "C": "Port Scan",
     "D": "Compensating Control",
     "correct": "B",
-    "explanation_de": "Bug Bounty ist der passende Security+-Begriff für diese Beschreibung: A Bug Bounty is a reward for finding and reporting software vulnerabilities to the developer. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Bug Bounty = dieser genaue Prüfbegriff.",
+    "explanation_de": "Eine Bug Bounty ist eine vom Softwarehersteller finanzierte Belohnung dafür, dass ein Forscher eine Schwachstelle findet und meldet, statt sie auszunutzen — erst nachdem der Hersteller einen Patch veröffentlicht hat, wird die Lücke öffentlich gemacht.",
     "delete_duplicates": [
       "1729528034675"
     ]
@@ -1019,7 +1019,7 @@
     "C": "False Positive",
     "D": "Risk Tolerance",
     "correct": "D",
-    "explanation_de": "Risk Tolerance ist der passende Security+-Begriff für diese Beschreibung: The process of prioritizing which systems to patch first is known as Risk Tolerance. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Risk Tolerance = dieser genaue Prüfbegriff.",
+    "explanation_de": "Messer beschreibt im Video wörtlich, wie Unternehmen entscheiden, welches System zuerst gepatcht wird: 'We refer to this prioritization as a risk tolerance' — Risk Tolerance bezeichnet also, wie viel Risiko eine Organisation bereit ist zu tragen, solange eine Schwachstelle noch ungepatcht bleibt, und steuert damit direkt die Patch-Reihenfolge.",
     "delete_duplicates": [
       "1729529439875"
     ]
@@ -1068,7 +1068,7 @@
     "C": "False Negative",
     "D": "Compensating Control",
     "correct": "C",
-    "explanation_de": "False Negative ist der passende Security+-Begriff für diese Beschreibung: A False Negative is when a vulnerability scan does not detect a vulnerability that does actually exist. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: False Negative = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein False Negative ist der gefährlichere Fall: Die Schwachstelle existiert tatsächlich, aber der Scanner hat sie nicht erkannt — sie taucht im Bericht gar nicht erst auf, wodurch ein Angreifer sie unbemerkt ausnutzen kann.",
     "delete_duplicates": [
       "1729528670461"
     ]
@@ -1095,7 +1095,7 @@
     "C": "Compensating Control",
     "D": "Government",
     "correct": "A",
-    "explanation_de": "False Positive ist der passende Security+-Begriff für diese Beschreibung: Reports of a vulnerability from whatever source, which do not actually exist, are called a False Positive. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: False Positive = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein False Positive ist eine gemeldete Schwachstelle, die in Wirklichkeit gar nicht existiert — Messer warnt aber, dass niedrig eingestufte oder informative Funde fälschlich oft als False Positive bezeichnet werden, obwohl sie durchaus real sind.",
     "delete_duplicates": [
       "1729528371220"
     ]
@@ -1119,7 +1119,7 @@
     "C": "Government",
     "D": "Compensating Control",
     "correct": "D",
-    "explanation_de": "Compensating Control ist der passende Security+-Begriff für diese Beschreibung: A Compensating Control is one put into place temporarily until a patch is able to be applied. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Compensating Control = dieser genaue Prüfbegriff.",
+    "explanation_de": "Kann eine Schwachstelle nicht sofort gepatcht werden, dienen Compensating Controls wie Access Control Lists am Router oder eine software-basierte Firewall als zweitbeste Lösung, bis das eigentliche Patchen möglich ist.",
     "delete_duplicates": [
       "1729530986060"
     ]
@@ -1211,7 +1211,7 @@
     "C": "Single Sign On",
     "D": "Actionable Data",
     "correct": "D",
-    "explanation_de": "Actionable Data ist der passende Security+-Begriff für diese Beschreibung: Actionable Data is information that can be acted upon once it is known. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Actionable Data = dieser genaue Prüfbegriff.",
+    "explanation_de": "Actionable Data sind Informationen, aus denen sich direkt eine Handlung ableiten lässt — Messer nennt als Beispiel einen plötzlichen Anstieg fehlgeschlagener Anmeldungen oder eine ungewöhnlich große Datenübertragung nach außen, die sofort einen Alarm auslösen sollten.",
     "delete_duplicates": [
       "1729540036899"
     ]
@@ -1405,7 +1405,7 @@
     "C": "Content Filtering",
     "D": "Digital Key Identified Mail",
     "correct": "C",
-    "explanation_de": "Content Filtering ist der passende Security+-Begriff für diese Beschreibung: Content Filtering provides control of inbound and outbound data. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Content Filtering = dieser genaue Prüfbegriff.",
+    "explanation_de": "Content Filtering steuert, welche Daten ein- und ausgehend über die reine Firewall-Funktion hinaus zugelassen werden — besonders relevant für Organisationen, die mit vielen sensiblen Daten arbeiten.",
     "delete_duplicates": [
       "1729542555581",
       "1729542555580"
@@ -1419,7 +1419,7 @@
     "C": "Active Directory",
     "D": "Content Filter",
     "correct": "D",
-    "explanation_de": "Content Filter ist der passende Security+-Begriff für diese Beschreibung: A Content Filter is sometimes known as a URL filter, or a website category filter. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Content Filter = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Content Filter wird auch als URL-Filter oder Website-Kategorie-Filter bezeichnet und blockiert typischerweise bekannt schädliche Seiten oder ganze Kategorien wie Glücksspiel oder Erwachseneninhalte.",
     "delete_duplicates": [
       "1729542531768",
       "1729542531767"
@@ -1433,7 +1433,7 @@
     "C": "Content Filter",
     "D": "Endpoint",
     "correct": "B",
-    "explanation_de": "Active Directory ist der passende Security+-Begriff für diese Beschreibung: Active Directory is a database containing every component on the network. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Active Directory = dieser genaue Prüfbegriff.",
+    "explanation_de": "Active Directory ist die zentrale Datenbank, die in einer Windows-Umgebung alle Computer, Benutzerkonten, Freigaben, Drucker und Sicherheitsgruppen des Netzwerks enthält und darüber auch Authentifizierung und Berechtigungen zentral verwaltet.",
     "delete_duplicates": [
       "1729543026428"
     ]
@@ -1471,7 +1471,7 @@
     "C": "Active Directory",
     "D": "Content Filter",
     "correct": "B",
-    "explanation_de": "Discretionary Access Control ist der passende Security+-Begriff für diese Beschreibung: Discretionary Access Control means the user has the ability to set their own access permissions. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Discretionary Access Control = dieser genaue Prüfbegriff.",
+    "explanation_de": "Linux arbeitet standardmäßig mit Discretionary Access Control: Der Benutzer entscheidet selbst, wem er welche Rechte auf seine Ressourcen einräumt — in hochsicheren Umgebungen wird dafür stattdessen oft Mandatory Access Control (z. B. via SELinux) eingesetzt.",
     "delete_duplicates": [
       "1729543300067"
     ]
@@ -1572,12 +1572,12 @@
   {
     "card_id": "1729544236865",
     "question": "M4-021: Which term uses public and private keys to verify the sender of a message?",
-    "A": "Digital Key Identified Mail",
+    "A": "DomainKeys Identified Mail",
     "B": "Endpoint",
     "C": "Content Filter",
     "D": "Active Directory",
     "correct": "A",
-    "explanation_de": "Digital Key Identified Mail ist der passende Security+-Begriff für diese Beschreibung: Digital Key Identified Mail uses public and private keys to verify the sender of a message. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Digital Key Identified Mail = dieser genaue Prüfbegriff.",
+    "explanation_de": "DKIM signiert die E-Mail beim Versand digital mit einem privaten Schlüssel; der empfangende Mailserver prüft den zugehörigen öffentlichen Schlüssel über einen DNS-TXT-Record und bestätigt so, dass die Nachricht wirklich vom angegebenen Server stammt. Hinweis: Der im Video genannte und tatsächlich korrekte Begriff lautet 'DomainKeys Identified Mail' (DKIM), nicht 'Digital Key Identified Mail' — siehe Flag.",
     "delete_duplicates": [
       "1729544236866"
     ]
@@ -1635,7 +1635,7 @@
     "C": "File Integrity Monitor",
     "D": "Endpoint",
     "correct": "C",
-    "explanation_de": "File Integrity Monitor ist der passende Security+-Begriff für diese Beschreibung: A File Integrity Monitor provides alerts if core application or operating system files are modified. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: File Integrity Monitor = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein File Integrity Monitor (FIM) überwacht Kern-Dateien von Betriebssystem und Anwendungen und schlägt Alarm, sobald sich etwas ändert — unter Windows übernimmt das im einfachsten Fall der eingebaute System File Checker (SFC).",
     "delete_duplicates": [
       "1729544752115"
     ]
@@ -1690,7 +1690,7 @@
     "C": "Tripwire",
     "D": "Content Filter",
     "correct": "C",
-    "explanation_de": "Tripwire ist der passende Security+-Begriff für diese Beschreibung: A popular FIM for Linux is Tripwire. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Tripwire = dieser genaue Prüfbegriff.",
+    "explanation_de": "Tripwire ist unter Linux das bekannteste FIM-Tool und überwacht Dateiänderungen in Echtzeit, sodass Änderungen an kritischen Dateien sofort auffallen.",
     "delete_duplicates": [
       "1729545172424"
     ]
@@ -1717,7 +1717,7 @@
     "C": "Content Filter",
     "D": "Digital Key Identified Mail",
     "correct": "B",
-    "explanation_de": "Endpoint ist der passende Security+-Begriff für diese Beschreibung: An Endpoint is the device being used by the user. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Endpoint = dieser genaue Prüfbegriff.",
+    "explanation_de": "Der Endpoint ist schlicht das Gerät, das der Nutzer verwendet — Desktop, Laptop oder Mobilgerät —, und genau dort muss laut Messer eine mehrschichtige Sicherheitsstrategie (Defense in Depth) ansetzen.",
     "delete_duplicates": [
       "1729545965529"
     ]
@@ -1870,7 +1870,7 @@
     "C": "Password Age",
     "D": "Biometrics",
     "correct": "A",
-    "explanation_de": "Single Sign On ist der passende Security+-Begriff für diese Beschreibung: Logging in once to be able to access multiple systems is called Single Sign On. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Single Sign On = dieser genaue Prüfbegriff.",
+    "explanation_de": "Mit Single Sign-On meldet man sich einmal im Netzwerk an und erhält danach für einen bestimmten Zeitraum (häufig 24 Stunden) Zugriff auf alle benötigten Ressourcen, ohne sich für jede einzelne Freigabe oder jeden Drucker erneut anmelden zu müssen.",
     "delete_duplicates": [
       "1729606424321"
     ]
@@ -1890,7 +1890,7 @@
     "C": "Leaf Objects",
     "D": "Password Age",
     "correct": "C",
-    "explanation_de": "Leaf Objects ist der passende Security+-Begriff für diese Beschreibung: Individual devices within the Directory Information Tree are known as Leaf Objects. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Leaf Objects = dieser genaue Prüfbegriff.",
+    "explanation_de": "Im Directory Information Tree von LDAP/X.500 sind Länder, Organisationen und Abteilungen die Container-Objekte (Äste), während die einzelnen Geräte darin als Leaf Objects (Blätter) bezeichnet werden.",
     "delete_duplicates": [
       "1729606994414"
     ]
@@ -1903,7 +1903,7 @@
     "C": "Access Control",
     "D": "Attestation",
     "correct": "D",
-    "explanation_de": "Attestation ist der passende Security+-Begriff für diese Beschreibung: Attestation is the process of verifying a person's identity through outside sources such as government or financial institutions. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Attestation = dieser genaue Prüfbegriff.",
+    "explanation_de": "Messer beschreibt Attestation als den Schritt, bei dem die Identität einer Person über zusätzliche externe Quellen bestätigt wird — meist über Regierungsdokumente wie Reisepass oder Führerschein, teils per persönlichem Termin, oder automatisiert über die Kreditauskunft und Fragen zu früheren Wohnorten oder Vermögenswerten. Das deckt sich exakt mit 'Regierung oder Finanzinstitut' aus der Frage; der übergeordnete Gesamtprozess der Identitätsprüfung heißt bei Messer dagegen 'Identity Proofing', während 'Attestation' konkret die Verifizierung über diese externen Quellen bezeichnet.",
     "delete_duplicates": [
       "1729606385893",
       "1729606385892"
@@ -1968,7 +1968,7 @@
     "C": "Biometrics",
     "D": "Single Sign On",
     "correct": "B",
-    "explanation_de": "Groups ist der passende Security+-Begriff für diese Beschreibung: The Windows implementation of RBAC is called Groups. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Groups = dieser genaue Prüfbegriff.",
+    "explanation_de": "Windows setzt Role-Based Access Control über Groups um: Der Administrator legt Gruppen mit bestimmten Rechten an (z. B. für Versand oder Management) und weist Nutzer diesen Gruppen zu, statt jedem Einzelnen individuell Rechte zu vergeben.",
     "delete_duplicates": [
       "1729609703138"
     ]
@@ -1981,7 +1981,7 @@
     "C": "Discretionary Access Control",
     "D": "Leaf Objects",
     "correct": "C",
-    "explanation_de": "Discretionary Access Control ist der passende Security+-Begriff für diese Beschreibung: If the creator or owner of a file is the one deciding who has what access to a file, this is known as Discretionary Access Control. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Discretionary Access Control = dieser genaue Prüfbegriff.",
+    "explanation_de": "Bei Discretionary Access Control entscheidet der Ersteller einer Datei selbst, wer worauf zugreifen darf — bequem und flexibel, aber laut Messer auch weniger sicher, weil jeder einzelne Nutzer die Berechtigungen korrekt setzen muss.",
     "delete_duplicates": [
       "1729609553996"
     ]
@@ -2040,7 +2040,7 @@
     "C": "Passwordless Authentication",
     "D": "Access Control",
     "correct": "D",
-    "explanation_de": "Access Control ist der passende Security+-Begriff für diese Beschreibung: Access Control is the process of enforcing policies to allow or disallow access to data. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Access Control = dieser genaue Prüfbegriff.",
+    "explanation_de": "Access Control ist der generelle Prozess, mit dem Richtlinien durchgesetzt werden, die den Zugriff auf Daten erlauben oder verweigern — die IT setzt dabei die zuvor definierte Zugriffs-Policy technisch im Betriebssystem um.",
     "delete_duplicates": [
       "1729609351816"
     ]
@@ -2089,7 +2089,7 @@
     "C": "Single Sign On",
     "D": "Authentication Factor",
     "correct": "D",
-    "explanation_de": "Authentication Factor ist der passende Security+-Begriff für diese Beschreibung: An Authentication Factor is any of a number of login parameters. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Authentication Factor = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Authentication Factor ist jeder Login-Parameter, der zur Anmeldung genutzt wird — Messer nennt vier Kategorien: etwas, das man weiß, hat, ist, oder wo man sich befindet.",
     "delete_duplicates": [
       "1729610407766"
     ]
@@ -2102,7 +2102,7 @@
     "C": "Attestation",
     "D": "Leaf Objects",
     "correct": "A",
-    "explanation_de": "Biometrics ist der passende Security+-Begriff für diese Beschreibung: Something you are is typically referred to as Biometrics. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Biometrics = dieser genaue Prüfbegriff.",
+    "explanation_de": "'Something you are' steht für Biometrics — etwa Fingerabdruck oder Stimme —, wobei laut Messer nicht das Bild selbst, sondern eine mathematische Repräsentation des Merkmals gespeichert wird, meist kombiniert mit einem weiteren Faktor.",
     "delete_duplicates": [
       "1729610578430"
     ]
@@ -2147,7 +2147,7 @@
     "C": "Single Sign On",
     "D": "Attestation",
     "correct": "A",
-    "explanation_de": "Entropy ist der passende Security+-Begriff für diese Beschreibung: Entropy describes how unpredictable a password might be. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Entropy = dieser genaue Prüfbegriff.",
+    "explanation_de": "Entropy beschreibt, wie unvorhersehbar ein Passwort ist — je höher die Entropie (Groß-/Kleinschreibung, Zahlen, Sonderzeichen, ausreichende Länge), desto schwerer lässt es sich per Brute-Force oder Password Spraying erraten.",
     "delete_duplicates": [
       "1729610995932"
     ]
@@ -2179,7 +2179,7 @@
     "C": "Passwordless Authentication",
     "D": "Discretionary Access Control",
     "correct": "A",
-    "explanation_de": "Password Age ist der passende Security+-Begriff für diese Beschreibung: Password Age is the time since a password was created. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Password Age = dieser genaue Prüfbegriff.",
+    "explanation_de": "Das Password Age ist die seit der letzten Passwortänderung verstrichene Zeit — läuft der vom Administrator festgelegte Zeitraum (z. B. 30, 60 oder 90 Tage) ab, muss das Passwort erneuert werden, sonst ist kein Login mehr möglich.",
     "delete_duplicates": [
       "1729611036481"
     ]
@@ -2200,7 +2200,7 @@
     "C": "Entropy",
     "D": "Password Manager",
     "correct": "D",
-    "explanation_de": "Password Manager ist der passende Security+-Begriff für diese Beschreibung: A Password Manager allows users to store all login information in a single place. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Password Manager = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Password Manager speichert alle Zugangsdaten verschlüsselt in einer einzigen Datenbank, die selbst zusätzlich per Master-Passwort oder Multifaktor-Authentifizierung geschützt wird.",
     "delete_duplicates": [
       "1729611118405"
     ]
@@ -2213,7 +2213,7 @@
     "C": "Passwordless Authentication",
     "D": "Access Control",
     "correct": "C",
-    "explanation_de": "Passwordless Authentication ist der passende Security+-Begriff für diese Beschreibung: Passwordless Authentication uses something besides a password to log in. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Passwordless Authentication = dieser genaue Prüfbegriff.",
+    "explanation_de": "Passwordless Authentication verzichtet auf ein klassisches Passwort und nutzt stattdessen z. B. Gesichtserkennung oder eine PIN — Messer nennt als Alltagsbeispiel die Windows-PIN-Anmeldung anstelle des Passworts.",
     "delete_duplicates": [
       "1729611199038"
     ]
@@ -2234,7 +2234,7 @@
     "C": "Scripting",
     "D": "Government",
     "correct": "C",
-    "explanation_de": "Scripting ist der passende Security+-Begriff für diese Beschreibung: Scripting allows the automation of tasks, rather than performing them manually. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Scripting = dieser genaue Prüfbegriff.",
+    "explanation_de": "Scripting automatisiert Aufgaben, die man sonst manuell erledigen müsste — Skripte laufen laut Messer rund um die Uhr fehlerfrei und ohne Tippfehler, wodurch IT-Mitarbeiter nachts nicht mehr für jedes kleine Problem geweckt werden müssen.",
     "delete_duplicates": [
       "1729612110303",
       "1729612110304"
@@ -2256,7 +2256,7 @@
     "C": "Scripting",
     "D": "Hardening",
     "correct": "A",
-    "explanation_de": "Technical Debt ist der passende Security+-Begriff für diese Beschreibung: Technical Debt refers to addressing symptoms rather than the root cause. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Technical Debt = dieser genaue Prüfbegriff.",
+    "explanation_de": "Technical Debt entsteht, wenn wiederholt nur Symptome statt der eigentlichen Ursache eines Problems behoben werden — ein schnell gebautes Skript, das ein tieferliegendes Problem nur kaschiert, kann laut Messer diese Schuld sogar noch vergrößern.",
     "delete_duplicates": [
       "1729612543399"
     ]
@@ -2276,7 +2276,7 @@
     "C": "Actionable Data",
     "D": "Guardrail",
     "correct": "D",
-    "explanation_de": "Guardrail ist der passende Security+-Begriff für diese Beschreibung: A Guardrail is an automated verification of information going into a system to protect against human mistakes. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Guardrail = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Guardrail ist eine automatisierte Prüfung von Eingaben, bevor sie ein System erreichen, um menschliche Fehler abzufangen — Messer nennt als Beispiel einen Techniker, der versehentlich einen viel zu großen Serverbereich löschen will und durch das Guardrail gestoppt wird.",
     "delete_duplicates": [
       "1729612337100"
     ]
@@ -2385,7 +2385,7 @@
     "C": "Groups",
     "D": "Threat Hunting",
     "correct": "D",
-    "explanation_de": "Threat Hunting ist der passende Security+-Begriff für diese Beschreibung: Threat Hunting is the process of searching for vulnerabilities before an attacker can find them. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Threat Hunting = dieser genaue Prüfbegriff.",
+    "explanation_de": "Threat Hunting bedeutet, aktiv nach Schwachstellen im eigenen Netzwerk zu suchen, bevor ein Angreifer sie findet — etwa durch Anpassen von Firewall-Regeln oder Abgleich der eigenen Systeme mit kürzlich veröffentlichten Schwachstellen.",
     "delete_duplicates": [
       "1729614400122"
     ]
@@ -2462,7 +2462,7 @@
     "C": "Compensating Control",
     "D": "Legal Hold",
     "correct": "D",
-    "explanation_de": "Legal Hold ist der passende Security+-Begriff für diese Beschreibung: A Legal Hold is a type of Data Acquisition Request where a legal entity uses a document to describe the type and quantity of data that needs to be stored. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Legal Hold = dieser genaue Prüfbegriff.",
+    "explanation_de": "Ein Legal Hold wird meist von einem Anwalt oder einer anderen juristischen Stelle initiiert und legt schriftlich fest, welche Art und Menge an Daten aufbewahrt werden muss — zuständig für die Umsetzung ist der Data Custodian.",
     "delete_duplicates": [
       "1729614972338"
     ]
@@ -2482,7 +2482,7 @@
     "C": "Guardrail",
     "D": "Digital Forensics",
     "correct": "D",
-    "explanation_de": "Digital Forensics ist der passende Security+-Begriff für diese Beschreibung: Digital Forensics is the process of collecting data about a security event during and especially after. Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n Merkhilfe: Digital Forensics = dieser genaue Prüfbegriff.",
+    "explanation_de": "Digital Forensics umfasst das Sammeln, Analysieren und Dokumentieren von Daten rund um einen Sicherheitsvorfall — unter Einhaltung strenger Chain-of-Custody-Vorgaben, da die Daten Jahre später noch in einem Gerichtsverfahren verwendet werden könnten.",
     "delete_duplicates": [
       "1729614808451"
     ]

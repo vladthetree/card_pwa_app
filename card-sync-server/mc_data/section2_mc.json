@@ -7,7 +7,7 @@
     "C": "Vulnerability",
     "D": "Security Control",
     "correct": "B",
-    "explanation_de": "Ein Threat Actor ist die handelnde Entität hinter einem Sicherheitsereignis. Nicht die Schwachstelle oder der Schutzmechanismus ist der Akteur, sondern die Person, Gruppe oder Organisation.\n\n \n\n Merkhilfe: Threat Actor ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer definiert einen Threat Actor als die Entität, die ein Ereignis verursacht, das die Sicherheit einer anderen Partei betrifft — also die handelnde Person oder Gruppe hinter einem Angriff, nicht die Schwachstelle oder der Kontrollmechanismus selbst.",
     "delete_duplicates": [
       "1728925347208"
     ]
@@ -28,7 +28,7 @@
     "C": "Hacktivist",
     "D": "Organized crime",
     "correct": "B",
-    "explanation_de": "Nation-state Actors handeln im Auftrag oder Interesse eines Staates.\n\n \n\n Merkhilfe: Staatliche Mittel, staatliche Ziele.",
+    "explanation_de": "Ein Nation-State-Akteur ist laut Messer eine ganze Regierung oder ein Regierungsarm im Bereich nationaler Sicherheit, mit enormen Ressourcen für dauerhafte, hochentwickelte Angriffe (APTs) — als Beispiel nennt er den Stuxnet-Wurm, den die USA und Israel gemeinsam gegen iranische Nuklearzentrifugen entwickelten.",
     "delete_duplicates": [
       "1728925645773"
     ]
@@ -49,7 +49,7 @@
     "C": "Nation-state actor",
     "D": "Insider threat",
     "correct": "B",
-    "explanation_de": "Unskilled Attackers nutzen meist fertige Tools und verstehen Details nicht zwingend. Das unterscheidet sie von gut ausgestatteten oder spezialisierten Akteuren.\n\n \n\n Merkhilfe: Unskilled attacker ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Unskilled Attacker (Script Kiddies) führen laut Messer vorhandene Skripte aus, ohne zu verstehen, was im Hintergrund passiert — funktioniert das Skript, war der Angriff erfolgreich; scheitert es, fehlt ihnen das Wissen, es anzupassen.",
     "delete_duplicates": [
       "1728925881636"
     ]
@@ -62,7 +62,7 @@
     "C": "Organized crime actor",
     "D": "Hacktivist",
     "correct": "D",
-    "explanation_de": "Hacktivists verbinden Hacking mit Aktivismus. Ihre Motivation ist typischerweise politisch oder ideologisch, nicht primaer finanziell.\n\n \n\n Merkhilfe: Hacktivist ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Hacktivisten handeln laut Messer aus politischen oder philosophischen Gründen und wollen stören oder schädigen — typisch sind Denial-of-Service, Website-Defacement oder das Veröffentlichen privater Dokumente; anders als organisierte Kriminalität sind sie primär nicht geldgetrieben.",
     "delete_duplicates": [
       "1728925920786"
     ]
@@ -86,7 +86,7 @@
     "C": "Nation-state espionage",
     "D": "Financial gain",
     "correct": "D",
-    "explanation_de": "Organized Crime ist in Security+ vor allem finanziell motiviert: Betrug, Erpressung, Datendiebstahl oder Verkauf von Zugangsdaten.\n\n \n\n Merkhilfe: Financial gain ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Organisierte Kriminalität ist laut Messer fast ausschließlich profitorientiert und oft wie ein Unternehmen strukturiert — mit getrennten Rollen für Hacking, Exploit-Entwicklung, Datenverkauf und sogar Kundensupport bei Ransomware-Opfern.",
     "delete_duplicates": [
       "1728926313615"
     ]
@@ -99,7 +99,7 @@
     "C": "Zero Trust",
     "D": "Insider threat",
     "correct": "B",
-    "explanation_de": "Shadow IT entsteht, wenn legitime Nutzer eigene Tools oder Dienste einsetzen und damit Sicherheitsrichtlinien umgehen. Das schafft unkontrollierte Risiken.\n\n \n\n Merkhilfe: Shadow IT ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Shadow IT sind laut Messer Gruppen innerhalb der eigenen Organisation, die eigene Infrastruktur und Cloud-Dienste über private Budgets oder Kreditkarten am offiziellen IT-Department vorbei aufbauen und nutzen, oft ohne Sicherheits-, Backup- oder Change-Control-Bewusstsein.",
     "delete_duplicates": [
       "1728926473441"
     ]
@@ -127,7 +127,7 @@
     "C": "Threat intelligence",
     "D": "Security baseline",
     "correct": "A",
-    "explanation_de": "Der Threat Vector ist der Weg oder die Methode des Angriffs. Der Threat Actor ist dagegen die handelnde Partei.\n\n \n\n Merkhilfe: Threat vector ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Threat Vector ist laut Messer die Methode, mit der ein Angreifer Zugriff auf ein System erlangt — Angreifer suchen und schaffen ständig neue solche Zugangswege, etwa über Messaging, Dateien, Geräte oder Netzwerke.",
     "delete_duplicates": [
       "1728934123173"
     ]
@@ -144,7 +144,7 @@
     "C": "Typosquatting",
     "D": "Vishing",
     "correct": "D",
-    "explanation_de": "Vishing steht für Voice Phishing. Der Kanal ist der entscheidende Hinweis: Telefonanruf statt E-Mail oder SMS.\n\n \n\n Merkhilfe: Vishing ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Vishing (Voice Phishing) ist laut Messer Phishing über einen Telefonanruf, bei dem der Angreifer die Anrufer-ID fälscht, sich etwa als Bank ausgibt und so an Kontodaten oder Zugangsdaten kommt.",
     "delete_duplicates": [
       "1728934553819"
     ]
@@ -157,7 +157,7 @@
     "C": "War dialing",
     "D": "Vishing",
     "correct": "C",
-    "explanation_de": "War Dialing prüft Telefonnummern auf erreichbare Systeme. Wardriving betrifft WLAN-Suche, Vishing ist Social Engineering per Telefon.\n\n \n\n Merkhilfe: War dialing ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "War Dialing bezeichnet laut Messer das systematische Anrufen vieler, teils unveröffentlichter Telefonnummern, um Systeme oder Modems zu finden, über die sich Zugang verschaffen lässt — eine Technik, die es laut Messer bis heute noch gibt.",
     "delete_duplicates": [
       "1728934644991"
     ]
@@ -170,7 +170,7 @@
     "C": "Guest network",
     "D": "Zero Trust network",
     "correct": "A",
-    "explanation_de": "Ein Air Gap trennt Systeme physisch oder logisch vom Internet. Die Isolation reduziert Remote-Angriffswege, beseitigt aber nicht alle Risiken.\n\n \n\n Merkhilfe: Air-gapped network ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Air-Gapped Network hat laut Messer keine direkte Netzwerkverbindung zur Außenwelt — genau deshalb greifen Angreifer hier oft auf präparierte USB-Sticks zurück, um trotzdem Schadsoftware einzuschleusen oder Daten herauszuschleusen.",
     "delete_duplicates": [
       "1728934726219"
     ]
@@ -187,7 +187,7 @@
     "C": "Unsupported systems",
     "D": "Hardened systems",
     "correct": "C",
-    "explanation_de": "Unsupported Systems erhalten keine Hersteller-Patches mehr. Das macht bekannte Schwachstellen dauerhaft riskant.\n\n \n\n Merkhilfe: Unsupported systems ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Unsupported Systems erhalten laut Messer keine Sicherheitspatches mehr vom Hersteller, etwa nicht mehr unterstützte Betriebssystemversionen — ein enormes Risiko, besonders wenn solche Geräte unbemerkt irgendwo im Netzwerk weiterlaufen.",
     "delete_duplicates": [
       "1728934802696"
     ]
@@ -204,7 +204,7 @@
     "C": "Monitoring Service Policy",
     "D": "Managed Service Provider",
     "correct": "D",
-    "explanation_de": "MSP bedeutet Managed Service Provider. Gemeint ist ein externer Dienstleister für IT-Betrieb oder IT-Services.\n\n \n\n Merkhilfe: Managed Service Provider ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "MSP steht laut Messer für Managed Service Provider — eine Drittfirma, die Kundennetzwerke überwacht und verwaltet. Genau dieser Weg wurde 2013 beim Target-Hack genutzt: Angreifer kamen über einen HVAC-Dienstleister ins Netzwerk und von dort in alle Kassensysteme.",
     "delete_duplicates": []
   },
   {
@@ -229,7 +229,7 @@
     "C": "Supply chain vector",
     "D": "Cloud vector",
     "correct": "A",
-    "explanation_de": "Removable Devices sind physische Datentraeger oder USB-Geräte. Sie bringen Risiken direkt in die Umgebung statt über das Internet.\n\n \n\n Merkhilfe: Removable device vector ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer beschreibt, wie Angreifer präparierte USB-Sticks etwa auf Firmenparkplätzen verteilen, in der Hoffnung, dass sie eingesteckt werden — manche geben sich dabei sogar als Tastatur aus und tippen automatisch Befehle, sobald sie angeschlossen sind.",
     "delete_duplicates": [
       "1728935633819"
     ]
@@ -264,7 +264,7 @@
     "C": "DNS records",
     "D": "File extensions",
     "correct": "B",
-    "explanation_de": "Default Credentials sind bekannte Standardzugangsdaten. Sie müssen beim Einrichten ersetzt werden, sonst bleibt der Zugriff trivial.\n\n \n\n Merkhilfe: Default credentials ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer nennt admin/admin als typisches Beispiel für Standard-Zugangsdaten auf Routern und Access Points — Seiten wie routerpasswords.com dokumentieren solche Defaults für tausende Geräte, weshalb sie sofort nach der Inbetriebnahme geändert werden müssen.",
     "delete_duplicates": []
   },
   {
@@ -275,7 +275,7 @@
     "C": "Wireless vector",
     "D": "Insider vector",
     "correct": "A",
-    "explanation_de": "Supply-Chain-Angriffe nutzen Vertrauen in Lieferanten, Hersteller oder Verteilungsketten aus. Das Risiko entsteht vor oder während der Lieferung.\n\n \n\n Merkhilfe: Supply chain vector ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Supply-Chain-Vektor schleust Schadsoftware laut Messer schon während der Herstellung oder über einen Drittanbieter in die Lieferkette ein — als Beispiel nennt er gefälschte Cisco-Catalyst-Switches, die 2020 entdeckt wurden, weil sie sich nicht korrekt aktualisieren ließen.",
     "delete_duplicates": [
       "1728936160806"
     ]
@@ -288,7 +288,7 @@
     "C": "Watering hole",
     "D": "Phishing",
     "correct": "D",
-    "explanation_de": "Phishing tarnt bösartige Nachrichten oder Links als vertrauenswuerdig. Der Kern ist die Täuschung über Nachricht oder Inhalt.\n\n \n\n Merkhilfe: Phishing ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Phishing täuscht laut Messer vor, ein legitimer, vertrauenswürdiger Absender oder eine echte Login-Seite zu sein — sein Beispiel ist eine gefälschte Rackspace-Login-Seite, die dem Original bis auf kleine Schrift- und Abstandsfehler zum Verwechseln ähnlich sah.",
     "delete_duplicates": [
       "1728936330356"
     ]
@@ -309,7 +309,7 @@
     "C": "Watering hole",
     "D": "ARP spoofing",
     "correct": "A",
-    "explanation_de": "Typosquatting nutzt Tippfehler oder aehnliche Domainnamen. Ziel ist, Nutzer auf eine fremde oder bösartige Domain zu lenken.\n\n \n\n Merkhilfe: Typosquatting ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Typosquatting nutzt laut Messer Tippfehler-Domains: Statt professormesser.com registrieren Angreifer professormessor.com und hoffen, dass Opfer den Unterschied übersehen und dem Link trotzdem vertrauen.",
     "delete_duplicates": [
       "1728936604867"
     ]
@@ -322,7 +322,7 @@
     "C": "Whaling",
     "D": "Pharming",
     "correct": "A",
-    "explanation_de": "Smishing ist SMS Phishing.\n\n \n\n Merkhilfe: SMS + Phishing = Smishing.",
+    "explanation_de": "Smishing ist Phishing per SMS — Messer zeigt als Beispiel eine Textnachricht, angeblich von der US Postal Service, die mit einer nicht zustellbaren Paketsendung lockt und zum Klick auf einen bösartigen Link verleitet.",
     "delete_duplicates": []
   },
   {
@@ -333,7 +333,7 @@
     "C": "RF jamming",
     "D": "Pass the hash",
     "correct": "A",
-    "explanation_de": "Pretexting baut eine glaubhafte Legende oder Rolle auf. Die Geschichte soll das Opfer zur Preisgabe von Informationen bewegen.\n\n \n\n Merkhilfe: Pretexting ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Pretexting ist laut Messer das bewusste Erfinden einer Geschichte, um das Opfer in eine Drama-Situation zu ziehen, damit es sich einloggt oder einen Link anklickt — Messer nennt es schlicht 'outright lying'.",
     "delete_duplicates": [
       "1728937017631"
     ]
@@ -346,7 +346,7 @@
     "C": "Downgrade attack",
     "D": "Buffer overflow",
     "correct": "A",
-    "explanation_de": "Impersonation bedeutet, eine fremde Identitaet oder Rolle vorzutaueschen, etwa Bank, Support oder Behoerde.\n\n \n\n Merkhilfe: Impersonation ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Impersonation bedeutet laut Messer, dass sich ein Angreifer als jemand anderes ausgibt, etwa als Helpdesk-Mitarbeiter oder Führungskraft, um durch das dadurch gewonnene Vertrauen an Informationen zu kommen, die er sonst nicht bekäme.",
     "delete_duplicates": [
       "1729003025466"
     ]
@@ -381,7 +381,7 @@
     "C": "Password spraying",
     "D": "Watering hole attack",
     "correct": "D",
-    "explanation_de": "Bei Watering-Hole-Angriffen wird ein Ort kompromittiert, den die Zielgruppe ohnehin besucht. Der direkte Angriff auf das Ziel wird umgangen.\n\n \n\n Merkhilfe: Watering hole attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Beim Watering-Hole-Angriff kompromittiert der Angreifer laut Messer nicht das eigentliche Ziel direkt, sondern eine Drittseite, die die Zielpersonen regelmäßig besuchen — als Beispiel nennt er die 2017 kompromittierte Website der polnischen Finanzaufsicht, über die gezielt nur Besucher aus bestimmten Bank-IP-Bereichen infiziert wurden.",
     "delete_duplicates": [
       "1729003632036"
     ]
@@ -398,7 +398,7 @@
     "C": "Defense in depth",
     "D": "Single sign-on",
     "correct": "C",
-    "explanation_de": "Defense in Depth setzt mehrere Schutzschichten ein. Faellt eine Kontrolle aus, sollen andere Schichten weiter schützen.\n\n \n\n Merkhilfe: Defense in depth ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Defense in Depth bedeutet laut Messer mehrere übereinanderliegende Sicherheitsschichten (z. B. Antivirus, Firewall, Intrusion Prevention System) zu kombinieren, damit ein Angriff, den eine Schicht übersieht, von einer anderen erkannt wird.",
     "delete_duplicates": [
       "1729003938349",
       "1729003938351"
@@ -432,7 +432,7 @@
     "C": "Influence campaign",
     "D": "Supply chain attack",
     "correct": "C",
-    "explanation_de": "Influence Campaigns manipulieren Wahrnehmung oder Verhalten durch gezielte Informationssteuerung. Es geht um Überzeugung und Ablenkung.\n\n \n\n Merkhilfe: Influence campaign ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Bei einer Influence Campaign nutzen Angreifer laut Messer gefälschte Social-Media-Konten, um Fehlinformationen zu posten und über Likes/Shares algorithmisch zu verstärken, bis reale Nutzer und irgendwann sogar Massenmedien die Geschichte aufgreifen.",
     "delete_duplicates": [
       "1729004574262",
       "1729004574264"
@@ -471,7 +471,7 @@
     "C": "Data Logic Layer",
     "D": "Distributed Load Library",
     "correct": "A",
-    "explanation_de": "DLL steht für Dynamic Link Library. DLLs enthalten gemeinsam nutzbaren Code, den Programme laden können.\n\n \n\n Merkhilfe: Dynamic Link Library ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "DLL steht für Dynamic-Link Library — unter Windows eine Art gemeinsam nutzbarer Ausführbarer-Code-Baustein, den mehrere Prozesse und Anwendungen einbinden können. Genau diese Eigenschaft macht DLLs laut Messer auch für Malware-Injection attraktiv.",
     "delete_duplicates": [
       "1729005007774"
     ]
@@ -484,7 +484,7 @@
     "C": "DLL injection",
     "D": "SQL injection",
     "correct": "C",
-    "explanation_de": "DLL Injection missbraucht das Laden von Dynamic Link Libraries durch laufende Prozesse. Dadurch läuft bösartiger Code im Kontext eines legitimen Prozesses.\n\n \n\n Merkhilfe: DLL injection ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Bei DLL Injection platziert der Angreifer laut Messer eine bösartige DLL auf dem Datenträger und hinterlegt im Zielprozess einen Pfad dorthin, sodass der Prozess beim Ausführen die schädliche DLL selbst lädt — die Malware läuft dann mit denselben Rechten wie der Zielprozess.",
     "delete_duplicates": [
       "1729005171343",
       "1729005171344"
@@ -498,7 +498,7 @@
     "C": "Packet filtering",
     "D": "Password spraying",
     "correct": "A",
-    "explanation_de": "Memory Forensics untersucht RAM-Inhalte. Obwohl Speicher fluechtig ist, kann er Hinweise auf laufende Prozesse und Malware liefern.\n\n \n\n Merkhilfe: Memory forensics ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer erklärt, dass Malware zwingend im Arbeitsspeicher laufen muss, um aktiv zu sein — Memory Forensics untersucht daher genau diesen flüchtigen Speicher (Prozesse, DLLs, Threads, Puffer), um laufende Schadsoftware zu finden, die auf der Festplatte vielleicht gar nicht sichtbar ist.",
     "delete_duplicates": [
       "1729005242070"
     ]
@@ -522,7 +522,7 @@
     "C": "SQL injection",
     "D": "Replay attack",
     "correct": "A",
-    "explanation_de": "Ein Buffer Overflow überschreibt Speicherbereiche, wenn Bounds Checking fehlt oder fehlerhaft ist. Das kann Abstuerze oder Codeausfuehrung ermöglichen.\n\n \n\n Merkhilfe: Buffer overflow attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Buffer Overflow entsteht laut Messer, wenn mehr Daten in einen Speicherbereich geschrieben werden, als er fasst, wodurch der Überschuss in den benachbarten Speicher überläuft — Messers Beispiel zeigt, wie 9 statt 8 Bytes eine Variable B von 1979 auf 25.856 verändern und so Admin-Rechte erschleichen.",
     "delete_duplicates": [
       "1729005878635"
     ]
@@ -539,7 +539,7 @@
     "C": "Hash collision",
     "D": "DNS poisoning",
     "correct": "A",
-    "explanation_de": "Race Conditions entstehen durch konkurrierende Ablaufe. Entscheidend ist Timing: Wer greift wann auf welchen Zustand zu?\n\n \n\n Merkhilfe: Race condition ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Race Condition entsteht laut Messer, wenn zwei Vorgänge nahezu gleichzeitig ablaufen und die Anwendung dieses Timing nicht korrekt berücksichtigt — sein Kontobeispiel zeigt, wie durch nicht sofort aktualisierte Abhebungen am Ende ein falscher Kontostand entsteht.",
     "delete_duplicates": [
       "1729006621298"
     ]
@@ -556,7 +556,7 @@
     "C": "Pass-the-hash attack",
     "D": "Deauthentication attack",
     "correct": "A",
-    "explanation_de": "TOCTOU steht für Time-of-Check to Time-of-Use. Der Angriff nutzt das Zeitfenster zwischen Prüfung und Verwendung aus.\n\n \n\n Merkhilfe: TOCTOU attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "TOCTOU (Time-Of-Check to Time-Of-Use) beschreibt laut Messer die Lücke zwischen dem Prüfen eines Werts und seiner tatsächlichen Verwendung — genau diese Lücke nutzten Angreifer 2023 beim Pwn2Own-Wettbewerb aus, um über einen Bluetooth-Bug im Tesla Model 3 Root-Rechte im Infotainmentsystem zu erlangen.",
     "delete_duplicates": []
   },
   {
@@ -583,7 +583,7 @@
     "C": "Replay attack",
     "D": "Logic bomb",
     "correct": "A",
-    "explanation_de": "Malicious Updates tarnen Schadcode als legitime Aktualisierung. Schutz: Quelle, Signatur und Update-Prozess pruefen.\n\n \n\n Merkhilfe: Malicious update ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer warnt, dass Update-Nachrichten selbst zum Angriffsvektor werden können, wenn sie nicht aus einer vertrauenswürdigen Quelle stammen — sein Kernbeispiel ist der SolarWinds-Orion-Vorfall 2020, bei dem Angreifer echten, digital signierten Updates monatelang unbemerkt Schadcode beigemischt hatten.",
     "delete_duplicates": [
       "1729007731875"
     ]
@@ -646,7 +646,7 @@
     "C": "Session Query Ledger",
     "D": "Structured Query Language",
     "correct": "D",
-    "explanation_de": "SQL steht für Structured Query Language. Sie wird für Abfragen und Verwaltung relationaler Datenbanken genutzt.\n\n \n\n Merkhilfe: Structured Query Language ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "SQL steht laut Messer für Structured Query Language, die gängigste Sprache, mit der Anwendungen mit einer Datenbank kommunizieren.",
     "delete_duplicates": [
       "1729008958157"
     ]
@@ -663,7 +663,7 @@
     "C": "RF jamming",
     "D": "SQL injection",
     "correct": "D",
-    "explanation_de": "SQL Injection fuegt eigene Datenbankabfragen in Anwendungseingaben ein. Unsichere Eingabepruefung macht das moeglich.\n\n \n\n Merkhilfe: SQL injection ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Bei SQL Injection fügt der Angreifer laut Messer eigenen SQL-Code in ein Eingabefeld der Anwendung ein, etwa 'Professor' or 1=1' — da 1 immer gleich 1 ist, liefert die Datenbank dann alle Datensätze statt nur den gesuchten zurück.",
     "delete_duplicates": [
       "1729009069890"
     ]
@@ -691,7 +691,7 @@
     "C": "Password spraying",
     "D": "RF jamming",
     "correct": "A",
-    "explanation_de": "Code Injection beschreibt das Einschleusen fremden Codes in eine Anwendung. SQLi, LDAP Injection und andere Varianten gehoeren dazu.\n\n \n\n Merkhilfe: Code injection ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Code Injection ist laut Messer der Oberbegriff für Angriffe, bei denen eigener Code in die Eingaben einer Anwendung geschmuggelt wird — SQL-, XML- und HTML-Injection sind laut Messer konkrete Ausprägungen davon.",
     "delete_duplicates": [
       "1729009370355"
     ]
@@ -711,7 +711,7 @@
     "C": "Packet capture",
     "D": "Input sanitization",
     "correct": "D",
-    "explanation_de": "Input Sanitization entfernt gefährliche oder unerwuenschte Bestandteile aus Eingaben. Das reduziert Injection- und XSS-Risiken.\n\n \n\n Merkhilfe: Input sanitization ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Input Sanitization bereinigt Nutzereingaben von unerwünschtem oder potenziell schädlichem Inhalt, bevor sie von der Anwendung verarbeitet werden — genau diese fehlende Prüfung nennt Messer als Ursache dafür, dass SQL- und XSS-Injection überhaupt funktionieren.",
     "delete_duplicates": [
       "1729009525181"
     ]
@@ -724,7 +724,7 @@
     "C": "Input exfiltration",
     "D": "Input flooding",
     "correct": "A",
-    "explanation_de": "Input Verification prüft Form und Erwartung: Datentyp, Laenge, Format oder erlaubte Werte. Sanitization entfernt dagegen Inhalte.\n\n \n\n Merkhilfe: Input verification ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Input Verification prüft, ob eine Eingabe der erwarteten Struktur oder dem erwarteten Format entspricht (z. B. Zahlenformat, Feldlänge) — fehlt diese Prüfung, kann ein Angreifer wie in Messers SQL-Injection-Beispiel beliebigen Code statt der erwarteten Werte einschleusen.",
     "delete_duplicates": [
       "1729009567782"
     ]
@@ -758,7 +758,7 @@
     "C": "Bash",
     "D": "JavaScript",
     "correct": "D",
-    "explanation_de": "XSS nutzt typischerweise JavaScript, weil Browser es für Webinteraktivitaet ausfuehren. Der Angriff läuft im Kontext der Website.\n\n \n\n Merkhilfe: JavaScript ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Cross-Site Scripting basiert laut Messer meist auf JavaScript, weil es in praktisch jedem Browser aktiviert ist und die eingebettete Malware so im Kontext der vertrauten Website beim Opfer ausgeführt wird.",
     "delete_duplicates": [
       "1729010233587",
       "1729010233589"
@@ -772,7 +772,7 @@
     "C": "Blind SQL injection",
     "D": "DNS poisoning",
     "correct": "A",
-    "explanation_de": "Reflected XSS wird nicht dauerhaft gespeichert. Der bösartige Inhalt wird über Anfrage oder Link zurueck an den Browser reflektiert.\n\n \n\n Merkhilfe: Reflected XSS ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Reflected (nicht-persistente) XSS liegt laut Messer vor, wenn der Angreifer dem Opfer einen Link mit eingebettetem Skript schickt, das nur bei diesem einen Aufruf über die verwundbare Website ausgeführt wird und Daten wie Session-Cookies direkt an den Angreifer sendet.",
     "delete_duplicates": [
       "1729010739213"
     ]
@@ -785,7 +785,7 @@
     "C": "Persistent XSS",
     "D": "Reflected XSS",
     "correct": "C",
-    "explanation_de": "Persistent oder Stored XSS wird auf dem Server gespeichert. Dadurch kann der Code später bei weiteren Nutzern ausgeführt werden.\n\n \n\n Merkhilfe: Persistent XSS ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Persistent XSS speichert laut Messer den bösartigen Payload dauerhaft auf der Zielseite selbst, etwa als Social-Media-Post — jeder, der die Seite danach besucht, führt automatisch das Skript im eigenen Browser aus.",
     "delete_duplicates": [
       "1729010808753"
     ]
@@ -802,7 +802,7 @@
     "C": "Reflected attack",
     "D": "Deauthentication attack",
     "correct": "B",
-    "explanation_de": "Persistent XSS heisst auch Stored XSS, weil das Skript dauerhaft in Anwendung oder Datenbank abgelegt wird.\n\n \n\n Merkhilfe: Stored XSS attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Persistent XSS wird laut Messer auch Stored XSS genannt, weil der Schadcode dauerhaft auf dem Server der Zielseite gespeichert bleibt und nicht wie bei Reflected XSS nur einmalig über einen Link mitgeschickt wird.",
     "delete_duplicates": []
   },
   {
@@ -825,7 +825,7 @@
     "C": "RF attenuation",
     "D": "DNS recursion",
     "correct": "A",
-    "explanation_de": "Gegen XSS helfen Sanitization und Validation/Verification. Sanitization entfernt oder neutralisiert Script-Inhalte.\n\n \n\n Merkhilfe: Input sanitization ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Input Sanitization ist laut Messer die Entwicklerseitige Gegenmaßnahme gegen XSS: Alle Eingabefelder müssen so geprüft werden, dass Nutzer kein eigenes Skript einschleusen können.",
     "delete_duplicates": [
       "1729011152084",
       "1729011152085"
@@ -853,7 +853,7 @@
     "C": "Internet of Things",
     "D": "Integrity of Tokens",
     "correct": "C",
-    "explanation_de": "IoT bedeutet Internet of Things: vernetzte Geräte, Sensoren und eingebettete Systeme mit eigener Software.\n\n \n\n Merkhilfe: Internet of Things ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "IoT steht für Internet of Things — Messer nennt Thermostate, Kühlschränke, Garagentore und andere vernetzte Alltagsgeräte, die im Hintergrund eine eigene, oft kaum zugängliche Firmware laufen lassen und damit ein eigenes Sicherheitsrisiko darstellen.",
     "delete_duplicates": [
       "1729016237395"
     ]
@@ -874,7 +874,7 @@
     "C": "End of Life (EOL)",
     "D": "End of Service Life (EOSL)",
     "correct": "C",
-    "explanation_de": "EOL bezieht sich auf das Ende der Produktion oder Produktlebensphase. EOSL ist spezifischer das Ende von Support und Updates.\n\n \n\n Merkhilfe: End of Life (EOL) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "End of Life (EOL) ist laut Messer die Ankündigung des Herstellers, ein Produkt in Zukunft nicht mehr zu verkaufen — Sicherheitsupdates gibt es zu diesem Zeitpunkt oft noch, aber das Datum ist ein erstes Warnsignal, das Gerät zu ersetzen.",
     "delete_duplicates": [
       "1729016393819"
     ]
@@ -891,7 +891,7 @@
     "C": "Change freeze",
     "D": "Patch Tuesday",
     "correct": "A",
-    "explanation_de": "EOSL ist kritisch für Sicherheit, weil danach keine regulaeren Updates oder Supportleistungen mehr kommen.\n\n \n\n Merkhilfe: End of Service Life (EOSL) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "End of Service Life (EOSL) ist laut Messer der Zeitpunkt, ab dem der Hersteller keine Sicherheitspatches mehr bereitstellt — Messers Beispiel sind die Trane-Comfortlink-II-Thermostate, bei denen zwischen bekannter Schwachstelle (April 2014) und erstem Patch (April 2015) ein ganzes Jahr verging.",
     "delete_duplicates": [
       "1729016466795"
     ]
@@ -915,7 +915,7 @@
     "C": "Hypervisor",
     "D": "Firmware",
     "correct": "D",
-    "explanation_de": "Firmware ist Software auf oder nahe an Hardware, etwa in Routern, IoT-Geräten oder Controllern. Sie muss ebenfalls gepatcht werden.\n\n \n\n Merkhilfe: Firmware ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Firmware ist laut Messer das Betriebssystem, das direkt in Hardware wie Thermostaten oder Routern läuft und meist nur vom Hersteller selbst aktualisiert werden kann.",
     "delete_duplicates": [
       "1729016997816"
     ]
@@ -958,7 +958,7 @@
     "C": "Typosquatting",
     "D": "VM escape",
     "correct": "D",
-    "explanation_de": "VM Escape durchbricht die Isolation virtueller Maschinen. Das Ziel ist Zugriff ausserhalb der kompromittierten VM.\n\n \n\n Merkhilfe: VM escape ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein VM Escape erlaubt es laut Messer, von einer virtuellen Maschine aus auf andere VMs desselben Hypervisors zuzugreifen — beim Pwn2Own-Wettbewerb 2017 gelang das über einen JavaScript-Bug in Edge, eine Windows-10-Kernel-Lücke und schließlich einen Hardware-Simulationsfehler in VMware.",
     "delete_duplicates": [
       "1729017742983"
     ]
@@ -971,7 +971,7 @@
     "C": "Resource reuse",
     "D": "Shadow IT",
     "correct": "C",
-    "explanation_de": "Resource Reuse beschreibt Wiederverwendung von Speicher oder Ressourcen ohne saubere Trennung. In Virtualisierung kann das Daten zwischen VMs preisgeben.\n\n \n\n Merkhilfe: Resource reuse ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Resource Reuse beschreibt laut Messer den Fall, dass der Hypervisor Speicherbereiche zwischen VMs nicht sauber trennt — bei einem Bug kann so eine VM Daten schreiben, die eine andere VM anschließend lesen kann.",
     "delete_duplicates": [
       "1729017832456"
     ]
@@ -991,7 +991,7 @@
     "C": "Domain registrar",
     "D": "Jump server",
     "correct": "A",
-    "explanation_de": "Der Hypervisor stellt die Virtualisierungsschicht bereit und verwaltet VMs auf gemeinsamer Hardware.\n\n \n\n Merkhilfe: Hypervisor ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Der Hypervisor ist laut Messer die Komponente, die mehreren virtuellen Maschinen auf derselben physischen Hardware CPU, Speicher und Storage zuteilt und verwaltet.",
     "delete_duplicates": [
       "1729017946322"
     ]
@@ -1004,7 +1004,7 @@
     "C": "Domain Name System (DNS)",
     "D": "Common Vulnerability Scoring System (CVSS)",
     "correct": "D",
-    "explanation_de": "CVSS bewertet Schweregrade von Schwachstellen numerisch. CVE identifiziert Schwachstellen, CVSS bewertet ihre Kritikalitaet.\n\n \n\n Merkhilfe: Common Vulnerability Scoring System (CVSS) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer nennt konkret CVSS (Common Vulnerability Scoring System) als Skala von 0 bis 10 und weist darauf hin, dass viele ungepatchte Cloud-Schwachstellen einen CVSS-Wert von 7 oder höher haben.",
     "delete_duplicates": [
       "1729018546550"
     ]
@@ -1028,7 +1028,7 @@
     "C": "RF jamming",
     "D": "RFID cloning",
     "correct": "B",
-    "explanation_de": "Cloud-Dienste sind öffentlich erreichbar und daher häufig Ziele von DoS oder DDoS, die Verfuegbarkeit angreifen.\n\n \n\n Merkhilfe: DoS/DDoS ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Weil öffentliche Cloud-Anwendungen laut Messer per Definition von überall auf der Welt erreichbar sein müssen, kann sie auch jeder mit einem Denial-of-Service bzw. Distributed-Denial-of-Service-Angriff überlasten.",
     "delete_duplicates": []
   },
   {
@@ -1039,7 +1039,7 @@
     "C": "SQL injection",
     "D": "Cross-site request forgery",
     "correct": "B",
-    "explanation_de": "Directory Traversal nutzt Pfadangaben, um ausserhalb des vorgesehenen Verzeichnisses zu lesen oder zu schreiben.\n\n \n\n Merkhilfe: Directory traversal ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Directory Traversal ist laut Messer eine häufige Fehlkonfiguration bei Webservern, bei der sich Nutzer manuell zwischen Verzeichnissen bewegen können, auf die sie eigentlich keinen Zugriff haben sollten.",
     "delete_duplicates": [
       "1729018813147"
     ]
@@ -1073,7 +1073,7 @@
     "C": "Session hijacking",
     "D": "Out-of-bounds write",
     "correct": "D",
-    "explanation_de": "Out-of-Bounds Write schreibt ausserhalb erlaubter Speicherbereiche. Das kann Absturz, Datenkorruption oder Codeausfuehrung ermöglichen.\n\n \n\n Merkhilfe: Out-of-bounds write ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Beim Out-of-Bounds Write schreibt der Angreifer laut Messer Daten in einen Speicherbereich, für den er eigentlich keine Berechtigung hat — das kann zu Remote Code Execution führen oder das System zum Absturz bringen.",
     "delete_duplicates": [
       "1729019182229"
     ]
@@ -1097,7 +1097,7 @@
     "C": "Birthday attack",
     "D": "Supply chain vulnerability",
     "correct": "D",
-    "explanation_de": "Supply-Chain-Schwachstellen liegen in Lieferanten, Komponenten oder Diensten, denen eine Organisation vertraut.\n\n \n\n Merkhilfe: Supply chain vulnerability ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Supply-Chain-Vulnerability entsteht laut Messer, wenn ein Angreifer irgendwo zwischen Rohstoff, Hersteller, Zulieferer und Distributor bösartigen Code einschleust, bevor das Produkt beim Kunden ankommt.",
     "delete_duplicates": [
       "1729019659957"
     ]
@@ -1114,7 +1114,7 @@
     "C": "Deauthentication frames",
     "D": "Hash collisions",
     "correct": "A",
-    "explanation_de": "Security Audits bei Dritten pruefen, ob vereinbarte Kontrollen und Sicherheitsanforderungen eingehalten werden.\n\n \n\n Merkhilfe: Security audits ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer empfiehlt, laufende Security Audits vertraglich mit Dienstleistern zu vereinbaren, damit man deren Sicherheitsprozesse jederzeit prüfen kann — genau das fehlte im Target-Fall bei dem beauftragten HVAC-Dienstleister.",
     "delete_duplicates": [
       "1729019769921"
     ]
@@ -1134,7 +1134,7 @@
     "C": "Zero Trust",
     "D": "Implicit trust",
     "correct": "C",
-    "explanation_de": "Zero Trust bedeutet: nicht automatisch vertrauen, sondern pruefen. Das passt besonders bei unbekannter Lieferkettenintegritaet.\n\n \n\n Merkhilfe: Zero Trust ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer rät, neue Hardware aus der Lieferkette grundsätzlich als 'untrusted out of the box' zu behandeln und erst nach eigener Prüfung ins Netzwerk zu lassen — genau dieses Prinzip 'nichts automatisch vertrauen' beschreibt Zero Trust.",
     "delete_duplicates": [
       "1729019963491"
     ]
@@ -1147,7 +1147,7 @@
     "C": "Open port",
     "D": "Host file",
     "correct": "B",
-    "explanation_de": "Digitale Signaturen bestaetigen Herausgeber und Integritaet. Veraenderte Software wuerde die Signaturpruefung nicht bestehen.\n\n \n\n Merkhilfe: Digital signature ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine digitale Signatur bestätigt laut Messer, dass ein Update wirklich vom angegebenen Hersteller stammt und unverändert ist — beim SolarWinds-Orion-Vorfall trug jedoch selbst die kompromittierte, signierte Software eine gültige Signatur, was zeigt, dass auch das kein hundertprozentiger Schutz ist.",
     "delete_duplicates": []
   },
   {
@@ -1158,7 +1158,7 @@
     "C": "Supply chain",
     "D": "Attack surface",
     "correct": "C",
-    "explanation_de": "Die Supply Chain umfasst Herstellung, Komponenten, Dienstleister, Transport und Bereitstellung bis zum Endnutzer.\n\n \n\n Merkhilfe: Supply chain ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Die Supply Chain ist laut Messer der gesamte Weg eines Produkts von den Rohstoffen über Hersteller und Distributoren bis zum Endkunden — und an jedem dieser Schritte kann laut Messer ein Angreifer ansetzen.",
     "delete_duplicates": [
       "1729020157177",
       "1729020157179"
@@ -1183,7 +1183,7 @@
     "C": "root",
     "D": "Administrator",
     "correct": "C",
-    "explanation_de": "root ist der klassische Superuser unter Linux/Unix. Windows verwendet dagegen typischerweise Administrator.\n\n \n\n Merkhilfe: root ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Unter Linux heißt das Administratorkonto laut Messer root, unter Windows administrator — beide werden gemeinsam auch als Superuser-Konto bezeichnet.",
     "delete_duplicates": [
       "1729093945242"
     ]
@@ -1203,7 +1203,7 @@
     "C": "Guest user",
     "D": "Standard user",
     "correct": "B",
-    "explanation_de": "Superuser bezeichnet Konten mit sehr hohen Rechten, etwa root oder Administrator. Solche Konten müssen besonders begrenzt werden.\n\n \n\n Merkhilfe: Superuser ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer bezeichnet root- bzw. Administrator-Konten gemeinsam als Superuser-Konten und empfiehlt, deren direkten Login möglichst zu deaktivieren und stattdessen su/sudo bzw. 'Als Administrator ausführen' zu nutzen.",
     "delete_duplicates": [
       "1729094001243"
     ]
@@ -1246,7 +1246,7 @@
     "C": "SSH",
     "D": "FTP",
     "correct": "C",
-    "explanation_de": "SSH verschlüsselt Remote-Shell-Kommunikation. Telnet übertraegt dagegen unverschlüsselt und gilt als unsicher.\n\n \n\n Merkhilfe: SSH ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer nennt Telnet, FTP, SMTP und IMAP als Protokolle, die Daten im Klartext übertragen, und empfiehlt stattdessen verschlüsselte Alternativen wie SSH, SFTP oder HTTPS.",
     "delete_duplicates": [
       "1729094357664",
       "1729094357665",
@@ -1261,7 +1261,7 @@
     "C": "Rooting",
     "D": "Birthday attack",
     "correct": "A",
-    "explanation_de": "Packet Capture oder Sniffing zeichnet Netzwerkpakete auf. Damit lassen sich Klartextprotokolle und verdachtige Kommunikation erkennen.\n\n \n\n Merkhilfe: Packet capture ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Mit einem Packet Capture (z. B. in Wireshark) lässt sich laut Messer direkt sehen, ob Daten im Klartext über unverschlüsselte Protokolle wie HTTP übertragen werden — sein Beispiel ist die 'Wall of Sheep' auf der DEFCON, wo genau so abgefangene Zugangsdaten öffentlich gezeigt werden.",
     "delete_duplicates": [
       "1729094464414",
       "1729094464416"
@@ -1298,7 +1298,7 @@
     "C": "Firewall",
     "D": "Keylogger",
     "correct": "C",
-    "explanation_de": "Firewalls erlauben oder blockieren Verkehr anhand von Regeln. Sie sind zentrale Kontrollen zum Schutz von Ports und Services.\n\n \n\n Merkhilfe: Firewall ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Firewall steuert laut Messer, welche Portnummern von außen erreichbar sind — da jeder aktivierte Dienst einen offenen Port bedeutet, hilft die Firewall, den Zugriff auf wirklich benötigte Ports zu beschränken.",
     "delete_duplicates": [
       "1729094720671"
     ]
@@ -1340,7 +1340,7 @@
     "C": "Sideloading",
     "D": "Smishing",
     "correct": "B",
-    "explanation_de": "Rooting hebt Android-Beschraenkungen auf. Bei iOS heisst ein vergleichbarer Eingriff Jailbreaking.\n\n \n\n Merkhilfe: Rooting ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Das Ersetzen des Betriebssystems auf einem Android-Gerät, um Standardeinschränkungen zu umgehen, nennt Messer Rooting — bei Apple-Geräten heißt derselbe Vorgang Jailbreaking.",
     "delete_duplicates": [
       "1729095666666",
       "1729095666667",
@@ -1355,7 +1355,7 @@
     "C": "Memory Dump Monitor",
     "D": "Mobile Data Masking",
     "correct": "A",
-    "explanation_de": "MDM steht für Mobile Device Management. Es erzwingt Richtlinien, Konfigurationen und Sicherheitsvorgaben auf Mobilgeraeten.\n\n \n\n Merkhilfe: Mobile Device Management ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "MDM steht laut Messer für Mobile Device Manager/Management — genau diese Verwaltungssoftware wird umgangen, wenn ein Gerät gerootet oder gejailbreakt wird.",
     "delete_duplicates": [
       "1729095773944",
       "1729095773946",
@@ -1386,7 +1386,7 @@
     "C": "Smishing",
     "D": "Vishing",
     "correct": "A",
-    "explanation_de": "Sideloading installiert Apps ausserhalb genehmigter Quellen. Das kann Sicherheitskontrollen von App-Stores umgehen.\n\n \n\n Merkhilfe: Sideloading ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Sideloading nennt Messer die Installation von Apps außerhalb des offiziellen App Stores — ein Gerät, das gerootet oder gejailbreakt wurde, lässt sich damit typischerweise mit beliebigen Apps bestücken.",
     "delete_duplicates": [
       "1729096077717"
     ]
@@ -1427,7 +1427,7 @@
     "C": "Replay attack",
     "D": "Watering hole attack",
     "correct": "B",
-    "explanation_de": "Zero-day bedeutet, dass es noch keinen Patch oder keine bekannte Abwehr gibt. Angreifer nutzen das Zeitfenster vor der Behebung.\n\n \n\n Merkhilfe: Zero-day attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Zero-Day-Angriff liegt laut Messer vor, wenn Angreifer eine Schwachstelle ausnutzen, bevor der Hersteller überhaupt davon weiß und einen Patch bereitstellen kann — Beispiele von Messer sind Zero-Days 2023 in Chrome, Windows UEFI Secure Boot und iOS.",
     "delete_duplicates": [
       "1729096456641"
     ]
@@ -1454,7 +1454,7 @@
     "C": "Malware",
     "D": "Firmware",
     "correct": "C",
-    "explanation_de": "Malware ist der Oberbegriff für bösartige Software wie Viren, Wuermer, Ransomware, Spyware oder Trojaner.\n\n \n\n Merkhilfe: Malware ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Malware ist laut Messer ein sehr breiter Oberbegriff für jede Software, die schädliche Dinge tut — von Keylogging über Werbeeinblendungen bis zur Verschlüsselung von Daten; Viren, Würmer und Ransomware sind laut Messer nur konkrete Ausprägungen davon.",
     "delete_duplicates": [
       "1729096807695"
     ]
@@ -1485,7 +1485,7 @@
     "C": "Ransomware",
     "D": "Bloatware",
     "correct": "C",
-    "explanation_de": "Ransomware verschlüsselt oder sperrt Daten. Offline-Backups bleiben für Malware schwerer erreichbar und ermöglichen Wiederherstellung.\n\n \n\n Merkhilfe: Ransomware ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer betont bei Ransomware ausdrücklich, dass Backups offline gespeichert sein müssen, damit die Ransomware sie nicht auch verschlüsseln kann — nur so lässt sich im Ernstfall alles löschen und aus einer bekannt guten Sicherung wiederherstellen, statt Lösegeld zu zahlen.",
     "delete_duplicates": [
       "1729097089989"
     ]
@@ -1516,7 +1516,7 @@
     "C": "Keylogger",
     "D": "Rootkit",
     "correct": "C",
-    "explanation_de": "Keylogger erfassen Tastatureingaben, etwa Passwoerter oder Kreditkartendaten. Der Hinweis ist das Mitschneiden von Keystrokes.\n\n \n\n Merkhilfe: Keylogger ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Keylogger bleibt laut Messer dauerhaft auf dem System aktiv, zeichnet jeden Tastenanschlag in einer Datei auf und sendet diese ein- oder mehrmals täglich an den Angreifer — Messer zeigt das am Beispiel des Remote-Access-Trojaners DarkComet.",
     "delete_duplicates": [
       "1729097293204",
       "1729097293205"
@@ -1537,7 +1537,7 @@
     "C": "Bloatware",
     "D": "Trojan horse",
     "correct": "D",
-    "explanation_de": "Ein Trojaner tarnt sich als legitime Software. Im Gegensatz zum Worm repliziert er sich nicht zwingend selbststaendig.\n\n \n\n Merkhilfe: Trojan horse ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Trojanisches Pferd gibt sich laut Messer als nützliche Software aus, installiert im Hintergrund aber tatsächlich Malware — der Nutzer denkt, eine legitime Funktion zu installieren.",
     "delete_duplicates": [
       "1729097352287"
     ]
@@ -1557,7 +1557,7 @@
     "C": "Drive-by download",
     "D": "War dialing",
     "correct": "C",
-    "explanation_de": "Drive-by Downloads versuchen Schadsoftware beim Besuch einer Seite auszuliefern, oft ohne bewusste Installation durch den Nutzer.\n\n \n\n Merkhilfe: Drive-by download ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Drive-by Download passiert laut Messer, wenn beim bloßen Besuch einer bösartigen Website automatisch Schadsoftware heruntergeladen wird, ganz ohne dass der Nutzer etwas anklickt.",
     "delete_duplicates": [
       "1729097429319"
     ]
@@ -1607,7 +1607,7 @@
     "C": "Program virus",
     "D": "Macro virus",
     "correct": "A",
-    "explanation_de": "Fileless Malware arbeitet stark im Speicher und hinterlaesst weniger klassische Dateien. Das erschwert signaturbasierte Erkennung.\n\n \n\n Merkhilfe: Fileless virus ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Fileless Virus schreibt laut Messer nie Dateien auf die Festplatte, sondern läuft komplett im Arbeitsspeicher (z. B. über PowerShell-Skripte) — dadurch entgeht er Antivirensoftware, die primär nach Schreibvorgängen auf dem Datenträger sucht.",
     "delete_duplicates": [
       "1729097907114"
     ]
@@ -1624,7 +1624,7 @@
     "C": "Trojan horse",
     "D": "Keylogger",
     "correct": "B",
-    "explanation_de": "Wuermer verbreiten sich selbststaendig über Netzwerke. Viren benoetigen häufig Nutzeraktion oder infizierte Dateien.\n\n \n\n Merkhilfe: Worm ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Worm verbreitet sich laut Messer selbstständig zwischen Systemen, ganz ohne Nutzerinteraktion — Messers Beispiel ist WannaCry, das über EternalBlue automatisch verwundbare Systeme im Netzwerk fand und mit Ransomware infizierte.",
     "delete_duplicates": [
       "1729098014968"
     ]
@@ -1663,7 +1663,7 @@
     "C": "Rootkit",
     "D": "Program virus",
     "correct": "D",
-    "explanation_de": "Program Viruses infizieren ausfuehrbare Programme oder laufen als Anwendungsteil. Boot-Sector-Viren setzen frueher im Startprozess an.\n\n \n\n Merkhilfe: Program virus ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein klassischer Program Virus läuft laut Messer als Anwendung oder Teil einer Anwendung und benötigt zum Start meist eine Nutzeraktion wie das Anklicken einer ausführbaren Datei — im Gegensatz zum Boot-Sector-Virus oder dem rein speicherresidenten Fileless Virus.",
     "delete_duplicates": [
       "1729098302258"
     ]
@@ -1680,7 +1680,7 @@
     "C": "Firmware",
     "D": "Bloatware",
     "correct": "A",
-    "explanation_de": "Spyware beobachtet Nutzer- oder Systemaktivitaeten und kann Daten abgreifen. Der Hinweis ist Überwachung.\n\n \n\n Merkhilfe: Spyware ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Spyware überwacht laut Messer alles, was auf dem System passiert — sie blendet Werbung ein, stiehlt persönliche Daten oder betreibt Affiliate-Betrug, oft über einen mitgelieferten Keylogger.",
     "delete_duplicates": [
       "1729098545423"
     ]
@@ -1716,7 +1716,7 @@
     "C": "Worm",
     "D": "Bloatware",
     "correct": "D",
-    "explanation_de": "Bloatware ist unerwuenschte oder überfluessige Vorinstallation. Sie ist nicht automatisch Malware, kann aber Ressourcen und Risiken erhoehen.\n\n \n\n Merkhilfe: Bloatware ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Bloatware sind laut Messer vom Hersteller vorinstallierte Apps, für deren Aufnahme der Hersteller meist bezahlt wird — sie sind lästig und ein potenzielles Sicherheitsrisiko, aber laut Messer nicht per se bösartig wie echte Malware.",
     "delete_duplicates": [
       "1729098771490",
       "1729098771492",
@@ -1762,7 +1762,7 @@
     "C": "Remote Access Trojan (RAT)",
     "D": "Logic bomb",
     "correct": "C",
-    "explanation_de": "Ein RAT gibt Angreifern Fernzugriff und Datensammelfunktionen. Er tarnt sich typischerweise als Trojaner.\n\n \n\n Merkhilfe: Remote Access Trojan (RAT) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein RAT (Remote Access Trojan) erlaubt dem Angreifer laut Messer Fernzugriff und kann Tastatureingaben, Screenshots und mehr abgreifen — als konkretes Beispiel nennt Messer die Software DarkComet.",
     "delete_duplicates": [
       "1729099376880"
     ]
@@ -1782,7 +1782,7 @@
     "C": "Keylogger",
     "D": "Worm",
     "correct": "B",
-    "explanation_de": "Logic Bombs werden durch Bedingung, Aktion oder Zeitpunkt ausgelöst. Bis dahin können sie unauffaellig bleiben.\n\n \n\n Merkhilfe: Logic bomb ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Logic Bomb wartet laut Messer auf ein bestimmtes Ereignis (etwa Datum/Uhrzeit oder einen Login) und löst erst dann aus — sein Beispiel ist der südkoreanische Vorfall vom 20. März 2013, bei dem Banksysteme und Geldautomaten pünktlich um 14 Uhr gelöscht wurden.",
     "delete_duplicates": [
       "1729099431733"
     ]
@@ -1829,7 +1829,7 @@
     "C": "UEFI Secure Boot",
     "D": "Packet capture",
     "correct": "C",
-    "explanation_de": "UEFI Secure Boot prüft Signaturen im Bootprozess. Dadurch können manipulierte Boot- oder OS-Komponenten auffallen.\n\n \n\n Merkhilfe: UEFI Secure Boot ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "UEFI Secure Boot prüft laut Messer die Signatur des Betriebssystemkerns vor dem Start und verhindert so, dass ein Rootkit, das sich in den Kernel eingenistet hat, beim nächsten Boot unbemerkt weiterläuft.",
     "delete_duplicates": [
       "1729099804992"
     ]
@@ -1868,7 +1868,7 @@
     "C": "RF jamming",
     "D": "Vishing",
     "correct": "B",
-    "explanation_de": "RFID Cloning kopiert die Kennung eines RFID-Ausweises oder Tokens. MFA und Kartenkontrollen reduzieren dieses Risiko.\n\n \n\n Merkhilfe: RFID cloning ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "RFID-Cloning kopiert laut Messer den Funkchip einer Zutrittskarte — Messer nennt Cloner-Geräte für unter 50 US-Dollar und den Fall, dass jemand in der Bahn beim Vorbeigehen ungewollt die Karte eines anderen ausliest und dupliziert.",
     "delete_duplicates": [
       "1729103336430",
       "1729103336432"
@@ -1889,7 +1889,7 @@
     "C": "Password spraying",
     "D": "Default credentials",
     "correct": "A",
-    "explanation_de": "MFA kombiniert mindestens zwei Faktoren, etwa Wissen, Besitz oder Biometrie. Dadurch reicht ein einzelnes gestohlenes Passwort nicht aus.\n\n \n\n Merkhilfe: Multi-factor authentication ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer nennt Multi-Faktor-Authentifizierung explizit als Schutz gegen geklonte Zutrittskarten: Selbst mit kopierter Karte fehlen dem Angreifer noch die PIN oder die Biometrie.",
     "delete_duplicates": [
       "1729103461405"
     ]
@@ -1917,7 +1917,7 @@
     "C": "Birthday attack",
     "D": "Pass-the-hash attack",
     "correct": "B",
-    "explanation_de": "Environmental Attacks zielen auf Umgebung und Infrastruktur. Beispiele sind Strom, Kuehlung oder Brandschutz.\n\n \n\n Merkhilfe: Environmental attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Environmental Attack greift laut Messer nicht das System direkt an, sondern seine Umgebung — Messer nennt das Abschalten der Stromversorgung von außen, das Manipulieren der HVAC-Kühlung oder der Brandlöschanlage als Beispiele.",
     "delete_duplicates": [
       "1729103670835"
     ]
@@ -1952,7 +1952,7 @@
     "C": "Pretexting",
     "D": "RFID cloning",
     "correct": "A",
-    "explanation_de": "DoS greift Verfuegbarkeit an. Ziel ist, legitime Nutzung eines Dienstes zu verhindern.\n\n \n\n Merkhilfe: Denial of Service (DoS) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Denial of Service liegt laut Messer vor, wenn ein Angreifer absichtlich dafür sorgt, dass ein Dienst ausfällt oder für andere nicht mehr erreichbar ist — sei es durch Überlastung oder das Ausnutzen einer Schwachstelle.",
     "delete_duplicates": [
       "1729104062054"
     ]
@@ -1980,7 +1980,7 @@
     "C": "Distributed Denial of Service (DDoS)",
     "D": "Directory traversal",
     "correct": "C",
-    "explanation_de": "DDoS verteilt den Angriff auf viele Systeme, oft Botnets. Dadurch wird die Abwehr schwieriger als bei einem einzelnen Ursprung.\n\n \n\n Merkhilfe: Distributed Denial of Service (DDoS) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Bei einer DDoS-Attacke nutzt der Angreifer laut Messer viele weltweit verteilte, infizierte Geräte gleichzeitig — als Beispiel nennt er das Zeus-Botnet mit bis zu 3,6 Millionen kontrollierten Rechnern.",
     "delete_duplicates": [
       "1729104262171"
     ]
@@ -2001,7 +2001,7 @@
     "C": "Amplification",
     "D": "Sanitization",
     "correct": "C",
-    "explanation_de": "Amplification nutzt Dienste, die auf kleine Anfragen große Antworten senden. So vervielfacht der Angreifer die Last.\n\n \n\n Merkhilfe: Amplification ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Amplification nutzt laut Messer Dienste wie DNS oder NTP, bei denen eine kleine Anfrage eine viel größere Antwort erzeugt — sein DNS-Beispiel zeigt, wie 15 Zeichen Anfrage zu rund 1.300 Zeichen Antwort führen, eine etwa 86-fache Verstärkung.",
     "delete_duplicates": [
       "1729104422353"
     ]
@@ -2032,7 +2032,7 @@
     "C": "SIEM",
     "D": "Botnet",
     "correct": "D",
-    "explanation_de": "Ein Botnet besteht aus kompromittierten Systemen unter zentraler oder koordinierter Kontrolle. Es wird häufig für DDoS oder Spam genutzt.\n\n \n\n Merkhilfe: Botnet ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Botnet ist laut Messer eine Ansammlung von mit Malware infizierten Geräten (robot network), die der Angreifer über ein einziges Kommando gleichzeitig gegen ein Ziel losschicken kann.",
     "delete_duplicates": [
       "1729104741765",
       "1729104741766"
@@ -2046,7 +2046,7 @@
     "C": "Command and Control",
     "D": "Common Vulnerability Scoring System",
     "correct": "C",
-    "explanation_de": "Command and Control, kurz C2, steuert kompromittierte Systeme. Darüber erhalten Bots Befehle.\n\n \n\n Merkhilfe: Command and Control ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Das Command and Control ist laut Messer die zentrale Steuerungsinfrastruktur, über die der Angreifer seinem Botnet die Befehle für einen DDoS-Angriff erteilt.",
     "delete_duplicates": []
   },
   {
@@ -2071,7 +2071,7 @@
     "C": "Host file",
     "D": "Shadow file",
     "correct": "C",
-    "explanation_de": "Host Files können Namensaufloesung lokal beeinflussen. Manipulation kann Traffic auf falsche IP-Adressen lenken.\n\n \n\n Merkhilfe: Host file ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Die lokale Host-Datei enthält laut Messer eine Liste von Domainnamen und zugehörigen IP-Adressen, die der Rechner vor jeder DNS-Anfrage zuerst prüft — genau diese Datei manipulieren Angreifer bei bestimmten DNS-Poisoning-Angriffen, um Nutzer auf bösartige Server umzuleiten.",
     "delete_duplicates": [
       "1729105178992",
       "1729105178994"
@@ -2118,7 +2118,7 @@
     "C": "Smishing",
     "D": "SQL injection",
     "correct": "A",
-    "explanation_de": "Deauthentication Attacks senden Management Frames, um Clients vom WLAN zu trennen. Sie zielen auf Verfuegbarkeit.\n\n \n\n Merkhilfe: Deauthentication attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Deauthentication-Angriff missbraucht laut Messer unverschlüsselte 802.11-Management-Frames, um gezielt Clients per gefälschten Deauth-Frames von einem WLAN zu werfen — Messer demonstriert das live mit airodump-ng und aireplay-ng gegen ein iPhone.",
     "delete_duplicates": [
       "1729106271935"
     ]
@@ -2131,7 +2131,7 @@
     "C": "Access control lists",
     "D": "Session cookies",
     "correct": "A",
-    "explanation_de": "Management Frames steuern WLAN-Verbindungen, etwa Association und Deauthentication. Schutz dieser Frames verhindert bestimmte WLAN-Angriffe.\n\n \n\n Merkhilfe: Management frames ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Management Frames regeln laut Messer im Hintergrund Verbindungsauf- und -abbau zwischen Client und Access Point — in älteren 802.11-Versionen liefen sie unverschlüsselt im Klartext, was Deauth-Angriffe erst ermöglichte.",
     "delete_duplicates": [
       "1729106340712"
     ]
@@ -2155,7 +2155,7 @@
     "C": "Typosquatting",
     "D": "RF jamming",
     "correct": "D",
-    "explanation_de": "RF Jamming stoert Funkkommunikation durch Interferenz oder Überlastung des Mediums. Der Angriff setzt physische Funknaehe voraus.\n\n \n\n Merkhilfe: RF jamming ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "RF Jamming stört laut Messer nicht nur ein Gerät, sondern alle Clients auf der Frequenz, indem der Angreifer das Signal-Rausch-Verhältnis so verschlechtert, dass echte Daten im Rauschen untergehen.",
     "delete_duplicates": [
       "1729106591300"
     ]
@@ -2176,7 +2176,7 @@
     "C": "DNS poisoning",
     "D": "Reactive jamming",
     "correct": "D",
-    "explanation_de": "Reactive Jamming bleibt ruhiger und stoert gezielt bei erkannter legitimer Kommunikation. Das kann Erkennung erschweren.\n\n \n\n Merkhilfe: Reactive jamming ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Reactive Jamming sendet laut Messer erst dann ein Störsignal, wenn tatsächlich Datenverkehr auf dem Kanal erkannt wird — bei Stille bleibt es leise, was die Fehlersuche für Netzwerkbetreiber deutlich erschwert.",
     "delete_duplicates": [
       "1729106782317",
       "1729106782318"
@@ -2202,7 +2202,7 @@
     "C": "Buffer overflow",
     "D": "Logic bomb",
     "correct": "A",
-    "explanation_de": "On-Path, frueher oft Man-in-the-Middle genannt, positioniert den Angreifer im Kommunikationsweg.\n\n \n\n Merkhilfe: On-path attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein On-Path-Angriff (auch Man-in-the-Middle) positioniert den Angreifer laut Messer unsichtbar zwischen zwei kommunizierenden Geräten, sodass er den Datenverkehr mitlesen und in Echtzeit verändern kann.",
     "delete_duplicates": [
       "1729107353630"
     ]
@@ -2233,7 +2233,7 @@
     "C": "RF attenuation",
     "D": "Input verification",
     "correct": "A",
-    "explanation_de": "ARP Poisoning manipuliert Zuordnungen zwischen IP- und MAC-Adresse. Dadurch kann lokaler Verkehr über den Angreifer laufen.\n\n \n\n Merkhilfe: ARP poisoning ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Bei ARP Poisoning sendet der Angreifer laut Messer gefälschte ARP-Antworten, die im Cache des Opfers die legitime MAC-Adresse (z. B. des Routers) durch die eigene ersetzen — weil ARP keinerlei Authentifizierung kennt, wird diese falsche Zuordnung anstandslos übernommen.",
     "delete_duplicates": [
       "1729107583326",
       "1729107583327"
@@ -2247,7 +2247,7 @@
     "C": "Access Rule Processor",
     "D": "Address Resolution Protocol",
     "correct": "D",
-    "explanation_de": "ARP steht für Address Resolution Protocol. Es ordnet IPv4-Adressen MAC-Adressen im lokalen Netz zu.\n\n \n\n Merkhilfe: Address Resolution Protocol ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "ARP steht laut Messer für Address Resolution Protocol — es löst zu einer bekannten IP-Adresse die zugehörige MAC-Adresse im lokalen Subnetz auf.",
     "delete_duplicates": [
       "1729107717299"
     ]
@@ -2282,7 +2282,7 @@
     "C": "Replay attack",
     "D": "Race condition",
     "correct": "C",
-    "explanation_de": "Replay Attacks zeichnen gültige Daten auf und verwenden sie erneut. Typisch sind Sitzungs- oder Authentifizierungsdaten.\n\n \n\n Merkhilfe: Replay attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Bei einem Replay-Angriff nutzt der Angreifer laut Messer zuvor abgefangene Authentifizierungs- oder Session-Daten erneut, um sich gegenüber dem Server als das Opfer auszugeben.",
     "delete_duplicates": [
       "1729174309231"
     ]
@@ -2310,7 +2310,7 @@
     "C": "Password spraying",
     "D": "Birthday attack",
     "correct": "B",
-    "explanation_de": "Pass the Hash nutzt den Hash selbst als Anmeldeartefakt. Das Klartextpasswort muss dafür nicht rekonstruiert werden.\n\n \n\n Merkhilfe: Pass the hash ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Pass the Hash ist laut Messer eine Replay-Variante, bei der der Angreifer nicht das Passwort, sondern direkt den mitgeschnittenen Passwort-Hash erneut an den Server sendet und sich damit authentifiziert, ohne das Klartextpasswort je zu kennen.",
     "delete_duplicates": [
       "1729174445462"
     ]
@@ -2336,7 +2336,7 @@
     "C": "Telnet",
     "D": "SNMPv1",
     "correct": "A",
-    "explanation_de": "HTTPS ist HTTP über TLS. Es schuetzt Webverkehr vor Mitlesen und Manipulation auf dem Transportweg.\n\n \n\n Merkhilfe: HTTPS ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "HTTPS ist laut Messer HTTP über eine verschlüsselte Verbindung — Messer empfiehlt es explizit als Gegenmaßnahme gegen Replay- und Session-Hijacking-Angriffe, da ein Angreifer verschlüsselten Verkehr nicht mitlesen kann.",
     "delete_duplicates": [
       "1729174658385",
       "1729174658386"
@@ -2354,7 +2354,7 @@
     "C": "RF jamming",
     "D": "Sideloading",
     "correct": "B",
-    "explanation_de": "Replay-Daten werden häufig durch Mitlesen im Kommunikationsweg gesammelt. Genau das ermöglicht ein On-Path-Angriff.\n\n \n\n Merkhilfe: On-path attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer erklärt, dass ein On-Path-Angriff oft der erste Schritt ist, um die für einen Replay-Angriff nötigen Daten (Passwort-Hashes, Session-IDs) überhaupt erst vom Netzwerk abzugreifen — beide Angriffe werden häufig kombiniert.",
     "delete_duplicates": [
       "1729174805552"
     ]
@@ -2386,7 +2386,7 @@
     "C": "Firmware",
     "D": "Shadow IT",
     "correct": "A",
-    "explanation_de": "Malicious Code ist bösartiger Code, der Schwachstellen oder Exploits nutzt. Er ist breiter als einzelne Malware-Familien.\n\n \n\n Merkhilfe: Malicious code ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Malicious Code braucht laut Messer der Angreifer immer dann, wenn Social Engineering, Standard-Zugangsdaten oder Fehlkonfigurationen nicht funktionieren — also wenn das System tatsächlich einigermaßen abgesichert ist und ein technischerer Ansatz nötig wird.",
     "delete_duplicates": [
       "1729175231853",
       "1729175231854"
@@ -2416,7 +2416,7 @@
     "C": "Password spraying",
     "D": "Injection attacks",
     "correct": "D",
-    "explanation_de": "Injection Attacks schleusen unerwartete Befehle oder Daten in Anwendungen ein. Fehlende Filterung und Validierung sind Kernursachen.\n\n \n\n Merkhilfe: Injection attacks ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Injection-Angriffe entstehen laut Messer immer dann, wenn eine Anwendung Nutzereingaben nicht ordentlich prüft — der Angreifer kann dann eigenen Code (SQL, HTML, XML, LDAP) einfach mit ins Eingabefeld schreiben.",
     "delete_duplicates": [
       "1729175578383",
       "1729175578384"
@@ -2452,7 +2452,7 @@
     "C": "Data Execution Prevention",
     "D": "Domain Name System",
     "correct": "C",
-    "explanation_de": "DEP markiert Speicherbereiche als nicht ausfuehrbar. Das erschwert bestimmte Speicher-Exploits.\n\n \n\n Merkhilfe: Data Execution Prevention ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Data Execution Prevention schränkt laut Messer ein, in welchen Speicherbereichen Code überhaupt ausgeführt werden darf, und erschwert damit Exploits wie Buffer Overflows, die Code in eigentlich nicht dafür vorgesehene Speicherbereiche schreiben.",
     "delete_duplicates": [
       "1729175912542"
     ]
@@ -2499,7 +2499,7 @@
     "C": "Firmware",
     "D": "Kernel module",
     "correct": "A",
-    "explanation_de": "Client-side Code läuft im Browser oder auf dem Endgeraet. JavaScript ist ein typisches Beispiel.\n\n \n\n Merkhilfe: Client-side code ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Client-seitiger Code läuft laut Messer im Browser des Nutzers, typischerweise als HTML oder JavaScript, das die vom Website-Betreiber gestaltete Seite darstellt.",
     "delete_duplicates": [
       "1729176350132"
     ]
@@ -2512,7 +2512,7 @@
     "C": "Host file",
     "D": "Server-side code",
     "correct": "D",
-    "explanation_de": "Server-side Code läuft auf dem Webserver oder Backend. Er verarbeitet Logik, Datenzugriff und serverseitige Antworten.\n\n \n\n Merkhilfe: Server-side code ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Server-seitiger Code läuft laut Messer auf dem Webserver selbst, etwa um Anfragen zu verarbeiten oder eine Überweisung im Hintergrund auszuführen — der Browser des Nutzers bekommt davon nichts mit.",
     "delete_duplicates": [
       "1729176391514"
     ]
@@ -2536,7 +2536,7 @@
     "C": "Cross-site scripting (XSS)",
     "D": "Directory traversal",
     "correct": "B",
-    "explanation_de": "CSRF laesst den Browser eines angemeldeten Nutzers unerwuenschte Requests senden. Tokens helfen, solche Requests zu pruefen.\n\n \n\n Merkhilfe: Cross-site request forgery (CSRF) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Cross-Site Request Forgery nutzt laut Messer aus, dass ein bereits eingeloggter Browser vom Zielserver als vertrauenswürdig eingestuft wird — der Angreifer bringt das Opfer dazu, unwissentlich eine Anfrage (z. B. eine Überweisung) im eigenen, authentifizierten Kontext auszulösen.",
     "delete_duplicates": [
       "1729176558494",
       "1729176558495"
@@ -2621,7 +2621,7 @@
     "C": "Birthday attack",
     "D": "Downgrade attack",
     "correct": "C",
-    "explanation_de": "Birthday Attacks zielen auf Kollisionen in Hashfunktionen. Je groesser die Stichprobe, desto hoeher die Kollisionswahrscheinlichkeit.\n\n \n\n Merkhilfe: Birthday attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Der Birthday Attack basiert laut Messer auf dem Geburtstagsparadoxon (bei 23 Personen ca. 50% Wahrscheinlichkeit einer Übereinstimmung) und überträgt dieses Prinzip auf die Suche nach zwei unterschiedlichen Klartexten mit identischem Hash — genau das gelang Forschern 2008 mit MD5.",
     "delete_duplicates": [
       "1729178147831",
       "1729178147832"
@@ -2646,7 +2646,7 @@
     "C": "Sideloading",
     "D": "Downgrade attack",
     "correct": "D",
-    "explanation_de": "Downgrade Attacks verschlechtern die ausgehandelte Sicherheit. Ziel ist eine schwache oder unverschlüsselte Verbindung.\n\n \n\n Merkhilfe: Downgrade attack ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein Downgrade-Angriff zwingt laut Messer zwei Geräte dazu, eine schwächere oder gar keine Verschlüsselung zu verwenden, obwohl der eigentliche Algorithmus sicher wäre — die Schwachstelle liegt in der Implementierung, nicht im Algorithmus selbst.",
     "delete_duplicates": [
       "1729178380872",
       "1729178380873"
@@ -2660,7 +2660,7 @@
     "C": "RFID cloning",
     "D": "DLL injection",
     "correct": "A",
-    "explanation_de": "SSL Stripping entfernt oder verhindert die HTTPS-Nutzung aus Sicht des Clients. Der Angreifer muss dafür typischerweise on-path sein.\n\n \n\n Merkhilfe: SSL stripping ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "SSL Stripping ist laut Messer ein Downgrade-Angriff, bei dem sich der Angreifer als On-Path-Proxy zwischen Nutzer und Webserver setzt, die HTTPS-Weiterleitung unterdrückt und den Nutzer stattdessen unverschlüsselt über HTTP kommunizieren lässt.",
     "delete_duplicates": [
       "1729178403878"
     ]
@@ -2694,7 +2694,7 @@
     "C": "Session fixation",
     "D": "Input verification",
     "correct": "A",
-    "explanation_de": "Eine Hash Collision liegt vor, wenn verschiedene Eingaben denselben Hash ergeben. Gute Hashfunktionen sollen das praktisch erschweren.\n\n \n\n Merkhilfe: Hash collision ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Hash-Kollision liegt laut Messer vor, wenn zwei unterschiedliche Klartexte denselben Hash-Wert erzeugen — genau das machte MD5 ab 1996 unsicher und führte 2008 dazu, dass Forscher damit ein gefälschtes, scheinbar gültiges CA-Zertifikat erzeugen konnten.",
     "delete_duplicates": [
       "1729178842872",
       "1729178842873"
@@ -2708,7 +2708,7 @@
     "C": "Salted",
     "D": "Sandboxed",
     "correct": "A",
-    "explanation_de": "In the clear bedeutet Klartext ohne Verschlüsselung. Solche Daten können bei Zugriff oder Mitschnitt direkt gelesen werden.\n\n \n\n Merkhilfe: In the clear ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "'In the clear' bezeichnet laut Messer Daten, die unverschlüsselt gespeichert oder übertragen werden — bei Passwörtern warnt er ausdrücklich davor, sie jemals als Klartext statt als Hash zu speichern.",
     "delete_duplicates": [
       "1729179162671"
     ]
@@ -2743,7 +2743,7 @@
     "C": "Password spraying",
     "D": "Brute forcing one account",
     "correct": "C",
-    "explanation_de": "Password Spraying verteilt wenige häufige Passwoerter über viele Konten. So werden Lockouts einzelner Konten vermieden.\n\n \n\n Merkhilfe: Password spraying ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Bei Password Spraying probiert der Angreifer laut Messer nur wenige, sehr verbreitete Passwörter (z. B. die Top 3) über viele Konten hinweg aus, um Lockouts zu vermeiden — anders als Brute Force, das viele Kombinationen gegen ein einzelnes Konto testet.",
     "delete_duplicates": [
       "1729180047820"
     ]
@@ -2770,7 +2770,7 @@
     "C": "Recovery point objective (RPO)",
     "D": "Common vulnerability score (CVSS)",
     "correct": "A",
-    "explanation_de": "IOCs sind Hinweise auf Kompromittierung, etwa ungewoehnliche Logins, Hash-Aenderungen oder verdachtige Netzwerkaktivitaet.\n\n \n\n Merkhilfe: Indicator of Compromise (IOC) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Einen Indicator of Compromise (IOC) definiert Messer als Hinweis, bei dem man mit hoher Sicherheit von einer tatsächlichen Kompromittierung ausgehen kann — etwa ungewöhnlicher Datenverkehr, veränderte Datei-Hashes oder unmögliche gleichzeitige Logins von weit entfernten Orten.",
     "delete_duplicates": [
       "1729180535846"
     ]
@@ -2864,7 +2864,7 @@
     "C": "Birthday attack",
     "D": "Segmentation",
     "correct": "D",
-    "explanation_de": "Segmentation teilt Netze oder Systeme in Bereiche. Das begrenzt Bewegungsfreiheit und Auswirkungen eines Sicherheitsereignisses.\n\n \n\n Merkhilfe: Segmentation ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Segmentation teilt laut Messer ein Netzwerk in kleinere physische, logische (z. B. VLANs) oder virtuelle Teile, um im Sicherheitsfall den Schaden einzugrenzen oder aus Compliance-Gründen sensible Bereiche zu trennen.",
     "delete_duplicates": [
       "1729182645617",
       "1729182645618",
@@ -2904,7 +2904,7 @@
     "C": "Payment Card Industry (PCI)",
     "D": "Open Web Application Security Project (OWASP)",
     "correct": "C",
-    "explanation_de": "PCI-Anforderungen betreffen Kreditkartendaten. Segmentierung hilft, Karteninhaberdaten von anderen Netzbereichen zu trennen.\n\n \n\n Merkhilfe: Payment Card Industry (PCI) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer nennt PCI-Compliance (Payment Card Industry) als konkretes Beispiel, bei dem Kreditkartendaten laut Vorschrift komplett vom Rest des Netzwerks getrennt gehalten werden müssen.",
     "delete_duplicates": [
       "1729182844023"
     ]
@@ -2917,7 +2917,7 @@
     "C": "Watering hole",
     "D": "Access control list (ACL)",
     "correct": "D",
-    "explanation_de": "ACLs definieren Erlaubnis- oder Sperrregeln. Sie können für Netzwerkverkehr, Betriebssystemrechte oder Anwendungen genutzt werden.\n\n \n\n Merkhilfe: Access control list (ACL) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Access Control List erlaubt oder verweigert laut Messer Datenverkehr anhand von Kriterien wie Quell-/Ziel-IP, Portnummer oder Tageszeit — sein Beispiel zeigt eine sehr granulare Regel, die James nur Zugriff auf 192.168.1.0/24 über die Ports 80, 443 und 8088 erlaubt.",
     "delete_duplicates": [
       "1729182899509"
     ]
@@ -2968,7 +2968,7 @@
     "C": "Allow list",
     "D": "Deny list",
     "correct": "C",
-    "explanation_de": "Eine Allow List ist restriktiv: Nur Eintraege auf der Liste duerfen laufen. Alles andere wird blockiert.\n\n \n\n Merkhilfe: Allow list ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Allow List lässt laut Messer grundsätzlich nur explizit freigegebene Anwendungen laufen — alles, was nicht auf der Liste steht, wird blockiert, was ein deutlich restriktiveres Modell als eine Deny List ist.",
     "delete_duplicates": [
       "1729183258175",
       "1729183335635"
@@ -2982,7 +2982,7 @@
     "C": "Deny list",
     "D": "Allow list",
     "correct": "C",
-    "explanation_de": "Eine Deny List sperrt bekannte unerwuenschte Eintraege. Nicht gelistete Anwendungen bleiben erlaubt.\n\n \n\n Merkhilfe: Deny list ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Deny List funktioniert laut Messer umgekehrt zur Allow List: Alles darf laufen, außer den explizit als schädlich bekannten Einträgen — genau so arbeitet klassische Antiviren-/Anti-Malware-Software.",
     "delete_duplicates": [
       "1729183351570",
       "1729183351571"
@@ -3050,7 +3050,7 @@
     "C": "Mitigation",
     "D": "Amplification",
     "correct": "C",
-    "explanation_de": "Mitigation reduziert Eintrittswahrscheinlichkeit oder Auswirkung. Es geht nicht zwingend um vollständige Beseitigung, sondern Risikosenkung.\n\n \n\n Merkhilfe: Mitigation ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Mitigation definiert Messer als den Prozess, die Auswirkungen eines (potenziellen) Sicherheitsvorfalls zu verringern — etwa durch Patching, Verschlüsselung, Monitoring oder Least Privilege.",
     "delete_duplicates": [
       "1729183952927"
     ]
@@ -3092,7 +3092,7 @@
     "C": "Encrypting File System (EFS)",
     "D": "Full Disk Encryption (FDE)",
     "correct": "C",
-    "explanation_de": "EFS verschlüsselt einzelne Dateien oder Ordner unter Windows. FDE verschlüsselt dagegen ein ganzes Laufwerk.\n\n \n\n Merkhilfe: Encrypting File System (EFS) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "EFS (Encrypting File System) ist laut Messer die in Windows integrierte Verschlüsselung auf Datei- oder Ordnerebene, mit der man gezielt einzelne Dateien statt des gesamten Laufwerks verschlüsseln kann.",
     "delete_duplicates": [
       "1729184719691",
       "1729184719693"
@@ -3106,7 +3106,7 @@
     "C": "Input sanitization",
     "D": "Data masking",
     "correct": "A",
-    "explanation_de": "Full Disk Encryption schuetzt ein komplettes Laufwerk. Das ist besonders wichtig bei mobilen oder verlorengehenden Geräten.\n\n \n\n Merkhilfe: Full Disk Encryption (FDE) ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Full Disk Encryption verschlüsselt laut Messer das gesamte Speichervolumen inklusive Betriebssystem und Nutzerdateien — unter Windows umgesetzt mit BitLocker, unter macOS mit FileVault.",
     "delete_duplicates": [
       "1729184751307",
       "1729184751309"
@@ -3150,7 +3150,7 @@
     "C": "MDM",
     "D": "FDE",
     "correct": "B",
-    "explanation_de": "SIEM steht für Security Information and Event Management. Es sammelt, korreliert und alarmiert zu Sicherheitsereignissen.\n\n \n\n Merkhilfe: SIEM ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Ein SIEM (Security Information and Event Manager) konsolidiert laut Messer Logdaten aus vielen verschiedenen Systemen an einer zentralen Stelle, um Berichte zu erstellen und Ereignisse zu überwachen.",
     "delete_duplicates": [
       "1729184967596",
       "1729184967598"
@@ -3164,7 +3164,7 @@
     "C": "Privilege escalation",
     "D": "Least privilege",
     "correct": "D",
-    "explanation_de": "Least Privilege begrenzt Rechte auf das Notwendige. Weniger Rechte bedeuten weniger Schaden bei Fehlern oder Kompromittierung.\n\n \n\n Merkhilfe: Least privilege ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Least Privilege bedeutet laut Messer, dass Nutzer nur die Rechte erhalten, die ihre konkrete Rolle erfordert — im Idealfall läuft laut Messer niemand dauerhaft mit administrativen Rechten.",
     "delete_duplicates": [
       "1729185023358"
     ]
@@ -3184,7 +3184,7 @@
     "C": "Packet capture",
     "D": "War dialing",
     "correct": "A",
-    "explanation_de": "Posture Assessment prüft Sicherheitszustand eines Endgeraets. Nicht konforme Geräte können in Quarantaene landen.\n\n \n\n Merkhilfe: Posture assessment ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Posture Assessment prüft laut Messer beim Login, ob ein Gerät den Sicherheitsanforderungen entspricht — etwa aktuelle Patches, aktuelle Antiviren-Signaturen und aktivierte lokale Firewall — bei Nichterfüllung landet das Gerät in Quarantäne bzw. einem separaten VLAN.",
     "delete_duplicates": []
   },
   {
@@ -3195,7 +3195,7 @@
     "C": "External Device Registration",
     "D": "Enterprise DNS Relay",
     "correct": "A",
-    "explanation_de": "EDR bedeutet Endpoint Detection and Response. Es erkennt, untersucht und reagiert auf Bedrohungen an Endpunkten.\n\n \n\n Merkhilfe: Endpoint Detection and Response ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "EDR steht laut Messer für Endpoint Detection and Response — im Gegensatz zu klassischem Antivirus erkennt es Bedrohungen laut Messer auch über Verhaltensanalyse und maschinelles Lernen statt nur über Signaturen und kann automatisch isolieren und zurückrollen.",
     "delete_duplicates": [
       "1729185236520"
     ]
@@ -3245,7 +3245,7 @@
     "C": "Hardening",
     "D": "Amplification",
     "correct": "C",
-    "explanation_de": "Hardening reduziert Angriffsoberflaeche durch sichere Konfiguration, Patches, deaktivierte Dienste und Zugriffsbeschränkung.\n\n \n\n Merkhilfe: Hardening ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Hardening beschreibt laut Messer die Maßnahmen, mit denen ein System weniger anfällig für Angriffe gemacht wird — etwa Patches einspielen, Passwortrichtlinien setzen und Zugriff einschränken.",
     "delete_duplicates": [
       "1729185940821"
     ]
@@ -3276,7 +3276,7 @@
     "C": "Password reuse",
     "D": "Defense in depth",
     "correct": "D",
-    "explanation_de": "Defense in Depth kombiniert Schutzmassnahmen. Mehrere Schichten senken das Risiko, dass ein einzelner Fehler alles oeffnet.\n\n \n\n Merkhilfe: Defense in depth ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Defense in Depth bedeutet laut Messer, dass beim Hardening viele verschiedene Werkzeuge und Richtlinien zusammenwirken, weil es laut Messer niemals nur einen einzigen Knopf gibt, um ein System vollständig abzusichern.",
     "delete_duplicates": [
       "1729186250126"
     ]
@@ -3305,7 +3305,7 @@
     "C": "DNS sinkhole",
     "D": "Host-based firewall",
     "correct": "D",
-    "explanation_de": "Host-based Firewalls laufen auf einzelnen Clients oder Servern. Sie können Verkehr direkt am Endpunkt kontrollieren.\n\n \n\n Merkhilfe: Host-based firewall ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Eine Host-based Firewall läuft laut Messer direkt auf jedem einzelnen Endgerät statt nur am Netzwerkperimeter und sieht dadurch den Datenverkehr auch vor bzw. nach der Verschlüsselung.",
     "delete_duplicates": [
       "1729186549471"
     ]
@@ -3343,7 +3343,7 @@
     "C": "Hosted Internet Proxy Server",
     "D": "Hash Integrity Processing Standard",
     "correct": "A",
-    "explanation_de": "HIPS ist ein hostbasiertes Intrusion Prevention System. Es überwacht und blockiert verdaechtige Aktivitaeten lokal am Endpunkt.\n\n \n\n Merkhilfe: Host-based Intrusion Prevention System ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "HIPS steht laut Messer für Host-based Intrusion Prevention System — es läuft auf dem einzelnen Gerät, oft integriert in EDR oder Anti-Malware, und kann z. B. Pufferüberläufe oder Änderungen an Kern-Systemdateien erkennen.",
     "delete_duplicates": [
       "1729186709320"
     ]
@@ -3356,7 +3356,7 @@
     "C": "Integrity Proof Standard",
     "D": "Intrusion Prevention System",
     "correct": "D",
-    "explanation_de": "IPS bedeutet Intrusion Prevention System. Im Gegensatz zu reinem Monitoring kann es verdaechtige Aktivitaeten blockieren.\n\n \n\n Merkhilfe: Intrusion Prevention System ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "IPS steht laut Messer für Intrusion Prevention System — es erkennt bekannte Angriffsmuster im Netzwerkverkehr anhand von Signaturen oder Verhaltensauffälligkeiten und kann sie aktiv blockieren.",
     "delete_duplicates": [
       "1729186723938"
     ]
@@ -3410,7 +3410,7 @@
     "C": "Multi-factor authentication",
     "D": "Typosquatting",
     "correct": "C",
-    "explanation_de": "MFA ergaenzt zentrale Authentifizierung durch weitere Faktoren. Das reduziert Risiko durch kompromittierte Passwoerter.\n\n \n\n Merkhilfe: Multi-factor authentication ist hier der Prüfbegriff. Achte auf die Schlüsselwörter in der Frage und grenze die anderen Optionen als benachbarte, aber anders gemeinte Security+-Konzepte ab.",
+    "explanation_de": "Messer empfiehlt für Management-Oberflächen von Infrastrukturgeräten explizit Multifaktor-Authentifizierung in Kombination mit zentralisierter, synchronisierter Authentifizierung, statt sich allein auf ein einzelnes Passwort zu verlassen.",
     "delete_duplicates": [
       "1729187191970"
     ]
