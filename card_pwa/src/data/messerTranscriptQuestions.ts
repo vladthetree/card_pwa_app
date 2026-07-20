@@ -543,6 +543,28 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 0,
       why: 'Baselines sind meist stabile Best Practices — aktualisiert wird bei neuen Schwachstellen, App-Updates oder neuen Betriebssystemen; danach testen und per Audit prüfen, ob sie wirksam bleiben.',
     },
+    {
+      q: 'Where can organizations get a starting point for establishing a security baseline, per the video?',
+      options: [
+        'From application developers, operating system manufacturers, or appliance manufacturers who already publish baselines',
+        'Baselines must always be created entirely from scratch with no outside reference',
+        'Only from a single global government standard',
+        'Security baselines cannot be established for applications, only hardware',
+      ],
+      correct: 0,
+      why: 'Laut Video muss man nicht bei null anfangen: Hersteller von Anwendungen, Betriebssystemen oder Appliances stellen bereits Baselines bereit, die angepasst werden können.',
+    },
+    {
+      q: 'Why must a security baseline be actively maintained after deployment, per the video?',
+      options: [
+        'New vulnerabilities, application updates, or new OS installs can require baseline updates, and deployed settings must be periodically audited',
+        'Once deployed, a baseline never needs to change again',
+        'Maintenance only matters for baselines older than ten years',
+        'Baselines are automatically maintained by antivirus software alone',
+      ],
+      correct: 0,
+      why: 'Laut Video können neue Schwachstellen, Anwendungsupdates oder neue Betriebssysteme eine Aktualisierung der Baseline erfordern — bereits ausgerollte Einstellungen müssen zudem regelmäßig geprüft werden.',
+    },
   ],
 
   // 078 — 4.1 Securing Wireless and Mobile
@@ -601,6 +623,39 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 1,
       why: 'Ein per Bluetooth verbundenes Gerät kann auf Daten des Telefons zugreifen — deshalb das formale Pairing, und deshalb nie automatisch mit unbekannten Geräten verbinden.',
+    },
+    {
+      q: 'What is the security challenge with BYOD, per the video?',
+      options: [
+        'Ensuring both the user’s personal data and the company’s data remain private and secure on a device the company does not own',
+        'BYOD devices cannot be managed by an MDM at all',
+        'BYOD requires the company to physically own every device',
+        'BYOD eliminates any need for security policy',
+      ],
+      correct: 0,
+      why: 'Bei BYOD muss laut Video sichergestellt werden, dass sowohl die privaten Daten des Nutzers als auch die Unternehmensdaten auf einem nicht firmeneigenen Gerät geschützt bleiben.',
+    },
+    {
+      q: 'How does CYOD differ from standard COPE, per the video?',
+      options: [
+        'It is still a corporate-owned device, but the user is given a choice of which corporate device to receive',
+        'CYOD devices are always personally owned by the employee',
+        'CYOD removes all corporate control over the device',
+        'CYOD only applies to desktop computers, never mobile devices',
+      ],
+      correct: 0,
+      why: 'CYOD bleibt laut Video ein firmeneigenes Gerät — der Nutzer darf aber auswählen, welches konkrete Gerät er bekommt.',
+    },
+    {
+      q: 'Why does the video flag cellular connectivity as a security concern for mobile devices?',
+      options: [
+        'The organization doesn’t have full control over data sent/received over the cellular network, raising traffic monitoring and location tracking concerns',
+        'Cellular networks are always more secure than Wi-Fi',
+        'Cellular data cannot be intercepted under any circumstances',
+        'Cellular connectivity requires no security considerations at all',
+      ],
+      correct: 0,
+      why: 'Laut Video hat die Organisation über Mobilfunkdaten keine volle Kontrolle — das wirft Fragen zu Traffic-Überwachung und Standortverfolgung auf.',
     },
   ],
 
@@ -878,6 +933,28 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 2,
       why: 'Neben tausenden Signaturen (z. B. für Conficker) können IPS-Systeme generische Angriffsmuster wie Database Injections erkennen und blocken — bei so vielen Regeln sind gelegentliche False Positives einzuplanen.',
     },
+    {
+      q: 'What happens to traffic that matches no rule in a firewall configured with implicit deny, per the video?',
+      options: [
+        'It is automatically dropped once it reaches the bottom of the rule base',
+        'It is automatically allowed through by default',
+        'It is queued indefinitely for manual review',
+        'Implicit deny only applies to outbound traffic, never inbound',
+      ],
+      correct: 0,
+      why: 'Bei Implicit Deny wird laut Video jeglicher Traffic, der keine Regel trifft, am Ende der Regelliste automatisch verworfen.',
+    },
+    {
+      q: 'In the video’s example firewall rule base, which protocol/port combination is explicitly denied?',
+      options: [
+        'ICMP (commonly used for ping)',
+        'TCP port 443 (HTTPS)',
+        'TCP port 22 (SSH)',
+        'UDP port 53 (DNS)',
+      ],
+      correct: 0,
+      why: 'Im gezeigten Regelwerk ist laut Video eingehender ICMP-Verkehr (z. B. Ping) explizit verweigert, während SSH, HTTPS und DNS erlaubt sind.',
+    },
   ],
 
   // 092 — 4.5 Secure Protocols
@@ -936,6 +1013,38 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 1,
       why: 'Der VPN-Tunnel verschlüsselt alles zwischen Gerät und Concentrator — unabhängig von der Anwendung. Der Concentrator entschlüsselt und leitet die Daten weiter; dafür braucht es ggf. Client-Software und einen Concentrator/Dienst.',
+    },
+    {
+      q: 'Which protocol pair does the video contrast as insecure Telnet vs. its secure replacement?',
+      options: [
+        'Telnet in the clear vs. SSH, its encrypted replacement',
+        'Telnet vs. SMTP, an unrelated mail protocol',
+        'Telnet vs. ICMP, a diagnostic protocol',
+        'Telnet vs. ARP, an address resolution protocol'],
+      correct: 0,
+      why: 'Statt des unverschlüsselten Telnet empfiehlt das Video SSH für den sicheren Fernzugriff auf die Konsole.',
+    },
+    {
+      q: 'Why can’t you assume traffic on port 443 is automatically secure, per the video?',
+      options: [
+        'A port number alone doesn’t guarantee encryption — you need to verify server settings and ideally confirm via packet capture',
+        'Port 443 always means the traffic is unencrypted',
+        'Port numbers automatically enforce encryption regardless of configuration',
+        'Port selection has no relationship to protocol security',
+      ],
+      correct: 0,
+      why: 'Laut Video ist eine Portnummer allein keine Garantie für Verschlüsselung — Servereinstellungen prüfen und ggf. per Paketmitschnitt bestätigen.',
+    },
+    {
+      q: 'Which network-level transport method does the video mention for encrypting traffic regardless of whether the application itself supports encryption?',
+      options: [
+        'A VPN, creating an encrypted tunnel to a concentrator',
+        'Increasing the MTU size',
+        'Switching from IPv4 to a longer subnet mask',
+        'Disabling DNS resolution',
+      ],
+      correct: 0,
+      why: 'Laut Video kann ein VPN den gesamten Datenverkehr auf Netzwerkebene verschlüsseln, unabhängig davon, ob die einzelne Anwendung selbst Verschlüsselung unterstützt.',
     },
   ],
 
@@ -2691,6 +2800,72 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 3,
       why: 'Heizungs- oder Lichthersteller sind keine Security-Spezialisten: IoT-Patches darum priorisieren und die Geräte in ein eigenes Segment stellen — ein kompromittiertes Gerät erreicht dann nur andere IoT-Geräte.',
     },
+    {
+      q: 'Which hardening technique does the video mention specifically for mobile devices?',
+      options: [
+        'Segmenting company data from personal data on the device, managed through an MDM',
+        'Disabling all patches to avoid instability',
+        'Never allowing any applications to be installed',
+        'Removing the device’s ability to connect to any network',
+      ],
+      correct: 0,
+      why: 'Laut Video wird auf Mobilgeräten oft Unternehmensdaten von privaten Daten logisch getrennt (Segmentierung), verwaltet über ein MDM.',
+    },
+    {
+      q: 'What hardening practice does the video recommend for desktop/laptop workstations regarding unused software?',
+      options: [
+        'Always remove software that is not being used, since every piece of software is a potential vulnerability',
+        'Keep all installed software indefinitely for convenience',
+        'Only remove software once a year regardless of usage',
+        'Unused software poses no security risk on workstations',
+      ],
+      correct: 0,
+      why: 'Laut Video sollte nicht genutzte Software von Workstations entfernt werden, da jede installierte Anwendung eine potenzielle Angriffsfläche darstellt.',
+    },
+    {
+      q: 'What does the video recommend for securing a cloud management workstation and cloud configurations?',
+      options: [
+        'Apply least privilege to cloud services/permissions, install EDR, and maintain backups (ideally to a separate provider)',
+        'Grant every cloud service full administrative access by default',
+        'Cloud infrastructure requires no hardening since the provider handles everything',
+        'Never back up cloud-based systems since they cannot fail',
+      ],
+      correct: 0,
+      why: 'Laut Video sollten Cloud-Dienste nach Least Privilege konfiguriert, mit EDR überwacht und regelmäßig gesichert werden — idealerweise auch bei einem zweiten Anbieter.',
+    },
+    {
+      q: 'Which authentication-related hardening step does the video recommend for servers?',
+      options: [
+        'Enforcing minimum password length/complexity, applying least privilege, and disabling unused accounts',
+        'Allowing every account administrator access by default for convenience',
+        'Never disabling any account, even unused ones',
+        'Servers do not need any password policy since they are physically secured',
+      ],
+      correct: 0,
+      why: 'Laut Video gehören Mindestpasswortlänge/-komplexität, Least Privilege und das Deaktivieren ungenutzter Konten zur Serverhärtung.',
+    },
+    {
+      q: 'Why does the video recommend acting quickly on a security patch for an embedded system?',
+      options: [
+        'Patches for purpose-built embedded appliances are unusual, so a notification of one is a significant, important event',
+        'Embedded systems receive patches every single day, so timing does not matter',
+        'Embedded systems never need patches at all',
+        'Embedded system patches are always applied automatically without any decision needed',
+      ],
+      correct: 0,
+      why: 'Da Patches für zweckgebundene Embedded-Geräte laut Video selten sind, ist eine Sicherheitsmeldung dafür ein wichtiges Ereignis, das man zügig prüfen sollte.',
+    },
+    {
+      q: 'What isolation practice does the video recommend for a real-time operating system?',
+      options: [
+        'Isolating the RTOS from the rest of the network and running the minimum number of necessary services',
+        'Connecting the RTOS directly to the public internet for easier updates',
+        'Running as many background services as possible for redundancy',
+        'RTOS devices should always share a network with general-purpose workstations',
+      ],
+      correct: 0,
+      why: 'Laut Video sollten RTOS-Systeme vom restlichen Netz isoliert werden und nur die unbedingt nötigen Dienste laufen lassen — kein anderes Gerät soll den zeitkritischen Betrieb stören.',
+    },
   ],
 
   // 079 — 4.1 Wireless Security Settings
@@ -2738,6 +2913,50 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 0,
       why: 'Der Supplicant will ins Netz, der Authenticator (z. B. Access Point/Switch) vermittelt, der AAA-Server prüft die Credentials — abgewickelt über EAP, für den Nutzer unsichtbar schnell. AAA steht für Authentication, Authorization, Accounting.',
+    },
+    {
+      q: 'What key improvement does WPA3 bring over WPA2, per the video?',
+      options: [
+        'A new handshake (SAE) that avoids exposing a crackable pre-shared key hash, removing the offline brute-force weakness of WPA2',
+        'WPA3 removed encryption entirely to increase speed',
+        'WPA3 uses the exact same four-way handshake as WPA2',
+        'WPA3 only works with open, unauthenticated networks',
+      ],
+      correct: 0,
+      why: 'WPA3 ersetzt laut Video das anfällige Vier-Wege-Handshake durch SAE (Simultaneous Authentication of Equals) — es gibt keinen übertragenen Hash mehr, den man offline brute-forcen könnte.',
+    },
+    {
+      q: 'What does WPA3-Enterprise typically link back to for authentication, per the video?',
+      options: [
+        'A centralized AAA server, often using RADIUS',
+        'No server at all — it is fully local to the access point',
+        'A single shared password identical for every user',
+        'A third-party social media login only',
+      ],
+      correct: 0,
+      why: 'WPA3-Enterprise (WPA3-802.1X) fragt laut Video Benutzername/Passwort ab und bindet die Authentifizierung an einen zentralen AAA-Server, oft RADIUS.',
+    },
+    {
+      q: 'What new block cipher mode does WPA3 introduce, per the video?',
+      options: [
+        'GCMP (Galois Counter Mode Protocol), providing stronger encryption and message integrity than WPA2',
+        'DES, for backward compatibility',
+        'No encryption protocol at all',
+        'The same RC4 stream cipher used in WEP',
+      ],
+      correct: 0,
+      why: 'Laut Video bringt WPA3 den neuen Blockchiffre-Modus GCMP mit stärkerer Verschlüsselung und integriertem Message Integrity Check.',
+    },
+    {
+      q: 'Which protocol does the video describe as the framework embedding authentication within the 802.1X process?',
+      options: [
+        'EAP (Extensible Authentication Protocol), customizable by manufacturers',
+        'FTP, for transferring credentials',
+        'ICMP, used for connectivity testing only',
+        'SMTP, normally used for email',
+      ],
+      correct: 0,
+      why: 'EAP ist laut Video das flexible Rahmenwerk, das die Authentifizierung in den 802.1X-Prozess einbettet und von Herstellern angepasst werden kann.',
     },
   ],
 
@@ -2787,6 +3006,28 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 0,
       why: 'Fuzzing (auch Fault Injection/Robustness Testing) schickt automatisiert zufällige Eingaben in die App und beobachtet unerwartetes Verhalten — Hinweise auf fehlende Eingabevalidierung. Frei verfügbar z. B. CERTs Basic Fuzzing Framework.',
     },
+    {
+      q: 'What kind of feedback does a static application security testing (SAST) tool provide, per the video?',
+      options: [
+        'Specific code-level findings, e.g. a function like "gets" flagged for missing buffer overflow checks, with fix recommendations',
+        'Only a single pass/fail result with no detail',
+        'Real-time network traffic analysis',
+        'A list of employee usernames',
+      ],
+      correct: 0,
+      why: 'Das Video zeigt konkrete Befunde eines statischen Analyzers, etwa eine als unsicher markierte Funktion mit Empfehlung, sie durch eine sicherere Variante zu ersetzen.',
+    },
+    {
+      q: 'Why does the video recommend testing a downloaded software package in a lab before deploying it?',
+      options: [
+        'To verify the contents can be trusted, especially if the package came from a third party rather than the manufacturer directly',
+        'Lab testing is never necessary for trusted packages',
+        'Package monitoring only applies to Linux systems',
+        'To make the installation process faster',
+      ],
+      correct: 0,
+      why: 'Laut Video sollte man ein Paket, dessen Herkunft nicht sicher ist (Drittanbieter statt Hersteller direkt), erst in einer Laborumgebung prüfen, bevor es produktiv eingesetzt wird.',
+    },
   ],
 
   // 083 — 4.3 Threat Intelligence
@@ -2834,6 +3075,28 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 1,
       why: 'Das nur mit Spezialsoftware erreichbare Dark Web zeigt Aktivitäten, Werkzeuge und Marktplätze der Hackergruppen (bis hin zum Verkauf gestohlener Kreditkarten) — man beobachtet auch, ob der eigene Firmenname auftaucht.',
+    },
+    {
+      q: 'What advantage do proprietary/third-party threat intelligence services offer, per the video?',
+      options: [
+        'They analyze threats across many organizations simultaneously and can alert customers to trends before those threats arrive locally',
+        'They only provide information about a single company’s own network',
+        'They are always free and require no subscription',
+        'They replace the need for any internal security team',
+      ],
+      correct: 0,
+      why: 'Laut Video sehen kommerzielle Threat-Intelligence-Anbieter Muster über viele Organisationen hinweg und können vor Trends warnen, bevor sie die eigene Organisation erreichen.',
+    },
+    {
+      q: 'How does the Cyber Threat Alliance (CTA) example illustrate an information-sharing organization, per the video?',
+      options: [
+        'Member organizations submit threat details, which are validated, scored, and distributed back to everyone in the alliance',
+        'Only government agencies may ever join such alliances',
+        'Information-sharing organizations never validate submitted data',
+        'The CTA only shares information with a single member at a time',
+      ],
+      correct: 0,
+      why: 'Die Cyber Threat Alliance sammelt laut Video Bedrohungsdaten von Mitgliedern, validiert und bewertet sie und verteilt sie an alle Mitglieder zurück.',
     },
   ],
 
@@ -2883,6 +3146,17 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 1,
       why: 'Bug Bounties belohnen das verantwortliche Melden von Schwachstellen: Der Forscher meldet sie dem Entwickler, dieser baut und veröffentlicht den Fix, danach werden Lücke und Behebung publik (CVE).',
     },
+    {
+      q: 'How does penetration testing differ from a vulnerability scan, per the video?',
+      options: [
+        'Penetration testing actually performs real exploits to try to gain access, while a vulnerability scan only checks for the potential',
+        'They are identical processes with different names',
+        'Vulnerability scans always require more time than penetration tests',
+        'Penetration testing never requires documented rules of engagement',
+      ],
+      correct: 0,
+      why: 'Laut Video führt ein Pentest echte Exploits gegen die eigenen Systeme aus, während ein Vulnerability Scan nur das Vorhandensein einer Schwachstelle prüft, ohne sie auszunutzen.',
+    },
   ],
 
   // 086 — 4.3 Vulnerability Remediation
@@ -2930,6 +3204,72 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 1,
       why: 'Ein Scan nach dem Ausrollen bestätigt, dass der Patch wirklich installiert ist und die Lücke schließt — und findet Systeme, die noch ungepatcht sind.',
+    },
+    {
+      q: 'What triggers an unscheduled (out-of-cycle) patch, per the video?',
+      options: [
+        'A particularly severe vulnerability or a zero-day with active exploits in the wild',
+        'Unscheduled patches are never released by vendors',
+        'Only the calendar date determines when patches are released',
+        'Patches are always released exactly once per year',
+      ],
+      correct: 0,
+      why: 'Laut Video gibt es bei besonders schweren oder aktiv ausgenutzten Zero-Day-Schwachstellen außerplanmäßige Patches außerhalb des normalen Zyklus.',
+    },
+    {
+      q: 'What does cybersecurity insurance typically NOT cover, per the video?',
+      options: [
+        'Intentional acts or the actual transfer of funds by the insured',
+        'Any losses whatsoever related to a security incident',
+        'Legal costs from resulting lawsuits',
+        'Revenue losses from an outage',
+      ],
+      correct: 0,
+      why: 'Laut Video deckt eine Cyber-Versicherung typischerweise keine vorsätzlichen Handlungen oder tatsächliche Geldtransfers ab — wohl aber z. B. Umsatzausfälle oder Rechtskosten.',
+    },
+    {
+      q: 'Who typically decides whether a system gets a patch exception/exemption, per the video?',
+      options: [
+        'A security or change control committee, not a single individual, after weighing the actual risk',
+        'Any single technician can grant an exemption unilaterally',
+        'Exemptions are automatically granted after 24 hours with no review',
+        'Exemptions are decided solely by the software vendor',
+      ],
+      correct: 0,
+      why: 'Laut Video trifft ein Sicherheits- bzw. Change-Control-Komitee diese Entscheidung gemeinsam, nicht eine einzelne Person — nach Abwägung des tatsächlichen Risikos (z. B. „nur lokal ausnutzbar").',
+    },
+    {
+      q: 'Why does the video recommend a vulnerability scan after rolling out a patch?',
+      options: [
+        'To confirm the patch was actually deployed properly and to find any systems that still need it',
+        'Rescanning is unnecessary once a patch ticket is closed',
+        'Scans after patching only check for unrelated issues',
+        'Rescanning replaces the need to test the patch beforehand',
+      ],
+      correct: 0,
+      why: 'Ein erneuter Scan nach dem Rollout bestätigt laut Video, dass der Patch wirklich installiert ist, und deckt Systeme auf, die eventuell übersehen wurden.',
+    },
+    {
+      q: 'Besides an automated rescan, what additional verification step does the video mention?',
+      options: [
+        'Manually logging into a system to confirm the patch is installed and working as expected',
+        'Verification is impossible without vendor involvement',
+        'Only automated tools can ever verify a patch, never a human',
+        'Verification only applies to hardware, never software patches',
+      ],
+      correct: 0,
+      why: 'Laut Video kann zusätzlich zur automatisierten Prüfung ein manuelles Login nötig sein, um zu bestätigen, dass der Patch korrekt installiert ist und wirkt.',
+    },
+    {
+      q: 'What kinds of metrics does the video suggest including in a patch reporting system for a large organization?',
+      options: [
+        'Total vulnerabilities found, patched vs. unpatched systems, new threat notifications, and patches with errors or exceptions',
+        'Only the total number of employees in the company',
+        'Reporting systems are unnecessary once you exceed 100 systems',
+        'Only the name of the IT manager on duty',
+      ],
+      correct: 0,
+      why: 'Laut Video sollte ein Reporting-System u. a. Gesamtzahl der Schwachstellen, gepatchte/ungepatchte Systeme, neue Bedrohungsmeldungen sowie Fehler/Ausnahmen bei Patches zeigen.',
     },
   ],
 
@@ -3126,6 +3466,50 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 3,
       why: 'Der DNS-Filter liefert für bekannte Bad-Domains (via Threat Intelligence gepflegt) keine oder eine Default-IP zurück — die Verbindung kommt nicht zustande, was auch Malware-Command-and-Control-Lookups stoppt.',
     },
+    {
+      q: 'How does a proxy provide content filtering differently from an agent-based filter, per the video?',
+      options: [
+        'The proxy sits centrally between users and the internet and makes requests on their behalf, rather than running as software on each device',
+        'A proxy must be installed individually on every user’s device',
+        'A proxy can only filter encrypted traffic, never plaintext',
+        'Proxies cannot cache any content',
+      ],
+      correct: 0,
+      why: 'Ein Proxy sitzt laut Video zentral zwischen Nutzern und Internet und stellt Anfragen stellvertretend — anders als ein agentenbasierter Filter auf jedem einzelnen Gerät.',
+    },
+    {
+      q: 'How do URL filters commonly organize the sites they control access to, per the video?',
+      options: [
+        'By category, such as gambling, adult, educational, or home and garden, rather than listing every domain individually',
+        'Only by exact IP address, never domain name',
+        'Content categorization is not possible with URL filters',
+        'Only by the file size of the requested page',
+      ],
+      correct: 0,
+      why: 'Statt einzelne Domains zu pflegen, gruppieren URL-Filter laut Video Websites in Kategorien wie Glücksspiel, Bildung oder Freizeit.',
+    },
+    {
+      q: 'What two ways does the video describe for setting up block/allow rules in a content filter?',
+      options: [
+        'By specific fully qualified domain name, or by category of website',
+        'Only by the time of day a request is made',
+        'Only by the requesting user’s screen resolution',
+        'Block rules can only ever apply to entire countries',
+      ],
+      correct: 0,
+      why: 'Laut Video lassen sich Regeln entweder auf eine konkrete Domain oder auf eine ganze Website-Kategorie anwenden.',
+    },
+    {
+      q: 'How does reputation-based filtering decide whether to allow a site, per the video?',
+      options: [
+        'It evaluates a site’s perceived risk level (e.g., trustworthy, low risk, high risk), largely through automated scanning',
+        'Reputation is assigned manually for every website on the internet',
+        'Reputation filtering ignores automated scanning entirely',
+        'Reputation only has two possible values: allowed or blocked',
+      ],
+      correct: 0,
+      why: 'Reputationsbasierte Filter bewerten laut Video das wahrgenommene Risiko einer Seite automatisiert (z. B. vertrauenswürdig bis hochriskant) — mit der Option, das manuell zu übersteuern.',
+    },
   ],
 
   // 091 — 4.5 Operating System Security
@@ -3318,6 +3702,28 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 0,
       why: 'Ein Angriff betrifft oft mehrere Systeme. XDR wertet Daten vieler Systeme und Quellen zusammen aus (u. a. Netzwerkverkehr, User-Behavior-Analytics), findet dadurch bisher übersehene Bedrohungen und reduziert False Positives.',
     },
+    {
+      q: 'How does an agentless NAC differ from a persistent agent for posture assessment, per the video?',
+      options: [
+        'It integrates with a directory service (e.g., Active Directory) and only runs during login/logoff, with no local software installed',
+        'Agentless NAC requires installing software on every endpoint',
+        'Agentless NAC can run continuously in the background at any time',
+        'Agentless NAC has nothing to do with directory services',
+      ],
+      correct: 0,
+      why: 'Agentenloses NAC ist laut Video an ein Verzeichnis wie Active Directory gekoppelt und läuft nur beim An-/Abmelden — es gibt keinen dauerhaft installierten Agenten.',
+    },
+    {
+      q: 'What does user behavior analytics use to detect abnormal activity, per the video?',
+      options: [
+        'A baseline of normal user activity (devices, traffic types, data accessed), against which deviations are flagged',
+        'Only the user’s typing speed',
+        'A fixed list of banned words in emails',
+        'Behavior analytics ignores historical activity entirely',
+      ],
+      correct: 0,
+      why: 'User Behavior Analytics baut laut Video eine Baseline aus normalem Verhalten (Geräte, Traffic, Datenzugriffe) auf, um Abweichungen als potenziell verdächtig zu erkennen.',
+    },
   ],
 
   // 098 — 4.6 Multifactor Authentication
@@ -3365,6 +3771,39 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 3,
       why: 'Der Standortfaktor nutzt IP-Adresse und GPS: Ein Login aus einem anderen Land als kurz zuvor kann blockiert werden. IP allein ist ungenau (v. a. bei IPv6), deshalb oft mit GPS kombiniert.',
+    },
+    {
+      q: 'What is the difference between a hardware and software authentication token, per the video?',
+      options: [
+        'A hardware token is a physical device generating codes; a software token provides the same function via an app on your phone',
+        'Hardware tokens require no code generation at all',
+        'Software tokens can only be used once and then are permanently disabled',
+        'Hardware and software tokens are functionally identical to a password',
+      ],
+      correct: 0,
+      why: 'Ein Hardware-Token ist laut Video ein physisches Gerät, das Codes erzeugt; ein Software-Token bietet dieselbe Funktion per App, ohne ein Zusatzgerät mitzuführen.',
+    },
+    {
+      q: 'What does a USB security key contain, per the video?',
+      options: [
+        'A certificate specific to you, so plugging it in is assumed to prove your identity',
+        'Your plaintext password stored for convenience',
+        'A live video feed of the user',
+        'Nothing — it is purely decorative and does not affect authentication',
+      ],
+      correct: 0,
+      why: 'Ein USB-Sicherheitsschlüssel trägt laut Video ein persönliches Zertifikat — sein Einstecken gilt als Nachweis, dass wirklich du der Besitzer bist.',
+    },
+    {
+      q: 'Which examples does the video give for "something you know"?',
+      options: [
+        'A memorized password, a PIN, or an unlock pattern',
+        'A fingerprint scan',
+        'Your current GPS location',
+        'A physical USB security key',
+      ],
+      correct: 0,
+      why: '„Something you know" umfasst laut Video ein gemerktes Passwort, eine PIN oder ein Entsperrmuster — Dinge, die nur du im Kopf hast.',
     },
   ],
 
@@ -3986,6 +4425,28 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 0,
       why: 'Manche Compliance-Vorgaben verlangen ein Audit durch einen externen Dritten; Art und Häufigkeit richten sich nach der jeweiligen Regulierung.',
     },
+    {
+      q: 'What does a cybersecurity audit examine, per the video?',
+      options: [
+        'IT infrastructure, software, network devices, and existing policies and procedures against current threats',
+        'Only the physical office layout',
+        'Only the company’s marketing materials',
+        'Audits are purely financial and never touch IT systems',
+      ],
+      correct: 0,
+      why: 'Ein Cybersecurity-Audit untersucht laut Video IT-Infrastruktur, Software, Netzwerkgeräte und bestehende Richtlinien im Hinblick auf aktuelle Bedrohungen.',
+    },
+    {
+      q: 'What is the relationship between an audit and an attestation, per the video?',
+      options: [
+        'Attestation is an opinion of truth about the results of an audit that was performed',
+        'Attestation always happens before any audit takes place',
+        'Audits and attestations are unrelated processes',
+        'Attestation replaces the need to perform an audit at all',
+      ],
+      correct: 0,
+      why: 'Laut Video ist die Attestierung eine Wahrheitsaussage über die Ergebnisse eines durchgeführten Audits — Audit und Attestierung gehören zusammen.',
+    },
   ],
 
   // 120 — 5.6 Security Awareness
@@ -4584,6 +5045,28 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 0,
       why: 'Laut Video liefert ein Port-Mirror/SPAN am Switch oder ein physischer Netzwerk-Tap dem passiv angeschlossenen Gerät eine Kopie des Traffics, ohne im Pfad zu liegen.',
+    },
+    {
+      q: 'How can an IPS block malicious traffic even without a specific signature for it, per the video?',
+      options: [
+        'By looking for anomalies or trends that resemble a generic intrusion, such as a database injection pattern',
+        'It cannot block anything without a matching signature',
+        'By blocking all traffic on the network permanently',
+        'By asking the user to approve each connection manually',
+      ],
+      correct: 0,
+      why: 'Laut Video kann ein IPS auch ohne konkrete Signatur anomales Verhalten (z. B. ein generisches Injection-Muster) erkennen und blockieren.',
+    },
+    {
+      q: 'What does an IPS signature, such as the example written for the Conficker worm, actually match against?',
+      options: [
+        'A very specific type of traffic pattern; if traffic matches it, the IPS can allow or block it',
+        'The physical MAC address of the sending device only',
+        'The time zone of the sender',
+        'The color scheme of the web page being requested',
+      ],
+      correct: 0,
+      why: 'Laut Video sucht eine IPS-Signatur (Beispiel: Conficker-Wurm) nach einem sehr spezifischen Traffic-Muster — passt der Verkehr, kann das IPS reagieren.',
     },
   ],
   '064': [
@@ -5663,6 +6146,368 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 0,
       why: 'Da jede installierte Anwendung laut Video einen eigenen Update-Prozess hat, verringert das Entfernen ungenutzter Software den Pflegeaufwand und die Angriffsfläche.',
+    },
+  ],
+  '080': [
+    {
+      q: 'What is input validation designed to prevent, per the video?',
+      options: [
+        'Unexpected data (e.g., malformed zip codes) from being interpreted improperly by the application',
+        'Users from ever typing anything into a form field',
+        'The application from ever crashing due to hardware failure',
+        'Only SQL databases can benefit from input validation',
+      ],
+      correct: 0,
+      why: 'Input Validation soll laut Video sicherstellen, dass unerwartete Eingaben (z. B. eine falsch formatierte Postleitzahl) nicht unkontrolliert von der Anwendung verarbeitet werden.',
+    },
+    {
+      q: 'What does the "secure" attribute on a cookie enforce, per the video?',
+      options: [
+        'The cookie is only transferred over HTTPS/an encrypted connection',
+        'The cookie is automatically deleted after one use',
+        'The cookie can never be read by any browser',
+        'The cookie is stored only on the server, never the client',
+      ],
+      correct: 0,
+      why: 'Ein als „secure" markiertes Cookie wird laut Video nur über HTTPS/verschlüsselte Verbindungen übertragen.',
+    },
+    {
+      q: 'What limitation of static code analysis (SAST) does the video point out?',
+      options: [
+        'It cannot find vulnerabilities that stem from how cryptography was implemented, since that isn’t visible just by reading the code',
+        'It always finds every vulnerability with zero false positives',
+        'It can only be used on compiled binaries, never source code',
+        'Static analysis replaces the need for any human review',
+      ],
+      correct: 0,
+      why: 'Laut Video übersieht ein statischer Analyzer typischerweise Schwachstellen, die aus der konkreten Implementierung von Kryptografie entstehen — das lässt sich nicht allein am Code ablesen.',
+    },
+    {
+      q: 'What can developers detect by building monitoring into their applications, per the video?',
+      options: [
+        'Attempted SQL injection or exploitation of known vulnerabilities, via logs analyzed for unusual activity',
+        'Only the application’s CPU temperature',
+        'Nothing useful — application monitoring provides no security value',
+        'Only successful logins, never failed ones',
+      ],
+      correct: 0,
+      why: 'Laut Video ermöglicht eingebautes Monitoring, Versuche wie SQL-Injection oder die Ausnutzung bekannter Schwachstellen anhand ungewöhnlicher Log-Muster zu erkennen.',
+    },
+  ],
+  '085': [
+    {
+      q: 'Why does the video say severity categorization (critical/high/medium/low) matters for a vulnerability report?',
+      options: [
+        'It lets teams address the most critical vulnerabilities first instead of treating every finding equally',
+        'Severity levels have no bearing on remediation order',
+        'Only informational findings should ever be prioritized',
+        'Severity categorization is purely cosmetic in scan reports',
+      ],
+      correct: 0,
+      why: 'Laut Video sollten kritische Schwachstellen zuerst behandelt werden — die Einstufung im Report hilft, Prioritäten bei begrenzten Ressourcen zu setzen.',
+    },
+    {
+      q: 'What does a CVSS score represent, per the video?',
+      options: [
+        'A standardized score from 0 to 10 indicating how critical a vulnerability is',
+        'The exact dollar cost of fixing a vulnerability',
+        'The number of systems affected by a vulnerability',
+        'A score that only applies to Microsoft products',
+      ],
+      correct: 0,
+      why: 'Der CVSS-Score reicht laut Video von 0 bis 10 und drückt aus, wie kritisch eine Schwachstelle eingestuft wird — 10 ist am kritischsten.',
+    },
+    {
+      q: 'Where can you cross-reference a CVE identifier found in a vulnerability scan, per the video?',
+      options: [
+        'The National Vulnerability Database (nvd.nist.gov) or cve.mitre.org',
+        'Only inside the scanner’s own proprietary database, nowhere else',
+        'CVE numbers cannot be looked up anywhere online',
+        'Only via the vulnerable vendor’s marketing department',
+      ],
+      correct: 0,
+      why: 'Laut Video lassen sich CVE-Nummern über die National Vulnerability Database (nvd.nist.gov) oder cve.mitre.org nachschlagen.',
+    },
+    {
+      q: 'Which classification examples does the video give for where a vulnerability scanner might find issues?',
+      options: [
+        'Desktop/mobile applications, web applications, and network devices like firewalls, switches, and routers',
+        'Vulnerabilities can only ever exist in desktop operating systems',
+        'Only vulnerabilities in physical hardware count, never software',
+        'Vulnerability scanners cannot classify findings by type',
+      ],
+      correct: 0,
+      why: 'Das Video zeigt Beispiele aus verschiedenen Kategorien: Desktop-/Mobile-Apps, Webanwendungen und Netzwerkgeräte wie Firewalls oder Router.',
+    },
+    {
+      q: 'How does the video define exposure factor?',
+      options: [
+        'A percentage representing how much impact a vulnerability would have if exploited, e.g. 100% if it could fully disable a public-facing service',
+        'The number of days since the vulnerability was published',
+        'The dollar amount of the CVE bug bounty',
+        'A fixed value that never changes between vulnerabilities',
+      ],
+      correct: 0,
+      why: 'Der Exposure Factor wird laut Video als Prozentsatz ausgedrückt — z. B. 100 %, wenn ein exponierter, ungepatchter Dienst komplett lahmgelegt werden könnte.',
+    },
+    {
+      q: 'Why does the video say patching priority differs between a public cloud system and an isolated lab system with the same vulnerability?',
+      options: [
+        'The public cloud system is exposed to everyone on the internet, so its environment carries far higher risk than an isolated lab system',
+        'Environment never affects patching priority',
+        'Lab systems always get patched before production systems',
+        'Cloud systems are never patched due to vendor lock-in',
+      ],
+      correct: 0,
+      why: 'Laut Video hat dieselbe Schwachstelle in der öffentlichen Cloud eine viel höhere Priorität als in einem isolierten Testlabor ohne weitere Konnektivität.',
+    },
+    {
+      q: 'How does the video’s hospital ransomware example illustrate industry/organizational impact?',
+      options: [
+        'A two-week hospital shutdown forced emergency cases to be diverted and scheduled surgeries canceled — impact varies dramatically by industry',
+        'All organizations experience identical impact from the same type of attack',
+        'Hospitals are immune to ransomware due to regulation',
+        'Impact assessment ignores the type of organization entirely',
+      ],
+      correct: 0,
+      why: 'Das Krankenhausbeispiel (Tallahassee Memorial Health) zeigt laut Video, wie dieselbe Angriffsart je nach Branche völlig unterschiedliche, teils lebensrelevante Auswirkungen haben kann.',
+    },
+  ],
+  '096': [
+    {
+      q: 'What marks the start and end of the IAM provisioning process, per the video?',
+      options: [
+        'It begins with creating a user account and ends when that account is deactivated, commonly tied to onboarding/offboarding',
+        'Provisioning has no defined start or end point',
+        'De-provisioning only happens if a user requests it themselves',
+        'Provisioning is a one-time event with no corresponding deprovisioning step',
+      ],
+      correct: 0,
+      why: 'Laut Video beginnt IAM-Provisionierung mit der Kontoerstellung und endet mit der Deaktivierung — typischerweise an Onboarding/Offboarding gekoppelt.',
+    },
+    {
+      q: 'Why does the video caution against assigning administrator access to every new hire?',
+      options: [
+        'The goal of IAM is to assign only the permissions necessary for the job, limiting ongoing and extended access',
+        'Administrator access should be the default for all users to save time',
+        'Permission assignment has no security implications',
+        'Every employee needs the same permissions regardless of role',
+      ],
+      correct: 0,
+      why: 'Ziel von IAM ist laut Video, genau die für die Aufgabe nötigen Rechte zu vergeben — nicht pauschal Adminrechte, die über den Bedarf hinausgehen.',
+    },
+    {
+      q: 'What does the video describe as part of the identity proofing (resolution + attestation) process?',
+      options: [
+        'Verifying who someone claims to be, potentially using government documents, in-person meetings, or credit report checks',
+        'Identity proofing only requires a self-reported name with no verification',
+        'Identity proofing is performed automatically with no human or document involvement',
+        'Identity proofing happens only after an account has already been fully provisioned',
+      ],
+      correct: 0,
+      why: 'Identity Proofing prüft laut Video die reale Identität — etwa über amtliche Dokumente, ein persönliches Treffen oder automatisierte Abfragen (z. B. Kreditauskunft).',
+    },
+    {
+      q: 'What does federation allow, per the video?',
+      options: [
+        'Logging into a site using an existing account from a third party (e.g., an existing login), without creating a new local account',
+        'Federation requires creating a brand-new password for every site',
+        'Federation only works between two servers owned by the same company',
+        'Federation eliminates the need for any authentication',
+      ],
+      correct: 0,
+      why: 'Federation erlaubt laut Video den Login über ein bereits bestehendes Konto eines Drittanbieters, ohne ein neues lokales Konto anzulegen.',
+    },
+    {
+      q: 'What does LDAP provide, per the video?',
+      options: [
+        'A standardized protocol for accessing large hierarchical directories of users and devices on a network',
+        'A method for compressing video files',
+        'A protocol exclusively for sending email',
+        'A wireless encryption standard',
+      ],
+      correct: 0,
+      why: 'LDAP ist laut Video ein standardisiertes Protokoll für den Zugriff auf große, hierarchisch aufgebaute Verzeichnisse von Nutzern und Geräten.',
+    },
+    {
+      q: 'What does OAuth determine once a user has authenticated, per the video?',
+      options: [
+        'What resources the user may access — OAuth is an authorization framework, not authentication itself',
+        'OAuth performs both authentication and authorization on its own, always',
+        'OAuth only works with LDAP directories',
+        'OAuth is used exclusively for encrypting stored passwords',
+      ],
+      correct: 0,
+      why: 'OAuth ist laut Video ein Autorisierungs-Framework — es legt fest, worauf jemand zugreifen darf, benötigt aber (oft via OpenID) eine separate Authentifizierung.',
+    },
+    {
+      q: 'What does the client present to the resource server after SAML authentication succeeds, per the video?',
+      options: [
+        'A SAML token generated by the authorization server',
+        'The user’s raw plaintext password',
+        'A physical smart card',
+        'Nothing — the resource server queries the authorization server directly every time',
+      ],
+      correct: 0,
+      why: 'Nach erfolgreicher Anmeldung erhält der Client laut Video ein SAML-Token vom Autorisierungsserver, das er dem Ressourcenserver zum Zugriff vorlegt.',
+    },
+    {
+      q: 'What does the video’s VPN concentrator example illustrate about interoperability?',
+      options: [
+        'Choosing a technology (e.g., LDAP support on a new VPN concentrator) that matches resources the organization already has, like an existing Active Directory server',
+        'Interoperability means every device must run identical software',
+        'Interoperability decisions never involve existing infrastructure',
+        'Interoperability only matters for hardware, never authentication protocols',
+      ],
+      correct: 0,
+      why: 'Das VPN-Beispiel im Video zeigt: Ein neues Gerät mit LDAP-Unterstützung passt gut, wenn bereits ein Active-Directory-/LDAP-Server vorhanden ist — Interoperabilität nutzt bestehende Ressourcen.',
+    },
+  ],
+  '097': [
+    {
+      q: 'Who defines the access rights in a mandatory access control model, per the video?',
+      options: [
+        'The system administrator, using labels like confidential, secret, or top secret',
+        'Whoever created the specific file or document',
+        'The end user decides their own access level',
+        'Mandatory access control has no defined authority; access is unrestricted',
+      ],
+      correct: 0,
+      why: 'Bei Mandatory Access Control legt laut Video der Administrator über Label wie „confidential" oder „top secret" fest, wer worauf zugreifen darf — nicht der einzelne Nutzer.',
+    },
+    {
+      q: 'How does role-based access control assign permissions, per the video?',
+      options: [
+        'The administrator creates groups tied to job functions and assigns rights to the group; users inherit permissions by being added to the group',
+        'Each user’s permissions are set individually with no group structure',
+        'Permissions are assigned randomly to reduce administrative overhead',
+        'Role-based access control requires the data creator to set permissions',
+      ],
+      correct: 0,
+      why: 'Bei RBAC erstellt der Administrator laut Video Gruppen je Rolle und weist Rechte der Gruppe zu — Nutzer erben die Rechte einfach durch Gruppenmitgliedschaft.',
+    },
+    {
+      q: 'What is the key characteristic of rule-based access control, per the video’s example?',
+      options: [
+        'System-enforced rules set by the administrator, e.g. access to a lab only between 9 a.m. and 5 p.m.',
+        'The end user sets all of the rules themselves',
+        'Rules can only ever be based on the requester’s job title',
+        'Rule-based access control ignores time and other contextual criteria entirely',
+      ],
+      correct: 0,
+      why: 'Rule-Based Access Control nutzt laut Video vom Administrator festgelegte, systemgeprüfte Regeln — Beispiel: Zugriff auf ein Labor nur zwischen 9 und 17 Uhr.',
+    },
+    {
+      q: 'What kinds of criteria can attribute-based access control combine, per the video?',
+      options: [
+        'IP address, time of day, desired action (read/write), and relationship to the data, among others',
+        'Only the file size being requested',
+        'Attribute-based control uses exactly one fixed criterion and nothing else',
+        'Only the user’s job title, identical to role-based control',
+      ],
+      correct: 0,
+      why: 'ABAC kombiniert laut Video mehrere Kriterien gleichzeitig — z. B. IP-Adresse, Tageszeit, gewünschte Aktion und Beziehung zu den Daten.',
+    },
+    {
+      q: 'What example of a time-of-day restriction does the video give?',
+      options: [
+        'A training room network being inaccessible between midnight and 6 a.m.',
+        'Time-of-day restrictions can only ever apply to a single global time zone',
+        'Time-of-day restrictions are incompatible with all other access control models',
+        'Access is restricted based only on the calendar year, never the time of day',
+      ],
+      correct: 0,
+      why: 'Das Video nennt als Beispiel ein Schulungsraum-Netz, das zwischen Mitternacht und 6 Uhr morgens nicht erreichbar ist.',
+    },
+    {
+      q: 'What happens if a user running with least privilege executes malicious software, per the video?',
+      options: [
+        'The malware’s damage is limited to only what that user’s restricted rights allow',
+        'The malware automatically gains full administrator rights regardless of the user’s privileges',
+        'Least privilege has no effect on malware behavior',
+        'Least privilege prevents malware from running at all',
+      ],
+      correct: 0,
+      why: 'Läuft ein Nutzer mit Least Privilege, bleibt der Schaden durch Malware laut Video auf die eingeschränkten Rechte dieses Nutzers begrenzt.',
+    },
+  ],
+  '099': [
+    {
+      q: 'What minimum password length does the video mention as a common baseline, trending upward over time?',
+      options: [
+        'At least eight characters, with requirements increasing as processing power grows',
+        'Exactly four characters is considered sufficient',
+        'Length has no bearing on password strength',
+        'Passwords should never exceed four characters for usability',
+      ],
+      correct: 0,
+      why: 'Laut Video gilt oft mindestens acht Zeichen als Ausgangspunkt — mit steigender Rechenleistung tendieren Anforderungen zu längeren Passwörtern.',
+    },
+    {
+      q: 'What does the video mean by password entropy?',
+      options: [
+        'How unpredictable a password is, improved by combining upper/lowercase, numbers, and special characters',
+        'The exact number of times a password has been reused',
+        'Entropy refers only to how the password is stored on disk',
+        'A measure of how quickly a password can be typed',
+      ],
+      correct: 0,
+      why: 'Entropie beschreibt laut Video die Unvorhersehbarkeit eines Passworts — eine Mischung aus Groß-/Kleinschreibung, Zahlen und Sonderzeichen erhöht sie.',
+    },
+    {
+      q: 'Why does the video recommend using a unique password for every account?',
+      options: [
+        'So that compromising one password does not give an attacker access to many accounts',
+        'Reusing a password across accounts is always safe if it is long enough',
+        'Password reuse improves security by simplifying memorization',
+        'Unique passwords are only relevant for administrator accounts',
+      ],
+      correct: 0,
+      why: 'Ein einzigartiges Passwort pro Konto verhindert laut Video, dass ein einziges kompromittiertes Passwort gleich mehrere Konten öffnet.',
+    },
+    {
+      q: 'What determines how often passwords must be changed, per the video?',
+      options: [
+        'System administrators set the expiration policy, e.g. every 30, 60, 90, or fewer days for critical systems',
+        'Password expiration is fixed at exactly one year for every system worldwide',
+        'Expired passwords always still allow login without any change',
+        'Expiration only applies to service accounts, never human users',
+      ],
+      correct: 0,
+      why: 'Laut Video legt der Systemadministrator die Ablauffrist fest — bei kritischen Systemen kann das deutlich kürzer sein als die üblichen 30/60/90 Tage.',
+    },
+    {
+      q: 'How do just-in-time permissions limit risk, per the video?',
+      options: [
+        'They grant administrative access only for a limited time via temporary credentials, so a breached regular account has no standing admin rights',
+        'They grant permanent administrator access to every technician',
+        'Just-in-time permissions never expire once granted',
+        'They remove the need for any approval process',
+      ],
+      correct: 0,
+      why: 'Just-in-Time-Rechte gewähren laut Video Adminzugriff nur befristet über temporäre Zugangsdaten — ein kompromittiertes Alltagskonto hat dadurch keine dauerhaften Adminrechte.',
+    },
+    {
+      q: 'What role does a password vault play in the just-in-time process, per the video?',
+      options: [
+        'It holds the primary credentials and issues temporary derived credentials instead of exposing the primary ones',
+        'It publishes primary credentials openly to all technicians',
+        'The vault has no connection to just-in-time access at all',
+        'A vault only stores end-user passwords, never administrative ones',
+      ],
+      correct: 0,
+      why: 'Der Password Vault verwahrt laut Video die primären Zugangsdaten und stellt daraus abgeleitete, temporäre Zugangsdaten aus — die Primärdaten werden nie direkt weitergegeben.',
+    },
+    {
+      q: 'What happens to ephemeral credentials after the technician’s session ends, per the video?',
+      options: [
+        'They can be deleted, since they were only ever temporarily assigned',
+        'They automatically become the technician’s new permanent password',
+        'They are stored forever for later reuse',
+        'They are shared with the next technician who needs access',
+      ],
+      correct: 0,
+      why: 'Ephemere Zugangsdaten sind laut Video nur temporär zugewiesen und können nach der Sitzung gelöscht werden — für den nächsten Bedarf wird ein neuer Satz erzeugt.',
     },
   ],
 }

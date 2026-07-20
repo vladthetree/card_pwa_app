@@ -3364,9 +3364,11 @@
    "learningAssetIds": [
     "video:76"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T076-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:secure-baselines:deploy": {
    "learningAssetIds": [
@@ -3374,7 +3376,8 @@
    ],
    "assessmentItemIds": [
     "tq:T076-03",
-    "tq:T076-04"
+    "tq:T076-04",
+    "tq:T076-07"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -3383,25 +3386,31 @@
    "learningAssetIds": [
     "video:76"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T076-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:hardening-targets:mobile-devices": {
    "learningAssetIds": [
     "video:77"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T077-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:hardening-targets:workstations": {
    "learningAssetIds": [
     "video:77"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T077-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:hardening-targets:switches": {
    "learningAssetIds": [
@@ -3427,17 +3436,21 @@
    "learningAssetIds": [
     "video:77"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T077-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:hardening-targets:servers": {
    "learningAssetIds": [
     "video:77"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T077-08"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:hardening-targets:ics-scada": {
    "learningAssetIds": [
@@ -3453,17 +3466,21 @@
    "learningAssetIds": [
     "video:77"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T077-09"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:hardening-targets:rtos": {
    "learningAssetIds": [
     "video:77"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T077-10"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:hardening-targets:iot-devices": {
    "learningAssetIds": [
@@ -3509,9 +3526,11 @@
    "learningAssetIds": [
     "video:78"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T078-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:mobile-solutions:deployment-models:corporate-owned-personally-enabled-cope": {
    "learningAssetIds": [
@@ -3527,17 +3546,21 @@
    "learningAssetIds": [
     "video:78"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T078-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:mobile-solutions:connection-methods:cellular": {
    "learningAssetIds": [
     "video:78"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T078-08"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:mobile-solutions:connection-methods:wi-fi": {
    "learningAssetIds": [
@@ -3563,57 +3586,71 @@
    "learningAssetIds": [
     "video:79"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T079-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:wireless-security-settings:aaa-remote-authentication-dial-in-user-service-r": {
    "learningAssetIds": [
     "video:79"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T079-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:wireless-security-settings:cryptographic-protocols": {
    "learningAssetIds": [
     "video:79"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T079-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:wireless-security-settings:authentication-protocols": {
    "learningAssetIds": [
     "video:79"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T079-08"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:application-security:input-validation": {
    "learningAssetIds": [
     "video:80"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T080-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:application-security:secure-cookies": {
    "learningAssetIds": [
     "video:80"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T080-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:application-security:static-code-analysis": {
    "learningAssetIds": [
     "video:80"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T080-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.1:application-security:code-signing": {
    "learningAssetIds": [
@@ -3639,9 +3676,11 @@
    "learningAssetIds": [
     "video:80"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T080-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.2:acquisition-procurement-process": {
    "learningAssetIds": [
@@ -3749,9 +3788,11 @@
    "learningAssetIds": [
     "video:82"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T082-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:identification-methods:application-security:dynamic-analysis": {
    "learningAssetIds": [
@@ -3767,9 +3808,11 @@
    "learningAssetIds": [
     "video:82"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T082-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:identification-methods:threat-feed:open-source-intelligence-osint": {
    "learningAssetIds": [
@@ -3785,17 +3828,21 @@
    "learningAssetIds": [
     "video:83"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T083-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:identification-methods:threat-feed:information-sharing-organization": {
    "learningAssetIds": [
     "video:83"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T083-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:identification-methods:threat-feed:dark-web": {
    "learningAssetIds": [
@@ -3812,9 +3859,11 @@
    "learningAssetIds": [
     "video:84"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T084-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:identification-methods:responsible-disclosure-program:bug-bounty-program": {
    "learningAssetIds": [
@@ -3830,9 +3879,11 @@
    "learningAssetIds": [
     "video:118"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T118-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing",
+   "status": "covered",
    "note": "Audit-Konzepte im 5.5-Video „Audits and Assessments“"
   },
   "req:sy0701:v7:4.3:analysis:confirmation:false-positive": {
@@ -3859,57 +3910,71 @@
    "learningAssetIds": [
     "video:85"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T085-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:analysis:common-vulnerability-scoring-system-cvss": {
    "learningAssetIds": [
     "video:85"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T085-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:analysis:common-vulnerability-enumeration-cve": {
    "learningAssetIds": [
     "video:85"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T085-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:analysis:vulnerability-classification": {
    "learningAssetIds": [
     "video:85"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T085-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:analysis:exposure-factor": {
    "learningAssetIds": [
     "video:85"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T085-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:analysis:environmental-variables": {
    "learningAssetIds": [
     "video:85"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T085-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:analysis:industry-organizational-impact": {
    "learningAssetIds": [
     "video:85"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T085-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:analysis:risk-tolerance": {
    "learningAssetIds": [
@@ -3925,17 +3990,21 @@
    "learningAssetIds": [
     "video:86"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T086-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:vulnerability-response-and-remediation:insurance": {
    "learningAssetIds": [
     "video:86"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T086-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:vulnerability-response-and-remediation:segmentation": {
    "learningAssetIds": [
@@ -3962,42 +4031,52 @@
    "learningAssetIds": [
     "video:86"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T086-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:validation-of-remediation:rescanning": {
    "learningAssetIds": [
     "video:86"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T086-08"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:validation-of-remediation:audit": {
    "learningAssetIds": [
     "video:118"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T118-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing",
+   "status": "covered",
    "note": "Audit-Konzepte im 5.5-Video „Audits and Assessments“"
   },
   "req:sy0701:v7:4.3:validation-of-remediation:verification": {
    "learningAssetIds": [
     "video:86"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T086-09"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.3:reporting": {
    "learningAssetIds": [
     "video:86"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T086-10"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.4:monitoring-computing-resources:systems": {
    "learningAssetIds": [
@@ -4195,7 +4274,9 @@
     "video:89"
    ],
    "assessmentItemIds": [
-    "tq:T089-02"
+    "tq:T089-02",
+    "tq:T089-06",
+    "tq:T089-07"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -4204,17 +4285,21 @@
    "learningAssetIds": [
     "video:89"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T089-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.5:firewall:ports-protocols": {
    "learningAssetIds": [
     "video:89"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T089-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.5:firewall:screened-subnets": {
    "learningAssetIds": [
@@ -4230,18 +4315,22 @@
    "learningAssetIds": [
     "video:63"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T063-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing",
+   "status": "covered",
    "note": "Trends/Signaturen im 3.2-Video „Intrusion Prevention“"
   },
   "req:sy0701:v7:4.5:ids-ips:signatures": {
    "learningAssetIds": [
     "video:63"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T063-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing",
+   "status": "covered",
    "note": "Trends/Signaturen im 3.2-Video „Intrusion Prevention“"
   },
   "req:sy0701:v7:4.5:web-filter:agent-based": {
@@ -4249,7 +4338,8 @@
     "video:90"
    ],
    "assessmentItemIds": [
-    "tq:T090-02"
+    "tq:T090-02",
+    "tq:T090-05"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -4258,9 +4348,11 @@
    "learningAssetIds": [
     "video:90"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T090-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.5:web-filter:universal-resource-locator-url-scanning": {
    "learningAssetIds": [
@@ -4268,7 +4360,8 @@
    ],
    "assessmentItemIds": [
     "mc:M4-018",
-    "tq:T090-01"
+    "tq:T090-01",
+    "tq:T090-06"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -4277,25 +4370,31 @@
    "learningAssetIds": [
     "video:90"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T090-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.5:web-filter:block-rules": {
    "learningAssetIds": [
     "video:90"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T090-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.5:web-filter:reputation": {
    "learningAssetIds": [
     "video:90"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T090-08"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.5:operating-system-security:group-policy": {
    "learningAssetIds": [
@@ -4321,25 +4420,31 @@
    "learningAssetIds": [
     "video:92"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T092-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.5:implementation-of-secure-protocols:port-selection": {
    "learningAssetIds": [
     "video:92"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T092-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.5:implementation-of-secure-protocols:transport-method": {
    "learningAssetIds": [
     "video:92"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T092-08"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.5:dns-filtering": {
    "learningAssetIds": [
@@ -4418,9 +4523,11 @@
    "learningAssetIds": [
     "video:95"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T095-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.5:endpoint-detection-and-response-edr-extended-det": {
    "learningAssetIds": [
@@ -4437,80 +4544,99 @@
    "learningAssetIds": [
     "video:95"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T095-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:provisioning-de-provisioning-user-accounts": {
    "learningAssetIds": [
     "video:96"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T096-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:permission-assignments-and-implications": {
    "learningAssetIds": [
     "video:96"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T096-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:identity-proofing": {
    "learningAssetIds": [
     "video:96"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T096-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:federation": {
    "learningAssetIds": [
     "video:96"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T096-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:single-sign-on-sso:lightweight-directory-access-protocol-ldap": {
    "learningAssetIds": [
     "video:96"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T096-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:single-sign-on-sso:open-authorization-oauth": {
    "learningAssetIds": [
     "video:96"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T096-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:single-sign-on-sso:security-assertions-markup-language-saml": {
    "learningAssetIds": [
     "video:96"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T096-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:interoperability": {
    "learningAssetIds": [
     "video:96"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T096-08"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:attestation": {
    "learningAssetIds": [
     "video:96"
    ],
    "assessmentItemIds": [
-    "mc:M4-027"
+    "mc:M4-027",
+    "tq:T096-03"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -4519,9 +4645,11 @@
    "learningAssetIds": [
     "video:97"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T097-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:access-controls:discretionary": {
    "learningAssetIds": [
@@ -4537,41 +4665,51 @@
    "learningAssetIds": [
     "video:97"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T097-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:access-controls:rule-based": {
    "learningAssetIds": [
     "video:97"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T097-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:access-controls:attribute-based": {
    "learningAssetIds": [
     "video:97"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T097-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:access-controls:time-of-day-restrictions": {
    "learningAssetIds": [
     "video:97"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T097-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:access-controls:least-privilege": {
    "learningAssetIds": [
     "video:97"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T097-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:multifactor-authentication:implementations:biometrics": {
    "learningAssetIds": [
@@ -4587,25 +4725,31 @@
    "learningAssetIds": [
     "video:98"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T098-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:multifactor-authentication:implementations:security-keys": {
    "learningAssetIds": [
     "video:98"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T098-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-know": {
    "learningAssetIds": [
     "video:98"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T098-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-have": {
    "learningAssetIds": [
@@ -4645,33 +4789,41 @@
    "learningAssetIds": [
     "video:99"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T099-01"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:password-concepts:password-best-practices:complexity": {
    "learningAssetIds": [
     "video:99"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T099-02"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:password-concepts:password-best-practices:reuse": {
    "learningAssetIds": [
     "video:99"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T099-03"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:password-concepts:password-best-practices:expiration": {
    "learningAssetIds": [
     "video:99"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T099-04"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing"
+   "status": "covered"
   },
   "req:sy0701:v7:4.6:password-concepts:password-best-practices:age": {
    "learningAssetIds": [
@@ -4707,27 +4859,33 @@
    "learningAssetIds": [
     "video:99"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T099-05"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing",
+   "status": "covered",
    "note": "JIT/Vaulting/Ephemeral im Video „Password Security“"
   },
   "req:sy0701:v7:4.6:privileged-access-management-tools:password-vaulting": {
    "learningAssetIds": [
     "video:99"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T099-06"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing",
+   "status": "covered",
    "note": "JIT/Vaulting/Ephemeral im Video „Password Security“"
   },
   "req:sy0701:v7:4.6:privileged-access-management-tools:ephemeral-credentials": {
    "learningAssetIds": [
     "video:99"
    ],
-   "assessmentItemIds": [],
+   "assessmentItemIds": [
+    "tq:T099-07"
+   ],
    "practicalItemIds": [],
-   "status": "assessment-missing",
+   "status": "covered",
    "note": "JIT/Vaulting/Ephemeral im Video „Password Security“"
   },
   "req:sy0701:v7:4.7:use-cases-of-automation-and-scripting:user-provisioning": {
@@ -6117,7 +6275,8 @@
    ],
    "assessmentItemIds": [
     "mc:M5-025",
-    "tq:T118-01"
+    "tq:T118-01",
+    "tq:T118-06"
    ],
    "practicalItemIds": [],
    "status": "covered"
