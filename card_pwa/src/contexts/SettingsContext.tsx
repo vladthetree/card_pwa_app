@@ -5,7 +5,7 @@
  * Important: Settings are persisted to localStorage while profile identity lives in IndexedDB; keep hydration flags accurate before dependent effects run.
  */
 import { createContext, useContext, useState, useEffect } from 'react'
-import { STORAGE_KEYS } from '../constants/appIdentity'
+import { EXAM_DATE_SYNCED_EVENT, STORAGE_KEYS } from '../constants/appIdentity'
 import {
   DEFAULT_ALGORITHM_PARAMS,
   normalizeAlgorithmParams,
@@ -13,9 +13,10 @@ import {
   type FSRSParams,
   type SM2Params,
 } from '../utils/algorithmParams'
-import { clearProfile, loadProfile, saveProfile, buildLocalProfile, getOrCreateDeviceId } from '../services/profileService'
+import { clearProfile, loadProfile, saveProfile, buildLocalProfile, getOrCreateDeviceId, profileScopeId } from '../services/profileService'
 import { normalizeStudyCardLimit } from '../services/studySessionPersistence'
 import { setCachedProfile } from '../services/syncConfig'
+import { enqueueSyncOperation } from '../services/syncQueue'
 import type { ProfileRecord } from '../db'
 
 export type Language = 'de' | 'en'
@@ -64,6 +65,9 @@ interface Settings {
   /** Prüfungstermin (ISO YYYY-MM-DD, z. B. Sec+) für den Countdown mit
    *  Tempo-Empfehlung auf der Heute-Kachel. null = kein Termin gesetzt. */
   examDateIso: string | null
+  /** Zeitpunkt (ms) der letzten `examDateIso`-Änderung — LWW-Basis für den
+   *  Profil-Sync (`examDate.upsert`). null = noch nie lokal gesetzt/synced. */
+  examDateUpdatedAt: number | null
   /** Focus mode: hides the study session header (deck stats, progress) while
    *  reserving its space, so the card does not jump. Back button stays visible. */
   focusMode: boolean
@@ -197,6 +201,7 @@ const DEFAULT_SETTINGS: Settings = {
   recallCheckSize: 7,
   newCardsPerDay: 10,
   examDateIso: null,
+  examDateUpdatedAt: null,
   focusMode: false,
   fullscreenEnabled: false,
   hardPracticeEnabled: true,
@@ -237,6 +242,11 @@ export function normalizeExamDateIso(value: unknown): string | null {
   return Number.isNaN(Date.parse(`${trimmed}T00:00:00`)) ? null : trimmed
 }
 
+export function normalizeExamDateUpdatedAt(value: unknown): number | null {
+  const parsed = Number(value)
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null
+}
+
 export function normalizeSettings(input: Partial<Settings> | undefined): Settings {
   const rawNextDayStartsAt = Number(input?.nextDayStartsAt)
   const normalizedChannels = normalizeNotificationChannels(input?.notificationChannels)
@@ -269,6 +279,7 @@ export function normalizeSettings(input: Partial<Settings> | undefined): Setting
     recallCheckSize: normalizeRecallCheckSize(input?.recallCheckSize),
     newCardsPerDay: normalizeNewCardsPerDay(input?.newCardsPerDay),
     examDateIso: normalizeExamDateIso(input?.examDateIso),
+    examDateUpdatedAt: normalizeExamDateUpdatedAt(input?.examDateUpdatedAt),
     focusMode: input?.focusMode === true,
     fullscreenEnabled: input?.fullscreenEnabled === true,
     hardPracticeEnabled: input?.hardPracticeEnabled !== false,
@@ -310,6 +321,29 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       }
     }
     setIsSettingsHydrated(true)
+  }, [])
+
+  // Ein von einem anderen Gerät gepullter `examDate.upsert` schreibt direkt in
+  // localStorage (syncPull.ts, außerhalb von React) und feuert dieses Event —
+  // Settings hat keine Dexie-liveQuery-Reaktivität, also hier explizit den
+  // gerade geschriebenen Wert ins React-State übernehmen (kein erneuter Push).
+  useEffect(() => {
+    const onExamDateSynced = () => {
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (!stored) return
+      try {
+        const parsed = JSON.parse(stored) as Partial<Settings>
+        setSettingsState(prev => ({
+          ...prev,
+          examDateIso: normalizeExamDateIso(parsed.examDateIso),
+          examDateUpdatedAt: normalizeExamDateUpdatedAt(parsed.examDateUpdatedAt),
+        }))
+      } catch {
+        // Ignore parsing errors
+      }
+    }
+    window.addEventListener(EXAM_DATE_SYNCED_EVENT, onExamDateSynced)
+    return () => window.removeEventListener(EXAM_DATE_SYNCED_EVENT, onExamDateSynced)
   }, [])
 
   // Load profile from IndexedDB on mount
@@ -456,7 +490,14 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   }
 
   const setExamDateIso = (dateIso: string | null) => {
-    saveSettings({ ...settings, examDateIso: normalizeExamDateIso(dateIso) })
+    const examDateIso = normalizeExamDateIso(dateIso)
+    const examDateUpdatedAt = Date.now()
+    saveSettings({ ...settings, examDateIso, examDateUpdatedAt })
+    void enqueueSyncOperation('examDate.upsert', {
+      profileId: profileScopeId(profile),
+      examDateIso,
+      updatedAt: examDateUpdatedAt,
+    })
   }
 
   const setFocusMode = (focusMode: boolean) => {

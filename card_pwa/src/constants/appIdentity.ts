@@ -52,6 +52,11 @@ export const SW_CHANNELS = {
  *  (e.g. ReviewHeatmap) can refresh without polling. */
 export const REVIEW_UPDATED_EVENT = 'card-pwa-reviews-updated' as const
 
+/** Fired on `window` after a pulled `examDate.upsert` operation updates the
+ *  localStorage-backed Settings, so SettingsContext can refresh its in-memory
+ *  state without a page reload (Settings has no Dexie liveQuery reactivity). */
+export const EXAM_DATE_SYNCED_EVENT = 'card-pwa-exam-date-synced' as const
+
 export const BACKUP_METADATA = {
   app: 'card-pwa',
   legacyApp: 'anki-pwa',

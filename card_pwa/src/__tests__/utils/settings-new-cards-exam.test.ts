@@ -36,3 +36,21 @@ describe('normalizeSettings — examDateIso', () => {
     expect(normalizeSettings({ examDateIso: 42 as unknown as string }).examDateIso).toBeNull()
   })
 })
+
+describe('normalizeSettings — examDateUpdatedAt (Profil-Sync-Basis)', () => {
+  it('Default ist null', () => {
+    expect(normalizeSettings(undefined).examDateUpdatedAt).toBeNull()
+    expect(normalizeSettings({}).examDateUpdatedAt).toBeNull()
+  })
+
+  it('übernimmt gültige Zeitstempel', () => {
+    expect(normalizeSettings({ examDateUpdatedAt: 1784000000000 }).examDateUpdatedAt).toBe(1784000000000)
+    expect(normalizeSettings({ examDateUpdatedAt: 0 }).examDateUpdatedAt).toBe(0)
+  })
+
+  it('fällt bei negativen/ungültigen Werten auf null zurück', () => {
+    expect(normalizeSettings({ examDateUpdatedAt: -5 }).examDateUpdatedAt).toBeNull()
+    expect(normalizeSettings({ examDateUpdatedAt: 'gestern' as unknown as number }).examDateUpdatedAt).toBeNull()
+    expect(normalizeSettings({ examDateUpdatedAt: undefined }).examDateUpdatedAt).toBeNull()
+  })
+})

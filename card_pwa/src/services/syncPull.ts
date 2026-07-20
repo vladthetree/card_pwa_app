@@ -40,6 +40,8 @@ import {
 } from '../utils/reviewDecks'
 import { filterDecksWithActiveCardsOrDescendants } from '../utils/deckContentScope'
 import { logError } from './errorLog'
+import { EXAM_DATE_SYNCED_EVENT, STORAGE_KEYS } from '../constants/appIdentity'
+import { normalizeExamDateIso, normalizeExamDateUpdatedAt } from '../contexts/SettingsContext'
 
 const SYNC_META_CURSOR_KEY = 'sync-cursor'
 const SYNC_META_APPLIED_OP_IDS_KEY = 'sync-applied-op-ids'
@@ -722,6 +724,40 @@ async function applyVideoNoteDelete(payload: unknown, fallbackTs = 0) {
   await db.videoNotes2.delete([profileId, objective])
 }
 
+/**
+ * Settings sind localStorage-basiert, nicht Dexie — hier also kein
+ * `db.put`, sondern direktes Lesen/Schreiben des Settings-Blobs plus
+ * `EXAM_DATE_SYNCED_EVENT`, damit ein gemounteter SettingsProvider sein
+ * React-State ohne Reload nachzieht (siehe SettingsContext.tsx).
+ */
+async function applyExamDateUpsert(payload: unknown) {
+  if (!payload || typeof payload !== 'object') return
+  const value = payload as Record<string, unknown>
+  const examDateIso = normalizeExamDateIso(value.examDateIso)
+  const updatedAt = normalizeExamDateUpdatedAt(value.updatedAt)
+  if (updatedAt === null) return
+
+  let stored: Record<string, unknown> = {}
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.settings)
+    stored = raw ? JSON.parse(raw) as Record<string, unknown> : {}
+  } catch {
+    stored = {}
+  }
+
+  const existingUpdatedAt = normalizeExamDateUpdatedAt(stored.examDateUpdatedAt)
+  if (existingUpdatedAt !== null && existingUpdatedAt > updatedAt) return
+
+  localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify({
+    ...stored,
+    examDateIso,
+    examDateUpdatedAt: updatedAt,
+  }))
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(EXAM_DATE_SYNCED_EVENT))
+  }
+}
+
 async function applyOperation(op: PulledOperation) {
   const fallbackTs = Number(op.clientTimestamp ?? 0)
 
@@ -764,6 +800,9 @@ async function applyOperation(op: PulledOperation) {
       return
     case 'videoNote.delete':
       await applyVideoNoteDelete(op.payload, fallbackTs)
+      return
+    case 'examDate.upsert':
+      await applyExamDateUpsert(op.payload)
       return
   }
 }

@@ -2540,6 +2540,93 @@ class TestBootstrapUpload:
 
 
 # ═════════════════════════════════════════════════════════════════════════════
+# Tests: Exam Date Sync (2026-07-21) — server_profile_settings, one row per user_id
+# ═════════════════════════════════════════════════════════════════════════════
+
+class TestExamDateSync:
+
+    def test_push_stores_exam_date_and_appears_on_pull(self, api, db_helper):
+        result = api.push(
+            op_id="exam-date-1",
+            op_type="examDate.upsert",
+            payload={
+                "profileId": "user-exam",
+                "examDateIso": "2026-08-09",
+                "updatedAt": 2000,
+            },
+            client_id="client-exam",
+            client_timestamp=2000,
+        )
+
+        assert result["ok"] is True
+        rows = db_helper.query("SELECT exam_date_iso, updated_at FROM server_profile_settings")
+        assert rows == [("2026-08-09", 2000)]
+
+        pulled = api.pull(since=0, client_id="reader")
+        assert pulled["ok"] is True
+        op = next(o for o in pulled["operations"] if o["opId"] == "exam-date-1")
+        assert op["type"] == "examDate.upsert"
+        assert op["payload"]["examDateIso"] == "2026-08-09"
+
+    def test_second_upsert_overwrites_single_row_per_user(self, api, db_helper):
+        api.push(
+            op_id="exam-date-a",
+            op_type="examDate.upsert",
+            payload={"examDateIso": "2026-08-09", "updatedAt": 1000},
+            client_id="client-a",
+            client_timestamp=1000,
+        )
+        api.push(
+            op_id="exam-date-b",
+            op_type="examDate.upsert",
+            payload={"examDateIso": "2026-09-01", "updatedAt": 2000},
+            client_id="client-b",
+            client_timestamp=2000,
+        )
+
+        rows = db_helper.query("SELECT exam_date_iso FROM server_profile_settings")
+        assert rows == [("2026-09-01",)]
+
+    def test_older_update_does_not_overwrite_newer(self, api, db_helper):
+        api.push(
+            op_id="exam-date-newer",
+            op_type="examDate.upsert",
+            payload={"examDateIso": "2026-09-01", "updatedAt": 5000},
+            client_id="client-a",
+            client_timestamp=5000,
+        )
+        api.push(
+            op_id="exam-date-older",
+            op_type="examDate.upsert",
+            payload={"examDateIso": "2026-01-01", "updatedAt": 1000},
+            client_id="client-b",
+            client_timestamp=1000,
+        )
+
+        rows = db_helper.query("SELECT exam_date_iso, updated_at FROM server_profile_settings")
+        assert rows == [("2026-09-01", 5000)]
+
+    def test_clearing_exam_date_stores_null(self, api, db_helper):
+        api.push(
+            op_id="exam-date-set",
+            op_type="examDate.upsert",
+            payload={"examDateIso": "2026-08-09", "updatedAt": 1000},
+            client_id="client-a",
+            client_timestamp=1000,
+        )
+        api.push(
+            op_id="exam-date-clear",
+            op_type="examDate.upsert",
+            payload={"examDateIso": None, "updatedAt": 2000},
+            client_id="client-a",
+            client_timestamp=2000,
+        )
+
+        rows = db_helper.query("SELECT exam_date_iso FROM server_profile_settings")
+        assert rows == [(None,)]
+
+
+# ═════════════════════════════════════════════════════════════════════════════
 # Tests: Offline Merge End-to-End
 # ═════════════════════════════════════════════════════════════════════════════
 

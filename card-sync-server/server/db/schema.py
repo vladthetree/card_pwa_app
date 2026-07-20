@@ -250,6 +250,21 @@ def init_db():
   conn.execute("CREATE INDEX IF NOT EXISTS idx_video_notes_snapshot_active ON server_video_notes(user_id, profile_id, objective) WHERE deleted_at IS NULL")
   conn.commit()
 
+  # ─────────────────────────────────────────────────────────────
+  # Server State: Profile Settings (bisher nur examDateIso — 2026-07-21)
+  # ─────────────────────────────────────────────────────────────
+  conn.execute("""
+    CREATE TABLE IF NOT EXISTS server_profile_settings (
+      user_id TEXT NOT NULL,
+      exam_date_iso TEXT,
+      updated_at INTEGER NOT NULL,
+      last_source_client TEXT,
+      PRIMARY KEY (user_id)
+    )
+  """)
+  conn.execute("CREATE INDEX IF NOT EXISTS idx_profile_settings_updated_at ON server_profile_settings(updated_at)")
+  conn.commit()
+
   card_cols = [r[1] for r in conn.execute("PRAGMA table_info(server_cards)").fetchall()]
   if "metadata_json" not in card_cols:
     conn.execute("ALTER TABLE server_cards ADD COLUMN metadata_json TEXT")
@@ -443,6 +458,7 @@ def rebuild_server_state(conn):
   conn.execute("DELETE FROM server_reviews")
   conn.execute("DELETE FROM server_shuffle_collections")
   conn.execute("DELETE FROM server_video_notes")
+  conn.execute("DELETE FROM server_profile_settings")
   conn.commit()
 
   # Fetch all operations in order

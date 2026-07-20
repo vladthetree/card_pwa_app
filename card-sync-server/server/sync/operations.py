@@ -41,6 +41,8 @@ def _push_detail(op_type, payload):
     return f"profile={p.get('profileId') or p.get('profile_id') or ''}  objective={p.get('objective','')}"
   if op_type == "videoNote.delete":
     return f"profile={p.get('profileId') or p.get('profile_id') or ''}  objective={p.get('objective','')}"
+  if op_type == "examDate.upsert":
+    return f"examDateIso={p.get('examDateIso')!r}"
   return ""
 
 def _prepare_payload_for_storage(op_type, payload, client_timestamp):
@@ -626,6 +628,35 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       deleted_at,
       source_client,
       state_user_id,
+    ))
+
+  elif op_type == "examDate.upsert":
+    candidate_ts = (
+      payload.get("updatedAt")
+      or payload.get("createdAt")
+      or payload.get("timestamp")
+      or client_timestamp
+      or now
+    )
+    existing = conn.execute(
+      "SELECT updated_at, last_source_client FROM server_profile_settings WHERE user_id=?",
+      (state_user_id,)
+    ).fetchone()
+    if existing and not lww_should_apply(existing[0], existing[1], candidate_ts, source_client):
+      return
+
+    raw_exam_date = payload.get("examDateIso")
+    exam_date_iso = raw_exam_date.strip() if isinstance(raw_exam_date, str) and raw_exam_date.strip() else None
+
+    conn.execute("""
+      INSERT OR REPLACE INTO server_profile_settings
+      (user_id, exam_date_iso, updated_at, last_source_client)
+      VALUES (?, ?, ?, ?)
+    """, (
+      state_user_id,
+      exam_date_iso,
+      candidate_ts,
+      source_client,
     ))
 
   elif op_type == "videoNote.upsert":
