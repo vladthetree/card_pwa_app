@@ -1,7 +1,7 @@
 {
   "schemaVersion": "sy0701-sy0-701-requirements-1",
-  "manifestVersion": "2026-07-19.1",
-  "generatedAt": 1784412776257,
+  "manifestVersion": "2026-07-19.2",
+  "generatedAt": 1784564635236,
   "sourceSnapshotId": "sy0701-v7-2026-07-15",
   "requirements": [
     {
@@ -211,8 +211,10 @@
         "acr:sy0701:v7:cia:confidentiality-integrity-availability"
       ],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:cia-confusion"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:1.2:non-repudiation",
@@ -1321,8 +1323,10 @@
       "actionVerb": "explain",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:key-usage-confusion"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:1.4:encryption:symmetric",
@@ -1552,8 +1556,10 @@
       "actionVerb": "explain",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:hash-reversibility"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:1.4:salting",
@@ -1588,8 +1594,10 @@
       "actionVerb": "explain",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:signature-key"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:1.4:key-stretching",
@@ -2498,8 +2506,10 @@
       "actionVerb": "explain",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:phishing-detection"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:2.2:human-vectors-social-engineering:vishing",
@@ -5549,8 +5559,10 @@
       "actionVerb": "compare",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:data-state-rest"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-transit",
@@ -5569,8 +5581,10 @@
       "actionVerb": "compare",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:data-state-transit"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-use",
@@ -5589,8 +5603,10 @@
       "actionVerb": "compare",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:data-state-use"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:3.3:general-data-considerations:data-sovereignty",
@@ -8828,8 +8844,10 @@
       "actionVerb": "implement",
       "acronymMeaningIds": [],
       "scenarioRequired": true,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:least-privilege"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:4.6:multifactor-authentication:implementations:biometrics",
@@ -8908,8 +8926,10 @@
       "actionVerb": "implement",
       "acronymMeaningIds": [],
       "scenarioRequired": true,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:mfa-factor-confusion"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-have",
@@ -9638,8 +9658,10 @@
       "actionVerb": "explain",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:ir-order-containment"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:4.8:process:eradication",
@@ -9657,8 +9679,10 @@
       "actionVerb": "explain",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:ir-order-eradication"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:4.8:process:recovery",
@@ -9676,8 +9700,10 @@
       "actionVerb": "explain",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:ir-order-recovery"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:4.8:process:lessons-learned",
@@ -9825,8 +9851,10 @@
       "actionVerb": "explain",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:custody-break"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:4.8:digital-forensics:acquisition",
@@ -10840,8 +10868,10 @@
         "acr:sy0701:v7:sle:single-loss-expectancy"
       ],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:risk-calc-sle"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:5.2:risk-analysis:annualized-loss-expectancy-ale",
@@ -10861,8 +10891,10 @@
         "acr:sy0701:v7:ale:annualized-loss-expectancy"
       ],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:risk-calc-ale"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:5.2:risk-analysis:annualized-rate-of-occurrence-aro",
@@ -12656,9 +12688,215 @@
       "criticalErrorClassIds": []
     }
   ],
-  "criticalErrorDefinitions": [],
-  "pendingReview": [
-    "Criticality je Requirement ist noch nicht fachlich zugewiesen (alle standard).",
-    "CriticalErrorDefinitions folgen mit der Criticality-Zuweisung."
-  ]
+  "criticalErrorDefinitions": [
+    {
+      "errorClassId": "err:cia-confusion",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:1.2:confidentiality-integrity-and-availability-cia",
+      "severity": "critical",
+      "description": "Schutzziele verwechselt: Maßnahme dem falschen CIA-Ziel zugeordnet (z. B. Verschlüsselung als Integrität, Redundanz als Vertraulichkeit).",
+      "triggerRuleId": "trigger:cia-goal-mismatch",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": false
+      }
+    },
+    {
+      "errorClassId": "err:key-usage-confusion",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:1.4:encryption:asymmetric",
+      "severity": "critical",
+      "description": "Falsche Schlüsselverwendung: mit dem privaten Schlüssel verschlüsselt bzw. den öffentlichen Schlüssel als geheim behandelt.",
+      "triggerRuleId": "trigger:asym-key-role",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": false
+      }
+    },
+    {
+      "errorClassId": "err:hash-reversibility",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:1.4:hashing",
+      "severity": "critical",
+      "description": "Hashing als umkehrbare Verschlüsselung behandelt (Einwegfunktion nicht verstanden).",
+      "triggerRuleId": "trigger:hash-oneway",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": false
+      }
+    },
+    {
+      "errorClassId": "err:signature-key",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:1.4:digital-signatures",
+      "severity": "critical",
+      "description": "Signatur-Schlüsselrollen vertauscht: Signieren mit öffentlichem bzw. Verifizieren mit privatem Schlüssel.",
+      "triggerRuleId": "trigger:signature-key-role",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": false
+      }
+    },
+    {
+      "errorClassId": "err:phishing-detection",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:2.2:human-vectors-social-engineering:phishing",
+      "severity": "critical",
+      "description": "Phishing-Indikatoren (Absender-Spoofing, Dringlichkeit, abweichende URLs) nicht erkannt oder legitime Mail als Phishing-Muster fehlklassifiziert.",
+      "triggerRuleId": "trigger:phishing-indicators",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": true
+      }
+    },
+    {
+      "errorClassId": "err:data-state-rest",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:3.3:general-data-considerations:data-states:data-at-rest",
+      "severity": "critical",
+      "description": "Schutzmechanismus falsch zugeordnet: Data at Rest nicht mit Speicher-/Volume-Verschlüsselung verbunden.",
+      "triggerRuleId": "trigger:data-state-rest",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": true
+      }
+    },
+    {
+      "errorClassId": "err:data-state-transit",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-transit",
+      "severity": "critical",
+      "description": "Schutzmechanismus falsch zugeordnet: Data in Transit nicht mit TLS/IPsec/VPN verbunden.",
+      "triggerRuleId": "trigger:data-state-transit",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": true
+      }
+    },
+    {
+      "errorClassId": "err:data-state-use",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-use",
+      "severity": "critical",
+      "description": "Schutzmechanismus falsch zugeordnet: Data in Use (RAM/CPU, Secure Enclave) nicht als eigener Zustand erkannt.",
+      "triggerRuleId": "trigger:data-state-use",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": true
+      }
+    },
+    {
+      "errorClassId": "err:least-privilege",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:4.6:access-controls:least-privilege",
+      "severity": "critical",
+      "description": "Least Privilege mit Need-to-know/Separation of Duties verwechselt oder als optionales Komfortprinzip eingeordnet.",
+      "triggerRuleId": "trigger:least-privilege",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": false
+      }
+    },
+    {
+      "errorClassId": "err:ir-order-containment",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:4.8:process:containment",
+      "severity": "critical",
+      "description": "IR-Phasenfehler: Eindämmung übersprungen oder nach Eradication/Recovery einsortiert.",
+      "triggerRuleId": "trigger:ir-order-containment",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": true
+      }
+    },
+    {
+      "errorClassId": "err:ir-order-eradication",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:4.8:process:eradication",
+      "severity": "critical",
+      "description": "IR-Phasenfehler: Beseitigung vor der Eindämmung oder als Teil der Recovery eingeordnet.",
+      "triggerRuleId": "trigger:ir-order-eradication",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": true
+      }
+    },
+    {
+      "errorClassId": "err:ir-order-recovery",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:4.8:process:recovery",
+      "severity": "critical",
+      "description": "IR-Phasenfehler: Wiederherstellung gestartet, bevor die Ursache beseitigt ist.",
+      "triggerRuleId": "trigger:ir-order-recovery",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": true
+      }
+    },
+    {
+      "errorClassId": "err:custody-break",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:4.8:digital-forensics:chain-of-custody",
+      "severity": "critical",
+      "description": "Chain of Custody als optionale Formalie behandelt; Lückenlosigkeit der Beweiskette nicht als Verwertbarkeitsbedingung erkannt.",
+      "triggerRuleId": "trigger:custody-break",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": true
+      }
+    },
+    {
+      "errorClassId": "err:risk-calc-sle",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:5.2:risk-analysis:single-loss-expectancy-sle",
+      "severity": "critical",
+      "description": "SLE falsch bestimmt (Asset Value × Exposure Factor) — verfälscht jede weitere Risikorechnung.",
+      "triggerRuleId": "trigger:risk-calc-sle",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": false
+      }
+    },
+    {
+      "errorClassId": "err:risk-calc-ale",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:5.2:risk-analysis:annualized-loss-expectancy-ale",
+      "severity": "critical",
+      "description": "ALE falsch bestimmt (SLE × ARO) oder mit SLE/ARO verwechselt.",
+      "triggerRuleId": "trigger:risk-calc-ale",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": false
+      }
+    },
+    {
+      "errorClassId": "err:mfa-factor-confusion",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-know",
+      "severity": "critical",
+      "description": "Authentifizierungsfaktoren verwechselt (Wissen/Besitz/Inhärenz/Ort) — z. B. OTP-App als „something you know“ eingeordnet.",
+      "triggerRuleId": "trigger:mfa-factor",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": false
+      }
+    }
+  ],
+  "pendingReview": []
 }

@@ -2,13 +2,13 @@
  * AI_CONTEXT:
  * Role: GENERATED data module of the dedicated SY0-701 learning-unit system — do not edit by hand.
  * Used by: learning-unit builders/tests; regenerate via `node scripts/sy0701/validate.mjs`.
- * Important: Derived from content/sy0-701/source/* (official V7 snapshot 95a2c7515792…, manifest 2026-07-19.1).
+ * Important: Derived from content/sy0-701/source/* (official V7 snapshot 95a2c7515792…, manifest 2026-07-19.2).
  */
 import type { ExamRequirementsManifest } from '../utils/learningUnits'
 
 export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
   "sourceSnapshotId": "sy0701-v7-2026-07-15",
-  "manifestVersion": "2026-07-19.1",
+  "manifestVersion": "2026-07-19.2",
   "requirements": [
     {
       "requirementId": "req:sy0701:v7:1.1:categories:technical",
@@ -217,8 +217,10 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
         "acr:sy0701:v7:cia:confidentiality-integrity-availability"
       ],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:cia-confusion"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:1.2:non-repudiation",
@@ -1327,8 +1329,10 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
       "actionVerb": "explain",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:key-usage-confusion"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:1.4:encryption:symmetric",
@@ -1558,8 +1562,10 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
       "actionVerb": "explain",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:hash-reversibility"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:1.4:salting",
@@ -1594,8 +1600,10 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
       "actionVerb": "explain",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:signature-key"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:1.4:key-stretching",
@@ -2504,8 +2512,10 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
       "actionVerb": "explain",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:phishing-detection"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:2.2:human-vectors-social-engineering:vishing",
@@ -5555,8 +5565,10 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
       "actionVerb": "compare",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:data-state-rest"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-transit",
@@ -5575,8 +5587,10 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
       "actionVerb": "compare",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:data-state-transit"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-use",
@@ -5595,8 +5609,10 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
       "actionVerb": "compare",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:data-state-use"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:3.3:general-data-considerations:data-sovereignty",
@@ -8834,8 +8850,10 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
       "actionVerb": "implement",
       "acronymMeaningIds": [],
       "scenarioRequired": true,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:least-privilege"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:4.6:multifactor-authentication:implementations:biometrics",
@@ -8914,8 +8932,10 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
       "actionVerb": "implement",
       "acronymMeaningIds": [],
       "scenarioRequired": true,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:mfa-factor-confusion"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-have",
@@ -9644,8 +9664,10 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
       "actionVerb": "explain",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:ir-order-containment"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:4.8:process:eradication",
@@ -9663,8 +9685,10 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
       "actionVerb": "explain",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:ir-order-eradication"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:4.8:process:recovery",
@@ -9682,8 +9706,10 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
       "actionVerb": "explain",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:ir-order-recovery"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:4.8:process:lessons-learned",
@@ -9831,8 +9857,10 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
       "actionVerb": "explain",
       "acronymMeaningIds": [],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:custody-break"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:4.8:digital-forensics:acquisition",
@@ -10846,8 +10874,10 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
         "acr:sy0701:v7:sle:single-loss-expectancy"
       ],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:risk-calc-sle"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:5.2:risk-analysis:annualized-loss-expectancy-ale",
@@ -10867,8 +10897,10 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
         "acr:sy0701:v7:ale:annualized-loss-expectancy"
       ],
       "scenarioRequired": false,
-      "criticality": "standard",
-      "criticalErrorClassIds": []
+      "criticality": "critical",
+      "criticalErrorClassIds": [
+        "err:risk-calc-ale"
+      ]
     },
     {
       "requirementId": "req:sy0701:v7:5.2:risk-analysis:annualized-rate-of-occurrence-aro",

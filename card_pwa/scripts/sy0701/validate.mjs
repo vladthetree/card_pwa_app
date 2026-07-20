@@ -8,8 +8,11 @@
  * ECHTE PBQ-Parser aus src/utils/cardTextParser.ts, keine Text-Heuristik)
  * und erzeugt die zehn Pflichtartefakte unter content/sy0-701/generated/.
  *
- * Exit-Code != 0, solange Content-Gates offen sind — das ist im aktuellen
- * Zustand ERWARTET (z. B. keine Readiness-Formen, keine Kalibrierung).
+ * Exit-Code != 0, solange Content-Gates offen sind.
+ *
+ * Ziel seit 2026-07-19: Lerngrundlage, keine Exam-Engine — Readiness-/
+ * Kalibrierungs-Gates sind gestrichen; die Artefakte 7–10 bleiben als
+ * dokumentierter Nicht-Anspruch erhalten.
  *
  *     node scripts/sy0701/validate.mjs
  */
@@ -23,11 +26,11 @@ const APP_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 const SOURCE = path.join(APP_ROOT, 'content', 'sy0-701', 'source')
 const GENERATED = path.join(APP_ROOT, 'content', 'sy0-701', 'generated')
 
-const MANIFEST_VERSION = '2026-07-19.1'
+const MANIFEST_VERSION = '2026-07-19.2'
 const SCENARIO_OBJECTIVES = ['2.4', '3.2', '4.1', '4.5', '4.6', '4.9', '5.6']
-const REQUIRED_READINESS_FORMS = 3
 
 const readJson = f => JSON.parse(fs.readFileSync(path.join(SOURCE, f), 'utf8'))
+const readJsonOptional = f => (fs.existsSync(path.join(SOURCE, f)) ? readJson(f) : null)
 const gates = []
 const gate = (id, ok, detail) => gates.push({ id, status: ok ? 'PASS' : 'FAIL', detail })
 const warn = []
@@ -61,6 +64,10 @@ const extract = readJson('objectives-v7-extract.json')
 const videosManifest = readJson('videos-manifest.json')
 const cardsSnapshot = readJson('cards-snapshot.json')
 const mappingDecisions = readJson('mapping-decisions.json')
+// Kuratierte fachliche Zuordnungen (OFFENE-PUNKTE #6/#8); optional, solange
+// die Kuratierung läuft — fehlende Einträge bleiben ehrlich 'mapping-review'.
+const leafMapping = readJsonOptional('leaf-mapping.json')
+const criticalitySource = readJsonOptional('criticality.json')
 
 if (snapshot.sha256 !== extract.sourceSha256) {
   console.error('FATAL: Hash-Mismatch zwischen exam-source-snapshot und objectives-v7-extract.')
@@ -70,7 +77,9 @@ if (snapshot.sha256 !== extract.sourceSha256) {
 const vite = await createServer({
   root: APP_ROOT,
   configFile: false,
-  server: { middlewareMode: true },
+  // Einmalskript ohne laufenden Dev-Server: kein Datei-Watcher nötig — vermeidet
+  // ENOSPC, wenn VSCodes eigener Watcher das inotify-Budget schon ausschöpft.
+  server: { middlewareMode: true, watch: null },
   logLevel: 'error',
 })
 let parserMod, labsMod, qmapMod, tqMod
@@ -163,8 +172,6 @@ for (const objective of extract.objectives) {
         actionVerb: verb,
         acronymMeaningIds,
         scenarioRequired,
-        // Initial konservativ: fachliche Criticality-Zuweisung ist offenes
-        // Review-Item; ohne 'critical' sind keine Error-Definitionen nötig.
         criticality: 'standard',
         criticalErrorClassIds: [],
       })
@@ -172,11 +179,55 @@ for (const objective of extract.objectives) {
   }
   walk(objective.bullets, [])
 }
+
+// ── Criticality aus kuratierter Source anwenden (OFFENE-PUNKTE #8) ──────────
+const criticalErrorDefinitions = criticalitySource?.criticalErrorDefinitions ?? []
+{
+  const reqById = new Map(requirements.map(r => [r.requirementId, r]))
+  const problems = []
+  const defIds = new Set()
+  for (const def of criticalErrorDefinitions) {
+    if (defIds.has(def.errorClassId)) problems.push(`doppelte errorClassId ${def.errorClassId}`)
+    defIds.add(def.errorClassId)
+    if (!reqById.has(def.requirementId)) problems.push(`Definition ${def.errorClassId} referenziert unbekannte Requirement ${def.requirementId}`)
+    if (def.severity !== 'critical' || !def.definitionVersion || !def.triggerRuleId || !def.resolutionRule) {
+      problems.push(`Definition ${def.errorClassId} unvollständig`)
+    }
+  }
+  const referencedDefIds = new Set()
+  for (const entry of criticalitySource?.critical ?? []) {
+    const req = reqById.get(entry.requirementId)
+    if (!req) { problems.push(`critical-Eintrag referenziert unbekannte Requirement ${entry.requirementId}`); continue }
+    if (!Array.isArray(entry.criticalErrorClassIds) || entry.criticalErrorClassIds.length === 0) {
+      problems.push(`critical-Eintrag ${entry.requirementId} ohne criticalErrorClassIds`)
+      continue
+    }
+    for (const id of entry.criticalErrorClassIds) {
+      if (!defIds.has(id)) problems.push(`critical-Eintrag ${entry.requirementId} referenziert unbekannte Definition ${id}`)
+      referencedDefIds.add(id)
+    }
+    req.criticality = 'critical'
+    req.criticalErrorClassIds = [...entry.criticalErrorClassIds]
+  }
+  for (const id of defIds) {
+    if (!referencedDefIds.has(id)) problems.push(`verwaiste CriticalErrorDefinition ${id}`)
+  }
+  if (problems.length > 0) {
+    console.error('FATAL: criticality.json inkonsistent:\n  - ' + problems.join('\n  - '))
+    process.exit(2)
+  }
+  const criticalCount = requirements.filter(r => r.criticality === 'critical').length
+  gate('criticality-zugewiesen', Boolean(criticalitySource) && criticalCount > 0,
+    criticalitySource
+      ? `${criticalCount} kritische Requirements, ${criticalErrorDefinitions.length} Error-Definitionen`
+      : 'criticality.json fehlt (fachliche Zuweisung steht aus)')
+}
+
 writeArtifact('sy0-701-requirements.json', {
   sourceSnapshotId: snapshot.snapshotId,
   requirements,
-  criticalErrorDefinitions: [],
-  pendingReview: [
+  criticalErrorDefinitions,
+  pendingReview: criticalitySource ? [] : [
     'Criticality je Requirement ist noch nicht fachlich zugewiesen (alle standard).',
     'CriticalErrorDefinitions folgen mit der Criticality-Zuweisung.',
   ],
@@ -341,37 +392,83 @@ for (const c of practiceObjectiveCards) {
   assessmentByObjective.set(c.objective, (assessmentByObjective.get(c.objective) ?? 0) + 1)
 }
 
-const byRequirementId = {}
-let contentMissing = 0
-let assessmentMissing = 0
-for (const r of requirements) {
-  const hasLearning = (videosByObjective.get(r.objectiveId) ?? []).length > 0
-  const hasAssessment = (assessmentByObjective.get(r.objectiveId) ?? 0) > 0
-  let qaStatus
-  if (!hasLearning) qaStatus = 'content-missing'
-  else if (!hasAssessment) qaStatus = 'assessment-missing'
-  else qaStatus = 'mapping-review' // Inhalt existiert nur auf Objective-Ebene; Leaf-Zuordnung unbelegt
-  if (qaStatus === 'content-missing') contentMissing += 1
-  if (qaStatus === 'assessment-missing') assessmentMissing += 1
-  byRequirementId[r.requirementId] = {
-    requirementId: r.requirementId,
-    learningAssetIds: (videosByObjective.get(r.objectiveId) ?? []).map(i => `video:${i}`),
-    assessmentItemIds: [],
-    practicalItemIds: (labsByObjective.get(r.objectiveId) ?? []).map(id => `lab:${id}`),
-    qaStatus,
+// Gültige Asset-IDs für die Referenzvalidierung der kuratierten Zuordnung.
+const validVideoIds = new Set(videosManifest.videos.map(v => `video:${v.index}`))
+const validAssessmentIds = new Set()
+for (const mapped of cardsByVideoIndex.values()) {
+  for (const m of mapped) validAssessmentIds.add(`mc:${m.questionId}`)
+}
+for (const [indexKey, list] of Object.entries(transcriptQuestions)) {
+  list.forEach((_, i) => validAssessmentIds.add(`tq:T${indexKey}-${String(i + 1).padStart(2, '0')}`))
+}
+for (const card of profile.cards) validAssessmentIds.add(`card:${card.id}`)
+const validPracticalIds = new Set(LAB_SCENARIOS.map(s => `lab:${s.id}`))
+for (const c of pbqCards) validPracticalIds.add(`card:${c.cardId}`)
+
+const curatedByReq = new Map(Object.entries(leafMapping?.entries ?? {}))
+{
+  const reqIds = new Set(requirements.map(r => r.requirementId))
+  const problems = []
+  for (const [reqId, entry] of curatedByReq) {
+    if (!reqIds.has(reqId)) { problems.push(`unbekannte Requirement ${reqId}`); continue }
+    if (!['covered', 'content-missing', 'assessment-missing'].includes(entry.status)) {
+      problems.push(`${reqId}: ungültiger Status ${entry.status}`)
+    }
+    for (const id of entry.learningAssetIds ?? []) {
+      if (!validVideoIds.has(id)) problems.push(`${reqId}: unbekanntes Lernasset ${id}`)
+    }
+    for (const id of entry.assessmentItemIds ?? []) {
+      if (!validAssessmentIds.has(id)) problems.push(`${reqId}: unbekanntes Assessment-Item ${id}`)
+    }
+    for (const id of entry.practicalItemIds ?? []) {
+      if (!validPracticalIds.has(id)) problems.push(`${reqId}: unbekanntes Praxis-Item ${id}`)
+    }
+    if (entry.status === 'covered'
+      && ((entry.learningAssetIds ?? []).length === 0 || (entry.assessmentItemIds ?? []).length === 0)) {
+      problems.push(`${reqId}: covered verlangt >=1 Lernasset UND >=1 Assessment-Item`)
+    }
   }
+  if (problems.length > 0) {
+    console.error(`FATAL: leaf-mapping.json inkonsistent (${problems.length} Probleme):\n  - ` + problems.slice(0, 25).join('\n  - '))
+    process.exit(2)
+  }
+}
+
+const byRequirementId = {}
+const statusCounts = { covered: 0, 'mapping-review': 0, 'content-missing': 0, 'assessment-missing': 0 }
+for (const r of requirements) {
+  const curated = curatedByReq.get(r.requirementId)
+  let coverage
+  if (curated) {
+    coverage = {
+      requirementId: r.requirementId,
+      learningAssetIds: [...(curated.learningAssetIds ?? [])],
+      assessmentItemIds: [...(curated.assessmentItemIds ?? [])],
+      practicalItemIds: [...(curated.practicalItemIds ?? [])],
+      qaStatus: curated.status,
+      reviewer: curated.reviewer ?? leafMapping?.reviewer,
+      ...(curated.note ? { note: curated.note } : {}),
+    }
+  } else {
+    // Unkuratiert: Inhalt existiert höchstens auf Objective-Ebene.
+    const hasLearning = (videosByObjective.get(r.objectiveId) ?? []).length > 0
+    coverage = {
+      requirementId: r.requirementId,
+      learningAssetIds: (videosByObjective.get(r.objectiveId) ?? []).map(i => `video:${i}`),
+      assessmentItemIds: [],
+      practicalItemIds: (labsByObjective.get(r.objectiveId) ?? []).map(id => `lab:${id}`),
+      qaStatus: hasLearning ? 'mapping-review' : 'content-missing',
+    }
+  }
+  statusCounts[coverage.qaStatus] += 1
+  byRequirementId[r.requirementId] = coverage
 }
 const blocking = Object.values(byRequirementId).filter(r => r.qaStatus !== 'covered').map(r => r.requirementId)
 writeArtifact('content-qa-report.json', {
   sourceSnapshotId: snapshot.snapshotId,
   requirementCount: requirements.length,
   coveredCount: requirements.length - blocking.length,
-  statusCounts: {
-    covered: requirements.length - blocking.length,
-    'mapping-review': blocking.length - contentMissing - assessmentMissing,
-    'content-missing': contentMissing,
-    'assessment-missing': assessmentMissing,
-  },
+  statusCounts,
   byRequirementId,
   blockingRequirementIds: blocking,
   mappingDecisions: {
@@ -380,11 +477,14 @@ writeArtifact('content-qa-report.json', {
     note: mappingDecisions.applicationStatus,
   },
   provenance: {
-    cardSet: 'Dritt-/abgeleitetes Kursmaterial (messner_lernkarten) — Lizenz-/Herkunftsprüfung offen',
+    cardSet: 'Dritt-/abgeleitetes Kursmaterial (messner_lernkarten) — Lizenz-/Herkunftsprüfung siehe content/sy0-701/LIZENZ-HERKUNFT.md',
     objectivesSnapshot: snapshot.usageBasis,
   },
 })
-gate('leaf-coverage', blocking.length === 0, `${requirements.length - blocking.length}/${requirements.length} Leaves covered (Leaf-Mapping steht aus)`)
+gate('leaf-mapping-gesichtet', statusCounts['mapping-review'] === 0,
+  `${requirements.length - statusCounts['mapping-review']}/${requirements.length} Leaves fachlich gesichtet`)
+gate('leaf-coverage', blocking.length === 0,
+  `${requirements.length - blocking.length}/${requirements.length} covered; Lücken: ${statusCounts['content-missing']} content-missing, ${statusCounts['assessment-missing']} assessment-missing`)
 gate('mapping-31-entschieden', mappingDecisions.decisions.length === 31, `${mappingDecisions.decisions.length}/31 entschieden; Anwendung zurückgestellt (Bestand unverändert)`)
 if (mappingDecisions.decisions.some(d => d.decision === 'move')) {
   warn.push('7 Mapping-Moves sind fachlich entschieden, aber auf Nutzer-Anweisung nicht auf sync.db angewendet.')
@@ -409,13 +509,11 @@ writeArtifact('content-pools.json', {
     readiness: {
       forms: [],
       formCount: 0,
-      requiredForms: REQUIRED_READINESS_FORMS,
-      note: 'Readiness-Items dürfen ausschließlich neu erstellte, nie ausgelieferte Items sein (Detailplan §6.2/Phase 0); der gesamte Bestand ist historisch exponiert und damit unzulässig.',
+      note: 'GESTRICHEN am 2026-07-19: keine Exam-Engine, keine Readiness-Formen — Ziel ist die Lerngrundlage.',
     },
   },
-  disjointness: 'Course/Practice überlappen nicht (M-ID-Zuordnung vs. Rest); Readiness ist leer und damit trivially disjunkt.',
+  disjointness: 'Course/Practice überlappen nicht (M-ID-Zuordnung vs. Rest); Readiness ist gestrichen.',
 })
-gate('readiness-formen', false, `0/${REQUIRED_READINESS_FORMS} disjunkte Readiness-Formen vorhanden`)
 
 // ── 8) holdout-leakage-report ───────────────────────────────────────────────
 writeArtifact('holdout-leakage-report.json', {
@@ -423,7 +521,7 @@ writeArtifact('holdout-leakage-report.json', {
   holdoutItemCount: 0,
   leakageFindings: [],
   verdict: 'NOT_APPLICABLE',
-  note: 'Es existieren noch keine Holdout-Items. Leakage-Prüfung wird wirksam, sobald Readiness-Formen im serverseitigen Holdout-Store angelegt sind (Client/Repo erhalten nur Deskriptoren + Hashes).',
+  note: 'GESTRICHEN am 2026-07-19: keine Exam-Engine, keine Holdout-Items — Artefakt bleibt als dokumentierter Nicht-Anspruch.',
 })
 
 // ── 9) historical-exposure-report ───────────────────────────────────────────
@@ -443,10 +541,9 @@ writeArtifact('historical-exposure-report.json', {
 writeArtifact('calibration-report.json', {
   sourceSnapshotId: snapshot.snapshotId,
   calibratedForms: [],
-  verdict: 'MISSING',
-  note: 'Keine Kalibrierungsdaten. Blueprint-Freigabe und Formäquivalenz (Detailplan §14) setzen kalibrierte, fachlich reviewte Formen voraus.',
+  verdict: 'NOT_APPLICABLE',
+  note: 'GESTRICHEN am 2026-07-19: keine Exam-Engine, keine Kalibrierung — Artefakt bleibt als dokumentierter Nicht-Anspruch.',
 })
-gate('kalibrierung', false, 'keine Kalibrierungsdaten vorhanden')
 
 // ── Generierte TS-Datenmodule (Plan §20: sy0701ContentMap.ts, sy0701Requirements.ts) ──
 const DATA_DIR = path.join(APP_ROOT, 'src', 'data')
@@ -457,10 +554,19 @@ const genHeader = `/**
  * Important: Derived from content/sy0-701/source/* (official V7 snapshot ${snapshot.sha256.slice(0, 12)}…, manifest ${MANIFEST_VERSION}).
  */`
 
+// Rückabbildung des kuratierten Leaf-Mappings: Video → zugeordnete Requirements.
+const requirementIdsByVideo = new Map()
+for (const [reqId, entry] of curatedByReq) {
+  for (const assetId of entry.learningAssetIds ?? []) {
+    const index = Number(assetId.replace('video:', ''))
+    if (!requirementIdsByVideo.has(index)) requirementIdsByVideo.set(index, [])
+    requirementIdsByVideo.get(index).push(reqId)
+  }
+}
 const contentMapEntries = videoContentMap.map(v => ({
   videoIndex: v.videoIndex,
   objectiveId: v.objective,
-  requirementIds: [], // Leaf-Mapping ist offenes Phase-0-Item (OFFENE-PUNKTE.md #6)
+  requirementIds: requirementIdsByVideo.get(v.videoIndex) ?? [],
   courseCardIds: v.cardIds,
   recallQuestionIds: v.recallQuestionIds,
   recallCardIds: v.cardIds,

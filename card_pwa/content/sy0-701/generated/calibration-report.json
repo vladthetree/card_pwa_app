@@ -1,9 +1,9 @@
 {
   "schemaVersion": "sy0701-calibration-report-1",
-  "manifestVersion": "2026-07-19.1",
-  "generatedAt": 1784412776337,
+  "manifestVersion": "2026-07-19.2",
+  "generatedAt": 1784564635362,
   "sourceSnapshotId": "sy0701-v7-2026-07-15",
   "calibratedForms": [],
-  "verdict": "MISSING",
-  "note": "Keine Kalibrierungsdaten. Blueprint-Freigabe und Formäquivalenz (Detailplan §14) setzen kalibrierte, fachlich reviewte Formen voraus."
+  "verdict": "NOT_APPLICABLE",
+  "note": "GESTRICHEN am 2026-07-19: keine Exam-Engine, keine Kalibrierung — Artefakt bleibt als dokumentierter Nicht-Anspruch."
 }

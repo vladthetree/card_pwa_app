@@ -1,13 +1,13 @@
 {
   "schemaVersion": "sy0701-content-pools-1",
-  "manifestVersion": "2026-07-19.1",
-  "generatedAt": 1784412776323,
+  "manifestVersion": "2026-07-19.2",
+  "generatedAt": 1784564635350,
   "sourceSnapshotId": "sy0701-v7-2026-07-15",
   "pools": {
     "course": {
       "videoUnits": 120,
       "mappedCardCount": 375,
-      "transcriptQuestionCount": 264
+      "transcriptQuestionCount": 319
     },
     "practice": {
       "rootDeckScenarioCards": 339,
@@ -19,9 +19,8 @@
     "readiness": {
       "forms": [],
       "formCount": 0,
-      "requiredForms": 3,
-      "note": "Readiness-Items dürfen ausschließlich neu erstellte, nie ausgelieferte Items sein (Detailplan §6.2/Phase 0); der gesamte Bestand ist historisch exponiert und damit unzulässig."
+      "note": "GESTRICHEN am 2026-07-19: keine Exam-Engine, keine Readiness-Formen — Ziel ist die Lerngrundlage."
     }
   },
-  "disjointness": "Course/Practice überlappen nicht (M-ID-Zuordnung vs. Rest); Readiness ist leer und damit trivially disjunkt."
+  "disjointness": "Course/Practice überlappen nicht (M-ID-Zuordnung vs. Rest); Readiness ist gestrichen."
 }

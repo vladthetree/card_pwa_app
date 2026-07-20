@@ -14,7 +14,7 @@ Das Produktziel ist, die Wahrscheinlichkeit des Bestehens zu erhöhen. Die App d
 - **Objective-Evidenz:** `insufficientEvidence | learning | mastered`
 - **Gesamtreife:** `notReady | approaching | examReady`
 
-`courseCompleted` bedeutet nur, dass der Lernpfad bearbeitet wurde. `examReady` erfordert zusätzlich vollständige, geprüfte Inhaltsabdeckung und unabhängige Leistungsnachweise.
+`courseCompleted` bedeutet nur, dass der Lernpfad bearbeitet wurde. **Streichung 2026-07-19:** Der `examReady`-Nachweis (Exam-Engine, Holdouts, Server-Receipts) ist kein Produktziel mehr — Ziel ist eine sehr gute, vollständige und geprüfte **Lerngrundlage** für SY0-701. Die App zeigt `examReady` niemals an; die Reife-Ebene bleibt dauerhaft auf dem ehrlichen Default und wird aus der UI genommen.
 
 ## Nutzerentscheidungen vom 2026-07-15
 
@@ -26,7 +26,7 @@ Das Produktziel ist, die Wahrscheinlichkeit des Bestehens zu erhöhen. Die App d
 - **Prüfung:** kurze Drills und vollständige 90-Minuten-Simulationen sind getrennte Modi.
 - **Anzeige:** große aktive Kachel, kompakte Empfehlungsliste und Vollliste im Sheet des Moduls „Aktuelles Paket“.
 
-Für das Bestehensziel sind **Phase 0 bis 5 einschließlich Readiness-Gate Pflicht**. Phasen 1–3 allein sind nur ein Lernorganisations-MVP. Phase 6 ist Feinschliff, Phase 7 optionaler Komfort-Sync. Der für Holdout-Integrität nötige Readiness-Sync gehört bereits zu Phase 5.
+**Streichung 2026-07-19:** Phase 5 (Exam-Engine/Readiness) entfällt komplett. Verbindlich bleiben Phase 0 in der Lerngrundlagen-Ausprägung (Content-Basis, Coverage, QA) sowie die umgesetzten Phasen 1–4; Phase 6 ist Feinschliff, Phase 7 optionaler Komfort-Sync. Der Schwerpunkt liegt fortan auf **Qualität und Zusammenstellung des Materials**.
 
 ## Nutzerentscheidungen vom 2026-07-18
 
@@ -42,6 +42,7 @@ Für das Bestehensziel sind **Phase 0 bis 5 einschließlich Readiness-Gate Pflic
 - **Lerneinheiten und Labs als Home-Modi:** `LearningUnitsView` und `LabsView` rendern eingebettet unter der Homebar (kein eigener Zurück-Pfeil); die View-Routen `learning-units` und `labs` entfallen. Desktop erreicht die Modi über dasselbe „Ansicht"-Menü der Deck-Toolbar.
 - **Dashboard = reine Statistik:** nur KPIs, Quests-Panel und Heatmap, untereinander scrollbar. Heute-Paket-Kachel, Lerneinheiten-Kachel und Daily-Quest-Kachel sind bewusst raus („das braucht man da nicht"); Daily Quest hat einen eigenen Modus, die Heute-Paket-Kachel ist ersatzlos aus der UI (die Mechanik bleibt im Code; den geführten Tagespfad decken die Lerneinheiten ab).
 - **Rückweg-Kontrakt:** Aus dem Lerneinheiten-Modus geöffnete Videos, Labs und Karten-Sessions kehren beim Schließen/Zurück exakt in den Modus zurück — nie in die Lernvideos-/Labs-Liste oder auf das leere Home.
+- **Exam-Engine gestrichen:** keine `ExamView`, keine Vollsimulationen/Drills-Engine, keine Holdout-Formen, kein Readiness-Server/-Receipt, keine Start-Gates. Ziel ist eine sehr gute Lerngrundlage; Priorität hat die Qualität und Zusammenstellung des Materials (Leaf-Abdeckung, Kartenlücken, QA/Provenienz, Akronyme, Lab-Aufgabentypen).
 
 ## Verbindliche Prüfungsbasis
 
@@ -88,7 +89,7 @@ Jeder kleinste prüfbare Eintrag erhält eine stabile `requirementId`, Aufgabenv
 
 „Ein Video vorhanden“ oder „eine Karte vorhanden“ reicht nicht als Coverage. Mehrdeutige Akronyme wie MAC, PAM, RA, RBAC und SAN werden als getrennte Kürzel-Bedeutungs-Paare behandelt.
 
-Für `examReady` reicht Akronym-Content nicht: jedes offizielle Akronym-Bedeutungspaar muss geprüft worden sein, die aktuelle Akronymleistung muss mindestens 80 Prozent betragen und bei mehrdeutigen Paaren darf kein ungelöster Fehler bestehen.
+Akronym-Qualitätsziel (als Lernziel weitergeführt, nachdem `examReady` gestrichen ist): jedes offizielle Akronym-Bedeutungspaar ist prüfbar abgedeckt, und mehrdeutige Paare werden getrennt geübt, bis kein ungelöster Fehler mehr besteht.
 
 ### Inhalts- und Herkunfts-QA
 
@@ -116,7 +117,7 @@ Matching und Ordering sind nur Teil der Praxisabdeckung. Der Pflichtumfang umfas
 
 Recall-Checks bleiben formative, non-scheduling Aktivität: Sie schreiben keine Kartenreviews, vergeben kein XP und zählen ohne per-Item Server-Scoring nicht als Mastery-Evidenz.
 
-Labs und Examensimulationen verwenden eigene Versuchstabellen. Während eines Lab- oder Examversuchs wird **kein** `recordReview` geschrieben, kein Scheduler verändert und kein XP vergeben. Erst nach Abgabe kann eine explizite Remediation normale Review-Sessions anlegen. Dadurch bleiben verspätetes Feedback, Holdout-Integrität und unverfälschte Readiness-Messung erhalten.
+Labs verwenden eigene Versuchstabellen *(Examensimulationen: gestrichen 2026-07-19)*. Während eines Labversuchs wird **kein** `recordReview` geschrieben, kein Scheduler verändert und kein XP vergeben. Erst nach Abgabe kann eine explizite Remediation normale Review-Sessions anlegen. Dadurch bleiben verspätetes Feedback, Holdout-Integrität und unverfälschte Readiness-Messung erhalten.
 
 Daily Quest und alle Home-/Shortcut-Einstiege beziehen die Ausschlussmenge aus einer zentralen profilbezogenen Query. Aktive Kurs-/Review-Karten sowie Items eines laufenden Examversuchs werden nicht doppelt angeboten; Readiness-Holdouts sind dauerhaft ausgeschlossen.
 
@@ -154,7 +155,7 @@ Daily Quest und alle Home-/Shortcut-Einstiege beziehen die Ausschlussmenge aus e
 - **Dauerschätzungen vorgezogen** (Phase-6-Punkt erledigt): ffprobe-Dauern aller 120 Videos → Content-Map (Manifest `2026-07-19.1`, neues Gate `video-dauern`) → `estimatedMinutes` je Course-Unit → das Pacing liefert erstmals echte `on-track`/`capacity-shortfall`-Urteile.
 - **Entscheidung lokale Assessment-Proposals: NEIN, erst mit dem Server (Phase 5).** Begründung: Ein Proposal ohne Server-Acceptance ist per §10 keine Evidenz und dürfte weder Response noch Punkte festlegen — lokal wäre es totes Gewicht mit Pflege-/Migrationskosten. Die ReviewRecords tragen bereits `opId`, `answerCorrect`, Zeit und Timestamp, sodass Proposals beim Phase-5-Serverstart idempotent aus der bestehenden Historie rekonstruiert werden können. Der §10-Wrapper (Review + Proposal + Outbox atomar) kommt zusammen mit der Server-Acceptance.
 
-Damit ist Phase 3 abgeschlossen bis auf das serverseitige Ledger (zweiter Punkt), das per Definition zu Phase 5 gehört.
+Damit ist Phase 3 abgeschlossen; das serverseitige Ledger (zweiter Punkt) ist mit der Phase-5-Streichung am 2026-07-19 entfallen — die lokalen Antwortstatistiken mit dokumentierten Grenzen bleiben die Empfehlungsbasis.
 
 **Sechste Runde am 2026-07-19** (Working Tree, 817/817 Tests + Build grün): **Phase-4-Kern umgesetzt** — dedizierte DB v2 mit UUID-`labAttempts` (eingefrorener `scenarioSnapshot` + Content-Hash-Version, Update nur inProgress, Abgabe unveränderlich, Retry = neue UUID, Backup-fest), Legacy-„geschafft“-Import (`legacy-labs-v1`-Marker, Abschluss- ohne Score-Evidenz), eine `lab`-Einheit je Szenario im Ranking/Screen, Deep Link Lerneinheiten-Screen → LabsView-Szenario, additive Instrumentierung: Öffnen startet/fortsetzt den Versuch, jeder Lösungs-Check protokolliert (Fehlversuch → Update, Lösung → Abgabe + Unit-Abschluss). Offen in Phase 4: fachliche §13.2-Normalisierung aller Szenarien (Schritt-IDs, Teilpunkt-Rubriken) und darauf aufbauend verspätetes Feedback + Remediation-Links.
 
@@ -176,11 +177,22 @@ Damit ist Phase 3 abgeschlossen bis auf das serverseitige Ledger (zweiter Punkt)
 - **Menüs zweigeteilt:** „Ansicht" (Dashboard, Nach Tags, Shuffle-Decks, Lernvideos) / „Modus" (Daily Quest, Lerneinheiten, Decks, Labs) in HomeBottomBar-Sheet und Desktop-Toolbar; Homebar-Zeile unverändert.
 - **Race-Fix Lab-Start:** paralleler Doppelstart (StrictMode-Doppeleffekt beim Öffnen) teilt sich jetzt Versuch + Ausführung statt `startUnitExecution`-Fehler zu werfen (`startOrResumeLabUnit`, mit Test).
 
+**Zehnte Runde am 2026-07-20** (Working Tree; 829/829 Tests + Build grün): **Content-Qualität, Schwerpunkt a/b/d (teilweise) begonnen** —
+
+- **Leaf-Mapping kuratiert** (`content/sy0-701/source/leaf-mapping.json`, neu): alle 655 Leafs fachlich gesichtet — Video-Zuordnung über eine transkript-verifizierte Regeltabelle (jedes Video-/Bullet-Segment gegen die Original-Transkripte in `~/youtube-playlists/…/transcripts` abgeglichen), Assessment-Zuordnung tokenbasiert vorgeschlagen und je Domain manuell durchgesehen/korrigiert (Verwechslungen wie Zero-Trust-Komponenten, MFA-Faktoren, Certificate-vs-Certification behoben). Generator liest die Datei optional und validiert Referenzen hart (`FATAL` bei unbekannten Asset-/Requirement-IDs). Neues Gate `leaf-mapping-gesichtet` (PASS: 655/655), `leaf-coverage` verschärft und zeigt jetzt die echte Lücke (336/655 `covered`, Rest `assessment-missing`, 0 `content-missing`).
+- **Criticality kuratiert** (`content/sy0-701/source/criticality.json`, neu): 16 fachlich ausgewählte kritische Requirements (Konzepte, deren Verwechslung besonders teuer ist: CIA-Ziele, Schlüsselrollen bei Asymmetrie/Signatur, Hashing-Unumkehrbarkeit, Data-States, Least Privilege, IR-Phasenreihenfolge, Chain of Custody, Risikorechnung SLE/ALE, MFA-Faktoren) mit je einer versionierten `CriticalErrorDefinition`. Generator validiert Konsistenz (verwaiste/unbekannte IDs → `FATAL`). Gate `criticality-zugewiesen` PASS.
+- **Kartenlücken 4.2/4.4/4.7/4.8/4.9 geschlossen:** 55 neue Recall-Fragen in `messerTranscriptQuestions.ts`, jede einzeln im zugehörigen Video-Transkript verankert (nicht aus dem ungeprüften APKG-`needs_review`-Bestand). Domain 4 (Security Operations) ist damit die erste vollständig `covered` Domain im Leaf-Mapping. Domains 1/2/3/5 haben noch 319 offene `assessment-missing`-Leafs — das ist die bei Weitem größte verbleibende Arbeit und wurde bewusst nicht überstürzt (Qualität vor Geschwindigkeit).
+- **Validator-Fix:** `server.watch: null` im vite-Einmalstart, da der VSCode-Extension-Host das inotify-Budget des Systems ausschöpft (`ENOSPC`) — der Generator ist ein Einmalskript ohne laufenden Dev-Server und braucht keinen Datei-Watcher.
+- **Datenqualitätstests gehalten:** neue Fragen mussten zweimal gegen `video-recall-check.test.tsx`-Gates (kein Options-Längenbias >3×, keine wortgleichen Fragen über Videos hinweg) nachgeschärft werden — beide Regeln haben reale, leicht zu übersehende Redaktionsfehler gefangen.
+
 **Nächste Schritte in Reihenfolge:**
 
-1. Working-Tree-Stand committen.
-2. Phase 5 (Exam-Engine): clientseitig beginnen mit `ExamView`-Grundgerüst, `examAttempts` (dedizierte DB v3) und Practice-Drills aus dem geprüften Inventar; alles Readiness-/Server-gebundene (Holdouts, Lease, Receipts) folgt gebündelt mit der card-sync-server-Arbeit.
-3. Nebenläufig offen: Content-Arbeit (neue Lab-Aufgabentypen, Leaf-Mapping, Readiness-Formen, Kalibrierung — `OFFENE-PUNKTE.md`), Puffertage im Plan-Editor, Baseline-Diagnostik-Entscheidung.
+1. Working-Tree-Stand committen (inkl. Race-Fix aus Runde 9 und Content-Arbeit aus Runde 10).
+2. **Content-Qualität — verbleibende 319 `assessment-missing`-Leafs (Domains 1/2/3/5), größter Hebel:** je Leaf im Transkript verankerte Frage verfassen oder Fach-Lücke bestätigen; gleiches Muster wie Domain 4 in Runde 10, aber deutlich mehr Umfang — eigene fokussierte Sitzung(en) empfohlen statt Fortsetzung im laufenden Kontext.
+3. QA je Item für die 375 bestehenden Recall-MCs: Lösungserklärung/Distraktorbegründung/Quelle/Freigabestatus je Karte, plus Lizenz-/Herkunftsprüfung des APKG-Kartensatzes.
+4. Akronym-Abdeckung: 336 offizielle Paare mit Erkennungs-/Anwendungsfrage, mehrdeutige (MAC, PAM, RA, RBAC, SAN) als getrennte Paare — braucht vermutlich einen neuen Fragetyp/-screen, kein reiner Content-Task.
+5. Labs: Aufgabentypen über Matching/Ordering hinaus (§13.1: Log-Analyse, Firewall/ACL, IAM, Härtung, Incident Response) — neue `decision`-Interaktion (bereits in `LabStepSnapshot`-Typ im Detailplan vorgesehen) plus `requirementIds` je Szenario aus dem jetzt vorhandenen Leaf-Mapping zurückspiegeln; die 23 PBQ-artigen Karten fachlich prüfen.
+6. Software-Rest (klein): Reife-Beschriftung aus der UI nehmen (Zeile „Reife: …" in Lerneinheiten-Modus/Kachel), Phase-6-Feinschliff (Filter, Tastatur/Screenreader, kein horizontaler Overflow); optional Phase 7 (Komfort-Sync von Video-/Unit-Zustand).
 
 ## Umsetzungsphasen
 
@@ -188,18 +200,17 @@ Damit ist Phase 3 abgeschlossen bis auf das serverseitige Ledger (zweiter Punkt)
 
 - [x] Offiziellen Source-Snapshot samt Hash, Dokumentrevision, Exam-Code, Sprache und Lifecycle-Gate speichern; altes im Repo registriertes Objectives-PDF ersetzen oder eindeutig als veraltet markieren. *(source/exam-source-snapshot.json; altes LAB_SOURCES-PDF als historisch dokumentiert)*
 - [x] Exakten Crosswalk für alle Objectives, Bullet-/Unter-Bullet-Pfade und Akronym-Bedeutungspaare erstellen. *(objectives-v7-extract.json: 28 Objectives, 655 Leafs, 336 Akronyme; generiert: sy0-701-requirements.json, sy0-701-acronyms.json)*
-- [ ] Für jeden Leaf-Pfad Lern-, Assessment- und bei Bedarf Praxisabdeckung samt QA/Provenienz dokumentieren. *(teilweise: Statusfelder generiert, aber 655 Leafs stehen auf `mapping-review`; QA/Provenienz offen)*
+- [ ] Für jeden Leaf-Pfad Lern-, Assessment- und bei Bedarf Praxisabdeckung samt QA/Provenienz dokumentieren. *(2026-07-19: kuratierte `source/leaf-mapping.json` — alle 655 Leafs fachlich gesichtet [Gate `leaf-mapping-gesichtet` PASS], Video-Zuordnung per transkript-verifizierter Regeltabelle, Assessment-Zuordnung tokenbasiert + manuell durchgesehen/korrigiert je Domain; 336/655 Leafs `covered` [Gate `leaf-coverage` bleibt FAIL bis alle 655], Rest ehrlich `assessment-missing` — keine Lücke wird verdeckt. Domain 4 [Security Operations] komplett covered inkl. 55 neu verfasster, transkriptverankerter Fragen für 4.2/4.4/4.7/4.8/4.9. Domains 1/2/3/5 noch mit offenen Leafs — größte verbleibende Content-Arbeit.)*
 - [x] 31 falsche Video-/Deck-Mappings fachlich entscheiden und korrigieren; danach Generator und Audit reproduzierbar ausführen. *(alle 31 entschieden in source/mapping-decisions.json; Korrektur am 2026-07-18 endgültig als „keine physischen Moves“ beschlossen — Zuordnung rein logisch per Karten-ID, der Generator erreicht alle 375 M-Karten, Audit via validate.mjs reproduzierbar)*
-- [ ] Rohmaterial für 4.2 und 4.9 fachlich prüfen/importieren oder echte Content-Lücke markieren; dünne Objectives und etwa 16 Videos ohne Recall beheben. *(teilweise: Recall-Lücke behoben — 0 Videos ohne Recall via Transkriptfragen; 4.2/4.9-Karten weiter offen)*
-- [ ] Alle 23 parsererkannten PBQ-artigen Karten sowie alle Labs mit dem tatsächlichen Kartenparser inventarisieren, fachlich prüfen und Objective-/Requirement-IDs zuordnen. *(teilweise: Inventar mit echtem Parser in generated/pbq-lab-coverage.json; fachliche Prüfung/Requirement-Zuordnung offen)*
-- [ ] Inhalte in Course-/Practice-Kontexte sowie mindestens drei untereinander disjunkte Readiness-Full-Formen (zwei Nachweise + Reserve) partitionieren; Leakage-, historische Exposure- und Kalibrierungsreports erzeugen. *(teilweise: Pools + alle drei Reports generiert; Readiness-Formen 0/3, ganzer Bestand historisch exponiert)*
-- [ ] Für Readiness ausschließlich neu erstellte, noch nie ausgelieferte oder lückenlos als ungesehen belegte Items verwenden; alte zugängliche Karten, unsichere Legacy-Historie sowie vom Kandidaten erstellte/reviewte Items ausschließen.
-- [ ] Holdout-Prompts/Lösungen ausschließlich in einem kandidatenseitig unzugänglichen Serverstore verwalten; Client/Repo/Backup enthalten vor Lease nur Deskriptoren und Hashes. Local-only oder administrativer Kandidatenzugriff blockiert `examReady`.
-- [ ] Full-Blueprint unabhängig freigeben: initial 90 Items/90 Minuten, 4–6 PBQ-nahe Items mit mindestens 10 % der Punkte, alle 28 Objectives, Aufgabenverb-/Szenario-/Schwierigkeitsmix und Formäquivalenz; Änderungen nur versioniert nach Kalibrierung.
+- [x] Rohmaterial für 4.2 und 4.9 fachlich prüfen/importieren oder echte Content-Lücke markieren; dünne Objectives und etwa 16 Videos ohne Recall beheben. *(2026-07-19: Recall-Lücke behoben — 0 Videos ohne Recall; 4.2/4.4/4.7/4.8/4.9 aus Transkript [nicht APKG-`needs_review`] mit 55 neuen, im Video verankerten Fragen geschlossen — Domain 4 durchgängig `covered`)*
+- [ ] Alle 23 parsererkannten PBQ-artigen Karten sowie alle Labs mit dem tatsächlichen Kartenparser inventarisieren, fachlich prüfen und Objective-/Requirement-IDs zuordnen. *(teilweise: Inventar mit echtem Parser in generated/pbq-lab-coverage.json; `requirementIds` im generierten `sy0701ContentMap.ts` werden jetzt aus dem kuratierten Leaf-Mapping zurückgespiegelt, für die 336 covered-Leafs also gefüllt; fachliche PBQ-Prüfung + neue §13.1-Aufgabentypen [Logs, Firewall/ACL, IAM, Härtung, IR] weiter offen)*
+- [x] Criticality je Requirement fachlich zuweisen; `CriticalErrorDefinition`s referenzieren. *(2026-07-19: kuratierte `source/criticality.json` — 16 fachlich ausgewählte kritische Requirements [CIA-Verwechslung, Schlüsselrollen, Data-States, Least Privilege, IR-Reihenfolge, Chain of Custody, Risikorechnung SLE/ALE, MFA-Faktoren] mit je einer versionierten `CriticalErrorDefinition`; Gate `criticality-zugewiesen` PASS, Konsistenzprüfung [verwaiste/unbekannte IDs] im Generator)*
+- [x] Inhalte in Course-/Practice-Kontexte partitionieren; Leakage-, Exposure- und Kalibrierungsreports erzeugen. *(Pools + alle drei Reports generiert und als Struktur-/QA-Werkzeuge behalten; **Readiness-Full-Formen gestrichen 2026-07-19**)*
+- *(gestrichen 2026-07-19)* Readiness-Item-Regeln, Holdout-Serverstore und Full-Blueprint — entfallen mit der Exam-Engine.
 - [ ] Baseline-Diagnostik, gebuchte Prüfungssprache, Termin, verfügbares Wochenbudget und Puffertage erfassen. *(teilweise, 2026-07-18: Sprache Englisch, Termin = Settings-`examDateIso`, Budget ~5 h/Woche; Baseline-Diagnostik und Puffertage offen)*
-- [ ] UI-Sprache und Prüfungssprache getrennt behandeln: Fachbegriffe und bewertbare Übungen von Beginn an auch in der gebuchten Prüfungssprache anbieten; Vollsimulationen ausschließlich in dieser Sprache durchführen.
+- [ ] UI-Sprache und Prüfungssprache getrennt behandeln: Fachbegriffe und bewertbare Übungen von Beginn an auch auf Englisch (gebuchte Prüfungssprache) anbieten. *(Vollsimulationsteil gestrichen 2026-07-19)*
 
-Exit: Kein offizieller Leaf-Pfad fehlt im Crosswalk; keine kritische Inhalts-, Mapping-, Lizenz- oder Assessment-Lücke ist ungeklärt. Andernfalls darf die App weder „vollständig abgedeckt“ noch `examReady` anzeigen.
+Exit: Kein offizieller Leaf-Pfad fehlt im Crosswalk; keine kritische Inhalts-, Mapping-, Lizenz- oder Assessment-Lücke ist ungeklärt. Andernfalls darf die App nicht „vollständig abgedeckt“ anzeigen (`examReady` gibt es nicht mehr).
 
 ### Phase 1 — Korrektes Modell und Liste (Lernorganisations-MVP)
 
@@ -235,13 +246,13 @@ Exit: Reload, Tageswechsel, Profilwechsel und Restore sind deterministisch; kein
 ### Phase 3 — Evidenzbasierte Reviews und Empfehlungen
 
 - [x] `listAnswerStats` statt Wrong-only-Query: `scored`, `correct`, `wrong`, `unanswered`, eindeutige Items, Exposition, Zeit, erste/letzte Antwort, letzte Antwort und `resolvedAt`. *(als Hint-Aggregation über ReviewRecords: pure `computeAnswerStats` + Query `listAnswerStats`; `answerCorrect`-Vorrang mit rating≥3-Fallback, Auflösung nur durch strikt spätere korrekte Antwort, `masteryEligibleOnly` ⇒ leer und `independentSessionCount` 0, bis das Ledger existiert)*
-- [ ] Das autoritative AssessmentEvent-Ledger vollständig aggregieren; Legacy-Review-Hints dürfen Empfehlungen, aber wegen unsicherer Herkunft keine Mastery liefern.
+- *(gestrichen 2026-07-19)* Autoritatives Server-AssessmentEvent-Ledger — entfällt mit der Exam-Engine. Es gilt dauerhaft: lokale Review-Hints liefern Empfehlungen, behaupten aber keine Mastery.
 - [x] Fälligkeit über dieselbe pure Eligibility-Logik wie die gewählte Study-Sortierung berechnen; direkte statt rekursive Deckquery verwenden. *(`sortStudyCards` mit `maxNewCards: 0` — eine Wiederholung führt nie neue Karten ein — über `listCardsByDeckIdsDirect`)*
 - [x] Review-Ausführung aus fälligen Karten und ungelösten Fehlern einfrieren; ein später korrekt gelöstes Item bleibt nicht endlos falsch. *(`buildReviewSelection` + `startOrResumeReviewUnit`; Auflösung über die strikt-später-Regel aus `listAnswerStats`)*
 - [x] Reviewversuche separat protokollieren. Die Tageskappe nutzt Profil, lokales Lerntagsdatum und Abschlussverlauf. *(`reviewUnitAttempts` append-only via Reconcile-Abschluss; `countReviewUnitAttemptsForDay` speist `reviewCompletedToday` im Ranking — höchstens eine Empfehlung pro Lerntag)*
 - [x] Review-Abbruch explizit speichern, aktive Reservierung lösen und unerledigte/überhängende Karten weiter als `reviewDue` behandeln. *(2026-07-19: `abortReviewUnit` protokolliert einen `abandoned`-Versuch — zählt NICHT zur Tageskappe —, löst die Reservierung, behält die Ausführung als Audit und räumt die Session auf; Abbruch-Button an laufenden Review-Zeilen im LearningUnitsView)*
 - [x] `rankLearningUnits` erhält Phase, Datum, heutige Reviews, Mastery und Readiness: Grundlagen priorisieren Kurs + fällige Reviews; Vertiefung Schwächen/Labs; Prüfungsphase Holdout-Drills; Abschlussphase kurze gezielte Remediation. *(seit 2026-07-18 mit echten Signalen verdrahtet: `reviewDueUnitIds` aus Eligibility + ungelösten Fehlern, `reviewCompletedToday` aus der Tageskappe; Mastery/Readiness bleiben bis Ledger/Phase 5 ehrliche `insufficientEvidence`/`notReady`-Defaults)*
-- [ ] Wenn Evidenz oder Zeit nicht reicht, zeigt das System einen klaren No-Go-/Terminverschiebungshinweis statt offene kritische Themen auszublenden. *(teilweise: Zeitseite umgesetzt — `capacity-shortfall` blockiert das Ranking und zeigt im Sheet „Termin verschieben oder Budget erhöhen“; Evidenzseite folgt mit dem Ledger)*
+- [x] Wenn Evidenz oder Zeit nicht reicht, zeigt das System einen klaren No-Go-/Terminverschiebungshinweis statt offene kritische Themen auszublenden. *(Zeitseite umgesetzt — `capacity-shortfall` blockiert das Ranking und zeigt „Termin verschieben oder Budget erhöhen“; Evidenzseite besteht lokal aus ehrlicher Stichproben-Anzeige [„Evidenz: unzureichend“] — der Server-Ledger-Teil ist gestrichen)*
 
 Exit: Empfehlungen sind mit einem deterministischen `reason` erklärbar; kleine Stichproben werden nie als starke/beherrschte Objectives dargestellt.
 
@@ -257,41 +268,20 @@ Exit: Empfehlungen sind mit einem deterministischen `reason` erklärbar; kleine 
 
 Exit: Praxisleistung ist profilfest, nachvollziehbar und fließt nur mit hinreichender Rubrik in Mastery ein.
 
-### Phase 5 — Exam-Engine, Phasen und Readiness (Pflicht)
+### Phase 5 — Exam-Engine und Readiness *(GESTRICHEN am 2026-07-19)*
 
-- [ ] Eigene `ExamView`; keine normale Study-Session und kein unmittelbares Lernfeedback während des Versuchs.
-- [ ] Dexie v24: UUID-basierte `examAttempts` und monotone Item-Exposition. Laufende Versuche sind aktualisierbar, abgegebene unveränderlich; gespeichert werden Profil, Exam-Code, Source-Snapshot, Content-Manifest, Sprache, Form-/Item-Versionen, Seed, Snapshots/IDs, globale Deadline, Antworten, Flags, Zeit je Item, Teilpunkte, unbeantwortete Items und Status.
-- [ ] Qualifizierende Vollsimulation gemäß freigegebenem Blueprint: initial exakt 90 Items/90 Minuten mit PBQ-/Objective-/Verb-/Szenario-/Schwierigkeitszielen, Navigation, Markieren/Überprüfen, Offline-Resume-Regel, Autosubmit und Feedback erst nach Abgabe. Kürzere Sets sind Drills.
-- [ ] Domainmix 12/22/18/28/20 mit deterministischer Rundung; PBQ-Auswahl aus dem vollständigen, geprüften Inventar statt nur aus dem Acronym-Deck.
-- [ ] Zwei disjunkte, zuvor ungesehene Holdout-Formen an unterschiedlichen Tagen; Exposition wird dauerhaft verfolgt.
-- [ ] Serverseitiger Readiness-Sync mit dauerhafter Auth-Identität→Person→Profil-Bindung, personenweitem Expositionsledger und bestätigten Attempt-/Assessmentdaten; Profil-/Gerätewechsel setzt Holdout-Historie nie zurück.
-- [ ] Client baut nur Practice-Formen. Der Server lädt Plan/Lifecycle/Snapshot autoritativ, wählt Readiness selbst und legt in derselben Lease-Transaktion Expositionen samt Receipt sowie genau einen Attempt mit Server-Start/-Deadline an; der signierte Payload enthält keine Scoringdaten, bindet Identity-Assurance und aktiven Plan und kann keinen zweiten Timer erzeugen. Deadline, Submit-Grace, Lease- und Signaturablauf sind exakt gekoppelt.
-- [ ] Qualifizierende Readiness-Läufe benötigen serverbelegte Start-/Heartbeat-/Deadline-Zeiten. Offline-Fortsetzung bleibt möglich, wird bei fehlender Zeitattestierung aber dauerhaft nur `practice-only`.
-- [ ] `examReady` wird serverseitig aus aktuellen Content-/Akronym-/Evidenz-/Exposure-Gates berechnet und nur über einen kurzlebigen, profil-/person-/assurance-/epoch-/plan-/exam-code-/datum-/sprache-/lifecycle-/booking-/versions-/watermarkgebundenen Receipt angezeigt; lokale Booleans reichen nie und jede Planänderung invalidiert den alten Receipt.
-- [ ] Lab-/Diagnostic-/Exam-Evidenz erst nach autoritativem Server-Receipt für Mastery qualifizieren; spätere Clock-/Lease-/Content-/Audit-Invalidierung über append-only Invalidation-Einträge aus allen Aggregaten entfernen.
-- [ ] Lernphase aus signierten Resttagen, Fortschritt, Coverage, Mastery und Readiness ableiten; Examtag (`0`) und überfälliger Termin werden eindeutig behandelt.
-- [ ] Ergebnis nach Domain, Objective, Requirement und PBQ-Rubrik; explizite Remediation erst nach Abgabe.
-- [ ] Practice-Diagnostic beim Einstieg und mindestens wöchentliche Pacing-Neuberechnung; die Diagnostik ist kein Holdout und zählt nicht als Readiness-Mock.
-- [ ] Lernplan serverseitig versioniert bestätigen: Candidate-ID ausschließlich aus Auth-Bindung, Bookability per offizieller Quelle aktualisieren und persönliche Buchung separat attestieren; Lease akzeptiert danach nur autoritative Plan-/Lifecycle-IDs.
-
-Interne, konfigurierbare Start-Gates — **keine offizielle 750/900-Umrechnung**:
-
-- Objective `mastered`: 100 % Leaf-Coverage, mindestens 8 unterschiedliche versionierte Abrufitems innerhalb der letzten 21 Tage in mindestens zwei Sitzungen mit 24 Stunden Abstand, in diesem Fenster mindestens 80 %, kein ungelöster kritischer Fehler in den letzten zwei Abrufen und bei Szenariozielen mindestens eine Praxisleistung mit 80 %.
-- Domain `ready`: Evidenz für jedes Objective, mindestens 80 % Domainleistung, kein Objective unter 70 % und kein kritischer Leaf-Pfad ungetestet.
-- `examReady`: alle 28 Objectives `mastered`, alle fünf Domains `ready`, kein `insufficientEvidence`, vollständige Coverage/Akronyme/Provenienz, keine kritischen Mappingfehler, zwei disjunkte 90-Minuten-Holdout-Mocks an verschiedenen Tagen und in der gebuchten Prüfungssprache, je mindestens 85 % gesamt, je Mock keine Domain unter 75 %, PBQ mindestens 80 %, Zeit eingehalten und keine unbeantworteten Items; getrenntes Labgate mindestens 80 % sowie Exam-Code, Buchbarkeit und Sprache bestätigt.
-
-Exit: Readiness ist reproduzierbar und gegen Leakage geschützt. Bei nicht erfüllten Gates bleibt der Status `approaching` oder `notReady`.
+Auf Nutzerentscheidung ersatzlos gestrichen: keine `ExamView`, keine `examAttempts`/Exposition (DB v24 entfällt), keine Holdout-Formen, kein Readiness-Sync, keine Receipts, keine internen Start-Gates und keine 750/900-Deutung. Die App behauptet zu keinem Zeitpunkt Prüfungsreife; sichtbar bleiben nur **Aktivität** und **formative Evidenz** mit ehrlicher Stichprobenangabe. Die Phase-5-Abschnitte des Detailplans sind damit obsolet.
 
 ### Phase 6 — Feinschliff
 
 - [x] Manifestgenerator um `durationSec` erweitern; UI-Fallback ohne Dauer. *(vorgezogen am 2026-07-19: ffprobe-Dauern aller 120 Videos im Source-Snapshot + Content-Map [Manifest 2026-07-19.1, Gate `video-dauern`]; `estimatedMinutes` = Videodauer + 10 min Draft-Overhead → Pacing rechnet echt [voller Kurs ≈ 15 h Video + 20 h Overhead]; ohne Dauer bleibt der ehrliche `missing-estimates`-Fallback)*
 - [ ] Filter, mobile Darstellung, Tastaturbedienung, Screenreader-Texte und kein horizontaler Overflow.
-- [ ] Persönliche Exam-Day-Checkliste: Sprache, Ausweis/Check-in, Systemtest, Zeitstrategie und genehmigte Accessibility-Vorkehrungen.
+- [ ] Persönliche Exam-Day-Checkliste: Sprache, Ausweis/Check-in, Systemtest, Zeitstrategie und genehmigte Accessibility-Vorkehrungen. *(optional; reine Info-Seite, unabhängig von der gestrichenen Exam-Engine)*
 
 ### Phase 7 — Optionaler Komfort-Sync
 
 - [ ] Unit-/Videozustand mit dokumentierter LWW-/monotoner Merge-Regel synchronisieren.
-- [ ] Weitere nicht-readinesskritische Komfortzustände geräteübergreifend erhalten; Exam-/Exposure-/Assessment-Sync ist bereits Pflicht in Phase 5.
+- [ ] Weitere Komfortzustände geräteübergreifend erhalten. *(Der frühere Pflicht-Readiness-/Exposure-Sync ist mit Phase 5 gestrichen.)*
 
 ## Datenbank- und Abhängigkeitsplan
 
@@ -299,8 +289,8 @@ Exit: Readiness ist reproduzierbar und gegen Leakage geschützt. Bei nicht erfü
 
 - Aktueller Ausgangspunkt: Dexie v21.
 - v22: profilgescopte Core-Stores für Decks/Karten/Scheduler/Reviews/Stats/Progress/Sessions/Shuffle, Profil-Lernzustand/Evidence-Epoch, Unit-State/Executions, Migrationsmeta, profil- und execution-bezogener Video-/Recall-Zustand, Assessment-Proposals/Accepted-Events/Resets/Receipts, Reviewversuche, Restore-Reconciliation und `LearnerExamPlan`.
-- v23: Labversuche und generische serverseitige Assessment-Qualification-Receipts. *(Labversuche am 2026-07-19 als v2 der dedizierten DB umgesetzt; Qualification-Receipts folgen mit dem Phase-5-Server)*
-- v24: Examversuche, personenweite Exposition, Timing-/Readiness-Receipts, Lifecycle-Confirmations und redaktierte Readiness-Historie.
+- v23: Labversuche. *(am 2026-07-19 als v2 der dedizierten DB umgesetzt; die serverseitigen Qualification-Receipts sind mit Phase 5 gestrichen)*
+- v24: *(gestrichen 2026-07-19 — Examversuche/Exposition/Receipts entfallen mit der Exam-Engine)*
 - Keine neuen Runtime-Abhängigkeiten. `fake-indexeddb` ist als eine neue **Dev-Dependency** für deterministische Migrationstests erlaubt; alternativ müssen diese Tests in einem echten Browser laufen.
 - Neue Tabellen werden in Backup/Restore und später im Sync explizit berücksichtigt.
 
@@ -316,7 +306,7 @@ Exit: Readiness ist reproduzierbar und gegen Leakage geschützt. Bei nicht erfü
 - `npm test -- --run`
 - neue pure Funktionen mit Unit-Tests; Dexie-Migrationen und Profiltrennung mit `fake-indexeddb` oder Browser-Test
 - Integrationsfluss: starten → Video → Recall → Karten → Reload/Tageswechsel → exakt fortsetzen → Abschluss
-- ab Phase 4: Lab-Resume/Submit; ab Phase 5: Timer, Autosubmit, Offline-Resume, Delayed Feedback und unveränderlicher Versuch
+- ab Phase 4: Lab-Resume/Submit *(die Phase-5-Prüfpunkte Timer/Autosubmit/Offline-Resume sind gestrichen)*
 - Backup/Restore, Daily-Quest-Ausschluss, Holdout-Leakage und A11y prüfen
 
 ### Content-DoD
@@ -324,13 +314,12 @@ Exit: Readiness ist reproduzierbar und gegen Leakage geschützt. Bei nicht erfü
 - vollständiger versionierter Leaf-/Akronym-Crosswalk
 - QA- und Provenienzfelder vollständig, keine ungeklärten Brain-Dump-/Lizenzrisiken
 - 4.2/4.9, dünne Objectives, 31 Fehlmappings und Recall-Lücken entschieden
-- Szenario-/PBQ-Matrix fachlich reviewed; Kurs-, Practice- und Readiness-Pools disjunkt
+- Szenario-/PBQ-Matrix fachlich reviewed; Kurs- und Practice-Pools sauber getrennt *(Readiness-Pool gestrichen)*
 
-### Learner-DoD
+### Learner-DoD *(reduziert 2026-07-19)*
 
-- Baseline und persönlicher Zeitplan vorhanden
-- alle Objective-/Domain-Evidenzgates erfüllt; sichtbare unzureichende Evidenz blockiert `examReady`
-- zwei gültige, disjunkte Holdout-Mocks und Praxisgate erfüllt
-- Exam-Code, Termin, Buchbarkeit und Prüfungssprache aktuell bestätigt
+- persönlicher Zeitplan (Termin, Wochenbudget, Puffertage) gepflegt
+- offene Schwächen sind sichtbar (unzureichende Evidenz wird nie kaschiert)
+- Exam-Code, Termin, Buchbarkeit und Prüfungssprache bleiben selbst zu prüfen
 
-Erst wenn alle drei DoDs erfüllt sind, darf die App `examReady` anzeigen. Auch dann bleibt es eine evidenzbasierte Empfehlung, keine Bestehensgarantie.
+Die App zeigt `examReady` nicht mehr an (Streichung 2026-07-19). Software- und Content-DoD bleiben der Qualitätsmaßstab der Lerngrundlage; eine Bestehensgarantie gab und gibt es nicht.

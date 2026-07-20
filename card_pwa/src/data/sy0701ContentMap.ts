@@ -2,18 +2,29 @@
  * AI_CONTEXT:
  * Role: GENERATED data module of the dedicated SY0-701 learning-unit system — do not edit by hand.
  * Used by: learning-unit builders/tests; regenerate via `node scripts/sy0701/validate.mjs`.
- * Important: Derived from content/sy0-701/source/* (official V7 snapshot 95a2c7515792…, manifest 2026-07-19.1).
+ * Important: Derived from content/sy0-701/source/* (official V7 snapshot 95a2c7515792…, manifest 2026-07-19.2).
  */
 import type { VideoContentMapEntry } from '../utils/learningUnits'
 
 export const SY0701_SOURCE_SNAPSHOT_ID = "sy0701-v7-2026-07-15"
-export const SY0701_CONTENT_MANIFEST_VERSION = "2026-07-19.1"
+export const SY0701_CONTENT_MANIFEST_VERSION = "2026-07-19.2"
 
 export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 2,
     "objectiveId": "1.1",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.1:categories:technical",
+      "req:sy0701:v7:1.1:categories:managerial",
+      "req:sy0701:v7:1.1:categories:operational",
+      "req:sy0701:v7:1.1:categories:physical",
+      "req:sy0701:v7:1.1:control-types:preventive",
+      "req:sy0701:v7:1.1:control-types:deterrent",
+      "req:sy0701:v7:1.1:control-types:detective",
+      "req:sy0701:v7:1.1:control-types:corrective",
+      "req:sy0701:v7:1.1:control-types:compensating",
+      "req:sy0701:v7:1.1:control-types:directive"
+    ],
     "courseCardIds": [
       "1728575607281",
       "1728575671733",
@@ -118,7 +129,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 3,
     "objectiveId": "1.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.2:confidentiality-integrity-and-availability-cia"
+    ],
     "courseCardIds": [
       "1728580188327",
       "1728580341002",
@@ -145,7 +158,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 4,
     "objectiveId": "1.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.2:non-repudiation"
+    ],
     "courseCardIds": [
       "1728581032043",
       "1728581130351",
@@ -184,7 +199,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 5,
     "objectiveId": "1.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.2:authentication-authorization-and-accounting-aaa:authenticating-people",
+      "req:sy0701:v7:1.2:authentication-authorization-and-accounting-aaa:authenticating-systems",
+      "req:sy0701:v7:1.2:authentication-authorization-and-accounting-aaa:authorization-models"
+    ],
     "courseCardIds": [
       "1728582261940",
       "1728582344236",
@@ -211,7 +230,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 6,
     "objectiveId": "1.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.2:gap-analysis"
+    ],
     "courseCardIds": [
       "1728594503878"
     ],
@@ -230,7 +251,16 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 7,
     "objectiveId": "1.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.2:zero-trust:control-plane:adaptive-identity",
+      "req:sy0701:v7:1.2:zero-trust:control-plane:threat-scope-reduction",
+      "req:sy0701:v7:1.2:zero-trust:control-plane:policy-driven-access-control",
+      "req:sy0701:v7:1.2:zero-trust:control-plane:policy-administrator",
+      "req:sy0701:v7:1.2:zero-trust:control-plane:policy-engine",
+      "req:sy0701:v7:1.2:zero-trust:data-plane:implicit-trust-zones",
+      "req:sy0701:v7:1.2:zero-trust:data-plane:subject-system",
+      "req:sy0701:v7:1.2:zero-trust:data-plane:policy-enforcement-point"
+    ],
     "courseCardIds": [
       "1728595373661",
       "1728595471351",
@@ -269,7 +299,19 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 8,
     "objectiveId": "1.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.2:physical-security:bollards",
+      "req:sy0701:v7:1.2:physical-security:access-control-vestibule",
+      "req:sy0701:v7:1.2:physical-security:fencing",
+      "req:sy0701:v7:1.2:physical-security:video-surveillance",
+      "req:sy0701:v7:1.2:physical-security:security-guard",
+      "req:sy0701:v7:1.2:physical-security:access-badge",
+      "req:sy0701:v7:1.2:physical-security:lighting",
+      "req:sy0701:v7:1.2:physical-security:sensors:infrared",
+      "req:sy0701:v7:1.2:physical-security:sensors:pressure",
+      "req:sy0701:v7:1.2:physical-security:sensors:microwave",
+      "req:sy0701:v7:1.2:physical-security:sensors:ultrasonic"
+    ],
     "courseCardIds": [
       "1728597672323",
       "1728598075567",
@@ -290,7 +332,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 9,
     "objectiveId": "1.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.2:deception-and-disruption-technology:honeypot",
+      "req:sy0701:v7:1.2:deception-and-disruption-technology:honeynet",
+      "req:sy0701:v7:1.2:deception-and-disruption-technology:honeyfile",
+      "req:sy0701:v7:1.2:deception-and-disruption-technology:honeytoken"
+    ],
     "courseCardIds": [
       "1728598803945"
     ],
@@ -309,7 +356,16 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 10,
     "objectiveId": "1.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.3:business-processes-impacting-security-operation:approval-process",
+      "req:sy0701:v7:1.3:business-processes-impacting-security-operation:ownership",
+      "req:sy0701:v7:1.3:business-processes-impacting-security-operation:stakeholders",
+      "req:sy0701:v7:1.3:business-processes-impacting-security-operation:impact-analysis",
+      "req:sy0701:v7:1.3:business-processes-impacting-security-operation:test-results",
+      "req:sy0701:v7:1.3:business-processes-impacting-security-operation:backout-plan",
+      "req:sy0701:v7:1.3:business-processes-impacting-security-operation:maintenance-window",
+      "req:sy0701:v7:1.3:business-processes-impacting-security-operation:standard-operating-procedure"
+    ],
     "courseCardIds": [
       "1728664841112",
       "1728665267982"
@@ -331,7 +387,18 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 11,
     "objectiveId": "1.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.3:technical-implications:allow-lists-deny-lists",
+      "req:sy0701:v7:1.3:technical-implications:restricted-activities",
+      "req:sy0701:v7:1.3:technical-implications:downtime",
+      "req:sy0701:v7:1.3:technical-implications:service-restart",
+      "req:sy0701:v7:1.3:technical-implications:application-restart",
+      "req:sy0701:v7:1.3:technical-implications:legacy-applications",
+      "req:sy0701:v7:1.3:technical-implications:dependencies",
+      "req:sy0701:v7:1.3:documentation:updating-diagrams",
+      "req:sy0701:v7:1.3:documentation:updating-policies-procedures",
+      "req:sy0701:v7:1.3:version-control"
+    ],
     "courseCardIds": [
       "1728665620599",
       "1728665665642"
@@ -353,7 +420,13 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 12,
     "objectiveId": "1.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.4:public-key-infrastructure-pki:public-key",
+      "req:sy0701:v7:1.4:public-key-infrastructure-pki:private-key",
+      "req:sy0701:v7:1.4:public-key-infrastructure-pki:key-escrow",
+      "req:sy0701:v7:1.4:encryption:asymmetric",
+      "req:sy0701:v7:1.4:encryption:symmetric"
+    ],
     "courseCardIds": [
       "1728666406964",
       "1728666452657",
@@ -392,7 +465,17 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 13,
     "objectiveId": "1.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.4:encryption:level:full-disk",
+      "req:sy0701:v7:1.4:encryption:level:partition",
+      "req:sy0701:v7:1.4:encryption:level:file",
+      "req:sy0701:v7:1.4:encryption:level:volume",
+      "req:sy0701:v7:1.4:encryption:level:database",
+      "req:sy0701:v7:1.4:encryption:level:record",
+      "req:sy0701:v7:1.4:encryption:transport-communication",
+      "req:sy0701:v7:1.4:encryption:algorithms",
+      "req:sy0701:v7:1.4:encryption:key-length"
+    ],
     "courseCardIds": [
       "1728669078281",
       "1728669233798",
@@ -425,7 +508,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 14,
     "objectiveId": "1.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.4:encryption:key-exchange"
+    ],
     "courseCardIds": [
       "1728675213140",
       "1728675511788",
@@ -446,7 +531,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 15,
     "objectiveId": "1.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.4:tools:trusted-platform-module-tpm",
+      "req:sy0701:v7:1.4:tools:hardware-security-module-hsm",
+      "req:sy0701:v7:1.4:tools:key-management-system",
+      "req:sy0701:v7:1.4:tools:secure-enclave"
+    ],
     "courseCardIds": [
       "1728675746261",
       "1728675819604",
@@ -473,7 +563,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 16,
     "objectiveId": "1.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.4:obfuscation:steganography",
+      "req:sy0701:v7:1.4:obfuscation:tokenization",
+      "req:sy0701:v7:1.4:obfuscation:data-masking"
+    ],
     "courseCardIds": [
       "1728677282633",
       "1728677405231",
@@ -500,7 +594,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 17,
     "objectiveId": "1.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.4:hashing",
+      "req:sy0701:v7:1.4:salting",
+      "req:sy0701:v7:1.4:digital-signatures",
+      "req:sy0701:v7:1.4:key-stretching"
+    ],
     "courseCardIds": [
       "1728678521196",
       "1728678905175",
@@ -527,7 +626,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 18,
     "objectiveId": "1.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.4:blockchain",
+      "req:sy0701:v7:1.4:open-public-ledger"
+    ],
     "courseCardIds": [
       "1728679899388"
     ],
@@ -546,7 +648,16 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 19,
     "objectiveId": "1.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:1.4:certificates:certificate-authorities",
+      "req:sy0701:v7:1.4:certificates:certificate-revocation-lists-crls",
+      "req:sy0701:v7:1.4:certificates:online-certificate-status-protocol-ocsp",
+      "req:sy0701:v7:1.4:certificates:self-signed",
+      "req:sy0701:v7:1.4:certificates:third-party",
+      "req:sy0701:v7:1.4:certificates:root-of-trust",
+      "req:sy0701:v7:1.4:certificates:certificate-signing-request-csr-generation",
+      "req:sy0701:v7:1.4:certificates:wildcard"
+    ],
     "courseCardIds": [
       "1728832173306",
       "1728832246367",
@@ -609,7 +720,27 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 20,
     "objectiveId": "2.1",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.1:threat-actors:nation-state",
+      "req:sy0701:v7:2.1:threat-actors:unskilled-attacker",
+      "req:sy0701:v7:2.1:threat-actors:hacktivist",
+      "req:sy0701:v7:2.1:threat-actors:insider-threat",
+      "req:sy0701:v7:2.1:threat-actors:organized-crime",
+      "req:sy0701:v7:2.1:threat-actors:shadow-it",
+      "req:sy0701:v7:2.1:attributes-of-actors:internal-external",
+      "req:sy0701:v7:2.1:attributes-of-actors:resources-funding",
+      "req:sy0701:v7:2.1:attributes-of-actors:level-of-sophistication-capability",
+      "req:sy0701:v7:2.1:motivations:data-exfiltration",
+      "req:sy0701:v7:2.1:motivations:espionage",
+      "req:sy0701:v7:2.1:motivations:service-disruption",
+      "req:sy0701:v7:2.1:motivations:blackmail",
+      "req:sy0701:v7:2.1:motivations:financial-gain",
+      "req:sy0701:v7:2.1:motivations:philosophical-political-beliefs",
+      "req:sy0701:v7:2.1:motivations:ethical",
+      "req:sy0701:v7:2.1:motivations:revenge",
+      "req:sy0701:v7:2.1:motivations:disruption-chaos",
+      "req:sy0701:v7:2.1:motivations:war"
+    ],
     "courseCardIds": [
       "1728925347209",
       "1728925645774",
@@ -639,7 +770,25 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 21,
     "objectiveId": "2.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.2:message-based:email",
+      "req:sy0701:v7:2.2:message-based:short-message-service-sms",
+      "req:sy0701:v7:2.2:message-based:instant-messaging-im",
+      "req:sy0701:v7:2.2:image-based",
+      "req:sy0701:v7:2.2:file-based",
+      "req:sy0701:v7:2.2:voice-call",
+      "req:sy0701:v7:2.2:removable-device",
+      "req:sy0701:v7:2.2:vulnerable-software:client-based-vs-agentless",
+      "req:sy0701:v7:2.2:unsupported-systems-and-applications",
+      "req:sy0701:v7:2.2:unsecure-networks:wireless",
+      "req:sy0701:v7:2.2:unsecure-networks:wired",
+      "req:sy0701:v7:2.2:unsecure-networks:bluetooth",
+      "req:sy0701:v7:2.2:open-service-ports",
+      "req:sy0701:v7:2.2:default-credentials",
+      "req:sy0701:v7:2.2:supply-chain:managed-service-providers-msps",
+      "req:sy0701:v7:2.2:supply-chain:vendors",
+      "req:sy0701:v7:2.2:supply-chain:suppliers"
+    ],
     "courseCardIds": [
       "1728934123174",
       "1728934553820",
@@ -678,7 +827,13 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 22,
     "objectiveId": "2.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.2:human-vectors-social-engineering:phishing",
+      "req:sy0701:v7:2.2:human-vectors-social-engineering:vishing",
+      "req:sy0701:v7:2.2:human-vectors-social-engineering:smishing",
+      "req:sy0701:v7:2.2:human-vectors-social-engineering:pretexting",
+      "req:sy0701:v7:2.2:human-vectors-social-engineering:typosquatting"
+    ],
     "courseCardIds": [
       "1728936330357",
       "1728936604868",
@@ -702,7 +857,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 23,
     "objectiveId": "2.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.2:human-vectors-social-engineering:impersonation",
+      "req:sy0701:v7:2.2:human-vectors-social-engineering:business-email-compromise"
+    ],
     "courseCardIds": [
       "1729003025465"
     ],
@@ -721,7 +879,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 24,
     "objectiveId": "2.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.2:human-vectors-social-engineering:watering-hole"
+    ],
     "courseCardIds": [
       "1729003632035",
       "1729003938350"
@@ -743,7 +903,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 25,
     "objectiveId": "2.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.2:human-vectors-social-engineering:misinformation-disinformation",
+      "req:sy0701:v7:2.2:human-vectors-social-engineering:brand-impersonation"
+    ],
     "courseCardIds": [
       "1729004574263"
     ],
@@ -762,7 +925,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 26,
     "objectiveId": "2.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.3:application:memory-injection"
+    ],
     "courseCardIds": [
       "1729005007773",
       "1729005171342",
@@ -783,7 +948,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 27,
     "objectiveId": "2.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.3:application:buffer-overflow"
+    ],
     "courseCardIds": [
       "1729005878634"
     ],
@@ -802,7 +969,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 28,
     "objectiveId": "2.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.3:application:race-conditions:time-of-check-toc",
+      "req:sy0701:v7:2.3:application:race-conditions:time-of-use-tou"
+    ],
     "courseCardIds": [
       "1729006621297",
       "1729007012771"
@@ -824,7 +994,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 29,
     "objectiveId": "2.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.3:application:malicious-update"
+    ],
     "courseCardIds": [
       "1729007731874"
     ],
@@ -843,7 +1015,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 30,
     "objectiveId": "2.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.3:operating-system-os-based"
+    ],
     "courseCardIds": [],
     "recallQuestionIds": [
       "T030-01",
@@ -859,7 +1033,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 31,
     "objectiveId": "2.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.3:web-based:structured-query-language-injection-sqli"
+    ],
     "courseCardIds": [
       "1729008958156",
       "1729009069891",
@@ -886,7 +1062,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 32,
     "objectiveId": "2.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.3:web-based:cross-site-scripting-xss"
+    ],
     "courseCardIds": [
       "1729010233588",
       "1729010739212",
@@ -913,7 +1091,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 33,
     "objectiveId": "2.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.3:hardware:firmware",
+      "req:sy0701:v7:2.3:hardware:end-of-life",
+      "req:sy0701:v7:2.3:hardware:legacy"
+    ],
     "courseCardIds": [
       "1729016237394",
       "1729016393818",
@@ -937,7 +1119,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 34,
     "objectiveId": "2.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.3:virtualization:virtual-machine-vm-escape",
+      "req:sy0701:v7:2.3:virtualization:resource-reuse"
+    ],
     "courseCardIds": [
       "1729017742984",
       "1729017832455",
@@ -958,7 +1143,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 35,
     "objectiveId": "2.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.3:cloud-specific"
+    ],
     "courseCardIds": [
       "1729018546549",
       "1729018727159",
@@ -982,7 +1169,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 36,
     "objectiveId": "2.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.3:supply-chain:service-provider",
+      "req:sy0701:v7:2.3:supply-chain:hardware-provider",
+      "req:sy0701:v7:2.3:supply-chain:software-provider"
+    ],
     "courseCardIds": [
       "1729019659956",
       "1729019769922",
@@ -1009,7 +1200,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 37,
     "objectiveId": "2.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.3:misconfiguration"
+    ],
     "courseCardIds": [
       "1729093945243",
       "1729094001244",
@@ -1036,7 +1229,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 38,
     "objectiveId": "2.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.3:mobile-device:side-loading",
+      "req:sy0701:v7:2.3:mobile-device:jailbreaking"
+    ],
     "courseCardIds": [
       "1729095666668",
       "1729095773945",
@@ -1057,7 +1253,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 39,
     "objectiveId": "2.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.3:zero-day"
+    ],
     "courseCardIds": [
       "1729096456640"
     ],
@@ -1076,7 +1274,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 40,
     "objectiveId": "2.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.4:malware-attacks:ransomware"
+    ],
     "courseCardIds": [
       "1729096807696",
       "1729097089990",
@@ -1103,7 +1303,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 41,
     "objectiveId": "2.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.4:malware-attacks:worm",
+      "req:sy0701:v7:2.4:malware-attacks:virus"
+    ],
     "courseCardIds": [
       "1729097907113",
       "1729098014967",
@@ -1124,7 +1327,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 42,
     "objectiveId": "2.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.4:malware-attacks:spyware",
+      "req:sy0701:v7:2.4:malware-attacks:bloatware"
+    ],
     "courseCardIds": [
       "1729098545424",
       "1729098771491"
@@ -1146,7 +1352,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 43,
     "objectiveId": "2.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.4:malware-attacks:trojan",
+      "req:sy0701:v7:2.4:malware-attacks:keylogger",
+      "req:sy0701:v7:2.4:malware-attacks:logic-bomb",
+      "req:sy0701:v7:2.4:malware-attacks:rootkit"
+    ],
     "courseCardIds": [
       "1729099376881",
       "1729099431734",
@@ -1167,7 +1378,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 44,
     "objectiveId": "2.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.4:physical-attacks:brute-force",
+      "req:sy0701:v7:2.4:physical-attacks:radio-frequency-identification-rfid-cloning",
+      "req:sy0701:v7:2.4:physical-attacks:environmental"
+    ],
     "courseCardIds": [
       "1729103336431",
       "1729103461406",
@@ -1188,7 +1403,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 45,
     "objectiveId": "2.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.4:network-attacks:distributed-denial-of-service-ddos:amplified",
+      "req:sy0701:v7:2.4:network-attacks:distributed-denial-of-service-ddos:reflected"
+    ],
     "courseCardIds": [
       "1729104062053",
       "1729104262170",
@@ -1215,7 +1433,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 46,
     "objectiveId": "2.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.4:network-attacks:domain-name-system-dns-attacks"
+    ],
     "courseCardIds": [
       "1729105178993"
     ],
@@ -1234,7 +1454,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 47,
     "objectiveId": "2.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.4:network-attacks:wireless"
+    ],
     "courseCardIds": [
       "1729106271934",
       "1729106340713",
@@ -1258,7 +1480,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 48,
     "objectiveId": "2.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.4:network-attacks:on-path"
+    ],
     "courseCardIds": [
       "1729107353631",
       "1729107583328",
@@ -1279,7 +1503,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 49,
     "objectiveId": "2.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.4:network-attacks:credential-replay"
+    ],
     "courseCardIds": [
       "1729174309232",
       "1729174445461",
@@ -1303,7 +1529,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 50,
     "objectiveId": "2.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.4:network-attacks:malicious-code"
+    ],
     "courseCardIds": [
       "1729175231855"
     ],
@@ -1322,7 +1550,14 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 51,
     "objectiveId": "2.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.4:application-attacks:injection",
+      "req:sy0701:v7:2.4:application-attacks:buffer-overflow",
+      "req:sy0701:v7:2.4:application-attacks:replay",
+      "req:sy0701:v7:2.4:application-attacks:privilege-escalation",
+      "req:sy0701:v7:2.4:application-attacks:forgery",
+      "req:sy0701:v7:2.4:application-attacks:directory-traversal"
+    ],
     "courseCardIds": [
       "1729175578382",
       "1729175912541",
@@ -1349,7 +1584,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 52,
     "objectiveId": "2.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.3:cryptographic",
+      "req:sy0701:v7:2.4:cryptographic-attacks:downgrade",
+      "req:sy0701:v7:2.4:cryptographic-attacks:collision",
+      "req:sy0701:v7:2.4:cryptographic-attacks:birthday"
+    ],
     "courseCardIds": [
       "1729178147830",
       "1729178380874",
@@ -1373,7 +1613,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 53,
     "objectiveId": "2.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.4:password-attacks:spraying",
+      "req:sy0701:v7:2.4:password-attacks:brute-force"
+    ],
     "courseCardIds": [
       "1729179162672",
       "1729180047821"
@@ -1395,7 +1638,17 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 54,
     "objectiveId": "2.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.4:indicators:account-lockout",
+      "req:sy0701:v7:2.4:indicators:concurrent-session-usage",
+      "req:sy0701:v7:2.4:indicators:blocked-content",
+      "req:sy0701:v7:2.4:indicators:impossible-travel",
+      "req:sy0701:v7:2.4:indicators:resource-consumption",
+      "req:sy0701:v7:2.4:indicators:resource-inaccessibility",
+      "req:sy0701:v7:2.4:indicators:out-of-cycle-logging",
+      "req:sy0701:v7:2.4:indicators:published-documented",
+      "req:sy0701:v7:2.4:indicators:missing-logs"
+    ],
     "courseCardIds": [
       "1729180535847"
     ],
@@ -1414,7 +1667,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 55,
     "objectiveId": "2.5",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.5:segmentation",
+      "req:sy0701:v7:2.5:access-control:access-control-list-acl",
+      "req:sy0701:v7:2.5:access-control:permissions"
+    ],
     "courseCardIds": [
       "1729182645620",
       "1729182844022",
@@ -1441,7 +1698,16 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 56,
     "objectiveId": "2.5",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.5:application-allow-list",
+      "req:sy0701:v7:2.5:isolation",
+      "req:sy0701:v7:2.5:patching",
+      "req:sy0701:v7:2.5:encryption",
+      "req:sy0701:v7:2.5:monitoring",
+      "req:sy0701:v7:2.5:least-privilege",
+      "req:sy0701:v7:2.5:configuration-enforcement",
+      "req:sy0701:v7:2.5:decommissioning"
+    ],
     "courseCardIds": [
       "1729183952928",
       "1729184719692",
@@ -1474,7 +1740,15 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 57,
     "objectiveId": "2.5",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:2.5:hardening-techniques:encryption",
+      "req:sy0701:v7:2.5:hardening-techniques:installation-of-endpoint-protection",
+      "req:sy0701:v7:2.5:hardening-techniques:host-based-firewall",
+      "req:sy0701:v7:2.5:hardening-techniques:host-based-intrusion-prevention-system-hips",
+      "req:sy0701:v7:2.5:hardening-techniques:disabling-ports-protocols",
+      "req:sy0701:v7:2.5:hardening-techniques:default-password-changes",
+      "req:sy0701:v7:2.5:hardening-techniques:removal-of-unnecessary-software"
+    ],
     "courseCardIds": [
       "1729185940822",
       "1729186250125",
@@ -1504,7 +1778,14 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 58,
     "objectiveId": "3.1",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:responsibility-matrix",
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:hybrid-considerations",
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:third-party-vendors",
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:infrastructure-as-code-iac",
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:serverless",
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:microservices"
+    ],
     "courseCardIds": [
       "1729192290034",
       "1729192837629",
@@ -1528,7 +1809,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 59,
     "objectiveId": "3.1",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:physical-isolation:air-gapped",
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:logical-segmentation",
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:software-defined-networking-sdn"
+    ],
     "courseCardIds": [
       "1729193807209",
       "1729193932999",
@@ -1561,7 +1846,17 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 60,
     "objectiveId": "3.1",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:on-premises",
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:centralized-vs-decentralized",
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:containerization",
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:virtualization",
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:iot",
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:industrial-control-systems-ics-supervisory-contr",
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:real-time-operating-system-rtos",
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:embedded-systems",
+      "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:high-availability"
+    ],
     "courseCardIds": [
       "1729195941442",
       "1729196035330",
@@ -1588,7 +1883,20 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 61,
     "objectiveId": "3.1",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.1:considerations:availability",
+      "req:sy0701:v7:3.1:considerations:resilience",
+      "req:sy0701:v7:3.1:considerations:cost",
+      "req:sy0701:v7:3.1:considerations:responsiveness",
+      "req:sy0701:v7:3.1:considerations:scalability",
+      "req:sy0701:v7:3.1:considerations:ease-of-deployment",
+      "req:sy0701:v7:3.1:considerations:risk-transference",
+      "req:sy0701:v7:3.1:considerations:ease-of-recovery",
+      "req:sy0701:v7:3.1:considerations:patch-availability",
+      "req:sy0701:v7:3.1:considerations:inability-to-patch",
+      "req:sy0701:v7:3.1:considerations:power",
+      "req:sy0701:v7:3.1:considerations:compute"
+    ],
     "courseCardIds": [
       "1729198761986",
       "1729198962970",
@@ -1612,7 +1920,13 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 62,
     "objectiveId": "3.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.2:infrastructure-considerations:device-placement",
+      "req:sy0701:v7:3.2:infrastructure-considerations:security-zones",
+      "req:sy0701:v7:3.2:infrastructure-considerations:attack-surface",
+      "req:sy0701:v7:3.2:infrastructure-considerations:connectivity",
+      "req:sy0701:v7:3.2:selection-of-effective-controls"
+    ],
     "courseCardIds": [],
     "recallQuestionIds": [
       "T062-01",
@@ -1628,7 +1942,14 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 63,
     "objectiveId": "3.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-open",
+      "req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-closed",
+      "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:active-vs-passive",
+      "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:inline-vs-tap-monitor",
+      "req:sy0701:v7:4.5:ids-ips:trends",
+      "req:sy0701:v7:4.5:ids-ips:signatures"
+    ],
     "courseCardIds": [
       "1729262665983",
       "1729263331128",
@@ -1649,7 +1970,13 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 64,
     "objectiveId": "3.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:jump-server",
+      "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:proxy-server",
+      "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:intrusion-prevention-system-ips-intrusion-detect",
+      "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:load-balancer",
+      "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:sensors"
+    ],
     "courseCardIds": [
       "1729264182198",
       "1729264760996",
@@ -1682,7 +2009,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 65,
     "objectiveId": "3.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.2:infrastructure-considerations:port-security:802-1x",
+      "req:sy0701:v7:3.2:infrastructure-considerations:port-security:extensible-authentication"
+    ],
     "courseCardIds": [
       "1729267472724",
       "1729267569310",
@@ -1703,7 +2033,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 66,
     "objectiveId": "3.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:web-application-firewall-waf",
+      "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:unified-threat-management-utm",
+      "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:next-generation-firewall-ngfw",
+      "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:layer-4-layer-7"
+    ],
     "courseCardIds": [
       "1729268983360",
       "1729269602613"
@@ -1725,7 +2060,14 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 67,
     "objectiveId": "3.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.2:secure-communication-access:virtual-private-network-vpn",
+      "req:sy0701:v7:3.2:secure-communication-access:remote-access",
+      "req:sy0701:v7:3.2:secure-communication-access:tunneling:transport-layer-security-tls",
+      "req:sy0701:v7:3.2:secure-communication-access:tunneling:internet-protocol-security-ipsec",
+      "req:sy0701:v7:3.2:secure-communication-access:software-defined-wide-area-network-sd-wan",
+      "req:sy0701:v7:3.2:secure-communication-access:secure-access-service-edge-sase"
+    ],
     "courseCardIds": [],
     "recallQuestionIds": [
       "T067-01",
@@ -1741,7 +2083,20 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 68,
     "objectiveId": "3.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.3:data-types:regulated",
+      "req:sy0701:v7:3.3:data-types:trade-secret",
+      "req:sy0701:v7:3.3:data-types:intellectual-property",
+      "req:sy0701:v7:3.3:data-types:legal-information",
+      "req:sy0701:v7:3.3:data-types:financial-information",
+      "req:sy0701:v7:3.3:data-types:humanand-non-human-readable",
+      "req:sy0701:v7:3.3:data-classifications:sensitive",
+      "req:sy0701:v7:3.3:data-classifications:confidential",
+      "req:sy0701:v7:3.3:data-classifications:public",
+      "req:sy0701:v7:3.3:data-classifications:restricted",
+      "req:sy0701:v7:3.3:data-classifications:private",
+      "req:sy0701:v7:3.3:data-classifications:critical"
+    ],
     "courseCardIds": [],
     "recallQuestionIds": [
       "T068-01",
@@ -1757,7 +2112,13 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 69,
     "objectiveId": "3.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.3:general-data-considerations:data-states:data-at-rest",
+      "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-transit",
+      "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-use",
+      "req:sy0701:v7:3.3:general-data-considerations:data-sovereignty",
+      "req:sy0701:v7:3.3:general-data-considerations:geolocation"
+    ],
     "courseCardIds": [
       "1729276559590",
       "1729276746898",
@@ -1778,7 +2139,16 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 70,
     "objectiveId": "3.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.3:methods-to-secure-data:geographic-restrictions",
+      "req:sy0701:v7:3.3:methods-to-secure-data:encryption",
+      "req:sy0701:v7:3.3:methods-to-secure-data:hashing",
+      "req:sy0701:v7:3.3:methods-to-secure-data:masking",
+      "req:sy0701:v7:3.3:methods-to-secure-data:tokenization",
+      "req:sy0701:v7:3.3:methods-to-secure-data:obfuscation",
+      "req:sy0701:v7:3.3:methods-to-secure-data:segmentation",
+      "req:sy0701:v7:3.3:methods-to-secure-data:permission-restrictions"
+    ],
     "courseCardIds": [
       "1729277620814",
       "1729277680140",
@@ -1802,7 +2172,16 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 71,
     "objectiveId": "3.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.4:high-availability:load-balancing-vs-clustering",
+      "req:sy0701:v7:3.4:site-considerations:hot",
+      "req:sy0701:v7:3.4:site-considerations:cold",
+      "req:sy0701:v7:3.4:site-considerations:warm",
+      "req:sy0701:v7:3.4:site-considerations:geographic-dispersion",
+      "req:sy0701:v7:3.4:platform-diversity",
+      "req:sy0701:v7:3.4:multi-cloud-systems",
+      "req:sy0701:v7:3.4:continuity-of-operations"
+    ],
     "courseCardIds": [
       "1729280373313",
       "1729280425752",
@@ -1823,7 +2202,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 72,
     "objectiveId": "3.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.4:capacity-planning:people",
+      "req:sy0701:v7:3.4:capacity-planning:technology",
+      "req:sy0701:v7:3.4:capacity-planning:infrastructure"
+    ],
     "courseCardIds": [],
     "recallQuestionIds": [
       "T072-01",
@@ -1839,7 +2222,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 73,
     "objectiveId": "3.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.4:testing:tabletop-exercises",
+      "req:sy0701:v7:3.4:testing:fail-over",
+      "req:sy0701:v7:3.4:testing:simulation",
+      "req:sy0701:v7:3.4:testing:parallel-processing"
+    ],
     "courseCardIds": [
       "1729282747703",
       "1729435542513"
@@ -1861,7 +2249,15 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 74,
     "objectiveId": "3.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.4:backups:onsite-offsite",
+      "req:sy0701:v7:3.4:backups:frequency",
+      "req:sy0701:v7:3.4:backups:encryption",
+      "req:sy0701:v7:3.4:backups:snapshots",
+      "req:sy0701:v7:3.4:backups:recovery",
+      "req:sy0701:v7:3.4:backups:replication",
+      "req:sy0701:v7:3.4:backups:journaling"
+    ],
     "courseCardIds": [
       "1729283435461",
       "1729283880472",
@@ -1882,7 +2278,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 75,
     "objectiveId": "3.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:3.4:power:generators",
+      "req:sy0701:v7:3.4:power:uninterruptible-power-supply-ups"
+    ],
     "courseCardIds": [
       "1729285411849"
     ],
@@ -1901,7 +2300,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 76,
     "objectiveId": "4.1",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.1:secure-baselines:establish",
+      "req:sy0701:v7:4.1:secure-baselines:deploy",
+      "req:sy0701:v7:4.1:secure-baselines:maintain"
+    ],
     "courseCardIds": [],
     "recallQuestionIds": [
       "T076-01",
@@ -1917,7 +2320,18 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 77,
     "objectiveId": "4.1",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.1:hardening-targets:mobile-devices",
+      "req:sy0701:v7:4.1:hardening-targets:workstations",
+      "req:sy0701:v7:4.1:hardening-targets:switches",
+      "req:sy0701:v7:4.1:hardening-targets:routers",
+      "req:sy0701:v7:4.1:hardening-targets:cloud-infrastructure",
+      "req:sy0701:v7:4.1:hardening-targets:servers",
+      "req:sy0701:v7:4.1:hardening-targets:ics-scada",
+      "req:sy0701:v7:4.1:hardening-targets:embedded-systems",
+      "req:sy0701:v7:4.1:hardening-targets:rtos",
+      "req:sy0701:v7:4.1:hardening-targets:iot-devices"
+    ],
     "courseCardIds": [
       "1729437834722",
       "1729438002934"
@@ -1939,7 +2353,17 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 78,
     "objectiveId": "4.1",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.1:wireless-devices:installation-considerations:site-surveys",
+      "req:sy0701:v7:4.1:wireless-devices:installation-considerations:heat-maps",
+      "req:sy0701:v7:4.1:mobile-solutions:mobile-device-management-mdm",
+      "req:sy0701:v7:4.1:mobile-solutions:deployment-models:bring-your-own-device-byod",
+      "req:sy0701:v7:4.1:mobile-solutions:deployment-models:corporate-owned-personally-enabled-cope",
+      "req:sy0701:v7:4.1:mobile-solutions:deployment-models:choose-your-own-device-cyod",
+      "req:sy0701:v7:4.1:mobile-solutions:connection-methods:cellular",
+      "req:sy0701:v7:4.1:mobile-solutions:connection-methods:wi-fi",
+      "req:sy0701:v7:4.1:mobile-solutions:connection-methods:bluetooth"
+    ],
     "courseCardIds": [],
     "recallQuestionIds": [
       "T078-01",
@@ -1955,7 +2379,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 79,
     "objectiveId": "4.1",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.1:wireless-security-settings:wi-fi-protected-access-3-wpa3",
+      "req:sy0701:v7:4.1:wireless-security-settings:aaa-remote-authentication-dial-in-user-service-r",
+      "req:sy0701:v7:4.1:wireless-security-settings:cryptographic-protocols",
+      "req:sy0701:v7:4.1:wireless-security-settings:authentication-protocols"
+    ],
     "courseCardIds": [
       "1729441416045"
     ],
@@ -1974,7 +2403,14 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 80,
     "objectiveId": "4.1",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.1:application-security:input-validation",
+      "req:sy0701:v7:4.1:application-security:secure-cookies",
+      "req:sy0701:v7:4.1:application-security:static-code-analysis",
+      "req:sy0701:v7:4.1:application-security:code-signing",
+      "req:sy0701:v7:4.1:sandboxing",
+      "req:sy0701:v7:4.1:monitoring"
+    ],
     "courseCardIds": [
       "1729443096377",
       "1729443455782",
@@ -1995,14 +2431,30 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 81,
     "objectiveId": "4.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.2:acquisition-procurement-process",
+      "req:sy0701:v7:4.2:assignment-accounting:ownership",
+      "req:sy0701:v7:4.2:assignment-accounting:classification",
+      "req:sy0701:v7:4.2:monitoring-asset-tracking:inventory",
+      "req:sy0701:v7:4.2:monitoring-asset-tracking:enumeration",
+      "req:sy0701:v7:4.2:disposal-decommissioning:sanitization",
+      "req:sy0701:v7:4.2:disposal-decommissioning:destruction",
+      "req:sy0701:v7:4.2:disposal-decommissioning:certification",
+      "req:sy0701:v7:4.2:disposal-decommissioning:data-retention"
+    ],
     "courseCardIds": [],
     "recallQuestionIds": [
       "T081-01",
       "T081-02",
       "T081-03",
       "T081-04",
-      "T081-05"
+      "T081-05",
+      "T081-06",
+      "T081-07",
+      "T081-08",
+      "T081-09",
+      "T081-10",
+      "T081-11"
     ],
     "recallCardIds": [],
     "durationSec": 517,
@@ -2011,7 +2463,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 82,
     "objectiveId": "4.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.3:identification-methods:vulnerability-scan",
+      "req:sy0701:v7:4.3:identification-methods:application-security:static-analysis",
+      "req:sy0701:v7:4.3:identification-methods:application-security:dynamic-analysis",
+      "req:sy0701:v7:4.3:identification-methods:application-security:package-monitoring"
+    ],
     "courseCardIds": [
       "1729525570343",
       "1729525688307"
@@ -2033,7 +2490,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 83,
     "objectiveId": "4.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.3:identification-methods:threat-feed:open-source-intelligence-osint",
+      "req:sy0701:v7:4.3:identification-methods:threat-feed:proprietary-third-party",
+      "req:sy0701:v7:4.3:identification-methods:threat-feed:information-sharing-organization",
+      "req:sy0701:v7:4.3:identification-methods:threat-feed:dark-web"
+    ],
     "courseCardIds": [
       "1729526448891",
       "1729526713518"
@@ -2055,7 +2517,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 84,
     "objectiveId": "4.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.3:identification-methods:penetration-testing",
+      "req:sy0701:v7:4.3:identification-methods:responsible-disclosure-program:bug-bounty-program"
+    ],
     "courseCardIds": [
       "1729528034674"
     ],
@@ -2074,7 +2539,18 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 85,
     "objectiveId": "4.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.3:analysis:confirmation:false-positive",
+      "req:sy0701:v7:4.3:analysis:confirmation:false-negative",
+      "req:sy0701:v7:4.3:analysis:prioritize",
+      "req:sy0701:v7:4.3:analysis:common-vulnerability-scoring-system-cvss",
+      "req:sy0701:v7:4.3:analysis:common-vulnerability-enumeration-cve",
+      "req:sy0701:v7:4.3:analysis:vulnerability-classification",
+      "req:sy0701:v7:4.3:analysis:exposure-factor",
+      "req:sy0701:v7:4.3:analysis:environmental-variables",
+      "req:sy0701:v7:4.3:analysis:industry-organizational-impact",
+      "req:sy0701:v7:4.3:analysis:risk-tolerance"
+    ],
     "courseCardIds": [
       "1729528371221",
       "1729528670460",
@@ -2095,7 +2571,16 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 86,
     "objectiveId": "4.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.3:vulnerability-response-and-remediation:patching",
+      "req:sy0701:v7:4.3:vulnerability-response-and-remediation:insurance",
+      "req:sy0701:v7:4.3:vulnerability-response-and-remediation:segmentation",
+      "req:sy0701:v7:4.3:vulnerability-response-and-remediation:compensating-controls",
+      "req:sy0701:v7:4.3:vulnerability-response-and-remediation:exceptions-and-exemptions",
+      "req:sy0701:v7:4.3:validation-of-remediation:rescanning",
+      "req:sy0701:v7:4.3:validation-of-remediation:verification",
+      "req:sy0701:v7:4.3:reporting"
+    ],
     "courseCardIds": [
       "1729530986061"
     ],
@@ -2114,7 +2599,18 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 87,
     "objectiveId": "4.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.4:monitoring-computing-resources:systems",
+      "req:sy0701:v7:4.4:monitoring-computing-resources:applications",
+      "req:sy0701:v7:4.4:monitoring-computing-resources:infrastructure",
+      "req:sy0701:v7:4.4:activities:log-aggregation",
+      "req:sy0701:v7:4.4:activities:alerting",
+      "req:sy0701:v7:4.4:activities:scanning",
+      "req:sy0701:v7:4.4:activities:reporting",
+      "req:sy0701:v7:4.4:activities:archiving",
+      "req:sy0701:v7:4.4:activities:alert-response-and-remediation-validation:quarantine",
+      "req:sy0701:v7:4.4:activities:alert-response-and-remediation-validation:alert-tuning"
+    ],
     "courseCardIds": [
       "1729540036900"
     ],
@@ -2123,7 +2619,16 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T087-01",
       "T087-02",
       "T087-03",
-      "T087-04"
+      "T087-04",
+      "T087-05",
+      "T087-06",
+      "T087-07",
+      "T087-08",
+      "T087-09",
+      "T087-10",
+      "T087-11",
+      "T087-12",
+      "T087-13"
     ],
     "recallCardIds": [
       "1729540036900"
@@ -2133,14 +2638,27 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 88,
     "objectiveId": "4.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.4:tools:security-content-automation-protocol-scap",
+      "req:sy0701:v7:4.4:tools:benchmarks",
+      "req:sy0701:v7:4.4:tools:agents-agentless",
+      "req:sy0701:v7:4.4:tools:security-information-and-event-management-siem",
+      "req:sy0701:v7:4.4:tools:antivirus",
+      "req:sy0701:v7:4.4:tools:data-loss-prevention-dlp",
+      "req:sy0701:v7:4.4:tools:simple-network-management-protocol-snmp-traps",
+      "req:sy0701:v7:4.4:tools:netflow",
+      "req:sy0701:v7:4.4:tools:vulnerability-scanners"
+    ],
     "courseCardIds": [],
     "recallQuestionIds": [
       "T088-01",
       "T088-02",
       "T088-03",
       "T088-04",
-      "T088-05"
+      "T088-05",
+      "T088-06",
+      "T088-07",
+      "T088-08"
     ],
     "recallCardIds": [],
     "durationSec": 846,
@@ -2149,7 +2667,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 89,
     "objectiveId": "4.5",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.5:firewall:rules",
+      "req:sy0701:v7:4.5:firewall:access-lists",
+      "req:sy0701:v7:4.5:firewall:ports-protocols",
+      "req:sy0701:v7:4.5:firewall:screened-subnets"
+    ],
     "courseCardIds": [],
     "recallQuestionIds": [
       "T089-01",
@@ -2165,7 +2688,15 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 90,
     "objectiveId": "4.5",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.5:web-filter:agent-based",
+      "req:sy0701:v7:4.5:web-filter:centralized-proxy",
+      "req:sy0701:v7:4.5:web-filter:universal-resource-locator-url-scanning",
+      "req:sy0701:v7:4.5:web-filter:content-categorization",
+      "req:sy0701:v7:4.5:web-filter:block-rules",
+      "req:sy0701:v7:4.5:web-filter:reputation",
+      "req:sy0701:v7:4.5:dns-filtering"
+    ],
     "courseCardIds": [
       "1729542531766",
       "1729542555582"
@@ -2187,7 +2718,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 91,
     "objectiveId": "4.5",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.5:operating-system-security:group-policy",
+      "req:sy0701:v7:4.5:operating-system-security:selinux"
+    ],
     "courseCardIds": [
       "1729543018478",
       "1729543300068"
@@ -2209,7 +2743,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 92,
     "objectiveId": "4.5",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.5:implementation-of-secure-protocols:protocol-selection",
+      "req:sy0701:v7:4.5:implementation-of-secure-protocols:port-selection",
+      "req:sy0701:v7:4.5:implementation-of-secure-protocols:transport-method"
+    ],
     "courseCardIds": [],
     "recallQuestionIds": [
       "T092-01",
@@ -2225,7 +2763,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 93,
     "objectiveId": "4.5",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.5:email-security:domain-based-message-authentication-reporting-an",
+      "req:sy0701:v7:4.5:email-security:domainkeys-identified-mail-dkim",
+      "req:sy0701:v7:4.5:email-security:sender-policy-framework-spf",
+      "req:sy0701:v7:4.5:email-security:gateway"
+    ],
     "courseCardIds": [
       "1729544236865"
     ],
@@ -2244,7 +2787,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 94,
     "objectiveId": "4.5",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.5:file-integrity-monitoring",
+      "req:sy0701:v7:4.5:dlp"
+    ],
     "courseCardIds": [
       "1729544752114",
       "1729545172423"
@@ -2266,7 +2812,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 95,
     "objectiveId": "4.5",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.5:network-access-control-nac",
+      "req:sy0701:v7:4.5:endpoint-detection-and-response-edr-extended-det",
+      "req:sy0701:v7:4.5:user-behavior-analytics"
+    ],
     "courseCardIds": [
       "1729545965530"
     ],
@@ -2285,7 +2835,17 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 96,
     "objectiveId": "4.6",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.6:provisioning-de-provisioning-user-accounts",
+      "req:sy0701:v7:4.6:permission-assignments-and-implications",
+      "req:sy0701:v7:4.6:identity-proofing",
+      "req:sy0701:v7:4.6:federation",
+      "req:sy0701:v7:4.6:single-sign-on-sso:lightweight-directory-access-protocol-ldap",
+      "req:sy0701:v7:4.6:single-sign-on-sso:open-authorization-oauth",
+      "req:sy0701:v7:4.6:single-sign-on-sso:security-assertions-markup-language-saml",
+      "req:sy0701:v7:4.6:interoperability",
+      "req:sy0701:v7:4.6:attestation"
+    ],
     "courseCardIds": [
       "1729606385894",
       "1729606424320",
@@ -2306,7 +2866,15 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 97,
     "objectiveId": "4.6",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.6:access-controls:mandatory",
+      "req:sy0701:v7:4.6:access-controls:discretionary",
+      "req:sy0701:v7:4.6:access-controls:role-based",
+      "req:sy0701:v7:4.6:access-controls:rule-based",
+      "req:sy0701:v7:4.6:access-controls:attribute-based",
+      "req:sy0701:v7:4.6:access-controls:time-of-day-restrictions",
+      "req:sy0701:v7:4.6:access-controls:least-privilege"
+    ],
     "courseCardIds": [
       "1729609351815",
       "1729609553997",
@@ -2327,7 +2895,15 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 98,
     "objectiveId": "4.6",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.6:multifactor-authentication:implementations:biometrics",
+      "req:sy0701:v7:4.6:multifactor-authentication:implementations:hard-soft-authentication-tokens",
+      "req:sy0701:v7:4.6:multifactor-authentication:implementations:security-keys",
+      "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-know",
+      "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-have",
+      "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-are",
+      "req:sy0701:v7:4.6:multifactor-authentication:factors:somewhere-you-are"
+    ],
     "courseCardIds": [
       "1729610407765",
       "1729610578431"
@@ -2349,7 +2925,18 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 99,
     "objectiveId": "4.6",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.6:password-concepts:password-best-practices:length",
+      "req:sy0701:v7:4.6:password-concepts:password-best-practices:complexity",
+      "req:sy0701:v7:4.6:password-concepts:password-best-practices:reuse",
+      "req:sy0701:v7:4.6:password-concepts:password-best-practices:expiration",
+      "req:sy0701:v7:4.6:password-concepts:password-best-practices:age",
+      "req:sy0701:v7:4.6:password-concepts:password-managers",
+      "req:sy0701:v7:4.6:password-concepts:passwordless",
+      "req:sy0701:v7:4.6:privileged-access-management-tools:just-in-time-permissions",
+      "req:sy0701:v7:4.6:privileged-access-management-tools:password-vaulting",
+      "req:sy0701:v7:4.6:privileged-access-management-tools:ephemeral-credentials"
+    ],
     "courseCardIds": [
       "1729610995931",
       "1729611036480",
@@ -2373,7 +2960,29 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 100,
     "objectiveId": "4.7",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.7:use-cases-of-automation-and-scripting:user-provisioning",
+      "req:sy0701:v7:4.7:use-cases-of-automation-and-scripting:resource-provisioning",
+      "req:sy0701:v7:4.7:use-cases-of-automation-and-scripting:guard-rails",
+      "req:sy0701:v7:4.7:use-cases-of-automation-and-scripting:security-groups",
+      "req:sy0701:v7:4.7:use-cases-of-automation-and-scripting:ticket-creation",
+      "req:sy0701:v7:4.7:use-cases-of-automation-and-scripting:escalation",
+      "req:sy0701:v7:4.7:use-cases-of-automation-and-scripting:enabling-disabling-services-and-access",
+      "req:sy0701:v7:4.7:use-cases-of-automation-and-scripting:continuous-integration-and-testing",
+      "req:sy0701:v7:4.7:use-cases-of-automation-and-scripting:integrations-and-application-programming-interfa",
+      "req:sy0701:v7:4.7:benefits:efficiency-time-saving",
+      "req:sy0701:v7:4.7:benefits:enforcing-baselines",
+      "req:sy0701:v7:4.7:benefits:standard-infrastructure-configurations",
+      "req:sy0701:v7:4.7:benefits:scaling-in-a-secure-manner",
+      "req:sy0701:v7:4.7:benefits:employee-retention",
+      "req:sy0701:v7:4.7:benefits:reaction-time",
+      "req:sy0701:v7:4.7:benefits:workforce-multiplier",
+      "req:sy0701:v7:4.7:other-considerations:complexity",
+      "req:sy0701:v7:4.7:other-considerations:cost",
+      "req:sy0701:v7:4.7:other-considerations:single-point-of-failure",
+      "req:sy0701:v7:4.7:other-considerations:technical-debt",
+      "req:sy0701:v7:4.7:other-considerations:ongoing-supportability"
+    ],
     "courseCardIds": [
       "1729612110305",
       "1729612337101",
@@ -2382,7 +2991,27 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "recallQuestionIds": [
       "M4-037",
       "M4-039",
-      "M4-038"
+      "M4-038",
+      "T100-01",
+      "T100-02",
+      "T100-03",
+      "T100-04",
+      "T100-05",
+      "T100-06",
+      "T100-07",
+      "T100-08",
+      "T100-09",
+      "T100-10",
+      "T100-11",
+      "T100-12",
+      "T100-13",
+      "T100-14",
+      "T100-15",
+      "T100-16",
+      "T100-17",
+      "T100-18",
+      "T100-19",
+      "T100-20"
     ],
     "recallCardIds": [
       "1729612110305",
@@ -2394,14 +3023,28 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 101,
     "objectiveId": "4.8",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.8:process:preparation",
+      "req:sy0701:v7:4.8:process:detection",
+      "req:sy0701:v7:4.8:process:analysis",
+      "req:sy0701:v7:4.8:process:containment",
+      "req:sy0701:v7:4.8:process:eradication",
+      "req:sy0701:v7:4.8:process:recovery",
+      "req:sy0701:v7:4.8:process:lessons-learned"
+    ],
     "courseCardIds": [],
     "recallQuestionIds": [
       "T101-01",
       "T101-02",
       "T101-03",
       "T101-04",
-      "T101-05"
+      "T101-05",
+      "T101-06",
+      "T101-07",
+      "T101-08",
+      "T101-09",
+      "T101-10",
+      "T101-11"
     ],
     "recallCardIds": [],
     "durationSec": 553,
@@ -2410,7 +3053,13 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 102,
     "objectiveId": "4.8",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.8:training",
+      "req:sy0701:v7:4.8:testing:tabletop-exercise",
+      "req:sy0701:v7:4.8:testing:simulation",
+      "req:sy0701:v7:4.8:root-cause-analysis",
+      "req:sy0701:v7:4.8:threat-hunting"
+    ],
     "courseCardIds": [
       "1729614400121"
     ],
@@ -2419,7 +3068,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T102-01",
       "T102-02",
       "T102-03",
-      "T102-04"
+      "T102-04",
+      "T102-05",
+      "T102-06"
     ],
     "recallCardIds": [
       "1729614400121"
@@ -2429,7 +3080,14 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 103,
     "objectiveId": "4.8",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.8:digital-forensics:legal-hold",
+      "req:sy0701:v7:4.8:digital-forensics:chain-of-custody",
+      "req:sy0701:v7:4.8:digital-forensics:acquisition",
+      "req:sy0701:v7:4.8:digital-forensics:reporting",
+      "req:sy0701:v7:4.8:digital-forensics:preservation",
+      "req:sy0701:v7:4.8:digital-forensics:e-discovery"
+    ],
     "courseCardIds": [
       "1729614808452",
       "1729614972339"
@@ -2440,7 +3098,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T103-01",
       "T103-02",
       "T103-03",
-      "T103-04"
+      "T103-04",
+      "T103-05",
+      "T103-06"
     ],
     "recallCardIds": [
       "1729614808452",
@@ -2451,14 +3111,33 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 104,
     "objectiveId": "4.9",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.9:log-data:firewall-logs",
+      "req:sy0701:v7:4.9:log-data:application-logs",
+      "req:sy0701:v7:4.9:log-data:endpoint-logs",
+      "req:sy0701:v7:4.9:log-data:os-specific-security-logs",
+      "req:sy0701:v7:4.9:log-data:ips-ids-logs",
+      "req:sy0701:v7:4.9:log-data:network-logs",
+      "req:sy0701:v7:4.9:log-data:metadata",
+      "req:sy0701:v7:4.9:data-sources:vulnerability-scans",
+      "req:sy0701:v7:4.9:data-sources:automated-reports",
+      "req:sy0701:v7:4.9:data-sources:dashboards",
+      "req:sy0701:v7:4.9:data-sources:packet-captures"
+    ],
     "courseCardIds": [],
     "recallQuestionIds": [
       "T104-01",
       "T104-02",
       "T104-03",
       "T104-04",
-      "T104-05"
+      "T104-05",
+      "T104-06",
+      "T104-07",
+      "T104-08",
+      "T104-09",
+      "T104-10",
+      "T104-11",
+      "T104-12"
     ],
     "recallCardIds": [],
     "durationSec": 820,
@@ -2467,7 +3146,16 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 105,
     "objectiveId": "5.1",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:5.1:guidelines",
+      "req:sy0701:v7:5.1:policies:acceptable-use-policy-aup",
+      "req:sy0701:v7:5.1:policies:information-security-policies",
+      "req:sy0701:v7:5.1:policies:business-continuity",
+      "req:sy0701:v7:5.1:policies:disaster-recovery",
+      "req:sy0701:v7:5.1:policies:incident-response",
+      "req:sy0701:v7:5.1:policies:software-development-lifecycle-sdlc",
+      "req:sy0701:v7:5.1:policies:change-management"
+    ],
     "courseCardIds": [
       "1729622224382",
       "1729622405616"
@@ -2489,7 +3177,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 106,
     "objectiveId": "5.1",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:5.1:standards:password",
+      "req:sy0701:v7:5.1:standards:access-control",
+      "req:sy0701:v7:5.1:standards:physical-security",
+      "req:sy0701:v7:5.1:standards:encryption"
+    ],
     "courseCardIds": [
       "1729699356554"
     ],
@@ -2508,7 +3201,15 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 107,
     "objectiveId": "5.1",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:5.1:procedures:change-management",
+      "req:sy0701:v7:5.1:procedures:onboarding-offboarding",
+      "req:sy0701:v7:5.1:procedures:playbooks",
+      "req:sy0701:v7:5.1:types-of-governance-structures:boards",
+      "req:sy0701:v7:5.1:types-of-governance-structures:committees",
+      "req:sy0701:v7:5.1:types-of-governance-structures:government-entities",
+      "req:sy0701:v7:5.1:types-of-governance-structures:centralized-decentralized"
+    ],
     "courseCardIds": [],
     "recallQuestionIds": [
       "T107-01",
@@ -2524,7 +3225,15 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 108,
     "objectiveId": "5.1",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:5.1:external-considerations:regulatory",
+      "req:sy0701:v7:5.1:external-considerations:legal",
+      "req:sy0701:v7:5.1:external-considerations:industry",
+      "req:sy0701:v7:5.1:external-considerations:local-regional",
+      "req:sy0701:v7:5.1:external-considerations:national",
+      "req:sy0701:v7:5.1:external-considerations:global",
+      "req:sy0701:v7:5.1:monitoring-and-revision"
+    ],
     "courseCardIds": [
       "1729701252008"
     ],
@@ -2543,7 +3252,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 109,
     "objectiveId": "5.1",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:5.1:roles-and-responsibilities-for-systems-and-data:owners",
+      "req:sy0701:v7:5.1:roles-and-responsibilities-for-systems-and-data:controllers",
+      "req:sy0701:v7:5.1:roles-and-responsibilities-for-systems-and-data:processors",
+      "req:sy0701:v7:5.1:roles-and-responsibilities-for-systems-and-data:custodians-stewards"
+    ],
     "courseCardIds": [],
     "recallQuestionIds": [
       "T109-01",
@@ -2559,7 +3273,13 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 110,
     "objectiveId": "5.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:5.2:risk-identification",
+      "req:sy0701:v7:5.2:risk-assessment:ad-hoc",
+      "req:sy0701:v7:5.2:risk-assessment:recurring",
+      "req:sy0701:v7:5.2:risk-assessment:one-time",
+      "req:sy0701:v7:5.2:risk-assessment:continuous"
+    ],
     "courseCardIds": [
       "1729705368991"
     ],
@@ -2578,7 +3298,24 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 111,
     "objectiveId": "5.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:5.2:risk-analysis:qualitative",
+      "req:sy0701:v7:5.2:risk-analysis:quantitative",
+      "req:sy0701:v7:5.2:risk-analysis:single-loss-expectancy-sle",
+      "req:sy0701:v7:5.2:risk-analysis:annualized-loss-expectancy-ale",
+      "req:sy0701:v7:5.2:risk-analysis:annualized-rate-of-occurrence-aro",
+      "req:sy0701:v7:5.2:risk-analysis:probability",
+      "req:sy0701:v7:5.2:risk-analysis:likelihood",
+      "req:sy0701:v7:5.2:risk-analysis:exposure-factor",
+      "req:sy0701:v7:5.2:risk-analysis:impact",
+      "req:sy0701:v7:5.2:risk-register:key-risk-indicators",
+      "req:sy0701:v7:5.2:risk-register:risk-owners",
+      "req:sy0701:v7:5.2:risk-register:risk-threshold",
+      "req:sy0701:v7:5.2:risk-tolerance",
+      "req:sy0701:v7:5.2:risk-appetite:expansionary",
+      "req:sy0701:v7:5.2:risk-appetite:conservative",
+      "req:sy0701:v7:5.2:risk-appetite:neutral"
+    ],
     "courseCardIds": [
       "1729706570753",
       "1729706672664",
@@ -2611,7 +3348,14 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 112,
     "objectiveId": "5.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:5.2:risk-management-strategies:transfer",
+      "req:sy0701:v7:5.2:risk-management-strategies:accept:exemption",
+      "req:sy0701:v7:5.2:risk-management-strategies:accept:exception",
+      "req:sy0701:v7:5.2:risk-management-strategies:avoid",
+      "req:sy0701:v7:5.2:risk-management-strategies:mitigate",
+      "req:sy0701:v7:5.2:risk-reporting"
+    ],
     "courseCardIds": [
       "1729708046154",
       "1729708108607"
@@ -2633,7 +3377,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 113,
     "objectiveId": "5.2",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:5.2:business-impact-analysis:recovery-time-objective-rto",
+      "req:sy0701:v7:5.2:business-impact-analysis:recovery-point-objective-rpo",
+      "req:sy0701:v7:5.2:business-impact-analysis:mean-time-to-repair-mttr",
+      "req:sy0701:v7:5.2:business-impact-analysis:mean-time-between-failures-mtbf"
+    ],
     "courseCardIds": [
       "1729708541619",
       "1729708787931"
@@ -2655,7 +3404,18 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 114,
     "objectiveId": "5.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:5.3:vendor-assessment:penetration-testing",
+      "req:sy0701:v7:5.3:vendor-assessment:right-to-audit-clause",
+      "req:sy0701:v7:5.3:vendor-assessment:evidence-of-internal-audits",
+      "req:sy0701:v7:5.3:vendor-assessment:independent-assessments",
+      "req:sy0701:v7:5.3:vendor-assessment:supply-chain-analysis",
+      "req:sy0701:v7:5.3:vendor-selection:due-diligence",
+      "req:sy0701:v7:5.3:vendor-selection:conflict-of-interest",
+      "req:sy0701:v7:5.3:vendor-monitoring",
+      "req:sy0701:v7:5.3:questionnaires",
+      "req:sy0701:v7:5.3:rules-of-engagement"
+    ],
     "courseCardIds": [
       "1729709419932"
     ],
@@ -2674,7 +3434,15 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 115,
     "objectiveId": "5.3",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:5.3:agreement-types:service-level-agreement-sla",
+      "req:sy0701:v7:5.3:agreement-types:memorandum-of-agreement-moa",
+      "req:sy0701:v7:5.3:agreement-types:memorandum-of-understanding-mou",
+      "req:sy0701:v7:5.3:agreement-types:master-service-agreement-msa",
+      "req:sy0701:v7:5.3:agreement-types:work-order-wo-statement-of-work-sow",
+      "req:sy0701:v7:5.3:agreement-types:non-disclosure-agreement-nda",
+      "req:sy0701:v7:5.3:agreement-types:business-partners-agreement-bpa"
+    ],
     "courseCardIds": [
       "1729710310793"
     ],
@@ -2693,7 +3461,19 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 116,
     "objectiveId": "5.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:5.4:compliance-reporting:internal",
+      "req:sy0701:v7:5.4:compliance-reporting:external",
+      "req:sy0701:v7:5.4:consequences-of-non-compliance:fines",
+      "req:sy0701:v7:5.4:consequences-of-non-compliance:sanctions",
+      "req:sy0701:v7:5.4:consequences-of-non-compliance:reputational-damage",
+      "req:sy0701:v7:5.4:consequences-of-non-compliance:loss-of-license",
+      "req:sy0701:v7:5.4:consequences-of-non-compliance:contractual-impacts",
+      "req:sy0701:v7:5.4:compliance-monitoring:due-diligence-care",
+      "req:sy0701:v7:5.4:compliance-monitoring:attestation-and-acknowledgement",
+      "req:sy0701:v7:5.4:compliance-monitoring:internal-and-external",
+      "req:sy0701:v7:5.4:compliance-monitoring:automation"
+    ],
     "courseCardIds": [
       "1729783659515",
       "1729783723324",
@@ -2714,7 +3494,16 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 117,
     "objectiveId": "5.4",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:5.4:privacy:legal-implications:local-regional",
+      "req:sy0701:v7:5.4:privacy:legal-implications:national",
+      "req:sy0701:v7:5.4:privacy:legal-implications:global",
+      "req:sy0701:v7:5.4:privacy:data-subject",
+      "req:sy0701:v7:5.4:privacy:controller-vs-processor",
+      "req:sy0701:v7:5.4:privacy:ownership",
+      "req:sy0701:v7:5.4:privacy:data-inventory-and-retention",
+      "req:sy0701:v7:5.4:privacy:right-to-be-forgotten"
+    ],
     "courseCardIds": [
       "1729784557847",
       "1729784627980"
@@ -2736,7 +3525,18 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 118,
     "objectiveId": "5.5",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:4.3:identification-methods:system-process-audit",
+      "req:sy0701:v7:4.3:validation-of-remediation:audit",
+      "req:sy0701:v7:5.5:attestation",
+      "req:sy0701:v7:5.5:internal:compliance",
+      "req:sy0701:v7:5.5:internal:audit-committee",
+      "req:sy0701:v7:5.5:internal:self-assessments",
+      "req:sy0701:v7:5.5:external:regulatory",
+      "req:sy0701:v7:5.5:external:examinations",
+      "req:sy0701:v7:5.5:external:assessment",
+      "req:sy0701:v7:5.5:external:independent-third-party-audit"
+    ],
     "courseCardIds": [
       "1729785415964",
       "1729785486403"
@@ -2758,7 +3558,17 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 119,
     "objectiveId": "5.5",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:5.5:penetration-testing:physical",
+      "req:sy0701:v7:5.5:penetration-testing:offensive",
+      "req:sy0701:v7:5.5:penetration-testing:defensive",
+      "req:sy0701:v7:5.5:penetration-testing:integrated",
+      "req:sy0701:v7:5.5:penetration-testing:known-environment",
+      "req:sy0701:v7:5.5:penetration-testing:partially-known-environment",
+      "req:sy0701:v7:5.5:penetration-testing:unknown-environment",
+      "req:sy0701:v7:5.5:penetration-testing:reconnaissance:passive",
+      "req:sy0701:v7:5.5:penetration-testing:reconnaissance:active"
+    ],
     "courseCardIds": [
       "1729785782984",
       "1729785809766",
@@ -2791,7 +3601,14 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 120,
     "objectiveId": "5.6",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:5.6:phishing:campaigns",
+      "req:sy0701:v7:5.6:phishing:recognizing-a-phishing-attempt",
+      "req:sy0701:v7:5.6:phishing:responding-to-reported-suspicious-messages",
+      "req:sy0701:v7:5.6:anomalous-behavior-recognition:risky",
+      "req:sy0701:v7:5.6:anomalous-behavior-recognition:unexpected",
+      "req:sy0701:v7:5.6:anomalous-behavior-recognition:unintentional"
+    ],
     "courseCardIds": [
       "1729786793022"
     ],
@@ -2810,7 +3627,20 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 121,
     "objectiveId": "5.6",
-    "requirementIds": [],
+    "requirementIds": [
+      "req:sy0701:v7:5.6:user-guidance-and-training:policy-handbooks",
+      "req:sy0701:v7:5.6:user-guidance-and-training:situational-awareness",
+      "req:sy0701:v7:5.6:user-guidance-and-training:insider-threat",
+      "req:sy0701:v7:5.6:user-guidance-and-training:password-management",
+      "req:sy0701:v7:5.6:user-guidance-and-training:removable-media-and-cables",
+      "req:sy0701:v7:5.6:user-guidance-and-training:social-engineering",
+      "req:sy0701:v7:5.6:user-guidance-and-training:operational-security",
+      "req:sy0701:v7:5.6:user-guidance-and-training:hybrid-remote-work-environments",
+      "req:sy0701:v7:5.6:reporting-and-monitoring:initial",
+      "req:sy0701:v7:5.6:reporting-and-monitoring:recurring",
+      "req:sy0701:v7:5.6:development",
+      "req:sy0701:v7:5.6:execution"
+    ],
     "courseCardIds": [],
     "recallQuestionIds": [
       "T121-01",
