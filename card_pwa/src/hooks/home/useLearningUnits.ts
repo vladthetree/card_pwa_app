@@ -31,11 +31,12 @@ import {
 import type { Card } from '../../types'
 import { sortStudyCards } from '../../services/studyCardOrdering'
 import { SY0_701_OBJECTIVES, getSecurityObjectiveDeckId } from '../../utils/securityDeckHierarchy'
-import { listCardsByDeckIdsDirect } from '../../db/queries'
+import { listCardsByDeckIdsDirect, listCardsByIds } from '../../db/queries'
 import { listAnswerStats } from '../../db/queries/answerStats'
 import {
   computeDraftPacing,
   computeExamTimeline,
+  computeLearningWorkload,
   rankLearningUnits,
   resolveLearningPhase,
   type LearningPacingResult,
@@ -63,6 +64,12 @@ import { readVideoProgress } from '../useMesserVideoProgress'
 import { readRecallScores } from '../useVideoRecallScores'
 import { useDayStartMs } from '../useDayStartMs'
 import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
+import {
+  buildLearningPlanContentMapping,
+  collectLearningPlanCardIds,
+  EMPTY_LEARNING_PLAN_CONTENT_MAPPING,
+  type LearningPlanContentMapping,
+} from '../../utils/learningPlanMapping'
 
 export interface LearningUnitsHomeData {
   loading: boolean
@@ -83,6 +90,10 @@ export interface LearningUnitsHomeData {
   formativeRecallByObjective: ReadonlyMap<string, number>
   /** Draft-Lernplan des Profils (null = noch keiner angelegt). */
   plan: DraftLearnerExamPlanRecord | null
+  /** Card-ID-basiertes Read-Model: Course-Unit → Objective-Deck → Karten. */
+  contentMapping: LearningPlanContentMapping
+  /** Effektiver Termin für Anzeige, Phase und Pacing. */
+  effectiveExamDateIso: string | null
   /** Draft-Pacing aus Termin, Budget und Dauerschätzungen (§12). */
   pacing: LearningPacingResult
   reload: () => void
@@ -94,8 +105,10 @@ interface Options {
   catalogLoading: boolean
   /** null = Profil noch nicht hydratisiert → Import darf noch nicht laufen. */
   profileId: string | null
-  /** Legacy-Settings-Termin als Fallback, solange kein Draft-Plan existiert. */
+  /** Profilgesyncter Termin aus den Einstellungen. */
   examDateIso: string | null
+  /** null = in dieser Settings-Generation noch nie explizit geändert. */
+  examDateUpdatedAt: number | null
   nextDayStartsAt: number
   /** Learn-ahead-Fenster der Study-Eligibility (Review-Fälligkeit, §11). */
   learnAheadMinutes: number
@@ -113,6 +126,8 @@ const EMPTY_RESULT = {
   stateByUnitId: new Map<string, LearningUnitState>(),
   formativeRecallByObjective: new Map<string, number>(),
   plan: null as DraftLearnerExamPlanRecord | null,
+  contentMapping: EMPTY_LEARNING_PLAN_CONTENT_MAPPING,
+  effectiveExamDateIso: null as string | null,
   pacing: computeDraftPacing({ daysLeft: null }),
 }
 
@@ -131,11 +146,24 @@ function formatLocalLearningDay(dayStartMs: number): string {
   return `${date.getFullYear()}-${month}-${day}`
 }
 
+/** Settings ist nach einer expliziten Änderung/Löschung autoritativ. Nur alte
+ * Installationen ohne Settings-Zeitstempel dürfen den Draft als Fallback lesen. */
+export function resolveEffectiveLearningPlanExamDate(input: {
+  settingsExamDateIso: string | null
+  settingsExamDateUpdatedAt: number | null
+  draftExamDateIso: string | null | undefined
+}): string | null {
+  return input.settingsExamDateUpdatedAt !== null
+    ? input.settingsExamDateIso
+    : (input.draftExamDateIso ?? input.settingsExamDateIso)
+}
+
 export function useLearningUnits({
   catalog,
   catalogLoading,
   profileId,
   examDateIso,
+  examDateUpdatedAt,
   nextDayStartsAt,
   learnAheadMinutes,
 }: Options): LearningUnitsHomeData {
@@ -230,12 +258,19 @@ export function useLearningUnits({
       }
 
       const objectiveDeckIds = SY0_701_OBJECTIVES.map(objective => getSecurityObjectiveDeckId(objective.code))
-      const [profileState, states, plan, recallRuns, objectiveCards, attemptsToday] = await Promise.all([
+      const mappedCardIds = collectLearningPlanCardIds({
+        courseDefinitions: definitions,
+        contentMapByVideoIndex: SY0701_CONTENT_MAP_BY_VIDEO_INDEX,
+      })
+      const [profileState, states, plan, recallRuns, objectiveCards, mappedCards, attemptsToday] = await Promise.all([
         getOrCreateProfileLearningState(profileId, now),
         listLearningUnitStates(profileId),
         getLearnerExamPlan(profileId),
         listVideoRecallRunsForProfile(profileId),
         listCardsByDeckIdsDirect(objectiveDeckIds),
+        // Explizite Card-ID-Abfrage: physische Deckposition ist kein
+        // Fortschrittsschlüssel und darf gemappte Karten nicht verschwinden lassen.
+        listCardsByIds(mappedCardIds),
         countReviewUnitAttemptsForDay(profileId, localLearningDay),
       ])
       const objectiveStats = await listAnswerStats({
@@ -255,12 +290,20 @@ export function useLearningUnits({
         cardsByObjective.set(objectiveId, list)
       }
       const reviewDueUnitIds = new Set<string>()
+      const dueReviewCardIds = new Set<string>()
       for (const [objectiveId, cards] of cardsByObjective) {
         const due = sortStudyCards(cards, { maxNewCards: 0, nextDayStartsAt, learnAheadMinutes, nowMs: now })
-        if (due.length > 0) reviewDueUnitIds.add(formatReviewUnitId(objectiveId))
+        if (due.length > 0) {
+          reviewDueUnitIds.add(formatReviewUnitId(objectiveId))
+          due.forEach(card => dueReviewCardIds.add(card.id))
+        }
       }
+      const unresolvedErrorCardIds = new Set<string>()
       for (const stat of objectiveStats) {
-        if (stat.unresolvedErrorItemIds.length > 0) reviewDueUnitIds.add(formatReviewUnitId(stat.scopeId))
+        if (stat.unresolvedErrorItemIds.length > 0) {
+          reviewDueUnitIds.add(formatReviewUnitId(stat.scopeId))
+          stat.unresolvedErrorItemIds.forEach(cardId => unresolvedErrorCardIds.add(cardId))
+        }
       }
       const reviewDefinitions = buildReviewUnits({
         objectives: SY0_701_OBJECTIVES.map(objective => ({ objectiveId: objective.code, title: objective.title })),
@@ -285,18 +328,45 @@ export function useLearningUnits({
       const courseCompleted = definitions.filter(
         definition => stateByUnitId.get(definition.unitId)?.activityStatus === 'completed',
       ).length
+      const contentMapping = buildLearningPlanContentMapping({
+        courseDefinitions: definitions,
+        contentMapByVideoIndex: SY0701_CONTENT_MAP_BY_VIDEO_INDEX,
+        cards: mappedCards,
+      })
 
-      const timeline = computeExamTimeline({ examDateIso: plan?.examDateIso ?? examDateIso, now })
+      // Ein explizit gesetzter oder gelöschter Settings-Termin gewinnt vor
+      // älteren/restaurierten Drafts. Ohne Settings-Historie bleibt der Draft
+      // als rückwärtskompatibler Fallback erhalten.
+      const effectiveExamDateIso = resolveEffectiveLearningPlanExamDate({
+        settingsExamDateIso: examDateIso,
+        settingsExamDateUpdatedAt: examDateUpdatedAt,
+        draftExamDateIso: plan?.examDateIso,
+      })
+      const timeline = computeExamTimeline({ examDateIso: effectiveExamDateIso, now })
       const phase = resolveLearningPhase({
         daysLeft: timeline.daysLeft,
         courseProgressRatio: courseCompleted / COURSE_UNIT_COUNT,
       })
+      const pendingReviewCardIds = new Set([...dueReviewCardIds, ...unresolvedErrorCardIds])
+      const workload = computeLearningWorkload({
+        remainingCourseUnits: definitions
+          .filter(definition => stateByUnitId.get(definition.unitId)?.activityStatus !== 'completed')
+          .map(definition => ({ unitId: definition.unitId, estimatedMinutes: definition.estimatedMinutes })),
+        // Bis B3 eine Pflichtlab-Auswahl festlegt, werden transparent alle
+        // offenen Labs als eigener Messwert geführt; nichts wird versteckt.
+        remainingLabUnits: LAB_DEFINITIONS
+          .filter(definition => stateByUnitId.get(definition.unitId)?.activityStatus !== 'completed')
+          .map(definition => ({ unitId: definition.unitId, estimatedMinutes: definition.estimatedMinutes })),
+        dueReviewCardCount: dueReviewCardIds.size,
+        unresolvedErrorCardCount: unresolvedErrorCardIds.size,
+        pendingReviewCardCount: pendingReviewCardIds.size,
+        timedReviewSampleCount: objectiveStats.reduce((sum, stat) => sum + stat.timedAnswerCount, 0),
+        observedReviewTimeMs: objectiveStats.reduce((sum, stat) => sum + stat.timedAnswerTimeMs, 0),
+      })
       const pacing = computeDraftPacing({
         daysLeft: timeline.daysLeft,
         plan: plan ?? null,
-        remainingUnits: definitions
-          .filter(definition => stateByUnitId.get(definition.unitId)?.activityStatus !== 'completed')
-          .map(definition => ({ unitId: definition.unitId, estimatedMinutes: definition.estimatedMinutes })),
+        workload,
       })
       const ranked = rankLearningUnits({
         // Kurs-, Review- und Lab-Units; Exam-Units folgen mit Phase 5.
@@ -324,6 +394,8 @@ export function useLearningUnits({
         stateByUnitId,
         formativeRecallByObjective,
         plan: plan ?? null,
+        contentMapping,
+        effectiveExamDateIso,
         pacing,
       })
     } catch (error) {
@@ -331,7 +403,7 @@ export function useLearningUnits({
       if (computeVersionRef.current !== version) return
       setData(prev => ({ ...prev, loading: false, available: false }))
     }
-  }, [catalog, catalogLoading, profileId, examDateIso, todayStartMs, objectiveEvidence])
+  }, [catalog, catalogLoading, profileId, examDateIso, examDateUpdatedAt, todayStartMs, objectiveEvidence])
 
   useEffect(() => {
     void compute()

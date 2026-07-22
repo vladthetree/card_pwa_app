@@ -26,7 +26,7 @@ const APP_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 const SOURCE = path.join(APP_ROOT, 'content', 'sy0-701', 'source')
 const GENERATED = path.join(APP_ROOT, 'content', 'sy0-701', 'generated')
 
-const MANIFEST_VERSION = '2026-07-19.2'
+const MANIFEST_VERSION = '2026-07-22.1'
 const SCENARIO_OBJECTIVES = ['2.4', '3.2', '4.1', '4.5', '4.6', '4.9', '5.6']
 
 const readJson = f => JSON.parse(fs.readFileSync(path.join(SOURCE, f), 'utf8'))
@@ -64,6 +64,7 @@ const extract = readJson('objectives-v7-extract.json')
 const videosManifest = readJson('videos-manifest.json')
 const cardsSnapshot = readJson('cards-snapshot.json')
 const mappingDecisions = readJson('mapping-decisions.json')
+const subdeckVideoMapping = readJson('subdeck-video-mapping.json')
 // Kuratierte fachliche Zuordnungen (OFFENE-PUNKTE #6/#8); optional, solange
 // die Kuratierung läuft — fehlende Einträge bleiben ehrlich 'mapping-review'.
 const leafMapping = readJsonOptional('leaf-mapping.json')
@@ -82,12 +83,13 @@ const vite = await createServer({
   server: { middlewareMode: true, watch: null },
   logLevel: 'error',
 })
-let parserMod, labsMod, qmapMod, tqMod
+let parserMod, labsMod, qmapMod, tqMod, coverageMod
 try {
   parserMod = await vite.ssrLoadModule('/src/utils/cardTextParser.ts')
   labsMod = await vite.ssrLoadModule('/src/data/labScenarios.ts')
   qmapMod = await vite.ssrLoadModule('/src/data/messerVideoQuestionMap.ts')
   tqMod = await vite.ssrLoadModule('/src/data/messerTranscriptQuestions.ts')
+  coverageMod = await vite.ssrLoadModule('/src/utils/learningUnits.ts')
 } finally {
   await vite.close()
 }
@@ -95,6 +97,7 @@ const { OrderingParser, MatchingParser } = parserMod
 const { LAB_SCENARIOS, LAB_SOURCES } = labsMod
 const videoTitleByQuestionId = qmapMod.MESSER_VIDEO_BY_QUESTION_ID
 const transcriptQuestions = tqMod.MESSER_TRANSCRIPT_QUESTIONS
+const { buildRequirementCoverage } = coverageMod
 
 // ── 1) exam-source-snapshot ─────────────────────────────────────────────────
 writeArtifact('exam-source-snapshot.json', { snapshot })
@@ -255,6 +258,7 @@ const profileB = cardsSnapshot.profiles[1]
 }
 
 const OBJECTIVE_DECK = /^sy0-701-objective-(\d)-(\d+)$/
+const objectiveDeckId = objective => `sy0-701-objective-${objective.replace('.', '-')}`
 const objectiveOfDeck = deckId => {
   const m = OBJECTIVE_DECK.exec(deckId)
   return m ? `${m[1]}.${m[2]}` : null
@@ -272,7 +276,7 @@ const videoByIndex = new Map(videosManifest.videos.map(v => [v.index, v]))
 const unknownDeckObjectives = new Set()
 const cardsByVideoIndex = new Map()
 const pbqCards = []
-const practiceObjectiveCards = []
+const subdeckCardsWithoutMId = []
 const rootDeckCards = []
 const acronymDeckCards = []
 let unresolvedQuestionIds = 0
@@ -306,7 +310,7 @@ for (const card of profile.cards) {
   }
 
   if (objective) {
-    if (!mId && !isPbq) practiceObjectiveCards.push({ cardId: card.id, objective })
+    if (!mId) subdeckCardsWithoutMId.push({ cardId: card.id, objective, subDeckId: card.deckId, isPbq })
   } else if (rootDeckDomain(card.deckId)) {
     rootDeckCards.push({ cardId: card.id, domain: rootDeckDomain(card.deckId), deckName })
   } else if (/acronym/i.test(deckName)) {
@@ -316,9 +320,63 @@ for (const card of profile.cards) {
 gate('deck-objectives-bekannt', unknownDeckObjectives.size === 0, unknownDeckObjectives.size ? [...unknownDeckObjectives].join(',') : 'alle Deck-Codes bekannt')
 gate('frage-video-aufloesung', unresolvedQuestionIds === 0, `${unresolvedQuestionIds} M-IDs ohne Videotreffer`)
 
+// Karten in Objective-Subdecks ohne M-ID werden redaktionell exakt einer
+// Messer-Video-Unit zugeordnet. Die Zuordnung ändert kein Deck und schreibt
+// keinen Fortschritt; allein die bestehende Card-ID verbindet beides.
+const cardById = new Map(profile.cards.map(card => [card.id, card]))
+const expectedCuratedCardIds = new Set(subdeckCardsWithoutMId.map(card => card.cardId))
+const curatedCardIds = new Set()
+const curatedProblems = []
+for (const mapping of subdeckVideoMapping.mappings ?? []) {
+  const card = cardById.get(mapping.cardId)
+  const video = videoByIndex.get(mapping.videoIndex)
+  if (curatedCardIds.has(mapping.cardId)) {
+    curatedProblems.push(`Karte ${mapping.cardId} mehrfach kuratiert`)
+    continue
+  }
+  curatedCardIds.add(mapping.cardId)
+  if (!card || !expectedCuratedCardIds.has(mapping.cardId)) {
+    curatedProblems.push(`Karte ${mapping.cardId} ist keine ungemappte Objective-Subdeck-Karte`)
+    continue
+  }
+  if (card.deckId !== mapping.subDeckId) {
+    curatedProblems.push(`Karte ${mapping.cardId}: Subdeck ${mapping.subDeckId} != Snapshot ${card.deckId}`)
+  }
+  if (!video) {
+    curatedProblems.push(`Karte ${mapping.cardId}: Video ${mapping.videoIndex} fehlt`)
+    continue
+  }
+  if (video.title !== mapping.videoTitle) {
+    curatedProblems.push(`Karte ${mapping.cardId}: Videotitel ${mapping.videoTitle} != ${video.title}`)
+  }
+  if (!mapping.transcriptAnchor) {
+    curatedProblems.push(`Karte ${mapping.cardId}: transcriptAnchor fehlt`)
+  }
+  if (!cardsByVideoIndex.has(video.index)) cardsByVideoIndex.set(video.index, [])
+  cardsByVideoIndex.get(video.index).push({
+    cardId: mapping.cardId,
+    questionId: null,
+    mappingKind: 'curated-subdeck',
+  })
+}
+for (const cardId of expectedCuratedCardIds) {
+  if (!curatedCardIds.has(cardId)) curatedProblems.push(`Subdeck-Karte ${cardId} ohne Videozuordnung`)
+}
+for (const cardId of curatedCardIds) {
+  if (!expectedCuratedCardIds.has(cardId)) curatedProblems.push(`Mapping enthält fremde Karte ${cardId}`)
+}
+gate(
+  'subdeck-karten-video-eindeutig',
+  curatedProblems.length === 0 && curatedCardIds.size === expectedCuratedCardIds.size,
+  curatedProblems.length > 0
+    ? curatedProblems.join('; ')
+    : `${curatedCardIds.size}/${expectedCuratedCardIds.size} Subdeck-Karten ohne M-ID exakt zugeordnet`,
+)
+
 // ── 4) video-content-map ────────────────────────────────────────────────────
 const videoContentMap = videosManifest.videos.map(video => {
   const mapped = cardsByVideoIndex.get(video.index) ?? []
+  const mappedWithQuestionId = mapped.filter(entry => entry.questionId)
   const indexKey = String(video.index).padStart(3, '0')
   const transcript = transcriptQuestions[indexKey] ?? []
   return {
@@ -328,8 +386,11 @@ const videoContentMap = videosManifest.videos.map(video => {
     file: video.file,
     durationSec: Number.isFinite(video.durationSec) ? video.durationSec : null,
     cardIds: mapped.map(m => m.cardId),
+    primarySubDeckId: objectiveDeckId(video.objective),
+    sourceSubDeckIds: [...new Set(mapped.map(m => cardById.get(m.cardId)?.deckId).filter(Boolean))],
+    recallCardIds: mappedWithQuestionId.map(m => m.cardId),
     recallQuestionIds: [
-      ...mapped.map(m => m.questionId),
+      ...mappedWithQuestionId.map(m => m.questionId),
       ...transcript.map((_, i) => `T${indexKey}-${String(i + 1).padStart(2, '0')}`),
     ],
   }
@@ -339,7 +400,11 @@ gate('video-dauern', videosOhneDauer.length === 0, videosOhneDauer.length ? `${v
 const videosOhneRecall = videoContentMap.filter(v => v.recallQuestionIds.length === 0)
 writeArtifact('video-content-map.json', {
   sourceSnapshotId: snapshot.snapshotId,
-  note: 'Karten-IDs sind profilübergreifend identisch (verifiziert); Zuordnung über M-Frage-ID im Kartenfront + generierte Video-Titel-Map, nie über das Objective-Deck.',
+  note: 'Jede Karte aus den 28 Objective-Subdecks ist genau einer Video-Unit zugeordnet: M-Karten über Frage-ID→Messer-Video, übrige Subdeck-Karten über die transkriptbasierte redaktionelle Source. Deckpositionen bleiben unverändert; Fortschritt läuft ausschließlich über Card-ID.',
+  mappingCounts: {
+    questionId: [...cardsByVideoIndex.values()].flat().filter(entry => entry.questionId).length,
+    curatedSubdeck: curatedCardIds.size,
+  },
   videos: videoContentMap,
   videosWithoutRecall: videosOhneRecall.map(v => v.videoIndex),
 })
@@ -388,9 +453,6 @@ for (const [indexKey, list] of Object.entries(transcriptQuestions)) {
   if (!video) continue
   assessmentByObjective.set(video.objective, (assessmentByObjective.get(video.objective) ?? 0) + list.length)
 }
-for (const c of practiceObjectiveCards) {
-  assessmentByObjective.set(c.objective, (assessmentByObjective.get(c.objective) ?? 0) + 1)
-}
 
 // Gültige Asset-IDs für die Referenzvalidierung der kuratierten Zuordnung.
 const validVideoIds = new Set(videosManifest.videos.map(v => `video:${v.index}`))
@@ -405,13 +467,36 @@ for (const card of profile.cards) validAssessmentIds.add(`card:${card.id}`)
 const validPracticalIds = new Set(LAB_SCENARIOS.map(s => `lab:${s.id}`))
 for (const c of pbqCards) validPracticalIds.add(`card:${c.cardId}`)
 
+// Praktische Abdeckung entsteht nur aus expliziten Requirement-IDs am
+// Szenario. Eine bloße Objective-Zuordnung beweist keine Leaf-Abdeckung.
+const requirementById = new Map(requirements.map(requirement => [requirement.requirementId, requirement]))
+const practicalItemIdsByRequirement = new Map()
+const practicalMappingProblems = []
+for (const scenario of LAB_SCENARIOS) {
+  const scenarioObjective = /^(\d\.\d+)\b/.exec(scenario.objective)?.[1]
+  for (const requirementId of scenario.requirementIds ?? []) {
+    const requirement = requirementById.get(requirementId)
+    if (!requirement) {
+      practicalMappingProblems.push(`Lab ${scenario.id} referenziert unbekannte Requirement ${requirementId}`)
+      continue
+    }
+    if (scenarioObjective !== requirement.objectiveId) {
+      practicalMappingProblems.push(`Lab ${scenario.id}: Objective ${scenarioObjective ?? 'unbekannt'} != Requirement ${requirement.objectiveId}`)
+      continue
+    }
+    const ids = practicalItemIdsByRequirement.get(requirementId) ?? []
+    ids.push(`lab:${scenario.id}`)
+    practicalItemIdsByRequirement.set(requirementId, ids)
+  }
+}
+
 const curatedByReq = new Map(Object.entries(leafMapping?.entries ?? {}))
 {
   const reqIds = new Set(requirements.map(r => r.requirementId))
-  const problems = []
+  const problems = [...practicalMappingProblems]
   for (const [reqId, entry] of curatedByReq) {
     if (!reqIds.has(reqId)) { problems.push(`unbekannte Requirement ${reqId}`); continue }
-    if (!['covered', 'content-missing', 'assessment-missing'].includes(entry.status)) {
+    if (!['covered', 'content-missing', 'assessment-missing', 'practice-missing', 'mapping-review'].includes(entry.status)) {
       problems.push(`${reqId}: ungültiger Status ${entry.status}`)
     }
     for (const id of entry.learningAssetIds ?? []) {
@@ -423,10 +508,6 @@ const curatedByReq = new Map(Object.entries(leafMapping?.entries ?? {}))
     for (const id of entry.practicalItemIds ?? []) {
       if (!validPracticalIds.has(id)) problems.push(`${reqId}: unbekanntes Praxis-Item ${id}`)
     }
-    if (entry.status === 'covered'
-      && ((entry.learningAssetIds ?? []).length === 0 || (entry.assessmentItemIds ?? []).length === 0)) {
-      problems.push(`${reqId}: covered verlangt >=1 Lernasset UND >=1 Assessment-Item`)
-    }
   }
   if (problems.length > 0) {
     console.error(`FATAL: leaf-mapping.json inkonsistent (${problems.length} Probleme):\n  - ` + problems.slice(0, 25).join('\n  - '))
@@ -434,17 +515,17 @@ const curatedByReq = new Map(Object.entries(leafMapping?.entries ?? {}))
   }
 }
 
-const byRequirementId = {}
-const statusCounts = { covered: 0, 'mapping-review': 0, 'content-missing': 0, 'assessment-missing': 0 }
+const rawCoverage = []
 for (const r of requirements) {
   const curated = curatedByReq.get(r.requirementId)
   let coverage
   if (curated) {
+    const mappedPracticalIds = practicalItemIdsByRequirement.get(r.requirementId) ?? []
     coverage = {
       requirementId: r.requirementId,
       learningAssetIds: [...(curated.learningAssetIds ?? [])],
       assessmentItemIds: [...(curated.assessmentItemIds ?? [])],
-      practicalItemIds: [...(curated.practicalItemIds ?? [])],
+      practicalItemIds: [...new Set([...(curated.practicalItemIds ?? []), ...mappedPracticalIds])],
       qaStatus: curated.status,
       reviewer: curated.reviewer ?? leafMapping?.reviewer,
       ...(curated.note ? { note: curated.note } : {}),
@@ -456,21 +537,39 @@ for (const r of requirements) {
       requirementId: r.requirementId,
       learningAssetIds: (videosByObjective.get(r.objectiveId) ?? []).map(i => `video:${i}`),
       assessmentItemIds: [],
-      practicalItemIds: (labsByObjective.get(r.objectiveId) ?? []).map(id => `lab:${id}`),
+      practicalItemIds: [...(practicalItemIdsByRequirement.get(r.requirementId) ?? [])],
       qaStatus: hasLearning ? 'mapping-review' : 'content-missing',
     }
   }
-  statusCounts[coverage.qaStatus] += 1
-  byRequirementId[r.requirementId] = coverage
+  rawCoverage.push(coverage)
 }
-const blocking = Object.values(byRequirementId).filter(r => r.qaStatus !== 'covered').map(r => r.requirementId)
-writeArtifact('content-qa-report.json', {
+// Eine Definition für Generator und App: dieselbe pure Kernfunktion entscheidet
+// anhand der tatsächlichen Assets, Assessments, Praxispfade und QA-Metadaten.
+const coverageReport = buildRequirementCoverage({
   sourceSnapshotId: snapshot.snapshotId,
-  requirementCount: requirements.length,
-  coveredCount: requirements.length - blocking.length,
+  requirements,
+  criticalErrorDefinitions,
+  coverage: rawCoverage,
+  now: Date.now(),
+})
+const statusCounts = {
+  covered: 0,
+  'mapping-review': 0,
+  'content-missing': 0,
+  'assessment-missing': 0,
+  'practice-missing': 0,
+}
+for (const coverage of Object.values(coverageReport.byRequirementId)) {
+  statusCounts[coverage.qaStatus] += 1
+}
+const missingPracticalRequirementIds = requirements
+  .filter(requirement => requirement.scenarioRequired)
+  .filter(requirement => coverageReport.byRequirementId[requirement.requirementId]?.practicalItemIds.length === 0)
+  .map(requirement => requirement.requirementId)
+writeArtifact('content-qa-report.json', {
+  ...coverageReport,
   statusCounts,
-  byRequirementId,
-  blockingRequirementIds: blocking,
+  missingPracticalRequirementIds,
   mappingDecisions: {
     decided: mappingDecisions.decisions.length,
     applied: 0,
@@ -483,8 +582,8 @@ writeArtifact('content-qa-report.json', {
 })
 gate('leaf-mapping-gesichtet', statusCounts['mapping-review'] === 0,
   `${requirements.length - statusCounts['mapping-review']}/${requirements.length} Leaves fachlich gesichtet`)
-gate('leaf-coverage', blocking.length === 0,
-  `${requirements.length - blocking.length}/${requirements.length} covered; Lücken: ${statusCounts['content-missing']} content-missing, ${statusCounts['assessment-missing']} assessment-missing`)
+gate('leaf-coverage', coverageReport.blockingRequirementIds.length === 0,
+  `${coverageReport.coveredCount}/${requirements.length} covered; Lücken: ${statusCounts['content-missing']} content-missing, ${statusCounts['assessment-missing']} assessment-missing, ${statusCounts['practice-missing']} practice-missing`)
 gate('mapping-31-entschieden', mappingDecisions.decisions.length === 31, `${mappingDecisions.decisions.length}/31 entschieden; Anwendung zurückgestellt (Bestand unverändert)`)
 if (mappingDecisions.decisions.some(d => d.decision === 'move')) {
   warn.push('7 Mapping-Moves sind fachlich entschieden, aber auf Nutzer-Anweisung nicht auf sync.db angewendet.')
@@ -501,7 +600,7 @@ writeArtifact('content-pools.json', {
     },
     practice: {
       rootDeckScenarioCards: rootDeckCards.length,
-      unmappedObjectiveCards: practiceObjectiveCards.length,
+      unmappedObjectiveCards: subdeckCardsWithoutMId.filter(card => !curatedCardIds.has(card.cardId)).length,
       acronymDeckCards: acronymDeckCards.length,
       pbqCards: pbqCards.length,
       labScenarios: LAB_SCENARIOS.length,
@@ -512,7 +611,7 @@ writeArtifact('content-pools.json', {
       note: 'GESTRICHEN am 2026-07-19: keine Exam-Engine, keine Readiness-Formen — Ziel ist die Lerngrundlage.',
     },
   },
-  disjointness: 'Course/Practice überlappen nicht (M-ID-Zuordnung vs. Rest); Readiness ist gestrichen.',
+  disjointness: 'Course enthält alle Objective-Subdeck-Karten exakt einmal (M-ID oder kuratiertes Transkriptmapping). Root-, Acronym- und eigenständige Übungsdecks bleiben Practice; Readiness ist gestrichen.',
 })
 
 // ── 8) holdout-leakage-report ───────────────────────────────────────────────
@@ -566,10 +665,12 @@ for (const [reqId, entry] of curatedByReq) {
 const contentMapEntries = videoContentMap.map(v => ({
   videoIndex: v.videoIndex,
   objectiveId: v.objective,
+  primarySubDeckId: v.primarySubDeckId,
+  sourceSubDeckIds: v.sourceSubDeckIds,
   requirementIds: requirementIdsByVideo.get(v.videoIndex) ?? [],
   courseCardIds: v.cardIds,
   recallQuestionIds: v.recallQuestionIds,
-  recallCardIds: v.cardIds,
+  recallCardIds: v.recallCardIds,
   ...(v.durationSec !== null ? { durationSec: v.durationSec } : {}),
   ...(v.cardIds.length === 0 ? { unmappedReason: 'keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)' } : {}),
 }))
@@ -599,11 +700,37 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = ${JSON.str
       sourceSnapshotId: snapshot.snapshotId,
       manifestVersion: MANIFEST_VERSION,
       requirements,
-      criticalErrorDefinitions: [],
+      criticalErrorDefinitions,
     },
     null,
     2,
   )}
+`,
+)
+fs.writeFileSync(
+  path.join(DATA_DIR, 'sy0701Coverage.ts'),
+  `${genHeader}
+
+export interface Sy0701CoverageSummary {
+  sourceSnapshotId: string
+  manifestVersion: string
+  generatedAt: number
+  requirementCount: number
+  coveredCount: number
+  blockingRequirementIds: readonly string[]
+  missingPracticalRequirementIds: readonly string[]
+}
+
+/** Kompakte Runtime-Projektion desselben content-qa-report.json. */
+export const SY0701_COVERAGE_SUMMARY: Sy0701CoverageSummary = ${JSON.stringify({
+    sourceSnapshotId: coverageReport.sourceSnapshotId,
+    manifestVersion: MANIFEST_VERSION,
+    generatedAt: coverageReport.generatedAt,
+    requirementCount: coverageReport.requirementCount,
+    coveredCount: coverageReport.coveredCount,
+    blockingRequirementIds: coverageReport.blockingRequirementIds,
+    missingPracticalRequirementIds,
+  }, null, 2)}
 `,
 )
 fs.writeFileSync(
@@ -621,7 +748,7 @@ export const SY0701_ACRONYMS: readonly AcronymMeaning[] = ${JSON.stringify(acron
 export const SY0701_AMBIGUOUS_ABBRS: readonly string[] = ${JSON.stringify(ambiguousAbbrs, null, 2)}
 `,
 )
-console.log('Generiert: src/data/sy0701ContentMap.ts, src/data/sy0701Requirements.ts, src/data/sy0701Acronyms.ts')
+console.log('Generiert: src/data/sy0701ContentMap.ts, src/data/sy0701Requirements.ts, src/data/sy0701Coverage.ts, src/data/sy0701Acronyms.ts')
 
 // ── Gate-Zusammenfassung ────────────────────────────────────────────────────
 const failed = gates.filter(g => g.status === 'FAIL')

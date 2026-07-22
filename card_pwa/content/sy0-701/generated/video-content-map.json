@@ -1,9 +1,13 @@
 {
   "schemaVersion": "sy0701-video-content-map-1",
-  "manifestVersion": "2026-07-19.2",
-  "generatedAt": 1784575753175,
+  "manifestVersion": "2026-07-22.1",
+  "generatedAt": 1784754852813,
   "sourceSnapshotId": "sy0701-v7-2026-07-15",
-  "note": "Karten-IDs sind profilübergreifend identisch (verifiziert); Zuordnung über M-Frage-ID im Kartenfront + generierte Video-Titel-Map, nie über das Objective-Deck.",
+  "note": "Jede Karte aus den 28 Objective-Subdecks ist genau einer Video-Unit zugeordnet: M-Karten über Frage-ID→Messer-Video, übrige Subdeck-Karten über die transkriptbasierte redaktionelle Source. Deckpositionen bleiben unverändert; Fortschritt läuft ausschließlich über Card-ID.",
+  "mappingCounts": {
+    "questionId": 375,
+    "curatedSubdeck": 37
+  },
   "videos": [
     {
       "videoIndex": 2,
@@ -12,6 +16,44 @@
       "file": "002 - 1.1 - Security Controls - CompTIA Security+ SY0-701.mp4",
       "durationSec": 709,
       "cardIds": [
+        "1728575607281",
+        "1728575671733",
+        "1728575802996",
+        "1728575898815",
+        "1728575980498",
+        "1728576003078",
+        "1728576047633",
+        "1728576145577",
+        "1728576486606",
+        "1728576531749",
+        "1728576557566",
+        "1728576798858",
+        "1728577258425",
+        "1728577295128",
+        "1728577400034",
+        "1728577609188",
+        "1728577652641",
+        "1728577684600",
+        "1728577715502",
+        "1728577866477",
+        "1728577900189",
+        "1728577946940",
+        "1728577973552",
+        "1728578225454",
+        "1728578357454",
+        "1728578398808",
+        "1728578427113",
+        "1728578626914",
+        "1728578658721",
+        "1728578702367",
+        "1728578743324",
+        "1779007738884"
+      ],
+      "primarySubDeckId": "sy0-701-objective-1-1",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-1"
+      ],
+      "recallCardIds": [
         "1728575607281",
         "1728575671733",
         "1728575802996",
@@ -91,6 +133,17 @@
         "1728580833593",
         "1728580937868"
       ],
+      "primarySubDeckId": "sy0-701-objective-1-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-2"
+      ],
+      "recallCardIds": [
+        "1728580188327",
+        "1728580341002",
+        "1728580721902",
+        "1728580833593",
+        "1728580937868"
+      ],
       "recallQuestionIds": [
         "M1-032",
         "M1-033",
@@ -106,6 +159,21 @@
       "file": "004 - 1.2 - Non-repudiation - CompTIA Security+ SY0-701.mp4",
       "durationSec": 478,
       "cardIds": [
+        "1728581032043",
+        "1728581130351",
+        "1728581175475",
+        "1728581211819",
+        "1728581264271",
+        "1728581355781",
+        "1728581458148",
+        "1728581782664",
+        "1728582010811"
+      ],
+      "primarySubDeckId": "sy0-701-objective-1-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-2"
+      ],
+      "recallCardIds": [
         "1728581032043",
         "1728581130351",
         "1728581175475",
@@ -141,6 +209,17 @@
         "1728582662217",
         "1728582727897"
       ],
+      "primarySubDeckId": "sy0-701-objective-1-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-2"
+      ],
+      "recallCardIds": [
+        "1728582261940",
+        "1728582344236",
+        "1728582379407",
+        "1728582662217",
+        "1728582727897"
+      ],
       "recallQuestionIds": [
         "M1-046",
         "M1-047",
@@ -161,6 +240,13 @@
       "cardIds": [
         "1728594503878"
       ],
+      "primarySubDeckId": "sy0-701-objective-1-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-2"
+      ],
+      "recallCardIds": [
+        "1728594503878"
+      ],
       "recallQuestionIds": [
         "M1-051",
         "T006-01",
@@ -176,6 +262,22 @@
       "file": "007 - 1.2 - Zero Trust - CompTIA Security+ SY0-701.mp4",
       "durationSec": 604,
       "cardIds": [
+        "1728595373661",
+        "1728595471351",
+        "1728595624204",
+        "1728596210594",
+        "1728596360560",
+        "1728596420109",
+        "1728596991068",
+        "1728597125561",
+        "1728597165153",
+        "1779669260169"
+      ],
+      "primarySubDeckId": "sy0-701-objective-1-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-2"
+      ],
+      "recallCardIds": [
         "1728595373661",
         "1728595471351",
         "1728595624204",
@@ -211,6 +313,15 @@
         "1728598075567",
         "1728598202804"
       ],
+      "primarySubDeckId": "sy0-701-objective-1-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-2"
+      ],
+      "recallCardIds": [
+        "1728597672323",
+        "1728598075567",
+        "1728598202804"
+      ],
       "recallQuestionIds": [
         "M1-061",
         "M1-062",
@@ -234,6 +345,13 @@
       "cardIds": [
         "1728598803945"
       ],
+      "primarySubDeckId": "sy0-701-objective-1-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-2"
+      ],
+      "recallCardIds": [
+        "1728598803945"
+      ],
       "recallQuestionIds": [
         "M1-064",
         "T009-01",
@@ -249,6 +367,14 @@
       "file": "010 - 1.3 - Change Management - CompTIA Security+ SY0-701.mp4",
       "durationSec": 681,
       "cardIds": [
+        "1728664841112",
+        "1728665267982"
+      ],
+      "primarySubDeckId": "sy0-701-objective-1-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-3"
+      ],
+      "recallCardIds": [
         "1728664841112",
         "1728665267982"
       ],
@@ -274,6 +400,14 @@
       "file": "011 - 1.3 - Technical Change Management - CompTIA Security+ SY0-701.mp4",
       "durationSec": 654,
       "cardIds": [
+        "1728665620599",
+        "1728665665642"
+      ],
+      "primarySubDeckId": "sy0-701-objective-1-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-3"
+      ],
+      "recallCardIds": [
         "1728665620599",
         "1728665665642"
       ],
@@ -310,6 +444,21 @@
         "1728668229954",
         "1728668742654"
       ],
+      "primarySubDeckId": "sy0-701-objective-1-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-4"
+      ],
+      "recallCardIds": [
+        "1728666406964",
+        "1728666452657",
+        "1728666527085",
+        "1728666620096",
+        "1728666652923",
+        "1728668006980",
+        "1728668074719",
+        "1728668229954",
+        "1728668742654"
+      ],
       "recallQuestionIds": [
         "M1-069",
         "M1-070",
@@ -329,6 +478,20 @@
       "file": "013 - 1.4 - Encrypting Data - CompTIA Security+ SY0-701.mp4",
       "durationSec": 587,
       "cardIds": [
+        "1728669078281",
+        "1728669233798",
+        "1728669281455",
+        "1728669344784",
+        "1728669781020",
+        "1728669901392",
+        "1728669937321",
+        "1779669260168"
+      ],
+      "primarySubDeckId": "sy0-701-objective-1-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-4"
+      ],
+      "recallCardIds": [
         "1728669078281",
         "1728669233798",
         "1728669281455",
@@ -363,6 +526,15 @@
         "1728675511788",
         "1728675650498"
       ],
+      "primarySubDeckId": "sy0-701-objective-1-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-4"
+      ],
+      "recallCardIds": [
+        "1728675213140",
+        "1728675511788",
+        "1728675650498"
+      ],
       "recallQuestionIds": [
         "M1-085",
         "M1-086",
@@ -376,6 +548,17 @@
       "file": "015 - 1.4 - Encryption Technologies - CompTIA Security+ SY0-701.mp4",
       "durationSec": 413,
       "cardIds": [
+        "1728675746261",
+        "1728675819604",
+        "1728676495697",
+        "1728676616843",
+        "1728676658755"
+      ],
+      "primarySubDeckId": "sy0-701-objective-1-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-4"
+      ],
+      "recallCardIds": [
         "1728675746261",
         "1728675819604",
         "1728676495697",
@@ -404,6 +587,17 @@
         "1728677849716",
         "1728678025496"
       ],
+      "primarySubDeckId": "sy0-701-objective-1-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-4"
+      ],
+      "recallCardIds": [
+        "1728677282633",
+        "1728677405231",
+        "1728677504907",
+        "1728677849716",
+        "1728678025496"
+      ],
       "recallQuestionIds": [
         "M1-093",
         "M1-094",
@@ -419,6 +613,17 @@
       "file": "017 - 1.4 - Hashing and Digital Signatures - CompTIA Security+ SY0-701.mp4",
       "durationSec": 624,
       "cardIds": [
+        "1728678521196",
+        "1728678905175",
+        "1728678954965",
+        "1728679006387",
+        "1728679028920"
+      ],
+      "primarySubDeckId": "sy0-701-objective-1-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-4"
+      ],
+      "recallCardIds": [
         "1728678521196",
         "1728678905175",
         "1728678954965",
@@ -442,6 +647,13 @@
       "cardIds": [
         "1728679899388"
       ],
+      "primarySubDeckId": "sy0-701-objective-1-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-4"
+      ],
+      "recallCardIds": [
+        "1728679899388"
+      ],
       "recallQuestionIds": [
         "M1-103",
         "T018-01",
@@ -458,6 +670,29 @@
       "file": "019 - 1.4 - Certificates - CompTIA Security+ SY0-701.mp4",
       "durationSec": 878,
       "cardIds": [
+        "1728832173306",
+        "1728832246367",
+        "1728832318150",
+        "1728832382513",
+        "1728832486334",
+        "1728832628955",
+        "1728833045831",
+        "1728833152415",
+        "1728833274722",
+        "1728833822183",
+        "1728833850610",
+        "1728833900981",
+        "1728834227764",
+        "1728834287549",
+        "1728834325821",
+        "1728834357184",
+        "1728834517490"
+      ],
+      "primarySubDeckId": "sy0-701-objective-1-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-4"
+      ],
+      "recallCardIds": [
         "1728832173306",
         "1728832246367",
         "1728832318150",
@@ -511,6 +746,20 @@
         "1728925881637",
         "1728925920785",
         "1728926313614",
+        "1728926473442",
+        "1779095116171",
+        "1779669260185"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-1",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-1"
+      ],
+      "recallCardIds": [
+        "1728925347209",
+        "1728925645774",
+        "1728925881637",
+        "1728925920785",
+        "1728926313614",
         "1728926473442"
       ],
       "recallQuestionIds": [
@@ -542,6 +791,22 @@
       "file": "021 - 2.2 - Common Threat Vectors - CompTIA Security+ SY0-701.mp4",
       "durationSec": 1034,
       "cardIds": [
+        "1728934123174",
+        "1728934553820",
+        "1728934644990",
+        "1728934726218",
+        "1728934802697",
+        "1728935077569",
+        "1728935633818",
+        "1728936074534",
+        "1728936160805"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-2",
+        "sy0-701-objective-3-1"
+      ],
+      "recallCardIds": [
         "1728934123174",
         "1728934553820",
         "1728934644990",
@@ -588,6 +853,16 @@
         "1728936658283",
         "1728937017632"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-2"
+      ],
+      "recallCardIds": [
+        "1728936330357",
+        "1728936604868",
+        "1728936658283",
+        "1728937017632"
+      ],
       "recallQuestionIds": [
         "M2-016",
         "M2-017",
@@ -602,6 +877,13 @@
       "file": "023 - 2.2 - Impersonation - CompTIA Security+ SY0-701.mp4",
       "durationSec": 351,
       "cardIds": [
+        "1729003025465"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-2"
+      ],
+      "recallCardIds": [
         "1729003025465"
       ],
       "recallQuestionIds": [
@@ -623,6 +905,15 @@
         "1729003632035",
         "1729003938350"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-2",
+        "sy0-701-objective-2-5"
+      ],
+      "recallCardIds": [
+        "1729003632035",
+        "1729003938350"
+      ],
       "recallQuestionIds": [
         "M2-021",
         "M2-022",
@@ -639,6 +930,13 @@
       "file": "025 - 2.2 - Other Social Engineering Attacks - CompTIA Security+ SY0-701.mp4",
       "durationSec": 209,
       "cardIds": [
+        "1729004574263"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-2"
+      ],
+      "recallCardIds": [
         "1729004574263"
       ],
       "recallQuestionIds": [
@@ -661,6 +959,16 @@
         "1729005171342",
         "1729005242071"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-3",
+        "sy0-701-objective-4-8"
+      ],
+      "recallCardIds": [
+        "1729005007773",
+        "1729005171342",
+        "1729005242071"
+      ],
       "recallQuestionIds": [
         "M2-024",
         "M2-025",
@@ -675,6 +983,13 @@
       "file": "027 - 2.3 - Buffer Overflows - CompTIA Security+ SY0-701.mp4",
       "durationSec": 216,
       "cardIds": [
+        "1729005878634"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-3"
+      ],
+      "recallCardIds": [
         "1729005878634"
       ],
       "recallQuestionIds": [
@@ -692,6 +1007,14 @@
       "file": "028 - 2.3 - Race Conditions - CompTIA Security+ SY0-701.mp4",
       "durationSec": 297,
       "cardIds": [
+        "1729006621297",
+        "1729007012771"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-3"
+      ],
+      "recallCardIds": [
         "1729006621297",
         "1729007012771"
       ],
@@ -715,6 +1038,13 @@
       "cardIds": [
         "1729007731874"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-3"
+      ],
+      "recallCardIds": [
+        "1729007731874"
+      ],
       "recallQuestionIds": [
         "M2-030",
         "T029-01",
@@ -730,6 +1060,9 @@
       "file": "030 - 2.3 - Operating System Vulnerabilities - CompTIA Security+ SY0-701.mp4",
       "durationSec": 249,
       "cardIds": [],
+      "primarySubDeckId": "sy0-701-objective-2-3",
+      "sourceSubDeckIds": [],
+      "recallCardIds": [],
       "recallQuestionIds": [
         "T030-01",
         "T030-02",
@@ -745,6 +1078,18 @@
       "file": "031 - 2.3 - SQL Injection - CompTIA Security+ SY0-701.mp4",
       "durationSec": 309,
       "cardIds": [
+        "1729008958156",
+        "1729009069891",
+        "1729009370356",
+        "1729009525180",
+        "1729009567783"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-3",
+        "sy0-701-objective-4-1"
+      ],
+      "recallCardIds": [
         "1729008958156",
         "1729009069891",
         "1729009370356",
@@ -773,6 +1118,17 @@
         "1729010864188",
         "1729011152083"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-3"
+      ],
+      "recallCardIds": [
+        "1729010233588",
+        "1729010739212",
+        "1729010808752",
+        "1729010864188",
+        "1729011152083"
+      ],
       "recallQuestionIds": [
         "M2-036",
         "M2-037",
@@ -788,6 +1144,16 @@
       "file": "033 - 2.3 - Hardware Vulnerabilities - CompTIA Security+ SY0-701.mp4",
       "durationSec": 387,
       "cardIds": [
+        "1729016237394",
+        "1729016393818",
+        "1729016466796",
+        "1729016997815"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-3"
+      ],
+      "recallCardIds": [
         "1729016237394",
         "1729016393818",
         "1729016466796",
@@ -812,6 +1178,15 @@
         "1729017832455",
         "1729017946321"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-3"
+      ],
+      "recallCardIds": [
+        "1729017742984",
+        "1729017832455",
+        "1729017946321"
+      ],
       "recallQuestionIds": [
         "M2-045",
         "M2-046",
@@ -825,6 +1200,18 @@
       "file": "035 - 2.3 - Cloud-specific Vulnerabilities - CompTIA Security+ SY0-701.mp4",
       "durationSec": 245,
       "cardIds": [
+        "1729018546549",
+        "1729018727159",
+        "1729018813146",
+        "1729019182230"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-3",
+        "sy0-701-objective-2-3",
+        "sy0-701-objective-2-4"
+      ],
+      "recallCardIds": [
         "1729018546549",
         "1729018727159",
         "1729018813146",
@@ -845,6 +1232,18 @@
       "file": "036 - 2.3 - Supply Chain Vulnerabilities - CompTIA Security+ SY0-701.mp4",
       "durationSec": 552,
       "cardIds": [
+        "1729019659956",
+        "1729019769922",
+        "1729019963492",
+        "1729020064785",
+        "1729020157178"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-3",
+        "sy0-701-objective-5-3"
+      ],
+      "recallCardIds": [
         "1729019659956",
         "1729019769922",
         "1729019963492",
@@ -873,6 +1272,19 @@
         "1729094464415",
         "1729094720670"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-3",
+        "sy0-701-objective-4-5",
+        "sy0-701-objective-4-4"
+      ],
+      "recallCardIds": [
+        "1729093945243",
+        "1729094001244",
+        "1729094357667",
+        "1729094464415",
+        "1729094720670"
+      ],
       "recallQuestionIds": [
         "M2-057",
         "M2-058",
@@ -889,6 +1301,16 @@
       "file": "038 - 2.3 - Mobile Device Vulnerabilities - CompTIA Security+ SY0-701.mp4",
       "durationSec": 203,
       "cardIds": [
+        "1729095666668",
+        "1729095773945",
+        "1729096077718"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-3",
+        "sy0-701-objective-4-1"
+      ],
+      "recallCardIds": [
         "1729095666668",
         "1729095773945",
         "1729096077718"
@@ -910,6 +1332,13 @@
       "cardIds": [
         "1729096456640"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-3"
+      ],
+      "recallCardIds": [
+        "1729096456640"
+      ],
       "recallQuestionIds": [
         "M2-065",
         "T039-01",
@@ -925,6 +1354,18 @@
       "file": "040 - 2.4 - An Overview of Malware - CompTIA Security+ SY0-701.mp4",
       "durationSec": 366,
       "cardIds": [
+        "1729096807696",
+        "1729097089990",
+        "1729097293203",
+        "1729097352286",
+        "1729097429318",
+        "1779095116172"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-4"
+      ],
+      "recallCardIds": [
         "1729096807696",
         "1729097089990",
         "1729097293203",
@@ -950,6 +1391,15 @@
         "1729098014967",
         "1729098302259"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-4"
+      ],
+      "recallCardIds": [
+        "1729097907113",
+        "1729098014967",
+        "1729098302259"
+      ],
       "recallQuestionIds": [
         "M2-071",
         "M2-072",
@@ -963,6 +1413,14 @@
       "file": "042 - 2.4 - Spyware and Bloatware - CompTIA Security+ SY0-701.mp4",
       "durationSec": 260,
       "cardIds": [
+        "1729098545424",
+        "1729098771491"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-4"
+      ],
+      "recallCardIds": [
         "1729098545424",
         "1729098771491"
       ],
@@ -986,6 +1444,16 @@
         "1729099431734",
         "1729099804993"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-4",
+        "sy0-701-objective-2-5"
+      ],
+      "recallCardIds": [
+        "1729099376881",
+        "1729099431734",
+        "1729099804993"
+      ],
       "recallQuestionIds": [
         "M2-076",
         "M2-077",
@@ -999,6 +1467,16 @@
       "file": "044 - 2.4 - Physical Attacks - CompTIA Security+ SY0-701.mp4",
       "durationSec": 244,
       "cardIds": [
+        "1729103336431",
+        "1729103461406",
+        "1729103670834"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-4",
+        "sy0-701-objective-4-6"
+      ],
+      "recallCardIds": [
         "1729103336431",
         "1729103461406",
         "1729103670834"
@@ -1023,6 +1501,17 @@
         "1729104741764",
         "1729104839747"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-4"
+      ],
+      "recallCardIds": [
+        "1729104062053",
+        "1729104262170",
+        "1729104422352",
+        "1729104741764",
+        "1729104839747"
+      ],
       "recallQuestionIds": [
         "M2-082",
         "M2-083",
@@ -1041,6 +1530,13 @@
       "cardIds": [
         "1729105178993"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-4"
+      ],
+      "recallCardIds": [
+        "1729105178993"
+      ],
       "recallQuestionIds": [
         "M2-087",
         "T046-01",
@@ -1056,6 +1552,16 @@
       "file": "047 - 2.4 - Wireless Attacks - CompTIA Security+ SY0-701.mp4",
       "durationSec": 475,
       "cardIds": [
+        "1729106271934",
+        "1729106340713",
+        "1729106591299",
+        "1729106782316"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-4"
+      ],
+      "recallCardIds": [
         "1729106271934",
         "1729106340713",
         "1729106591299",
@@ -1079,6 +1585,15 @@
         "1729107583328",
         "1729107717300"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-4"
+      ],
+      "recallCardIds": [
+        "1729107353631",
+        "1729107583328",
+        "1729107717300"
+      ],
       "recallQuestionIds": [
         "M2-092",
         "M2-093",
@@ -1092,6 +1607,16 @@
       "file": "049 - 2.4 - Replay Attacks - CompTIA Security+ SY0-701.mp4",
       "durationSec": 345,
       "cardIds": [
+        "1729174309232",
+        "1729174445461",
+        "1729174658387",
+        "1729174805551"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-4"
+      ],
+      "recallCardIds": [
         "1729174309232",
         "1729174445461",
         "1729174658387",
@@ -1114,6 +1639,13 @@
       "cardIds": [
         "1729175231855"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-4"
+      ],
+      "recallCardIds": [
+        "1729175231855"
+      ],
       "recallQuestionIds": [
         "M2-099",
         "T050-01",
@@ -1129,6 +1661,18 @@
       "file": "051 - 2.4 - Application Attacks - CompTIA Security+ SY0-701.mp4",
       "durationSec": 707,
       "cardIds": [
+        "1729175578382",
+        "1729175912541",
+        "1729176350133",
+        "1729176391515",
+        "1729176558493"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-4",
+        "sy0-701-objective-4-1"
+      ],
+      "recallCardIds": [
         "1729175578382",
         "1729175912541",
         "1729176350133",
@@ -1158,6 +1702,16 @@
         "1729178403877",
         "1729178842874"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-4"
+      ],
+      "recallCardIds": [
+        "1729178147830",
+        "1729178380874",
+        "1729178403877",
+        "1729178842874"
+      ],
       "recallQuestionIds": [
         "M2-105",
         "M2-106",
@@ -1173,6 +1727,15 @@
       "file": "053 - 2.4 - Password Attacks - CompTIA Security+ SY0-701.mp4",
       "durationSec": 435,
       "cardIds": [
+        "1729179162672",
+        "1729180047821"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-1-4",
+        "sy0-701-objective-2-4"
+      ],
+      "recallCardIds": [
         "1729179162672",
         "1729180047821"
       ],
@@ -1192,6 +1755,15 @@
       "file": "054 - 2.4 - Indicators of Compromise - CompTIA Security+ SY0-701.mp4",
       "durationSec": 658,
       "cardIds": [
+        "1729180535847",
+        "1779669260186"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-4",
+        "sy0-701-objective-4-4"
+      ],
+      "recallCardIds": [
         "1729180535847"
       ],
       "recallQuestionIds": [
@@ -1223,6 +1795,18 @@
         "1729183258174",
         "1729183351572"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-5",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-5",
+        "sy0-701-objective-5-4"
+      ],
+      "recallCardIds": [
+        "1729182645620",
+        "1729182844022",
+        "1729182899508",
+        "1729183258174",
+        "1729183351572"
+      ],
       "recallQuestionIds": [
         "M2-112",
         "M2-113",
@@ -1239,6 +1823,22 @@
       "file": "056 - 2.5 - Mitigation Techniques - CompTIA Security+ SY0-701.mp4",
       "durationSec": 411,
       "cardIds": [
+        "1729183952928",
+        "1729184719692",
+        "1729184751308",
+        "1729184967597",
+        "1729185023357",
+        "1729185192740",
+        "1729185236521"
+      ],
+      "primarySubDeckId": "sy0-701-objective-2-5",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-5",
+        "sy0-701-objective-1-4",
+        "sy0-701-objective-4-4",
+        "sy0-701-objective-4-5"
+      ],
+      "recallCardIds": [
         "1729183952928",
         "1729184719692",
         "1729184751308",
@@ -1275,6 +1875,19 @@
         "1729186723937",
         "1729187191969"
       ],
+      "primarySubDeckId": "sy0-701-objective-2-5",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-2-5",
+        "sy0-701-objective-4-6"
+      ],
+      "recallCardIds": [
+        "1729185940822",
+        "1729186250125",
+        "1729186549472",
+        "1729186709321",
+        "1729186723937",
+        "1729187191969"
+      ],
       "recallQuestionIds": [
         "M2-124",
         "M2-125",
@@ -1295,6 +1908,20 @@
       "file": "058 - 3.1 - Cloud Infrastructures - CompTIA Security+ SY0-701.mp4",
       "durationSec": 595,
       "cardIds": [
+        "1729192290034",
+        "1729192837629",
+        "1729192907745",
+        "1729193133878",
+        "1779669260165",
+        "1779669260187",
+        "1779669260188",
+        "1779669260189"
+      ],
+      "primarySubDeckId": "sy0-701-objective-3-1",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-3-1"
+      ],
+      "recallCardIds": [
         "1729192290034",
         "1729192837629",
         "1729192907745",
@@ -1327,6 +1954,20 @@
         "1729194357503",
         "1729194474927"
       ],
+      "primarySubDeckId": "sy0-701-objective-3-1",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-3-1",
+        "sy0-701-objective-1-2"
+      ],
+      "recallCardIds": [
+        "1729193807209",
+        "1729193932999",
+        "1729194200065",
+        "1729194220599",
+        "1729194266296",
+        "1729194357503",
+        "1729194474927"
+      ],
       "recallQuestionIds": [
         "M3-010",
         "M3-006",
@@ -1347,6 +1988,18 @@
       "file": "060 - 3.1 - Other Infrastructure Concepts - CompTIA Security+ SY0-701.mp4",
       "durationSec": 864,
       "cardIds": [
+        "1729195941442",
+        "1729196035330",
+        "1729196140243",
+        "1729196325940",
+        "1729196548024",
+        "1779669260193"
+      ],
+      "primarySubDeckId": "sy0-701-objective-3-1",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-3-1"
+      ],
+      "recallCardIds": [
         "1729195941442",
         "1729196035330",
         "1729196140243",
@@ -1377,6 +2030,19 @@
         "1729198761986",
         "1729198962970",
         "1729199602908",
+        "1729199710866",
+        "1779669260176"
+      ],
+      "primarySubDeckId": "sy0-701-objective-3-1",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-3-1",
+        "sy0-701-objective-4-7",
+        "sy0-701-objective-3-4"
+      ],
+      "recallCardIds": [
+        "1729198761986",
+        "1729198962970",
+        "1729199602908",
         "1729199710866"
       ],
       "recallQuestionIds": [
@@ -1404,6 +2070,9 @@
       "file": "062 - 3.2 - Secure Infrastructures - CompTIA Security+ SY0-701.mp4",
       "durationSec": 354,
       "cardIds": [],
+      "primarySubDeckId": "sy0-701-objective-3-2",
+      "sourceSubDeckIds": [],
+      "recallCardIds": [],
       "recallQuestionIds": [
         "T062-01",
         "T062-02",
@@ -1422,6 +2091,15 @@
       "file": "063 - 3.2 - Intrusion Prevention - CompTIA Security+ SY0-701.mp4",
       "durationSec": 313,
       "cardIds": [
+        "1729262665983",
+        "1729263331128",
+        "1729263374388"
+      ],
+      "primarySubDeckId": "sy0-701-objective-3-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-3-2"
+      ],
+      "recallCardIds": [
         "1729262665983",
         "1729263331128",
         "1729263374388"
@@ -1453,6 +2131,19 @@
         "1729265956352",
         "1729266155183"
       ],
+      "primarySubDeckId": "sy0-701-objective-3-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-3-2"
+      ],
+      "recallCardIds": [
+        "1729264182198",
+        "1729264760996",
+        "1729265068837",
+        "1729265371258",
+        "1729265508608",
+        "1729265956352",
+        "1729266155183"
+      ],
       "recallQuestionIds": [
         "M3-028",
         "M3-027",
@@ -1475,6 +2166,15 @@
         "1729267569310",
         "1729267646397"
       ],
+      "primarySubDeckId": "sy0-701-objective-3-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-3-2"
+      ],
+      "recallCardIds": [
+        "1729267472724",
+        "1729267569310",
+        "1729267646397"
+      ],
       "recallQuestionIds": [
         "M3-032",
         "M3-033",
@@ -1488,6 +2188,14 @@
       "file": "066 - 3.2 - Firewall Types - CompTIA Security+ SY0-701.mp4",
       "durationSec": 480,
       "cardIds": [
+        "1729268983360",
+        "1729269602613"
+      ],
+      "primarySubDeckId": "sy0-701-objective-3-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-3-2"
+      ],
+      "recallCardIds": [
         "1729268983360",
         "1729269602613"
       ],
@@ -1507,7 +2215,14 @@
       "title": "Secure Communication",
       "file": "067 - 3.2 - Secure Communication - CompTIA Security+ SY0-701.mp4",
       "durationSec": 594,
-      "cardIds": [],
+      "cardIds": [
+        "1779669260166"
+      ],
+      "primarySubDeckId": "sy0-701-objective-3-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-3-1"
+      ],
+      "recallCardIds": [],
       "recallQuestionIds": [
         "T067-01",
         "T067-02",
@@ -1525,6 +2240,9 @@
       "file": "068 - 3.3 - Data Types and Classifications - CompTIA Security+ SY0-701.mp4",
       "durationSec": 354,
       "cardIds": [],
+      "primarySubDeckId": "sy0-701-objective-3-3",
+      "sourceSubDeckIds": [],
+      "recallCardIds": [],
       "recallQuestionIds": [
         "T068-01",
         "T068-02",
@@ -1550,6 +2268,17 @@
       "cardIds": [
         "1729276559590",
         "1729276746898",
+        "1729276778013",
+        "1779095116175"
+      ],
+      "primarySubDeckId": "sy0-701-objective-3-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-3-3",
+        "sy0-701-objective-5-4"
+      ],
+      "recallCardIds": [
+        "1729276559590",
+        "1729276746898",
         "1729276778013"
       ],
       "recallQuestionIds": [
@@ -1568,6 +2297,17 @@
       "file": "070 - 3.3 - Protecting Data - CompTIA Security+ SY0-701.mp4",
       "durationSec": 867,
       "cardIds": [
+        "1729277620814",
+        "1729277680140",
+        "1729277707224",
+        "1729278256356"
+      ],
+      "primarySubDeckId": "sy0-701-objective-3-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-3-3",
+        "sy0-701-objective-1-4"
+      ],
+      "recallCardIds": [
         "1729277620814",
         "1729277680140",
         "1729277707224",
@@ -1596,6 +2336,16 @@
       "cardIds": [
         "1729280373313",
         "1729280425752",
+        "1729280698248",
+        "1779095116174"
+      ],
+      "primarySubDeckId": "sy0-701-objective-3-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-3-4"
+      ],
+      "recallCardIds": [
+        "1729280373313",
+        "1729280425752",
         "1729280698248"
       ],
       "recallQuestionIds": [
@@ -1616,6 +2366,9 @@
       "file": "072 - 3.4 - Capacity Planning - CompTIA Security+ SY0-701.mp4",
       "durationSec": 232,
       "cardIds": [],
+      "primarySubDeckId": "sy0-701-objective-3-4",
+      "sourceSubDeckIds": [],
+      "recallCardIds": [],
       "recallQuestionIds": [
         "T072-01",
         "T072-02",
@@ -1636,6 +2389,14 @@
         "1729282747703",
         "1729435542513"
       ],
+      "primarySubDeckId": "sy0-701-objective-3-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-3-4"
+      ],
+      "recallCardIds": [
+        "1729282747703",
+        "1729435542513"
+      ],
       "recallQuestionIds": [
         "M3-047",
         "M3-046",
@@ -1653,6 +2414,15 @@
       "file": "074 - 3.4 - Backups - CompTIA Security+ SY0-701.mp4",
       "durationSec": 735,
       "cardIds": [
+        "1729283435461",
+        "1729283880472",
+        "1729284162703"
+      ],
+      "primarySubDeckId": "sy0-701-objective-3-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-3-4"
+      ],
+      "recallCardIds": [
         "1729283435461",
         "1729283880472",
         "1729284162703"
@@ -1678,6 +2448,13 @@
       "cardIds": [
         "1729285411849"
       ],
+      "primarySubDeckId": "sy0-701-objective-3-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-3-4"
+      ],
+      "recallCardIds": [
+        "1729285411849"
+      ],
       "recallQuestionIds": [
         "M3-051",
         "T075-01",
@@ -1693,6 +2470,9 @@
       "file": "076 - 4.1 - Secure Baselines - CompTIA Security+ SY0-701.mp4",
       "durationSec": 251,
       "cardIds": [],
+      "primarySubDeckId": "sy0-701-objective-4-1",
+      "sourceSubDeckIds": [],
+      "recallCardIds": [],
       "recallQuestionIds": [
         "T076-01",
         "T076-02",
@@ -1710,6 +2490,14 @@
       "file": "077 - 4.1 - Hardening Targets - CompTIA Security+ SY0-701.mp4",
       "durationSec": 610,
       "cardIds": [
+        "1729437834722",
+        "1729438002934"
+      ],
+      "primarySubDeckId": "sy0-701-objective-4-1",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-1"
+      ],
+      "recallCardIds": [
         "1729437834722",
         "1729438002934"
       ],
@@ -1734,7 +2522,16 @@
       "title": "Securing Wireless and Mobile",
       "file": "078 - 4.1 - Securing Wireless and Mobile - CompTIA Security+ SY0-701.mp4",
       "durationSec": 538,
-      "cardIds": [],
+      "cardIds": [
+        "1779669260190",
+        "1779669260191",
+        "1779669260192"
+      ],
+      "primarySubDeckId": "sy0-701-objective-4-1",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-1"
+      ],
+      "recallCardIds": [],
       "recallQuestionIds": [
         "T078-01",
         "T078-02",
@@ -1753,6 +2550,14 @@
       "file": "079 - 4.1 - Wireless Security Settings - CompTIA Security+ SY0-701.mp4",
       "durationSec": 654,
       "cardIds": [
+        "1729441416045",
+        "1779669260173"
+      ],
+      "primarySubDeckId": "sy0-701-objective-4-1",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-1"
+      ],
+      "recallCardIds": [
         "1729441416045"
       ],
       "recallQuestionIds": [
@@ -1778,6 +2583,15 @@
         "1729443455782",
         "1729443520771"
       ],
+      "primarySubDeckId": "sy0-701-objective-4-1",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-1"
+      ],
+      "recallCardIds": [
+        "1729443096377",
+        "1729443455782",
+        "1729443520771"
+      ],
       "recallQuestionIds": [
         "M4-006",
         "M4-005",
@@ -1795,6 +2609,9 @@
       "file": "081 - 4.2 - Asset Management - CompTIA Security+ SY0-701.mp4",
       "durationSec": 517,
       "cardIds": [],
+      "primarySubDeckId": "sy0-701-objective-4-2",
+      "sourceSubDeckIds": [],
+      "recallCardIds": [],
       "recallQuestionIds": [
         "T081-01",
         "T081-02",
@@ -1819,6 +2636,14 @@
         "1729525570343",
         "1729525688307"
       ],
+      "primarySubDeckId": "sy0-701-objective-4-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-3"
+      ],
+      "recallCardIds": [
+        "1729525570343",
+        "1729525688307"
+      ],
       "recallQuestionIds": [
         "M4-008",
         "M4-007",
@@ -1837,6 +2662,16 @@
       "file": "083 - 4.3 - Threat Intelligence - CompTIA Security+ SY0-701.mp4",
       "durationSec": 286,
       "cardIds": [
+        "1729526448891",
+        "1729526713518",
+        "1779669260183",
+        "1779669260184"
+      ],
+      "primarySubDeckId": "sy0-701-objective-4-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-3"
+      ],
+      "recallCardIds": [
         "1729526448891",
         "1729526713518"
       ],
@@ -1860,6 +2695,13 @@
       "cardIds": [
         "1729528034674"
       ],
+      "primarySubDeckId": "sy0-701-objective-4-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-3"
+      ],
+      "recallCardIds": [
+        "1729528034674"
+      ],
       "recallQuestionIds": [
         "M4-011",
         "T084-01",
@@ -1876,6 +2718,15 @@
       "file": "085 - 4.3 - Analyzing Vulnerabilities - CompTIA Security+ SY0-701.mp4",
       "durationSec": 629,
       "cardIds": [
+        "1729528371221",
+        "1729528670460",
+        "1729529439876"
+      ],
+      "primarySubDeckId": "sy0-701-objective-4-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-3"
+      ],
+      "recallCardIds": [
         "1729528371221",
         "1729528670460",
         "1729529439876"
@@ -1902,6 +2753,13 @@
       "cardIds": [
         "1729530986061"
       ],
+      "primarySubDeckId": "sy0-701-objective-4-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-3"
+      ],
+      "recallCardIds": [
+        "1729530986061"
+      ],
       "recallQuestionIds": [
         "M4-015",
         "T086-01",
@@ -1923,6 +2781,13 @@
       "file": "087 - 4.4 - Security Monitoring - CompTIA Security+ SY0-701.mp4",
       "durationSec": 627,
       "cardIds": [
+        "1729540036900"
+      ],
+      "primarySubDeckId": "sy0-701-objective-4-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-4"
+      ],
+      "recallCardIds": [
         "1729540036900"
       ],
       "recallQuestionIds": [
@@ -1948,7 +2813,14 @@
       "title": "Security Tools",
       "file": "088 - 4.4 - Security Tools - CompTIA Security+ SY0-701.mp4",
       "durationSec": 846,
-      "cardIds": [],
+      "cardIds": [
+        "1779669260179"
+      ],
+      "primarySubDeckId": "sy0-701-objective-4-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-3"
+      ],
+      "recallCardIds": [],
       "recallQuestionIds": [
         "T088-01",
         "T088-02",
@@ -1966,7 +2838,14 @@
       "title": "Firewalls",
       "file": "089 - 4.5 - Firewalls - CompTIA Security+ SY0-701.mp4",
       "durationSec": 690,
-      "cardIds": [],
+      "cardIds": [
+        "1779669260174"
+      ],
+      "primarySubDeckId": "sy0-701-objective-4-5",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-5"
+      ],
+      "recallCardIds": [],
       "recallQuestionIds": [
         "T089-01",
         "T089-02",
@@ -1984,6 +2863,14 @@
       "file": "090 - 4.5 - Web Filtering - CompTIA Security+ SY0-701.mp4",
       "durationSec": 600,
       "cardIds": [
+        "1729542531766",
+        "1729542555582"
+      ],
+      "primarySubDeckId": "sy0-701-objective-4-5",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-5"
+      ],
+      "recallCardIds": [
         "1729542531766",
         "1729542555582"
       ],
@@ -2010,6 +2897,15 @@
         "1729543018478",
         "1729543300068"
       ],
+      "primarySubDeckId": "sy0-701-objective-4-5",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-5",
+        "sy0-701-objective-4-6"
+      ],
+      "recallCardIds": [
+        "1729543018478",
+        "1729543300068"
+      ],
       "recallQuestionIds": [
         "M4-019",
         "M4-020",
@@ -2026,6 +2922,9 @@
       "file": "092 - 4.5 - Secure Protocols - CompTIA Security+ SY0-701.mp4",
       "durationSec": 286,
       "cardIds": [],
+      "primarySubDeckId": "sy0-701-objective-4-5",
+      "sourceSubDeckIds": [],
+      "recallCardIds": [],
       "recallQuestionIds": [
         "T092-01",
         "T092-02",
@@ -2044,6 +2943,16 @@
       "file": "093 - 4.5 - Email Security - CompTIA Security+ SY0-701.mp4",
       "durationSec": 424,
       "cardIds": [
+        "1729544236865",
+        "1779669260180",
+        "1779669260181",
+        "1779669260182"
+      ],
+      "primarySubDeckId": "sy0-701-objective-4-5",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-5"
+      ],
+      "recallCardIds": [
         "1729544236865"
       ],
       "recallQuestionIds": [
@@ -2064,6 +2973,14 @@
         "1729544752114",
         "1729545172423"
       ],
+      "primarySubDeckId": "sy0-701-objective-4-5",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-5"
+      ],
+      "recallCardIds": [
+        "1729544752114",
+        "1729545172423"
+      ],
       "recallQuestionIds": [
         "M4-022",
         "M4-023",
@@ -2080,6 +2997,16 @@
       "file": "095 - 4.5 - Endpoint Security - CompTIA Security+ SY0-701.mp4",
       "durationSec": 564,
       "cardIds": [
+        "1729545965530",
+        "1779669260170",
+        "1779669260171"
+      ],
+      "primarySubDeckId": "sy0-701-objective-4-5",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-5",
+        "sy0-701-objective-4-4"
+      ],
+      "recallCardIds": [
         "1729545965530"
       ],
       "recallQuestionIds": [
@@ -2099,6 +3026,15 @@
       "file": "096 - 4.6 - Identity and Access Management - CompTIA Security+ SY0-701.mp4",
       "durationSec": 766,
       "cardIds": [
+        "1729606385894",
+        "1729606424320",
+        "1729606994413"
+      ],
+      "primarySubDeckId": "sy0-701-objective-4-6",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-6"
+      ],
+      "recallCardIds": [
         "1729606385894",
         "1729606424320",
         "1729606994413"
@@ -2128,6 +3064,15 @@
         "1729609553997",
         "1729609703139"
       ],
+      "primarySubDeckId": "sy0-701-objective-4-6",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-6"
+      ],
+      "recallCardIds": [
+        "1729609351815",
+        "1729609553997",
+        "1729609703139"
+      ],
       "recallQuestionIds": [
         "M4-030",
         "M4-029",
@@ -2147,6 +3092,14 @@
       "file": "098 - 4.6 - Multifactor Authentication - CompTIA Security+ SY0-701.mp4",
       "durationSec": 269,
       "cardIds": [
+        "1729610407765",
+        "1729610578431"
+      ],
+      "primarySubDeckId": "sy0-701-objective-4-6",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-6"
+      ],
+      "recallCardIds": [
         "1729610407765",
         "1729610578431"
       ],
@@ -2174,6 +3127,16 @@
         "1729611118404",
         "1729611199039"
       ],
+      "primarySubDeckId": "sy0-701-objective-4-6",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-6"
+      ],
+      "recallCardIds": [
+        "1729610995931",
+        "1729611036480",
+        "1729611118404",
+        "1729611199039"
+      ],
       "recallQuestionIds": [
         "M4-033",
         "M4-034",
@@ -2195,6 +3158,15 @@
       "file": "100 - 4.7 - Scripting and Automation - CompTIA Security+ SY0-701.mp4",
       "durationSec": 500,
       "cardIds": [
+        "1729612110305",
+        "1729612337101",
+        "1729612543398"
+      ],
+      "primarySubDeckId": "sy0-701-objective-4-7",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-7"
+      ],
+      "recallCardIds": [
         "1729612110305",
         "1729612337101",
         "1729612543398"
@@ -2232,6 +3204,9 @@
       "file": "101 - 4.8 - Incident Response - CompTIA Security+ SY0-701.mp4",
       "durationSec": 553,
       "cardIds": [],
+      "primarySubDeckId": "sy0-701-objective-4-8",
+      "sourceSubDeckIds": [],
+      "recallCardIds": [],
       "recallQuestionIds": [
         "T101-01",
         "T101-02",
@@ -2255,6 +3230,13 @@
       "cardIds": [
         "1729614400121"
       ],
+      "primarySubDeckId": "sy0-701-objective-4-8",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-8"
+      ],
+      "recallCardIds": [
+        "1729614400121"
+      ],
       "recallQuestionIds": [
         "M4-040",
         "T102-01",
@@ -2272,6 +3254,14 @@
       "file": "103 - 4.8 - Digital Forensics - CompTIA Security+ SY0-701.mp4",
       "durationSec": 594,
       "cardIds": [
+        "1729614808452",
+        "1729614972339"
+      ],
+      "primarySubDeckId": "sy0-701-objective-4-8",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-8"
+      ],
+      "recallCardIds": [
         "1729614808452",
         "1729614972339"
       ],
@@ -2293,6 +3283,9 @@
       "file": "104 - 4.9 - Log Data - CompTIA Security+ SY0-701.mp4",
       "durationSec": 820,
       "cardIds": [],
+      "primarySubDeckId": "sy0-701-objective-4-9",
+      "sourceSubDeckIds": [],
+      "recallCardIds": [],
       "recallQuestionIds": [
         "T104-01",
         "T104-02",
@@ -2318,6 +3311,14 @@
         "1729622224382",
         "1729622405616"
       ],
+      "primarySubDeckId": "sy0-701-objective-5-1",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-5-1"
+      ],
+      "recallCardIds": [
+        "1729622224382",
+        "1729622405616"
+      ],
       "recallQuestionIds": [
         "M5-002",
         "M5-001",
@@ -2338,6 +3339,13 @@
       "cardIds": [
         "1729699356554"
       ],
+      "primarySubDeckId": "sy0-701-objective-5-1",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-5-1"
+      ],
+      "recallCardIds": [
+        "1729699356554"
+      ],
       "recallQuestionIds": [
         "M5-003",
         "T106-01",
@@ -2353,7 +3361,14 @@
       "title": "Security Procedures",
       "file": "107 - 5.1 - Security Procedures - CompTIA Security+ SY0-701.mp4",
       "durationSec": 422,
-      "cardIds": [],
+      "cardIds": [
+        "1779669260172"
+      ],
+      "primarySubDeckId": "sy0-701-objective-5-1",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-4-7"
+      ],
+      "recallCardIds": [],
       "recallQuestionIds": [
         "T107-01",
         "T107-02",
@@ -2373,6 +3388,13 @@
       "file": "108 - 5.1 - Security Considerations - CompTIA Security+ SY0-701.mp4",
       "durationSec": 291,
       "cardIds": [
+        "1729701252008"
+      ],
+      "primarySubDeckId": "sy0-701-objective-5-1",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-5-4"
+      ],
+      "recallCardIds": [
         "1729701252008"
       ],
       "recallQuestionIds": [
@@ -2395,6 +3417,9 @@
       "file": "109 - 5.1 - Data Roles and Responsibilities - CompTIA Security+ SY0-701.mp4",
       "durationSec": 147,
       "cardIds": [],
+      "primarySubDeckId": "sy0-701-objective-5-1",
+      "sourceSubDeckIds": [],
+      "recallCardIds": [],
       "recallQuestionIds": [
         "T109-01",
         "T109-02",
@@ -2410,6 +3435,13 @@
       "file": "110 - 5.2 - Risk Management - CompTIA Security+ SY0-701.mp4",
       "durationSec": 209,
       "cardIds": [
+        "1729705368991"
+      ],
+      "primarySubDeckId": "sy0-701-objective-5-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-5-2"
+      ],
+      "recallCardIds": [
         "1729705368991"
       ],
       "recallQuestionIds": [
@@ -2429,6 +3461,19 @@
       "file": "111 - 5.2 - Risk Analysis - CompTIA Security+ SY0-701.mp4",
       "durationSec": 553,
       "cardIds": [
+        "1729706570753",
+        "1729706672664",
+        "1729706838699",
+        "1729706866215",
+        "1729706988234",
+        "1729707107108",
+        "1729707523667"
+      ],
+      "primarySubDeckId": "sy0-701-objective-5-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-5-2"
+      ],
+      "recallCardIds": [
         "1729706570753",
         "1729706672664",
         "1729706838699",
@@ -2464,6 +3509,15 @@
       "durationSec": 192,
       "cardIds": [
         "1729708046154",
+        "1729708108607",
+        "1779095116173"
+      ],
+      "primarySubDeckId": "sy0-701-objective-5-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-5-2"
+      ],
+      "recallCardIds": [
+        "1729708046154",
         "1729708108607"
       ],
       "recallQuestionIds": [
@@ -2488,6 +3542,18 @@
       "durationSec": 174,
       "cardIds": [
         "1729708541619",
+        "1729708787931",
+        "1779669260175",
+        "1779669260177",
+        "1779669260178"
+      ],
+      "primarySubDeckId": "sy0-701-objective-5-2",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-5-2",
+        "sy0-701-objective-3-4"
+      ],
+      "recallCardIds": [
+        "1729708541619",
         "1729708787931"
       ],
       "recallQuestionIds": [
@@ -2506,6 +3572,14 @@
       "file": "114 - 5.3 - Third-party Risk Assessment - CompTIA Security+ SY0-701.mp4",
       "durationSec": 696,
       "cardIds": [
+        "1729709419932",
+        "1779669260167"
+      ],
+      "primarySubDeckId": "sy0-701-objective-5-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-5-3"
+      ],
+      "recallCardIds": [
         "1729709419932"
       ],
       "recallQuestionIds": [
@@ -2532,6 +3606,13 @@
       "cardIds": [
         "1729710310793"
       ],
+      "primarySubDeckId": "sy0-701-objective-5-3",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-5-3"
+      ],
+      "recallCardIds": [
+        "1729710310793"
+      ],
       "recallQuestionIds": [
         "M5-018",
         "T115-01",
@@ -2549,6 +3630,15 @@
       "file": "116 - 5.4 - Compliance - CompTIA Security+ SY0-701.mp4",
       "durationSec": 485,
       "cardIds": [
+        "1729783659515",
+        "1729783723324",
+        "1729783769844"
+      ],
+      "primarySubDeckId": "sy0-701-objective-5-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-5-4"
+      ],
+      "recallCardIds": [
         "1729783659515",
         "1729783723324",
         "1729783769844"
@@ -2578,6 +3668,15 @@
       "durationSec": 321,
       "cardIds": [
         "1729784557847",
+        "1729784627980",
+        "1779669260194"
+      ],
+      "primarySubDeckId": "sy0-701-objective-5-4",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-5-4"
+      ],
+      "recallCardIds": [
+        "1729784557847",
         "1729784627980"
       ],
       "recallQuestionIds": [
@@ -2601,6 +3700,14 @@
       "file": "118 - 5.5 - Audits and Assessments - CompTIA Security+ SY0-701.mp4",
       "durationSec": 168,
       "cardIds": [
+        "1729785415964",
+        "1729785486403"
+      ],
+      "primarySubDeckId": "sy0-701-objective-5-5",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-5-5"
+      ],
+      "recallCardIds": [
         "1729785415964",
         "1729785486403"
       ],
@@ -2633,6 +3740,21 @@
         "1729785920415",
         "1729786008395",
         "1729786075246",
+        "1729786475642",
+        "1779095116170"
+      ],
+      "primarySubDeckId": "sy0-701-objective-5-5",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-5-5",
+        "sy0-701-objective-5-6"
+      ],
+      "recallCardIds": [
+        "1729785782984",
+        "1729785809766",
+        "1729785886535",
+        "1729785920415",
+        "1729786008395",
+        "1729786075246",
         "1729786475642"
       ],
       "recallQuestionIds": [
@@ -2659,6 +3781,13 @@
       "cardIds": [
         "1729786793022"
       ],
+      "primarySubDeckId": "sy0-701-objective-5-6",
+      "sourceSubDeckIds": [
+        "sy0-701-objective-5-6"
+      ],
+      "recallCardIds": [
+        "1729786793022"
+      ],
       "recallQuestionIds": [
         "M5-033",
         "T120-01",
@@ -2679,6 +3808,9 @@
       "file": "121 - 5.6 - User Training - CompTIA Security+ SY0-701.mp4",
       "durationSec": 271,
       "cardIds": [],
+      "primarySubDeckId": "sy0-701-objective-5-6",
+      "sourceSubDeckIds": [],
+      "recallCardIds": [],
       "recallQuestionIds": [
         "T121-01",
         "T121-02",

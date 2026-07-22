@@ -1111,19 +1111,19 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                       {settings.language === 'de' ? 'Prüfungstermin' : 'Exam date'}
                     </label>
                     <div className={`${UI_TOKENS.surface.panelSoft} p-4`}>
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
                         <input
                           type="date"
                           value={settings.examDateIso ?? ''}
                           onChange={event => setExamDateIso(event.target.value || null)}
                           aria-label={settings.language === 'de' ? 'Prüfungstermin' : 'Exam date'}
-                          className="flex-1 rounded-ds border border-[#18181b] bg-[#0c0c0c] px-3 py-2 font-mono text-sm text-white [color-scheme:dark] focus:border-[--brand-primary-50] focus:outline-none"
+                          className="min-h-11 flex-1 rounded-ds border border-[#18181b] bg-[#0c0c0c] px-3 font-mono text-base text-white [color-scheme:dark] focus:border-[--brand-primary-50] focus:outline-none sm:text-sm"
                         />
                         {settings.examDateIso && (
                           <button
                             type="button"
                             onClick={() => setExamDateIso(null)}
-                            className="rounded-ds border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-xs font-semibold text-white/70 transition hover:border-[#3f3f46] hover:text-white"
+                            className="min-h-11 rounded-ds border border-[#18181b] bg-[#0c0c0c] px-3 text-sm font-semibold text-white/70 transition hover:border-[#3f3f46] hover:text-white sm:text-xs"
                           >
                             {settings.language === 'de' ? 'Entfernen' : 'Clear'}
                           </button>
@@ -1131,8 +1131,8 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                       </div>
                       <p className="mt-2 text-xs leading-relaxed text-white/45">
                         {settings.language === 'de'
-                          ? 'Zieldatum (z. B. Security+). Die Heute-Kachel rechnet daraus ein ruhiges Tempo: restliche Videos und neue Karten pro Tag.'
-                          : 'Target date (e.g. Security+). The Today tile derives a calm pace from it: remaining videos and new cards per day.'}
+                          ? 'Zieldatum für Countdown und Lerneinheiten. Änderungen werden mit dem Lernplan und dem aktiven Profil abgeglichen.'
+                          : 'Target date for the countdown and learning units. Changes are reconciled with the study plan and active profile.'}
                       </p>
                     </div>
                   </div>

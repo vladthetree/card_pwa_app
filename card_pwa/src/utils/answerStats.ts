@@ -38,6 +38,10 @@ export interface AnswerStats {
   independentSessionCount: number
   exposureCount: number
   totalTimeMs: number
+  /** Antworten mit tatsächlich gemessener positiver Bearbeitungszeit. */
+  timedAnswerCount: number
+  /** Summe ausschließlich der positiven, tatsächlich gemessenen Zeiten. */
+  timedAnswerTimeMs: number
   firstAnsweredAt?: number
   lastAnsweredAt?: number
   lastAnswerCorrect?: boolean
@@ -89,10 +93,16 @@ export function computeAnswerStats(input: {
     const itemIds = new Set<string>()
     let correct = 0
     let totalTimeMs = 0
+    let timedAnswerCount = 0
+    let timedAnswerTimeMs = 0
     for (const row of rows) {
       itemIds.add(row.itemId)
       if (row.correct) correct += 1
       totalTimeMs += row.timeMs
+      if (row.timeMs > 0) {
+        timedAnswerCount += 1
+        timedAnswerTimeMs += row.timeMs
+      }
     }
     const scored = rows.length
     const last = rows[rows.length - 1]
@@ -128,6 +138,8 @@ export function computeAnswerStats(input: {
       independentSessionCount: 0,
       exposureCount: scored,
       totalTimeMs,
+      timedAnswerCount,
+      timedAnswerTimeMs,
       firstAnsweredAt: rows[0]?.answeredAt,
       lastAnsweredAt: last?.answeredAt,
       lastAnswerCorrect: last?.correct,

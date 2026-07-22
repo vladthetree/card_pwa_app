@@ -2,17 +2,21 @@
  * AI_CONTEXT:
  * Role: GENERATED data module of the dedicated SY0-701 learning-unit system — do not edit by hand.
  * Used by: learning-unit builders/tests; regenerate via `node scripts/sy0701/validate.mjs`.
- * Important: Derived from content/sy0-701/source/* (official V7 snapshot 95a2c7515792…, manifest 2026-07-19.2).
+ * Important: Derived from content/sy0-701/source/* (official V7 snapshot 95a2c7515792…, manifest 2026-07-22.1).
  */
 import type { VideoContentMapEntry } from '../utils/learningUnits'
 
 export const SY0701_SOURCE_SNAPSHOT_ID = "sy0701-v7-2026-07-15"
-export const SY0701_CONTENT_MANIFEST_VERSION = "2026-07-19.2"
+export const SY0701_CONTENT_MANIFEST_VERSION = "2026-07-22.1"
 
 export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 2,
     "objectiveId": "1.1",
+    "primarySubDeckId": "sy0-701-objective-1-1",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-1"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.1:categories:technical",
       "req:sy0701:v7:1.1:categories:managerial",
@@ -56,7 +60,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728578626914",
       "1728578658721",
       "1728578702367",
-      "1728578743324"
+      "1728578743324",
+      "1779007738884"
     ],
     "recallQuestionIds": [
       "M1-001",
@@ -129,6 +134,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 3,
     "objectiveId": "1.2",
+    "primarySubDeckId": "sy0-701-objective-1-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.2:confidentiality-integrity-and-availability-cia"
     ],
@@ -158,6 +167,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 4,
     "objectiveId": "1.2",
+    "primarySubDeckId": "sy0-701-objective-1-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.2:non-repudiation"
     ],
@@ -199,6 +212,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 5,
     "objectiveId": "1.2",
+    "primarySubDeckId": "sy0-701-objective-1-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.2:authentication-authorization-and-accounting-aaa:authenticating-people",
       "req:sy0701:v7:1.2:authentication-authorization-and-accounting-aaa:authenticating-systems",
@@ -233,6 +250,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 6,
     "objectiveId": "1.2",
+    "primarySubDeckId": "sy0-701-objective-1-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.2:gap-analysis"
     ],
@@ -254,6 +275,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 7,
     "objectiveId": "1.2",
+    "primarySubDeckId": "sy0-701-objective-1-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.2:zero-trust:control-plane:adaptive-identity",
       "req:sy0701:v7:1.2:zero-trust:control-plane:threat-scope-reduction",
@@ -273,7 +298,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728596420109",
       "1728596991068",
       "1728597125561",
-      "1728597165153"
+      "1728597165153",
+      "1779669260169"
     ],
     "recallQuestionIds": [
       "M1-052",
@@ -304,6 +330,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 8,
     "objectiveId": "1.2",
+    "primarySubDeckId": "sy0-701-objective-1-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.2:physical-security:bollards",
       "req:sy0701:v7:1.2:physical-security:access-control-vestibule",
@@ -345,6 +375,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 9,
     "objectiveId": "1.2",
+    "primarySubDeckId": "sy0-701-objective-1-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.2:deception-and-disruption-technology:honeypot",
       "req:sy0701:v7:1.2:deception-and-disruption-technology:honeynet",
@@ -369,6 +403,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 10,
     "objectiveId": "1.3",
+    "primarySubDeckId": "sy0-701-objective-1-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.3:business-processes-impacting-security-operation:approval-process",
       "req:sy0701:v7:1.3:business-processes-impacting-security-operation:ownership",
@@ -406,6 +444,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 11,
     "objectiveId": "1.3",
+    "primarySubDeckId": "sy0-701-objective-1-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.3:technical-implications:allow-lists-deny-lists",
       "req:sy0701:v7:1.3:technical-implications:restricted-activities",
@@ -446,6 +488,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 12,
     "objectiveId": "1.4",
+    "primarySubDeckId": "sy0-701-objective-1-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.4:public-key-infrastructure-pki:public-key",
       "req:sy0701:v7:1.4:public-key-infrastructure-pki:private-key",
@@ -491,6 +537,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 13,
     "objectiveId": "1.4",
+    "primarySubDeckId": "sy0-701-objective-1-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.4:encryption:level:full-disk",
       "req:sy0701:v7:1.4:encryption:level:partition",
@@ -509,7 +559,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728669344784",
       "1728669781020",
       "1728669901392",
-      "1728669937321"
+      "1728669937321",
+      "1779669260168"
     ],
     "recallQuestionIds": [
       "M1-078",
@@ -539,6 +590,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 14,
     "objectiveId": "1.4",
+    "primarySubDeckId": "sy0-701-objective-1-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.4:encryption:key-exchange"
     ],
@@ -562,6 +617,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 15,
     "objectiveId": "1.4",
+    "primarySubDeckId": "sy0-701-objective-1-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.4:tools:trusted-platform-module-tpm",
       "req:sy0701:v7:1.4:tools:hardware-security-module-hsm",
@@ -595,6 +654,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 16,
     "objectiveId": "1.4",
+    "primarySubDeckId": "sy0-701-objective-1-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.4:obfuscation:steganography",
       "req:sy0701:v7:1.4:obfuscation:tokenization",
@@ -626,6 +689,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 17,
     "objectiveId": "1.4",
+    "primarySubDeckId": "sy0-701-objective-1-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.4:hashing",
       "req:sy0701:v7:1.4:salting",
@@ -658,6 +725,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 18,
     "objectiveId": "1.4",
+    "primarySubDeckId": "sy0-701-objective-1-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.4:blockchain",
       "req:sy0701:v7:1.4:open-public-ledger"
@@ -681,6 +752,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 19,
     "objectiveId": "1.4",
+    "primarySubDeckId": "sy0-701-objective-1-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:1.4:certificates:certificate-authorities",
       "req:sy0701:v7:1.4:certificates:certificate-revocation-lists-crls",
@@ -756,6 +831,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 20,
     "objectiveId": "2.1",
+    "primarySubDeckId": "sy0-701-objective-2-1",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-1"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.1:threat-actors:nation-state",
       "req:sy0701:v7:2.1:threat-actors:unskilled-attacker",
@@ -783,7 +862,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1728925881637",
       "1728925920785",
       "1728926313614",
-      "1728926473442"
+      "1728926473442",
+      "1779095116171",
+      "1779669260185"
     ],
     "recallQuestionIds": [
       "M2-001",
@@ -819,6 +900,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 21,
     "objectiveId": "2.2",
+    "primarySubDeckId": "sy0-701-objective-2-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-2",
+      "sy0-701-objective-3-1"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.2:message-based:email",
       "req:sy0701:v7:2.2:message-based:short-message-service-sms",
@@ -888,6 +974,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 22,
     "objectiveId": "2.2",
+    "primarySubDeckId": "sy0-701-objective-2-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.2:human-vectors-social-engineering:phishing",
       "req:sy0701:v7:2.2:human-vectors-social-engineering:vishing",
@@ -918,6 +1008,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 23,
     "objectiveId": "2.2",
+    "primarySubDeckId": "sy0-701-objective-2-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.2:human-vectors-social-engineering:impersonation",
       "req:sy0701:v7:2.2:human-vectors-social-engineering:business-email-compromise"
@@ -941,6 +1035,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 24,
     "objectiveId": "2.2",
+    "primarySubDeckId": "sy0-701-objective-2-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-2",
+      "sy0-701-objective-2-5"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.2:human-vectors-social-engineering:watering-hole"
     ],
@@ -965,6 +1064,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 25,
     "objectiveId": "2.2",
+    "primarySubDeckId": "sy0-701-objective-2-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.2:human-vectors-social-engineering:misinformation-disinformation",
       "req:sy0701:v7:2.2:human-vectors-social-engineering:brand-impersonation"
@@ -988,6 +1091,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 26,
     "objectiveId": "2.3",
+    "primarySubDeckId": "sy0-701-objective-2-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-3",
+      "sy0-701-objective-4-8"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.3:application:memory-injection"
     ],
@@ -1012,6 +1120,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 27,
     "objectiveId": "2.3",
+    "primarySubDeckId": "sy0-701-objective-2-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.3:application:buffer-overflow"
     ],
@@ -1033,6 +1145,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 28,
     "objectiveId": "2.3",
+    "primarySubDeckId": "sy0-701-objective-2-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.3:application:race-conditions:time-of-check-toc",
       "req:sy0701:v7:2.3:application:race-conditions:time-of-use-tou"
@@ -1060,6 +1176,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 29,
     "objectiveId": "2.3",
+    "primarySubDeckId": "sy0-701-objective-2-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.3:application:malicious-update"
     ],
@@ -1081,6 +1201,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 30,
     "objectiveId": "2.3",
+    "primarySubDeckId": "sy0-701-objective-2-3",
+    "sourceSubDeckIds": [],
     "requirementIds": [
       "req:sy0701:v7:2.3:operating-system-os-based"
     ],
@@ -1099,6 +1221,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 31,
     "objectiveId": "2.3",
+    "primarySubDeckId": "sy0-701-objective-2-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-3",
+      "sy0-701-objective-4-1"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.3:web-based:structured-query-language-injection-sqli"
     ],
@@ -1129,6 +1256,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 32,
     "objectiveId": "2.3",
+    "primarySubDeckId": "sy0-701-objective-2-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.3:web-based:cross-site-scripting-xss"
     ],
@@ -1158,6 +1289,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 33,
     "objectiveId": "2.3",
+    "primarySubDeckId": "sy0-701-objective-2-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.3:hardware:firmware",
       "req:sy0701:v7:2.3:hardware:end-of-life",
@@ -1187,6 +1322,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 34,
     "objectiveId": "2.3",
+    "primarySubDeckId": "sy0-701-objective-2-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.3:virtualization:virtual-machine-vm-escape",
       "req:sy0701:v7:2.3:virtualization:resource-reuse"
@@ -1211,6 +1350,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 35,
     "objectiveId": "2.3",
+    "primarySubDeckId": "sy0-701-objective-2-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-3",
+      "sy0-701-objective-2-3",
+      "sy0-701-objective-2-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.3:cloud-specific"
     ],
@@ -1238,6 +1383,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 36,
     "objectiveId": "2.3",
+    "primarySubDeckId": "sy0-701-objective-2-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-3",
+      "sy0-701-objective-5-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.3:supply-chain:service-provider",
       "req:sy0701:v7:2.3:supply-chain:hardware-provider",
@@ -1270,6 +1420,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 37,
     "objectiveId": "2.3",
+    "primarySubDeckId": "sy0-701-objective-2-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-3",
+      "sy0-701-objective-4-5",
+      "sy0-701-objective-4-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.3:misconfiguration"
     ],
@@ -1300,6 +1456,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 38,
     "objectiveId": "2.3",
+    "primarySubDeckId": "sy0-701-objective-2-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-3",
+      "sy0-701-objective-4-1"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.3:mobile-device:side-loading",
       "req:sy0701:v7:2.3:mobile-device:jailbreaking"
@@ -1326,6 +1487,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 39,
     "objectiveId": "2.3",
+    "primarySubDeckId": "sy0-701-objective-2-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.3:zero-day"
     ],
@@ -1347,6 +1512,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 40,
     "objectiveId": "2.4",
+    "primarySubDeckId": "sy0-701-objective-2-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.4:malware-attacks:ransomware"
     ],
@@ -1355,7 +1524,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729097089990",
       "1729097293203",
       "1729097352286",
-      "1729097429318"
+      "1729097429318",
+      "1779095116172"
     ],
     "recallQuestionIds": [
       "M2-066",
@@ -1376,6 +1546,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 41,
     "objectiveId": "2.4",
+    "primarySubDeckId": "sy0-701-objective-2-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.4:malware-attacks:worm",
       "req:sy0701:v7:2.4:malware-attacks:virus"
@@ -1400,6 +1574,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 42,
     "objectiveId": "2.4",
+    "primarySubDeckId": "sy0-701-objective-2-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.4:malware-attacks:spyware",
       "req:sy0701:v7:2.4:malware-attacks:bloatware"
@@ -1425,6 +1603,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 43,
     "objectiveId": "2.4",
+    "primarySubDeckId": "sy0-701-objective-2-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-4",
+      "sy0-701-objective-2-5"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.4:malware-attacks:trojan",
       "req:sy0701:v7:2.4:malware-attacks:keylogger",
@@ -1451,6 +1634,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 44,
     "objectiveId": "2.4",
+    "primarySubDeckId": "sy0-701-objective-2-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-4",
+      "sy0-701-objective-4-6"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.4:physical-attacks:brute-force",
       "req:sy0701:v7:2.4:physical-attacks:radio-frequency-identification-rfid-cloning",
@@ -1477,6 +1665,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 45,
     "objectiveId": "2.4",
+    "primarySubDeckId": "sy0-701-objective-2-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.4:network-attacks:distributed-denial-of-service-ddos:amplified",
       "req:sy0701:v7:2.4:network-attacks:distributed-denial-of-service-ddos:reflected"
@@ -1508,6 +1700,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 46,
     "objectiveId": "2.4",
+    "primarySubDeckId": "sy0-701-objective-2-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.4:network-attacks:domain-name-system-dns-attacks"
     ],
@@ -1529,6 +1725,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 47,
     "objectiveId": "2.4",
+    "primarySubDeckId": "sy0-701-objective-2-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.4:network-attacks:wireless"
     ],
@@ -1555,6 +1755,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 48,
     "objectiveId": "2.4",
+    "primarySubDeckId": "sy0-701-objective-2-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.4:network-attacks:on-path"
     ],
@@ -1578,6 +1782,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 49,
     "objectiveId": "2.4",
+    "primarySubDeckId": "sy0-701-objective-2-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.4:network-attacks:credential-replay"
     ],
@@ -1605,6 +1813,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 50,
     "objectiveId": "2.4",
+    "primarySubDeckId": "sy0-701-objective-2-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.4:network-attacks:malicious-code"
     ],
@@ -1626,6 +1838,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 51,
     "objectiveId": "2.4",
+    "primarySubDeckId": "sy0-701-objective-2-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-4",
+      "sy0-701-objective-4-1"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.4:application-attacks:injection",
       "req:sy0701:v7:2.4:application-attacks:buffer-overflow",
@@ -1663,6 +1880,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 52,
     "objectiveId": "2.4",
+    "primarySubDeckId": "sy0-701-objective-2-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.3:cryptographic",
       "req:sy0701:v7:2.4:cryptographic-attacks:downgrade",
@@ -1693,6 +1914,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 53,
     "objectiveId": "2.4",
+    "primarySubDeckId": "sy0-701-objective-2-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-1-4",
+      "sy0-701-objective-2-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.4:password-attacks:spraying",
       "req:sy0701:v7:2.4:password-attacks:brute-force"
@@ -1718,6 +1944,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 54,
     "objectiveId": "2.4",
+    "primarySubDeckId": "sy0-701-objective-2-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-4",
+      "sy0-701-objective-4-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.4:indicators:account-lockout",
       "req:sy0701:v7:2.4:indicators:concurrent-session-usage",
@@ -1730,7 +1961,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "req:sy0701:v7:2.4:indicators:missing-logs"
     ],
     "courseCardIds": [
-      "1729180535847"
+      "1729180535847",
+      "1779669260186"
     ],
     "recallQuestionIds": [
       "M2-111",
@@ -1755,6 +1987,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 55,
     "objectiveId": "2.5",
+    "primarySubDeckId": "sy0-701-objective-2-5",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-5",
+      "sy0-701-objective-5-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.5:segmentation",
       "req:sy0701:v7:2.5:access-control:access-control-list-acl",
@@ -1787,6 +2024,13 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 56,
     "objectiveId": "2.5",
+    "primarySubDeckId": "sy0-701-objective-2-5",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-5",
+      "sy0-701-objective-1-4",
+      "sy0-701-objective-4-4",
+      "sy0-701-objective-4-5"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.5:application-allow-list",
       "req:sy0701:v7:2.5:isolation",
@@ -1833,6 +2077,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 57,
     "objectiveId": "2.5",
+    "primarySubDeckId": "sy0-701-objective-2-5",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-2-5",
+      "sy0-701-objective-4-6"
+    ],
     "requirementIds": [
       "req:sy0701:v7:2.5:hardening-techniques:encryption",
       "req:sy0701:v7:2.5:hardening-techniques:installation-of-endpoint-protection",
@@ -1875,6 +2124,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 58,
     "objectiveId": "3.1",
+    "primarySubDeckId": "sy0-701-objective-3-1",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-3-1"
+    ],
     "requirementIds": [
       "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:responsibility-matrix",
       "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:hybrid-considerations",
@@ -1887,7 +2140,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729192290034",
       "1729192837629",
       "1729192907745",
-      "1729193133878"
+      "1729193133878",
+      "1779669260165",
+      "1779669260187",
+      "1779669260188",
+      "1779669260189"
     ],
     "recallQuestionIds": [
       "M3-002",
@@ -1911,6 +2168,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 59,
     "objectiveId": "3.1",
+    "primarySubDeckId": "sy0-701-objective-3-1",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-3-1",
+      "sy0-701-objective-1-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:physical-isolation:air-gapped",
       "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:logical-segmentation",
@@ -1951,6 +2213,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 60,
     "objectiveId": "3.1",
+    "primarySubDeckId": "sy0-701-objective-3-1",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-3-1"
+    ],
     "requirementIds": [
       "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:on-premises",
       "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:centralized-vs-decentralized",
@@ -1967,7 +2233,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729196035330",
       "1729196140243",
       "1729196325940",
-      "1729196548024"
+      "1729196548024",
+      "1779669260193"
     ],
     "recallQuestionIds": [
       "M3-015",
@@ -1994,6 +2261,12 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 61,
     "objectiveId": "3.1",
+    "primarySubDeckId": "sy0-701-objective-3-1",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-3-1",
+      "sy0-701-objective-4-7",
+      "sy0-701-objective-3-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:3.1:considerations:availability",
       "req:sy0701:v7:3.1:considerations:resilience",
@@ -2012,7 +2285,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729198761986",
       "1729198962970",
       "1729199602908",
-      "1729199710866"
+      "1729199710866",
+      "1779669260176"
     ],
     "recallQuestionIds": [
       "M3-020",
@@ -2042,6 +2316,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 62,
     "objectiveId": "3.2",
+    "primarySubDeckId": "sy0-701-objective-3-2",
+    "sourceSubDeckIds": [],
     "requirementIds": [
       "req:sy0701:v7:3.2:infrastructure-considerations:device-placement",
       "req:sy0701:v7:3.2:infrastructure-considerations:security-zones",
@@ -2067,6 +2343,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 63,
     "objectiveId": "3.2",
+    "primarySubDeckId": "sy0-701-objective-3-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-3-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-open",
       "req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-closed",
@@ -2101,6 +2381,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 64,
     "objectiveId": "3.2",
+    "primarySubDeckId": "sy0-701-objective-3-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-3-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:jump-server",
       "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:proxy-server",
@@ -2141,6 +2425,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 65,
     "objectiveId": "3.2",
+    "primarySubDeckId": "sy0-701-objective-3-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-3-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:3.2:infrastructure-considerations:port-security:802-1x",
       "req:sy0701:v7:3.2:infrastructure-considerations:port-security:extensible-authentication"
@@ -2165,6 +2453,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 66,
     "objectiveId": "3.2",
+    "primarySubDeckId": "sy0-701-objective-3-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-3-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:web-application-firewall-waf",
       "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:unified-threat-management-utm",
@@ -2193,6 +2485,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 67,
     "objectiveId": "3.2",
+    "primarySubDeckId": "sy0-701-objective-3-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-3-1"
+    ],
     "requirementIds": [
       "req:sy0701:v7:3.2:secure-communication-access:virtual-private-network-vpn",
       "req:sy0701:v7:3.2:secure-communication-access:remote-access",
@@ -2201,7 +2497,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "req:sy0701:v7:3.2:secure-communication-access:software-defined-wide-area-network-sd-wan",
       "req:sy0701:v7:3.2:secure-communication-access:secure-access-service-edge-sase"
     ],
-    "courseCardIds": [],
+    "courseCardIds": [
+      "1779669260166"
+    ],
     "recallQuestionIds": [
       "T067-01",
       "T067-02",
@@ -2212,12 +2510,13 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T067-07"
     ],
     "recallCardIds": [],
-    "durationSec": 594,
-    "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
+    "durationSec": 594
   },
   {
     "videoIndex": 68,
     "objectiveId": "3.3",
+    "primarySubDeckId": "sy0-701-objective-3-3",
+    "sourceSubDeckIds": [],
     "requirementIds": [
       "req:sy0701:v7:3.3:data-types:regulated",
       "req:sy0701:v7:3.3:data-types:trade-secret",
@@ -2255,6 +2554,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 69,
     "objectiveId": "3.3",
+    "primarySubDeckId": "sy0-701-objective-3-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-3-3",
+      "sy0-701-objective-5-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:3.3:general-data-considerations:data-states:data-at-rest",
       "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-transit",
@@ -2265,7 +2569,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "courseCardIds": [
       "1729276559590",
       "1729276746898",
-      "1729276778013"
+      "1729276778013",
+      "1779095116175"
     ],
     "recallQuestionIds": [
       "M3-037",
@@ -2285,6 +2590,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 70,
     "objectiveId": "3.3",
+    "primarySubDeckId": "sy0-701-objective-3-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-3-3",
+      "sy0-701-objective-1-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:3.3:methods-to-secure-data:geographic-restrictions",
       "req:sy0701:v7:3.3:methods-to-secure-data:encryption",
@@ -2325,6 +2635,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 71,
     "objectiveId": "3.4",
+    "primarySubDeckId": "sy0-701-objective-3-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-3-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:3.4:high-availability:load-balancing-vs-clustering",
       "req:sy0701:v7:3.4:site-considerations:hot",
@@ -2338,7 +2652,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     "courseCardIds": [
       "1729280373313",
       "1729280425752",
-      "1729280698248"
+      "1729280698248",
+      "1779095116174"
     ],
     "recallQuestionIds": [
       "M3-045",
@@ -2360,6 +2675,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 72,
     "objectiveId": "3.4",
+    "primarySubDeckId": "sy0-701-objective-3-4",
+    "sourceSubDeckIds": [],
     "requirementIds": [
       "req:sy0701:v7:3.4:capacity-planning:people",
       "req:sy0701:v7:3.4:capacity-planning:technology",
@@ -2382,6 +2699,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 73,
     "objectiveId": "3.4",
+    "primarySubDeckId": "sy0-701-objective-3-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-3-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:3.4:testing:tabletop-exercises",
       "req:sy0701:v7:3.4:testing:fail-over",
@@ -2410,6 +2731,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 74,
     "objectiveId": "3.4",
+    "primarySubDeckId": "sy0-701-objective-3-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-3-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:3.4:backups:onsite-offsite",
       "req:sy0701:v7:3.4:backups:frequency",
@@ -2445,6 +2770,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 75,
     "objectiveId": "3.4",
+    "primarySubDeckId": "sy0-701-objective-3-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-3-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:3.4:power:generators",
       "req:sy0701:v7:3.4:power:uninterruptible-power-supply-ups"
@@ -2467,6 +2796,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 76,
     "objectiveId": "4.1",
+    "primarySubDeckId": "sy0-701-objective-4-1",
+    "sourceSubDeckIds": [],
     "requirementIds": [
       "req:sy0701:v7:4.1:secure-baselines:establish",
       "req:sy0701:v7:4.1:secure-baselines:deploy",
@@ -2489,6 +2820,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 77,
     "objectiveId": "4.1",
+    "primarySubDeckId": "sy0-701-objective-4-1",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-1"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.1:hardening-targets:mobile-devices",
       "req:sy0701:v7:4.1:hardening-targets:workstations",
@@ -2528,6 +2863,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 78,
     "objectiveId": "4.1",
+    "primarySubDeckId": "sy0-701-objective-4-1",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-1"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.1:wireless-devices:installation-considerations:site-surveys",
       "req:sy0701:v7:4.1:wireless-devices:installation-considerations:heat-maps",
@@ -2539,7 +2878,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "req:sy0701:v7:4.1:mobile-solutions:connection-methods:wi-fi",
       "req:sy0701:v7:4.1:mobile-solutions:connection-methods:bluetooth"
     ],
-    "courseCardIds": [],
+    "courseCardIds": [
+      "1779669260190",
+      "1779669260191",
+      "1779669260192"
+    ],
     "recallQuestionIds": [
       "T078-01",
       "T078-02",
@@ -2551,12 +2894,15 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T078-08"
     ],
     "recallCardIds": [],
-    "durationSec": 538,
-    "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
+    "durationSec": 538
   },
   {
     "videoIndex": 79,
     "objectiveId": "4.1",
+    "primarySubDeckId": "sy0-701-objective-4-1",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-1"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.1:wireless-security-settings:wi-fi-protected-access-3-wpa3",
       "req:sy0701:v7:4.1:wireless-security-settings:aaa-remote-authentication-dial-in-user-service-r",
@@ -2564,7 +2910,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "req:sy0701:v7:4.1:wireless-security-settings:authentication-protocols"
     ],
     "courseCardIds": [
-      "1729441416045"
+      "1729441416045",
+      "1779669260173"
     ],
     "recallQuestionIds": [
       "M4-003",
@@ -2585,6 +2932,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 80,
     "objectiveId": "4.1",
+    "primarySubDeckId": "sy0-701-objective-4-1",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-1"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.1:application-security:input-validation",
       "req:sy0701:v7:4.1:application-security:secure-cookies",
@@ -2617,6 +2968,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 81,
     "objectiveId": "4.2",
+    "primarySubDeckId": "sy0-701-objective-4-2",
+    "sourceSubDeckIds": [],
     "requirementIds": [
       "req:sy0701:v7:4.2:acquisition-procurement-process",
       "req:sy0701:v7:4.2:assignment-accounting:ownership",
@@ -2649,6 +3002,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 82,
     "objectiveId": "4.3",
+    "primarySubDeckId": "sy0-701-objective-4-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.3:identification-methods:vulnerability-scan",
       "req:sy0701:v7:4.3:identification-methods:application-security:static-analysis",
@@ -2678,6 +3035,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 83,
     "objectiveId": "4.3",
+    "primarySubDeckId": "sy0-701-objective-4-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.3:identification-methods:threat-feed:open-source-intelligence-osint",
       "req:sy0701:v7:4.3:identification-methods:threat-feed:proprietary-third-party",
@@ -2686,7 +3047,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "courseCardIds": [
       "1729526448891",
-      "1729526713518"
+      "1729526713518",
+      "1779669260183",
+      "1779669260184"
     ],
     "recallQuestionIds": [
       "M4-009",
@@ -2707,6 +3070,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 84,
     "objectiveId": "4.3",
+    "primarySubDeckId": "sy0-701-objective-4-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.3:identification-methods:penetration-testing",
       "req:sy0701:v7:4.3:identification-methods:responsible-disclosure-program:bug-bounty-program"
@@ -2730,6 +3097,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 85,
     "objectiveId": "4.3",
+    "primarySubDeckId": "sy0-701-objective-4-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.3:analysis:confirmation:false-positive",
       "req:sy0701:v7:4.3:analysis:confirmation:false-negative",
@@ -2769,6 +3140,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 86,
     "objectiveId": "4.3",
+    "primarySubDeckId": "sy0-701-objective-4-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.3:vulnerability-response-and-remediation:patching",
       "req:sy0701:v7:4.3:vulnerability-response-and-remediation:insurance",
@@ -2803,6 +3178,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 87,
     "objectiveId": "4.4",
+    "primarySubDeckId": "sy0-701-objective-4-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.4:monitoring-computing-resources:systems",
       "req:sy0701:v7:4.4:monitoring-computing-resources:applications",
@@ -2842,6 +3221,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 88,
     "objectiveId": "4.4",
+    "primarySubDeckId": "sy0-701-objective-4-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.4:tools:security-content-automation-protocol-scap",
       "req:sy0701:v7:4.4:tools:benchmarks",
@@ -2853,7 +3236,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "req:sy0701:v7:4.4:tools:netflow",
       "req:sy0701:v7:4.4:tools:vulnerability-scanners"
     ],
-    "courseCardIds": [],
+    "courseCardIds": [
+      "1779669260179"
+    ],
     "recallQuestionIds": [
       "T088-01",
       "T088-02",
@@ -2865,19 +3250,24 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T088-08"
     ],
     "recallCardIds": [],
-    "durationSec": 846,
-    "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
+    "durationSec": 846
   },
   {
     "videoIndex": 89,
     "objectiveId": "4.5",
+    "primarySubDeckId": "sy0-701-objective-4-5",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-5"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.5:firewall:rules",
       "req:sy0701:v7:4.5:firewall:access-lists",
       "req:sy0701:v7:4.5:firewall:ports-protocols",
       "req:sy0701:v7:4.5:firewall:screened-subnets"
     ],
-    "courseCardIds": [],
+    "courseCardIds": [
+      "1779669260174"
+    ],
     "recallQuestionIds": [
       "T089-01",
       "T089-02",
@@ -2888,12 +3278,15 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T089-07"
     ],
     "recallCardIds": [],
-    "durationSec": 690,
-    "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
+    "durationSec": 690
   },
   {
     "videoIndex": 90,
     "objectiveId": "4.5",
+    "primarySubDeckId": "sy0-701-objective-4-5",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-5"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.5:web-filter:agent-based",
       "req:sy0701:v7:4.5:web-filter:centralized-proxy",
@@ -2928,6 +3321,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 91,
     "objectiveId": "4.5",
+    "primarySubDeckId": "sy0-701-objective-4-5",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-5",
+      "sy0-701-objective-4-6"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.5:operating-system-security:group-policy",
       "req:sy0701:v7:4.5:operating-system-security:selinux"
@@ -2953,6 +3351,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 92,
     "objectiveId": "4.5",
+    "primarySubDeckId": "sy0-701-objective-4-5",
+    "sourceSubDeckIds": [],
     "requirementIds": [
       "req:sy0701:v7:4.5:implementation-of-secure-protocols:protocol-selection",
       "req:sy0701:v7:4.5:implementation-of-secure-protocols:port-selection",
@@ -2976,6 +3376,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 93,
     "objectiveId": "4.5",
+    "primarySubDeckId": "sy0-701-objective-4-5",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-5"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.5:email-security:domain-based-message-authentication-reporting-an",
       "req:sy0701:v7:4.5:email-security:domainkeys-identified-mail-dkim",
@@ -2983,7 +3387,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "req:sy0701:v7:4.5:email-security:gateway"
     ],
     "courseCardIds": [
-      "1729544236865"
+      "1729544236865",
+      "1779669260180",
+      "1779669260181",
+      "1779669260182"
     ],
     "recallQuestionIds": [
       "M4-021",
@@ -3000,6 +3407,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 94,
     "objectiveId": "4.5",
+    "primarySubDeckId": "sy0-701-objective-4-5",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-5"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.5:file-integrity-monitoring",
       "req:sy0701:v7:4.5:dlp"
@@ -3025,13 +3436,20 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 95,
     "objectiveId": "4.5",
+    "primarySubDeckId": "sy0-701-objective-4-5",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-5",
+      "sy0-701-objective-4-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.5:network-access-control-nac",
       "req:sy0701:v7:4.5:endpoint-detection-and-response-edr-extended-det",
       "req:sy0701:v7:4.5:user-behavior-analytics"
     ],
     "courseCardIds": [
-      "1729545965530"
+      "1729545965530",
+      "1779669260170",
+      "1779669260171"
     ],
     "recallQuestionIds": [
       "M4-024",
@@ -3050,6 +3468,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 96,
     "objectiveId": "4.6",
+    "primarySubDeckId": "sy0-701-objective-4-6",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-6"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.6:provisioning-de-provisioning-user-accounts",
       "req:sy0701:v7:4.6:permission-assignments-and-implications",
@@ -3089,6 +3511,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 97,
     "objectiveId": "4.6",
+    "primarySubDeckId": "sy0-701-objective-4-6",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-6"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.6:access-controls:mandatory",
       "req:sy0701:v7:4.6:access-controls:discretionary",
@@ -3124,6 +3550,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 98,
     "objectiveId": "4.6",
+    "primarySubDeckId": "sy0-701-objective-4-6",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-6"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.6:multifactor-authentication:implementations:biometrics",
       "req:sy0701:v7:4.6:multifactor-authentication:implementations:hard-soft-authentication-tokens",
@@ -3157,6 +3587,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 99,
     "objectiveId": "4.6",
+    "primarySubDeckId": "sy0-701-objective-4-6",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-6"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.6:password-concepts:password-best-practices:length",
       "req:sy0701:v7:4.6:password-concepts:password-best-practices:complexity",
@@ -3199,6 +3633,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 100,
     "objectiveId": "4.7",
+    "primarySubDeckId": "sy0-701-objective-4-7",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-7"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.7:use-cases-of-automation-and-scripting:user-provisioning",
       "req:sy0701:v7:4.7:use-cases-of-automation-and-scripting:resource-provisioning",
@@ -3262,6 +3700,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 101,
     "objectiveId": "4.8",
+    "primarySubDeckId": "sy0-701-objective-4-8",
+    "sourceSubDeckIds": [],
     "requirementIds": [
       "req:sy0701:v7:4.8:process:preparation",
       "req:sy0701:v7:4.8:process:detection",
@@ -3292,6 +3732,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 102,
     "objectiveId": "4.8",
+    "primarySubDeckId": "sy0-701-objective-4-8",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-8"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.8:training",
       "req:sy0701:v7:4.8:testing:tabletop-exercise",
@@ -3319,6 +3763,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 103,
     "objectiveId": "4.8",
+    "primarySubDeckId": "sy0-701-objective-4-8",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-8"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.8:digital-forensics:legal-hold",
       "req:sy0701:v7:4.8:digital-forensics:chain-of-custody",
@@ -3350,6 +3798,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 104,
     "objectiveId": "4.9",
+    "primarySubDeckId": "sy0-701-objective-4-9",
+    "sourceSubDeckIds": [],
     "requirementIds": [
       "req:sy0701:v7:4.9:log-data:firewall-logs",
       "req:sy0701:v7:4.9:log-data:application-logs",
@@ -3385,6 +3835,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 105,
     "objectiveId": "5.1",
+    "primarySubDeckId": "sy0-701-objective-5-1",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-5-1"
+    ],
     "requirementIds": [
       "req:sy0701:v7:5.1:guidelines",
       "req:sy0701:v7:5.1:policies:acceptable-use-policy-aup",
@@ -3418,6 +3872,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 106,
     "objectiveId": "5.1",
+    "primarySubDeckId": "sy0-701-objective-5-1",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-5-1"
+    ],
     "requirementIds": [
       "req:sy0701:v7:5.1:standards:password",
       "req:sy0701:v7:5.1:standards:access-control",
@@ -3443,6 +3901,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 107,
     "objectiveId": "5.1",
+    "primarySubDeckId": "sy0-701-objective-5-1",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-4-7"
+    ],
     "requirementIds": [
       "req:sy0701:v7:5.1:procedures:change-management",
       "req:sy0701:v7:5.1:procedures:onboarding-offboarding",
@@ -3452,7 +3914,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "req:sy0701:v7:5.1:types-of-governance-structures:government-entities",
       "req:sy0701:v7:5.1:types-of-governance-structures:centralized-decentralized"
     ],
-    "courseCardIds": [],
+    "courseCardIds": [
+      "1779669260172"
+    ],
     "recallQuestionIds": [
       "T107-01",
       "T107-02",
@@ -3465,12 +3929,15 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T107-09"
     ],
     "recallCardIds": [],
-    "durationSec": 422,
-    "unmappedReason": "keine per-Video gemappten Karten (Objective-Practice-Pool bleibt unberührt)"
+    "durationSec": 422
   },
   {
     "videoIndex": 108,
     "objectiveId": "5.1",
+    "primarySubDeckId": "sy0-701-objective-5-1",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-5-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:5.1:external-considerations:regulatory",
       "req:sy0701:v7:5.1:external-considerations:legal",
@@ -3503,6 +3970,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 109,
     "objectiveId": "5.1",
+    "primarySubDeckId": "sy0-701-objective-5-1",
+    "sourceSubDeckIds": [],
     "requirementIds": [
       "req:sy0701:v7:5.1:roles-and-responsibilities-for-systems-and-data:owners",
       "req:sy0701:v7:5.1:roles-and-responsibilities-for-systems-and-data:controllers",
@@ -3524,6 +3993,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 110,
     "objectiveId": "5.2",
+    "primarySubDeckId": "sy0-701-objective-5-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-5-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:5.2:risk-identification",
       "req:sy0701:v7:5.2:risk-assessment:ad-hoc",
@@ -3551,6 +4024,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 111,
     "objectiveId": "5.2",
+    "primarySubDeckId": "sy0-701-objective-5-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-5-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:5.2:risk-analysis:qualitative",
       "req:sy0701:v7:5.2:risk-analysis:quantitative",
@@ -3610,6 +4087,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 112,
     "objectiveId": "5.2",
+    "primarySubDeckId": "sy0-701-objective-5-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-5-2"
+    ],
     "requirementIds": [
       "req:sy0701:v7:5.2:risk-management-strategies:transfer",
       "req:sy0701:v7:5.2:risk-management-strategies:accept:exemption",
@@ -3620,7 +4101,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "courseCardIds": [
       "1729708046154",
-      "1729708108607"
+      "1729708108607",
+      "1779095116173"
     ],
     "recallQuestionIds": [
       "M5-013",
@@ -3644,6 +4126,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 113,
     "objectiveId": "5.2",
+    "primarySubDeckId": "sy0-701-objective-5-2",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-5-2",
+      "sy0-701-objective-3-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:5.2:business-impact-analysis:recovery-time-objective-rto",
       "req:sy0701:v7:5.2:business-impact-analysis:recovery-point-objective-rpo",
@@ -3652,7 +4139,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "courseCardIds": [
       "1729708541619",
-      "1729708787931"
+      "1729708787931",
+      "1779669260175",
+      "1779669260177",
+      "1779669260178"
     ],
     "recallQuestionIds": [
       "M5-015",
@@ -3671,6 +4161,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 114,
     "objectiveId": "5.3",
+    "primarySubDeckId": "sy0-701-objective-5-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-5-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:5.3:vendor-assessment:penetration-testing",
       "req:sy0701:v7:5.3:vendor-assessment:right-to-audit-clause",
@@ -3684,7 +4178,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "req:sy0701:v7:5.3:rules-of-engagement"
     ],
     "courseCardIds": [
-      "1729709419932"
+      "1729709419932",
+      "1779669260167"
     ],
     "recallQuestionIds": [
       "M5-017",
@@ -3708,6 +4203,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 115,
     "objectiveId": "5.3",
+    "primarySubDeckId": "sy0-701-objective-5-3",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-5-3"
+    ],
     "requirementIds": [
       "req:sy0701:v7:5.3:agreement-types:service-level-agreement-sla",
       "req:sy0701:v7:5.3:agreement-types:memorandum-of-agreement-moa",
@@ -3737,6 +4236,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 116,
     "objectiveId": "5.4",
+    "primarySubDeckId": "sy0-701-objective-5-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-5-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:5.4:compliance-reporting:internal",
       "req:sy0701:v7:5.4:compliance-reporting:external",
@@ -3781,6 +4284,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 117,
     "objectiveId": "5.4",
+    "primarySubDeckId": "sy0-701-objective-5-4",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-5-4"
+    ],
     "requirementIds": [
       "req:sy0701:v7:5.4:privacy:legal-implications:local-regional",
       "req:sy0701:v7:5.4:privacy:legal-implications:national",
@@ -3793,7 +4300,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
     ],
     "courseCardIds": [
       "1729784557847",
-      "1729784627980"
+      "1729784627980",
+      "1779669260194"
     ],
     "recallQuestionIds": [
       "M5-022",
@@ -3817,6 +4325,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 118,
     "objectiveId": "5.5",
+    "primarySubDeckId": "sy0-701-objective-5-5",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-5-5"
+    ],
     "requirementIds": [
       "req:sy0701:v7:4.3:identification-methods:system-process-audit",
       "req:sy0701:v7:4.3:validation-of-remediation:audit",
@@ -3857,6 +4369,11 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 119,
     "objectiveId": "5.5",
+    "primarySubDeckId": "sy0-701-objective-5-5",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-5-5",
+      "sy0-701-objective-5-6"
+    ],
     "requirementIds": [
       "req:sy0701:v7:5.5:penetration-testing:physical",
       "req:sy0701:v7:5.5:penetration-testing:offensive",
@@ -3875,7 +4392,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "1729785920415",
       "1729786008395",
       "1729786075246",
-      "1729786475642"
+      "1729786475642",
+      "1779095116170"
     ],
     "recallQuestionIds": [
       "M5-028",
@@ -3905,6 +4423,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 120,
     "objectiveId": "5.6",
+    "primarySubDeckId": "sy0-701-objective-5-6",
+    "sourceSubDeckIds": [
+      "sy0-701-objective-5-6"
+    ],
     "requirementIds": [
       "req:sy0701:v7:5.6:phishing:campaigns",
       "req:sy0701:v7:5.6:phishing:recognizing-a-phishing-attempt",
@@ -3936,6 +4458,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
     "videoIndex": 121,
     "objectiveId": "5.6",
+    "primarySubDeckId": "sy0-701-objective-5-6",
+    "sourceSubDeckIds": [],
     "requirementIds": [
       "req:sy0701:v7:5.6:user-guidance-and-training:policy-handbooks",
       "req:sy0701:v7:5.6:user-guidance-and-training:situational-awareness",

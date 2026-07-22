@@ -1,16 +1,10 @@
 {
   "schemaVersion": "sy0701-content-qa-report-1",
-  "manifestVersion": "2026-07-19.2",
-  "generatedAt": 1784575753192,
+  "manifestVersion": "2026-07-22.1",
+  "generatedAt": 1784754852831,
   "sourceSnapshotId": "sy0701-v7-2026-07-15",
   "requirementCount": 655,
-  "coveredCount": 655,
-  "statusCounts": {
-    "covered": 655,
-    "mapping-review": 0,
-    "content-missing": 0,
-    "assessment-missing": 0
-  },
+  "coveredCount": 480,
   "byRequirementId": {
     "req:sy0701:v7:1.1:categories:technical": {
       "requirementId": "req:sy0701:v7:1.1:categories:technical",
@@ -2039,7 +2033,7 @@
         "tq:T050-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:malware-attacks:trojan": {
@@ -2052,7 +2046,7 @@
         "mc:M2-069"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:malware-attacks:worm": {
@@ -2064,7 +2058,7 @@
         "mc:M2-072"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:malware-attacks:spyware": {
@@ -2078,7 +2072,7 @@
         "tq:T042-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:malware-attacks:bloatware": {
@@ -2092,7 +2086,7 @@
         "tq:T042-04"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:malware-attacks:virus": {
@@ -2105,7 +2099,7 @@
         "mc:M2-073"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:malware-attacks:keylogger": {
@@ -2117,7 +2111,7 @@
         "mc:M2-068"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:malware-attacks:logic-bomb": {
@@ -2129,7 +2123,7 @@
         "mc:M2-077"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:malware-attacks:rootkit": {
@@ -2141,7 +2135,7 @@
         "mc:M2-078"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:physical-attacks:brute-force": {
@@ -2153,7 +2147,7 @@
         "tq:T044-01"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:physical-attacks:radio-frequency-identification-rfid-cloning": {
@@ -2165,7 +2159,7 @@
         "mc:M2-079"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:physical-attacks:environmental": {
@@ -2177,7 +2171,7 @@
         "mc:M2-081"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:network-attacks:distributed-denial-of-service-ddos:amplified": {
@@ -2189,7 +2183,7 @@
         "mc:M2-084"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:network-attacks:distributed-denial-of-service-ddos:reflected": {
@@ -2201,7 +2195,7 @@
         "tq:T045-01"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:network-attacks:domain-name-system-dns-attacks": {
@@ -2214,7 +2208,7 @@
         "tq:T046-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:network-attacks:wireless": {
@@ -2228,7 +2222,7 @@
         "mc:M2-089"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:network-attacks:on-path": {
@@ -2242,7 +2236,7 @@
         "mc:M2-098"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:network-attacks:credential-replay": {
@@ -2254,7 +2248,7 @@
         "tq:T049-01"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:network-attacks:malicious-code": {
@@ -2268,7 +2262,7 @@
         "mc:M2-069"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:application-attacks:injection": {
@@ -2280,7 +2274,7 @@
         "mc:M2-100"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:application-attacks:buffer-overflow": {
@@ -2292,7 +2286,7 @@
         "tq:T051-01"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:application-attacks:replay": {
@@ -2305,7 +2299,7 @@
         "mc:M2-098"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:application-attacks:privilege-escalation": {
@@ -2317,7 +2311,7 @@
         "tq:T051-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:application-attacks:forgery": {
@@ -2329,7 +2323,7 @@
         "mc:M2-104"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:application-attacks:directory-traversal": {
@@ -2341,7 +2335,7 @@
         "tq:T051-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:cryptographic-attacks:downgrade": {
@@ -2354,7 +2348,7 @@
         "mc:M2-107"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:cryptographic-attacks:collision": {
@@ -2366,7 +2360,7 @@
         "mc:M2-108"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:cryptographic-attacks:birthday": {
@@ -2378,7 +2372,7 @@
         "mc:M2-105"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:password-attacks:spraying": {
@@ -2391,7 +2385,7 @@
         "tq:T053-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:password-attacks:brute-force": {
@@ -2404,7 +2398,7 @@
         "tq:T053-04"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:indicators:account-lockout": {
@@ -2416,7 +2410,7 @@
         "tq:T054-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:indicators:concurrent-session-usage": {
@@ -2428,7 +2422,7 @@
         "tq:T054-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:indicators:blocked-content": {
@@ -2440,7 +2434,7 @@
         "tq:T054-07"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:indicators:impossible-travel": {
@@ -2453,7 +2447,7 @@
         "tq:T054-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:indicators:resource-consumption": {
@@ -2465,7 +2459,7 @@
         "tq:T054-08"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:indicators:resource-inaccessibility": {
@@ -2477,7 +2471,7 @@
         "tq:T054-09"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:indicators:out-of-cycle-logging": {
@@ -2489,7 +2483,7 @@
         "tq:T054-10"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:indicators:published-documented": {
@@ -2501,7 +2495,7 @@
         "tq:T054-11"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.4:indicators:missing-logs": {
@@ -2513,7 +2507,7 @@
         "tq:T054-12"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:2.5:segmentation": {
@@ -3107,7 +3101,7 @@
         "tq:T062-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:security-zones": {
@@ -3119,7 +3113,7 @@
         "tq:T062-01"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:attack-surface": {
@@ -3131,7 +3125,7 @@
         "tq:T062-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:connectivity": {
@@ -3143,7 +3137,7 @@
         "tq:T062-07"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-open": {
@@ -3155,7 +3149,7 @@
         "tq:T063-01"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-closed": {
@@ -3167,7 +3161,7 @@
         "tq:T063-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:active-vs-passive": {
@@ -3179,7 +3173,7 @@
         "tq:T063-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:inline-vs-tap-monitor": {
@@ -3191,7 +3185,7 @@
         "tq:T063-04"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:jump-server": {
@@ -3203,7 +3197,7 @@
         "mc:M3-028"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:proxy-server": {
@@ -3215,7 +3209,7 @@
         "mc:M3-030"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:intrusion-prevention-system-ips-intrusion-detect": {
@@ -3227,7 +3221,7 @@
         "tq:T064-01"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:load-balancer": {
@@ -3240,7 +3234,7 @@
         "mc:M3-029"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:sensors": {
@@ -3252,7 +3246,7 @@
         "mc:M3-024"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:port-security:802-1x": {
@@ -3264,7 +3258,7 @@
         "mc:M3-031"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:port-security:extensible-authentication": {
@@ -3276,7 +3270,7 @@
         "mc:M3-033"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:web-application-firewall-waf": {
@@ -3289,7 +3283,7 @@
         "mc:M3-034"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:unified-threat-management-utm": {
@@ -3302,7 +3296,7 @@
         "mc:M3-035"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:next-generation-firewall-ngfw": {
@@ -3316,7 +3310,7 @@
         "tq:T066-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:layer-4-layer-7": {
@@ -3328,7 +3322,7 @@
         "tq:T066-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:secure-communication-access:virtual-private-network-vpn": {
@@ -3342,7 +3336,7 @@
         "tq:T067-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:secure-communication-access:remote-access": {
@@ -3354,7 +3348,7 @@
         "tq:T067-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:secure-communication-access:tunneling:transport-layer-security-tls": {
@@ -3367,7 +3361,7 @@
         "tq:T067-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:secure-communication-access:tunneling:internet-protocol-security-ipsec": {
@@ -3379,7 +3373,7 @@
         "tq:T067-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:secure-communication-access:software-defined-wide-area-network-sd-wan": {
@@ -3391,7 +3385,7 @@
         "tq:T067-07"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:secure-communication-access:secure-access-service-edge-sase": {
@@ -3403,7 +3397,7 @@
         "tq:T067-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:3.2:selection-of-effective-controls": {
@@ -3415,7 +3409,7 @@
         "tq:T062-08"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen",
       "note": "Sammel-Bullet; Kontrollauswahl zieht sich durch alle 3.2-Videos"
     },
@@ -4023,7 +4017,9 @@
       "assessmentItemIds": [
         "tq:T076-06"
       ],
-      "practicalItemIds": [],
+      "practicalItemIds": [
+        "lab:betrieb-baseline-haertung-server"
+      ],
       "qaStatus": "covered",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
@@ -4037,7 +4033,9 @@
         "tq:T076-04",
         "tq:T076-07"
       ],
-      "practicalItemIds": [],
+      "practicalItemIds": [
+        "lab:betrieb-baseline-haertung-server"
+      ],
       "qaStatus": "covered",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
@@ -4050,7 +4048,7 @@
         "tq:T076-07"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:hardening-targets:mobile-devices": {
@@ -4062,7 +4060,7 @@
         "tq:T077-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:hardening-targets:workstations": {
@@ -4074,7 +4072,7 @@
         "tq:T077-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:hardening-targets:switches": {
@@ -4085,7 +4083,9 @@
       "assessmentItemIds": [
         "tq:T077-02"
       ],
-      "practicalItemIds": [],
+      "practicalItemIds": [
+        "lab:betrieb-switch-haertung"
+      ],
       "qaStatus": "covered",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
@@ -4098,7 +4098,7 @@
         "tq:T077-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:hardening-targets:cloud-infrastructure": {
@@ -4110,7 +4110,7 @@
         "tq:T077-07"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:hardening-targets:servers": {
@@ -4122,7 +4122,7 @@
         "tq:T077-08"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:hardening-targets:ics-scada": {
@@ -4134,7 +4134,7 @@
         "tq:T077-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:hardening-targets:embedded-systems": {
@@ -4146,7 +4146,7 @@
         "tq:T077-09"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:hardening-targets:rtos": {
@@ -4158,7 +4158,7 @@
         "tq:T077-10"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:hardening-targets:iot-devices": {
@@ -4170,7 +4170,7 @@
         "tq:T077-04"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:wireless-devices:installation-considerations:site-surveys": {
@@ -4182,7 +4182,7 @@
         "tq:T078-01"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:wireless-devices:installation-considerations:heat-maps": {
@@ -4194,7 +4194,7 @@
         "tq:T078-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:mobile-solutions:mobile-device-management-mdm": {
@@ -4206,7 +4206,7 @@
         "tq:T078-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:mobile-solutions:deployment-models:bring-your-own-device-byod": {
@@ -4218,7 +4218,7 @@
         "tq:T078-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:mobile-solutions:deployment-models:corporate-owned-personally-enabled-cope": {
@@ -4230,7 +4230,7 @@
         "tq:T078-04"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:mobile-solutions:deployment-models:choose-your-own-device-cyod": {
@@ -4242,7 +4242,7 @@
         "tq:T078-07"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:mobile-solutions:connection-methods:cellular": {
@@ -4254,7 +4254,7 @@
         "tq:T078-08"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:mobile-solutions:connection-methods:wi-fi": {
@@ -4266,7 +4266,7 @@
         "tq:T078-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:mobile-solutions:connection-methods:bluetooth": {
@@ -4278,7 +4278,7 @@
         "tq:T078-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:wireless-security-settings:wi-fi-protected-access-3-wpa3": {
@@ -4290,7 +4290,7 @@
         "tq:T079-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:wireless-security-settings:aaa-remote-authentication-dial-in-user-service-r": {
@@ -4302,7 +4302,7 @@
         "tq:T079-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:wireless-security-settings:cryptographic-protocols": {
@@ -4314,7 +4314,7 @@
         "tq:T079-07"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:wireless-security-settings:authentication-protocols": {
@@ -4326,7 +4326,7 @@
         "tq:T079-08"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:application-security:input-validation": {
@@ -4338,7 +4338,7 @@
         "tq:T080-01"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:application-security:secure-cookies": {
@@ -4350,7 +4350,7 @@
         "tq:T080-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:application-security:static-code-analysis": {
@@ -4362,7 +4362,7 @@
         "tq:T080-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:application-security:code-signing": {
@@ -4374,7 +4374,7 @@
         "mc:M4-005"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:sandboxing": {
@@ -4386,7 +4386,7 @@
         "mc:M4-004"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.1:monitoring": {
@@ -4398,7 +4398,7 @@
         "tq:T080-04"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.2:acquisition-procurement-process": {
@@ -5114,7 +5114,9 @@
         "tq:T089-06",
         "tq:T089-07"
       ],
-      "practicalItemIds": [],
+      "practicalItemIds": [
+        "lab:firewalls-acl-implicit-deny"
+      ],
       "qaStatus": "covered",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
@@ -5126,7 +5128,9 @@
       "assessmentItemIds": [
         "tq:T089-06"
       ],
-      "practicalItemIds": [],
+      "practicalItemIds": [
+        "lab:firewalls-acl-implicit-deny"
+      ],
       "qaStatus": "covered",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
@@ -5139,7 +5143,7 @@
         "tq:T089-07"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:firewall:screened-subnets": {
@@ -5150,7 +5154,9 @@
       "assessmentItemIds": [
         "tq:T089-04"
       ],
-      "practicalItemIds": [],
+      "practicalItemIds": [
+        "lab:firewalls-screened-subnet-platzierung"
+      ],
       "qaStatus": "covered",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
@@ -5163,7 +5169,7 @@
         "tq:T063-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen",
       "note": "Trends/Signaturen im 3.2-Video „Intrusion Prevention“"
     },
@@ -5176,7 +5182,7 @@
         "tq:T063-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen",
       "note": "Trends/Signaturen im 3.2-Video „Intrusion Prevention“"
     },
@@ -5190,7 +5196,7 @@
         "tq:T090-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:web-filter:centralized-proxy": {
@@ -5202,7 +5208,7 @@
         "tq:T090-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:web-filter:universal-resource-locator-url-scanning": {
@@ -5216,7 +5222,7 @@
         "tq:T090-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:web-filter:content-categorization": {
@@ -5228,7 +5234,7 @@
         "tq:T090-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:web-filter:block-rules": {
@@ -5240,7 +5246,7 @@
         "tq:T090-07"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:web-filter:reputation": {
@@ -5252,7 +5258,7 @@
         "tq:T090-08"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:operating-system-security:group-policy": {
@@ -5264,7 +5270,7 @@
         "tq:T091-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:operating-system-security:selinux": {
@@ -5276,7 +5282,7 @@
         "tq:T091-04"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:implementation-of-secure-protocols:protocol-selection": {
@@ -5288,7 +5294,7 @@
         "tq:T092-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:implementation-of-secure-protocols:port-selection": {
@@ -5300,7 +5306,7 @@
         "tq:T092-07"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:implementation-of-secure-protocols:transport-method": {
@@ -5312,7 +5318,7 @@
         "tq:T092-08"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:dns-filtering": {
@@ -5324,7 +5330,7 @@
         "tq:T090-04"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:email-security:domain-based-message-authentication-reporting-an": {
@@ -5336,7 +5342,7 @@
         "tq:T093-04"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:email-security:domainkeys-identified-mail-dkim": {
@@ -5348,7 +5354,7 @@
         "tq:T093-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:email-security:sender-policy-framework-spf": {
@@ -5360,7 +5366,7 @@
         "tq:T093-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:email-security:gateway": {
@@ -5372,7 +5378,7 @@
         "tq:T093-01"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:file-integrity-monitoring": {
@@ -5385,7 +5391,7 @@
         "tq:T094-01"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:dlp": {
@@ -5399,7 +5405,7 @@
         "tq:T094-04"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:network-access-control-nac": {
@@ -5411,7 +5417,7 @@
         "tq:T095-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:endpoint-detection-and-response-edr-extended-det": {
@@ -5424,7 +5430,7 @@
         "tq:T095-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.5:user-behavior-analytics": {
@@ -5436,7 +5442,7 @@
         "tq:T095-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:provisioning-de-provisioning-user-accounts": {
@@ -5448,7 +5454,7 @@
         "tq:T096-01"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:permission-assignments-and-implications": {
@@ -5459,7 +5465,9 @@
       "assessmentItemIds": [
         "tq:T096-02"
       ],
-      "practicalItemIds": [],
+      "practicalItemIds": [
+        "lab:iam-least-privilege-helpdesk"
+      ],
       "qaStatus": "covered",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
@@ -5472,7 +5480,7 @@
         "tq:T096-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:federation": {
@@ -5484,7 +5492,7 @@
         "tq:T096-04"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:single-sign-on-sso:lightweight-directory-access-protocol-ldap": {
@@ -5496,7 +5504,7 @@
         "tq:T096-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:single-sign-on-sso:open-authorization-oauth": {
@@ -5507,7 +5515,9 @@
       "assessmentItemIds": [
         "tq:T096-06"
       ],
-      "practicalItemIds": [],
+      "practicalItemIds": [
+        "lab:iam-sso-protokollwahl"
+      ],
       "qaStatus": "covered",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
@@ -5519,7 +5529,9 @@
       "assessmentItemIds": [
         "tq:T096-07"
       ],
-      "practicalItemIds": [],
+      "practicalItemIds": [
+        "lab:iam-sso-protokollwahl"
+      ],
       "qaStatus": "covered",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
@@ -5532,7 +5544,7 @@
         "tq:T096-08"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:attestation": {
@@ -5545,7 +5557,7 @@
         "tq:T096-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:access-controls:mandatory": {
@@ -5557,7 +5569,7 @@
         "tq:T097-01"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:access-controls:discretionary": {
@@ -5569,7 +5581,7 @@
         "mc:M4-029"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:access-controls:role-based": {
@@ -5581,7 +5593,7 @@
         "tq:T097-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:access-controls:rule-based": {
@@ -5593,7 +5605,7 @@
         "tq:T097-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:access-controls:attribute-based": {
@@ -5605,7 +5617,7 @@
         "tq:T097-04"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:access-controls:time-of-day-restrictions": {
@@ -5617,7 +5629,7 @@
         "tq:T097-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:access-controls:least-privilege": {
@@ -5629,7 +5641,7 @@
         "tq:T097-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:multifactor-authentication:implementations:biometrics": {
@@ -5641,7 +5653,7 @@
         "mc:M4-032"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:multifactor-authentication:implementations:hard-soft-authentication-tokens": {
@@ -5653,7 +5665,7 @@
         "tq:T098-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:multifactor-authentication:implementations:security-keys": {
@@ -5665,7 +5677,7 @@
         "tq:T098-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-know": {
@@ -5677,7 +5689,7 @@
         "tq:T098-07"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-have": {
@@ -5690,7 +5702,7 @@
         "tq:T098-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-are": {
@@ -5704,7 +5716,7 @@
         "tq:T098-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:multifactor-authentication:factors:somewhere-you-are": {
@@ -5717,7 +5729,7 @@
         "tq:T098-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:password-concepts:password-best-practices:length": {
@@ -5729,7 +5741,7 @@
         "tq:T099-01"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:password-concepts:password-best-practices:complexity": {
@@ -5741,7 +5753,7 @@
         "tq:T099-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:password-concepts:password-best-practices:reuse": {
@@ -5753,7 +5765,7 @@
         "tq:T099-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:password-concepts:password-best-practices:expiration": {
@@ -5765,7 +5777,7 @@
         "tq:T099-04"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:password-concepts:password-best-practices:age": {
@@ -5777,7 +5789,7 @@
         "mc:M4-034"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:password-concepts:password-managers": {
@@ -5789,7 +5801,7 @@
         "mc:M4-035"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:password-concepts:passwordless": {
@@ -5801,7 +5813,7 @@
         "mc:M4-036"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.6:privileged-access-management-tools:just-in-time-permissions": {
@@ -5813,7 +5825,7 @@
         "tq:T099-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen",
       "note": "JIT/Vaulting/Ephemeral im Video „Password Security“"
     },
@@ -5826,7 +5838,7 @@
         "tq:T099-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen",
       "note": "JIT/Vaulting/Ephemeral im Video „Password Security“"
     },
@@ -5839,7 +5851,7 @@
         "tq:T099-07"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen",
       "note": "JIT/Vaulting/Ephemeral im Video „Password Security“"
     },
@@ -6139,7 +6151,9 @@
       "assessmentItemIds": [
         "tq:T101-08"
       ],
-      "practicalItemIds": [],
+      "practicalItemIds": [
+        "lab:incident-response-sofortmassnahme-ransomware"
+      ],
       "qaStatus": "covered",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
@@ -6261,7 +6275,9 @@
       "assessmentItemIds": [
         "tq:T103-02"
       ],
-      "practicalItemIds": [],
+      "practicalItemIds": [
+        "lab:incident-response-chain-of-custody"
+      ],
       "qaStatus": "covered",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
@@ -6324,7 +6340,9 @@
         "tq:T104-01",
         "tq:T104-06"
       ],
-      "practicalItemIds": [],
+      "practicalItemIds": [
+        "lab:betrieb-firewall-log-triage"
+      ],
       "qaStatus": "covered",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
@@ -6337,7 +6355,7 @@
         "tq:T104-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.9:log-data:endpoint-logs": {
@@ -6349,7 +6367,7 @@
         "tq:T104-07"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.9:log-data:os-specific-security-logs": {
@@ -6361,7 +6379,7 @@
         "tq:T104-08"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.9:log-data:ips-ids-logs": {
@@ -6372,7 +6390,9 @@
       "assessmentItemIds": [
         "tq:T104-09"
       ],
-      "practicalItemIds": [],
+      "practicalItemIds": [
+        "lab:betrieb-ips-alert-eskalation"
+      ],
       "qaStatus": "covered",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
@@ -6385,7 +6405,7 @@
         "tq:T104-10"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.9:log-data:metadata": {
@@ -6397,7 +6417,7 @@
         "tq:T104-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.9:data-sources:vulnerability-scans": {
@@ -6409,7 +6429,7 @@
         "tq:T104-11"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.9:data-sources:automated-reports": {
@@ -6421,7 +6441,7 @@
         "tq:T104-12"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.9:data-sources:dashboards": {
@@ -6433,7 +6453,7 @@
         "tq:T104-04"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:4.9:data-sources:packet-captures": {
@@ -6445,7 +6465,7 @@
         "tq:T104-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.1:guidelines": {
@@ -7850,7 +7870,7 @@
         "tq:T120-01"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:phishing:recognizing-a-phishing-attempt": {
@@ -7862,7 +7882,7 @@
         "tq:T120-05"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:phishing:responding-to-reported-suspicious-messages": {
@@ -7874,7 +7894,7 @@
         "tq:T120-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:anomalous-behavior-recognition:risky": {
@@ -7886,7 +7906,7 @@
         "tq:T120-07"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:anomalous-behavior-recognition:unexpected": {
@@ -7898,7 +7918,7 @@
         "tq:T120-08"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:anomalous-behavior-recognition:unintentional": {
@@ -7910,7 +7930,7 @@
         "tq:T120-09"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:user-guidance-and-training:policy-handbooks": {
@@ -7922,7 +7942,7 @@
         "tq:T121-06"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:user-guidance-and-training:situational-awareness": {
@@ -7934,7 +7954,7 @@
         "tq:T121-02"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:user-guidance-and-training:insider-threat": {
@@ -7946,7 +7966,7 @@
         "tq:T121-03"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:user-guidance-and-training:password-management": {
@@ -7958,7 +7978,7 @@
         "tq:T121-07"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:user-guidance-and-training:removable-media-and-cables": {
@@ -7970,7 +7990,7 @@
         "tq:T121-08"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:user-guidance-and-training:social-engineering": {
@@ -7982,7 +8002,7 @@
         "tq:T121-09"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:user-guidance-and-training:operational-security": {
@@ -7994,7 +8014,7 @@
         "tq:T121-10"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:user-guidance-and-training:hybrid-remote-work-environments": {
@@ -8006,7 +8026,7 @@
         "tq:T121-11"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:reporting-and-monitoring:initial": {
@@ -8018,7 +8038,7 @@
         "tq:T121-12"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:reporting-and-monitoring:recurring": {
@@ -8030,7 +8050,7 @@
         "tq:T121-13"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:development": {
@@ -8042,7 +8062,7 @@
         "tq:T121-14"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     },
     "req:sy0701:v7:5.6:execution": {
@@ -8054,11 +8074,371 @@
         "tq:T121-15"
       ],
       "practicalItemIds": [],
-      "qaStatus": "covered",
+      "qaStatus": "practice-missing",
       "reviewer": "claude-fable-5 — Videozuordnung über transkript-verifizierte Regeltabelle, Assessment-Zuordnung tokenbasiert mit Video-Prior, fachlich durchgesehen"
     }
   },
-  "blockingRequirementIds": [],
+  "blockingRequirementIds": [
+    "req:sy0701:v7:2.4:malware-attacks:ransomware",
+    "req:sy0701:v7:2.4:malware-attacks:trojan",
+    "req:sy0701:v7:2.4:malware-attacks:worm",
+    "req:sy0701:v7:2.4:malware-attacks:spyware",
+    "req:sy0701:v7:2.4:malware-attacks:bloatware",
+    "req:sy0701:v7:2.4:malware-attacks:virus",
+    "req:sy0701:v7:2.4:malware-attacks:keylogger",
+    "req:sy0701:v7:2.4:malware-attacks:logic-bomb",
+    "req:sy0701:v7:2.4:malware-attacks:rootkit",
+    "req:sy0701:v7:2.4:physical-attacks:brute-force",
+    "req:sy0701:v7:2.4:physical-attacks:radio-frequency-identification-rfid-cloning",
+    "req:sy0701:v7:2.4:physical-attacks:environmental",
+    "req:sy0701:v7:2.4:network-attacks:distributed-denial-of-service-ddos:amplified",
+    "req:sy0701:v7:2.4:network-attacks:distributed-denial-of-service-ddos:reflected",
+    "req:sy0701:v7:2.4:network-attacks:domain-name-system-dns-attacks",
+    "req:sy0701:v7:2.4:network-attacks:wireless",
+    "req:sy0701:v7:2.4:network-attacks:on-path",
+    "req:sy0701:v7:2.4:network-attacks:credential-replay",
+    "req:sy0701:v7:2.4:network-attacks:malicious-code",
+    "req:sy0701:v7:2.4:application-attacks:injection",
+    "req:sy0701:v7:2.4:application-attacks:buffer-overflow",
+    "req:sy0701:v7:2.4:application-attacks:replay",
+    "req:sy0701:v7:2.4:application-attacks:privilege-escalation",
+    "req:sy0701:v7:2.4:application-attacks:forgery",
+    "req:sy0701:v7:2.4:application-attacks:directory-traversal",
+    "req:sy0701:v7:2.4:cryptographic-attacks:downgrade",
+    "req:sy0701:v7:2.4:cryptographic-attacks:collision",
+    "req:sy0701:v7:2.4:cryptographic-attacks:birthday",
+    "req:sy0701:v7:2.4:password-attacks:spraying",
+    "req:sy0701:v7:2.4:password-attacks:brute-force",
+    "req:sy0701:v7:2.4:indicators:account-lockout",
+    "req:sy0701:v7:2.4:indicators:concurrent-session-usage",
+    "req:sy0701:v7:2.4:indicators:blocked-content",
+    "req:sy0701:v7:2.4:indicators:impossible-travel",
+    "req:sy0701:v7:2.4:indicators:resource-consumption",
+    "req:sy0701:v7:2.4:indicators:resource-inaccessibility",
+    "req:sy0701:v7:2.4:indicators:out-of-cycle-logging",
+    "req:sy0701:v7:2.4:indicators:published-documented",
+    "req:sy0701:v7:2.4:indicators:missing-logs",
+    "req:sy0701:v7:3.2:infrastructure-considerations:device-placement",
+    "req:sy0701:v7:3.2:infrastructure-considerations:security-zones",
+    "req:sy0701:v7:3.2:infrastructure-considerations:attack-surface",
+    "req:sy0701:v7:3.2:infrastructure-considerations:connectivity",
+    "req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-open",
+    "req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-closed",
+    "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:active-vs-passive",
+    "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:inline-vs-tap-monitor",
+    "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:jump-server",
+    "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:proxy-server",
+    "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:intrusion-prevention-system-ips-intrusion-detect",
+    "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:load-balancer",
+    "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:sensors",
+    "req:sy0701:v7:3.2:infrastructure-considerations:port-security:802-1x",
+    "req:sy0701:v7:3.2:infrastructure-considerations:port-security:extensible-authentication",
+    "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:web-application-firewall-waf",
+    "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:unified-threat-management-utm",
+    "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:next-generation-firewall-ngfw",
+    "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:layer-4-layer-7",
+    "req:sy0701:v7:3.2:secure-communication-access:virtual-private-network-vpn",
+    "req:sy0701:v7:3.2:secure-communication-access:remote-access",
+    "req:sy0701:v7:3.2:secure-communication-access:tunneling:transport-layer-security-tls",
+    "req:sy0701:v7:3.2:secure-communication-access:tunneling:internet-protocol-security-ipsec",
+    "req:sy0701:v7:3.2:secure-communication-access:software-defined-wide-area-network-sd-wan",
+    "req:sy0701:v7:3.2:secure-communication-access:secure-access-service-edge-sase",
+    "req:sy0701:v7:3.2:selection-of-effective-controls",
+    "req:sy0701:v7:4.1:secure-baselines:maintain",
+    "req:sy0701:v7:4.1:hardening-targets:mobile-devices",
+    "req:sy0701:v7:4.1:hardening-targets:workstations",
+    "req:sy0701:v7:4.1:hardening-targets:routers",
+    "req:sy0701:v7:4.1:hardening-targets:cloud-infrastructure",
+    "req:sy0701:v7:4.1:hardening-targets:servers",
+    "req:sy0701:v7:4.1:hardening-targets:ics-scada",
+    "req:sy0701:v7:4.1:hardening-targets:embedded-systems",
+    "req:sy0701:v7:4.1:hardening-targets:rtos",
+    "req:sy0701:v7:4.1:hardening-targets:iot-devices",
+    "req:sy0701:v7:4.1:wireless-devices:installation-considerations:site-surveys",
+    "req:sy0701:v7:4.1:wireless-devices:installation-considerations:heat-maps",
+    "req:sy0701:v7:4.1:mobile-solutions:mobile-device-management-mdm",
+    "req:sy0701:v7:4.1:mobile-solutions:deployment-models:bring-your-own-device-byod",
+    "req:sy0701:v7:4.1:mobile-solutions:deployment-models:corporate-owned-personally-enabled-cope",
+    "req:sy0701:v7:4.1:mobile-solutions:deployment-models:choose-your-own-device-cyod",
+    "req:sy0701:v7:4.1:mobile-solutions:connection-methods:cellular",
+    "req:sy0701:v7:4.1:mobile-solutions:connection-methods:wi-fi",
+    "req:sy0701:v7:4.1:mobile-solutions:connection-methods:bluetooth",
+    "req:sy0701:v7:4.1:wireless-security-settings:wi-fi-protected-access-3-wpa3",
+    "req:sy0701:v7:4.1:wireless-security-settings:aaa-remote-authentication-dial-in-user-service-r",
+    "req:sy0701:v7:4.1:wireless-security-settings:cryptographic-protocols",
+    "req:sy0701:v7:4.1:wireless-security-settings:authentication-protocols",
+    "req:sy0701:v7:4.1:application-security:input-validation",
+    "req:sy0701:v7:4.1:application-security:secure-cookies",
+    "req:sy0701:v7:4.1:application-security:static-code-analysis",
+    "req:sy0701:v7:4.1:application-security:code-signing",
+    "req:sy0701:v7:4.1:sandboxing",
+    "req:sy0701:v7:4.1:monitoring",
+    "req:sy0701:v7:4.5:firewall:ports-protocols",
+    "req:sy0701:v7:4.5:ids-ips:trends",
+    "req:sy0701:v7:4.5:ids-ips:signatures",
+    "req:sy0701:v7:4.5:web-filter:agent-based",
+    "req:sy0701:v7:4.5:web-filter:centralized-proxy",
+    "req:sy0701:v7:4.5:web-filter:universal-resource-locator-url-scanning",
+    "req:sy0701:v7:4.5:web-filter:content-categorization",
+    "req:sy0701:v7:4.5:web-filter:block-rules",
+    "req:sy0701:v7:4.5:web-filter:reputation",
+    "req:sy0701:v7:4.5:operating-system-security:group-policy",
+    "req:sy0701:v7:4.5:operating-system-security:selinux",
+    "req:sy0701:v7:4.5:implementation-of-secure-protocols:protocol-selection",
+    "req:sy0701:v7:4.5:implementation-of-secure-protocols:port-selection",
+    "req:sy0701:v7:4.5:implementation-of-secure-protocols:transport-method",
+    "req:sy0701:v7:4.5:dns-filtering",
+    "req:sy0701:v7:4.5:email-security:domain-based-message-authentication-reporting-an",
+    "req:sy0701:v7:4.5:email-security:domainkeys-identified-mail-dkim",
+    "req:sy0701:v7:4.5:email-security:sender-policy-framework-spf",
+    "req:sy0701:v7:4.5:email-security:gateway",
+    "req:sy0701:v7:4.5:file-integrity-monitoring",
+    "req:sy0701:v7:4.5:dlp",
+    "req:sy0701:v7:4.5:network-access-control-nac",
+    "req:sy0701:v7:4.5:endpoint-detection-and-response-edr-extended-det",
+    "req:sy0701:v7:4.5:user-behavior-analytics",
+    "req:sy0701:v7:4.6:provisioning-de-provisioning-user-accounts",
+    "req:sy0701:v7:4.6:identity-proofing",
+    "req:sy0701:v7:4.6:federation",
+    "req:sy0701:v7:4.6:single-sign-on-sso:lightweight-directory-access-protocol-ldap",
+    "req:sy0701:v7:4.6:interoperability",
+    "req:sy0701:v7:4.6:attestation",
+    "req:sy0701:v7:4.6:access-controls:mandatory",
+    "req:sy0701:v7:4.6:access-controls:discretionary",
+    "req:sy0701:v7:4.6:access-controls:role-based",
+    "req:sy0701:v7:4.6:access-controls:rule-based",
+    "req:sy0701:v7:4.6:access-controls:attribute-based",
+    "req:sy0701:v7:4.6:access-controls:time-of-day-restrictions",
+    "req:sy0701:v7:4.6:access-controls:least-privilege",
+    "req:sy0701:v7:4.6:multifactor-authentication:implementations:biometrics",
+    "req:sy0701:v7:4.6:multifactor-authentication:implementations:hard-soft-authentication-tokens",
+    "req:sy0701:v7:4.6:multifactor-authentication:implementations:security-keys",
+    "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-know",
+    "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-have",
+    "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-are",
+    "req:sy0701:v7:4.6:multifactor-authentication:factors:somewhere-you-are",
+    "req:sy0701:v7:4.6:password-concepts:password-best-practices:length",
+    "req:sy0701:v7:4.6:password-concepts:password-best-practices:complexity",
+    "req:sy0701:v7:4.6:password-concepts:password-best-practices:reuse",
+    "req:sy0701:v7:4.6:password-concepts:password-best-practices:expiration",
+    "req:sy0701:v7:4.6:password-concepts:password-best-practices:age",
+    "req:sy0701:v7:4.6:password-concepts:password-managers",
+    "req:sy0701:v7:4.6:password-concepts:passwordless",
+    "req:sy0701:v7:4.6:privileged-access-management-tools:just-in-time-permissions",
+    "req:sy0701:v7:4.6:privileged-access-management-tools:password-vaulting",
+    "req:sy0701:v7:4.6:privileged-access-management-tools:ephemeral-credentials",
+    "req:sy0701:v7:4.9:log-data:application-logs",
+    "req:sy0701:v7:4.9:log-data:endpoint-logs",
+    "req:sy0701:v7:4.9:log-data:os-specific-security-logs",
+    "req:sy0701:v7:4.9:log-data:network-logs",
+    "req:sy0701:v7:4.9:log-data:metadata",
+    "req:sy0701:v7:4.9:data-sources:vulnerability-scans",
+    "req:sy0701:v7:4.9:data-sources:automated-reports",
+    "req:sy0701:v7:4.9:data-sources:dashboards",
+    "req:sy0701:v7:4.9:data-sources:packet-captures",
+    "req:sy0701:v7:5.6:phishing:campaigns",
+    "req:sy0701:v7:5.6:phishing:recognizing-a-phishing-attempt",
+    "req:sy0701:v7:5.6:phishing:responding-to-reported-suspicious-messages",
+    "req:sy0701:v7:5.6:anomalous-behavior-recognition:risky",
+    "req:sy0701:v7:5.6:anomalous-behavior-recognition:unexpected",
+    "req:sy0701:v7:5.6:anomalous-behavior-recognition:unintentional",
+    "req:sy0701:v7:5.6:user-guidance-and-training:policy-handbooks",
+    "req:sy0701:v7:5.6:user-guidance-and-training:situational-awareness",
+    "req:sy0701:v7:5.6:user-guidance-and-training:insider-threat",
+    "req:sy0701:v7:5.6:user-guidance-and-training:password-management",
+    "req:sy0701:v7:5.6:user-guidance-and-training:removable-media-and-cables",
+    "req:sy0701:v7:5.6:user-guidance-and-training:social-engineering",
+    "req:sy0701:v7:5.6:user-guidance-and-training:operational-security",
+    "req:sy0701:v7:5.6:user-guidance-and-training:hybrid-remote-work-environments",
+    "req:sy0701:v7:5.6:reporting-and-monitoring:initial",
+    "req:sy0701:v7:5.6:reporting-and-monitoring:recurring",
+    "req:sy0701:v7:5.6:development",
+    "req:sy0701:v7:5.6:execution"
+  ],
+  "statusCounts": {
+    "covered": 480,
+    "mapping-review": 0,
+    "content-missing": 0,
+    "assessment-missing": 0,
+    "practice-missing": 175
+  },
+  "missingPracticalRequirementIds": [
+    "req:sy0701:v7:2.4:malware-attacks:ransomware",
+    "req:sy0701:v7:2.4:malware-attacks:trojan",
+    "req:sy0701:v7:2.4:malware-attacks:worm",
+    "req:sy0701:v7:2.4:malware-attacks:spyware",
+    "req:sy0701:v7:2.4:malware-attacks:bloatware",
+    "req:sy0701:v7:2.4:malware-attacks:virus",
+    "req:sy0701:v7:2.4:malware-attacks:keylogger",
+    "req:sy0701:v7:2.4:malware-attacks:logic-bomb",
+    "req:sy0701:v7:2.4:malware-attacks:rootkit",
+    "req:sy0701:v7:2.4:physical-attacks:brute-force",
+    "req:sy0701:v7:2.4:physical-attacks:radio-frequency-identification-rfid-cloning",
+    "req:sy0701:v7:2.4:physical-attacks:environmental",
+    "req:sy0701:v7:2.4:network-attacks:distributed-denial-of-service-ddos:amplified",
+    "req:sy0701:v7:2.4:network-attacks:distributed-denial-of-service-ddos:reflected",
+    "req:sy0701:v7:2.4:network-attacks:domain-name-system-dns-attacks",
+    "req:sy0701:v7:2.4:network-attacks:wireless",
+    "req:sy0701:v7:2.4:network-attacks:on-path",
+    "req:sy0701:v7:2.4:network-attacks:credential-replay",
+    "req:sy0701:v7:2.4:network-attacks:malicious-code",
+    "req:sy0701:v7:2.4:application-attacks:injection",
+    "req:sy0701:v7:2.4:application-attacks:buffer-overflow",
+    "req:sy0701:v7:2.4:application-attacks:replay",
+    "req:sy0701:v7:2.4:application-attacks:privilege-escalation",
+    "req:sy0701:v7:2.4:application-attacks:forgery",
+    "req:sy0701:v7:2.4:application-attacks:directory-traversal",
+    "req:sy0701:v7:2.4:cryptographic-attacks:downgrade",
+    "req:sy0701:v7:2.4:cryptographic-attacks:collision",
+    "req:sy0701:v7:2.4:cryptographic-attacks:birthday",
+    "req:sy0701:v7:2.4:password-attacks:spraying",
+    "req:sy0701:v7:2.4:password-attacks:brute-force",
+    "req:sy0701:v7:2.4:indicators:account-lockout",
+    "req:sy0701:v7:2.4:indicators:concurrent-session-usage",
+    "req:sy0701:v7:2.4:indicators:blocked-content",
+    "req:sy0701:v7:2.4:indicators:impossible-travel",
+    "req:sy0701:v7:2.4:indicators:resource-consumption",
+    "req:sy0701:v7:2.4:indicators:resource-inaccessibility",
+    "req:sy0701:v7:2.4:indicators:out-of-cycle-logging",
+    "req:sy0701:v7:2.4:indicators:published-documented",
+    "req:sy0701:v7:2.4:indicators:missing-logs",
+    "req:sy0701:v7:3.2:infrastructure-considerations:device-placement",
+    "req:sy0701:v7:3.2:infrastructure-considerations:security-zones",
+    "req:sy0701:v7:3.2:infrastructure-considerations:attack-surface",
+    "req:sy0701:v7:3.2:infrastructure-considerations:connectivity",
+    "req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-open",
+    "req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-closed",
+    "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:active-vs-passive",
+    "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:inline-vs-tap-monitor",
+    "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:jump-server",
+    "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:proxy-server",
+    "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:intrusion-prevention-system-ips-intrusion-detect",
+    "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:load-balancer",
+    "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:sensors",
+    "req:sy0701:v7:3.2:infrastructure-considerations:port-security:802-1x",
+    "req:sy0701:v7:3.2:infrastructure-considerations:port-security:extensible-authentication",
+    "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:web-application-firewall-waf",
+    "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:unified-threat-management-utm",
+    "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:next-generation-firewall-ngfw",
+    "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:layer-4-layer-7",
+    "req:sy0701:v7:3.2:secure-communication-access:virtual-private-network-vpn",
+    "req:sy0701:v7:3.2:secure-communication-access:remote-access",
+    "req:sy0701:v7:3.2:secure-communication-access:tunneling:transport-layer-security-tls",
+    "req:sy0701:v7:3.2:secure-communication-access:tunneling:internet-protocol-security-ipsec",
+    "req:sy0701:v7:3.2:secure-communication-access:software-defined-wide-area-network-sd-wan",
+    "req:sy0701:v7:3.2:secure-communication-access:secure-access-service-edge-sase",
+    "req:sy0701:v7:3.2:selection-of-effective-controls",
+    "req:sy0701:v7:4.1:secure-baselines:maintain",
+    "req:sy0701:v7:4.1:hardening-targets:mobile-devices",
+    "req:sy0701:v7:4.1:hardening-targets:workstations",
+    "req:sy0701:v7:4.1:hardening-targets:routers",
+    "req:sy0701:v7:4.1:hardening-targets:cloud-infrastructure",
+    "req:sy0701:v7:4.1:hardening-targets:servers",
+    "req:sy0701:v7:4.1:hardening-targets:ics-scada",
+    "req:sy0701:v7:4.1:hardening-targets:embedded-systems",
+    "req:sy0701:v7:4.1:hardening-targets:rtos",
+    "req:sy0701:v7:4.1:hardening-targets:iot-devices",
+    "req:sy0701:v7:4.1:wireless-devices:installation-considerations:site-surveys",
+    "req:sy0701:v7:4.1:wireless-devices:installation-considerations:heat-maps",
+    "req:sy0701:v7:4.1:mobile-solutions:mobile-device-management-mdm",
+    "req:sy0701:v7:4.1:mobile-solutions:deployment-models:bring-your-own-device-byod",
+    "req:sy0701:v7:4.1:mobile-solutions:deployment-models:corporate-owned-personally-enabled-cope",
+    "req:sy0701:v7:4.1:mobile-solutions:deployment-models:choose-your-own-device-cyod",
+    "req:sy0701:v7:4.1:mobile-solutions:connection-methods:cellular",
+    "req:sy0701:v7:4.1:mobile-solutions:connection-methods:wi-fi",
+    "req:sy0701:v7:4.1:mobile-solutions:connection-methods:bluetooth",
+    "req:sy0701:v7:4.1:wireless-security-settings:wi-fi-protected-access-3-wpa3",
+    "req:sy0701:v7:4.1:wireless-security-settings:aaa-remote-authentication-dial-in-user-service-r",
+    "req:sy0701:v7:4.1:wireless-security-settings:cryptographic-protocols",
+    "req:sy0701:v7:4.1:wireless-security-settings:authentication-protocols",
+    "req:sy0701:v7:4.1:application-security:input-validation",
+    "req:sy0701:v7:4.1:application-security:secure-cookies",
+    "req:sy0701:v7:4.1:application-security:static-code-analysis",
+    "req:sy0701:v7:4.1:application-security:code-signing",
+    "req:sy0701:v7:4.1:sandboxing",
+    "req:sy0701:v7:4.1:monitoring",
+    "req:sy0701:v7:4.5:firewall:ports-protocols",
+    "req:sy0701:v7:4.5:ids-ips:trends",
+    "req:sy0701:v7:4.5:ids-ips:signatures",
+    "req:sy0701:v7:4.5:web-filter:agent-based",
+    "req:sy0701:v7:4.5:web-filter:centralized-proxy",
+    "req:sy0701:v7:4.5:web-filter:universal-resource-locator-url-scanning",
+    "req:sy0701:v7:4.5:web-filter:content-categorization",
+    "req:sy0701:v7:4.5:web-filter:block-rules",
+    "req:sy0701:v7:4.5:web-filter:reputation",
+    "req:sy0701:v7:4.5:operating-system-security:group-policy",
+    "req:sy0701:v7:4.5:operating-system-security:selinux",
+    "req:sy0701:v7:4.5:implementation-of-secure-protocols:protocol-selection",
+    "req:sy0701:v7:4.5:implementation-of-secure-protocols:port-selection",
+    "req:sy0701:v7:4.5:implementation-of-secure-protocols:transport-method",
+    "req:sy0701:v7:4.5:dns-filtering",
+    "req:sy0701:v7:4.5:email-security:domain-based-message-authentication-reporting-an",
+    "req:sy0701:v7:4.5:email-security:domainkeys-identified-mail-dkim",
+    "req:sy0701:v7:4.5:email-security:sender-policy-framework-spf",
+    "req:sy0701:v7:4.5:email-security:gateway",
+    "req:sy0701:v7:4.5:file-integrity-monitoring",
+    "req:sy0701:v7:4.5:dlp",
+    "req:sy0701:v7:4.5:network-access-control-nac",
+    "req:sy0701:v7:4.5:endpoint-detection-and-response-edr-extended-det",
+    "req:sy0701:v7:4.5:user-behavior-analytics",
+    "req:sy0701:v7:4.6:provisioning-de-provisioning-user-accounts",
+    "req:sy0701:v7:4.6:identity-proofing",
+    "req:sy0701:v7:4.6:federation",
+    "req:sy0701:v7:4.6:single-sign-on-sso:lightweight-directory-access-protocol-ldap",
+    "req:sy0701:v7:4.6:interoperability",
+    "req:sy0701:v7:4.6:attestation",
+    "req:sy0701:v7:4.6:access-controls:mandatory",
+    "req:sy0701:v7:4.6:access-controls:discretionary",
+    "req:sy0701:v7:4.6:access-controls:role-based",
+    "req:sy0701:v7:4.6:access-controls:rule-based",
+    "req:sy0701:v7:4.6:access-controls:attribute-based",
+    "req:sy0701:v7:4.6:access-controls:time-of-day-restrictions",
+    "req:sy0701:v7:4.6:access-controls:least-privilege",
+    "req:sy0701:v7:4.6:multifactor-authentication:implementations:biometrics",
+    "req:sy0701:v7:4.6:multifactor-authentication:implementations:hard-soft-authentication-tokens",
+    "req:sy0701:v7:4.6:multifactor-authentication:implementations:security-keys",
+    "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-know",
+    "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-have",
+    "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-are",
+    "req:sy0701:v7:4.6:multifactor-authentication:factors:somewhere-you-are",
+    "req:sy0701:v7:4.6:password-concepts:password-best-practices:length",
+    "req:sy0701:v7:4.6:password-concepts:password-best-practices:complexity",
+    "req:sy0701:v7:4.6:password-concepts:password-best-practices:reuse",
+    "req:sy0701:v7:4.6:password-concepts:password-best-practices:expiration",
+    "req:sy0701:v7:4.6:password-concepts:password-best-practices:age",
+    "req:sy0701:v7:4.6:password-concepts:password-managers",
+    "req:sy0701:v7:4.6:password-concepts:passwordless",
+    "req:sy0701:v7:4.6:privileged-access-management-tools:just-in-time-permissions",
+    "req:sy0701:v7:4.6:privileged-access-management-tools:password-vaulting",
+    "req:sy0701:v7:4.6:privileged-access-management-tools:ephemeral-credentials",
+    "req:sy0701:v7:4.9:log-data:application-logs",
+    "req:sy0701:v7:4.9:log-data:endpoint-logs",
+    "req:sy0701:v7:4.9:log-data:os-specific-security-logs",
+    "req:sy0701:v7:4.9:log-data:network-logs",
+    "req:sy0701:v7:4.9:log-data:metadata",
+    "req:sy0701:v7:4.9:data-sources:vulnerability-scans",
+    "req:sy0701:v7:4.9:data-sources:automated-reports",
+    "req:sy0701:v7:4.9:data-sources:dashboards",
+    "req:sy0701:v7:4.9:data-sources:packet-captures",
+    "req:sy0701:v7:5.6:phishing:campaigns",
+    "req:sy0701:v7:5.6:phishing:recognizing-a-phishing-attempt",
+    "req:sy0701:v7:5.6:phishing:responding-to-reported-suspicious-messages",
+    "req:sy0701:v7:5.6:anomalous-behavior-recognition:risky",
+    "req:sy0701:v7:5.6:anomalous-behavior-recognition:unexpected",
+    "req:sy0701:v7:5.6:anomalous-behavior-recognition:unintentional",
+    "req:sy0701:v7:5.6:user-guidance-and-training:policy-handbooks",
+    "req:sy0701:v7:5.6:user-guidance-and-training:situational-awareness",
+    "req:sy0701:v7:5.6:user-guidance-and-training:insider-threat",
+    "req:sy0701:v7:5.6:user-guidance-and-training:password-management",
+    "req:sy0701:v7:5.6:user-guidance-and-training:removable-media-and-cables",
+    "req:sy0701:v7:5.6:user-guidance-and-training:social-engineering",
+    "req:sy0701:v7:5.6:user-guidance-and-training:operational-security",
+    "req:sy0701:v7:5.6:user-guidance-and-training:hybrid-remote-work-environments",
+    "req:sy0701:v7:5.6:reporting-and-monitoring:initial",
+    "req:sy0701:v7:5.6:reporting-and-monitoring:recurring",
+    "req:sy0701:v7:5.6:development",
+    "req:sy0701:v7:5.6:execution"
+  ],
   "mappingDecisions": {
     "decided": 31,
     "applied": 0,

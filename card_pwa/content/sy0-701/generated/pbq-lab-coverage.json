@@ -1,7 +1,7 @@
 {
   "schemaVersion": "sy0701-pbq-lab-coverage-1",
-  "manifestVersion": "2026-07-19.2",
-  "generatedAt": 1784575753179,
+  "manifestVersion": "2026-07-22.1",
+  "generatedAt": 1784754852817,
   "sourceSnapshotId": "sy0701-v7-2026-07-15",
   "pbqCards": [
     {
@@ -167,7 +167,7 @@
     }
   ],
   "pbqCardCount": 23,
-  "labScenarioCount": 100,
+  "labScenarioCount": 110,
   "labsByObjective": {
     "1.1": [
       "grundlagen-control-funktion",
@@ -224,14 +224,18 @@
       "firewalls-vpn-split-tunnel",
       "firewalls-ids-ips-platzierung",
       "firewalls-nac-8021x",
-      "betrieb-email-authentisierung"
+      "betrieb-email-authentisierung",
+      "firewalls-acl-implicit-deny",
+      "firewalls-screened-subnet-platzierung"
     ],
     "4.9": [
       "firewalls-log-triage",
       "ir-log-quellen",
       "ir-chain-of-custody",
       "ir-forensic-volatility",
-      "ir-edr-timeline"
+      "ir-edr-timeline",
+      "betrieb-firewall-log-triage",
+      "betrieb-ips-alert-eskalation"
     ],
     "3.1": [
       "architektur-cloud-modelle",
@@ -258,7 +262,9 @@
       "iam-pam-jit",
       "iam-federation-flow",
       "iam-sso-protokolle",
-      "iam-passwort-richtlinie"
+      "iam-passwort-richtlinie",
+      "iam-least-privilege-helpdesk",
+      "iam-sso-protokollwahl"
     ],
     "5.1": [
       "iam-offboarding",
@@ -267,7 +273,9 @@
     "4.1": [
       "betrieb-server-haertung",
       "betrieb-wlan-sicherheit",
-      "betrieb-mobile-deployment"
+      "betrieb-mobile-deployment",
+      "betrieb-baseline-haertung-server",
+      "betrieb-switch-haertung"
     ],
     "4.2": [
       "betrieb-asset-lifecycle"
@@ -295,7 +303,9 @@
       "ir-phishing-report-flow",
       "ir-lessons-learned-actions",
       "ir-uebungsformate",
-      "ir-threat-hunt-hypothese"
+      "ir-threat-hunt-hypothese",
+      "incident-response-sofortmassnahme-ransomware",
+      "incident-response-chain-of-custody"
     ],
     "1.4": [
       "krypto-bausteine",
@@ -359,7 +369,9 @@
       "labScenarioIds": [
         "betrieb-server-haertung",
         "betrieb-wlan-sicherheit",
-        "betrieb-mobile-deployment"
+        "betrieb-mobile-deployment",
+        "betrieb-baseline-haertung-server",
+        "betrieb-switch-haertung"
       ],
       "pbqCardIds": [],
       "ok": true
@@ -376,7 +388,9 @@
         "firewalls-vpn-split-tunnel",
         "firewalls-ids-ips-platzierung",
         "firewalls-nac-8021x",
-        "betrieb-email-authentisierung"
+        "betrieb-email-authentisierung",
+        "firewalls-acl-implicit-deny",
+        "firewalls-screened-subnet-platzierung"
       ],
       "pbqCardIds": [],
       "ok": true
@@ -392,7 +406,9 @@
         "iam-pam-jit",
         "iam-federation-flow",
         "iam-sso-protokolle",
-        "iam-passwort-richtlinie"
+        "iam-passwort-richtlinie",
+        "iam-least-privilege-helpdesk",
+        "iam-sso-protokollwahl"
       ],
       "pbqCardIds": [],
       "ok": true
@@ -404,7 +420,9 @@
         "ir-log-quellen",
         "ir-chain-of-custody",
         "ir-forensic-volatility",
-        "ir-edr-timeline"
+        "ir-edr-timeline",
+        "betrieb-firewall-log-triage",
+        "betrieb-ips-alert-eskalation"
       ],
       "pbqCardIds": [],
       "ok": true

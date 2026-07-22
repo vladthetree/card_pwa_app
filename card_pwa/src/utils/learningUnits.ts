@@ -14,7 +14,12 @@ export type LearningUnitType = 'course' | 'review' | 'lab' | 'exam'
 export type ActivityStatus = 'notStarted' | 'inProgress' | 'completed'
 export type ObjectiveEvidenceStatus = 'insufficientEvidence' | 'learning' | 'mastered'
 export type ReadinessStatus = 'notReady' | 'approaching' | 'examReady'
-export type CoverageStatus = 'covered' | 'content-missing' | 'assessment-missing' | 'mapping-review'
+export type CoverageStatus =
+  | 'covered'
+  | 'content-missing'
+  | 'assessment-missing'
+  | 'practice-missing'
+  | 'mapping-review'
 export type LearningPhase = 'foundation' | 'deepening' | 'exam' | 'final' | 'pastExam'
 
 export interface ValidationResult {
@@ -124,6 +129,11 @@ export type LearningUnitExecution =
 export interface VideoContentMapEntry {
   videoIndex: number
   objectiveId: string
+  /** Offizielles Objective-Subdeck, unter dem die Video-Unit im Plan liegt. */
+  primarySubDeckId: string
+  /** Physische Objective-Subdecks der exakt gemappten Karten. Wegen bewusst
+   *  nicht verschobener Karten können diese vom primären Subdeck abweichen. */
+  sourceSubDeckIds: string[]
   requirementIds: string[]
   courseCardIds: string[]
   recallQuestionIds: string[]
@@ -811,31 +821,36 @@ export function buildRequirementCoverage(input: {
   let coveredCount = 0
   for (const requirement of input.requirements) {
     const entry = byRequirementId[requirement.requirementId]
-    const hasEntry = entry !== undefined
-    const meetsBase =
-      hasEntry &&
-      entry.qaStatus === 'covered' &&
-      entry.learningAssetIds.length > 0 &&
-      entry.assessmentItemIds.length > 0 &&
-      (!requirement.scenarioRequired || entry.practicalItemIds.length > 0) &&
-      entry.reviewer !== undefined
     const criticalOk =
       requirement.criticality !== 'critical' ||
       (requirement.criticalErrorClassIds.length > 0 &&
         requirement.criticalErrorClassIds.every(id => definitionsById.has(id)))
-    if (meetsBase && criticalOk) {
+
+    let effectiveEntry: RequirementCoverage
+    if (!entry) {
+      effectiveEntry = {
+        requirementId: requirement.requirementId,
+        learningAssetIds: [],
+        assessmentItemIds: [],
+        practicalItemIds: [],
+        qaStatus: 'content-missing',
+      }
+    } else {
+      let qaStatus = entry.qaStatus
+      if (qaStatus === 'covered') {
+        if (entry.learningAssetIds.length === 0) qaStatus = 'content-missing'
+        else if (entry.assessmentItemIds.length === 0) qaStatus = 'assessment-missing'
+        else if (requirement.scenarioRequired && entry.practicalItemIds.length === 0) qaStatus = 'practice-missing'
+        else if (entry.reviewer === undefined || !criticalOk) qaStatus = 'mapping-review'
+      }
+      effectiveEntry = { ...entry, qaStatus }
+    }
+    byRequirementId[requirement.requirementId] = effectiveEntry
+
+    if (effectiveEntry.qaStatus === 'covered') {
       coveredCount += 1
     } else {
       blockingRequirementIds.push(requirement.requirementId)
-      if (!hasEntry) {
-        byRequirementId[requirement.requirementId] = {
-          requirementId: requirement.requirementId,
-          learningAssetIds: [],
-          assessmentItemIds: [],
-          practicalItemIds: [],
-          qaStatus: 'content-missing',
-        }
-      }
     }
   }
 

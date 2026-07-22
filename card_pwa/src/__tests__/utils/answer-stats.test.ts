@@ -22,7 +22,7 @@ describe('computeAnswerStats', () => {
     expect(c1).toMatchObject({
       scored: 2, correct: 1, wrong: 1, partial: 0, unanswered: 0,
       earnedPoints: 1, possiblePoints: 2, uniqueItemCount: 1,
-      exposureCount: 2, totalTimeMs: 8000,
+      exposureCount: 2, totalTimeMs: 8000, timedAnswerCount: 2, timedAnswerTimeMs: 8000,
       firstAnsweredAt: T0, lastAnsweredAt: T0 + 1000, lastAnswerCorrect: true,
     })
   })

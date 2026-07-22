@@ -1,20 +1,20 @@
 {
   "schemaVersion": "sy0701-content-pools-1",
-  "manifestVersion": "2026-07-19.2",
-  "generatedAt": 1784575753206,
+  "manifestVersion": "2026-07-22.1",
+  "generatedAt": 1784754852846,
   "sourceSnapshotId": "sy0701-v7-2026-07-15",
   "pools": {
     "course": {
       "videoUnits": 120,
-      "mappedCardCount": 375,
+      "mappedCardCount": 412,
       "transcriptQuestionCount": 638
     },
     "practice": {
       "rootDeckScenarioCards": 339,
-      "unmappedObjectiveCards": 30,
+      "unmappedObjectiveCards": 0,
       "acronymDeckCards": 43,
       "pbqCards": 23,
-      "labScenarios": 100
+      "labScenarios": 110
     },
     "readiness": {
       "forms": [],
@@ -22,5 +22,5 @@
       "note": "GESTRICHEN am 2026-07-19: keine Exam-Engine, keine Readiness-Formen — Ziel ist die Lerngrundlage."
     }
   },
-  "disjointness": "Course/Practice überlappen nicht (M-ID-Zuordnung vs. Rest); Readiness ist gestrichen."
+  "disjointness": "Course enthält alle Objective-Subdeck-Karten exakt einmal (M-ID oder kuratiertes Transkriptmapping). Root-, Acronym- und eigenständige Übungsdecks bleiben Practice; Readiness ist gestrichen."
 }

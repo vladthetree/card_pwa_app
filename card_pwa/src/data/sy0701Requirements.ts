@@ -2,13 +2,13 @@
  * AI_CONTEXT:
  * Role: GENERATED data module of the dedicated SY0-701 learning-unit system — do not edit by hand.
  * Used by: learning-unit builders/tests; regenerate via `node scripts/sy0701/validate.mjs`.
- * Important: Derived from content/sy0-701/source/* (official V7 snapshot 95a2c7515792…, manifest 2026-07-19.2).
+ * Important: Derived from content/sy0-701/source/* (official V7 snapshot 95a2c7515792…, manifest 2026-07-22.1).
  */
 import type { ExamRequirementsManifest } from '../utils/learningUnits'
 
 export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
   "sourceSnapshotId": "sy0701-v7-2026-07-15",
-  "manifestVersion": "2026-07-19.2",
+  "manifestVersion": "2026-07-22.1",
   "requirements": [
     {
       "requirementId": "req:sy0701:v7:1.1:categories:technical",
@@ -12694,5 +12694,214 @@ export const SY0701_REQUIREMENTS_MANIFEST: ExamRequirementsManifest = {
       "criticalErrorClassIds": []
     }
   ],
-  "criticalErrorDefinitions": []
+  "criticalErrorDefinitions": [
+    {
+      "errorClassId": "err:cia-confusion",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:1.2:confidentiality-integrity-and-availability-cia",
+      "severity": "critical",
+      "description": "Schutzziele verwechselt: Maßnahme dem falschen CIA-Ziel zugeordnet (z. B. Verschlüsselung als Integrität, Redundanz als Vertraulichkeit).",
+      "triggerRuleId": "trigger:cia-goal-mismatch",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": false
+      }
+    },
+    {
+      "errorClassId": "err:key-usage-confusion",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:1.4:encryption:asymmetric",
+      "severity": "critical",
+      "description": "Falsche Schlüsselverwendung: mit dem privaten Schlüssel verschlüsselt bzw. den öffentlichen Schlüssel als geheim behandelt.",
+      "triggerRuleId": "trigger:asym-key-role",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": false
+      }
+    },
+    {
+      "errorClassId": "err:hash-reversibility",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:1.4:hashing",
+      "severity": "critical",
+      "description": "Hashing als umkehrbare Verschlüsselung behandelt (Einwegfunktion nicht verstanden).",
+      "triggerRuleId": "trigger:hash-oneway",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": false
+      }
+    },
+    {
+      "errorClassId": "err:signature-key",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:1.4:digital-signatures",
+      "severity": "critical",
+      "description": "Signatur-Schlüsselrollen vertauscht: Signieren mit öffentlichem bzw. Verifizieren mit privatem Schlüssel.",
+      "triggerRuleId": "trigger:signature-key-role",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": false
+      }
+    },
+    {
+      "errorClassId": "err:phishing-detection",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:2.2:human-vectors-social-engineering:phishing",
+      "severity": "critical",
+      "description": "Phishing-Indikatoren (Absender-Spoofing, Dringlichkeit, abweichende URLs) nicht erkannt oder legitime Mail als Phishing-Muster fehlklassifiziert.",
+      "triggerRuleId": "trigger:phishing-indicators",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": true
+      }
+    },
+    {
+      "errorClassId": "err:data-state-rest",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:3.3:general-data-considerations:data-states:data-at-rest",
+      "severity": "critical",
+      "description": "Schutzmechanismus falsch zugeordnet: Data at Rest nicht mit Speicher-/Volume-Verschlüsselung verbunden.",
+      "triggerRuleId": "trigger:data-state-rest",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": true
+      }
+    },
+    {
+      "errorClassId": "err:data-state-transit",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-transit",
+      "severity": "critical",
+      "description": "Schutzmechanismus falsch zugeordnet: Data in Transit nicht mit TLS/IPsec/VPN verbunden.",
+      "triggerRuleId": "trigger:data-state-transit",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": true
+      }
+    },
+    {
+      "errorClassId": "err:data-state-use",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-use",
+      "severity": "critical",
+      "description": "Schutzmechanismus falsch zugeordnet: Data in Use (RAM/CPU, Secure Enclave) nicht als eigener Zustand erkannt.",
+      "triggerRuleId": "trigger:data-state-use",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": true
+      }
+    },
+    {
+      "errorClassId": "err:least-privilege",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:4.6:access-controls:least-privilege",
+      "severity": "critical",
+      "description": "Least Privilege mit Need-to-know/Separation of Duties verwechselt oder als optionales Komfortprinzip eingeordnet.",
+      "triggerRuleId": "trigger:least-privilege",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": false
+      }
+    },
+    {
+      "errorClassId": "err:ir-order-containment",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:4.8:process:containment",
+      "severity": "critical",
+      "description": "IR-Phasenfehler: Eindämmung übersprungen oder nach Eradication/Recovery einsortiert.",
+      "triggerRuleId": "trigger:ir-order-containment",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": true
+      }
+    },
+    {
+      "errorClassId": "err:ir-order-eradication",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:4.8:process:eradication",
+      "severity": "critical",
+      "description": "IR-Phasenfehler: Beseitigung vor der Eindämmung oder als Teil der Recovery eingeordnet.",
+      "triggerRuleId": "trigger:ir-order-eradication",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": true
+      }
+    },
+    {
+      "errorClassId": "err:ir-order-recovery",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:4.8:process:recovery",
+      "severity": "critical",
+      "description": "IR-Phasenfehler: Wiederherstellung gestartet, bevor die Ursache beseitigt ist.",
+      "triggerRuleId": "trigger:ir-order-recovery",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": true
+      }
+    },
+    {
+      "errorClassId": "err:custody-break",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:4.8:digital-forensics:chain-of-custody",
+      "severity": "critical",
+      "description": "Chain of Custody als optionale Formalie behandelt; Lückenlosigkeit der Beweiskette nicht als Verwertbarkeitsbedingung erkannt.",
+      "triggerRuleId": "trigger:custody-break",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": true
+      }
+    },
+    {
+      "errorClassId": "err:risk-calc-sle",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:5.2:risk-analysis:single-loss-expectancy-sle",
+      "severity": "critical",
+      "description": "SLE falsch bestimmt (Asset Value × Exposure Factor) — verfälscht jede weitere Risikorechnung.",
+      "triggerRuleId": "trigger:risk-calc-sle",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": false
+      }
+    },
+    {
+      "errorClassId": "err:risk-calc-ale",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:5.2:risk-analysis:annualized-loss-expectancy-ale",
+      "severity": "critical",
+      "description": "ALE falsch bestimmt (SLE × ARO) oder mit SLE/ARO verwechselt.",
+      "triggerRuleId": "trigger:risk-calc-ale",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": false
+      }
+    },
+    {
+      "errorClassId": "err:mfa-factor-confusion",
+      "definitionVersion": "2026-07-19.1",
+      "requirementId": "req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-know",
+      "severity": "critical",
+      "description": "Authentifizierungsfaktoren verwechselt (Wissen/Besitz/Inhärenz/Ort) — z. B. OTP-App als „something you know“ eingeordnet.",
+      "triggerRuleId": "trigger:mfa-factor",
+      "resolutionRule": {
+        "minIndependentCorrectEvents": 2,
+        "minSpacingHours": 24,
+        "practicalRecheckRequired": false
+      }
+    }
+  ]
 }

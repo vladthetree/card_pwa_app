@@ -3,6 +3,7 @@ import type { LearningUnitDefinition, LearningUnitState } from '../../utils/lear
 import {
   computeDraftPacing,
   computeExamTimeline,
+  computeLearningWorkload,
   rankLearningUnits,
   resolveLearningPhase,
   type LearningPacingResult,
@@ -215,5 +216,46 @@ describe('computeDraftPacing', () => {
     })
     expect(shortfall.reason).toBe('capacity-shortfall')
     expect(shortfall.feasible).toBe(false)
+  })
+
+  it('nutzt die vollständige Restarbeit und reicht ihre Messdaten an die Anzeige durch', () => {
+    const workload = computeLearningWorkload({
+      remainingCourseUnits: [{ unitId: 'course-1', estimatedMinutes: 60 }],
+      remainingLabUnits: [{ unitId: 'lab-1', estimatedMinutes: 30 }],
+      dueReviewCardCount: 8,
+      unresolvedErrorCardCount: 4,
+      pendingReviewCardCount: 10,
+      timedReviewSampleCount: 4,
+      observedReviewTimeMs: 120_000,
+    })
+    const result = computeDraftPacing({ daysLeft: 30, plan, workload })
+
+    expect(workload.averageReviewSeconds).toBe(30)
+    expect(workload.estimatedCurrentReviewMinutes).toBe(5)
+    expect(workload.reserveMinutes).toBe(19)
+    expect(workload.totalMinutes).toBe(114)
+    expect(result.requiredMinutes).toBe(114)
+    expect(result.workload).toBe(workload)
+    expect(result.reason).toBe('on-track')
+  })
+
+  it('erfindet ohne persönliche Kartenzeit keine Review- oder Gesamtdauer', () => {
+    const workload = computeLearningWorkload({
+      remainingCourseUnits: [{ unitId: 'course-1', estimatedMinutes: 60 }],
+      remainingLabUnits: [],
+      dueReviewCardCount: 3,
+      unresolvedErrorCardCount: 0,
+      pendingReviewCardCount: 3,
+      timedReviewSampleCount: 0,
+      observedReviewTimeMs: 0,
+    })
+    const result = computeDraftPacing({ daysLeft: 30, plan, workload })
+
+    expect(workload.averageReviewSeconds).toBeNull()
+    expect(workload.estimatedCurrentReviewMinutes).toBeNull()
+    expect(workload.totalMinutes).toBeNull()
+    expect(workload.missingMeasurements).toEqual(['review-time'])
+    expect(result.reason).toBe('missing-estimates')
+    expect(result.workload).toBe(workload)
   })
 })

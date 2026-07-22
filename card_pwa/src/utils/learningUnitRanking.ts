@@ -24,6 +24,91 @@ export interface LearningPacingResult {
   feasible: boolean
   missingEstimateUnitIds: string[]
   reason: 'on-track' | 'capacity-shortfall' | 'missing-plan' | 'missing-estimates' | 'past-exam'
+  workload?: LearningWorkloadMetrics
+}
+
+export interface LearningWorkloadMetrics {
+  remainingCourseUnitCount: number
+  remainingCourseMinutes: number
+  remainingLabUnitCount: number
+  /** Alle derzeit offenen Labs; bis zur späteren Pflichtlab-Kuratierung bewusst so bezeichnet. */
+  remainingLabMinutes: number
+  dueReviewCardCount: number
+  unresolvedErrorCardCount: number
+  pendingReviewCardCount: number
+  timedReviewSampleCount: number
+  averageReviewSeconds: number | null
+  estimatedCurrentReviewMinutes: number | null
+  reservePercent: 20
+  reserveMinutes: number | null
+  totalMinutes: number | null
+  missingEstimateUnitIds: string[]
+  missingMeasurements: Array<'review-time'>
+}
+
+interface EstimatedUnit {
+  unitId: string
+  estimatedMinutes?: number
+}
+
+/**
+ * Transparente Restarbeitsmessung ohne Prüfungssimulationen. Kurs-/Labzeiten
+ * stammen aus den Unit-Definitionen; Reviewzeit wird ausschließlich aus
+ * tatsächlich gemessenen positiven Reviewzeiten geschätzt. Ohne Stichprobe
+ * bleibt die Gesamtschätzung offen statt einen Sekundenwert zu erfinden.
+ */
+export function computeLearningWorkload(input: {
+  remainingCourseUnits: EstimatedUnit[]
+  remainingLabUnits: EstimatedUnit[]
+  dueReviewCardCount: number
+  unresolvedErrorCardCount: number
+  pendingReviewCardCount: number
+  timedReviewSampleCount: number
+  observedReviewTimeMs: number
+}): LearningWorkloadMetrics {
+  const allUnits = [...input.remainingCourseUnits, ...input.remainingLabUnits]
+  const missingEstimateUnitIds = allUnits
+    .filter(unit => unit.estimatedMinutes === undefined)
+    .map(unit => unit.unitId)
+  const sumMinutes = (units: EstimatedUnit[]) => units.reduce(
+    (sum, unit) => sum + (unit.estimatedMinutes ?? 0),
+    0,
+  )
+  const remainingCourseMinutes = sumMinutes(input.remainingCourseUnits)
+  const remainingLabMinutes = sumMinutes(input.remainingLabUnits)
+  const timedReviewSampleCount = Math.max(0, Math.floor(input.timedReviewSampleCount))
+  const averageReviewSeconds = timedReviewSampleCount > 0 && input.observedReviewTimeMs > 0
+    ? input.observedReviewTimeMs / timedReviewSampleCount / 1000
+    : null
+  const pendingReviewCardCount = Math.max(0, Math.floor(input.pendingReviewCardCount))
+  const estimatedCurrentReviewMinutes = pendingReviewCardCount === 0
+    ? 0
+    : averageReviewSeconds === null
+      ? null
+      : Math.ceil((pendingReviewCardCount * averageReviewSeconds) / 60)
+  const missingMeasurements: LearningWorkloadMetrics['missingMeasurements'] =
+    pendingReviewCardCount > 0 && estimatedCurrentReviewMinutes === null ? ['review-time'] : []
+  const complete = missingEstimateUnitIds.length === 0 && missingMeasurements.length === 0
+  const baseMinutes = remainingCourseMinutes + remainingLabMinutes + (estimatedCurrentReviewMinutes ?? 0)
+  const reserveMinutes = complete ? Math.ceil(baseMinutes * 0.2) : null
+
+  return {
+    remainingCourseUnitCount: input.remainingCourseUnits.length,
+    remainingCourseMinutes,
+    remainingLabUnitCount: input.remainingLabUnits.length,
+    remainingLabMinutes,
+    dueReviewCardCount: Math.max(0, Math.floor(input.dueReviewCardCount)),
+    unresolvedErrorCardCount: Math.max(0, Math.floor(input.unresolvedErrorCardCount)),
+    pendingReviewCardCount,
+    timedReviewSampleCount,
+    averageReviewSeconds,
+    estimatedCurrentReviewMinutes,
+    reservePercent: 20,
+    reserveMinutes,
+    totalMinutes: reserveMinutes === null ? null : baseMinutes + reserveMinutes,
+    missingEstimateUnitIds,
+    missingMeasurements,
+  }
 }
 
 export type LearningUnitReason =
@@ -106,12 +191,25 @@ export function computeDraftPacing(input: {
   plan?: DraftPacingPlanInput | null
   /** Offene (nicht abgeschlossene) Units; ohne `estimatedMinutes` → missing-estimates. */
   remainingUnits?: Array<{ unitId: string; estimatedMinutes?: number }>
+  workload?: LearningWorkloadMetrics
 }): LearningPacingResult {
+  const remaining = input.remainingUnits ?? []
+  const missingEstimateUnitIds = input.workload?.missingEstimateUnitIds ?? remaining
+    .filter(unit => unit.estimatedMinutes === undefined)
+    .map(unit => unit.unitId)
+  const requiredMinutes = input.workload
+    ? input.workload.totalMinutes ?? (
+        input.workload.remainingCourseMinutes +
+        input.workload.remainingLabMinutes +
+        (input.workload.estimatedCurrentReviewMinutes ?? 0)
+      )
+    : remaining.reduce((sum, unit) => sum + (unit.estimatedMinutes ?? 0), 0)
   const base = {
-    requiredMinutes: 0,
+    requiredMinutes,
     availableMinutesAfterBuffer: 0,
     requiredMinutesPerLearningDay: null as number | null,
-    missingEstimateUnitIds: [] as string[],
+    missingEstimateUnitIds,
+    ...(input.workload ? { workload: input.workload } : {}),
   }
   if (input.daysLeft === null) return { ...base, feasible: true, reason: 'missing-plan' }
   if (input.daysLeft < 0) return { ...base, feasible: false, reason: 'past-exam' }
@@ -125,11 +223,6 @@ export function computeDraftPacing(input: {
   const availableMinutesAfterBuffer = Math.floor(effectiveDays * (weeklyMinutes / 7))
   const remainingLearningDays = Math.floor(effectiveDays * (learningDaysPerWeek / 7))
 
-  const remaining = input.remainingUnits ?? []
-  const missingEstimateUnitIds = remaining
-    .filter(unit => unit.estimatedMinutes === undefined)
-    .map(unit => unit.unitId)
-  const requiredMinutes = remaining.reduce((sum, unit) => sum + (unit.estimatedMinutes ?? 0), 0)
   const requiredMinutesPerLearningDay =
     remainingLearningDays > 0 ? Math.ceil(requiredMinutes / remainingLearningDays) : null
 
@@ -138,8 +231,9 @@ export function computeDraftPacing(input: {
     availableMinutesAfterBuffer,
     requiredMinutesPerLearningDay,
     missingEstimateUnitIds,
+    ...(input.workload ? { workload: input.workload } : {}),
   }
-  if (missingEstimateUnitIds.length > 0) {
+  if (missingEstimateUnitIds.length > 0 || (input.workload?.missingMeasurements.length ?? 0) > 0) {
     // Unvollständige Schätzungen: keine Machbarkeitsaussage vortäuschen.
     return { ...shared, feasible: true, reason: 'missing-estimates' }
   }

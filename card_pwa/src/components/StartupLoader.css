@@ -1,0 +1,183 @@
+.startup-loader {
+  --startup-loader-primary: #e75f3c;
+  --startup-loader-secondary: #79b7aa;
+  position: relative;
+  width: min(15rem, 72vw);
+  height: 10.5rem;
+  contain: layout paint;
+  isolation: isolate;
+}
+
+.startup-loader__orbit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 999px;
+  will-change: transform;
+}
+
+.startup-loader__orbit--outer {
+  width: 13.75rem;
+  height: 8.25rem;
+  margin: -4.125rem 0 0 -6.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-top-color: var(--startup-loader-primary);
+  border-bottom-color: var(--startup-loader-secondary);
+  animation: startup-loader-orbit 4.8s linear infinite;
+}
+
+.startup-loader__orbit--inner {
+  width: 7.75rem;
+  height: 7.75rem;
+  margin: -3.875rem 0 0 -3.875rem;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  animation: startup-loader-orbit-reverse 7.2s linear infinite;
+}
+
+.startup-loader__satellite {
+  position: absolute;
+  width: 1.15rem;
+  height: 1.5rem;
+  border: 1px solid currentColor;
+  border-radius: 0.28rem;
+  background: #090806;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.startup-loader__satellite::after {
+  content: '';
+  position: absolute;
+  left: 0.2rem;
+  right: 0.2rem;
+  top: 0.37rem;
+  height: 1px;
+  background: currentColor;
+  box-shadow: 0 0.28rem 0 currentColor;
+  opacity: 0.72;
+}
+
+.startup-loader__satellite--primary {
+  top: -0.75rem;
+  left: 50%;
+  margin-left: -0.575rem;
+  color: var(--startup-loader-primary);
+}
+
+.startup-loader__satellite--secondary {
+  right: 0.45rem;
+  bottom: 0.15rem;
+  color: var(--startup-loader-secondary);
+  transform: rotate(104deg);
+}
+
+.startup-loader__dot {
+  position: absolute;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: 0 0 0 3px #090806, 0 0 0 4px currentColor;
+}
+
+.startup-loader__dot--primary {
+  left: -0.275rem;
+  top: 50%;
+  color: var(--startup-loader-primary);
+}
+
+.startup-loader__dot--secondary {
+  right: -0.275rem;
+  top: 50%;
+  color: var(--startup-loader-secondary);
+}
+
+.startup-loader__deck {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4.3rem;
+  height: 5.4rem;
+  margin: -2.7rem 0 0 -2.15rem;
+  animation: startup-loader-breathe 2.4s ease-in-out infinite;
+}
+
+.startup-loader__card {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border-radius: 0.62rem;
+  background: #11100d;
+}
+
+.startup-loader__card--back {
+  border: 1px solid var(--startup-loader-secondary);
+  opacity: 0.58;
+  transform: translate3d(0.55rem, -0.28rem, 0) rotate(7deg);
+}
+
+.startup-loader__card--middle {
+  border: 1px solid var(--startup-loader-primary);
+  opacity: 0.72;
+  transform: translate3d(-0.48rem, 0.2rem, 0) rotate(-6deg);
+}
+
+.startup-loader__card--front {
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 18px -14px #000;
+}
+
+.startup-loader__eyebrow,
+.startup-loader__line {
+  position: absolute;
+  left: 0.7rem;
+  display: block;
+  height: 2px;
+  border-radius: 99px;
+}
+
+.startup-loader__eyebrow {
+  top: 0.82rem;
+  width: 1.1rem;
+  background: var(--startup-loader-primary);
+}
+
+.startup-loader__line {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.startup-loader__line--long {
+  top: 2rem;
+  width: 2.9rem;
+}
+
+.startup-loader__line--short {
+  top: 2.72rem;
+  width: 2rem;
+  background: var(--startup-loader-secondary);
+  opacity: 0.82;
+}
+
+@keyframes startup-loader-orbit {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes startup-loader-orbit-reverse {
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes startup-loader-breathe {
+  0%, 100% { transform: translate3d(0, 1px, 0); }
+  50% { transform: translate3d(0, -2px, 0); }
+}
+
+/* Ein Ladeindikator muss auch bei „Bewegung reduzieren" Fortschritt zeigen.
+   Deshalb bleibt genau eine langsame, gleichförmige Drehung übrig; Gegenlauf
+   und Pulsieren werden entfernt. */
+.startup-loader--calm .startup-loader__orbit--outer {
+  animation-duration: 8s;
+}
+
+.startup-loader--calm .startup-loader__orbit--inner,
+.startup-loader--calm .startup-loader__deck {
+  animation: none;
+}

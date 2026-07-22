@@ -12,6 +12,7 @@ import { SettingsProvider, useSettings } from './contexts/SettingsContext'
 import AppInitializer from './components/AppInitializer'
 import AppErrorBoundary from './components/AppErrorBoundary'
 import ToastContainer from './components/ToastContainer'
+import StartupLoader from './components/StartupLoader'
 import type { Card, Deck, ShuffleCollection, View } from './types'
 import {
   clearActiveSession,
@@ -288,7 +289,6 @@ const StudyView = lazy(() => import('./components/StudyView'))
 const ShuffleStudyView = lazy(() => import('./components/ShuffleStudyView'))
 const VideosView = lazy(() => import('./components/videos/VideosView'))
 const UpdateBanner = lazy(() => import('./components/UpdateBanner'))
-const MetaBalls = lazy(() => import('./components/MetaBalls'))
 
 function ViewFallback({ reason = 'startup', continueHint = false }: { reason?: 'startup' | 'update'; continueHint?: boolean }) {
   const { settings } = useSettings()
@@ -309,36 +309,12 @@ function ViewFallback({ reason = 'startup', continueHint = false }: { reason?: '
       aria-live="polite"
     >
       <div className="flex min-h-[22rem] w-full max-w-xl flex-col items-center justify-center">
-        <div className="relative h-44 w-72 max-w-[78vw] overflow-hidden sm:h-52 sm:w-80">
-          {prefersReducedMotion ? (
-            /* iOS „Bewegung reduzieren": Die WebGL-Metaballs stünden hier still
-               und sähen nur wie ein verwischter Fleck aus — stattdessen ein
-               bewusst gestalteter, ruhiger Glow in den Theme-Farben. */
-            <div
-              aria-hidden
-              className="absolute inset-0"
-              style={{
-                background: `radial-gradient(ellipse 55% 45% at 38% 52%, ${theme.primary}55, transparent 70%), radial-gradient(ellipse 45% 40% at 66% 46%, ${theme.secondary}40, transparent 72%)`,
-                filter: 'saturate(1.15)',
-              }}
-            />
-          ) : (
-            <Suspense fallback={null}>
-              <MetaBalls
-                color={theme.primary}
-                cursorBallColor={theme.secondary}
-                cursorBallSize={2.4}
-                ballCount={12}
-                animationSize={24}
-                enableMouseInteraction={false}
-                enableTransparency
-                hoverSmoothness={0.08}
-                clumpFactor={0.72}
-                speed={0.9}
-              />
-            </Suspense>
-          )}
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_38%,rgba(11,11,9,0.58)_100%)]" />
+        <div className="flex h-44 w-72 max-w-[78vw] items-center justify-center overflow-visible sm:h-52 sm:w-80">
+          <StartupLoader
+            primary={theme.primary}
+            secondary={theme.secondary}
+            reducedMotion={prefersReducedMotion}
+          />
         </div>
         <div className="mt-5 text-center">
           <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-ds-muted">

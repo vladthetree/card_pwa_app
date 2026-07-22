@@ -28,6 +28,8 @@ import {
 } from '../../utils/learningUnits'
 import { SY0701_CONTENT_MAP, SY0701_CONTENT_MAP_BY_VIDEO_INDEX } from '../../data/sy0701ContentMap'
 import { SY0701_REQUIREMENTS_MANIFEST } from '../../data/sy0701Requirements'
+import { SY0701_COVERAGE_SUMMARY } from '../../data/sy0701Coverage'
+import contentQaReport from '../../../content/sy0-701/generated/content-qa-report.json'
 
 // ── Fixtures ────────────────────────────────────────────────────────────────
 
@@ -68,6 +70,8 @@ const realCatalog: LocalVideoMeta[] = SY0701_CONTENT_MAP.map(entry =>
 const contentEntry: VideoContentMapEntry = {
   videoIndex: 2,
   objectiveId: '1.1',
+  primarySubDeckId: 'sy0-701-objective-1-1',
+  sourceSubDeckIds: ['sy0-701-objective-1-1'],
   requirementIds: [],
   courseCardIds: ['c1', 'c2', 'c3'],
   recallQuestionIds: ['M1-001', 'M1-002', 'M1-003', 'T002-01'],
@@ -126,9 +130,17 @@ describe('generierte SY0701-Datenmodule', () => {
     }
   })
 
-  it('mappt genau 375 M-Karten und lässt kein Video ohne Recall-Fragen', () => {
+  it('mappt alle 412 Objective-Subdeck-Karten exakt und lässt kein Video ohne Recall-Fragen', () => {
     const mapped = SY0701_CONTENT_MAP.reduce((n, e) => n + e.courseCardIds.length, 0)
-    expect(mapped).toBe(375)
+    expect(mapped).toBe(412)
+    expect(new Set(SY0701_CONTENT_MAP.flatMap(entry => entry.courseCardIds)).size).toBe(412)
+    expect(new Set(SY0701_CONTENT_MAP.map(entry => entry.primarySubDeckId)).size).toBe(28)
+    // SOAR liegt physisch weiterhin im 4.7-Subdeck, gehört laut Messer-
+    // Transkript aber exakt zur Video-Unit 107 unter dem primären 5.1-Subdeck.
+    const securityProcedures = SY0701_CONTENT_MAP_BY_VIDEO_INDEX.get(107)!
+    expect(securityProcedures.primarySubDeckId).toBe('sy0-701-objective-5-1')
+    expect(securityProcedures.sourceSubDeckIds).toContain('sy0-701-objective-4-7')
+    expect(securityProcedures.courseCardIds).toContain('1779669260172')
     for (const entry of SY0701_CONTENT_MAP) {
       expect(entry.recallQuestionIds.length).toBeGreaterThan(0)
     }
@@ -409,6 +421,8 @@ describe('buildRequirementCoverage', () => {
     // Szenarioziel ohne praktischen Pfad bleibt blockierend, das einfache Ziel nicht.
     expect(report.coveredCount).toBe(1)
     expect(report.blockingRequirementIds).toEqual([scenarioReq.requirementId])
+    expect(report.byRequirementId[scenarioReq.requirementId].qaStatus).toBe('practice-missing')
+    expect(report.byRequirementId[plainReq.requirementId].qaStatus).toBe('covered')
     const withPractical = buildRequirementCoverage({
       sourceSnapshotId: 'snap',
       requirements: [scenarioReq],
@@ -438,6 +452,15 @@ describe('buildRequirementCoverage', () => {
     }
     const present = buildRequirementCoverage({ sourceSnapshotId: 's', requirements: [critical], criticalErrorDefinitions: [definition], coverage, now: 1 })
     expect(present.coveredCount).toBe(1)
+  })
+
+  it('liefert Generator und Runtime-UI dieselben ehrlichen Coverage-Zahlen', () => {
+    expect(SY0701_COVERAGE_SUMMARY.sourceSnapshotId).toBe(contentQaReport.sourceSnapshotId)
+    expect(SY0701_COVERAGE_SUMMARY.requirementCount).toBe(contentQaReport.requirementCount)
+    expect(SY0701_COVERAGE_SUMMARY.coveredCount).toBe(contentQaReport.coveredCount)
+    expect(SY0701_COVERAGE_SUMMARY.blockingRequirementIds).toEqual(contentQaReport.blockingRequirementIds)
+    expect(SY0701_COVERAGE_SUMMARY.missingPracticalRequirementIds).toEqual(contentQaReport.missingPracticalRequirementIds)
+    expect(contentQaReport.statusCounts).toMatchObject({ covered: 480, 'practice-missing': 175 })
   })
 })
 
