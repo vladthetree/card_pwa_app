@@ -7,9 +7,9 @@
  * Provenance (RECOVERY_LOG §4, Git-Historie bis f72ffd6): Struktur, Kategorien-Layout und die mit
  * (BELEGT) markierten Szenarien sind aus den Handy-Screenshots vom 8. Juni 2026
  * rekonstruiert (`WhatsApp …23.38.26/.47/.57/.39.17/.39.49.jpeg`). Alle übrigen
- * Szenarien sind ⚠️ NEU GENERIERT nach docs/labs.md (Ziel-Inventar: 71 Szenarien,
- * alle SY0-701-Domains, Schwerpunkt Firewalls / Incident Response). Der
- * Fortschritts-Zähler rechnet dynamisch über das tatsächliche Inventar.
+ * Szenarien sind redaktionell ergänzte Trainingsfälle für die offiziellen
+ * SY0-701-Objectives. Der Fortschritts-Zähler rechnet dynamisch über das
+ * tatsächliche Inventar; Quellen stehen in LAB_SCENARIO_SOURCE_REFS.
  */
 
 export type LabDifficulty = 'einsteiger' | 'fortgeschritten' | 'experte'
@@ -31,11 +31,9 @@ export interface LabOrderingInteraction {
 }
 
 /**
- * Entscheidungs-Interaktion (§13.1 der Umsetzungsplan-Doku: "Matching/Ordering
- * allein erfüllt dieses Gate nicht") — deckt Log-Analyse, Firewall/ACL-Regeln,
- * IAM-, Härtungs- und Incident-Response-Entscheidungen ab, die sich nicht als
- * Zuordnung oder Reihenfolge modellieren lassen. Leichtgewichtig gehalten wie
- * matching/ordering: reine Selbstbewertung, keine Rubrik-/Attempt-Persistenz.
+ * Entscheidungs-Interaktion für Log-Analyse, Firewall/ACL-Regeln, IAM,
+ * Härtung und Incident Response. Die Runtime friert jede Interaktion in einer
+ * Rubrik ein und protokolliert erfolgreiche wie fehlgeschlagene Versuche.
  */
 export interface LabDecisionInteraction {
   type: 'decision'
@@ -45,7 +43,23 @@ export interface LabDecisionInteraction {
   correctIds: string[]
 }
 
-export type LabInteraction = LabMatchingInteraction | LabOrderingInteraction | LabDecisionInteraction
+export type LabSingleInteraction = LabMatchingInteraction | LabOrderingInteraction | LabDecisionInteraction
+
+/** Mehrstufiger Praxisfall. Jeder Schritt muss gelöst werden, bevor der nächste
+ * sichtbar wird; dadurch können Analyse, Maßnahmenwahl und Verifikation als
+ * zusammenhängender Ablauf statt als drei unabhängige Quizfragen auftreten. */
+export interface LabWorkflowInteraction {
+  type: 'workflow'
+  steps: Array<{
+    stepId: string
+    title: string
+    prompt: string
+    evidence?: string
+    interaction: LabDecisionInteraction
+  }>
+}
+
+export type LabInteraction = LabSingleInteraction | LabWorkflowInteraction
 
 export interface LabScenario {
   id: string
@@ -63,9 +77,9 @@ export interface LabScenario {
   /** "Ziel:"-Callout (amber). */
   goal?: string
   interaction: LabInteraction
-  /** Requirement-IDs aus dem kuratierten Leaf-Mapping (content/sy0-701/source/leaf-mapping.json),
-   *  die dieses Szenario praktisch übt. Optional — Backfill für den bestehenden 100er-Bestand
-   *  ist noch offen (OFFENE-PUNKTE.md #14), neue Szenarien tragen es von Anfang an. */
+  /** Requirement-IDs aus dem kuratierten Leaf-Mapping, die durch eine konkrete
+   * Interaktion dieses Szenarios praktisch geübt werden. Eine Objective-Nähe
+   * allein genügt ausdrücklich nicht für dieses Mapping. */
   requirementIds?: string[]
 }
 
@@ -99,10 +113,10 @@ export const LAB_CATEGORIES: LabCategory[] = [
 export const LAB_SOURCES: LabSource[] = [
   {
     id: 'comptia-sy0-701-objectives',
-    title: 'CompTIA Security+ Certification Exam Objectives (SY0-701)',
+    title: 'CompTIA Security+ Certification Exam Objectives (SY0-701), Version 7.0',
     publisher: 'CompTIA',
-    url: 'https://assets.ctfassets.net/82ripq7fjls2/6TYWUym0Nudqa8nGEnegjG/0f9b974d3b1837fe85ab8e6553f4d623/CompTIA-Security-Plus-SY0-701-Exam-Objectives.pdf',
-    accessed: '2026-06-10',
+    url: 'https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be',
+    accessed: '2026-07-23',
     note: 'Primaere Zuordnung der Szenarien zu Domains/Objectives und SY0-701-Begriffen.',
   },
   {
@@ -2982,15 +2996,573 @@ export const LAB_SCENARIOS: LabScenario[] = [
       correctIds: ['who-accessed', 'hash'],
     },
   },
+
+  // ── Mehrstufige Objective-Capstones (2026-07-23) ───────────────────────
+  // Transkriptgestützte Praxispfade: Diagnose → Maßnahme → Verifikation.
+  {
+    id: 'capstone-2-4-compromise-triage',
+    categoryId: 'bedrohungen',
+    title: 'Capstone: Kompromittierung erkennen und eingrenzen',
+    objective: '2.4 Indicators of malicious activity',
+    difficulty: 'experte',
+    minutes: 25,
+    description: 'Ein Analyst korreliert Endpoint-, Authentifizierungs- und DNS-Ereignisse. Löse Diagnose, Sofortmaßnahme und Verifikation als zusammenhängenden Fall.',
+    requirementIds: [
+      'req:sy0701:v7:2.4:malware-attacks:ransomware',
+      'req:sy0701:v7:2.4:malware-attacks:keylogger',
+      'req:sy0701:v7:2.4:network-attacks:credential-replay',
+      'req:sy0701:v7:2.4:indicators:impossible-travel',
+      'req:sy0701:v7:2.4:indicators:resource-consumption',
+      'req:sy0701:v7:2.4:indicators:missing-logs',
+      'req:sy0701:v7:2.4:malware-attacks:trojan',
+      'req:sy0701:v7:2.4:malware-attacks:worm',
+      'req:sy0701:v7:2.4:malware-attacks:spyware',
+      'req:sy0701:v7:2.4:malware-attacks:bloatware',
+      'req:sy0701:v7:2.4:malware-attacks:virus',
+      'req:sy0701:v7:2.4:malware-attacks:logic-bomb',
+      'req:sy0701:v7:2.4:malware-attacks:rootkit',
+      'req:sy0701:v7:2.4:physical-attacks:brute-force',
+      'req:sy0701:v7:2.4:physical-attacks:radio-frequency-identification-rfid-cloning',
+      'req:sy0701:v7:2.4:physical-attacks:environmental',
+      'req:sy0701:v7:2.4:network-attacks:distributed-denial-of-service-ddos:amplified',
+      'req:sy0701:v7:2.4:network-attacks:distributed-denial-of-service-ddos:reflected',
+      'req:sy0701:v7:2.4:network-attacks:domain-name-system-dns-attacks',
+      'req:sy0701:v7:2.4:network-attacks:wireless',
+      'req:sy0701:v7:2.4:network-attacks:on-path',
+      'req:sy0701:v7:2.4:network-attacks:malicious-code',
+      'req:sy0701:v7:2.4:application-attacks:injection',
+      'req:sy0701:v7:2.4:application-attacks:buffer-overflow',
+      'req:sy0701:v7:2.4:application-attacks:replay',
+      'req:sy0701:v7:2.4:application-attacks:privilege-escalation',
+      'req:sy0701:v7:2.4:application-attacks:forgery',
+      'req:sy0701:v7:2.4:application-attacks:directory-traversal',
+      'req:sy0701:v7:2.4:cryptographic-attacks:downgrade',
+      'req:sy0701:v7:2.4:cryptographic-attacks:collision',
+      'req:sy0701:v7:2.4:cryptographic-attacks:birthday',
+      'req:sy0701:v7:2.4:password-attacks:spraying',
+      'req:sy0701:v7:2.4:password-attacks:brute-force',
+      'req:sy0701:v7:2.4:indicators:account-lockout',
+      'req:sy0701:v7:2.4:indicators:concurrent-session-usage',
+      'req:sy0701:v7:2.4:indicators:blocked-content',
+      'req:sy0701:v7:2.4:indicators:resource-inaccessibility',
+      'req:sy0701:v7:2.4:indicators:out-of-cycle-logging',
+      'req:sy0701:v7:2.4:indicators:published-documented',
+    ],
+    interaction: {
+      type: 'workflow',
+      steps: [
+        {
+          stepId: 'diagnose', title: 'Indikatoren korrelieren',
+          prompt: 'Welche Befunde sprechen gemeinsam für eine laufende Kompromittierung?',
+          evidence: '08:11 Login Berlin\n08:14 Login Singapore, gleicher Account\n08:17 winword.exe -> powershell.exe\n08:19 CPU 98 %, Dateien erhalten .locked\n08:20 Endpoint-Logging stoppt',
+          interaction: { type: 'decision', selectionMode: 'multiple', options: [
+            { id: 'travel', text: 'Unmögliche Reise kann auf Credential Replay hindeuten' },
+            { id: 'locked', text: 'Hohe Last plus .locked-Dateien passt zu Ransomware' },
+            { id: 'missing', text: 'Plötzlich fehlende Logs sind ein zusätzlicher Indikator' },
+            { id: 'normal', text: 'Alle Ereignisse sind normale Büroaktivität' },
+          ], correctIds: ['travel', 'locked', 'missing'] },
+        },
+        {
+          stepId: 'contain', title: 'Sofortmaßnahme',
+          prompt: 'Welche Maßnahmen begrenzen den Schaden, ohne die Beweislage unnötig zu zerstören?',
+          interaction: { type: 'decision', selectionMode: 'multiple', options: [
+            { id: 'isolate', text: 'Endpoint logisch vom Netz isolieren' },
+            { id: 'disable', text: 'Betroffenes Konto sperren und aktive Sessions widerrufen' },
+            { id: 'wipe', text: 'Sofort ohne Sicherung formatieren' },
+            { id: 'wait', text: 'Bis zum Ende der Verschlüsselung warten' },
+          ], correctIds: ['isolate', 'disable'] },
+        },
+        {
+          stepId: 'verify', title: 'Persistenz prüfen',
+          prompt: 'Welche Kontrollen helfen bei der Prüfung auf Keylogger/Persistenz und weitere betroffene Systeme?',
+          interaction: { type: 'decision', selectionMode: 'multiple', options: [
+            { id: 'edr', text: 'EDR-Prozessbaum, Autostarts und ungewöhnliche Hooks untersuchen' },
+            { id: 'auth', text: 'Authentifizierungslogs nach weiteren Replays korrelieren' },
+            { id: 'dns', text: 'DNS- und Proxy-Logs nach denselben Zielen durchsuchen' },
+            { id: 'delete', text: 'Zentrale Logs vor der Analyse löschen' },
+          ], correctIds: ['edr', 'auth', 'dns'] },
+        },
+        {
+          stepId: 'malware', title: 'Malware-Muster differenzieren',
+          prompt: 'Welche Zuordnungen aus den ergänzenden EDR-Befunden sind fachlich korrekt?',
+          evidence: 'A verbreitet sich selbstständig zwischen Hosts\nB sammelt Browserdaten und Tastatureingaben\nC wirkt nützlich, öffnet aber eine Backdoor\nD startet erst am Monatsende\nE manipuliert Kernel-Funktionen\nF unnötige OEM-Software vergrößert die Angriffsfläche',
+          interaction: { type: 'decision', selectionMode: 'multiple', options: [
+            { id: 'worm', text: 'A = Worm; selbstständige Verbreitung' },
+            { id: 'spyware', text: 'B = Spyware/Keylogger-Verhalten' },
+            { id: 'trojan', text: 'C = Trojan; legitime Tarnung' },
+            { id: 'logic-root', text: 'D = Logic Bomb und E = Rootkit' },
+            { id: 'bloat', text: 'F = Bloatware; nicht zwingend Malware, aber zusätzliche Fläche' },
+            { id: 'virus', text: 'Ein Virus bindet sich typischerweise an Datei/Anwendung und benötigt Ausführung zur Verbreitung' },
+            { id: 'virus-wrong', text: 'A ist zwingend ein dateigebundener Virus und kann sich nie selbst verbreiten' },
+          ], correctIds: ['worm', 'spyware', 'trojan', 'logic-root', 'bloat', 'virus'] },
+        },
+        {
+          stepId: 'physical', title: 'Physische Angriffe',
+          prompt: 'Welche Befunde erfordern physische Gegenmaßnahmen?',
+          interaction: { type: 'decision', selectionMode: 'multiple', options: [
+            { id: 'door', text: 'Aufgehebelte Tür = physische Brute Force' },
+            { id: 'rfid', text: 'Kopierte Badge-Funksignatur = RFID Cloning' },
+            { id: 'environment', text: 'Manipulierte Kühlung/Stromversorgung = Environmental Attack' },
+            { id: 'hash', text: 'Hash Collision ist ausschließlich ein Türschlossproblem' },
+          ], correctIds: ['door', 'rfid', 'environment'] },
+        },
+        {
+          stepId: 'network-crypto', title: 'Netzwerk und Kryptografie',
+          prompt: 'Welche Interpretationen der Netzwerkbeweise sind korrekt?',
+          evidence: 'DNS request 60 B with spoofed victim IP -> response 4.1 KB\nGateway ARP mapping changes unexpectedly\nClients forced from TLS 1.3 to obsolete protocol\nTwo distinct files produce the same weak hash',
+          interaction: { type: 'decision', selectionMode: 'multiple', options: [
+            { id: 'ddos', text: 'Große Antwort an gespoofte Adresse = reflected/amplified DDoS' },
+            { id: 'onpath', text: 'Manipulierte ARP-Zuordnung = möglicher On-Path-Angriff' },
+            { id: 'downgrade', text: 'Erzwungenes schwächeres Protokoll = Downgrade' },
+            { id: 'collision', text: 'Gleicher Hash bei verschiedenen Dateien = Collision; Birthday-Angriffe suchen solche Paare' },
+            { id: 'wireless', text: 'Deauth-Flut/Jamming in ergänzenden WLAN-Logs wäre ein Wireless Attack' },
+            { id: 'dns', text: 'Unerwartete Namensauflösung zu einer fremden IP verlangt Prüfung auf DNS Poisoning/Hijacking' },
+            { id: 'safe', text: 'Alle DNS-Antworten sind unabhängig von Größe und Absender sicher' },
+          ], correctIds: ['ddos', 'onpath', 'downgrade', 'collision', 'wireless', 'dns'] },
+        },
+        {
+          stepId: 'application-indicators', title: 'Requests und Folgeindikatoren',
+          prompt: 'Welche Analysepaare sind korrekt?',
+          evidence: "POST id=' OR 1=1--\nGET /download?file=../../etc/shadow\nSession token appears from two countries\nHundreds of users try 'Winter2026!'\nOne account receives 40,000 guesses\nSecurity service logs outside its normal cycle, then stops",
+          interaction: { type: 'decision', selectionMode: 'multiple', options: [
+            { id: 'inject', text: 'SQL-Metazeichen = Injection; übergroße Eingaben können Buffer Overflows auslösen' },
+            { id: 'traversal', text: '../ = Directory Traversal' },
+            { id: 'replay', text: 'Wiederverwendeter Session-Token = Replay/Forgery-Risiko' },
+            { id: 'passwords', text: 'Ein Passwort gegen viele Konten = Spraying; viele gegen eines = Brute Force' },
+            { id: 'indicators', text: 'Concurrent Sessions, Lockouts, Blocked Content, Ressourcenprobleme und ungewöhnliche/fehlende Logs sind korrelierbare Indikatoren' },
+            { id: 'privilege', text: 'Zugriff eines normalen Kontos auf Admin-Funktionen kann Privilege Escalation anzeigen' },
+            { id: 'malicious', text: 'Unerwarteter Script-/Binary-Download kann Malicious Code liefern und muss analysiert werden' },
+            { id: 'published', text: 'Veröffentlichte Hinweise auf geleakte Daten sind ein externer Indikator und müssen korreliert werden' },
+            { id: 'ignore', text: 'Veröffentlichte Hinweise auf geleakte Daten dürfen ohne Prüfung ignoriert werden' },
+          ], correctIds: ['inject', 'traversal', 'replay', 'passwords', 'indicators', 'privilege', 'malicious', 'published'] },
+        },
+      ],
+    },
+  },
+  {
+    id: 'capstone-3-2-secure-infrastructure',
+    categoryId: 'architektur',
+    title: 'Capstone: Sichere Infrastruktur entwerfen',
+    objective: '3.2 Apply security principles to enterprise infrastructure',
+    difficulty: 'experte',
+    minutes: 24,
+    description: 'Ein öffentliches Kundenportal wird neu aufgebaut. Entscheide Platzierung, Überwachung und sicheren Fernzugriff in drei abhängigen Schritten.',
+    topology: 'Internet -> Edge -> Web/API -> interne Datenbank\nAdministratoren -> Remote-Zugriff -> Management-Zone',
+    requirementIds: [
+      'req:sy0701:v7:3.2:infrastructure-considerations:device-placement',
+      'req:sy0701:v7:3.2:infrastructure-considerations:security-zones',
+      'req:sy0701:v7:3.2:infrastructure-considerations:attack-surface',
+      'req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-closed',
+      'req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:inline-vs-tap-monitor',
+      'req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:web-application-firewall-waf',
+      'req:sy0701:v7:3.2:secure-communication-access:virtual-private-network-vpn',
+      'req:sy0701:v7:3.2:secure-communication-access:secure-access-service-edge-sase',
+      'req:sy0701:v7:3.2:infrastructure-considerations:connectivity',
+      'req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-open',
+      'req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:active-vs-passive',
+      'req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:jump-server',
+      'req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:proxy-server',
+      'req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:intrusion-prevention-system-ips-intrusion-detect',
+      'req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:load-balancer',
+      'req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:sensors',
+      'req:sy0701:v7:3.2:infrastructure-considerations:port-security:802-1x',
+      'req:sy0701:v7:3.2:infrastructure-considerations:port-security:extensible-authentication',
+      'req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:unified-threat-management-utm',
+      'req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:next-generation-firewall-ngfw',
+      'req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:layer-4-layer-7',
+      'req:sy0701:v7:3.2:secure-communication-access:remote-access',
+      'req:sy0701:v7:3.2:secure-communication-access:tunneling:transport-layer-security-tls',
+      'req:sy0701:v7:3.2:secure-communication-access:tunneling:internet-protocol-security-ipsec',
+      'req:sy0701:v7:3.2:secure-communication-access:software-defined-wide-area-network-sd-wan',
+      'req:sy0701:v7:3.2:selection-of-effective-controls',
+    ],
+    interaction: { type: 'workflow', steps: [
+      { stepId: 'zones', title: 'Zonen und Platzierung', prompt: 'Welche Architektur reduziert die Angriffsfläche?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'waf', text: 'WAF vor die öffentlichen Web-Endpunkte setzen' },
+        { id: 'db', text: 'Datenbank in eine nicht öffentlich erreichbare interne Zone legen' },
+        { id: 'mgmt', text: 'Management-Zugriff in eine getrennte Admin-Zone legen' },
+        { id: 'flat', text: 'Webserver, Datenbank und Admin-Clients in ein flaches Netz stellen' },
+      ], correctIds: ['waf', 'db', 'mgmt'] } },
+      { stepId: 'sensor', title: 'Überwachung und Failure Mode', prompt: 'Der Sicherheitsbetrieb bevorzugt Ausfall gegenüber ungeprüftem Verkehr. Welche Kombination passt?', interaction: { type: 'decision', selectionMode: 'single', options: [
+        { id: 'inline-closed', text: 'IPS inline und fail-closed' },
+        { id: 'tap-open', text: 'Passiver TAP mit fail-open als Blockierkontrolle' },
+        { id: 'span', text: 'SPAN-Port als aktiv blockierende Kontrolle' },
+        { id: 'none', text: 'Keine Sensorik einsetzen' },
+      ], correctIds: ['inline-closed'] } },
+      { stepId: 'remote', title: 'Sicherer Fernzugriff', prompt: 'Welche Lösungen schützen Administratorzugriffe von außen?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'vpn', text: 'VPN mit starker Authentisierung für klar abgegrenzte Netzzugriffe' },
+        { id: 'sase', text: 'SASE für richtlinienbasierten Zugriff verteilter Nutzer und Standorte' },
+        { id: 'rdp', text: 'RDP direkt aus dem Internet zur Datenbank erlauben' },
+        { id: 'telnet', text: 'Telnet als verschlüsselten Admin-Kanal verwenden' },
+      ], correctIds: ['vpn', 'sase'] } },
+      { stepId: 'appliances', title: 'Appliances auswählen', prompt: 'Welche Zuordnungen erfüllen die jeweiligen Anforderungen?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'jump', text: 'Jump Server als kontrollierter Einstieg in die Management-Zone' },
+        { id: 'proxy', text: 'Proxy vermittelt und protokolliert Client-Zugriffe' },
+        { id: 'balance', text: 'Load Balancer verteilt Verbindungen auf redundante Backends' },
+        { id: 'idsips', text: 'IDS/IPS und weitere Sensoren liefern passive bzw. aktive Erkennung' },
+        { id: 'utm', text: 'UTM bündelt mehrere Sicherheitsfunktionen; NGFW erkennt Anwendungen und Layer-7-Kontext' },
+        { id: 'onebox', text: 'Ein Layer-4-Filter ersetzt automatisch jede Layer-7-Anwendungskontrolle' },
+      ], correctIds: ['jump', 'proxy', 'balance', 'idsips', 'utm'] } },
+      { stepId: 'access-network', title: 'Zugang und Standortkopplung', prompt: 'Welche Kontrollen sichern Ports und mehrere WAN-Verbindungen?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'dot1x', text: '802.1X mit EAP authentisiert Geräte/Nutzer vor produktivem Portzugang' },
+        { id: 'sdwan', text: 'SD-WAN steuert mehrere Verbindungstypen zentral' },
+        { id: 'connectivity', text: 'Redundante Konnektivität und Ausfallpfade als Designanforderung prüfen' },
+        { id: 'maconly', text: 'Nur MAC-Adressen als starke Identitätsprüfung verwenden' },
+      ], correctIds: ['dot1x', 'sdwan', 'connectivity'] } },
+      { stepId: 'protocol-failure', title: 'Tunnel und Failure Modes', prompt: 'Welche Entscheidungen passen zu Schutzbedarf und Verfügbarkeit?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'tls', text: 'TLS für anwendungsnahe Transportverschlüsselung wählen' },
+        { id: 'ipsec', text: 'IPsec für IP-basierte Site-to-Site-Tunnel einsetzen' },
+        { id: 'remote', text: 'Remote Access mit starker Authentisierung und minimalem Zugriff koppeln' },
+        { id: 'open', text: 'Fail-open nur nach bewusster Abwägung zugunsten Verfügbarkeit; Schutzwirkung fällt beim Fehler aus' },
+        { id: 'active-passive', text: 'Aktive Inline-Kontrollen können blockieren; passive Monitor-Sensoren beobachten' },
+        { id: 'random', text: 'Kontrollen ohne Bezug zu Datenfluss und Risiko zufällig auswählen' },
+      ], correctIds: ['tls', 'ipsec', 'remote', 'open', 'active-passive'] } },
+    ] },
+  },
+  {
+    id: 'capstone-4-1-hardening-rollout',
+    categoryId: 'betrieb',
+    title: 'Capstone: Baseline, Mobile und Anwendung härten',
+    objective: '4.1 Apply common security techniques to computing resources',
+    difficulty: 'experte',
+    minutes: 24,
+    description: 'Ein Rollout umfasst Server, BYOD-Mobilgeräte, WLAN und eine neue Webanwendung. Wähle je Phase die wirksamen Kontrollen.',
+    requirementIds: [
+      'req:sy0701:v7:4.1:secure-baselines:maintain',
+      'req:sy0701:v7:4.1:hardening-targets:servers',
+      'req:sy0701:v7:4.1:hardening-targets:cloud-infrastructure',
+      'req:sy0701:v7:4.1:wireless-devices:installation-considerations:site-surveys',
+      'req:sy0701:v7:4.1:wireless-devices:installation-considerations:heat-maps',
+      'req:sy0701:v7:4.1:mobile-solutions:mobile-device-management-mdm',
+      'req:sy0701:v7:4.1:mobile-solutions:deployment-models:bring-your-own-device-byod',
+      'req:sy0701:v7:4.1:wireless-security-settings:wi-fi-protected-access-3-wpa3',
+      'req:sy0701:v7:4.1:application-security:input-validation',
+      'req:sy0701:v7:4.1:application-security:static-code-analysis',
+      'req:sy0701:v7:4.1:application-security:code-signing',
+      'req:sy0701:v7:4.1:monitoring',
+      'req:sy0701:v7:4.1:hardening-targets:mobile-devices',
+      'req:sy0701:v7:4.1:hardening-targets:workstations',
+      'req:sy0701:v7:4.1:hardening-targets:routers',
+      'req:sy0701:v7:4.1:hardening-targets:ics-scada',
+      'req:sy0701:v7:4.1:hardening-targets:embedded-systems',
+      'req:sy0701:v7:4.1:hardening-targets:rtos',
+      'req:sy0701:v7:4.1:hardening-targets:iot-devices',
+      'req:sy0701:v7:4.1:mobile-solutions:deployment-models:corporate-owned-personally-enabled-cope',
+      'req:sy0701:v7:4.1:mobile-solutions:deployment-models:choose-your-own-device-cyod',
+      'req:sy0701:v7:4.1:mobile-solutions:connection-methods:cellular',
+      'req:sy0701:v7:4.1:mobile-solutions:connection-methods:wi-fi',
+      'req:sy0701:v7:4.1:mobile-solutions:connection-methods:bluetooth',
+      'req:sy0701:v7:4.1:wireless-security-settings:aaa-remote-authentication-dial-in-user-service-r',
+      'req:sy0701:v7:4.1:wireless-security-settings:cryptographic-protocols',
+      'req:sy0701:v7:4.1:wireless-security-settings:authentication-protocols',
+      'req:sy0701:v7:4.1:application-security:secure-cookies',
+      'req:sy0701:v7:4.1:sandboxing',
+    ],
+    interaction: { type: 'workflow', steps: [
+      { stepId: 'baseline', title: 'Server- und Cloud-Baseline', prompt: 'Welche Handlungen halten die Baseline wirksam?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'audit', text: 'Abweichungen regelmäßig messen und korrigieren' },
+        { id: 'test', text: 'Änderungen erst testen und dann automatisiert ausrollen' },
+        { id: 'cloud', text: 'Cloud-Konfigurationen ebenfalls in die Baseline aufnehmen' },
+        { id: 'forget', text: 'Nach Erstinstallation nie wieder prüfen' },
+      ], correctIds: ['audit', 'test', 'cloud'] } },
+      { stepId: 'mobile', title: 'WLAN und BYOD', prompt: 'Welche Kontrollen gehören in den mobilen Rollout?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'survey', text: 'Site Survey und Heat Map für Abdeckung und Störquellen' },
+        { id: 'wpa3', text: 'WPA3 mit geeigneter Enterprise-Authentisierung' },
+        { id: 'mdm', text: 'BYOD-Richtlinie plus MDM-Container/Compliance-Regeln' },
+        { id: 'open', text: 'Offenes WLAN ohne Gerätekontrolle' },
+      ], correctIds: ['survey', 'wpa3', 'mdm'] } },
+      { stepId: 'app', title: 'Anwendung absichern', prompt: 'Welche Maßnahmen reduzieren Manipulation und unsicheren Code?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'validation', text: 'Serverseitige Input Validation' },
+        { id: 'sast', text: 'Statische Codeanalyse in der Pipeline' },
+        { id: 'sign', text: 'Freigegebene Artefakte signieren und Signatur prüfen' },
+        { id: 'monitor', text: 'Laufzeit und sicherheitsrelevante Ereignisse überwachen' },
+        { id: 'trust', text: 'Alle Client-Eingaben ungeprüft übernehmen' },
+      ], correctIds: ['validation', 'sast', 'sign', 'monitor'] } },
+      { stepId: 'targets', title: 'Härtungsziele unterscheiden', prompt: 'Welche Maßnahmen berücksichtigen die jeweiligen Plattformgrenzen?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'endpoint', text: 'Mobile Devices und Workstations: Patchstand, EDR, Geräteschutz und minimale Dienste' },
+        { id: 'router', text: 'Router: Managementzugriff, Firmware, Protokolle und ungenutzte Interfaces härten' },
+        { id: 'ot', text: 'ICS/SCADA: Verfügbarkeit, Segmentierung und eingeschränkte Patchfenster berücksichtigen' },
+        { id: 'embedded', text: 'Embedded/RTOS/IoT: begrenzte Ressourcen, lange Lebenszyklen und Herstellerupdates berücksichtigen' },
+        { id: 'same', text: 'Auf jedem Ziel ungeprüft dieselbe Desktop-Baseline erzwingen' },
+      ], correctIds: ['endpoint', 'router', 'ot', 'embedded'] } },
+      { stepId: 'mobile-models', title: 'Gerätemodelle und Verbindungen', prompt: 'Welche Zuordnungen sind korrekt?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'cope', text: 'COPE = Firmengerät mit erlaubter privater Nutzung' },
+        { id: 'cyod', text: 'CYOD = Auswahl aus genehmigten, verwaltbaren Geräten' },
+        { id: 'connections', text: 'Cellular, Wi-Fi und Bluetooth benötigen jeweils risikogerechte Richtlinien' },
+        { id: 'byodwrong', text: 'BYOD bedeutet, dass die Organisation Eigentümer jedes Geräts ist' },
+      ], correctIds: ['cope', 'cyod', 'connections'] } },
+      { stepId: 'wireless-app', title: 'Enterprise-WLAN und Laufzeitschutz', prompt: 'Welche Kombination verbessert Authentisierung und App-Isolation?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'radius', text: 'AAA/RADIUS mit geeignetem EAP-Authentisierungsprotokoll' },
+        { id: 'crypto', text: 'Aktuelles kryptografisches WLAN-Protokoll statt veralteter Verfahren' },
+        { id: 'cookies', text: 'Secure/HttpOnly/SameSite-Cookieattribute passend einsetzen' },
+        { id: 'sandbox', text: 'Unvertrauenswürdigen Code in einer begrenzten Sandbox ausführen' },
+        { id: 'open', text: 'Enterprise-WLAN ohne Authentisierung betreiben' },
+      ], correctIds: ['radius', 'crypto', 'cookies', 'sandbox'] } },
+    ] },
+  },
+  {
+    id: 'capstone-4-5-control-change',
+    categoryId: 'firewalls',
+    title: 'Capstone: Security Controls sicher ändern',
+    objective: '4.5 Modify enterprise capabilities to enhance security',
+    difficulty: 'experte',
+    minutes: 24,
+    description: 'Nach Phishing und verdächtigem Egress müssen Netzwerk-, Mail- und Endpoint-Kontrollen angepasst und anschließend geprüft werden.',
+    requirementIds: [
+      'req:sy0701:v7:4.5:firewall:ports-protocols',
+      'req:sy0701:v7:4.5:ids-ips:trends',
+      'req:sy0701:v7:4.5:ids-ips:signatures',
+      'req:sy0701:v7:4.5:web-filter:universal-resource-locator-url-scanning',
+      'req:sy0701:v7:4.5:web-filter:content-categorization',
+      'req:sy0701:v7:4.5:web-filter:reputation',
+      'req:sy0701:v7:4.5:implementation-of-secure-protocols:protocol-selection',
+      'req:sy0701:v7:4.5:implementation-of-secure-protocols:port-selection',
+      'req:sy0701:v7:4.5:email-security:domain-based-message-authentication-reporting-an',
+      'req:sy0701:v7:4.5:email-security:domainkeys-identified-mail-dkim',
+      'req:sy0701:v7:4.5:email-security:sender-policy-framework-spf',
+      'req:sy0701:v7:4.5:file-integrity-monitoring',
+      'req:sy0701:v7:4.5:dlp',
+      'req:sy0701:v7:4.5:endpoint-detection-and-response-edr-extended-det',
+      'req:sy0701:v7:4.5:user-behavior-analytics',
+      'req:sy0701:v7:4.5:web-filter:agent-based',
+      'req:sy0701:v7:4.5:web-filter:centralized-proxy',
+      'req:sy0701:v7:4.5:web-filter:block-rules',
+      'req:sy0701:v7:4.5:operating-system-security:group-policy',
+      'req:sy0701:v7:4.5:operating-system-security:selinux',
+      'req:sy0701:v7:4.5:implementation-of-secure-protocols:transport-method',
+      'req:sy0701:v7:4.5:dns-filtering',
+      'req:sy0701:v7:4.5:email-security:gateway',
+      'req:sy0701:v7:4.5:network-access-control-nac',
+    ],
+    interaction: { type: 'workflow', steps: [
+      { stepId: 'network', title: 'Netzwerkregeln', prompt: 'Welche Änderungen sind fachlich begründet?', evidence: 'EDR: powershell -> 198.51.100.7:4444\nIPS: neue C2-Signatur verfügbar\nProxy: Domain reputation=malicious', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'egress', text: 'Nicht benötigten Egress-Port 4444 blockieren' },
+        { id: 'sig', text: 'Geprüfte IPS-Signatur aktivieren und Treffertrend beobachten' },
+        { id: 'url', text: 'URL-Scanning, Kategorie und Reputation für die Domain anwenden' },
+        { id: 'allow', text: 'Unbekannte Protokolle auf allen Ports freigeben' },
+      ], correctIds: ['egress', 'sig', 'url'] } },
+      { stepId: 'mail', title: 'Mail-Authentisierung', prompt: 'Welche Kontrollen erschweren Domain-Spoofing und machen Fehler sichtbar?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'spf', text: 'SPF auf autorisierte Sender begrenzen' },
+        { id: 'dkim', text: 'Ausgehende Nachrichten mit DKIM signieren' },
+        { id: 'dmarc', text: 'DMARC-Policy und Reporting auswerten' },
+        { id: 'openrelay', text: 'Mail-Gateway als Open Relay betreiben' },
+      ], correctIds: ['spf', 'dkim', 'dmarc'] } },
+      { stepId: 'endpoint', title: 'Endpoint und Daten', prompt: 'Welche Kontrollen erkennen Folgeschäden und Datenabfluss?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'edr', text: 'EDR-Telemetrie und Prozessketten prüfen' },
+        { id: 'fim', text: 'FIM auf kritischen Dateien aktivieren' },
+        { id: 'dlp', text: 'DLP-Regeln für sensible Datentypen anwenden' },
+        { id: 'uba', text: 'User-Behavior-Abweichungen korrelieren' },
+        { id: 'nologs', text: 'Endpoint-Logging deaktivieren' },
+      ], correctIds: ['edr', 'fim', 'dlp', 'uba'] } },
+      { stepId: 'verify', title: 'Änderung verifizieren', prompt: 'Welche Tests belegen, dass die Änderung schützt, ohne legitime Dienste zu brechen?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'denytest', text: 'Gezielten Negativtest gegen blockierten Port durchführen' },
+        { id: 'mailtest', text: 'SPF/DKIM/DMARC mit Testnachrichten und Reports prüfen' },
+        { id: 'business', text: 'Legitime Geschäftsflüsse als Positivtest prüfen' },
+        { id: 'assume', text: 'Nur die gespeicherte Konfiguration ansehen und Wirkung annehmen' },
+      ], correctIds: ['denytest', 'mailtest', 'business'] } },
+      { stepId: 'enforcement', title: 'Verteilte Durchsetzung', prompt: 'Welche Kontrollen decken Büro, Remote-Clients und Gerätezugang ab?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'agent', text: 'Agent-basierter Webfilter schützt verwaltete Remote-Endpoints' },
+        { id: 'proxy', text: 'Zentraler Proxy erzwingt Kategorien, Reputation und Blockregeln im Standort' },
+        { id: 'dns', text: 'DNS-Filter blockiert Auflösung bekannter schädlicher Ziele' },
+        { id: 'nac', text: 'NAC prüft Identität/Posture vor produktivem Netzwerkzugang' },
+        { id: 'bypass', text: 'Nicht verwaltete Geräte ohne Prüfung ins interne Netz lassen' },
+      ], correctIds: ['agent', 'proxy', 'dns', 'nac'] } },
+      { stepId: 'host-transport', title: 'Host und Transport', prompt: 'Welche Maßnahmen setzen sichere Host- und Transportvorgaben um?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'gpo', text: 'Windows-Sicherheitsvorgaben über Group Policy verteilen' },
+        { id: 'selinux', text: 'SELinux-Policy für Mandatory Access Controls auf Linux anwenden' },
+        { id: 'transport', text: 'Sicheren Transport passend zu Protokoll und Port auswählen und verifizieren' },
+        { id: 'gateway', text: 'Mail-Gateway für Filterung, Authentisierungsprüfung und Richtlinien einsetzen' },
+        { id: 'plain', text: 'Veraltete Klartextprotokolle nur wegen Kompatibilität bevorzugen' },
+      ], correctIds: ['gpo', 'selinux', 'transport', 'gateway'] } },
+    ] },
+  },
+  {
+    id: 'capstone-4-6-identity-lifecycle',
+    categoryId: 'iam',
+    title: 'Capstone: Identitäts- und Privilegien-Lifecycle',
+    objective: '4.6 Implement and maintain identity and access management',
+    difficulty: 'experte',
+    minutes: 24,
+    description: 'Ein externer Administrator wird aufgenommen, erhält zeitweise Rechte und verlässt das Projekt. Baue einen kontrollierten Lifecycle.',
+    requirementIds: [
+      'req:sy0701:v7:4.6:provisioning-de-provisioning-user-accounts',
+      'req:sy0701:v7:4.6:identity-proofing',
+      'req:sy0701:v7:4.6:federation',
+      'req:sy0701:v7:4.6:interoperability',
+      'req:sy0701:v7:4.6:access-controls:role-based',
+      'req:sy0701:v7:4.6:access-controls:attribute-based',
+      'req:sy0701:v7:4.6:access-controls:time-of-day-restrictions',
+      'req:sy0701:v7:4.6:multifactor-authentication:implementations:security-keys',
+      'req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-know',
+      'req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-have',
+      'req:sy0701:v7:4.6:password-concepts:password-managers',
+      'req:sy0701:v7:4.6:password-concepts:passwordless',
+      'req:sy0701:v7:4.6:privileged-access-management-tools:just-in-time-permissions',
+      'req:sy0701:v7:4.6:privileged-access-management-tools:password-vaulting',
+      'req:sy0701:v7:4.6:privileged-access-management-tools:ephemeral-credentials',
+      'req:sy0701:v7:4.6:single-sign-on-sso:lightweight-directory-access-protocol-ldap',
+      'req:sy0701:v7:4.6:attestation',
+      'req:sy0701:v7:4.6:access-controls:mandatory',
+      'req:sy0701:v7:4.6:access-controls:discretionary',
+      'req:sy0701:v7:4.6:access-controls:rule-based',
+      'req:sy0701:v7:4.6:access-controls:least-privilege',
+      'req:sy0701:v7:4.6:multifactor-authentication:implementations:biometrics',
+      'req:sy0701:v7:4.6:multifactor-authentication:implementations:hard-soft-authentication-tokens',
+      'req:sy0701:v7:4.6:multifactor-authentication:factors:something-you-are',
+      'req:sy0701:v7:4.6:multifactor-authentication:factors:somewhere-you-are',
+      'req:sy0701:v7:4.6:password-concepts:password-best-practices:length',
+      'req:sy0701:v7:4.6:password-concepts:password-best-practices:complexity',
+      'req:sy0701:v7:4.6:password-concepts:password-best-practices:reuse',
+      'req:sy0701:v7:4.6:password-concepts:password-best-practices:expiration',
+      'req:sy0701:v7:4.6:password-concepts:password-best-practices:age',
+    ],
+    interaction: { type: 'workflow', steps: [
+      { stepId: 'proof', title: 'Onboarding', prompt: 'Welche Kontrollen gehören vor die erste Rechtevergabe?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'proof', text: 'Identität gegen verlässliche Nachweise prüfen' },
+        { id: 'federate', text: 'Vertrauensbeziehung/Federation und Protokoll-Kompatibilität prüfen' },
+        { id: 'role', text: 'Definierte Projektrolle statt Einzelvollmachten verwenden' },
+        { id: 'shared', text: 'Ein gemeinsames Admin-Konto für alle Externen anlegen' },
+      ], correctIds: ['proof', 'federate', 'role'] } },
+      { stepId: 'conditional', title: 'Bedingter Zugriff', prompt: 'Welche Kombination setzt Kontext und MFA sinnvoll um?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'abac', text: 'ABAC-Regeln für Gerät, Standort und Projektzugehörigkeit' },
+        { id: 'time', text: 'Zeitfenster passend zum genehmigten Wartungstermin' },
+        { id: 'mfa', text: 'Passphrase plus Security Key als zwei Faktorarten' },
+        { id: 'two-passwords', text: 'Zwei Passwörter als zwei unterschiedliche Faktoren' },
+      ], correctIds: ['abac', 'time', 'mfa'] } },
+      { stepId: 'pam', title: 'Privilegierte Sitzung', prompt: 'Welche PAM-Maßnahmen begrenzen dauerhaftes Geheimnis- und Rechte-Risiko?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'jit', text: 'Just-in-Time-Berechtigung nur für das Wartungsfenster' },
+        { id: 'vault', text: 'Verwaltete Geheimnisse im Passwort-Vault' },
+        { id: 'ephemeral', text: 'Kurzlebige, sitzungsgebundene Credentials' },
+        { id: 'permanent', text: 'Dauerhafte Domain-Admin-Mitgliedschaft' },
+      ], correctIds: ['jit', 'vault', 'ephemeral'] } },
+      { stepId: 'offboard', title: 'Offboarding', prompt: 'Was muss am Projektende passieren?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'disable', text: 'Konto und Federation-Zugriff deaktivieren' },
+        { id: 'revoke', text: 'Tokens, Sessions und verbleibende Secrets widerrufen/rotieren' },
+        { id: 'audit', text: 'Entzug und letzte privilegierte Aktivitäten auditieren' },
+        { id: 'keep', text: 'Konto für einen möglichen späteren Einsatz aktiv lassen' },
+      ], correctIds: ['disable', 'revoke', 'audit'] } },
+      { stepId: 'models-attestation', title: 'Modelle und Attestation', prompt: 'Welche Zuordnungen und Nachweise sind korrekt?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'ldap', text: 'LDAP(S) für Verzeichnisabfragen und Gruppeninformationen einer kompatiblen SSO-Umgebung' },
+        { id: 'attest', text: 'Attestation liefert einen überprüfbaren Nachweis über Identität oder Gerätezustand' },
+        { id: 'macdac', text: 'MAC nutzt zentrale Labels; DAC überlässt Freigaben dem Objektbesitzer' },
+        { id: 'rule', text: 'Rule-based Access kann etwa ein Wartungszeitfenster erzwingen' },
+        { id: 'least', text: 'Least Privilege begrenzt die Rolle auf tatsächlich benötigte Rechte' },
+        { id: 'swap', text: 'DAC verlangt zwingend staatliche Clearance-Labels' },
+      ], correctIds: ['ldap', 'attest', 'macdac', 'rule', 'least'] } },
+      { stepId: 'factors-passwords', title: 'Faktoren und Passwortregeln', prompt: 'Welche Maßnahmen sind eigenständige Faktoren bzw. angemessene Passwortpraxis?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'bio', text: 'Biometrie = something you are' },
+        { id: 'token', text: 'Hard-/Soft-Token = something you have' },
+        { id: 'location', text: 'Standortsignal = somewhere you are und nur als Kontext/Faktor mit angemessener Genauigkeit nutzen' },
+        { id: 'length', text: 'Länge/Passphrasen priorisieren und bekannte kompromittierte Passwörter blockieren' },
+        { id: 'reuse', text: 'Wiederverwendung verhindern; Alter/Expiration risikobasiert statt blind periodisch behandeln' },
+        { id: 'complex', text: 'Komplexitätszwang allein ersetzt weder Länge noch Blocklist oder MFA' },
+        { id: 'samefactor', text: 'Zwei memorierte Passwörter sind automatisch zwei Faktorarten' },
+      ], correctIds: ['bio', 'token', 'location', 'length', 'reuse', 'complex'] } },
+    ] },
+  },
+  {
+    id: 'capstone-4-9-log-correlation',
+    categoryId: 'incident-response',
+    title: 'Capstone: Logs und Paketdaten korrelieren',
+    objective: '4.9 Use data sources to support an investigation',
+    difficulty: 'experte',
+    minutes: 16,
+    description: 'Ein SIEM-Alarm muss mit Host-, Netzwerk- und Inhaltsdaten verifiziert werden. Wähle Quellen, korreliere die Timeline und entscheide die nächste Analyse.',
+    requirementIds: [
+      'req:sy0701:v7:4.9:log-data:application-logs',
+      'req:sy0701:v7:4.9:log-data:endpoint-logs',
+      'req:sy0701:v7:4.9:log-data:os-specific-security-logs',
+      'req:sy0701:v7:4.9:log-data:network-logs',
+      'req:sy0701:v7:4.9:log-data:metadata',
+      'req:sy0701:v7:4.9:data-sources:vulnerability-scans',
+      'req:sy0701:v7:4.9:data-sources:automated-reports',
+      'req:sy0701:v7:4.9:data-sources:dashboards',
+      'req:sy0701:v7:4.9:data-sources:packet-captures',
+    ],
+    interaction: { type: 'workflow', steps: [
+      { stepId: 'sources', title: 'Quellen auswählen', prompt: 'Welche Quellen verbinden den verdächtigen Prozess mit einer Netzwerkverbindung und einer bekannten Schwachstelle?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'endpoint', text: 'Endpoint-Prozess- und OS-Sicherheitslogs' },
+        { id: 'network', text: 'Firewall/Netzwerklogs' },
+        { id: 'scan', text: 'Vulnerability-Scan des Hosts' },
+        { id: 'weather', text: 'Wetterbericht des Standorts' },
+      ], correctIds: ['endpoint', 'network', 'scan'] } },
+      { stepId: 'timeline', title: 'Timeline korrelieren', prompt: 'Welche Befunde stützen denselben Vorfall?', evidence: '10:01 app.log: export job started by svc-report\n10:02 endpoint: powershell encoded command\n10:03 firewall: 2.4 GB to new external IP\n10:04 file metadata: archive created by svc-report', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'app', text: 'Anwendungslog zeigt den auslösenden Account' },
+        { id: 'process', text: 'Endpoint-/OS-Log zeigt den verdächtigen Prozess' },
+        { id: 'flow', text: 'Netzwerklog zeigt ungewöhnliches Datenvolumen' },
+        { id: 'meta', text: 'Metadaten verbinden Archiv und Servicekonto' },
+      ], correctIds: ['app', 'process', 'flow', 'meta'] } },
+      { stepId: 'depth', title: 'Detailanalyse', prompt: 'Welche Werkzeuge liefern aktuelle Übersicht bzw. Paketdetail, ohne sie zu verwechseln?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'dashboard', text: 'Dashboard für aktuellen Überblick und Trend' },
+        { id: 'report', text: 'Automatisierten Bericht gezielt nach Host/Zeitraum erzeugen' },
+        { id: 'pcap', text: 'Packet Capture für Protokoll- und Payload-Details, soweit sichtbar' },
+        { id: 'dashboard-payload', text: 'Vom Dashboard vollständige Paketbytes erwarten' },
+      ], correctIds: ['dashboard', 'report', 'pcap'] } },
+    ] },
+  },
+  {
+    id: 'capstone-5-6-awareness-program',
+    categoryId: 'governance',
+    title: 'Capstone: Awareness-Programm messen und verbessern',
+    objective: '5.6 Implement security awareness practices',
+    difficulty: 'experte',
+    minutes: 17,
+    description: 'Nach einer Phishing-Kampagne müssen Meldungen triagiert, Verhaltensmuster eingeordnet und die nächste Trainingsrunde geplant werden.',
+    requirementIds: [
+      'req:sy0701:v7:5.6:phishing:campaigns',
+      'req:sy0701:v7:5.6:phishing:recognizing-a-phishing-attempt',
+      'req:sy0701:v7:5.6:phishing:responding-to-reported-suspicious-messages',
+      'req:sy0701:v7:5.6:anomalous-behavior-recognition:risky',
+      'req:sy0701:v7:5.6:anomalous-behavior-recognition:unexpected',
+      'req:sy0701:v7:5.6:anomalous-behavior-recognition:unintentional',
+      'req:sy0701:v7:5.6:user-guidance-and-training:policy-handbooks',
+      'req:sy0701:v7:5.6:user-guidance-and-training:situational-awareness',
+      'req:sy0701:v7:5.6:user-guidance-and-training:insider-threat',
+      'req:sy0701:v7:5.6:user-guidance-and-training:password-management',
+      'req:sy0701:v7:5.6:user-guidance-and-training:removable-media-and-cables',
+      'req:sy0701:v7:5.6:user-guidance-and-training:social-engineering',
+      'req:sy0701:v7:5.6:user-guidance-and-training:operational-security',
+      'req:sy0701:v7:5.6:user-guidance-and-training:hybrid-remote-work-environments',
+      'req:sy0701:v7:5.6:reporting-and-monitoring:initial',
+      'req:sy0701:v7:5.6:reporting-and-monitoring:recurring',
+      'req:sy0701:v7:5.6:development',
+      'req:sy0701:v7:5.6:execution',
+    ],
+    interaction: { type: 'workflow', steps: [
+      { stepId: 'triage', title: 'Phishing-Meldung', prompt: 'Eine Mail fordert unter Zeitdruck eine Passwortbestätigung über eine abweichende Domain. Was ist richtig?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'recognize', text: 'Dringlichkeit, Absender und Ziel-URL als Indikatoren erkennen' },
+        { id: 'report', text: 'Über den vorgesehenen Meldekanal an Security melden' },
+        { id: 'campaign', text: 'Nach ähnlichen Nachrichten der Kampagne suchen' },
+        { id: 'forward', text: 'An Kollegen weiterleiten, damit sie den Link testen' },
+      ], correctIds: ['recognize', 'report', 'campaign'] } },
+      { stepId: 'behavior', title: 'Verhalten einordnen', prompt: 'Welche Beobachtungen gehören in die Verhaltensanalyse?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'risky', text: 'Riskant: sensible Datei absichtlich auf privaten Cloudspeicher kopiert' },
+        { id: 'unexpected', text: 'Unerwartet: Admin meldet sich erstmals nachts aus neuem Land an' },
+        { id: 'unintentional', text: 'Unbeabsichtigt: Mitarbeiter steckt gefundenen USB-Stick ein' },
+        { id: 'ignore', text: 'Abweichungen grundsätzlich nicht melden' },
+      ], correctIds: ['risky', 'unexpected', 'unintentional'] } },
+      { stepId: 'develop', title: 'Training entwickeln', prompt: 'Welche Inhalte adressieren die beobachteten Ursachen?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'policy', text: 'Policy-Handbuch und klare Meldewege' },
+        { id: 'topics', text: 'Passwörter, Social Engineering, Removable Media und OPSEC' },
+        { id: 'remote', text: 'Situational Awareness für Hybrid-/Remote-Arbeit und Insider-Risiken' },
+        { id: 'generic', text: 'Nur ein unverändertes allgemeines Video ohne Bezug zu Befunden' },
+      ], correctIds: ['policy', 'topics', 'remote'] } },
+      { stepId: 'measure', title: 'Ausführen und messen', prompt: 'Wie wird aus einer einmaligen Aktion ein steuerbares Programm?', interaction: { type: 'decision', selectionMode: 'multiple', options: [
+        { id: 'initial', text: 'Initiale Baseline aus Kampagne und Meldedaten erfassen' },
+        { id: 'execute', text: 'Rollenspezifische Maßnahmen ausführen' },
+        { id: 'recurring', text: 'Wiederkehrend Meldequote, Klickrate und Themenlücken beobachten' },
+        { id: 'pass', text: 'Teilnahme allein dauerhaft als Wirksamkeitsbeleg verwenden' },
+      ], correctIds: ['initial', 'execute', 'recurring'] } },
+    ] },
+  },
 ]
 
 /**
- * Ziel-Inventar: 110 Szenarien — Ausbau vom belegten 71er-Handy-Stand
- * (Pill "4 / 71") auf volle SY0-701-Objective-Abdeckung inkl. 10
- * Entscheidungs-Szenarien über Matching/Ordering hinaus (2026-07-20,
- * §13.1); siehe docs/labs.md.
+ * Ziel-Inventar entspricht der versionierten Registry. Seit 2026-07-23 sind
+ * sieben mehrstufige Capstones über die offiziellen Scenario-Objectives
+ * enthalten; ältere Matching-/Ordering-Fälle bleiben als Grundübungen erhalten.
  */
-export const LAB_TARGET_INVENTORY = 110
+export const LAB_TARGET_INVENTORY = LAB_SCENARIOS.length
 
 const SY0_701 = 'comptia-sy0-701-objectives'
 
@@ -3091,6 +3663,13 @@ export const LAB_SCENARIO_SOURCE_REFS: Record<string, string[]> = {
   'ir-threat-hunt-hypothese': [SY0_701, 'mitre-attack-enterprise', 'nist-sp-800-61r3'],
   'incident-response-sofortmassnahme-ransomware': [SY0_701, 'nist-sp-800-61r2', 'cisa-stopransomware-guide'],
   'incident-response-chain-of-custody': [SY0_701, 'nist-sp-800-61r2'],
+  'capstone-2-4-compromise-triage': [SY0_701, 'mitre-attack-enterprise', 'cisa-stopransomware-guide'],
+  'capstone-3-2-secure-infrastructure': [SY0_701, 'nist-sp-800-207', 'nist-sp-800-94'],
+  'capstone-4-1-hardening-rollout': [SY0_701, 'cis-benchmarks', 'nist-sp-800-40r4', 'nist-sp-800-97'],
+  'capstone-4-5-control-change': [SY0_701, 'nist-sp-800-92', 'nist-sp-800-94', 'nist-sp-800-177r1'],
+  'capstone-4-6-identity-lifecycle': [SY0_701, 'nist-sp-800-63b', 'nist-sp-800-63c', 'nist-sp-800-207'],
+  'capstone-4-9-log-correlation': [SY0_701, 'nist-sp-800-92', 'nist-sp-800-61r3'],
+  'capstone-5-6-awareness-program': [SY0_701, 'cisa-phishing-social-engineering', 'nist-csf-2'],
 
   'krypto-bausteine': [SY0_701, 'nist-encryption-basics', 'nist-sp-800-57r5'],
   'krypto-cert-lifecycle': [SY0_701, 'nist-sp-800-57r5'],

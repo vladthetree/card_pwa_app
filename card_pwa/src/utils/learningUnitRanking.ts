@@ -1,8 +1,8 @@
 /**
  * AI_CONTEXT:
  * Role: Pure exam-timeline, learning-phase, and phase-aware unit-ranking logic of the dedicated SY0-701 learning-unit system (Phase 1).
- * Used by: learning-unit tests and (later phases) the dedicated Lerneinheiten UI — nothing in the existing app imports this yet.
- * Important: Deterministic, no I/O; rules come from docs/lerneinheiten-sy0-701-umsetzungsplan.md §12. Every rank carries an explainable `reason`.
+ * Used by: learning-unit tests, Home learning-unit hook, and plan UI.
+ * Important: Deterministic, no I/O. Every rank carries an explainable `reason`.
  */
 import type {
   LearningPhase,
@@ -36,19 +36,52 @@ export interface LearningWorkloadMetrics {
   dueReviewCardCount: number
   unresolvedErrorCardCount: number
   pendingReviewCardCount: number
+  /** Bereits terminierte Karten, die bis zum gesetzten Prüfungstermin fällig werden
+   * (inklusive aktuell fälliger/fehlerhafter Karten, dedupliziert). */
+  scheduledReviewCardCount: number
+  /** Noch nicht eingeführte Karten erzeugen spätere FSRS-Termine, die ohne
+   * erste Antworten nicht seriös vorausberechnet werden können. */
+  unintroducedCardCount: number
   timedReviewSampleCount: number
   averageReviewSeconds: number | null
   estimatedCurrentReviewMinutes: number | null
+  estimatedScheduledReviewMinutes: number | null
   reservePercent: 20
   reserveMinutes: number | null
+  /** Bekannte Untergrenze inklusive Reserve, auch wenn spätere Reviews offen sind. */
+  minimumTotalMinutes: number | null
   totalMinutes: number | null
   missingEstimateUnitIds: string[]
-  missingMeasurements: Array<'review-time'>
+  missingMeasurements: Array<'review-time' | 'future-new-card-reviews'>
 }
 
 interface EstimatedUnit {
   unitId: string
   estimatedMinutes?: number
+}
+
+export const SY0701_DOMAIN_WEIGHTS: Readonly<Record<string, number>> = {
+  '1': 12,
+  '2': 22,
+  '3': 18,
+  '4': 28,
+  '5': 20,
+}
+
+/** Vergleicht den hinterlegten Minutenanteil mit dem offiziellen Blueprint.
+ * Positive Lücke = im Plan relativ unterrepräsentiert. */
+export function computeDomainEffortGaps(definitions: readonly LearningUnitDefinition[]): Record<string, number> {
+  const minutesByDomain: Record<string, number> = { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
+  for (const definition of definitions) {
+    const domain = definition.objectiveIds[0]?.split('.')[0]
+    if (!(domain in minutesByDomain) || definition.estimatedMinutes === undefined) continue
+    minutesByDomain[domain] += Math.max(0, definition.estimatedMinutes)
+  }
+  const total = Object.values(minutesByDomain).reduce((sum, minutes) => sum + minutes, 0)
+  return Object.fromEntries(Object.entries(SY0701_DOMAIN_WEIGHTS).map(([domain, official]) => [
+    domain,
+    official - (total > 0 ? (minutesByDomain[domain] / total) * 100 : 0),
+  ]))
 }
 
 /**
@@ -63,6 +96,8 @@ export function computeLearningWorkload(input: {
   dueReviewCardCount: number
   unresolvedErrorCardCount: number
   pendingReviewCardCount: number
+  scheduledReviewCardCount?: number
+  unintroducedCardCount?: number
   timedReviewSampleCount: number
   observedReviewTimeMs: number
 }): LearningWorkloadMetrics {
@@ -81,16 +116,29 @@ export function computeLearningWorkload(input: {
     ? input.observedReviewTimeMs / timedReviewSampleCount / 1000
     : null
   const pendingReviewCardCount = Math.max(0, Math.floor(input.pendingReviewCardCount))
+  const scheduledReviewCardCount = Math.max(
+    pendingReviewCardCount,
+    Math.floor(input.scheduledReviewCardCount ?? pendingReviewCardCount),
+  )
+  const unintroducedCardCount = Math.max(0, Math.floor(input.unintroducedCardCount ?? 0))
   const estimatedCurrentReviewMinutes = pendingReviewCardCount === 0
     ? 0
     : averageReviewSeconds === null
       ? null
       : Math.ceil((pendingReviewCardCount * averageReviewSeconds) / 60)
-  const missingMeasurements: LearningWorkloadMetrics['missingMeasurements'] =
-    pendingReviewCardCount > 0 && estimatedCurrentReviewMinutes === null ? ['review-time'] : []
+  const estimatedScheduledReviewMinutes = scheduledReviewCardCount === 0
+    ? 0
+    : averageReviewSeconds === null
+      ? null
+      : Math.ceil((scheduledReviewCardCount * averageReviewSeconds) / 60)
+  const missingMeasurements: LearningWorkloadMetrics['missingMeasurements'] = []
+  if (scheduledReviewCardCount > 0 && estimatedScheduledReviewMinutes === null) missingMeasurements.push('review-time')
+  if (unintroducedCardCount > 0) missingMeasurements.push('future-new-card-reviews')
   const complete = missingEstimateUnitIds.length === 0 && missingMeasurements.length === 0
-  const baseMinutes = remainingCourseMinutes + remainingLabMinutes + (estimatedCurrentReviewMinutes ?? 0)
-  const reserveMinutes = complete ? Math.ceil(baseMinutes * 0.2) : null
+  const knownBaseMinutes = remainingCourseMinutes + remainingLabMinutes + (estimatedScheduledReviewMinutes ?? 0)
+  const knownInputsComplete = missingEstimateUnitIds.length === 0 && !missingMeasurements.includes('review-time')
+  const reserveMinutes = knownInputsComplete ? Math.ceil(knownBaseMinutes * 0.2) : null
+  const minimumTotalMinutes = reserveMinutes === null ? null : knownBaseMinutes + reserveMinutes
 
   return {
     remainingCourseUnitCount: input.remainingCourseUnits.length,
@@ -100,12 +148,16 @@ export function computeLearningWorkload(input: {
     dueReviewCardCount: Math.max(0, Math.floor(input.dueReviewCardCount)),
     unresolvedErrorCardCount: Math.max(0, Math.floor(input.unresolvedErrorCardCount)),
     pendingReviewCardCount,
+    scheduledReviewCardCount,
+    unintroducedCardCount,
     timedReviewSampleCount,
     averageReviewSeconds,
     estimatedCurrentReviewMinutes,
+    estimatedScheduledReviewMinutes,
     reservePercent: 20,
     reserveMinutes,
-    totalMinutes: reserveMinutes === null ? null : baseMinutes + reserveMinutes,
+    minimumTotalMinutes,
+    totalMinutes: complete ? minimumTotalMinutes : null,
     missingEstimateUnitIds,
     missingMeasurements,
   }
@@ -198,10 +250,10 @@ export function computeDraftPacing(input: {
     .filter(unit => unit.estimatedMinutes === undefined)
     .map(unit => unit.unitId)
   const requiredMinutes = input.workload
-    ? input.workload.totalMinutes ?? (
+    ? input.workload.totalMinutes ?? input.workload.minimumTotalMinutes ?? (
         input.workload.remainingCourseMinutes +
         input.workload.remainingLabMinutes +
-        (input.workload.estimatedCurrentReviewMinutes ?? 0)
+        (input.workload.estimatedScheduledReviewMinutes ?? 0)
       )
     : remaining.reduce((sum, unit) => sum + (unit.estimatedMinutes ?? 0), 0)
   const base = {
@@ -272,6 +324,14 @@ export function rankLearningUnits(input: {
   pacing: LearningPacingResult
 }): RankedLearningUnit[] {
   const noGo = !input.pacing.feasible || input.pacing.reason === 'past-exam'
+  const domainGaps = computeDomainEffortGaps(input.definitions)
+  const domainPriority = Object.fromEntries(
+    Object.keys(SY0701_DOMAIN_WEIGHTS)
+      .sort((a, b) => domainGaps[b] - domainGaps[a] || a.localeCompare(b))
+      .map((domain, index) => [domain, index]),
+  )
+  const labOffset = (definition: LearningUnitDefinition) =>
+    domainPriority[definition.objectiveIds[0]?.split('.')[0]] ?? Object.keys(SY0701_DOMAIN_WEIGHTS).length
 
   const activeUnits: Prioritized[] = []
   const rest: Prioritized[] = []
@@ -319,7 +379,7 @@ export function rankLearningUnits(input: {
           priority = 200
           reason = 'scheduler_due'
         } else if (definition.type === 'lab') {
-          priority = 300
+          priority = 300 + labOffset(definition)
           reason = 'objective_practice_gap'
         } else {
           priority = 800
@@ -334,11 +394,11 @@ export function rankLearningUnits(input: {
           recommended = !input.reviewCompletedToday && reviewRecommendations < 1
           if (recommended) reviewRecommendations += 1
         } else if (definition.type === 'lab' && hasWeakEvidence) {
-          priority = 20
+          priority = 20 + labOffset(definition)
           reason = 'weak_domain'
           recommended = true
         } else if (definition.type === 'lab') {
-          priority = 40
+          priority = 40 + labOffset(definition)
           reason = 'objective_practice_gap'
         } else if (definition.type === 'course' && definition.unitId === nextCourse?.unitId) {
           priority = 60
@@ -364,7 +424,7 @@ export function rankLearningUnits(input: {
           reason = 'unresolved_error_retest'
           recommended = true
         } else if (definition.type === 'lab' && hasWeakEvidence) {
-          priority = 30
+          priority = 30 + labOffset(definition)
           reason = 'weak_domain'
         } else if (definition.type === 'course') {
           priority = 500 + definition.order

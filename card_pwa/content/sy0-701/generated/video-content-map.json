@@ -1,7 +1,7 @@
 {
   "schemaVersion": "sy0701-video-content-map-1",
-  "manifestVersion": "2026-07-22.1",
-  "generatedAt": 1784754852813,
+  "manifestVersion": "2026-07-23.1",
+  "generatedAt": 1784845327155,
   "sourceSnapshotId": "sy0701-v7-2026-07-15",
   "note": "Jede Karte aus den 28 Objective-Subdecks ist genau einer Video-Unit zugeordnet: M-Karten über Frage-ID→Messer-Video, übrige Subdeck-Karten über die transkriptbasierte redaktionelle Source. Deckpositionen bleiben unverändert; Fortschritt läuft ausschließlich über Card-ID.",
   "mappingCounts": {
@@ -2287,7 +2287,9 @@
         "M3-036",
         "T069-01",
         "T069-02",
-        "T069-03"
+        "T069-03",
+        "T069-04",
+        "T069-05"
       ]
     },
     {
@@ -3082,7 +3084,8 @@
         "T097-03",
         "T097-04",
         "T097-05",
-        "T097-06"
+        "T097-06",
+        "T097-07"
       ]
     },
     {
@@ -3112,7 +3115,8 @@
         "T098-04",
         "T098-05",
         "T098-06",
-        "T098-07"
+        "T098-07",
+        "T098-08"
       ]
     },
     {
@@ -3218,7 +3222,10 @@
         "T101-08",
         "T101-09",
         "T101-10",
-        "T101-11"
+        "T101-11",
+        "T101-12",
+        "T101-13",
+        "T101-14"
       ]
     },
     {
@@ -3273,7 +3280,8 @@
         "T103-03",
         "T103-04",
         "T103-05",
-        "T103-06"
+        "T103-06",
+        "T103-07"
       ]
     },
     {
@@ -3498,7 +3506,8 @@
         "T111-06",
         "T111-07",
         "T111-08",
-        "T111-09"
+        "T111-09",
+        "T111-10"
       ]
     },
     {

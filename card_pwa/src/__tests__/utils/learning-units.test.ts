@@ -460,7 +460,7 @@ describe('buildRequirementCoverage', () => {
     expect(SY0701_COVERAGE_SUMMARY.coveredCount).toBe(contentQaReport.coveredCount)
     expect(SY0701_COVERAGE_SUMMARY.blockingRequirementIds).toEqual(contentQaReport.blockingRequirementIds)
     expect(SY0701_COVERAGE_SUMMARY.missingPracticalRequirementIds).toEqual(contentQaReport.missingPracticalRequirementIds)
-    expect(contentQaReport.statusCounts).toMatchObject({ covered: 480, 'practice-missing': 175 })
+    expect(contentQaReport.statusCounts).toMatchObject({ covered: 655, 'practice-missing': 0 })
   })
 })
 

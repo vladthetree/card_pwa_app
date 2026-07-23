@@ -44,7 +44,7 @@ export function buildLearningPlanFormValues(input: {
     examLanguage: EXAM_LANGUAGES.includes(input.examLanguage as ExamLanguage) ? input.examLanguage! : 'en',
     weeklyHours: String((input.weeklyMinutesAvailable ?? 300) / 60),
     learningDays: String(input.learningDaysPerWeek ?? 6),
-    bufferDays: String(input.bufferDays ?? 0),
+    bufferDays: String(input.bufferDays ?? 7),
   }
 }
 
@@ -112,15 +112,18 @@ const COPY = {
     } satisfies Record<LearningPacingResult['reason'], string>,
     perDay: (minutes: number) => `Etwa ${minutes} Min. je Lerntag`,
     workloadTitle: 'Aktuell erfasste Restarbeit',
-    workloadSource: 'Kurs/Labs: hinterlegte Planwerte · aktuell offene Karten: deine gemessenen Zeiten',
+    workloadSource: 'Kurs/Labs: Planwerte · Reviews bis Termin: Scheduler + deine gemessene Kartenzeit',
     courseWork: (units: number, duration: string) => `Kurs: ${units} Einheiten · ${duration} Planwert`,
     labWork: (units: number, duration: string) => `Labs: ${units} offen · ${duration} Planwert (alle offenen Labs)`,
     reviewWork: (cards: number, duration: string) => `Wiederholung: ${cards} Karten · etwa ${duration}`,
+    scheduledReviewWork: (cards: number, duration: string) => `Bis Termin bereits fällig geplant: ${cards} Karten · etwa ${duration}`,
+    futureReviewsOpen: (cards: number) => `${cards} neue Karten: spätere FSRS-Reviews erst nach der ersten Antwort berechenbar`,
     reviewSplit: (due: number, errors: number) => `${due} fällig · ${errors} ungelöste Fehler`,
     reviewTiming: (seconds: number, samples: number) => `Ø ${seconds} Sek./Karte aus ${samples} Messungen`,
     reviewTimingMissing: (cards: number) => `${cards} Karten offen · noch keine verwertbare Zeitmessung`,
     reserveWork: (percent: number, duration: string) => `Reserve ${percent} %: ${duration}`,
-    totalWork: (duration: string) => `Aktueller Umfang: ${duration}`,
+    totalWork: (duration: string) => `Prognostizierter Umfang: ${duration}`,
+    minimumWork: (duration: string) => `Bekannte Untergrenze inkl. Reserve: ${duration}`,
     missingUnitEstimates: (count: number) => `${count} Einheiten ohne Zeitwert`,
     totalWorkOpen: 'Der aktuelle Umfang bleibt offen, weil Mess- oder Schätzwerte fehlen.',
   },
@@ -161,15 +164,18 @@ const COPY = {
     } satisfies Record<LearningPacingResult['reason'], string>,
     perDay: (minutes: number) => `About ${minutes} min per study day`,
     workloadTitle: 'Currently recorded remaining work',
-    workloadSource: 'Course/labs: stored plan values · currently open cards: your measured times',
+    workloadSource: 'Course/labs: plan values · reviews through the date: scheduler + your measured card time',
     courseWork: (units: number, duration: string) => `Course: ${units} units · ${duration} plan value`,
     labWork: (units: number, duration: string) => `Labs: ${units} open · ${duration} plan value (all open labs)`,
     reviewWork: (cards: number, duration: string) => `Review: ${cards} cards · about ${duration}`,
+    scheduledReviewWork: (cards: number, duration: string) => `Already scheduled through the date: ${cards} cards · about ${duration}`,
+    futureReviewsOpen: (cards: number) => `${cards} new cards: later FSRS reviews become predictable after the first answer`,
     reviewSplit: (due: number, errors: number) => `${due} due · ${errors} unresolved errors`,
     reviewTiming: (seconds: number, samples: number) => `Avg ${seconds} sec/card from ${samples} measurements`,
     reviewTimingMissing: (cards: number) => `${cards} cards open · no usable timing data yet`,
     reserveWork: (percent: number, duration: string) => `${percent}% reserve: ${duration}`,
-    totalWork: (duration: string) => `Current scope: ${duration}`,
+    totalWork: (duration: string) => `Projected scope: ${duration}`,
+    minimumWork: (duration: string) => `Known lower bound incl. reserve: ${duration}`,
     missingUnitEstimates: (count: number) => `${count} units without a time value`,
     totalWorkOpen: 'The current scope remains open because measurement or estimate values are missing.',
   },
@@ -325,28 +331,36 @@ export function LearningPlanPanel({
         <div className="mt-1.5 grid gap-1 font-mono text-[10px] leading-relaxed text-ds-muted">
           <span>{copy.courseWork(workload.remainingCourseUnitCount, formatDuration(workload.remainingCourseMinutes, language))}</span>
           <span>{copy.labWork(workload.remainingLabUnitCount, formatDuration(workload.remainingLabMinutes, language))}</span>
-          {workload.estimatedCurrentReviewMinutes === null
-            ? <span className="text-amber-200">{copy.reviewTimingMissing(workload.pendingReviewCardCount)}</span>
+          {workload.estimatedScheduledReviewMinutes === null
+            ? <span className="text-amber-200">{copy.reviewTimingMissing(workload.scheduledReviewCardCount)}</span>
             : (
                 <>
-                  <span>{copy.reviewWork(workload.pendingReviewCardCount, formatDuration(workload.estimatedCurrentReviewMinutes, language))}</span>
+                  <span>{copy.scheduledReviewWork(workload.scheduledReviewCardCount, formatDuration(workload.estimatedScheduledReviewMinutes, language))}</span>
                   {workload.averageReviewSeconds !== null && (
                     <span>{copy.reviewTiming(Math.round(workload.averageReviewSeconds), workload.timedReviewSampleCount)}</span>
                   )}
                 </>
               )}
           <span>{copy.reviewSplit(workload.dueReviewCardCount, workload.unresolvedErrorCardCount)}</span>
+          {workload.unintroducedCardCount > 0 && (
+            <span className="text-amber-200">{copy.futureReviewsOpen(workload.unintroducedCardCount)}</span>
+          )}
           {workload.missingEstimateUnitIds.length > 0 && (
             <span className="text-amber-200">{copy.missingUnitEstimates(workload.missingEstimateUnitIds.length)}</span>
           )}
           {workload.reserveMinutes !== null && (
             <span>{copy.reserveWork(workload.reservePercent, formatDuration(workload.reserveMinutes, language))}</span>
           )}
-          <span className="font-semibold text-ds-fg">
-            {workload.totalMinutes === null
-              ? copy.totalWorkOpen
-              : copy.totalWork(formatDuration(workload.totalMinutes, language))}
-          </span>
+          {workload.totalMinutes === null ? (
+            <>
+              {workload.minimumTotalMinutes !== null && (
+                <span className="font-semibold text-ds-fg">{copy.minimumWork(formatDuration(workload.minimumTotalMinutes, language))}</span>
+              )}
+              <span className="text-amber-200">{copy.totalWorkOpen}</span>
+            </>
+          ) : (
+            <span className="font-semibold text-ds-fg">{copy.totalWork(formatDuration(workload.totalMinutes, language))}</span>
+          )}
         </div>
       </div>
     )

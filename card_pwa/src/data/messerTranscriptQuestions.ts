@@ -1,16 +1,16 @@
 /**
  * AI_CONTEXT:
- * Role: Curated MC questions derived from the professormesser.com video transcripts for videos without mapped deck questions.
- * Used by: VideoRecallCheck merges these with the mapped deck questions (which always stay untouched).
+ * Role: Curated MC questions derived from the professormesser.com video transcripts for formative video recall.
+ * Used by: VideoRecallCheck merges a deterministic sample with mapped deck questions.
  * Important: Keyed by the 3-digit playlist index; content is grounded in the transcript of exactly that video.
  */
 
 /**
  * Transkript-Fragen: Wissensabfrage direkt aus dem Videoinhalt.
  *
- * Diese Fragen ergänzen den Abruf-Check für Videos, zu denen (noch) keine
- * gemappten Deck-Fragen existieren — sie ersetzen nie bestehende Fragen und
- * werden nirgends als Karten gespeichert (non-scheduling, rein in-App).
+ * Diese Fragen ergänzen den Abruf-Check aller fachlichen Videos. Gemappte
+ * Deck-Fragen bleiben priorisiert; Transkriptfragen füllen die gewählte
+ * Stichprobe auf und werden nicht als Karten gespeichert (non-scheduling).
  * Frage/Optionen auf Englisch (Kurssprache), Begründung auf Deutsch —
  * wie bei den konvertierten Messer-Karten.
  */
@@ -544,26 +544,26 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       why: 'Baselines sind meist stabile Best Practices — aktualisiert wird bei neuen Schwachstellen, App-Updates oder neuen Betriebssystemen; danach testen und per Audit prüfen, ob sie wirksam bleiben.',
     },
     {
-      q: 'Where can organizations get a starting point for establishing a security baseline, per the video?',
+      q: 'A team is deploying a Windows-based payment application and needs an initial baseline quickly. Which approach is most defensible?',
       options: [
-        'From application developers, operating system manufacturers, or appliance manufacturers who already publish baselines',
-        'Baselines must always be created entirely from scratch with no outside reference',
-        'Only from a single global government standard',
-        'Security baselines cannot be established for applications, only hardware',
+        'Combine vendor-published application and Windows baselines, then test and tailor them to the organization',
+        'Copy an unrelated router baseline unchanged because all security settings are interchangeable',
+        'Enable every available Group Policy setting without testing its effect on the payment service',
+        'Use the application’s current production state as the baseline even though it has never been reviewed',
       ],
       correct: 0,
-      why: 'Laut Video muss man nicht bei null anfangen: Hersteller von Anwendungen, Betriebssystemen oder Appliances stellen bereits Baselines bereit, die angepasst werden können.',
+      why: 'Hersteller-Baselines sind ein belastbarer Ausgangspunkt, müssen aber für Anwendung, Betriebssystem und Organisationsbedarf kombiniert, getestet und angepasst werden.',
     },
     {
-      q: 'Why must a security baseline be actively maintained after deployment, per the video?',
+      q: 'A compliance scan finds that 18 servers drifted from the approved baseline after an OS upgrade. What should happen next?',
       options: [
-        'New vulnerabilities, application updates, or new OS installs can require baseline updates, and deployed settings must be periodically audited',
-        'Once deployed, a baseline never needs to change again',
-        'Maintenance only matters for baselines older than ten years',
-        'Baselines are automatically maintained by antivirus software alone',
+        'Validate whether the approved baseline needs an update, test it, remediate the drift, and audit deployment results',
+        'Delete the scan because drift is expected after every upgrade',
+        'Disable configuration monitoring to prevent future findings',
+        'Roll back all servers before determining whether the new OS changed valid settings',
       ],
       correct: 0,
-      why: 'Laut Video können neue Schwachstellen, Anwendungsupdates oder neue Betriebssysteme eine Aktualisierung der Baseline erfordern — bereits ausgerollte Einstellungen müssen zudem regelmäßig geprüft werden.',
+      why: 'Ein OS-Wechsel kann eine Baseline-Änderung erfordern. Die saubere Reihenfolge ist bewerten, testen, freigeben, Drift beheben und die Wirksamkeit erneut auditieren.',
     },
   ],
 
@@ -1170,6 +1170,39 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 1,
       why: 'Laut Video gilt: Läuft der Vorfall bereits, ist On-the-Job-Training zu spät. Doku und Prozesse müssen vorher trainiert und getestet sein — das kostet, spart im Ernstfall aber Geld.',
+    },
+    {
+      q: 'A workstation is actively encrypting a shared drive and contacting an unknown command server. What should the analyst do first?',
+      options: [
+        'Isolate the workstation from the network while preserving evidence',
+        'Restore the workstation from backup before disconnecting it',
+        'Delete every log entry related to the workstation',
+        'Wait for the encryption to finish so the full impact is known',
+      ],
+      correct: 0,
+      why: 'Bei einem aktiven Angriff kommt zuerst Containment: das System isolieren, weitere Ausbreitung stoppen und Beweise erhalten. Wiederherstellung folgt erst nach Analyse und Eradication.',
+    },
+    {
+      q: 'After containment, responders find a web shell, a persistence account, and the exploited unpatched service. Which action represents eradication?',
+      options: [
+        'Remove the web shell and account, patch the service, and verify persistence is gone',
+        'Reconnect the host without changing it',
+        'Notify users that service is fully restored',
+        'Archive the incident ticket without validating the host',
+      ],
+      correct: 0,
+      why: 'Eradication entfernt Schadsoftware und Persistenz und schließt die ausgenutzte Schwachstelle. Erst danach kann die kontrollierte Recovery beginnen.',
+    },
+    {
+      q: 'A rebuilt server has passed malware scans and the exploited vulnerability is patched. Which next action is part of recovery?',
+      options: [
+        'Return it to production in a controlled manner and monitor for recurrence',
+        'Create a new attacker persistence account for testing',
+        'Destroy all incident evidence before reconnecting it',
+        'Skip validation because the operating system was reinstalled',
+      ],
+      correct: 0,
+      why: 'Recovery stellt den Dienst kontrolliert wieder her, validiert den sicheren Zustand und überwacht auf erneute Auffälligkeiten.',
     },
   ],
 
@@ -3959,6 +3992,17 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 0,
       why: '„Something you know" umfasst laut Video ein gemerktes Passwort, eine PIN oder ein Entsperrmuster — Dinge, die nur du im Kopf hast.',
     },
+    {
+      q: 'A login requires a password and a PIN memorized by the user. Why is this not true multifactor authentication?',
+      options: [
+        'Both checks use the same knowledge factor',
+        'A PIN is always a possession factor',
+        'Passwords are biometric factors',
+        'Multifactor authentication requires two different usernames',
+      ],
+      correct: 0,
+      why: 'Passwort und PIN sind beide „something you know". MFA verlangt mindestens zwei unterschiedliche Faktorarten, etwa Wissen plus Besitz oder Biometrie.',
+    },
   ],
 
   // 102 — 4.8 Incident Planning
@@ -4098,6 +4142,17 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 1,
       why: 'Laut Video können Gerichtsverfahren Jahre später folgen — die Daten müssen daher über die gesamte Zeit unverändert und nach Best Practices aufbewahrt werden.',
+    },
+    {
+      q: 'An analyst hands a forensic drive image to outside counsel. Which record is essential to preserve the chain of custody?',
+      options: [
+        'Who transferred and received it, when, why, and the verified evidence hash',
+        'Only the analyst’s opinion about the suspected attacker',
+        'The marketing classification of the affected product',
+        'A list of unrelated open helpdesk tickets',
+      ],
+      correct: 0,
+      why: 'Chain of Custody dokumentiert Besitz, Übergaben, Zeitpunkt, Zweck und Integrität des Beweismittels. Ein Hash belegt, dass die übergebene Kopie unverändert ist.',
     },
   ],
 
@@ -5699,6 +5754,28 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 1,
       why: 'Das Video nennt GPS, 802.11-Informationen und Mobilfunkanbieter-Daten als Bausteine der Geolokalisierung.',
     },
+    {
+      q: 'A stolen laptop is powered off and its SSD contains customer records. Which control most directly protects this data state?',
+      options: [
+        'Full-disk encryption with protected recovery keys',
+        'TLS on the corporate web server',
+        'A load balancer in front of the application',
+        'Input validation on the login form',
+      ],
+      correct: 0,
+      why: 'Die Kundendaten liegen auf dem SSD und sind damit Data at Rest. Full-Disk Encryption schützt genau diesen Zustand; TLS schützt dagegen Data in Transit.',
+    },
+    {
+      q: 'A payment application decrypts card data in RAM so the CPU can process it. Which protection best addresses this exposed data state?',
+      options: [
+        'Limit process access and use a trusted execution environment where supported',
+        'Encrypt only the database backup stored offline',
+        'Replace HTTPS with an unencrypted internal protocol',
+        'Publish the memory dump to a shared troubleshooting folder',
+      ],
+      correct: 0,
+      why: 'Während der Verarbeitung handelt es sich um Data in Use. Zugriffsbeschränkung und gegebenenfalls Secure Enclaves schützen den laufenden Prozess besser als reine Speicher- oder Transportverschlüsselung.',
+    },
   ],
   '070': [
     {
@@ -6580,15 +6657,15 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
   ],
   '051': [
     {
-      q: 'What happens in a buffer overflow, per the video?',
+      q: 'A service copies a 300-byte request into a fixed 128-byte memory buffer and then crashes with adjacent control data overwritten. Which finding best fits the evidence?',
       options: [
-        'More data is written into a memory variable than it can hold, and the extra data spills into adjacent memory',
-        'A buffer is deliberately left empty to save memory',
-        'The application refuses all input larger than one byte',
-        'The CPU automatically compresses oversized input',
+        'A buffer overflow caused by missing bounds checking',
+        'A directory traversal caused by canonicalizing the request path',
+        'A replay attack caused by reusing an authentication token',
+        'A race condition caused by two threads updating the same record',
       ],
       correct: 0,
-      why: 'Beim Buffer Overflow wird laut Video mehr Information in eine reservierte Speichervariable geschrieben, als sie fassen kann — der Überschuss läuft in den benachbarten Speicherbereich über.',
+      why: 'Die Eingabe überschreitet den reservierten Speicher und überschreibt angrenzende Daten. Bounds Checking bzw. sichere Speicheroperationen verhindern dieses Buffer-Overflow-Muster.',
     },
     {
       q: 'What is horizontal privilege escalation, as distinguished from vertical, per the video?',
@@ -7013,6 +7090,17 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       correct: 0,
       why: 'Läuft ein Nutzer mit Least Privilege, bleibt der Schaden durch Malware laut Video auf die eingeschränkten Rechte dieses Nutzers begrenzt.',
     },
+    {
+      q: 'A helpdesk technician must reset passwords and unlock accounts but never administer servers. Which permission change best follows least privilege?',
+      options: [
+        'Delegate only password-reset and account-unlock permissions to the helpdesk role',
+        'Add the technician to Domain Admins for simpler support',
+        'Share the existing administrator password with the technician',
+        'Disable audit logging so support actions are faster',
+      ],
+      correct: 0,
+      why: 'Least Privilege vergibt nur die für die konkrete Aufgabe erforderlichen Rechte. Eine eng delegierte Helpdesk-Rolle vermeidet unnötige Server- und Domänenrechte.',
+    },
   ],
   '099': [
     {
@@ -7192,6 +7280,17 @@ export const MESSER_TRANSCRIPT_QUESTIONS: Record<string, TranscriptQuestion[]> =
       ],
       correct: 0,
       why: 'Neutral steht laut Video als mittlere Einstufung zwischen conservative und expansionary innerhalb der qualitativen Risk-Appetite-Postures.',
+    },
+    {
+      q: 'A loss event would cost $40,000 and is expected once every five years. What is the annualized loss expectancy (ALE)?',
+      options: [
+        '$8,000',
+        '$40,000',
+        '$200,000',
+        '$5,000',
+      ],
+      correct: 0,
+      why: 'ALE = SLE × ARO. Bei 40.000 US-Dollar Einzelschaden und einer jährlichen Rate von 0,2 ergibt sich 8.000 US-Dollar pro Jahr.',
     },
   ],
   '116': [

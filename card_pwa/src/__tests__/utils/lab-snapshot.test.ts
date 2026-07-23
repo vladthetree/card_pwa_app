@@ -104,9 +104,18 @@ describe('buildLabScenarioSnapshot', () => {
   it('lässt sich über die gesamte Registry ableiten (100 % der Szenarien normalisierbar)', () => {
     for (const scenario of LAB_SCENARIOS) {
       const snapshot = buildLabScenarioSnapshot(scenario)
-      expect(snapshot.steps).toHaveLength(1)
-      expect(snapshot.rubric).toHaveLength(1)
+      const expectedSteps = scenario.interaction.type === 'workflow' ? scenario.interaction.steps.length : 1
+      expect(snapshot.steps).toHaveLength(expectedSteps)
+      expect(snapshot.rubric).toHaveLength(expectedSteps)
     }
+  })
+
+  it('friert einen mehrstufigen Capstone mit unabhängigen Schritt-IDs ein', () => {
+    const scenario = LAB_SCENARIOS.find(item => item.id === 'capstone-4-9-log-correlation')!
+    const snapshot = buildLabScenarioSnapshot(scenario)
+    expect(snapshot.steps.map(step => step.stepId)).toEqual(['sources', 'timeline', 'depth'])
+    expect(snapshot.rubric.map(criterion => criterion.stepId)).toEqual(['sources', 'timeline', 'depth'])
+    expect(snapshot.rubric.every(criterion => criterion.comparison === 'set-equal')).toBe(true)
   })
 })
 

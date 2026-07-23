@@ -2987,7 +2987,8 @@
     "video:69"
    ],
    "assessmentItemIds": [
-    "tq:T069-01"
+    "tq:T069-01",
+    "tq:T069-04"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -3008,7 +3009,8 @@
     "video:69"
    ],
    "assessmentItemIds": [
-    "tq:T069-02"
+    "tq:T069-02",
+    "tq:T069-05"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -4706,7 +4708,8 @@
     "video:97"
    ],
    "assessmentItemIds": [
-    "tq:T097-06"
+    "tq:T097-06",
+    "tq:T097-07"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -4746,7 +4749,8 @@
     "video:98"
    ],
    "assessmentItemIds": [
-    "tq:T098-07"
+    "tq:T098-07",
+    "tq:T098-08"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -5133,7 +5137,8 @@
     "video:101"
    ],
    "assessmentItemIds": [
-    "tq:T101-08"
+    "tq:T101-08",
+    "tq:T101-12"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -5143,7 +5148,8 @@
     "video:101"
    ],
    "assessmentItemIds": [
-    "tq:T101-09"
+    "tq:T101-09",
+    "tq:T101-13"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -5153,7 +5159,8 @@
     "video:101"
    ],
    "assessmentItemIds": [
-    "tq:T101-04"
+    "tq:T101-04",
+    "tq:T101-14"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -5235,7 +5242,8 @@
     "video:103"
    ],
    "assessmentItemIds": [
-    "tq:T103-02"
+    "tq:T103-02",
+    "tq:T103-07"
    ],
    "practicalItemIds": [],
    "status": "covered"
@@ -5786,7 +5794,8 @@
     "video:111"
    ],
    "assessmentItemIds": [
-    "mc:M5-007"
+    "mc:M5-007",
+    "tq:T111-10"
    ],
    "practicalItemIds": [],
    "status": "covered"

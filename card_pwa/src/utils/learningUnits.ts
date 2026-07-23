@@ -1,8 +1,8 @@
 /**
  * AI_CONTEXT:
- * Role: Pure core of the dedicated SY0-701 learning-unit system (Phase 1): unit builders, frozen executions, step state, and leaf coverage.
- * Used by: learning-unit tests and (later phases) the dedicated Lerneinheiten UI/persistence — nothing in the existing app imports this yet.
- * Important: Everything here is pure and deterministic (seeded); contracts live in docs/lerneinheiten-sy0-701-umsetzungsplan.md §7/§8/§23.2. Do not add I/O.
+ * Role: Pure core of the integrated SY0-701 learning-unit system: unit builders, frozen executions, step state, and leaf coverage.
+ * Used by: learning-unit UI, runner, validator, persistence, and tests.
+ * Important: Everything here is pure and deterministic (seeded). Do not add I/O.
  */
 import type { Card } from '../types'
 import type { LocalVideoMeta } from './localVideoManifest'

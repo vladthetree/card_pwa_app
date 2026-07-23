@@ -61,6 +61,16 @@ describe('buildRecallCardView — Frage/Antwort-Reduktion', () => {
     expect(view.merkhilfe).toContain('Technical = Technologie')
   })
 
+  it('mischt auch Legacy-MC-Optionen und behält die korrekte Markierung', () => {
+    const card = makeCard(
+      'M1-001: Which category?\nA: Managerial\nB: Operational\nC: Technical\nD: Physical',
+      '>> CORRECT: C | Technical\n\nErklärung.',
+    )
+    const view = buildRecallCardView(card, [3, 2, 1, 0])
+    expect(view.options.map(option => option.text)).toEqual(['Physical', 'Technical', 'Operational', 'Managerial'])
+    expect(view.options.find(option => option.correct)?.label).toBe('B')
+  })
+
   it('fällt ohne erkannte korrekte Option auf die schlichte Text-Ansicht zurück', () => {
     const card = makeCard(
       'Frage mit Optionen ohne Marker\nA: Eins\nB: Zwei',

@@ -2,12 +2,12 @@
  * AI_CONTEXT:
  * Role: GENERATED data module of the dedicated SY0-701 learning-unit system — do not edit by hand.
  * Used by: learning-unit builders/tests; regenerate via `node scripts/sy0701/validate.mjs`.
- * Important: Derived from content/sy0-701/source/* (official V7 snapshot 95a2c7515792…, manifest 2026-07-22.1).
+ * Important: Derived from content/sy0-701/source/* (official V7 snapshot 95a2c7515792…, manifest 2026-07-23.1).
  */
 import type { VideoContentMapEntry } from '../utils/learningUnits'
 
 export const SY0701_SOURCE_SNAPSHOT_ID = "sy0701-v7-2026-07-15"
-export const SY0701_CONTENT_MANIFEST_VERSION = "2026-07-22.1"
+export const SY0701_CONTENT_MANIFEST_VERSION = "2026-07-23.1"
 
 export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
   {
@@ -2578,7 +2578,9 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "M3-036",
       "T069-01",
       "T069-02",
-      "T069-03"
+      "T069-03",
+      "T069-04",
+      "T069-05"
     ],
     "recallCardIds": [
       "1729276559590",
@@ -3538,7 +3540,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T097-03",
       "T097-04",
       "T097-05",
-      "T097-06"
+      "T097-06",
+      "T097-07"
     ],
     "recallCardIds": [
       "1729609351815",
@@ -3576,7 +3579,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T098-04",
       "T098-05",
       "T098-06",
-      "T098-07"
+      "T098-07",
+      "T098-08"
     ],
     "recallCardIds": [
       "1729610407765",
@@ -3723,7 +3727,10 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T101-08",
       "T101-09",
       "T101-10",
-      "T101-11"
+      "T101-11",
+      "T101-12",
+      "T101-13",
+      "T101-14"
     ],
     "recallCardIds": [],
     "durationSec": 553,
@@ -3787,7 +3794,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T103-03",
       "T103-04",
       "T103-05",
-      "T103-06"
+      "T103-06",
+      "T103-07"
     ],
     "recallCardIds": [
       "1729614808452",
@@ -4071,7 +4079,8 @@ export const SY0701_CONTENT_MAP: readonly VideoContentMapEntry[] = [
       "T111-06",
       "T111-07",
       "T111-08",
-      "T111-09"
+      "T111-09",
+      "T111-10"
     ],
     "recallCardIds": [
       "1729706570753",

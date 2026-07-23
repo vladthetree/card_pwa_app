@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT:
- * Role: Dedicated Dexie database of the SY0-701 learning-unit system (Phase 2) — profile-scoped unit state, frozen executions, video/recall progress, exam plans.
- * Used by: db/queries/learningUnits.ts and its tests — nothing in the existing app opens this database.
+ * Role: Dedicated Dexie database of the integrated SY0-701 learning-unit system — profile-scoped unit state, frozen executions, video/recall progress, and learner plans.
+ * Used by: db/queries/learningUnits.ts, learning-unit runtime, and tests.
  * Important: Deliberately a SEPARATE database (`card-pwa-learning-units`), not a version bump of CardPwaDB: the existing system stays untouched (Detailplan §16.1 sieht v22 in der Haupt-DB vor; diese dedizierte DB ist das additive Äquivalent). Every key starts with profileId.
  */
 import Dexie, { type Table } from 'dexie'

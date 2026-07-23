@@ -189,7 +189,7 @@ export interface RecallCardView {
  * (Optionen einzeln, korrekte markiert, Erklärung/Merkhilfe getrennt),
  * alle anderen Typen als schlichte Frage/Antwort-Ansicht.
  */
-export function buildRecallCardView(card: Card): RecallCardView {
+export function buildRecallCardView(card: Card, optionOrder?: readonly number[]): RecallCardView {
   const question = parseQuestion(card.front)
   const prompt = (question.question || stripHtml(card.front))
     .replace(/^M[1-5]-\d{3}:\s*/, '') // interne Fragen-ID, für Lernende nur Rauschen
@@ -213,11 +213,18 @@ export function buildRecallCardView(card: Card): RecallCardView {
     merkhilfe = parsed.merkhilfe
   } else {
     const parsed = parseMcAnswer(card.back)
-    options = Object.entries(question.options).map(([label, text]) => ({
-      label,
-      text: stripHtml(text).trim(),
-      correct: parsed.correctOptions.includes(label),
-    }))
+    const sourceOptions = Object.entries(question.options)
+    const order = optionOrder && optionOrder.length === sourceOptions.length
+      ? optionOrder
+      : sourceOptions.map((_entry, index) => index)
+    options = order.map((sourceIndex, position) => {
+      const [sourceLabel, text] = sourceOptions[sourceIndex]
+      return {
+        label: OPTION_LABELS[position] ?? String(position + 1),
+        text: stripHtml(text).trim(),
+        correct: parsed.correctOptions.includes(sourceLabel),
+      }
+    })
     merkhilfe = parsed.merkhilfe
     // Ohne erkannte korrekte Option gäbe die Optionsliste beim Aufdecken keine
     // Antwort preis — dann lieber die schlichte Text-Ansicht.
@@ -362,7 +369,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
         for (const questionId of frozenQuestionIds) {
           const card = cardByQuestionId.get(questionId)
           if (card) {
-            combined.push({ source: 'deck', card, questionId, view: buildRecallCardView(card) })
+            combined.push({ source: 'deck', card, questionId, view: buildRecallCardView(card, shuffle([0, 1, 2, 3])) })
             continue
           }
           const match = /^T(\d{3})-(\d{2})$/.exec(questionId)
@@ -377,7 +384,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
         // Freier Modus: Deck-Fragen haben Vorrang; Transkript-Fragen füllen bis maxCards auf.
         const deckItems: RecallQuizItem[] = shuffle(deckCards)
           .slice(0, maxCards)
-          .map(card => ({ source: 'deck', card, questionId: questionIdOfCard(card), view: buildRecallCardView(card) }))
+          .map(card => ({ source: 'deck', card, questionId: questionIdOfCard(card), view: buildRecallCardView(card, shuffle([0, 1, 2, 3])) }))
         const transcriptWithIds = transcriptQuestions.map((question, position) => ({
           question,
           questionId: videoIndex === null || videoIndex === undefined

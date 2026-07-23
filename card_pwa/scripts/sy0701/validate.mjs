@@ -6,7 +6,7 @@
  * Rein additiv: liest die versionierten Snapshots aus content/sy0-701/source/
  * und bestehende App-Module (read-only via Vite ssrLoadModule — u. a. der
  * ECHTE PBQ-Parser aus src/utils/cardTextParser.ts, keine Text-Heuristik)
- * und erzeugt die zehn Pflichtartefakte unter content/sy0-701/generated/.
+ * und erzeugt die versionierten QA-Artefakte unter content/sy0-701/generated/.
  *
  * Exit-Code != 0, solange Content-Gates offen sind.
  *
@@ -26,7 +26,7 @@ const APP_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 const SOURCE = path.join(APP_ROOT, 'content', 'sy0-701', 'source')
 const GENERATED = path.join(APP_ROOT, 'content', 'sy0-701', 'generated')
 
-const MANIFEST_VERSION = '2026-07-22.1'
+const MANIFEST_VERSION = '2026-07-23.1'
 const SCENARIO_OBJECTIVES = ['2.4', '3.2', '4.1', '4.5', '4.6', '4.9', '5.6']
 
 const readJson = f => JSON.parse(fs.readFileSync(path.join(SOURCE, f), 'utf8'))
@@ -613,6 +613,91 @@ writeArtifact('content-pools.json', {
   },
   disjointness: 'Course enthält alle Objective-Subdeck-Karten exakt einmal (M-ID oder kuratiertes Transkriptmapping). Root-, Acronym- und eigenständige Übungsdecks bleiben Practice; Readiness ist gestrichen.',
 })
+
+// ── 7b) question-quality-report ────────────────────────────────────────────
+// Der Report prüft die tatsächlich auslieferbaren MC-Stämme. Positionszahlen
+// bleiben Rohdaten: CardFace und Transkript-Recall mischen Optionen bei der
+// Auslieferung; der Report hält diese Schutzmaßnahme ausdrücklich fest.
+const normalizeQuestionText = value => String(value ?? '')
+  .toLowerCase()
+  .normalize('NFKD')
+  .replace(/[^a-z0-9]+/g, ' ')
+  .trim()
+const parseCardMc = card => {
+  if (OrderingParser.isOrdering(card.front ?? '') || MatchingParser.isMatching(card.front ?? '')) return null
+  const optionMatches = [...String(card.front ?? '').matchAll(/^[A-D]:\s*(.+)$/gm)]
+  if (optionMatches.length !== 4 || !Number.isInteger(card.type) || card.type < 0 || card.type > 3) return null
+  const stem = String(card.front).split(/^A:\s*/m)[0].replace(/^(?:M\d-\d{3}|\d+[.:])\s*/i, '').trim()
+  return {
+    itemId: `card:${card.id}`,
+    pool: M_ID.test(card.front ?? '') ? 'mapped-card' : rootDeckDomain(card.deckId) ? 'root-practice-card' : 'other-card',
+    stem,
+    options: optionMatches.map(match => match[1].trim()),
+    correct: card.type,
+  }
+}
+const questionRecords = profile.cards.map(parseCardMc).filter(Boolean)
+for (const [indexKey, list] of Object.entries(transcriptQuestions)) {
+  list.forEach((question, index) => questionRecords.push({
+    itemId: `tq:T${indexKey}-${String(index + 1).padStart(2, '0')}`,
+    pool: 'transcript',
+    stem: question.q,
+    options: [...question.options],
+    correct: question.correct,
+  }))
+}
+const duplicateOptionItems = questionRecords
+  .filter(question => new Set(question.options.map(normalizeQuestionText)).size !== question.options.length)
+  .map(question => question.itemId)
+const idsByStem = new Map()
+for (const question of questionRecords) {
+  const key = normalizeQuestionText(question.stem)
+  const ids = idsByStem.get(key) ?? []
+  ids.push(question.itemId)
+  idsByStem.set(key, ids)
+}
+const exactDuplicateStemGroups = [...idsByStem.values()].filter(ids => ids.length > 1)
+const positionCountsByPool = {}
+const stemStyleCounts = { what: 0, which: 0, how: 0, why: 0, when: 0, other: 0 }
+const scenarioPattern = /\b(given|scenario|organization|company|administrator|analyst|engineer|employee|team|manager|discovers?|observes?|reports?|needs?|wants?|most likely|best|first|next)\b/i
+let scenarioStemCount = 0
+let absolutistDistractorCount = 0
+for (const question of questionRecords) {
+  const positions = positionCountsByPool[question.pool] ?? [0, 0, 0, 0]
+  positions[question.correct] += 1
+  positionCountsByPool[question.pool] = positions
+  const first = /^(what|which|how|why|when)\b/i.exec(question.stem)?.[1]?.toLowerCase() ?? 'other'
+  stemStyleCounts[first] += 1
+  if (scenarioPattern.test(question.stem)) scenarioStemCount += 1
+  absolutistDistractorCount += question.options.filter((option, index) =>
+    index !== question.correct && /\b(always|never|only|cannot|nothing|everything)\b/i.test(option)).length
+}
+const criticalVariantCounts = (criticalitySource?.critical ?? []).map(requirement => ({
+  requirementId: requirement.requirementId,
+  assessmentVariantCount: curatedByReq.get(requirement.requirementId)?.assessmentItemIds?.length ?? 0,
+}))
+writeArtifact('question-quality-report.json', {
+  questionCount: questionRecords.length,
+  byPool: Object.fromEntries([...new Set(questionRecords.map(question => question.pool))].map(pool => [
+    pool,
+    questionRecords.filter(question => question.pool === pool).length,
+  ])),
+  scenarioStemCount,
+  stemStyleCounts,
+  rawCorrectPositionCountsByPool: positionCountsByPool,
+  duplicateOptionItems,
+  exactDuplicateStemGroups,
+  absolutistDistractorCount,
+  criticalVariantCounts,
+  deliveryPositionMitigation: 'Reguläre MC-Karten werden in CardFace deterministisch gemischt; sowohl gemappte Deck- als auch Transkriptfragen werden vor dem Video-Recall gemischt. Rohpositionen bleiben trotzdem als Autoren-QA sichtbar.',
+  note: 'Szenario- und Absolutismus-Zahlen sind reproduzierbare Heuristiken, kein fachliches Qualitätsurteil. Duplicate-Optionen, exakte Stämme und Variantentiefe sind harte Gates.',
+})
+gate('fragen-ohne-doppelte-optionen', duplicateOptionItems.length === 0,
+  duplicateOptionItems.length ? duplicateOptionItems.join(',') : `${questionRecords.length} MC-Fragen geprüft`)
+gate('fragen-ohne-exakte-stamm-doubletten', exactDuplicateStemGroups.length === 0,
+  exactDuplicateStemGroups.length ? JSON.stringify(exactDuplicateStemGroups) : 'keine exakten Stämme doppelt')
+gate('kritische-requirements-mit-varianten', criticalVariantCounts.every(entry => entry.assessmentVariantCount >= 2),
+  criticalVariantCounts.filter(entry => entry.assessmentVariantCount < 2).map(entry => entry.requirementId).join(',') || 'alle kritischen Requirements mit mindestens zwei Varianten')
 
 // ── 8) holdout-leakage-report ───────────────────────────────────────────────
 writeArtifact('holdout-leakage-report.json', {

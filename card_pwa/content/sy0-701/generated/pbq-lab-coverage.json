@@ -1,7 +1,7 @@
 {
   "schemaVersion": "sy0701-pbq-lab-coverage-1",
-  "manifestVersion": "2026-07-22.1",
-  "generatedAt": 1784754852817,
+  "manifestVersion": "2026-07-23.1",
+  "generatedAt": 1784845327160,
   "sourceSnapshotId": "sy0701-v7-2026-07-15",
   "pbqCards": [
     {
@@ -167,7 +167,7 @@
     }
   ],
   "pbqCardCount": 23,
-  "labScenarioCount": 110,
+  "labScenarioCount": 117,
   "labsByObjective": {
     "1.1": [
       "grundlagen-control-funktion",
@@ -200,7 +200,8 @@
       "bedrohungen-indikatoren",
       "bedrohungen-passwort-angriffe",
       "bedrohungen-netzwerk-angriffe",
-      "bedrohungen-web-app-angriffe"
+      "bedrohungen-web-app-angriffe",
+      "capstone-2-4-compromise-triage"
     ],
     "2.3": [
       "bedrohungen-vuln-typen"
@@ -212,7 +213,8 @@
       "firewalls-geo-block",
       "firewalls-segmentierung",
       "firewalls-east-west-microseg",
-      "architektur-container-hardening"
+      "architektur-container-hardening",
+      "capstone-3-2-secure-infrastructure"
     ],
     "4.5": [
       "firewalls-implicit-deny",
@@ -226,7 +228,8 @@
       "firewalls-nac-8021x",
       "betrieb-email-authentisierung",
       "firewalls-acl-implicit-deny",
-      "firewalls-screened-subnet-platzierung"
+      "firewalls-screened-subnet-platzierung",
+      "capstone-4-5-control-change"
     ],
     "4.9": [
       "firewalls-log-triage",
@@ -235,7 +238,8 @@
       "ir-forensic-volatility",
       "ir-edr-timeline",
       "betrieb-firewall-log-triage",
-      "betrieb-ips-alert-eskalation"
+      "betrieb-ips-alert-eskalation",
+      "capstone-4-9-log-correlation"
     ],
     "3.1": [
       "architektur-cloud-modelle",
@@ -264,7 +268,8 @@
       "iam-sso-protokolle",
       "iam-passwort-richtlinie",
       "iam-least-privilege-helpdesk",
-      "iam-sso-protokollwahl"
+      "iam-sso-protokollwahl",
+      "capstone-4-6-identity-lifecycle"
     ],
     "5.1": [
       "iam-offboarding",
@@ -275,7 +280,8 @@
       "betrieb-wlan-sicherheit",
       "betrieb-mobile-deployment",
       "betrieb-baseline-haertung-server",
-      "betrieb-switch-haertung"
+      "betrieb-switch-haertung",
+      "capstone-4-1-hardening-rollout"
     ],
     "4.2": [
       "betrieb-asset-lifecycle"
@@ -335,7 +341,8 @@
       "governance-vertragsdokumente"
     ],
     "5.6": [
-      "governance-awareness-plan"
+      "governance-awareness-plan",
+      "capstone-5-6-awareness-program"
     ]
   },
   "scenarioObjectiveGate": [
@@ -346,7 +353,8 @@
         "bedrohungen-indikatoren",
         "bedrohungen-passwort-angriffe",
         "bedrohungen-netzwerk-angriffe",
-        "bedrohungen-web-app-angriffe"
+        "bedrohungen-web-app-angriffe",
+        "capstone-2-4-compromise-triage"
       ],
       "pbqCardIds": [
         "1779095116172"
@@ -359,7 +367,8 @@
         "firewalls-geo-block",
         "firewalls-segmentierung",
         "firewalls-east-west-microseg",
-        "architektur-container-hardening"
+        "architektur-container-hardening",
+        "capstone-3-2-secure-infrastructure"
       ],
       "pbqCardIds": [],
       "ok": true
@@ -371,7 +380,8 @@
         "betrieb-wlan-sicherheit",
         "betrieb-mobile-deployment",
         "betrieb-baseline-haertung-server",
-        "betrieb-switch-haertung"
+        "betrieb-switch-haertung",
+        "capstone-4-1-hardening-rollout"
       ],
       "pbqCardIds": [],
       "ok": true
@@ -390,7 +400,8 @@
         "firewalls-nac-8021x",
         "betrieb-email-authentisierung",
         "firewalls-acl-implicit-deny",
-        "firewalls-screened-subnet-platzierung"
+        "firewalls-screened-subnet-platzierung",
+        "capstone-4-5-control-change"
       ],
       "pbqCardIds": [],
       "ok": true
@@ -408,7 +419,8 @@
         "iam-sso-protokolle",
         "iam-passwort-richtlinie",
         "iam-least-privilege-helpdesk",
-        "iam-sso-protokollwahl"
+        "iam-sso-protokollwahl",
+        "capstone-4-6-identity-lifecycle"
       ],
       "pbqCardIds": [],
       "ok": true
@@ -422,7 +434,8 @@
         "ir-forensic-volatility",
         "ir-edr-timeline",
         "betrieb-firewall-log-triage",
-        "betrieb-ips-alert-eskalation"
+        "betrieb-ips-alert-eskalation",
+        "capstone-4-9-log-correlation"
       ],
       "pbqCardIds": [],
       "ok": true
@@ -430,7 +443,8 @@
     {
       "objective": "5.6",
       "labScenarioIds": [
-        "governance-awareness-plan"
+        "governance-awareness-plan",
+        "capstone-5-6-awareness-program"
       ],
       "pbqCardIds": [],
       "ok": true

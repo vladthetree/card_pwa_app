@@ -21,9 +21,9 @@ import { STORAGE_KEYS } from '../../constants/appIdentity'
  */
 
 describe('Labs — Inventar-Integrität', () => {
-  it('Inventar ist auf den 110er-Zielstand ausgebaut (100er-Stand + 10 Entscheidungs-Szenarien §13.1)', () => {
+  it('Inventar umfasst den aktuellen Bestand einschließlich der sieben mehrstufigen Capstones', () => {
     expect(LAB_SCENARIOS.length).toBe(LAB_TARGET_INVENTORY)
-    expect(LAB_TARGET_INVENTORY).toBe(110)
+    expect(LAB_TARGET_INVENTORY).toBe(117)
   })
 
   it('alle Szenario-IDs sind eindeutig', () => {
@@ -50,9 +50,9 @@ describe('Labs — Inventar-Integrität', () => {
   it('Zielverteilung deckt alle Kategorien ab und betont Firewalls/Incident Response', () => {
     const counts = new Map<string, number>()
     for (const scenario of LAB_SCENARIOS) counts.set(scenario.categoryId, (counts.get(scenario.categoryId) ?? 0) + 1)
-    expect(counts.get('firewalls')).toBe(16)
-    expect(counts.get('incident-response')).toBe(16)
-    expect(counts.get('betrieb')).toBe(16)
+    expect(counts.get('firewalls')).toBe(17)
+    expect(counts.get('incident-response')).toBe(17)
+    expect(counts.get('betrieb')).toBe(17)
     for (const category of LAB_CATEGORIES) {
       expect(counts.get(category.id) ?? 0, category.id).toBeGreaterThanOrEqual(9)
     }
@@ -118,6 +118,27 @@ describe('Labs — Inventar-Integrität', () => {
       if (scenario.interaction.type !== 'ordering') continue
       const identity = scenario.interaction.steps.map((_step, index) => index)
       expect(scenario.interaction.correctOrder, scenario.id).not.toEqual(identity)
+    }
+  })
+
+  it('Workflow-Capstones besitzen eindeutige, valide und mehrstufige Entscheidungen', () => {
+    const workflows = LAB_SCENARIOS.filter(s => s.interaction.type === 'workflow')
+    expect(workflows).toHaveLength(7)
+
+    for (const scenario of workflows) {
+      if (scenario.interaction.type !== 'workflow') throw new Error('unexpected shape')
+      expect(scenario.interaction.steps.length, scenario.id).toBeGreaterThanOrEqual(3)
+      const stepIds = scenario.interaction.steps.map(step => step.stepId)
+      expect(new Set(stepIds).size, scenario.id).toBe(stepIds.length)
+
+      for (const step of scenario.interaction.steps) {
+        const optionIds = step.interaction.options.map(option => option.id)
+        expect(new Set(optionIds).size, `${scenario.id}: ${step.stepId}`).toBe(optionIds.length)
+        expect(step.interaction.correctIds.length, `${scenario.id}: ${step.stepId}`).toBeGreaterThan(0)
+        for (const correctId of step.interaction.correctIds) {
+          expect(optionIds, `${scenario.id}: ${step.stepId}: ${correctId}`).toContain(correctId)
+        }
+      }
     }
   })
 

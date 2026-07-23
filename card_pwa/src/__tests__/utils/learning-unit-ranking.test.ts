@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import type { LearningUnitDefinition, LearningUnitState } from '../../utils/learningUnits'
 import {
   computeDraftPacing,
+  computeDomainEffortGaps,
   computeExamTimeline,
   computeLearningWorkload,
   rankLearningUnits,
@@ -45,6 +46,18 @@ describe('resolveLearningPhase', () => {
     expect(resolveLearningPhase({ daysLeft: null, courseProgressRatio: 0.59 })).toBe('foundation')
     expect(resolveLearningPhase({ daysLeft: null, courseProgressRatio: 0.6 })).toBe('deepening')
     expect(resolveLearningPhase({ daysLeft: null, courseProgressRatio: Number.NaN })).toBe('foundation')
+  })
+})
+
+describe('computeDomainEffortGaps', () => {
+  it('markiert relativ unterrepräsentierte Domänen positiv', () => {
+    const gaps = computeDomainEffortGaps([
+      unit({ unitId: 'd4', type: 'lab', order: 1, objectiveIds: ['4.5'], estimatedMinutes: 80 }),
+      unit({ unitId: 'd5', type: 'lab', order: 2, objectiveIds: ['5.6'], estimatedMinutes: 20 }),
+    ])
+    expect(gaps['5']).toBe(0)
+    expect(gaps['4']).toBe(-52)
+    expect(gaps['3']).toBe(18)
   })
 })
 
@@ -257,5 +270,25 @@ describe('computeDraftPacing', () => {
     expect(workload.missingMeasurements).toEqual(['review-time'])
     expect(result.reason).toBe('missing-estimates')
     expect(result.workload).toBe(workload)
+  })
+
+  it('rechnet bereits terminierte Reviews bis zum Termin, lässt neue Karten aber als offene Zukunftslast stehen', () => {
+    const workload = computeLearningWorkload({
+      remainingCourseUnits: [{ unitId: 'course-1', estimatedMinutes: 60 }],
+      remainingLabUnits: [{ unitId: 'lab-1', estimatedMinutes: 30 }],
+      dueReviewCardCount: 4,
+      unresolvedErrorCardCount: 1,
+      pendingReviewCardCount: 5,
+      scheduledReviewCardCount: 25,
+      unintroducedCardCount: 40,
+      timedReviewSampleCount: 10,
+      observedReviewTimeMs: 300_000,
+    })
+
+    expect(workload.estimatedCurrentReviewMinutes).toBe(3)
+    expect(workload.estimatedScheduledReviewMinutes).toBe(13)
+    expect(workload.minimumTotalMinutes).toBe(124)
+    expect(workload.totalMinutes).toBeNull()
+    expect(workload.missingMeasurements).toContain('future-new-card-reviews')
   })
 })

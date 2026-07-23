@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT:
  * Role: §13.2-Normalisierung der Lab-Szenarien als deterministische Ableitung
- *       aus der Registry: stabile Schritt-IDs, Teilpunkt-Rubrik mit Feedback
+ *       aus der Registry: stabile Ein-/Mehrschritt-IDs, Teilpunkt-Rubrik mit Feedback
  *       und pures Scoring gegen den eingefrorenen Snapshot.
  * Used by: learningUnitRunner (Einfrieren beim Versuchsstart + Bewertung jedes
  *          Lösungs-Checks) und Tests.
@@ -9,7 +9,7 @@
  *            eines Snapshots — jede Textänderung ändert die Versionskennung
  *            (Content-Hash) und erreicht laufende Versuche nie (§13.2).
  */
-import type { LabScenario } from '../data/labScenarios'
+import type { LabScenario, LabSingleInteraction } from '../data/labScenarios'
 import { fnv1a32 } from './hash'
 import { computeDecisionScore } from './pbqScoring'
 
@@ -89,14 +89,12 @@ const FEEDBACK: LabRubricFeedback = {
   failure: 'Keine korrekte Zuordnung — Szenario und Beweismaterial erneut durchgehen.',
 }
 
-/**
- * Leitet den §13.2-Snapshot deterministisch aus einem Registry-Szenario ab:
- * genau ein Schritt (`step-1`) je heutiger Interaktion mit Teilpunkt-Rubrik —
- * Matching: 1 Punkt je Paar; Ordering: 1 Punkt je exakt platzierter Position.
- */
-export function buildLabScenarioSnapshot(scenario: LabScenario): LabScenarioSnapshot {
-  const stepId = 'step-1'
-  const interaction = scenario.interaction
+function snapshotStep(input: {
+  stepId: string
+  prompt: string
+  interaction: LabSingleInteraction
+}): { step: LabStepSnapshot; criterion: LabRubricCriterionSnapshot } {
+  const { stepId, prompt, interaction } = input
   let step: LabStepSnapshot
   let criterion: LabRubricCriterionSnapshot
 
@@ -110,7 +108,7 @@ export function buildLabScenarioSnapshot(scenario: LabScenario): LabScenarioSnap
     step = {
       stepId,
       kind: 'matching',
-      prompt: scenario.goal ?? scenario.description,
+      prompt,
       leftIds: interaction.items.map(item => item.left),
       options: [...interaction.options],
     }
@@ -127,7 +125,7 @@ export function buildLabScenarioSnapshot(scenario: LabScenario): LabScenarioSnap
     step = {
       stepId,
       kind: 'ordering',
-      prompt: scenario.goal ?? scenario.description,
+      prompt,
       itemIds: [...interaction.steps],
     }
     criterion = {
@@ -143,7 +141,7 @@ export function buildLabScenarioSnapshot(scenario: LabScenario): LabScenarioSnap
     step = {
       stepId,
       kind: 'decision',
-      prompt: scenario.goal ?? scenario.description,
+      prompt,
       optionIds: interaction.options.map(option => option.id),
     }
     criterion = {
@@ -156,14 +154,33 @@ export function buildLabScenarioSnapshot(scenario: LabScenario): LabScenarioSnap
     }
   }
 
+  return { step, criterion }
+}
+
+/** Leitet den Snapshot deterministisch aus dem Registry-Szenario ab. Alte
+ * Szenarien bleiben ein Schritt; Workflow-Capstones frieren jeden fachlichen
+ * Schritt mit eigener Rubrik und stabiler ID ein. */
+export function buildLabScenarioSnapshot(scenario: LabScenario): LabScenarioSnapshot {
+  const normalized = scenario.interaction.type === 'workflow'
+    ? scenario.interaction.steps.map(workflowStep => snapshotStep({
+        stepId: workflowStep.stepId,
+        prompt: workflowStep.prompt,
+        interaction: workflowStep.interaction,
+      }))
+    : [snapshotStep({
+        stepId: 'step-1',
+        prompt: scenario.goal ?? scenario.description,
+        interaction: scenario.interaction,
+      })]
+
   const core = {
     scenarioId: scenario.id,
     title: scenario.title,
     objectiveLabel: scenario.objective,
     difficulty: scenario.difficulty,
     expectedDurationSec: scenario.minutes * 60,
-    steps: [step],
-    rubric: [criterion],
+    steps: normalized.map(entry => entry.step),
+    rubric: normalized.map(entry => entry.criterion),
   }
   return { ...core, scenarioVersion: `v-${fnv1a32(JSON.stringify(core)).toString(16)}` }
 }

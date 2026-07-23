@@ -130,10 +130,11 @@ describe('LearningPlanPanel summary', () => {
     }))
 
     expect(html).toContain('data-testid="learning-workload-metrics"')
-    expect(html).toContain('Kurs/Labs: hinterlegte Planwerte')
+    expect(html).toContain('Kurs/Labs: Planwerte · Reviews bis Termin')
     expect(html).toContain('Kurs: 1 Einheiten · 1 Std. Planwert')
     expect(html).toContain('Ø 30 Sek./Karte aus 4 Messungen')
-    expect(html).toContain('Aktueller Umfang: 1 Std. 54 Min.')
+    expect(html).toContain('Bis Termin bereits fällig geplant: 10 Karten · etwa 5 Min.')
+    expect(html).toContain('Prognostizierter Umfang: 1 Std. 54 Min.')
     expect(html).not.toContain('Prüfungssimulation')
   })
 

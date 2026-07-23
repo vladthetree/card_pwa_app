@@ -64,6 +64,7 @@ import { readVideoProgress } from '../useMesserVideoProgress'
 import { readRecallScores } from '../useVideoRecallScores'
 import { useDayStartMs } from '../useDayStartMs'
 import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
+import { DAY_MS, resolveDueAtMs } from '../../utils/time'
 import {
   buildLearningPlanContentMapping,
   collectLearningPlanCardIds,
@@ -348,6 +349,14 @@ export function useLearningUnits({
         courseProgressRatio: courseCompleted / COURSE_UNIT_COUNT,
       })
       const pendingReviewCardIds = new Set([...dueReviewCardIds, ...unresolvedErrorCardIds])
+      const scheduledReviewCardIds = new Set(pendingReviewCardIds)
+      if (timeline.daysLeft !== null && timeline.daysLeft >= 0) {
+        const horizonEnd = now + (timeline.daysLeft + 1) * DAY_MS
+        for (const card of objectiveCards) {
+          if (card.type !== 'new' && resolveDueAtMs(card) < horizonEnd) scheduledReviewCardIds.add(card.id)
+        }
+      }
+      const unintroducedCardCount = mappedCards.filter(card => card.type === 'new' || card.reps === 0).length
       const workload = computeLearningWorkload({
         remainingCourseUnits: definitions
           .filter(definition => stateByUnitId.get(definition.unitId)?.activityStatus !== 'completed')
@@ -360,6 +369,8 @@ export function useLearningUnits({
         dueReviewCardCount: dueReviewCardIds.size,
         unresolvedErrorCardCount: unresolvedErrorCardIds.size,
         pendingReviewCardCount: pendingReviewCardIds.size,
+        scheduledReviewCardCount: scheduledReviewCardIds.size,
+        unintroducedCardCount,
         timedReviewSampleCount: objectiveStats.reduce((sum, stat) => sum + stat.timedAnswerCount, 0),
         observedReviewTimeMs: objectiveStats.reduce((sum, stat) => sum + stat.timedAnswerTimeMs, 0),
       })

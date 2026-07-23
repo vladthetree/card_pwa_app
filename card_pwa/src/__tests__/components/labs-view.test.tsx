@@ -152,4 +152,15 @@ describe('LabScenarioView — Detail', () => {
     expect(html).toContain('role="radio"')
     expect(html).toContain('role="radiogroup"')
   })
+
+  it('Mehrschritt-Capstone zeigt Schrittfortschritt und zunächst nur die erste Analyse', () => {
+    const scenario = LAB_SCENARIOS.find(item => item.id === 'capstone-4-9-log-correlation')!
+    const html = renderToStaticMarkup(
+      createElement(LabScenarioView, { language: 'de', scenario, onBack: () => {}, onSolved: () => {} }),
+    )
+    expect(html).toContain('Schritt 1 von 3')
+    expect(html).toContain('Quellen auswählen')
+    expect(html).toContain('Endpoint-Prozess- und OS-Sicherheitslogs')
+    expect(html).not.toContain('Timeline korrelieren')
+  })
 })
