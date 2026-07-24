@@ -19,9 +19,9 @@ interface MobileBottomSheetItemProps {
 }
 
 const BACKDROP_CLASS = 'fixed inset-0 z-[190] bg-black/70 backdrop-blur-[2px]'
-const PANEL_CLASS = 'home-bottom-sheet-panel fixed left-0 right-0 z-[200] rounded-t-ds-sheet border-t border-ds-border bg-ds-bg px-4 pt-3 shadow-menu'
-const HANDLE_CLASS = 'mx-auto mb-4 h-1 w-10 rounded-full bg-ds-border-hover'
-const ITEM_CLASS = 'flex w-full items-center justify-between gap-3 rounded-ds px-3 py-3.5 text-left text-[15px] text-white/80 transition-colors hover:bg-ds-panel active:bg-ds-panel hover:text-white active:text-white'
+const PANEL_CLASS = 'home-bottom-sheet-panel fixed left-0 right-0 z-[200] border-4 border-black bg-[#FFFDF5] px-4 pt-3 shadow-[0_-8px_0_0_#000]'
+const HANDLE_CLASS = 'mx-auto mb-4 h-2 w-14 rounded-full border-2 border-black bg-[#FFD93D]'
+const ITEM_CLASS = 'mb-2 flex w-full items-center justify-between gap-3 border-2 border-black bg-white px-3 py-3.5 text-left text-[15px] font-bold text-black shadow-[3px_3px_0_0_#000] transition-all duration-100 hover:bg-[#FFD93D] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none'
 
 export function MobileBottomSheet({ open, ariaLabel, onClose, children }: MobileBottomSheetProps) {
   return (
@@ -64,14 +64,14 @@ export function MobileBottomSheet({ open, ariaLabel, onClose, children }: Mobile
 
 export function MobileBottomSheetLabel({ children }: { children: ReactNode }) {
   return (
-    <p className="px-1 pb-2 pt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
+    <p className="px-1 pb-2 pt-2 font-mono text-[10px] font-black uppercase tracking-[0.18em] text-black">
       {children}
     </p>
   )
 }
 
 export function MobileBottomSheetDivider() {
-  return <div className="my-2 border-t border-[#1f1f23]" />
+  return <div className="my-3 border-t-4 border-black" />
 }
 
 export function MobileBottomSheetItem({

@@ -69,7 +69,7 @@ function ErrorAlert({ message, onRetry }: { message: string; onRetry: () => void
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className="border border-rose-500/30 bg-black p-4 rounded-ds-xl text-rose-300 text-sm mb-4 flex items-center justify-between"
+      className="mb-4 flex items-center justify-between border-4 border-black bg-[#FFD93D] p-4 text-sm font-black text-black"
     >
       <div className="flex items-center gap-2">
         <AlertCircle size={16} />

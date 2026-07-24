@@ -9,96 +9,27 @@ import { STORAGE_KEYS } from '../constants/appIdentity'
  */
 export const THEMES = {
   default: {
-    name: 'Ember Ledger',
-    primary: '#f05f3e',
-    secondary: '#8fc7ba',
-    accent: '#d9a24a',
-    background: '#000000',
-    floor: '#070605',
-    card: '#11100d',
-    surface: '#11100d',
-    surfaceHover: '#1f1a12',
-    panel: '#17140f',
-    panelHover: '#211b13',
-    border: '#2a251c',
-    borderStrong: '#5d5040',
-    borderHover: '#806a52',
-    text: '#f7f2e8',
-    textSecondary: 'rgba(247,242,232,0.74)',
-    textMuted: '#8c8274',
-    subtle: '#655d50',
-    codeBg: '#17130e',
-    cardBorder: 'rgba(255,255,255,0.58)',
-    glow: 'rgba(240,95,62,0.16)',
-  },
-  ghost: {
-    name: 'Bone Ink',
-    primary: '#f3efe7',
-    secondary: '#9fa99c',
-    accent: '#c9bfad',
-    background: '#000000',
-    floor: '#060606',
-    card: '#10100e',
-    surface: '#10100e',
-    surfaceHover: '#191813',
-    panel: '#151511',
-    panelHover: '#1d1b15',
-    border: '#292820',
-    borderStrong: '#5a5548',
-    borderHover: '#817767',
-    text: '#f6f2eb',
-    textSecondary: 'rgba(246,242,235,0.72)',
-    textMuted: '#837d70',
-    subtle: '#625b50',
-    codeBg: '#161511',
-    cardBorder: 'rgba(255,255,255,0.56)',
-    glow: 'rgba(246,242,235,0.10)',
-  },
-  blueSteel: {
-    name: 'Slate Reed',
-    primary: '#9bb7ad',
-    secondary: '#d6a85e',
-    accent: '#c5cfc8',
-    background: '#000000',
-    floor: '#050707',
-    card: '#0d1311',
-    surface: '#0d1311',
-    surfaceHover: '#17211d',
-    panel: '#121a17',
-    panelHover: '#1a2520',
-    border: '#22312c',
-    borderStrong: '#4f6c62',
-    borderHover: '#709184',
-    text: '#eaf1ed',
-    textSecondary: 'rgba(234,241,237,0.72)',
-    textMuted: '#77847d',
-    subtle: '#56615b',
-    codeBg: '#111916',
-    cardBorder: 'rgba(255,255,255,0.56)',
-    glow: 'rgba(155,183,173,0.14)',
-  },
-  mono: {
-    name: 'Mono Signal',
-    primary: '#ffffff',
-    secondary: '#d9d9d9',
-    accent: '#8f8f8f',
-    background: '#000000',
-    floor: '#050505',
-    card: '#0b0b0b',
-    surface: '#0b0b0b',
-    surfaceHover: '#151515',
-    panel: '#101010',
-    panelHover: '#181818',
-    border: '#242424',
-    borderStrong: '#686868',
-    borderHover: '#f0f0f0',
-    text: '#ffffff',
-    textSecondary: 'rgba(255,255,255,0.76)',
-    textMuted: '#8b8b8b',
-    subtle: '#5f5f5f',
-    codeBg: '#111111',
-    cardBorder: 'rgba(255,255,255,0.68)',
-    glow: 'rgba(255,255,255,0.12)',
+    name: 'Neo-Brutalismus',
+    primary: '#FF6B6B',
+    secondary: '#C4B5FD',
+    accent: '#FFD93D',
+    background: '#FFFDF5',
+    floor: '#FFFDF5',
+    card: '#FFFFFF',
+    surface: '#FFFFFF',
+    surfaceHover: '#FFD93D',
+    panel: '#C4B5FD',
+    panelHover: '#FFD93D',
+    border: '#000000',
+    borderStrong: '#000000',
+    borderHover: '#000000',
+    text: '#000000',
+    textSecondary: 'rgba(0,0,0,0.72)',
+    textMuted: '#000000',
+    subtle: '#000000',
+    codeBg: '#FFFFFF',
+    cardBorder: '#000000',
+    glow: 'rgba(255,107,107,0.18)',
   },
 } as const
 
@@ -141,13 +72,10 @@ function getThemeChromeColor(key: ThemeKey): string {
 }
 
 function normalizeSavedThemeKey(value: string | null): ThemeKey {
-  if (!value) return 'default'
-  if (value === 'blue-steel' || value === 'blue_steel' || value === 'bluesteel') return 'blueSteel'
-  if (value === 'mono' || value === 'black-white' || value === 'black_white' || value === 'blackwhite' || value === 'monochrome') return 'mono'
-  if (value === 'dark') return 'mono'
-  if (value === 'paper' || value === 'slate' || value === 'aurora' || value === 'ocean' || value === 'forest' || value === 'cyber' || value === 'midnight') return 'blueSteel'
-  if (value === 'ember' || value === 'sunset') return 'default'
-  if (value in THEMES) return value as ThemeKey
+  // Frühere Theme-Keys werden bewusst auf das einzige aktuelle System
+  // migriert. Eine Auswahl gibt es erst wieder, wenn weitere Designs fertig
+  // und vollständig durch alle Ansichten gezogen sind.
+  void value
   return 'default'
 }
 
@@ -167,11 +95,14 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   // Apply theme to CSS custom properties
   useEffect(() => {
     const root = document.documentElement
+    // Das einzige visuelle Grundsystem ist appweit Neo-Brutalismus. Die Klasse
+    // sitzt auf body, damit auch Portale und Modale dieselben Tokens erben.
+    document.body.classList.add('neo-app')
     const themeColor = getThemeChromeColor(themeKey)
     const [primaryR, primaryG, primaryB] = hexToRgbTuple(theme.primary)
     const [secondaryR, secondaryG, secondaryB] = hexToRgbTuple(theme.secondary)
 
-    root.setAttribute('data-theme', themeKey === 'blueSteel' ? 'blue-steel' : themeKey)
+    root.setAttribute('data-theme', 'neo')
 
     root.style.setProperty('--brand-primary', `rgb(${primaryR}, ${primaryG}, ${primaryB})`)
     root.style.setProperty('--brand-primary-08', `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.08)`)

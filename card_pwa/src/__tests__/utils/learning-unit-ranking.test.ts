@@ -29,6 +29,16 @@ describe('computeExamTimeline', () => {
   it('liefert null ohne bzw. bei ungültigem Termin', () => {
     expect(computeExamTimeline({ examDateIso: null, now: NOW }).daysLeft).toBeNull()
     expect(computeExamTimeline({ examDateIso: 'quatsch', now: NOW }).daysLeft).toBeNull()
+    for (const examDateIso of ['2026-02-29', '2026-02-31', '2026-04-31', '0000-01-01']) {
+      expect(computeExamTimeline({ examDateIso, now: NOW }))
+        .toEqual({ daysLeft: null, examDateIso: null })
+    }
+  })
+
+  it('akzeptiert einen echten Schalttag ohne Normalisierung', () => {
+    const now = new Date(2028, 1, 28, 14, 30).getTime()
+    expect(computeExamTimeline({ examDateIso: '2028-02-29', now }))
+      .toEqual({ daysLeft: 1, examDateIso: '2028-02-29' })
   })
 })
 
@@ -167,6 +177,23 @@ describe('rankLearningUnits', () => {
     const ranked = rank({ phase: 'pastExam', daysLeft: -1, pacing: { ...okPacing, feasible: false, reason: 'past-exam' } })
     expect(ranked.every(r => !r.recommended)).toBe(true)
     expect(ranked.every(r => r.reason === 'readiness_no_go')).toBe(true)
+  })
+
+  it('pastExam blockiert auch eine bereits aktive Ausführung, hält sie aber sichtbar an Rang 1', () => {
+    const active: LearningUnitState = {
+      profileId: 'p', evidenceEpoch: 1, unitId: 'unit:course:003', activityStatus: 'inProgress',
+      currentStep: 'cards', activeExecutionId: 'exec-1', lastActivityAt: 1, updatedAt: 1,
+    }
+    const ranked = rank({
+      stateByUnitId: new Map([['unit:course:003', active]]),
+      phase: 'pastExam',
+      daysLeft: -1,
+      pacing: { ...okPacing, feasible: false, reason: 'past-exam' },
+    })
+    expect(ranked[0].definition.unitId).toBe('unit:course:003')
+    expect(ranked.every(entry => entry.blocked)).toBe(true)
+    expect(ranked.every(entry => !entry.recommended)).toBe(true)
+    expect(ranked.every(entry => entry.reason === 'readiness_no_go')).toBe(true)
   })
 
   it('No-Go-Pacing blockiert Empfehlungen, versteckt aber keine Einheit', () => {

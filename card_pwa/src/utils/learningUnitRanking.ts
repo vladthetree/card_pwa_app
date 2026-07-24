@@ -11,6 +11,7 @@ import type {
   ObjectiveEvidenceStatus,
   ReadinessStatus,
 } from './learningUnits'
+import { parseLocalExamDate } from './examDate'
 
 export interface ExamTimeline {
   daysLeft: number | null
@@ -186,12 +187,9 @@ export interface RankedLearningUnit {
 /** Lokale Kalendertage bis zum Termin; 0 am Prüfungstag, negativ danach,
  *  null ohne Termin. Bewusst über lokale Mitternacht, nie über UTC. */
 export function computeExamTimeline(input: { examDateIso: string | null; now: number }): ExamTimeline {
-  if (!input.examDateIso || !/^\d{4}-\d{2}-\d{2}$/.test(input.examDateIso)) {
-    return { daysLeft: null, examDateIso: null }
-  }
-  const [year, month, day] = input.examDateIso.split('-').map(Number)
-  const examLocalMidnight = new Date(year, month - 1, day).getTime()
-  if (!Number.isFinite(examLocalMidnight)) return { daysLeft: null, examDateIso: null }
+  const examDate = parseLocalExamDate(input.examDateIso)
+  if (!examDate) return { daysLeft: null, examDateIso: null }
+  const examLocalMidnight = examDate.getTime()
   const nowDate = new Date(input.now)
   const todayLocalMidnight = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate()).getTime()
   const dayMs = 86_400_000
@@ -346,8 +344,15 @@ export function rankLearningUnits(input: {
   for (const definition of input.definitions) {
     const state = input.stateByUnitId.get(definition.unitId)
     if (state?.activityStatus === 'inProgress' && state.activeExecutionId) {
-      // Immer zuerst: bereits aktive Ausführungen (frei vorgezogene inklusive).
-      activeUnits.push({ definition, priority: 0, reason: 'active_execution', recommended: true, blocked: false })
+      // Immer zuerst sichtbar, bei No-Go aber nicht als aktuelle Empfehlung
+      // ausgeben. So bleibt die Ausführung erreichbar, ohne Warnung zu umgehen.
+      activeUnits.push({
+        definition,
+        priority: 0,
+        reason: noGo ? 'readiness_no_go' : 'active_execution',
+        recommended: !noGo,
+        blocked: noGo,
+      })
       continue
     }
 

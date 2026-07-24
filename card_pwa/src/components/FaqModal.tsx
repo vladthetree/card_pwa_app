@@ -115,7 +115,7 @@ export default function FaqModal({ isOpen, onClose }: Props) {
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-4 border-b border-[#18181b] bg-[#050505]/95">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b-4 border-black bg-[#C4B5FD] px-5 py-4">
               <div className="flex items-center gap-2">
                 <HelpCircle size={20} strokeWidth={1.5} className="text-white" />
                 <div>
@@ -260,7 +260,7 @@ export default function FaqModal({ isOpen, onClose }: Props) {
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 px-5 py-4 border-t border-[#18181b] flex gap-3 bg-[#050505]/95">
+            <div className="sticky bottom-0 flex gap-3 border-t-4 border-black bg-[#FFFDF5] px-5 py-4">
               <button
                 onClick={onClose}
                 className={`${UI_TOKENS.button.footerSecondary} text-sm font-medium hover:bg-white/5`}

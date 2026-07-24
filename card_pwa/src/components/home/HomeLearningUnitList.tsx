@@ -6,7 +6,16 @@
  * "beherrscht".
  */
 import { motion } from '../../ui/motion'
-import { AlertTriangle, ChevronRight, ListChecks } from 'lucide-react'
+import {
+  AlertTriangle,
+  Beaker,
+  ChevronRight,
+  ClipboardCheck,
+  Clock3,
+  ListChecks,
+  Play,
+  RefreshCw,
+} from 'lucide-react'
 import type { LearningPhase, LearningUnitDefinition, LearningUnitState, ReadinessStatus } from '../../utils/learningUnits'
 import type { LearningUnitReason, RankedLearningUnit } from '../../utils/learningUnitRanking'
 
@@ -14,6 +23,14 @@ export const LEARNING_UNIT_COPY = {
   de: {
     label: 'Lerneinheiten · SY0-701',
     showAll: 'Alle anzeigen',
+    recommended: 'Empfohlen',
+    duration: (minutes: number) => `ca. ${minutes} Min.`,
+    type: {
+      course: 'Video',
+      review: 'Wiederholung',
+      lab: 'Lab',
+      exam: 'Prüfung',
+    },
     progress: (done: number, total: number) => `${done}/${total} bearbeitet`,
     daysLeft: (days: number) => days === 1 ? 'noch 1 Tag' : `noch ${days} Tage`,
     examToday: 'Prüfungstag',
@@ -53,6 +70,14 @@ export const LEARNING_UNIT_COPY = {
   en: {
     label: 'Learning units · SY0-701',
     showAll: 'Show all',
+    recommended: 'Recommended',
+    duration: (minutes: number) => `about ${minutes} min`,
+    type: {
+      course: 'Video',
+      review: 'Review',
+      lab: 'Lab',
+      exam: 'Exam',
+    },
     progress: (done: number, total: number) => `${done}/${total} worked through`,
     daysLeft: (days: number) => days === 1 ? '1 day left' : `${days} days left`,
     examToday: 'Exam day',
@@ -91,7 +116,7 @@ export const LEARNING_UNIT_COPY = {
   },
 } as const
 
-const MAX_COMPACT_ROWS = 5
+const MAX_COMPACT_ROWS = 3
 
 interface Props {
   language: 'de' | 'en'
@@ -112,13 +137,42 @@ interface Props {
 function ActivityChip({ language, status }: { language: 'de' | 'en'; status: 'notStarted' | 'inProgress' | 'completed' }) {
   const copy = LEARNING_UNIT_COPY[language]
   const tone = status === 'completed'
-    ? 'border-emerald-400/40 bg-emerald-400/10 text-emerald-300'
+    ? 'border-black bg-[#C4B5FD] text-black'
     : status === 'inProgress'
-      ? 'border-[--brand-primary-50] bg-[--brand-primary-08] text-[--brand-primary]'
-      : 'border-ds-border text-ds-muted'
+      ? 'border-black bg-[#FF6B6B] text-black'
+      : 'border-black bg-white text-black'
   return (
-    <span className={`shrink-0 rounded-full border px-1.5 py-px font-mono text-[10px] leading-4 ${tone}`}>
+    <span className={`shrink-0 rounded-full border px-2 py-0.5 font-mono text-[11px] leading-4 ${tone}`}>
       {copy.activity[status]}
+    </span>
+  )
+}
+
+function UnitTypeMark({
+  type,
+  recommended,
+}: {
+  type: LearningUnitDefinition['type']
+  recommended: boolean
+}) {
+  const Icon = type === 'course'
+    ? Play
+    : type === 'review'
+      ? RefreshCw
+      : type === 'lab'
+        ? Beaker
+        : ClipboardCheck
+  return (
+    <span className={`flex h-10 w-10 shrink-0 items-center justify-center border-2 border-black text-black ${
+      recommended
+        ? 'bg-[#FF6B6B]'
+        : type === 'review'
+          ? 'bg-[#C4B5FD]'
+          : type === 'lab'
+            ? 'bg-[#FFD93D]'
+            : 'bg-white'
+    }`}>
+      <Icon size={17} strokeWidth={2.5} />
     </span>
   )
 }
@@ -141,12 +195,12 @@ export function HomeLearningUnitList({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22, ease: 'easeOut' }}
       data-testid="learning-unit-list"
-      className="min-w-0 overflow-hidden rounded-ds border border-ds-border bg-ds-card p-3 shadow-card sm:p-4"
+      className="neo-learning-card min-w-0 p-4 sm:p-5"
     >
       <div className="flex min-w-0 items-center justify-between gap-2">
         <div className="min-w-0">
-          <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[--brand-primary]">{copy.label}</div>
-          <div className="mt-0.5 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-[11px] text-ds-muted">
+          <div className="font-sans text-[12px] font-bold uppercase tracking-[0.14em] text-black">{copy.label}</div>
+          <div className="mt-1 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-[12px] text-ds-muted">
             <span>{copy.phase[phase]}</span>
             <span aria-hidden>·</span>
             <span>{copy.progress(courseCompleted, courseTotal)}</span>
@@ -163,7 +217,7 @@ export function HomeLearningUnitList({
             type="button"
             data-testid="learning-unit-show-all"
             onClick={onShowAll}
-            className="flex shrink-0 items-center gap-1 rounded-ds border border-ds-border px-2 py-1.5 font-mono text-[11px] text-ds-fg transition hover:border-[--brand-primary-50] hover:text-[--brand-primary]"
+            className="neo-learning-press neo-learning-secondary flex min-h-11 shrink-0 items-center gap-1.5 px-3 py-2 font-sans text-[12px] font-bold uppercase tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
           >
             <ListChecks size={13} strokeWidth={1.75} />
             {copy.showAll}
@@ -172,41 +226,59 @@ export function HomeLearningUnitList({
       </div>
 
       {noGo && (
-        <div className="mt-3 flex items-start gap-2 rounded-ds border border-amber-400/40 bg-amber-400/10 px-2.5 py-2">
-          <AlertTriangle size={14} strokeWidth={1.75} className="mt-0.5 shrink-0 text-amber-300" />
-          <span className="font-mono text-[11px] leading-relaxed text-amber-200">{copy.noGo}</span>
+        <div className="neo-learning-note mt-4 flex items-start gap-2 px-3 py-3">
+          <AlertTriangle size={16} strokeWidth={2.5} className="mt-0.5 shrink-0 text-black" />
+          <span className="font-sans text-[13px] font-bold leading-relaxed text-black">{copy.noGo}</span>
         </div>
       )}
 
-      <ul className="mt-3 grid min-w-0 gap-1.5">
+      <ul className="mt-4 grid min-w-0 gap-3">
         {rows.map((row, index) => {
           const state = stateByUnitId.get(row.definition.unitId)
           const activity = state?.activityStatus ?? 'notStarted'
+          const highlighted = index === 0 && row.recommended
           return (
             <li key={row.definition.unitId} className="min-w-0">
               <button
                 type="button"
                 data-testid={`learning-unit-row-${row.definition.unitId}`}
                 onClick={() => onOpenUnit(row.definition)}
-                className={`flex w-full min-w-0 items-center gap-2.5 rounded-ds border px-2.5 py-2 text-left transition ${
-                  index === 0 && row.recommended
-                    ? 'border-[--brand-primary-50] bg-[--brand-primary-08] hover:brightness-110'
-                    : 'border-ds-border bg-ds-floor hover:border-[--brand-primary-50]'
+                className={`neo-learning-press group flex min-h-16 w-full min-w-0 items-center gap-3 p-3 text-left ${
+                  highlighted
+                    ? 'neo-learning-accent'
+                    : 'neo-learning-hover-yellow bg-white'
                 }`}
               >
-                <span className="shrink-0 font-mono text-[11px] tabular-nums text-ds-muted">
-                  {row.definition.type === 'review' ? 'REV' : String(row.definition.order).padStart(3, '0')}
-                </span>
+                <UnitTypeMark type={row.definition.type} recommended={highlighted} />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-sans text-[13px] font-semibold leading-tight text-ds-fg">
-                    {row.definition.title}
+                  <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                    <span className="break-words font-sans text-[15px] font-bold leading-snug text-black">
+                      {row.definition.title}
+                    </span>
+                    {highlighted && (
+                      <span className="neo-learning-label font-sans text-[10px] uppercase tracking-[0.06em]">
+                        {copy.recommended}
+                      </span>
+                    )}
                   </span>
-                  <span className="mt-0.5 block truncate font-mono text-[10px] text-ds-muted">
-                    {`Objective ${row.definition.objectiveIds[0]}`} · {copy.reason[row.reason]}
+                  <span className="mt-1 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 font-sans text-[11px] font-bold leading-relaxed text-black">
+                    <span>{copy.type[row.definition.type]}</span>
+                    {row.definition.estimatedMinutes !== undefined && (
+                      <span className="inline-flex items-center gap-1">
+                        <Clock3 size={11} strokeWidth={1.75} />
+                        {copy.duration(row.definition.estimatedMinutes)}
+                      </span>
+                    )}
+                    <span>{`Objective ${row.definition.objectiveIds[0]}`}</span>
+                  </span>
+                  <span className="mt-0.5 block break-words font-sans text-[11px] font-medium leading-relaxed text-black">
+                    {copy.reason[row.reason]}
                   </span>
                 </span>
-                <ActivityChip language={language} status={activity} />
-                <ChevronRight size={14} strokeWidth={1.75} className="shrink-0 text-ds-muted" />
+                <span className="hidden shrink-0 sm:block">
+                  <ActivityChip language={language} status={activity} />
+                </span>
+                <ChevronRight size={18} strokeWidth={3} className="shrink-0 text-black transition-transform group-hover:translate-x-0.5" />
               </button>
             </li>
           )
@@ -215,7 +287,7 @@ export function HomeLearningUnitList({
 
       {/* Evidenz und Reife bewusst getrennt von der Aktivität (§18): bearbeitete
           Einheiten erzeugen noch keine Mastery-Evidenz. */}
-      <div className="mt-2.5 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-[10px] text-ds-muted">
+      <div className="mt-4 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 border-t-2 border-black pt-3 font-sans text-[11px] font-bold text-black">
         <span>{copy.evidenceNote}</span>
         <span aria-hidden>·</span>
         <span>{copy.readiness[readiness]}</span>

@@ -70,20 +70,20 @@ for (const requirementId of SY0701_COVERAGE_SUMMARY.missingPracticalRequirementI
 const VIEW_COPY = {
   de: {
     title: 'Lerneinheiten',
-    subtitle: (done: number, total: number) => `SY0-701 · ${done} von ${total} bearbeitet`,
+    subtitle: (done: number, total: number) => `SY0-701 · Kurs ${done}/${total} Videos`,
     back: 'Zurück',
     loading: 'Lade Lerneinheiten …',
     unavailable: 'Kurskatalog nicht verfügbar (offline ohne Daten?).',
     allUnits: 'Alle Einheiten',
-    pathHint: 'Fokuspfad · Domain wählen',
+    pathHint: 'Lernpfad · Domain wählen',
     domainNav: 'Prüfungsdomain auswählen',
     domain: (id: string) => `Domain ${id}`,
     domainShort: (id: string) => `D${id}`,
-    unitCount: (done: number, total: number) => `${done}/${total} erledigt`,
-    cardCount: (reviewed: number, total: number) => `${reviewed}/${total} Karten bearbeitet`,
+    unitCount: (done: number, total: number) => `${done}/${total} Einheiten`,
+    cardCount: (reviewed: number, total: number) => `${reviewed}/${total} Karten gelernt`,
     subDeck: (objective: string, sources: string[]) => sources.length > 0
-      ? `Subdeck ${objective} · Karten aus ${sources.join(', ')}`
-      : `Subdeck ${objective}`,
+      ? `Karten für ${objective} + ${sources.join(', ')}`
+      : `Karten für ${objective}`,
     expandObjective: (code: string) => `Objective ${code} öffnen`,
     collapseObjective: (code: string) => `Objective ${code} schließen`,
     objectiveCount: (done: number, total: number) => `${done}/${total}`,
@@ -93,11 +93,19 @@ const VIEW_COPY = {
       mastered: 'Evidenz: beherrscht',
     } satisfies Record<ObjectiveEvidenceStatus, string>,
     leafLine: (covered: number, total: number, samples: number) =>
-      `Leafs ${covered}/${total} nachgewiesen · ${samples} formative Abrufe`,
+      `${covered}/${total} Prüfungsziele abgedeckt · ${samples} Wissenschecks`,
     coverageSummary: (covered: number, total: number, practiceGaps: number) =>
-      `Fachlich vollständig: ${covered}/${total} Leafs · ${practiceGaps} offene Praxispfade`,
-    practiceGaps: (count: number) => `${count} szenariobasierte Anforderungen ohne gemapptes Praxis-Item`,
-    honesty: '„Abgeschlossen“ heißt bearbeitet — nicht beherrscht. Mastery entsteht erst aus geprüfter Abruf-Evidenz.',
+      `${covered}/${total} Prüfungsziele abgedeckt · ${practiceGaps} offene Praxisbereiche`,
+    practiceGaps: (count: number) => `${count} Praxisanforderungen benötigen noch eine passende Übung`,
+    honesty: 'Bearbeitet bedeutet nicht automatisch sicher beherrscht. Deine Reife steigt durch erfolgreiche Wissenschecks und Wiederholungen.',
+    progressDetails: 'So wird dein Fortschritt bewertet',
+    unitType: {
+      course: 'Video',
+      review: 'Wiederholung',
+      lab: 'Lab',
+      exam: 'Prüfung',
+    },
+    duration: (minutes: number) => `ca. ${minutes} Min.`,
     abortReview: 'Wiederholung abbrechen',
     reviewEmpty: 'Nichts zu wiederholen — in diesem Objective sind keine Karten fällig und keine Fehler ungelöst.',
     reviewStartFailed: 'Wiederholung konnte nicht gestartet werden.',
@@ -123,20 +131,20 @@ const VIEW_COPY = {
   },
   en: {
     title: 'Learning units',
-    subtitle: (done: number, total: number) => `SY0-701 · ${done} of ${total} worked through`,
+    subtitle: (done: number, total: number) => `SY0-701 · Course ${done}/${total} videos`,
     back: 'Back',
     loading: 'Loading learning units …',
     unavailable: 'Course catalog unavailable (offline without data?).',
     allUnits: 'All units',
-    pathHint: 'Focus path · choose a domain',
+    pathHint: 'Learning path · choose a domain',
     domainNav: 'Choose exam domain',
     domain: (id: string) => `Domain ${id}`,
     domainShort: (id: string) => `D${id}`,
-    unitCount: (done: number, total: number) => `${done}/${total} done`,
-    cardCount: (reviewed: number, total: number) => `${reviewed}/${total} cards reviewed`,
+    unitCount: (done: number, total: number) => `${done}/${total} units`,
+    cardCount: (reviewed: number, total: number) => `${reviewed}/${total} cards learned`,
     subDeck: (objective: string, sources: string[]) => sources.length > 0
-      ? `Subdeck ${objective} · cards from ${sources.join(', ')}`
-      : `Subdeck ${objective}`,
+      ? `Cards for ${objective} + ${sources.join(', ')}`
+      : `Cards for ${objective}`,
     expandObjective: (code: string) => `Open objective ${code}`,
     collapseObjective: (code: string) => `Close objective ${code}`,
     objectiveCount: (done: number, total: number) => `${done}/${total}`,
@@ -146,11 +154,19 @@ const VIEW_COPY = {
       mastered: 'Evidence: mastered',
     } satisfies Record<ObjectiveEvidenceStatus, string>,
     leafLine: (covered: number, total: number, samples: number) =>
-      `Leafs ${covered}/${total} evidenced · ${samples} formative recalls`,
+      `${covered}/${total} exam objectives covered · ${samples} knowledge checks`,
     coverageSummary: (covered: number, total: number, practiceGaps: number) =>
-      `Fully evidenced: ${covered}/${total} leaves · ${practiceGaps} open practical paths`,
-    practiceGaps: (count: number) => `${count} scenario requirements without a mapped practical item`,
-    honesty: '"Completed" means worked through — not mastered. Mastery only comes from verified retrieval evidence.',
+      `${covered}/${total} exam objectives covered · ${practiceGaps} open practice areas`,
+    practiceGaps: (count: number) => `${count} practical requirements still need a matching exercise`,
+    honesty: 'Completed does not automatically mean confidently mastered. Readiness grows through successful knowledge checks and reviews.',
+    progressDetails: 'How your progress is measured',
+    unitType: {
+      course: 'Video',
+      review: 'Review',
+      lab: 'Lab',
+      exam: 'Exam',
+    },
+    duration: (minutes: number) => `about ${minutes} min`,
     abortReview: 'Abort review',
     reviewEmpty: 'Nothing to review — no cards due and no unresolved errors in this objective.',
     reviewStartFailed: 'Could not start the review.',
@@ -209,11 +225,11 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
   })
   const { plan, pacing } = learningUnits
 
-  // Der Settings-Termin ist der profilgesyncte Primärpfad. Der Plantermin ist
-  // nur Fallback für ältere/restaurierte Drafts und wird beim Speichern wieder
-  // in beide Pfade geschrieben.
+  // Der profilgescopte Plan ist die autoritative Terminquelle. Settings wird
+  // beim Speichern nur als synchronisierter Countdown-Kompatibilitätscache
+  // nachgezogen.
   const storedPlanValues = useMemo(() => buildLearningPlanFormValues({
-    examDateIso: learningUnits.effectiveExamDateIso,
+    examDateIso: plan?.examDateIso ?? learningUnits.effectiveExamDateIso,
     examLanguage: plan?.examLanguage,
     weeklyMinutesAvailable: plan?.weeklyMinutesAvailable,
     learningDaysPerWeek: plan?.learningDaysPerWeek,
@@ -278,14 +294,13 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
         learningDaysPerWeek: normalized.learningDaysPerWeek,
         bufferDays: normalized.bufferDays,
       })
-      // Settings ist der geräte-/profilsynchrone Terminpfad. Auch ein bewusstes
-      // Löschen muss dort einen updatedAt erhalten, wenn nur ein alter Planwert
-      // existierte.
+      // Settings bleibt eine abgeleitete Kompatibilitätsansicht für Countdown
+      // und Legacy-Sync. Der Plan wurde direkt darüber bereits geschrieben.
       if (
         settings.examDateIso !== normalized.examDateIso ||
         (settings.examDateUpdatedAt === null && (plan?.examDateIso ?? null) !== normalized.examDateIso)
       ) {
-        setExamDateIso(normalized.examDateIso)
+        await setExamDateIso(normalized.examDateIso, { planAlreadySaved: true })
       }
       setPlanBaseline(planDraft)
       learningUnits.reload()
@@ -448,16 +463,16 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
+    <div className="learning-units-neo flex h-full min-h-0 flex-col">
       {!embedded && (
-        <div className="shrink-0 border-b border-ds-border px-4 pb-3 pt-safe-2">
+        <div className="shrink-0 border-b-4 border-black bg-[#FFD93D] px-4 pb-3 pt-safe-2">
           <div className="flex items-center gap-3">
-            <button type="button" onClick={onExit} className="ds-icon-button flex h-11 w-11 shrink-0" aria-label={copy.back}>
-              <ArrowLeft size={16} />
+            <button type="button" onClick={onExit} className="neo-learning-press flex h-11 w-11 shrink-0 items-center justify-center bg-white" aria-label={copy.back}>
+              <ArrowLeft size={18} strokeWidth={3} />
             </button>
             <div className="min-w-0 flex-1">
-              <div className="font-mono text-[22px] font-bold leading-tight text-ds-fg">{copy.title}</div>
-              <div className="truncate font-mono text-[12px] text-ds-muted">
+              <div className="font-sans text-[24px] font-black uppercase leading-tight text-black">{copy.title}</div>
+              <div className="break-words font-sans text-[12px] font-bold leading-snug text-black">
                 {copy.subtitle(learningUnits.courseCompleted, learningUnits.courseTotal)} · {listCopy.readiness[learningUnits.readiness]}
               </div>
             </div>
@@ -466,81 +481,105 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
       )}
 
       <div className={`min-h-0 flex-1 overflow-y-auto ${embedded ? 'px-0 py-1' : 'px-4 py-3'}`} data-study-scroll="allow">
-        <div className="mx-auto flex w-full max-w-2xl flex-col gap-3 pb-safe-2">
+        <div className="mx-auto flex w-full max-w-2xl flex-col gap-3 pb-safe-2 lg:max-w-5xl xl:max-w-6xl">
           {embedded && (
-            <div className="truncate px-0.5 font-mono text-[12px] text-ds-muted" data-testid="learning-units-embedded-subtitle">
-              {copy.subtitle(learningUnits.courseCompleted, learningUnits.courseTotal)} · {listCopy.readiness[learningUnits.readiness]}
+            <div className="px-0.5" data-testid="learning-units-embedded-subtitle">
+              <h2 className="font-sans text-[26px] font-black uppercase leading-none tracking-tight text-black sm:hidden">
+                {copy.title}
+              </h2>
+              <div className="mt-2 break-words font-sans text-[13px] font-bold leading-snug text-black sm:mt-0">
+                {copy.subtitle(learningUnits.courseCompleted, learningUnits.courseTotal)} · {listCopy.readiness[learningUnits.readiness]}
+              </div>
             </div>
           )}
-          <p className="font-mono text-[11px] leading-relaxed text-ds-muted">{copy.honesty}</p>
-          <div
-            className="rounded-ds border border-amber-400/35 bg-amber-400/10 px-3 py-2 font-mono text-[11px] leading-relaxed text-amber-100"
-            data-testid="learning-units-coverage-summary"
-          >
-            {copy.coverageSummary(
-              SY0701_COVERAGE_SUMMARY.coveredCount,
-              SY0701_COVERAGE_SUMMARY.requirementCount,
-              SY0701_COVERAGE_SUMMARY.missingPracticalRequirementIds.length,
-            )}
+
+          <div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr),340px] lg:items-start lg:gap-4">
+            <div className="flex min-w-0 flex-col gap-3 lg:col-start-1 lg:row-start-1">
+              {learningUnits.loading && (
+                <p className="font-mono text-[12px] text-ds-muted">{copy.loading}</p>
+              )}
+              {!learningUnits.loading && !learningUnits.available && (
+                <p className="font-mono text-[12px] text-ds-muted">{copy.unavailable}</p>
+              )}
+
+              {learningUnits.available && learningUnits.ranked.length > 0 && (
+                <HomeLearningUnitList
+                  language={settings.language}
+                  phase={learningUnits.phase}
+                  daysLeft={learningUnits.daysLeft}
+                  readiness={learningUnits.readiness}
+                  courseCompleted={learningUnits.courseCompleted}
+                  courseTotal={learningUnits.courseTotal}
+                  ranked={learningUnits.ranked}
+                  stateByUnitId={learningUnits.stateByUnitId}
+                  onOpenUnit={handleOpenUnit}
+                />
+              )}
+            </div>
+
+            <aside className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-2 lg:col-start-2 lg:row-start-1">
+              <LearningPlanPanel
+                language={settings.language}
+                summaryValues={planBaseline}
+                values={planDraft}
+                pacing={pacing}
+                previewPacing={previewPacing}
+                contentProgress={learningUnits.contentMapping.summary}
+                open={planEditorOpen}
+                dirty={planDirty}
+                saving={planSaving}
+                saveError={planSaveError}
+                configured={plan !== null}
+                collapseSignal={plan?.updatedAt ?? 0}
+                onOpen={handleOpenPlan}
+                onChange={handlePlanChange}
+                onSave={() => void handleSavePlan()}
+                onClose={() => {
+                  setPlanEditorOpen(false)
+                  setPlanDraft(planBaseline)
+                  setPlanSaveError(null)
+                }}
+              />
+
+              <details className="neo-learning-card group">
+                <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 bg-[#C4B5FD] px-3 py-2.5 font-sans text-[13px] font-black uppercase text-black marker:hidden">
+                  <span>{copy.progressDetails}</span>
+                  <ChevronDown
+                    size={16}
+                    strokeWidth={1.75}
+                    className="shrink-0 text-black transition-transform group-open:rotate-180"
+                  />
+                </summary>
+                <div className="border-t-[3px] border-black px-3 pb-3 pt-2.5">
+                  <p className="font-sans text-[13px] font-medium leading-relaxed text-black">{copy.honesty}</p>
+                  <div
+                    className="neo-learning-note mt-3 px-3 py-2.5 font-sans text-[11px] font-bold leading-relaxed"
+                    data-testid="learning-units-coverage-summary"
+                  >
+                    {copy.coverageSummary(
+                      SY0701_COVERAGE_SUMMARY.coveredCount,
+                      SY0701_COVERAGE_SUMMARY.requirementCount,
+                      SY0701_COVERAGE_SUMMARY.missingPracticalRequirementIds.length,
+                    )}
+                  </div>
+                </div>
+              </details>
+            </aside>
           </div>
 
-          <LearningPlanPanel
-            language={settings.language}
-            summaryValues={planBaseline}
-            values={planDraft}
-            pacing={pacing}
-            previewPacing={previewPacing}
-            contentProgress={learningUnits.contentMapping.summary}
-            open={planEditorOpen}
-            dirty={planDirty}
-            saving={planSaving}
-            saveError={planSaveError}
-            configured={plan !== null}
-            collapseSignal={plan?.updatedAt ?? 0}
-            onOpen={handleOpenPlan}
-            onChange={handlePlanChange}
-            onSave={() => void handleSavePlan()}
-            onClose={() => {
-              setPlanEditorOpen(false)
-              setPlanDraft(planBaseline)
-              setPlanSaveError(null)
-            }}
-          />
-
-          {learningUnits.loading && (
-            <p className="font-mono text-[12px] text-ds-muted">{copy.loading}</p>
-          )}
-          {!learningUnits.loading && !learningUnits.available && (
-            <p className="font-mono text-[12px] text-ds-muted">{copy.unavailable}</p>
-          )}
-
-          {learningUnits.available && learningUnits.ranked.length > 0 && (
-            <HomeLearningUnitList
-              language={settings.language}
-              phase={learningUnits.phase}
-              daysLeft={learningUnits.daysLeft}
-              readiness={learningUnits.readiness}
-              courseCompleted={learningUnits.courseCompleted}
-              courseTotal={learningUnits.courseTotal}
-              ranked={learningUnits.ranked}
-              stateByUnitId={learningUnits.stateByUnitId}
-              onOpenUnit={handleOpenUnit}
-            />
-          )}
-
           {learningUnits.available && (
-            <section data-testid="learning-units-full-list" className="rounded-ds border border-ds-border bg-ds-card p-3 sm:p-4">
+            <section data-testid="learning-units-full-list" className="neo-learning-card p-4 sm:p-5">
               <div className="flex items-center gap-2">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-ds border border-[--brand-primary-50] bg-[--brand-primary-08] text-[--brand-primary]">
-                  <Route size={16} strokeWidth={1.75} />
+                <span className="flex h-11 w-11 shrink-0 -rotate-2 items-center justify-center border-[3px] border-black bg-[#FF6B6B] text-black shadow-[3px_3px_0_0_#000]">
+                  <Route size={20} strokeWidth={3} />
                 </span>
                 <div className="min-w-0">
-                  <h3 className="font-sans text-[15px] font-semibold text-ds-fg">{copy.allUnits}</h3>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-ds-muted">{copy.pathHint}</p>
+                  <h3 className="font-sans text-[20px] font-black uppercase text-black">{copy.allUnits}</h3>
+                  <p className="mt-0.5 font-sans text-[11px] font-bold uppercase tracking-[0.12em] text-black">{copy.pathHint}</p>
                 </div>
               </div>
 
-              <div className="mt-3 grid grid-cols-5 gap-1.5" role="tablist" aria-label={copy.domainNav}>
+              <div className="mt-3 flex gap-2 overflow-x-auto pb-1 sm:grid sm:grid-cols-5 sm:overflow-visible sm:pb-0" role="tablist" aria-label={copy.domainNav}>
                 {domainSummaries.map(summary => {
                   const active = summary.domainId === selectedDomainId
                   return (
@@ -551,14 +590,14 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
                       aria-selected={active}
                       aria-controls={`learning-domain-${summary.domainId}`}
                       onClick={() => selectDomain(summary.domainId)}
-                      className={`flex min-h-12 min-w-0 flex-col items-center justify-center rounded-ds border px-1 transition active:scale-[0.98] ${
+                      className={`neo-learning-press flex min-h-14 min-w-[74px] flex-1 flex-col items-center justify-center px-2 font-sans focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 sm:min-w-0 ${
                         active
-                          ? 'border-[--brand-primary-50] bg-[--brand-primary-12] text-[--brand-primary]'
-                          : 'border-ds-border bg-ds-floor text-ds-muted hover:border-ds-border-hover'
+                          ? 'bg-[#FFD93D] text-black'
+                          : 'neo-learning-hover-violet bg-white text-black'
                       }`}
                     >
-                      <span className="font-mono text-[12px] font-bold">{copy.domainShort(summary.domainId)}</span>
-                      <span className="font-mono text-[9px] tabular-nums opacity-75">{summary.done}/{summary.total}</span>
+                      <span className="text-[13px] font-black">{copy.domainShort(summary.domainId)}</span>
+                      <span className="mt-0.5 text-[10px] font-bold tabular-nums">{summary.done}/{summary.total}</span>
                     </button>
                   )
                 })}
@@ -570,15 +609,15 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
                 className="mt-3"
               >
                 <div className="mb-2 px-0.5">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[--brand-primary]">
+                  <div className="font-sans text-[11px] font-black uppercase tracking-[0.12em] text-black">
                     {copy.domain(selectedDomainId)}
                   </div>
-                  <div className="font-sans text-[14px] font-semibold leading-tight text-ds-fg">
+                  <div className="mt-0.5 font-sans text-[18px] font-black leading-tight text-black">
                     {SY0_701_ROOT_DECKS[selectedDomainId].domain}
                   </div>
                 </div>
 
-                <div className="grid gap-2">
+                <div className="grid gap-2 lg:grid-cols-2 lg:items-start lg:gap-3">
                   {SY0_701_OBJECTIVES
                     .filter(objective => objective.code.startsWith(`${selectedDomainId}.`))
                     .map(objective => {
@@ -595,61 +634,63 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
                       const deckMapping = learningUnits.contentMapping.byObjectiveId.get(objective.code)
                       const contentId = `learning-objective-${objective.code.replace('.', '-')}`
                       return (
-                        <section key={objective.code} className={`overflow-hidden rounded-ds border transition ${
-                          expanded ? 'border-[--brand-primary-50] bg-ds-floor' : 'border-ds-border bg-ds-floor/70'
+                        <section key={objective.code} className={`overflow-hidden border-2 border-black transition ${
+                          expanded ? 'bg-[#C4B5FD]' : 'bg-white'
                         }`}>
                           <button
                             type="button"
                             onClick={() => setExpandedObjectiveId(expanded ? null : objective.code)}
-                            className="flex min-h-14 w-full items-start gap-2.5 px-3 py-3 text-left"
+                            className="neo-learning-hover-yellow flex min-h-16 w-full items-start gap-3 px-3 py-3 text-left transition duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-black"
                             aria-expanded={expanded}
                             aria-controls={contentId}
                             aria-label={expanded ? copy.collapseObjective(objective.code) : copy.expandObjective(objective.code)}
                           >
-                            <span className={`mt-0.5 shrink-0 rounded-md border px-1.5 py-1 font-mono text-[11px] font-bold ${
+                            <span className={`mt-0.5 shrink-0 border-2 border-black px-2 py-1 font-sans text-[12px] font-black ${
                               expanded
-                                ? 'border-[--brand-primary-50] bg-[--brand-primary-12] text-[--brand-primary]'
-                                : 'border-ds-border text-ds-muted'
+                                ? 'bg-[#FF6B6B] text-black'
+                                : 'bg-white text-black'
                             }`}>
                               {objective.code}
                             </span>
                             <span className="min-w-0 flex-1">
-                              <span className="block font-sans text-[13px] font-semibold leading-snug text-ds-fg">
+                              <span className="block font-sans text-[15px] font-black leading-snug text-black">
                                 {objective.title}
                               </span>
-                              <span className="mt-1 flex flex-wrap gap-x-2 gap-y-0.5 font-mono text-[10px] leading-relaxed text-ds-muted">
+                              <span className="mt-1 flex flex-wrap gap-x-2 gap-y-1 font-sans text-[11px] font-bold leading-relaxed text-black">
                                 <span className="tabular-nums">{copy.unitCount(done, units.length)}</span>
                                 {deckMapping && deckMapping.cardIds.length > 0 && (
-                                  <span className="tabular-nums text-[--brand-secondary]">
+                                  <span className="tabular-nums text-black">
                                     {copy.cardCount(deckMapping.reviewedCardIds.length, deckMapping.cardIds.length)}
                                   </span>
                                 )}
                                 <span>{copy.evidence[evidence]}</span>
-                                <span>{copy.leafLine(leaf?.coveredLeafs ?? 0, leaf?.totalLeafs ?? 0, samples)}</span>
                               </span>
                             </span>
                             <ChevronDown
                               size={16}
                               strokeWidth={1.75}
-                              className={`mt-1 shrink-0 text-ds-muted transition-transform ${expanded ? 'rotate-180' : 'rotate-0'}`}
+                              className={`mt-1 shrink-0 text-black transition-transform ${expanded ? 'rotate-180' : 'rotate-0'}`}
                             />
                           </button>
 
                           {expanded && (
-                            <div id={contentId} className="border-t border-ds-border px-3 pb-3 pt-2.5">
+                            <div id={contentId} className="border-t-2 border-black bg-[#FFFDF5] px-3 pb-3 pt-3">
+                              <div className="mb-3 border-2 border-black bg-white px-2.5 py-2 font-sans text-[11px] font-bold leading-relaxed text-black">
+                                {copy.leafLine(leaf?.coveredLeafs ?? 0, leaf?.totalLeafs ?? 0, samples)}
+                              </div>
                               {missingPractical.length > 0 && (
-                                <details className="mb-3 rounded-ds border border-amber-400/35 bg-amber-400/10 px-2.5 py-2 text-amber-100">
-                                  <summary className="cursor-pointer font-mono text-[10px] leading-relaxed">
+                                <details className="mb-3 border-2 border-black bg-[#FFD93D] px-2.5 py-2 text-black">
+                                  <summary className="cursor-pointer font-sans text-[11px] font-bold leading-relaxed">
                                     {copy.practiceGaps(missingPractical.length)}
                                   </summary>
-                                  <ul className="mt-2 grid gap-1 border-t border-amber-400/20 pt-2 font-mono text-[10px] leading-relaxed">
+                                  <ul className="mt-2 grid gap-1 border-t-2 border-black pt-2 font-sans text-[11px] font-medium leading-relaxed">
                                     {missingPractical.map(requirement => (
                                       <li key={requirement.requirementId}>{requirement.requirementSummary}</li>
                                     ))}
                                   </ul>
                                 </details>
                               )}
-                              <ul className="ml-2 grid min-w-0 gap-2 border-l border-ds-border pl-3">
+                              <ul className="ml-2 grid min-w-0 gap-3 border-l-2 border-black pl-3">
                                 {units.map(unit => {
                                   const activity = learningUnits.stateByUnitId.get(unit.definition.unitId)?.activityStatus ?? 'notStarted'
                                   const abortable = unit.definition.type === 'review' && activity === 'inProgress'
@@ -660,45 +701,56 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
                                       objectiveId !== null && objectiveId !== unitMapping?.objectiveId
                                     ))
                                   return (
-                                    <li key={unit.definition.unitId} className="relative flex min-w-0 items-stretch gap-2 before:absolute before:-left-[17px] before:top-5 before:h-2 before:w-2 before:rounded-full before:border before:border-ds-border-hover before:bg-ds-floor">
+                                    <li key={unit.definition.unitId} className="relative flex min-w-0 items-stretch gap-2 before:absolute before:-left-[18px] before:top-5 before:h-2.5 before:w-2.5 before:rounded-full before:border-2 before:border-black before:bg-[#FFD93D]">
                                       <button
                                         type="button"
                                         onClick={() => void handleOpenUnit(unit.definition)}
-                                        className={`grid min-h-12 w-full min-w-0 flex-1 grid-cols-[auto,minmax(0,1fr)] items-start gap-2 rounded-ds border px-2.5 py-2.5 text-left transition hover:border-[--brand-primary-50] ${
+                                        className={`neo-learning-press grid min-h-14 w-full min-w-0 flex-1 grid-cols-[auto,minmax(0,1fr)] items-start gap-2.5 px-3 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 ${
                                           unit.recommended
-                                            ? 'border-[--brand-primary-50] bg-[--brand-primary-08]'
-                                            : 'border-ds-border bg-ds-card'
+                                            ? 'bg-[#FF6B6B]'
+                                            : 'neo-learning-hover-yellow bg-white'
                                         }`}
                                       >
-                                        <span className="pt-0.5 font-mono text-[10px] tabular-nums text-ds-muted">
-                                          {unit.definition.type === 'review' ? 'REV' : String(unit.definition.order).padStart(3, '0')}
+                                        <span className={`border-2 border-black px-1.5 py-1 font-sans text-[10px] font-black uppercase tracking-[0.06em] ${
+                                          unit.recommended
+                                            ? 'bg-[#FFD93D] text-black'
+                                            : unit.definition.type === 'lab'
+                                              ? 'bg-[#C4B5FD] text-black'
+                                              : 'bg-white text-black'
+                                        }`}>
+                                          {copy.unitType[unit.definition.type]}
                                         </span>
                                         <span className="min-w-0">
-                                          <span className="block break-words font-sans text-[13px] font-semibold leading-snug text-ds-fg">
+                                          <span className="block break-words font-sans text-[14px] font-black leading-snug text-black">
                                             {unit.definition.title}
                                           </span>
-                                          <span className="mt-1 flex flex-wrap items-center gap-1.5">
-                                            <span className={`rounded-full border px-1.5 py-px font-mono text-[9px] leading-4 ${
+                                          <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                                            {unit.definition.estimatedMinutes !== undefined && (
+                                              <span className="font-sans text-[10px] font-bold text-black">
+                                                {copy.duration(unit.definition.estimatedMinutes)}
+                                              </span>
+                                            )}
+                                            <span className={`rounded-full border-2 border-black px-2 py-0.5 font-sans text-[10px] font-bold leading-4 text-black ${
                                               activity === 'completed'
-                                                ? 'border-emerald-400/40 bg-emerald-400/10 text-emerald-300'
+                                                ? 'bg-[#C4B5FD]'
                                                 : activity === 'inProgress'
-                                                  ? 'border-[--brand-primary-50] bg-[--brand-primary-08] text-[--brand-primary]'
-                                                  : 'border-ds-border text-ds-muted'
+                                                  ? 'bg-[#FF6B6B]'
+                                                  : 'bg-white'
                                             }`}>
                                               {listCopy.activity[activity]}
                                             </span>
                                             {unit.recommended && (
-                                              <span className="font-mono text-[9px] text-[--brand-primary]">
+                                              <span className="font-sans text-[10px] font-black text-black">
                                                 {listCopy.reason[unit.reason]}
                                               </span>
                                             )}
                                             {unitMapping && (
                                               <>
-                                                <span className="rounded-full border border-ds-border px-1.5 py-px font-mono text-[9px] leading-4 text-ds-muted">
+                                                <span className="rounded-full border-2 border-black bg-white px-2 py-0.5 font-sans text-[10px] font-bold leading-4 text-black">
                                                   {copy.subDeck(unitMapping.objectiveId, sourceSubDeckObjectives)}
                                                 </span>
                                                 {unitMapping.cardIds.length > 0 && (
-                                                  <span className="rounded-full border border-[--brand-secondary-25] bg-[--brand-secondary-08] px-1.5 py-px font-mono text-[9px] leading-4 text-[--brand-secondary]">
+                                                  <span className="rounded-full border-2 border-black bg-[#C4B5FD] px-2 py-0.5 font-sans text-[10px] font-bold leading-4 text-black">
                                                     {copy.cardCount(unitMapping.reviewedCardIds.length, unitMapping.cardIds.length)}
                                                   </span>
                                                 )}
@@ -714,9 +766,9 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
                                           title={copy.abortReview}
                                           data-testid={`learning-unit-abort-${unit.definition.unitId}`}
                                           onClick={() => void handleAbortReviewUnit(unit.definition)}
-                                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-ds border border-ds-border text-ds-muted transition hover:border-red-400/50 hover:text-red-300"
+                                          className="neo-learning-press flex h-11 w-11 shrink-0 items-center justify-center bg-[#FF6B6B] text-black"
                                         >
-                                          <X size={14} strokeWidth={2} />
+                                          <X size={16} strokeWidth={3} />
                                         </button>
                                       )}
                                     </li>

@@ -281,19 +281,34 @@ function VideoStudyBar({
   // Eingeklappt: schlanke Leiste zum Ausklappen → mehr Platz fürs Video.
   if (!open) {
     return (
-      <button
-        type="button"
-        onClick={onToggle}
-        data-testid="video-studybar-toggle"
-        aria-expanded={false}
-        className={`mt-2 flex w-full max-w-3xl items-center justify-center gap-2 rounded-ds-lg border border-[#18181b] bg-[#080808] font-mono font-bold text-zinc-400 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary] ${
-          compact ? 'py-1.5 text-[11px]' : 'py-2 text-[12px]'
-        }`}
-      >
-        <Brain size={14} strokeWidth={1.5} />
-        {copy.recall}
-        <ChevronDown size={13} strokeWidth={1.5} />
-      </button>
+      <div className="mt-2 flex w-full max-w-3xl items-stretch gap-2">
+        <button
+          type="button"
+          onClick={onToggle}
+          data-testid="video-studybar-toggle"
+          aria-expanded={false}
+          className={`flex min-w-0 flex-1 items-center justify-center gap-2 rounded-ds-lg border border-[#18181b] bg-[#080808] font-mono font-bold text-zinc-400 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary] ${
+            compact ? 'py-1.5 text-[11px]' : 'py-2 text-[12px]'
+          }`}
+        >
+          <Brain size={14} strokeWidth={1.5} />
+          {copy.recall}
+          <ChevronDown size={13} strokeWidth={1.5} />
+        </button>
+        <button
+          type="button"
+          onClick={onOpenTranscript}
+          data-testid="video-transcript-open"
+          title={copy.transcript}
+          aria-label={copy.transcript}
+          className={`flex shrink-0 items-center justify-center gap-2 rounded-ds-lg border border-[#1f1f23] bg-[#0c0c0c] font-mono font-bold text-zinc-300 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary] ${
+            compact ? 'h-8 w-10 text-[11px]' : 'px-4 text-[12px]'
+          }`}
+        >
+          <FileText size={14} strokeWidth={1.5} />
+          {!compact && copy.transcript}
+        </button>
+      </div>
     )
   }
 
@@ -774,14 +789,15 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
   }, [activeItem, isHandsetLayout])
 
   const renderPlayer = (compact = false) =>
-    activeItem ? (
+    recallOpen ? null : activeItem ? (
       videoSrc ? (
         <MesserVideoPlayer
           file={activeItem.file}
           src={videoSrc}
           variant={compact ? 'compact' : 'full'}
-          keyboardOpen={keyboardOpen}
-          pauseForKeyboardInput={compact && writingMode}
+          paused={recallOpen}
+          keyboardOpen={keyboardOpen || writingMode}
+          pauseForKeyboardInput={false}
           onTimeChange={setCurrentVideoTime}
           seekRequest={seekRequest}
           onEnded={() => {
@@ -792,7 +808,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
           labels={{ fullscreen: copy.fullscreen, exitFullscreen: copy.exitFullscreen, speed: copy.speed }}
         />
       ) : resolving ? (
-        <div className="flex aspect-video w-full max-w-6xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-[#1f1f23] bg-black text-center">
+        <div className="neo-keep-dark flex aspect-video w-full max-w-6xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-[#1f1f23] bg-black text-center">
           <Loader2 size={26} className="animate-spin text-zinc-500" />
           <div className="font-mono text-[12px] text-zinc-500">{copy.resolving}</div>
         </div>
@@ -850,7 +866,9 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
               <div
                 key={video.file}
                 className={`flex items-center gap-2 rounded-ds-lg border px-2 py-2 transition-colors ${
-                  isActive ? 'border-[--brand-secondary-80] bg-[--brand-secondary-12]' : 'border-transparent hover:border-[#1f1f23] hover:bg-[#0c0c0c]'
+                  isActive
+                    ? 'border-[--brand-secondary-80] bg-[--brand-secondary-12]'
+                    : 'border-transparent hover:border-black hover:bg-[#FFD93D]'
                 }`}
               >
                 <button
@@ -1047,7 +1065,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
           )}
           <div className="flex min-h-0 flex-[5] flex-col border-r border-[#18181b]">
             <div
-              className={`flex flex-col items-center overflow-y-auto bg-black ${
+              className={`neo-keep-dark flex flex-col items-center overflow-y-auto bg-black ${
                 activeItem
                   ? 'min-h-0 flex-1 justify-center px-5 py-5'
                   : 'shrink-0 border-b border-[#18181b] px-4 py-4'
@@ -1119,8 +1137,10 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
           Tastatur das Textfeld sichtbar bleibt und das Video oben stehen bleibt. */}
       {isHandsetLayout && activeItem && (
         <div
-          className="fixed left-0 right-0 z-50 flex flex-col bg-black/95 backdrop-blur-sm"
-          style={viewport ? { top: `${viewport.top}px`, height: `${viewport.height}px` } : { top: 0, height: '100dvh' }}
+          className="neo-keep-dark fixed inset-0 z-50 flex min-h-[100dvh] flex-col bg-black"
+          style={(keyboardOpen || writingMode) && viewport
+            ? { top: `${viewport.top}px`, right: 0, bottom: 'auto', left: 0, height: `${viewport.height}px`, minHeight: 0 }
+            : { inset: 0, height: '100dvh' }}
           role="dialog"
           aria-modal="true"
           aria-label={activeItem.title}
@@ -1164,10 +1184,10 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
             )}
           </div>
 
-          {/* Video + Lernleiste: im Schreibmodus ausgeblendet → Notizzettel bekommt
-              den ganzen Platz über der Tastatur. Der Player bleibt gemountet,
-              damit er kontrolliert pausieren und danach weiterlaufen kann. */}
-          <div className={writingMode ? 'hidden' : 'flex shrink-0 justify-center px-3'}>
+          {/* Video bleibt beim Schreiben sichtbar und wird über keyboardOpen /
+              writingMode kompakt begrenzt. So kann die Notiz direkt zum sichtbaren
+              Inhalt entstehen, ohne dass die Tastatur den Player verdrängt. */}
+          <div className="flex shrink-0 justify-center px-3">
             {renderPlayer(true)}
           </div>
           {!writingMode && !keyboardOpen && <div className="flex shrink-0 justify-center px-3">{renderStudyBar(true)}</div>}

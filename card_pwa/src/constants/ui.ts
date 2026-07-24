@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Shared constants for ui; centralizes app identity, animation, or UI values used across modules.
  */
-const T = 'transition-all duration-150 ease-out'
+const T = 'transition-all duration-100 ease-linear'
 
 export const UI_TOKENS = {
   layout: {
@@ -69,29 +69,29 @@ export const UI_TOKENS = {
 
   modal: {
     overlay:     'fixed inset-0 z-[1000] flex items-center justify-center px-safe pt-safe-4 pb-4 sm:px-4',
-    backdrop:    'absolute inset-0 bg-black/[0.82] backdrop-blur-md',
+    backdrop:    'absolute inset-0 bg-black/75',
     shell:       `relative flex min-h-0 w-full max-h-[calc(100dvh-env(safe-area-inset-top,0px)-2rem)] flex-col ds-modal ${T}`,
-    header:      'sticky top-0 z-10 flex shrink-0 items-center justify-between gap-3 px-5 py-4 border-b border-ds-border bg-ds-bg/95 backdrop-blur-xl',
-    title:       'text-white font-semibold text-lg leading-tight break-words',
-    subtitle:    'text-xs text-white/50 mt-0.5 break-words',
+    header:      'sticky top-0 z-10 flex shrink-0 items-center justify-between gap-3 border-b-4 border-black bg-[#FFD93D] px-5 py-4',
+    title:       'text-black font-black uppercase text-lg leading-tight break-words',
+    subtitle:    'mt-0.5 break-words text-xs font-bold text-black',
     closeButton: `ds-icon-button min-w-[44px] min-h-[44px] sm:min-w-[36px] sm:min-h-[36px] ${T}`,
     body:        'min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5',
-    footer:      'sticky bottom-0 flex shrink-0 gap-3 px-5 py-4 border-t border-ds-border bg-ds-bg/95 backdrop-blur-xl',
+    footer:      'sticky bottom-0 flex shrink-0 gap-3 border-t-4 border-black bg-[#FFFDF5] px-5 py-4',
   },
 
   input: {
-    base:     `w-full bg-ds-card border border-ds-border rounded-ds px-3 py-2.5 text-white text-sm outline-none focus-visible:border-ds-border-hover focus-visible:ring-2 focus-visible:ring-[--brand-primary-25] ${T}`,
-    textarea: `w-full rounded-ds bg-ds-card border border-ds-border px-3 py-2 text-sm text-white outline-none focus-visible:border-ds-border-hover focus-visible:ring-2 focus-visible:ring-[--brand-primary-25] resize-y ${T}`,
+    base:     `w-full border-[3px] border-black bg-white px-3 py-2.5 text-sm font-bold text-black outline-none focus-visible:bg-[#FFD93D] focus-visible:shadow-[4px_4px_0_0_#000] ${T}`,
+    textarea: `w-full resize-y border-[3px] border-black bg-white px-3 py-2 text-sm font-bold text-black outline-none focus-visible:bg-[#FFD93D] focus-visible:shadow-[4px_4px_0_0_#000] ${T}`,
   },
 
   button: {
     // Mobile-first: keep interactive targets close to iOS's 44x44pt guidance.
-    ghost:         `px-3 py-1.5 rounded-ds border border-ds-border bg-ds-card text-white/80 hover:text-white hover:border-ds-border-hover hover:bg-ds-panel-hover ${T} active:scale-[0.98] text-xs`,
+    ghost:         `border-2 border-black bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-black shadow-[3px_3px_0_0_#000] hover:bg-[#FFD93D] ${T} active:translate-x-[3px] active:translate-y-[3px] active:shadow-none`,
     iconGhost:     `flex min-h-11 min-w-11 items-center gap-2 px-3 py-2 ds-icon-button ${T} active:scale-[0.98] sm:min-h-0 sm:min-w-0 sm:py-1.5`,
-    secondary:     `py-2 px-3 rounded-ds text-xs border ${T} active:scale-[0.98] border-ds-border bg-ds-card text-white/70 hover:text-white hover:border-ds-border-hover`,
-    secondaryActive: `py-2 px-3 rounded-ds text-xs border ${T} active:scale-[0.98] border-ds-border-hover bg-ds-panel text-white`,
-    footerSecondary: `flex-1 py-3 rounded-ds border border-ds-border bg-ds-card text-white/80 hover:text-white hover:border-ds-border-hover ${T} active:scale-[0.98]`,
-    footerPrimary:   `flex-1 py-3 rounded-ds bg-[--brand-primary] text-black hover:brightness-110 font-semibold ${T} active:scale-[0.98] disabled:opacity-60`,
+    secondary:     `border-2 border-black bg-white px-3 py-2 text-xs font-bold uppercase text-black shadow-[3px_3px_0_0_#000] ${T} active:translate-x-[3px] active:translate-y-[3px] active:shadow-none`,
+    secondaryActive: `border-2 border-black bg-[#C4B5FD] px-3 py-2 text-xs font-bold uppercase text-black shadow-[3px_3px_0_0_#000] ${T} active:translate-x-[3px] active:translate-y-[3px] active:shadow-none`,
+    footerSecondary: `flex-1 border-2 border-black bg-white py-3 font-bold uppercase text-black shadow-[3px_3px_0_0_#000] ${T} active:translate-x-[3px] active:translate-y-[3px] active:shadow-none`,
+    footerPrimary:   `flex-1 border-2 border-black bg-[#FF6B6B] py-3 font-bold uppercase text-black shadow-[3px_3px_0_0_#000] ${T} active:translate-x-[3px] active:translate-y-[3px] active:shadow-none disabled:opacity-60`,
     // Min 44×44px icon button for iOS touch targets
     iconAction:    `ds-icon-button flex w-11 h-11 ${T} active:scale-[0.98]`,
     // Compact 36px icon button for dense UI (desktop / secondary controls)

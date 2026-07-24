@@ -65,7 +65,7 @@ export function HomeLearningUnitsTile({
             <span>{copy.readiness[readiness]}</span>
           </span>
           {top && (
-            <span className="mt-1 block truncate font-sans text-[13px] font-semibold leading-tight text-ds-fg">
+            <span className="mt-1 block break-words font-sans text-[13px] font-semibold leading-snug text-ds-fg">
               {top.definition.title}
             </span>
           )}

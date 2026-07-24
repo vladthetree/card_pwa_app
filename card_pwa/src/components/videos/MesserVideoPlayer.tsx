@@ -41,6 +41,7 @@ interface Props {
   file: string
   src: string
   variant: 'compact' | 'full'
+  paused?: boolean
   keyboardOpen?: boolean
   pauseForKeyboardInput?: boolean
   onEnded?: () => void
@@ -53,6 +54,7 @@ export default function MesserVideoPlayer({
   file,
   src,
   variant,
+  paused = false,
   keyboardOpen = false,
   pauseForKeyboardInput = false,
   onEnded,
@@ -72,6 +74,7 @@ export default function MesserVideoPlayer({
   const lastPositionRef = useRef(0)
   const lastDurationRef = useRef(0)
   const keyboardPauseRef = useRef({ pausedByInput: false, shouldResume: false })
+  const forcedPauseRef = useRef(paused)
   const [rate, setRate] = useState(() => getPlaybackRate())
   const [isFs, setIsFs] = useState(false)
 
@@ -94,6 +97,23 @@ export default function MesserVideoPlayer({
   useEffect(() => {
     keyboardPauseRef.current = { pausedByInput: false, shouldResume: false }
   }, [file, src])
+
+  // Recall-Fragen dürfen das Video nicht verdeckt weiterlaufen lassen. Das
+  // Attribut verhindert Autoplay beim direkten Recall-Deep-Link; der Effekt
+  // stoppt zusätzlich ein bereits laufendes Video, wenn der Check geöffnet wird.
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    if (paused) {
+      forcedPauseRef.current = true
+      video.pause()
+      return
+    }
+    if (forcedPauseRef.current) {
+      forcedPauseRef.current = false
+      void video.play().catch(() => {})
+    }
+  }, [paused, file, src])
 
   useEffect(() => {
     const video = videoRef.current
@@ -175,11 +195,16 @@ export default function MesserVideoPlayer({
       pendingSeekRef.current = null
       video.currentTime = Math.max(0, pending.seconds)
       onTimeChange?.(video.currentTime)
+      if (!paused) void video.play().catch(() => {})
       return
     }
     const resume = computeResume(getResumePosition(file), video.duration)
     if (resume > 0) video.currentTime = resume
     onTimeChange?.(video.currentTime)
+    // Der Sprung aus einer Lerneinheit passiert nach einem IndexedDB-Schritt.
+    // Einige mobile Browser führen das declarative autoplay dann nicht erneut
+    // aus; der Metadaten-Event ist der zuverlässige zweite Startversuch.
+    if (!paused) void video.play().catch(() => {})
   }
 
   const handleTimeUpdate = () => {
@@ -206,6 +231,10 @@ export default function MesserVideoPlayer({
   }
 
   const handlePlay = () => {
+    if (paused) {
+      videoRef.current?.pause()
+      return
+    }
     if (!pauseForKeyboardInput) return
     const video = videoRef.current
     if (!video) return
@@ -235,17 +264,21 @@ export default function MesserVideoPlayer({
 
   return (
     <div className={`flex w-full flex-col ${compact ? 'max-w-3xl shrink-0 gap-1.5' : 'max-w-6xl gap-2'}`}>
-      <div className={`overflow-hidden rounded-ds-2xl border border-[#1f1f23] bg-black ${compact ? '' : 'aspect-video w-full'}`}>
+      <div className={`neo-keep-dark overflow-hidden rounded-ds-2xl border border-[#1f1f23] bg-black ${compact ? '' : 'aspect-video w-full'}`}>
         <video
           ref={videoRef}
           key={file}
           src={src}
           controls
-          autoPlay
+          autoPlay={!paused}
           playsInline
           preload="metadata"
           controlsList="nodownload"
           onLoadedMetadata={handleLoadedMetadata}
+          onCanPlay={() => {
+            const video = videoRef.current
+            if (!paused && video?.paused) void video.play().catch(() => {})
+          }}
           onTimeUpdate={handleTimeUpdate}
           onPlay={handlePlay}
           onPause={handlePause}

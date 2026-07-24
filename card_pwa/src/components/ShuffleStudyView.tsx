@@ -52,7 +52,7 @@ function ErrorAlert({ message, onRetry }: { message: string; onRetry: () => void
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className="mx-auto mb-4 flex w-full max-w-3xl items-center justify-between rounded-ds-xl border border-rose-500/30 bg-black p-4 text-sm text-rose-300"
+      className="mx-auto mb-4 flex w-full max-w-3xl items-center justify-between border-4 border-black bg-[#FFD93D] p-4 text-sm font-black text-black"
     >
       <div className="flex items-center gap-2">
         <RefreshCw size={14} />

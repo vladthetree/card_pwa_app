@@ -18,6 +18,10 @@ import { normalizeStudyCardLimit } from '../services/studySessionPersistence'
 import { setCachedProfile } from '../services/syncConfig'
 import { enqueueSyncOperation } from '../services/syncQueue'
 import type { ProfileRecord } from '../db'
+import { saveDraftLearnerExamPlan } from '../db/queries/learningUnits'
+import { normalizeExamDateIso } from '../utils/examDate'
+
+export { normalizeExamDateIso } from '../utils/examDate'
 
 export type Language = 'de' | 'en'
 export type Algorithm = 'sm2' | 'fsrs'
@@ -107,7 +111,7 @@ interface SettingsContextType {
   setDailyGoal: (goal: number) => void
   setRecallCheckSize: (size: number) => void
   setNewCardsPerDay: (count: number) => void
-  setExamDateIso: (dateIso: string | null) => void
+  setExamDateIso: (dateIso: string | null, options?: { planAlreadySaved?: boolean }) => Promise<void>
   setFocusMode: (enabled: boolean) => void
   setFullscreenEnabled: (enabled: boolean) => void
   setHardPracticeEnabled: (enabled: boolean) => void
@@ -233,13 +237,6 @@ export function normalizeNewCardsPerDay(value: unknown): number {
   const parsed = Number(value)
   if (!Number.isFinite(parsed)) return 10
   return Math.max(0, Math.min(100, Math.round(parsed)))
-}
-
-export function normalizeExamDateIso(value: unknown): string | null {
-  if (typeof value !== 'string') return null
-  const trimmed = value.trim()
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return null
-  return Number.isNaN(Date.parse(`${trimmed}T00:00:00`)) ? null : trimmed
 }
 
 export function normalizeExamDateUpdatedAt(value: unknown): number | null {
@@ -489,11 +486,29 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     saveSettings({ ...settings, newCardsPerDay: normalizeNewCardsPerDay(count) })
   }
 
-  const setExamDateIso = (dateIso: string | null) => {
+  const setExamDateIso = async (
+    dateIso: string | null,
+    options: { planAlreadySaved?: boolean } = {},
+  ) => {
     const examDateIso = normalizeExamDateIso(dateIso)
+    if (dateIso !== null && examDateIso === null) {
+      throw new Error(`Invalid exam date: ${dateIso}`)
+    }
     const examDateUpdatedAt = Date.now()
+
+    // `learnerExamPlans` is the authoritative write source. Settings remains
+    // a derived compatibility/countdown cache and is only updated after the
+    // profile-scoped plan write has succeeded.
+    if (!options.planAlreadySaved) {
+      await saveDraftLearnerExamPlan({
+        profileId: profileScopeId(profile),
+        now: examDateUpdatedAt,
+        examDateIso,
+        uiLanguage: settings.language,
+      })
+    }
     saveSettings({ ...settings, examDateIso, examDateUpdatedAt })
-    void enqueueSyncOperation('examDate.upsert', {
+    await enqueueSyncOperation('examDate.upsert', {
       profileId: profileScopeId(profile),
       examDateIso,
       updatedAt: examDateUpdatedAt,

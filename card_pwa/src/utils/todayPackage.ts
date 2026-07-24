@@ -10,6 +10,7 @@
 import type { LocalVideoMeta } from './localVideoManifest'
 import type { RecallRunResult } from '../hooks/useVideoRecallScores'
 import { STORAGE_KEYS } from '../constants/appIdentity'
+import { parseLocalExamDate } from './examDate'
 
 /** Persistierter Fortschritt: das zuletzt vollständig abgeschlossene Paket. */
 export interface TodayPackagePointer {
@@ -144,9 +145,9 @@ export interface ExamPacing {
 
 /** Volle verbleibende Kalendertage bis zum Prüfungstermin. */
 export function computeExamDaysLeft(examDateIso: string | null, nowMs = Date.now()): number | null {
-  if (!examDateIso) return null
-  const examMs = Date.parse(`${examDateIso}T00:00:00`)
-  if (Number.isNaN(examMs)) return null
+  const examDate = parseLocalExamDate(examDateIso)
+  if (!examDate) return null
+  const examMs = examDate.getTime()
   const daysLeft = Math.ceil((examMs - nowMs) / 86_400_000)
   return daysLeft > 0 ? daysLeft : null
 }

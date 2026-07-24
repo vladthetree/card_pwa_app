@@ -22,7 +22,7 @@ import {
   type NotificationChannelKey,
   FONT_FAMILY_OPTIONS,
 } from '../contexts/SettingsContext'
-import { THEMES, useTheme, type ThemeKey } from '../contexts/ThemeContext'
+import { useTheme } from '../contexts/ThemeContext'
 import { clearAlgorithmDiagnostics, getAlgorithmDiagnostics, getYoungCardLapseRate, normalizeDueDates, resetLearningProgress, type AlgorithmDiagnosticsEntry, type YoungCardLapseStats } from '../db/queries'
 import { clearErrorLogs, downloadErrorLogsAsTxt, getErrorLogs, type ErrorLogEntry } from '../services/errorLog'
 import { UI_TOKENS } from '../constants/ui'
@@ -108,7 +108,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
     resetAlgorithmParams,
     profile,
   } = useSettings()
-  const { themeKey, setTheme } = useTheme()
+  const { setTheme } = useTheme()
   const t = STRINGS[settings.language]
   const prefersReducedMotion = useReducedMotion()
   const [openSection, setOpenSection] = useState<SettingsSectionKey | null>(null)
@@ -750,7 +750,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="sticky top-0 z-10 flex shrink-0 items-center justify-between gap-3 px-5 py-4 border-b border-[#18181b] bg-[#050505]/95 backdrop-blur-xl">
+            <div className="sticky top-0 z-10 flex shrink-0 items-center justify-between gap-3 border-b-4 border-black bg-[#FFD93D] px-5 py-4">
               <div className="flex min-w-0 items-center gap-2">
                 <SettingsIcon size={18} strokeWidth={1.5} className="text-zinc-400" />
                 <div className="min-w-0">
@@ -787,7 +787,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
 
               <SettingsSection
                 title={settings.language === 'de' ? 'Darstellung' : 'Appearance'}
-                description={settings.language === 'de' ? 'Sprache, Schrift, Theme und Fokus-Modus.' : 'Language, font, theme, and focus mode.'}
+                description={settings.language === 'de' ? 'Sprache, Schrift und Fokus-Modus.' : 'Language, font, and focus mode.'}
                 icon={<Palette size={18} />}
                 isOpen={openSection === 'appearance'}
                 onToggle={() => toggleSection('appearance')}
@@ -858,61 +858,39 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                   </div>
 
                   <div>
-                    <label className="block text-xs text-white/50 font-medium mb-2 uppercase tracking-wide">
-                      {t.theme}
+                    <label className="mb-2 block text-xs font-black uppercase tracking-wide text-black">
+                      {settings.language === 'de' ? 'Design' : 'Design'}
                     </label>
-                    <p className="text-xs text-white/40 leading-relaxed mb-3">{t.theme_help}</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {Object.entries(THEMES).map(([key, theme]) => {
-                        const selected = key === themeKey
-
-                        return (
-                          <button
-                            key={key}
-                            type="button"
-                            onClick={() => setTheme(key as ThemeKey)}
-                            className={`rounded-ds-2xl border p-3 text-left transition-all duration-300 ease-out active:scale-95 ${
-                              selected
-                                ? 'border-[#3f3f46] bg-[#111] shadow-card'
-                                : 'border-[#18181b] bg-[#0c0c0c] hover:border-[#3f3f46] hover:bg-[#111]'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between gap-3">
-                              <div>
-                                <p className="text-sm font-black" style={{ color: theme.text }}>{theme.name}</p>
-                                <p className="text-xs mt-1" style={{ color: selected ? theme.textSecondary : theme.textMuted }}>
-                                  {selected ? t.current_selection : ''}
-                                </p>
-                              </div>
-                              <div className="flex gap-1.5">
-                                {[theme.primary, theme.secondary, theme.accent].map((color, idx) => (
-                                  <span
-                                    key={`${key}-${idx}`}
-                                    className="w-4 h-4 rounded-full border border-white/20"
-                                    style={{ backgroundColor: color }}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                            <div
-                              className="mt-3 h-16 overflow-hidden rounded-ds-xl border"
-                              style={{
-                                background: theme.background,
-                                borderColor: theme.border,
-                              }}
-                            >
-                              <div className="h-full w-full px-3 py-2 flex flex-col justify-between" style={{ background: theme.surface }}>
-                                <div className="h-2.5 w-20 rounded-full" style={{ background: theme.primary, opacity: 0.9 }} />
-                                <div className="flex gap-1.5">
-                                  <span className="h-2 w-14 rounded-full" style={{ background: theme.secondary, opacity: 0.9 }} />
-                                  <span className="h-2 w-9 rounded-full" style={{ background: theme.accent, opacity: 0.9 }} />
-                                </div>
-                              </div>
-                            </div>
-                          </button>
-                        )
-                      })}
-                    </div>
+                    <p className="mb-3 text-xs font-bold leading-relaxed text-black">
+                      {settings.language === 'de'
+                        ? 'Aktuell ist ausschließlich Neo-Brutalismus verfügbar.'
+                        : 'Neo-Brutalism is currently the only available design.'}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setTheme('default')}
+                      aria-pressed="true"
+                      data-testid="theme-option-neo"
+                      className="w-full border-4 border-black bg-[#C4B5FD] p-4 text-left shadow-[7px_7px_0_0_#000] transition-all duration-100 active:translate-x-[7px] active:translate-y-[7px] active:shadow-none"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <p className="text-base font-black uppercase text-black">Neo-Brutalismus</p>
+                          <p className="mt-1 text-xs font-bold text-black">
+                            {settings.language === 'de' ? 'Aktuelles App-Design' : 'Current app design'}
+                          </p>
+                        </div>
+                        <span className="border-2 border-black bg-[#FFD93D] px-2 py-1 text-[10px] font-black uppercase tracking-widest text-black">
+                          {settings.language === 'de' ? 'Aktiv' : 'Active'}
+                        </span>
+                      </div>
+                      <div className="mt-4 grid grid-cols-4 border-2 border-black">
+                        <span className="h-8 bg-[#FFFDF5]" aria-label="Cream" />
+                        <span className="h-8 bg-[#FF6B6B]" aria-label="Red" />
+                        <span className="h-8 bg-[#FFD93D]" aria-label="Yellow" />
+                        <span className="h-8 bg-[#C4B5FD]" aria-label="Violet" />
+                      </div>
+                    </button>
                   </div>
 
                   <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
@@ -1115,14 +1093,14 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                         <input
                           type="date"
                           value={settings.examDateIso ?? ''}
-                          onChange={event => setExamDateIso(event.target.value || null)}
+                          onChange={event => { void setExamDateIso(event.target.value || null) }}
                           aria-label={settings.language === 'de' ? 'Prüfungstermin' : 'Exam date'}
                           className="min-h-11 flex-1 rounded-ds border border-[#18181b] bg-[#0c0c0c] px-3 font-mono text-base text-white [color-scheme:dark] focus:border-[--brand-primary-50] focus:outline-none sm:text-sm"
                         />
                         {settings.examDateIso && (
                           <button
                             type="button"
-                            onClick={() => setExamDateIso(null)}
+                            onClick={() => { void setExamDateIso(null) }}
                             className="min-h-11 rounded-ds border border-[#18181b] bg-[#0c0c0c] px-3 text-sm font-semibold text-white/70 transition hover:border-[#3f3f46] hover:text-white sm:text-xs"
                           >
                             {settings.language === 'de' ? 'Entfernen' : 'Clear'}
@@ -1714,7 +1692,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 flex shrink-0 gap-3 px-5 py-4 border-t border-[#18181b] bg-[#050505]/95 backdrop-blur-xl">
+            <div className="sticky bottom-0 flex shrink-0 gap-3 border-t-4 border-black bg-[#FFFDF5] px-5 py-4">
               <button
                 onClick={onClose}
                 className={`${UI_TOKENS.button.footerSecondary} text-sm font-medium hover:bg-white/5`}

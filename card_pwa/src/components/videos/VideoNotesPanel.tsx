@@ -347,7 +347,7 @@ export default function VideoNotesPanel({
   return (
     <div className="flex h-full min-h-0 flex-col">
       {/* Kopf */}
-      <div className="flex items-center gap-2 border-b border-[#18181b] px-4 py-3">
+      <div className={`${writing ? 'hidden' : 'flex'} items-center gap-2 border-b border-[#18181b] px-4 py-3`}>
         <NotebookPen size={15} strokeWidth={1.5} className="shrink-0 text-[--brand-secondary]" />
         <div className="min-w-0 flex-1">
           <div className="font-mono text-[13px] font-bold text-white">{copy.heading}</div>
@@ -365,7 +365,7 @@ export default function VideoNotesPanel({
         </span>
       </div>
 
-      <div className="flex shrink-0 items-center gap-1.5 overflow-x-auto border-b border-[#18181b] px-4 py-2">
+      <div className={`${writing ? 'hidden' : 'flex'} shrink-0 items-center gap-1.5 overflow-x-auto border-b border-[#18181b] px-4 py-2`}>
         <span className="mr-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600">{copy.zettelTools}</span>
         <button
           type="button"
@@ -450,7 +450,7 @@ export default function VideoNotesPanel({
           onBlur={() => onFocusChange?.(false)}
           placeholder={copy.placeholder}
           data-testid="video-note-content"
-          className="absolute inset-0 resize-none whitespace-pre-wrap break-words bg-transparent px-4 py-3 font-mono text-[13px] leading-relaxed text-transparent caret-zinc-100 placeholder:text-zinc-600 focus:outline-none"
+          className="neo-video-note-input absolute inset-0 resize-none whitespace-pre-wrap break-words bg-white px-4 py-3 font-mono text-[13px] leading-relaxed text-black caret-black placeholder:text-black/55 focus:outline-none"
         />
       </div>
 

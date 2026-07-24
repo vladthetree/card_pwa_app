@@ -64,6 +64,11 @@ describe('LabsView — Liste (Beleg …23.38.26.jpeg)', () => {
     expect(html).toContain('Min')
   })
 
+  it('zeigt keinen zufälligen Übungs-Lab-Generator mehr', () => {
+    expect(html).not.toContain('Übungs-Lab generieren')
+    expect(html).not.toContain('lab-training-')
+  })
+
   it('rendert durchgängig Mono-Schrift', () => {
     expect(html).toContain('font-mono')
     expect(html).not.toContain('font-sans')

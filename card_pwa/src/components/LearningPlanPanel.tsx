@@ -1,15 +1,18 @@
 /**
  * AI_CONTEXT: Responsive summary + editor for the SY0-701 draft learning plan.
  * Mobile renders the editor as a safe-area-aware bottom sheet; desktop uses a
- * centered dialog. The component is controlled so persistence stays in
- * LearningUnitsView and the exam-date settings/sync path remains authoritative.
+ * centered dialog. The component is controlled so the profile-scoped learning
+ * plan remains the authoritative source and Settings is only a compatibility
+ * projection for countdown/sync.
  */
-import { useEffect, useId, useRef, useState } from 'react'
-import { AlertTriangle, CalendarDays, Check, ChevronDown, Clock3, Layers3, Pencil, X } from 'lucide-react'
+import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
+import { createPortal } from 'react-dom'
+import { AlertTriangle, ArrowLeft, CalendarDays, Check, ChevronDown, Clock3, Layers3, Minus, Pencil, Plus, X } from 'lucide-react'
 import { AnimatePresence, motion } from '../ui/motion'
 import { useVisualViewport } from '../hooks/useVisualViewport'
 import type { LearningPacingResult } from '../utils/learningUnitRanking'
 import type { LearningPlanMappingSummary } from '../utils/learningPlanMapping'
+import { isValidExamDateIso } from '../utils/examDate'
 
 export const EXAM_LANGUAGES = ['en', 'ja', 'pt', 'es', 'th'] as const
 export type ExamLanguage = (typeof EXAM_LANGUAGES)[number]
@@ -56,12 +59,13 @@ export function normalizeLearningPlanFormValues(values: LearningPlanFormValues):
   const weeklyHours = Number(values.weeklyHours)
   const learningDays = Number(values.learningDays)
   const bufferDays = Number(values.bufferDays)
-  const dateValid = values.examDateIso === '' || /^\d{4}-\d{2}-\d{2}$/.test(values.examDateIso)
+  const dateValid = values.examDateIso === '' || isValidExamDateIso(values.examDateIso)
   const languageValid = EXAM_LANGUAGES.includes(values.examLanguage as ExamLanguage)
   if (
     !dateValid || !languageValid ||
     !Number.isFinite(weeklyHours) || weeklyHours < 0.5 || weeklyHours > 80 ||
     !Number.isInteger(learningDays) || learningDays < 1 || learningDays > 7 ||
+    values.bufferDays.trim() === '' ||
     !Number.isInteger(bufferDays) || bufferDays < 0 || bufferDays > 60
   ) return null
 
@@ -82,6 +86,7 @@ const COPY = {
     editorTitle: 'Lernplan bearbeiten',
     editorSubtitle: 'Termin und Zeitbudget steuern die Empfehlungen der Lerneinheiten.',
     examDate: 'Prüfungstermin',
+    examDatePreset: (days: number) => `+${days} Tage`,
     noExamDate: 'Noch kein Prüfungstermin',
     language: 'Prüfungssprache',
     weeklyHours: 'Stunden pro Woche',
@@ -126,6 +131,18 @@ const COPY = {
     minimumWork: (duration: string) => `Bekannte Untergrenze inkl. Reserve: ${duration}`,
     missingUnitEstimates: (count: number) => `${count} Einheiten ohne Zeitwert`,
     totalWorkOpen: 'Der aktuelle Umfang bleibt offen, weil Mess- oder Schätzwerte fehlen.',
+    wizard: {
+      stepTitles: {
+        examDateIso: 'Wann ist deine Prüfung?',
+        examLanguage: 'In welcher Sprache?',
+        weeklyHours: 'Wie viele Stunden pro Woche?',
+        learningDays: 'Wie viele Lerntage pro Woche?',
+        bufferDays: 'Wie viele Puffertage?',
+      } satisfies Record<LearningPlanField, string>,
+      summaryTitle: 'Dein Lernplan',
+      back: 'Zurück',
+      next: 'Weiter',
+    },
   },
   en: {
     title: 'Study plan',
@@ -134,6 +151,7 @@ const COPY = {
     editorTitle: 'Edit study plan',
     editorSubtitle: 'Your date and time budget drive the learning-unit recommendations.',
     examDate: 'Exam date',
+    examDatePreset: (days: number) => `+${days} days`,
     noExamDate: 'No exam date yet',
     language: 'Exam language',
     weeklyHours: 'Hours per week',
@@ -178,6 +196,18 @@ const COPY = {
     minimumWork: (duration: string) => `Known lower bound incl. reserve: ${duration}`,
     missingUnitEstimates: (count: number) => `${count} units without a time value`,
     totalWorkOpen: 'The current scope remains open because measurement or estimate values are missing.',
+    wizard: {
+      stepTitles: {
+        examDateIso: 'When is your exam?',
+        examLanguage: 'In which language?',
+        weeklyHours: 'How many hours per week?',
+        learningDays: 'How many study days per week?',
+        bufferDays: 'How many buffer days?',
+      } satisfies Record<LearningPlanField, string>,
+      summaryTitle: 'Your study plan',
+      back: 'Back',
+      next: 'Next',
+    },
   },
 } as const
 
@@ -187,6 +217,32 @@ const LANGUAGE_LABELS: Record<ExamLanguage, { de: string; en: string }> = {
   pt: { de: 'Portugiesisch', en: 'Portuguese' },
   es: { de: 'Spanisch', en: 'Spanish' },
   th: { de: 'Thailändisch', en: 'Thai' },
+}
+
+const EXAM_DATE_PRESET_DAYS = [30, 60, 90] as const
+
+const WIZARD_FIELDS: readonly LearningPlanField[] = ['examDateIso', 'examLanguage', 'weeklyHours', 'learningDays', 'bufferDays']
+
+const STEPPER_FIELD_CONFIG: Record<'weeklyHours' | 'learningDays' | 'bufferDays', {
+  min: number
+  max: number
+  step: number
+  unitKey: 'hoursShort' | 'daysShort' | 'bufferShort'
+}> = {
+  weeklyHours: { min: 0.5, max: 80, step: 0.5, unitKey: 'hoursShort' },
+  learningDays: { min: 1, max: 7, step: 1, unitKey: 'daysShort' },
+  bufferDays: { min: 0, max: 60, step: 1, unitKey: 'bufferShort' },
+}
+
+/** Lokales Kalenderdatum in N Tagen als YYYY-MM-DD (bewusst lokale
+ *  Tagesarithmetik, konsistent mit parseLocalExamDate). */
+function isoDateInDays(days: number): string {
+  const date = new Date()
+  date.setDate(date.getDate() + days)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 function formatExamDate(iso: string, language: 'de' | 'en'): string {
@@ -210,12 +266,12 @@ function formatDuration(minutes: number, language: 'de' | 'en'): string {
 
 function pacingTone(pacing: LearningPacingResult): string {
   if (pacing.reason === 'past-exam' || pacing.reason === 'capacity-shortfall') {
-    return 'border-amber-400/35 bg-amber-400/10 text-amber-200'
+    return 'border-black bg-[#FFD93D] text-black'
   }
   if (pacing.reason === 'on-track') {
-    return 'border-emerald-400/30 bg-emerald-400/10 text-emerald-200'
+    return 'border-black bg-[#C4B5FD] text-black'
   }
-  return 'border-ds-border bg-ds-card text-ds-muted'
+  return 'border-black bg-white text-black'
 }
 
 interface Props {
@@ -257,7 +313,10 @@ export function LearningPlanPanel({
 }: Props) {
   const copy = COPY[language]
   const titleId = useId()
+  const formId = useId()
   const dateInputRef = useRef<HTMLInputElement>(null)
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const returnFocusRef = useRef<HTMLElement | null>(null)
   const [confirmDiscard, setConfirmDiscard] = useState(false)
   const [summaryCollapsed, setSummaryCollapsed] = useState(configured)
   const viewport = useVisualViewport()
@@ -270,15 +329,71 @@ export function LearningPlanPanel({
     ? Math.round((contentProgress.reviewedCardCount / contentProgress.cardCount) * 100)
     : 0
 
+  // Erst-Setup (noch kein gespeicherter Plan): minimalistischer Ein-Feld-pro-
+  // Screen-Wizard. Sobald ein Plan existiert, bleibt es beim kompakten
+  // Formular — sonst müsste man sich für eine einzelne Änderung erneut durch
+  // alle Schritte klicken.
+  const useWizard = !configured
+  const [wizardStep, setWizardStep] = useState(0)
+  const [wizardDirection, setWizardDirection] = useState(1)
+  const advanceTimerRef = useRef<number | null>(null)
+  const currentField: LearningPlanField | null = useWizard && wizardStep < WIZARD_FIELDS.length
+    ? WIZARD_FIELDS[wizardStep]
+    : null
+
+  useEffect(() => {
+    if (open) {
+      setWizardStep(0)
+      setWizardDirection(1)
+    }
+  }, [open])
+
+  useEffect(() => () => {
+    if (advanceTimerRef.current !== null) window.clearTimeout(advanceTimerRef.current)
+  }, [])
+
+  const goToStep = (next: number) => {
+    const clamped = Math.max(0, Math.min(WIZARD_FIELDS.length, next))
+    setWizardDirection(clamped >= wizardStep ? 1 : -1)
+    setWizardStep(clamped)
+  }
+  const goNext = () => goToStep(wizardStep + 1)
+  const goPrev = () => {
+    if (wizardStep === 0) {
+      requestClose()
+      return
+    }
+    goToStep(wizardStep - 1)
+  }
+  // Diskrete Auswahl (Sprache, Termin-Preset) fühlt sich wie Typeform an: kurz
+  // sichtbar markieren, dann automatisch weiter — kein Doppelklick auf "Weiter".
+  const scheduleAutoAdvance = () => {
+    if (advanceTimerRef.current !== null) window.clearTimeout(advanceTimerRef.current)
+    advanceTimerRef.current = window.setTimeout(() => {
+      advanceTimerRef.current = null
+      goNext()
+    }, 220)
+  }
+  const handleWizardSubmit = (event: FormEvent) => {
+    event.preventDefault()
+    if (!normalized) return
+    if (currentField) {
+      goNext()
+      return
+    }
+    if (dirty && !saving) onSave()
+  }
+
   useEffect(() => {
     if (configured) setSummaryCollapsed(true)
   }, [collapseSignal, configured])
 
   useEffect(() => {
-    if (!open) {
-      setConfirmDiscard(false)
-      return
-    }
+    if (!open) return
+    const activeElement = document.activeElement
+    returnFocusRef.current = activeElement instanceof HTMLElement && activeElement !== document.body
+      ? activeElement
+      : document.querySelector<HTMLElement>('[data-testid="learning-plan-edit"]')
     // Auf Handys soll sich das native Datums-Picker/Keyboard nicht ungefragt
     // öffnen. Desktop bekommt weiterhin einen sinnvollen Startfokus.
     const focusTimer = window.setTimeout(() => {
@@ -286,15 +401,52 @@ export function LearningPlanPanel({
         dateInputRef.current?.focus({ preventScroll: true })
       }
     }, 180)
+    return () => {
+      window.clearTimeout(focusTimer)
+      const returnTarget = returnFocusRef.current
+      window.setTimeout(() => {
+        if (returnTarget?.isConnected) returnTarget.focus({ preventScroll: true })
+      }, 0)
+    }
+  }, [open])
+
+  useEffect(() => {
+    if (!open) {
+      setConfirmDiscard(false)
+      return
+    }
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return
-      event.preventDefault()
-      if (dirty) setConfirmDiscard(true)
-      else onClose()
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        if (dirty) setConfirmDiscard(true)
+        else onClose()
+        return
+      }
+      if (event.key !== 'Tab') return
+
+      const dialog = dialogRef.current
+      if (!dialog) return
+      const focusable = [...dialog.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+      )].filter(element => element.getClientRects().length > 0)
+      if (focusable.length === 0) {
+        event.preventDefault()
+        dialog.focus({ preventScroll: true })
+        return
+      }
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      const active = document.activeElement
+      if (event.shiftKey && (active === first || !dialog.contains(active))) {
+        event.preventDefault()
+        last.focus({ preventScroll: true })
+      } else if (!event.shiftKey && (active === last || !dialog.contains(active))) {
+        event.preventDefault()
+        first.focus({ preventScroll: true })
+      }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => {
-      window.clearTimeout(focusTimer)
       window.removeEventListener('keydown', onKeyDown)
     }
   }, [dirty, onClose, open])
@@ -322,7 +474,7 @@ export function LearningPlanPanel({
     if (!workload) return null
     return (
       <div className="mt-2 rounded-ds border border-ds-border bg-ds-card px-2.5 py-2.5" data-testid="learning-workload-metrics">
-        <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[--brand-secondary]">
+        <div className="font-sans text-[10px] font-black uppercase tracking-[0.12em] text-black">
           {copy.workloadTitle}
         </div>
         <div className="mt-1 font-mono text-[9px] leading-relaxed text-ds-muted">
@@ -332,7 +484,7 @@ export function LearningPlanPanel({
           <span>{copy.courseWork(workload.remainingCourseUnitCount, formatDuration(workload.remainingCourseMinutes, language))}</span>
           <span>{copy.labWork(workload.remainingLabUnitCount, formatDuration(workload.remainingLabMinutes, language))}</span>
           {workload.estimatedScheduledReviewMinutes === null
-            ? <span className="text-amber-200">{copy.reviewTimingMissing(workload.scheduledReviewCardCount)}</span>
+            ? <span className="font-bold text-black">{copy.reviewTimingMissing(workload.scheduledReviewCardCount)}</span>
             : (
                 <>
                   <span>{copy.scheduledReviewWork(workload.scheduledReviewCardCount, formatDuration(workload.estimatedScheduledReviewMinutes, language))}</span>
@@ -343,10 +495,10 @@ export function LearningPlanPanel({
               )}
           <span>{copy.reviewSplit(workload.dueReviewCardCount, workload.unresolvedErrorCardCount)}</span>
           {workload.unintroducedCardCount > 0 && (
-            <span className="text-amber-200">{copy.futureReviewsOpen(workload.unintroducedCardCount)}</span>
+            <span className="font-bold text-black">{copy.futureReviewsOpen(workload.unintroducedCardCount)}</span>
           )}
           {workload.missingEstimateUnitIds.length > 0 && (
-            <span className="text-amber-200">{copy.missingUnitEstimates(workload.missingEstimateUnitIds.length)}</span>
+            <span className="font-bold text-black">{copy.missingUnitEstimates(workload.missingEstimateUnitIds.length)}</span>
           )}
           {workload.reserveMinutes !== null && (
             <span>{copy.reserveWork(workload.reservePercent, formatDuration(workload.reserveMinutes, language))}</span>
@@ -356,12 +508,184 @@ export function LearningPlanPanel({
               {workload.minimumTotalMinutes !== null && (
                 <span className="font-semibold text-ds-fg">{copy.minimumWork(formatDuration(workload.minimumTotalMinutes, language))}</span>
               )}
-              <span className="text-amber-200">{copy.totalWorkOpen}</span>
+              <span className="font-bold text-black">{copy.totalWorkOpen}</span>
             </>
           ) : (
             <span className="font-semibold text-ds-fg">{copy.totalWork(formatDuration(workload.totalMinutes, language))}</span>
           )}
         </div>
+      </div>
+    )
+  }
+
+  const summaryRowLabel = (field: LearningPlanField): string => {
+    if (field === 'examDateIso') return copy.examDate
+    if (field === 'examLanguage') return copy.language
+    if (field === 'weeklyHours') return copy.weeklyHours
+    if (field === 'learningDays') return copy.learningDays
+    return copy.bufferDays
+  }
+
+  const summaryRowValue = (field: LearningPlanField): string => {
+    if (field === 'examDateIso') return formatExamDate(values.examDateIso, language)
+    if (field === 'examLanguage') {
+      const code = EXAM_LANGUAGES.includes(values.examLanguage as ExamLanguage) ? values.examLanguage as ExamLanguage : 'en'
+      return LANGUAGE_LABELS[code][language]
+    }
+    if (field === 'weeklyHours') return `${values.weeklyHours} ${copy.hoursShort}`
+    if (field === 'learningDays') return `${values.learningDays} ${copy.daysShort}`
+    return `${values.bufferDays} ${copy.bufferShort}`
+  }
+
+  const renderWizardSummary = () => (
+    <div className="flex flex-col gap-4">
+      <h3 className="text-center font-sans text-[20px] font-semibold leading-snug text-ds-fg sm:text-[22px]">
+        {copy.wizard.summaryTitle}
+      </h3>
+      <div className="grid gap-1 rounded-ds border border-ds-border bg-ds-card p-1.5" data-testid="learning-plan-wizard-summary">
+        {WIZARD_FIELDS.map((field, index) => (
+          <button
+            key={field}
+            type="button"
+            onClick={() => goToStep(index)}
+            className="flex min-h-11 items-center justify-between gap-3 rounded-ds px-2.5 py-2 text-left transition hover:bg-ds-floor"
+          >
+            <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-ds-muted">{summaryRowLabel(field)}</span>
+            <span className="flex items-center gap-1.5 font-sans text-[13px] font-semibold text-ds-fg">
+              {summaryRowValue(field)}
+              <Pencil size={12} strokeWidth={1.75} className="shrink-0 text-ds-muted" />
+            </span>
+          </button>
+        ))}
+      </div>
+      <div className={`flex items-start gap-2 rounded-ds border px-3 py-3 font-mono text-[11px] leading-relaxed ${pacingTone(previewPacing)}`}>
+        <Clock3 size={15} strokeWidth={1.75} className="mt-0.5 shrink-0" />
+        <span>{pacingLabel(previewPacing)}</span>
+      </div>
+      {workloadDetails(previewPacing)}
+      {saveError && (
+        <p className="border-2 border-black bg-[#FF6B6B] px-3 py-2.5 font-sans text-[11px] font-bold leading-relaxed text-black" role="alert" aria-live="assertive">
+          {saveError}
+        </p>
+      )}
+    </div>
+  )
+
+  const renderWizardStep = () => {
+    if (!currentField) return renderWizardSummary()
+    return (
+      <div className="flex flex-col items-center gap-6 py-2 text-center" data-testid={`learning-plan-wizard-step-${currentField}`}>
+        <h3 className="font-sans text-[20px] font-semibold leading-snug text-ds-fg sm:text-[22px]">
+          {copy.wizard.stepTitles[currentField]}
+        </h3>
+
+        {currentField === 'examDateIso' && (
+          <div className="w-full max-w-xs">
+            <div className="transition-transform duration-200 ease-out focus-within:scale-[1.04]">
+              <input
+                ref={dateInputRef}
+                type="date"
+                value={values.examDateIso}
+                onChange={event => onChange('examDateIso', event.target.value)}
+                className="min-h-14 w-full rounded-ds border border-ds-border bg-ds-card px-4 text-center font-sans text-[20px] text-ds-fg [color-scheme:dark]"
+              />
+            </div>
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-1.5">
+              {EXAM_DATE_PRESET_DAYS.map(days => (
+                <button
+                  key={days}
+                  type="button"
+                  onClick={() => {
+                    onChange('examDateIso', isoDateInDays(days))
+                    scheduleAutoAdvance()
+                  }}
+                  className="min-h-9 rounded-full border border-ds-border bg-ds-card px-3 font-mono text-[12px] text-ds-muted transition hover:border-[--brand-primary-50] hover:text-ds-fg active:scale-[0.98]"
+                >
+                  {copy.examDatePreset(days)}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {currentField === 'examLanguage' && (
+          <div className="grid w-full max-w-xs gap-2">
+            {EXAM_LANGUAGES.map(code => {
+              const active = values.examLanguage === code
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() => {
+                    onChange('examLanguage', code)
+                    scheduleAutoAdvance()
+                  }}
+                  className={`flex min-h-14 items-center justify-between rounded-ds border px-4 font-sans text-[15px] transition-transform duration-200 ease-out ${
+                    active
+                      ? 'scale-[1.03] border-black bg-[#FFD93D] text-black'
+                      : 'border-ds-border bg-ds-card text-ds-fg hover:border-ds-border-hover'
+                  }`}
+                >
+                  <span>{LANGUAGE_LABELS[code][language]}</span>
+                  {active && <Check size={16} strokeWidth={2} />}
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {(currentField === 'weeklyHours' || currentField === 'learningDays' || currentField === 'bufferDays') && (() => {
+          const config = STEPPER_FIELD_CONFIG[currentField]
+          const field = currentField
+          const raw = values[field]
+          const numeric = Number(raw)
+          const base = Number.isFinite(numeric) ? numeric : config.min
+          const step = (delta: number) => {
+            const next = Math.min(config.max, Math.max(config.min, base + delta))
+            onChange(field, config.step < 1 ? String(Math.round(next * 10) / 10) : String(Math.round(next)))
+          }
+          return (
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex w-full max-w-xs items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => step(-config.step)}
+                  aria-label="−"
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-ds-border bg-ds-card text-ds-fg transition hover:border-[--brand-primary-50] active:scale-[0.95]"
+                >
+                  <Minus size={18} strokeWidth={2} />
+                </button>
+                <div className="transition-transform duration-200 ease-out focus-within:scale-[1.05]">
+                  <input
+                    type="number"
+                    inputMode={config.step < 1 ? 'decimal' : 'numeric'}
+                    min={config.min}
+                    max={config.max}
+                    step={config.step}
+                    value={raw}
+                    onChange={event => onChange(field, event.target.value)}
+                    className="h-16 w-28 rounded-ds border border-ds-border bg-ds-card text-center font-sans text-[32px] tabular-nums text-ds-fg"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => step(config.step)}
+                  aria-label="+"
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-ds-border bg-ds-card text-ds-fg transition hover:border-[--brand-primary-50] active:scale-[0.95]"
+                >
+                  <Plus size={18} strokeWidth={2} />
+                </button>
+              </div>
+              <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-ds-muted">{copy[config.unitKey]}</span>
+            </div>
+          )
+        })()}
+
+        {!normalized && (
+          <p className="border-2 border-black bg-[#FFD93D] px-3 py-2.5 font-sans text-[11px] font-bold leading-relaxed text-black" role="alert">
+            {copy.invalid}
+          </p>
+        )}
       </div>
     )
   }
@@ -384,7 +708,7 @@ export function LearningPlanPanel({
           >
             <span className="min-w-0 flex-1">
               <span className="flex items-center gap-2">
-                <span id={`${titleId}-summary`} className="font-mono text-[11px] uppercase tracking-[0.14em] text-[--brand-primary]">
+                <span id={`${titleId}-summary`} className="font-sans text-[11px] font-black uppercase tracking-[0.14em] text-black">
                   {copy.title}
                 </span>
                 <span className="rounded-full border border-ds-border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.08em] text-ds-muted">
@@ -392,7 +716,7 @@ export function LearningPlanPanel({
                 </span>
               </span>
               <span className="mt-1 flex min-w-0 items-center gap-2 text-ds-fg">
-                <CalendarDays size={15} strokeWidth={1.75} className="shrink-0 text-[--brand-secondary]" />
+                <CalendarDays size={16} strokeWidth={2.5} className="shrink-0 text-black" />
                 <span className="font-sans text-[14px] font-semibold leading-tight">
                   {formatExamDate(summaryValues.examDateIso, language)}
                 </span>
@@ -419,7 +743,7 @@ export function LearningPlanPanel({
           <div className="mt-2.5 border-t border-ds-border pt-2.5">
             <div className="flex min-w-0 items-center justify-between gap-2 font-mono text-[10px] leading-tight text-ds-muted">
               <span className="flex min-w-0 items-center gap-1.5">
-                <Layers3 size={13} strokeWidth={1.75} className="shrink-0 text-[--brand-secondary]" />
+                <Layers3 size={14} strokeWidth={2.5} className="shrink-0 text-black" />
                 <span className="truncate">
                   {copy.mappedDecks(contentProgress.rootDeckCount, contentProgress.deckCount, contentProgress.unitCount)}
                 </span>
@@ -437,7 +761,7 @@ export function LearningPlanPanel({
               aria-valuenow={contentProgress.reviewedCardCount}
             >
               <div
-                className="h-full rounded-full bg-[--brand-secondary] transition-[width] duration-300"
+                className="h-full rounded-full bg-black transition-[width] duration-300"
                 style={{ width: `${cardProgressPercent}%` }}
               />
             </div>
@@ -474,75 +798,148 @@ export function LearningPlanPanel({
         </AnimatePresence>
       </section>
 
-      <AnimatePresence>
-        {open && (
-          <div
-            className="fixed left-0 right-0 z-[1000] flex items-end justify-center px-safe pt-safe-2 sm:items-center sm:p-4"
-            style={viewport
-              ? { top: `${viewport.top}px`, height: `${viewport.height}px` }
-              : { top: 0, height: '100dvh' }}
-          >
-            <motion.div
-              className="absolute inset-0 bg-black/[0.82] backdrop-blur-md"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
-              onClick={requestClose}
-              aria-hidden="true"
-            />
-            <motion.div
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby={titleId}
-              data-testid="learning-plan-editor"
-              initial={{ opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="relative flex max-h-full w-full flex-col overflow-hidden rounded-t-ds-sheet border border-b-0 border-ds-border bg-ds-bg shadow-modal sm:max-h-[min(760px,calc(100dvh-2rem))] sm:max-w-2xl sm:rounded-ds-xl sm:border-b"
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {open && (
+            <div
+              className="learning-plan-neo fixed left-0 right-0 z-[9999] flex items-end justify-center px-safe pt-safe-2 sm:items-center sm:p-4"
+              style={viewport
+                ? { top: `${viewport.top}px`, height: `${viewport.height}px` }
+                : { top: 0, height: '100dvh' }}
             >
-              <div className="shrink-0 border-b border-ds-border bg-ds-bg/95 px-4 pb-3 pt-3 backdrop-blur-xl sm:px-5 sm:py-4">
-                <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-ds-border-hover sm:hidden" aria-hidden="true" />
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h2 id={titleId} className="font-sans text-[19px] font-semibold leading-tight text-ds-fg">
-                      {copy.editorTitle}
-                    </h2>
-                    <p className="mt-1 font-mono text-[11px] leading-relaxed text-ds-muted">
-                      {copy.editorSubtitle}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={requestClose}
-                    aria-label={copy.close}
-                    className="ds-icon-button flex h-11 w-11 shrink-0 sm:h-9 sm:w-9"
-                  >
-                    <X size={16} strokeWidth={1.75} />
-                  </button>
-                </div>
-              </div>
-
-              <form
-                className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5 sm:py-5"
-                data-study-scroll="allow"
-                onSubmit={event => {
-                  event.preventDefault()
-                  if (normalized && dirty && !saving) onSave()
-                }}
+              <motion.div
+                className="absolute inset-0 bg-black/75"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                onClick={requestClose}
+                aria-hidden="true"
+              />
+              <motion.div
+                ref={dialogRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby={titleId}
+                tabIndex={-1}
+                data-testid="learning-plan-editor"
+                initial={{ opacity: 0, y: 28 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                className="relative flex max-h-full w-full flex-col overflow-hidden rounded-t-ds-sheet border-4 border-b-0 border-black bg-ds-bg shadow-modal sm:max-h-[min(760px,calc(100dvh-2rem))] sm:max-w-2xl sm:rounded-ds-xl sm:border-b-4"
               >
+                <div className="shrink-0 border-b-4 border-black bg-[#FFD93D] px-4 pb-3 pt-3 sm:px-5 sm:py-4">
+                  <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-ds-border-hover sm:hidden" aria-hidden="true" />
+                  {useWizard ? (
+                  <div className="flex items-center justify-between gap-3">
+                    <button
+                      type="button"
+                      onClick={goPrev}
+                      aria-label={copy.wizard.back}
+                      className={`ds-icon-button flex h-9 w-9 shrink-0 ${wizardStep === 0 ? 'invisible' : ''}`}
+                    >
+                      <ArrowLeft size={16} strokeWidth={1.75} />
+                    </button>
+                    <h2 id={titleId} className="sr-only">
+                      {currentField ? copy.wizard.stepTitles[currentField] : copy.wizard.summaryTitle}
+                    </h2>
+                    <div className="flex items-center gap-1.5" aria-hidden="true">
+                      {WIZARD_FIELDS.map((_, index) => (
+                        <span
+                          key={index}
+                          className={`h-1.5 rounded-full transition-all ${
+                            index === wizardStep
+                              ? 'w-5 bg-[--brand-primary]'
+                              : index < wizardStep || currentField === null
+                                ? 'w-1.5 bg-[--brand-primary-50]'
+                                : 'w-1.5 bg-ds-border-hover'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={requestClose}
+                      aria-label={copy.close}
+                      className="ds-icon-button flex h-9 w-9 shrink-0"
+                    >
+                      <X size={16} strokeWidth={1.75} />
+                    </button>
+                  </div>
+                  ) : (
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h2 id={titleId} className="font-sans text-[19px] font-semibold leading-tight text-ds-fg">
+                        {copy.editorTitle}
+                      </h2>
+                      <p className="mt-1 font-mono text-[11px] leading-relaxed text-ds-muted">
+                        {copy.editorSubtitle}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={requestClose}
+                      aria-label={copy.close}
+                      className="ds-icon-button flex h-11 w-11 shrink-0 sm:h-9 sm:w-9"
+                    >
+                      <X size={16} strokeWidth={1.75} />
+                    </button>
+                  </div>
+                  )}
+                </div>
+
+                {useWizard ? (
+                <form
+                  id={formId}
+                  className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-8 sm:px-8 sm:py-10"
+                  data-study-scroll="allow"
+                  onSubmit={handleWizardSubmit}
+                >
+                  <motion.div
+                    key={wizardStep}
+                    initial={{ opacity: 0, x: wizardDirection >= 0 ? 24 : -24 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                  >
+                    {renderWizardStep()}
+                  </motion.div>
+                </form>
+                ) : (
+                <form
+                  id={formId}
+                  className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5 sm:py-5"
+                  data-study-scroll="allow"
+                  onSubmit={event => {
+                    event.preventDefault()
+                    if (normalized && dirty && !saving) onSave()
+                  }}
+                >
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  <label className="col-span-2 grid gap-1.5 font-mono text-[11px] text-ds-muted sm:col-span-2">
-                    {copy.examDate}
-                    <input
-                      ref={dateInputRef}
-                      type="date"
-                      value={values.examDateIso}
-                      onChange={event => onChange('examDateIso', event.target.value)}
-                      className="min-h-11 w-full rounded-ds border border-ds-border bg-ds-card px-3 font-sans text-[16px] text-ds-fg [color-scheme:dark]"
-                    />
-                  </label>
+                  <div className="col-span-2 grid gap-1.5 sm:col-span-2">
+                    <label className="grid gap-1.5 font-mono text-[11px] text-ds-muted">
+                      {copy.examDate}
+                      <input
+                        ref={dateInputRef}
+                        type="date"
+                        value={values.examDateIso}
+                        onChange={event => onChange('examDateIso', event.target.value)}
+                        className="min-h-11 w-full rounded-ds border border-ds-border bg-ds-card px-3 font-sans text-[16px] text-ds-fg [color-scheme:dark]"
+                      />
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {EXAM_DATE_PRESET_DAYS.map(days => (
+                        <button
+                          key={days}
+                          type="button"
+                          onClick={() => onChange('examDateIso', isoDateInDays(days))}
+                          className="min-h-8 rounded-full border border-ds-border bg-ds-card px-2.5 font-mono text-[11px] text-ds-muted transition hover:border-[--brand-primary-50] hover:text-ds-fg active:scale-[0.98]"
+                        >
+                          {copy.examDatePreset(days)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   <label className="col-span-2 grid gap-1.5 font-mono text-[11px] text-ds-muted sm:col-span-2">
                     {copy.language}
                     <select
@@ -600,7 +997,7 @@ export function LearningPlanPanel({
                 </div>
 
                 {!normalized && (
-                  <p className="mt-3 rounded-ds border border-amber-400/35 bg-amber-400/10 px-3 py-2.5 font-mono text-[11px] leading-relaxed text-amber-200" role="alert">
+                  <p className="mt-3 border-2 border-black bg-[#FFD93D] px-3 py-2.5 font-sans text-[11px] font-bold leading-relaxed text-black" role="alert">
                     {copy.invalid}
                   </p>
                 )}
@@ -612,45 +1009,69 @@ export function LearningPlanPanel({
                 {workloadDetails(previewPacing)}
 
                 {saveError && (
-                  <p className="mt-3 rounded-ds border border-red-400/35 bg-red-400/10 px-3 py-2.5 font-mono text-[11px] leading-relaxed text-red-200" role="alert" aria-live="assertive">
+                  <p className="mt-3 border-2 border-black bg-[#FF6B6B] px-3 py-2.5 font-sans text-[11px] font-bold leading-relaxed text-black" role="alert" aria-live="assertive">
                     {saveError}
                   </p>
                 )}
-              </form>
+                </form>
+                )}
 
-              {confirmDiscard ? (
-                <div className={`shrink-0 border-t border-amber-400/30 bg-amber-400/10 px-4 pt-3 sm:px-5 sm:pb-4 ${keyboardOpen ? 'pb-3' : 'pb-safe-4'}`}>
-                  <div className="font-sans text-[14px] font-semibold text-amber-100">{copy.discardTitle}</div>
-                  <div className="mt-0.5 font-mono text-[11px] text-amber-200/75">{copy.discardText}</div>
+                {confirmDiscard ? (
+                <div className={`shrink-0 border-t-4 border-black bg-[#FFD93D] px-4 pt-3 sm:px-5 sm:pb-4 ${keyboardOpen ? 'pb-3' : 'pb-safe-4'}`}>
+                  <div className="font-sans text-[14px] font-black text-black">{copy.discardTitle}</div>
+                  <div className="mt-0.5 font-sans text-[11px] font-bold text-black">{copy.discardText}</div>
                   <div className="mt-3 grid grid-cols-2 gap-2">
-                    <button type="button" onClick={() => setConfirmDiscard(false)} className="min-h-11 rounded-ds border border-ds-border bg-ds-card px-3 text-[14px] text-ds-fg">
+                    <button type="button" onClick={() => setConfirmDiscard(false)} className="min-h-12 border-2 border-black bg-white px-3 text-[14px] font-bold text-black shadow-[3px_3px_0_0_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none">
                       {copy.keepEditing}
                     </button>
-                    <button type="button" onClick={onClose} className="min-h-11 rounded-ds border border-red-400/35 bg-red-400/10 px-3 text-[14px] font-semibold text-red-200">
+                    <button type="button" onClick={onClose} className="min-h-12 border-2 border-black bg-[#FF6B6B] px-3 text-[14px] font-bold text-black shadow-[3px_3px_0_0_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none">
                       {copy.discard}
                     </button>
                   </div>
                 </div>
+              ) : useWizard ? (
+                <div className={`grid shrink-0 grid-cols-2 gap-2 border-t-4 border-black bg-[#FFFDF5] px-4 pt-3 sm:px-5 sm:pb-4 ${keyboardOpen ? 'pb-3' : 'pb-safe-4'}`}>
+                  <button
+                    type="button"
+                    onClick={goPrev}
+                    disabled={saving}
+                    data-testid="learning-plan-wizard-back"
+                    className="min-h-12 border-2 border-black bg-white px-3 font-sans text-[14px] font-bold text-black shadow-[3px_3px_0_0_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none disabled:opacity-50"
+                  >
+                    {wizardStep === 0 ? copy.cancel : copy.wizard.back}
+                  </button>
+                  <button
+                    type="submit"
+                    form={formId}
+                    disabled={currentField ? !normalized : (!normalized || !dirty || saving)}
+                    className="min-h-12 border-2 border-black bg-[--brand-primary] px-3 font-sans text-[14px] font-bold text-black shadow-[3px_3px_0_0_#000] transition active:translate-x-[3px] active:translate-y-[3px] active:shadow-none disabled:opacity-45"
+                    data-testid={currentField ? 'learning-plan-wizard-next' : 'learning-plan-save'}
+                  >
+                    {currentField ? copy.wizard.next : (saving ? copy.saving : copy.save)}
+                  </button>
+                </div>
               ) : (
-                <div className={`grid shrink-0 grid-cols-2 gap-2 border-t border-ds-border bg-ds-bg/95 px-4 pt-3 backdrop-blur-xl sm:px-5 sm:pb-4 ${keyboardOpen ? 'pb-3' : 'pb-safe-4'}`}>
-                  <button type="button" onClick={requestClose} disabled={saving} className="min-h-11 rounded-ds border border-ds-border bg-ds-card px-3 font-sans text-[14px] text-ds-fg disabled:opacity-50">
+                <div className={`grid shrink-0 grid-cols-2 gap-2 border-t-4 border-black bg-[#FFFDF5] px-4 pt-3 sm:px-5 sm:pb-4 ${keyboardOpen ? 'pb-3' : 'pb-safe-4'}`}>
+                  <button type="button" onClick={requestClose} disabled={saving} className="min-h-12 border-2 border-black bg-white px-3 font-sans text-[14px] font-bold text-black shadow-[3px_3px_0_0_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none disabled:opacity-50">
                     {copy.cancel}
                   </button>
                   <button
-                    type="button"
-                    onClick={onSave}
+                    type="submit"
+                    form={formId}
                     disabled={!normalized || !dirty || saving}
-                    className="min-h-11 rounded-ds bg-[--brand-primary] px-3 font-sans text-[14px] font-semibold text-black transition active:scale-[0.98] disabled:opacity-45"
+                    className="min-h-12 border-2 border-black bg-[--brand-primary] px-3 font-sans text-[14px] font-bold text-black shadow-[3px_3px_0_0_#000] transition active:translate-x-[3px] active:translate-y-[3px] active:shadow-none disabled:opacity-45"
                     data-testid="learning-plan-save"
                   >
                     {saving ? copy.saving : copy.save}
                   </button>
                 </div>
-              )}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+                )}
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
     </>
   )
 }

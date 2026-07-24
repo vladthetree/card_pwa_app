@@ -147,9 +147,9 @@ export function HomeDeckListSection({
       {loading ? (
         <div className="grid grid-cols-1 items-start gap-2.5 sm:gap-3 lg:grid-cols-2">{[...Array(4)].map((_, i) => <div key={i} className="h-20 ds-card animate-pulse" />)}</div>
       ) : !showShuffleOnly && decks.length === 0 ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex min-h-full flex-col items-center justify-start pt-10 pb-12 text-center sm:justify-center sm:py-16">
-          <p className="text-white/30 text-sm mb-4">{t.no_decks}</p>
-          <button onClick={onShowImport} className="inline-flex items-center gap-2 rounded-ds bg-[--brand-primary] px-5 py-2.5 text-sm font-semibold text-[#150b08] transition-all duration-200 ease-out hover:brightness-110 active:scale-[0.98]">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mx-auto mt-8 flex w-[calc(100%-1rem)] max-w-lg flex-col items-center border-4 border-black bg-[#FFD93D] px-6 py-8 text-center shadow-[8px_8px_0_0_#000] sm:mt-16">
+          <p className="mb-4 text-sm font-black uppercase tracking-wide text-black">{t.no_decks}</p>
+          <button onClick={onShowImport} className="inline-flex items-center gap-2 border-[3px] border-black bg-[#FF6B6B] px-5 py-2.5 text-sm font-black uppercase text-black shadow-[4px_4px_0_0_#000] transition-all duration-100 hover:bg-white active:translate-x-1 active:translate-y-1 active:shadow-none">
             <Upload size={16} strokeWidth={1.5} /> {t.import_now}
           </button>
         </motion.div>

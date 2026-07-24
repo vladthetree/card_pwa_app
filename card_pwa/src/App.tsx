@@ -263,7 +263,7 @@ function SafeAreaDebugOverlay() {
   if (!enabled) return null
 
   return (
-    <div className="fixed left-2 top-2 z-[9999] max-w-[calc(100vw-1rem)] rounded-ds border border-white/20 bg-black/90 p-2 font-mono text-[10px] leading-tight text-white shadow-2xl">
+    <div className="neo-keep-dark fixed left-2 top-2 z-[9999] max-w-[calc(100vw-1rem)] rounded-ds border border-white/20 bg-black/90 p-2 font-mono text-[10px] leading-tight text-white shadow-2xl">
       <div className="mb-1 flex items-center justify-between gap-3 text-[11px] font-bold">
         <span>safe-area debug</span>
         <button

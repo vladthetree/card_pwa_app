@@ -139,36 +139,46 @@ export function HomeDeckToolbar({
     acronyms: acronymsLabel,
   }
   const activeFilterValue = showShuffleOnly ? shuffleDecksLabel : tabLabels[homeTab]
+  const sectionTitle = showShuffleOnly
+    ? shuffleDecksLabel
+    : homeTab === 'decks'
+      ? t.decks_title
+      : tabLabels[homeTab]
+  const showSearch = showShuffleOnly || homeTab === 'decks' || homeTab === 'tags'
 
   return (
-    <div className="sticky top-0 z-[90] mb-2 mt-2 flex-shrink-0 sm:mb-3 sm:mt-4">
+    <div className={`sticky top-0 z-[90] mb-2 mt-2 flex-shrink-0 sm:mb-3 sm:mt-4 ${
+      homeTab === 'learning-units' ? 'learning-units-toolbar-neo' : ''
+    }`}>
       <div className="rounded-ds border border-ds-border bg-ds-bg/92 p-2 shadow-card backdrop-blur-md sm:border-0 sm:bg-ds-bg/70 sm:p-0 sm:shadow-none sm:backdrop-blur-sm">
       <div className="flex min-w-0 flex-wrap items-center gap-2 overflow-x-hidden overflow-y-visible sm:flex-nowrap sm:gap-1 sm:pb-1">
         <h2 className="mr-2 hidden shrink-0 font-sans text-lg font-semibold text-theme-text sm:block">
-          {t.decks_title}
+          {sectionTitle}
         </h2>
 
-        <label className="relative flex h-8 min-w-0 flex-[0_1_16rem] items-center rounded-ds border border-ds-border bg-ds-card pl-2 pr-2 text-xs text-white/85 transition-colors focus-within:border-[--brand-primary-50]">
-          <Search size={13} strokeWidth={1.5} className="pointer-events-none mr-1.5 text-white/45" />
-          <input
-            type="search"
-            value={deckSearchQuery}
-            onChange={e => onDeckSearchQueryChange(e.target.value)}
-            placeholder={language === 'de' ? 'Titel/Tag suchen' : 'Search title/tag'}
-            className="h-full min-w-0 flex-1 bg-transparent text-xs text-white/85 outline-none"
-          />
-          {deckSearchQuery.trim().length > 0 && (
-            <button
-              type="button"
-              onClick={() => onDeckSearchQueryChange('')}
-              className="ds-icon-button flex h-9 w-9"
-              aria-label={language === 'de' ? 'Suche leeren' : 'Clear search'}
-              title={language === 'de' ? 'Suche leeren' : 'Clear search'}
-            >
-              <X size={12} strokeWidth={1.5} />
-            </button>
-          )}
-        </label>
+        {showSearch && (
+          <label className="relative flex h-8 min-w-0 flex-[0_1_16rem] items-center rounded-ds border border-ds-border bg-ds-card pl-2 pr-2 text-xs text-white/85 transition-colors focus-within:border-[--brand-primary-50]">
+            <Search size={13} strokeWidth={1.5} className="pointer-events-none mr-1.5 text-white/45" />
+            <input
+              type="search"
+              value={deckSearchQuery}
+              onChange={e => onDeckSearchQueryChange(e.target.value)}
+              placeholder={language === 'de' ? 'Titel/Tag suchen' : 'Search title/tag'}
+              className="h-full min-w-0 flex-1 bg-transparent text-xs text-white/85 outline-none"
+            />
+            {deckSearchQuery.trim().length > 0 && (
+              <button
+                type="button"
+                onClick={() => onDeckSearchQueryChange('')}
+                className="ds-icon-button flex h-9 w-9"
+                aria-label={language === 'de' ? 'Suche leeren' : 'Clear search'}
+                title={language === 'de' ? 'Suche leeren' : 'Clear search'}
+              >
+                <X size={12} strokeWidth={1.5} />
+              </button>
+            )}
+          </label>
+        )}
 
         <div className="flex min-w-0 flex-1 items-center justify-between gap-1.5 sm:ml-auto sm:shrink-0 sm:flex-none sm:justify-end sm:gap-1">
           <div className="relative shrink-0" ref={filterAnchorRef}>

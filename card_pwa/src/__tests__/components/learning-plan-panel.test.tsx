@@ -53,7 +53,22 @@ describe('LearningPlanPanel values', () => {
     const valid = buildLearningPlanFormValues({})
     expect(normalizeLearningPlanFormValues({ ...valid, weeklyHours: '' })).toBeNull()
     expect(normalizeLearningPlanFormValues({ ...valid, learningDays: '8' })).toBeNull()
+    expect(normalizeLearningPlanFormValues({ ...valid, bufferDays: '' })).toBeNull()
     expect(normalizeLearningPlanFormValues({ ...valid, bufferDays: '-1' })).toBeNull()
+  })
+
+  it.each(['2026-02-29', '2026-02-31', '2026-04-31', '0000-01-01'])(
+    'weist unmögliches Kalenderdatum %s zurück',
+    examDateIso => {
+      const valid = buildLearningPlanFormValues({})
+      expect(normalizeLearningPlanFormValues({ ...valid, examDateIso })).toBeNull()
+    },
+  )
+
+  it('akzeptiert einen echten Schalttag', () => {
+    const valid = buildLearningPlanFormValues({})
+    expect(normalizeLearningPlanFormValues({ ...valid, examDateIso: '2028-02-29' })?.examDateIso)
+      .toBe('2028-02-29')
   })
 
   it('erkennt echte Änderungen ohne numerische Zwischenzustände umzudeuten', () => {
@@ -72,20 +87,28 @@ describe('Lernplan-Terminquelle', () => {
     })).toBe('2026-10-01')
   })
 
-  it('priorisiert einen explizit geänderten Settings-Termin', () => {
+  it('priorisiert einen vorhandenen profilgescopten Plan vor Settings', () => {
     expect(resolveEffectiveLearningPlanExamDate({
       settingsExamDateIso: '2026-11-15',
       settingsExamDateUpdatedAt: 123,
       draftExamDateIso: '2026-10-01',
-    })).toBe('2026-11-15')
+    })).toBe('2026-10-01')
   })
 
-  it('respektiert ein explizites Löschen trotz altem Draft', () => {
+  it('respektiert eine explizite Löschung im Plan trotz Settings-Altwert', () => {
     expect(resolveEffectiveLearningPlanExamDate({
-      settingsExamDateIso: null,
+      settingsExamDateIso: '2026-10-01',
       settingsExamDateUpdatedAt: 124,
-      draftExamDateIso: '2026-10-01',
+      draftExamDateIso: null,
     })).toBeNull()
+  })
+
+  it('liest Settings nur als Fallback, wenn noch kein Plan existiert', () => {
+    expect(resolveEffectiveLearningPlanExamDate({
+      settingsExamDateIso: '2026-11-15',
+      settingsExamDateUpdatedAt: 123,
+      draftExamDateIso: undefined,
+    })).toBe('2026-11-15')
   })
 })
 

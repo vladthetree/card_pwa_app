@@ -42,6 +42,7 @@ import { filterDecksWithActiveCardsOrDescendants } from '../utils/deckContentSco
 import { logError } from './errorLog'
 import { EXAM_DATE_SYNCED_EVENT, STORAGE_KEYS } from '../constants/appIdentity'
 import { normalizeExamDateIso, normalizeExamDateUpdatedAt } from '../contexts/SettingsContext'
+import { getLearnerExamPlan, saveDraftLearnerExamPlan } from '../db/queries/learningUnits'
 
 const SYNC_META_CURSOR_KEY = 'sync-cursor'
 const SYNC_META_APPLIED_OP_IDS_KEY = 'sync-applied-op-ids'
@@ -725,17 +726,18 @@ async function applyVideoNoteDelete(payload: unknown, fallbackTs = 0) {
 }
 
 /**
- * Settings sind localStorage-basiert, nicht Dexie — hier also kein
- * `db.put`, sondern direktes Lesen/Schreiben des Settings-Blobs plus
- * `EXAM_DATE_SYNCED_EVENT`, damit ein gemounteter SettingsProvider sein
- * React-State ohne Reload nachzieht (siehe SettingsContext.tsx).
+ * Der profilgescopte Lernplan ist die autoritative Terminquelle. Settings
+ * bleibt eine abgeleitete localStorage-Kompatibilitätsansicht für Countdown
+ * und bestehende UI-Verbraucher.
  */
 async function applyExamDateUpsert(payload: unknown) {
   if (!payload || typeof payload !== 'object') return
   const value = payload as Record<string, unknown>
   const examDateIso = normalizeExamDateIso(value.examDateIso)
+  if (value.examDateIso !== null && examDateIso === null) return
   const updatedAt = normalizeExamDateUpdatedAt(value.updatedAt)
-  if (updatedAt === null) return
+  const profileId = typeof value.profileId === 'string' ? value.profileId.trim() : ''
+  if (updatedAt === null || !profileId) return
 
   let stored: Record<string, unknown> = {}
   try {
@@ -746,7 +748,18 @@ async function applyExamDateUpsert(payload: unknown) {
   }
 
   const existingUpdatedAt = normalizeExamDateUpdatedAt(stored.examDateUpdatedAt)
-  if (existingUpdatedAt !== null && existingUpdatedAt > updatedAt) return
+  const existingPlan = await getLearnerExamPlan(profileId)
+  if (
+    (existingUpdatedAt !== null && existingUpdatedAt > updatedAt)
+    || (existingPlan && existingPlan.updatedAt > updatedAt)
+  ) return
+
+  await saveDraftLearnerExamPlan({
+    profileId,
+    now: updatedAt,
+    examDateIso,
+    uiLanguage: existingPlan?.uiLanguage ?? (stored.language === 'en' ? 'en' : 'de'),
+  })
 
   localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify({
     ...stored,

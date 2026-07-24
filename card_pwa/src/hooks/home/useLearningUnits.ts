@@ -147,16 +147,15 @@ function formatLocalLearningDay(dayStartMs: number): string {
   return `${date.getFullYear()}-${month}-${day}`
 }
 
-/** Settings ist nach einer expliziten Änderung/Löschung autoritativ. Nur alte
- * Installationen ohne Settings-Zeitstempel dürfen den Draft als Fallback lesen. */
+/** Der profilgescopte Plan ist autoritativ. Settings dient ausschließlich als
+ * Legacy-Fallback, solange für das Profil noch kein Plan-Datensatz existiert. */
 export function resolveEffectiveLearningPlanExamDate(input: {
   settingsExamDateIso: string | null
   settingsExamDateUpdatedAt: number | null
   draftExamDateIso: string | null | undefined
 }): string | null {
-  return input.settingsExamDateUpdatedAt !== null
-    ? input.settingsExamDateIso
-    : (input.draftExamDateIso ?? input.settingsExamDateIso)
+  if (input.draftExamDateIso !== undefined) return input.draftExamDateIso
+  return input.settingsExamDateIso
 }
 
 export function useLearningUnits({
@@ -335,9 +334,8 @@ export function useLearningUnits({
         cards: mappedCards,
       })
 
-      // Ein explizit gesetzter oder gelöschter Settings-Termin gewinnt vor
-      // älteren/restaurierten Drafts. Ohne Settings-Historie bleibt der Draft
-      // als rückwärtskompatibler Fallback erhalten.
+      // Der profilgescopte Plan gewinnt einschließlich einer expliziten
+      // Löschung. Settings wird nur für Altinstallationen ohne Plan gelesen.
       const effectiveExamDateIso = resolveEffectiveLearningPlanExamDate({
         settingsExamDateIso: examDateIso,
         settingsExamDateUpdatedAt: examDateUpdatedAt,

@@ -550,6 +550,511 @@
 }
 
 @layer components {
+  /* ── Global Neo-Brutalism layer ──────────────────────────────────────────
+     ThemeContext keeps legacy preference keys intact, while this body-scoped
+     contract supplies one coherent visual language to normal DOM and portals. */
+  .neo-app {
+    --neo-canvas: #fffdf5;
+    --neo-ink: #000000;
+    --neo-accent: #ff6b6b;
+    --neo-secondary: #ffd93d;
+    --neo-muted: #c4b5fd;
+    --neo-white: #ffffff;
+    --ds-bg: var(--neo-canvas);
+    --ds-floor: var(--neo-canvas);
+    --ds-card: var(--neo-white);
+    --ds-panel: var(--neo-muted);
+    --ds-panel-hover: var(--neo-secondary);
+    --ds-border: var(--neo-ink);
+    --ds-border-strong: var(--neo-ink);
+    --ds-border-hover: var(--neo-ink);
+    --ds-fg: var(--neo-ink);
+    --ds-text-normal: var(--neo-ink);
+    --ds-muted: var(--neo-ink);
+    --ds-subtle: var(--neo-ink);
+    --ds-code-bg: var(--neo-white);
+    --ds-accent-primary: var(--neo-accent);
+    --ds-accent-secondary: #6f5ae8;
+    --brand-primary: var(--neo-accent);
+    --brand-primary-08: var(--neo-accent);
+    --brand-primary-12: var(--neo-accent);
+    --brand-primary-15: var(--neo-accent);
+    --brand-primary-20: var(--neo-accent);
+    --brand-primary-25: var(--neo-accent);
+    --brand-primary-50: var(--neo-accent);
+    --brand-primary-80: var(--neo-accent);
+    --brand-primary-100: var(--neo-accent);
+    --brand-secondary: #6f5ae8;
+    --brand-secondary-08: var(--neo-muted);
+    --brand-secondary-12: var(--neo-muted);
+    --brand-secondary-15: var(--neo-muted);
+    --brand-secondary-20: var(--neo-muted);
+    --brand-secondary-25: var(--neo-muted);
+    --brand-secondary-50: #6f5ae8;
+    --brand-secondary-80: #6f5ae8;
+    --brand-secondary-100: #6f5ae8;
+    --theme-primary: var(--neo-accent);
+    --theme-secondary: #6f5ae8;
+    --theme-accent: var(--neo-secondary);
+    --theme-background: var(--neo-canvas);
+    --theme-floor: var(--neo-canvas);
+    --theme-card: var(--neo-white);
+    --theme-surface: var(--neo-white);
+    --theme-surface-hover: var(--neo-secondary);
+    --theme-panel: var(--neo-muted);
+    --theme-panel-hover: var(--neo-secondary);
+    --theme-border: var(--neo-ink);
+    --theme-border-strong: var(--neo-ink);
+    --theme-border-hover: var(--neo-ink);
+    --theme-text: var(--neo-ink);
+    --theme-text-secondary: var(--neo-ink);
+    --theme-text-muted: var(--neo-ink);
+    --app-background: var(--neo-canvas);
+    --home-bottom-bar-bg: var(--neo-canvas);
+    --card-border-color: var(--neo-ink);
+    --card-border-width: 3px;
+    --radius-ds-sm: 0px;
+    --radius-ds-md: 0px;
+    --radius-ds-lg: 0px;
+    --radius-ds-xl: 0px;
+    --radius-ds-2xl: 0px;
+    --radius-ds-sheet: 0px;
+    --shadow-card: 6px 6px 0 0 var(--neo-ink);
+    --shadow-menu: 8px 8px 0 0 var(--neo-ink);
+    --shadow-modal: 10px 10px 0 0 var(--neo-ink);
+    color: var(--neo-ink);
+    color-scheme: light;
+    background-color: var(--neo-canvas) !important;
+    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+  }
+
+  .neo-app::before,
+  .neo-app #root {
+    background-color: var(--neo-canvas) !important;
+    background-image:
+      linear-gradient(to right, rgba(0, 0, 0, 0.075) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.075) 1px, transparent 1px) !important;
+    background-size: 32px 32px !important;
+  }
+
+  .neo-app :is(h1, h2, h3, h4, h5, h6) {
+    color: var(--neo-ink);
+    font-family: var(--app-font-family-sans);
+    font-weight: 900;
+  }
+
+  .neo-app :is(button, [role='button']) {
+    font-weight: 700;
+    transition-duration: 100ms;
+    transition-timing-function: linear;
+  }
+
+  .neo-app [class*='rounded-']:not(.rounded-full),
+  .neo-app .rounded {
+    border-radius: 0 !important;
+  }
+
+  .neo-app [class~='border'] {
+    border-width: 2px;
+    border-color: var(--neo-ink);
+  }
+
+  .neo-app :is(.ds-card, .ds-panel, .glass) {
+    border: 3px solid var(--neo-ink);
+    border-radius: 0;
+    background: var(--neo-white);
+    box-shadow: var(--shadow-card);
+    color: var(--neo-ink);
+  }
+
+  .neo-app :is(.ds-modal, .ds-menu) {
+    border: 4px solid var(--neo-ink);
+    border-radius: 0;
+    background: var(--neo-white);
+    box-shadow: var(--shadow-modal);
+    color: var(--neo-ink);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .neo-app .ds-icon-button {
+    border: 2px solid var(--neo-ink);
+    border-radius: 0;
+    background: var(--neo-white);
+    box-shadow: 3px 3px 0 0 var(--neo-ink);
+    color: var(--neo-ink);
+  }
+
+  .neo-app .ds-icon-button:active {
+    transform: translate(3px, 3px);
+    box-shadow: none;
+  }
+
+  .neo-app :is(input, select, textarea) {
+    border: 3px solid var(--neo-ink) !important;
+    border-radius: 0 !important;
+    background: var(--neo-white) !important;
+    color: var(--neo-ink) !important;
+    font-weight: 700;
+  }
+
+  .neo-app :is(input, select, textarea):focus-visible {
+    outline: none;
+    background: var(--neo-secondary) !important;
+    box-shadow: 4px 4px 0 0 var(--neo-ink);
+  }
+
+  .neo-app :is(input, textarea)::placeholder {
+    color: var(--neo-ink) !important;
+    opacity: 0.55;
+  }
+
+  /* Legacy literal text utilities are normalized to pure ink. Contexts that
+     must stay dark (video playback) opt back in through neo-keep-dark. */
+  .neo-app .text-white,
+  .neo-app [class*='text-white/'],
+  .neo-app [class*='text-zinc-'],
+  .neo-app [class*='text-amber-'],
+  .neo-app [class*='text-emerald-'],
+  .neo-app [class*='text-red-'],
+  .neo-app [class*='text-rose-'] {
+    color: var(--neo-ink) !important;
+  }
+
+  .neo-app [class*='border-white/'],
+  .neo-app [class*='border-zinc-'],
+  .neo-app [class*='border-amber-'],
+  .neo-app [class*='border-emerald-'],
+  .neo-app [class*='border-red-'],
+  .neo-app [class*='border-rose-'] {
+    border-color: var(--neo-ink) !important;
+  }
+
+  .neo-app [class*='bg-white/'],
+  .neo-app [class*='bg-[#050505]'],
+  .neo-app [class*='bg-[#060606]'],
+  .neo-app [class*='bg-[#070707]'],
+  .neo-app [class*='bg-[#080808]'],
+  .neo-app [class*='bg-[#0a0a0a]'],
+  .neo-app [class*='bg-[#0c0c0c]'],
+  .neo-app [class*='bg-[#0f0f0f]'],
+  .neo-app .bg-zinc-950,
+  .neo-app .bg-zinc-900,
+  .neo-app .bg-\[\#050505\],
+  .neo-app .bg-\[\#060606\],
+  .neo-app .bg-\[\#070707\],
+  .neo-app .bg-\[\#080808\],
+  .neo-app .bg-\[\#0a0a0a\],
+  .neo-app .bg-\[\#0c0c0c\],
+  .neo-app .bg-\[\#0f0f0f\],
+  .neo-app .bg-\[\#111\],
+  .neo-app .bg-\[\#18181b\],
+  .neo-app .bg-\[\#27272a\] {
+    background-color: var(--neo-white) !important;
+  }
+
+  .neo-app .bg-zinc-500,
+  .neo-app .bg-zinc-300,
+  .neo-app .bg-zinc-200 {
+    background-color: var(--neo-muted) !important;
+  }
+
+  .neo-app .border-\[\#18181b\],
+  .neo-app .border-\[\#1f1f22\],
+  .neo-app .border-\[\#1f1f23\],
+  .neo-app .border-\[\#27272a\],
+  .neo-app .border-\[\#3f3f46\] {
+    border-color: var(--neo-ink) !important;
+  }
+
+  .neo-app [class*='backdrop-blur'] {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* Alte dunkle Hover-Utilities würden auf den nun schwarzen Text treffen.
+     Im hellen Neo-System werden diese Zustände deshalb zu gelben Papierkarten. */
+  .neo-app [class*='hover:bg-[#050505]']:hover,
+  .neo-app [class*='hover:bg-[#060606]']:hover,
+  .neo-app [class*='hover:bg-[#070707]']:hover,
+  .neo-app [class*='hover:bg-[#080808]']:hover,
+  .neo-app [class*='hover:bg-[#0a0a0a]']:hover,
+  .neo-app [class*='hover:bg-[#0c0c0c]']:hover,
+  .neo-app [class*='hover:bg-[#0f0f0f]']:hover,
+  .neo-app [class*='hover:bg-[#111]']:hover {
+    background-color: var(--neo-secondary) !important;
+    color: var(--neo-ink) !important;
+  }
+
+  .neo-app .neo-keep-dark,
+  .neo-app .neo-keep-dark .bg-black {
+    background: #000 !important;
+    color: #fff !important;
+  }
+
+  /* Player, Notizzettel und Player-Controls sind die einzige bewusst dunkle
+     Insel. Ihre Legacy-Flächen dürfen nicht von der hellen App-Normalisierung
+     zu Weiß umgefärbt werden, sonst entsteht Weiß-auf-Weiß. */
+  .neo-app .neo-keep-dark [class*='bg-[#050505]'],
+  .neo-app .neo-keep-dark [class*='bg-[#060606]'],
+  .neo-app .neo-keep-dark [class*='bg-[#070707]'],
+  .neo-app .neo-keep-dark [class*='bg-[#080808]'],
+  .neo-app .neo-keep-dark [class*='bg-[#0a0a0a]'],
+  .neo-app .neo-keep-dark [class*='bg-[#0c0c0c]'],
+  .neo-app .neo-keep-dark [class*='bg-[#0f0f0f]'],
+  .neo-app .neo-keep-dark [class*='bg-[#111]'] {
+    background-color: #111 !important;
+  }
+
+  .neo-app .neo-keep-dark .text-white,
+  .neo-app .neo-keep-dark [class*='text-white/'],
+  .neo-app .neo-keep-dark [class*='text-zinc-'] {
+    color: #fff !important;
+  }
+
+  .neo-app .neo-keep-dark :is(button, [role='button']) {
+    color: #fff;
+  }
+
+  .neo-app .neo-keep-dark .ds-icon-button {
+    border-color: #000 !important;
+    background: var(--neo-secondary) !important;
+    box-shadow: 3px 3px 0 0 #fff;
+    color: #000 !important;
+  }
+
+  .neo-app .neo-keep-dark [class*='hover:bg-[#0']:hover,
+  .neo-app .neo-keep-dark [class*='hover:bg-[#111]']:hover {
+    background-color: #27272a !important;
+    color: #fff !important;
+  }
+
+  /* Der Notizzettel ist bewusst ein klassisches Papier-Eingabefeld: auch im
+     Fokus weiß, schwarze Schrift und schwarzer Cursor — kein gelber Fokusfill. */
+  .neo-app .neo-keep-dark .neo-video-note-input,
+  .neo-app .neo-keep-dark .neo-video-note-input:focus-visible {
+    border: 3px solid #000 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    color: #000 !important;
+    caret-color: #000 !important;
+  }
+
+  .neo-app .neo-keep-dark .neo-video-note-input::placeholder {
+    color: rgba(0, 0, 0, 0.55) !important;
+    opacity: 1;
+  }
+
+  /* Learning-unit-specific composition helpers remain scoped here; their
+     palette now resolves to the same app-wide Neo-Brutalist contract. */
+  .learning-units-neo,
+  .learning-plan-neo {
+    --neo-canvas: #fffdf5;
+    --neo-ink: #000000;
+    --neo-accent: #ff6b6b;
+    --neo-secondary: #ffd93d;
+    --neo-muted: #c4b5fd;
+    --neo-white: #ffffff;
+    --ds-bg: var(--neo-canvas);
+    --ds-floor: var(--neo-canvas);
+    --ds-card: var(--neo-white);
+    --ds-panel: var(--neo-muted);
+    --ds-panel-hover: var(--neo-secondary);
+    --ds-border: var(--neo-ink);
+    --ds-border-strong: var(--neo-ink);
+    --ds-border-hover: var(--neo-ink);
+    --ds-fg: var(--neo-ink);
+    --ds-text-normal: var(--neo-ink);
+    --ds-muted: var(--neo-ink);
+    --ds-subtle: var(--neo-ink);
+    --brand-primary: var(--neo-accent);
+    --brand-primary-08: #ff6b6b;
+    --brand-primary-12: #ff6b6b;
+    --brand-primary-15: #ff6b6b;
+    --brand-primary-20: #ff6b6b;
+    --brand-primary-25: #ff6b6b;
+    --brand-primary-50: #ff6b6b;
+    --brand-primary-80: #ff6b6b;
+    --brand-primary-100: #ff6b6b;
+    --brand-secondary: #6f5ae8;
+    --brand-secondary-08: #c4b5fd;
+    --brand-secondary-12: #c4b5fd;
+    --brand-secondary-25: #c4b5fd;
+    --brand-secondary-50: #6f5ae8;
+    --radius-ds-sm: 0px;
+    --radius-ds-md: 0px;
+    --radius-ds-lg: 0px;
+    --radius-ds-xl: 0px;
+    --radius-ds-2xl: 0px;
+    --radius-ds-sheet: 0px;
+    --shadow-card: 6px 6px 0 0 #000;
+    --shadow-menu: 8px 8px 0 0 #000;
+    --shadow-modal: 10px 10px 0 0 #000;
+    color: var(--neo-ink);
+    color-scheme: light;
+    background-color: var(--neo-canvas);
+    background-image:
+      linear-gradient(to right, rgba(0, 0, 0, 0.075) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.075) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .neo-learning-card {
+    border: 3px solid var(--neo-ink);
+    border-radius: 0;
+    background: var(--neo-white);
+    box-shadow: 6px 6px 0 0 var(--neo-ink);
+  }
+
+  .neo-learning-panel {
+    border: 3px solid var(--neo-ink);
+    border-radius: 0;
+    background: var(--neo-canvas);
+  }
+
+  .neo-learning-press {
+    border: 2px solid var(--neo-ink);
+    border-radius: 0;
+    box-shadow: 3px 3px 0 0 var(--neo-ink);
+    transition-duration: 100ms;
+    transition-timing-function: linear;
+  }
+
+  .neo-learning-press:active {
+    transform: translate(3px, 3px);
+    box-shadow: none;
+  }
+
+  .neo-learning-label {
+    display: inline-flex;
+    align-items: center;
+    border: 2px solid var(--neo-ink);
+    border-radius: 999px;
+    background: var(--neo-secondary);
+    padding: 0.125rem 0.5rem;
+    color: var(--neo-ink);
+    font-family: var(--app-font-family-sans);
+    font-weight: 700;
+  }
+
+  .neo-learning-accent {
+    background: var(--neo-accent);
+    color: var(--neo-ink);
+  }
+
+  .neo-learning-secondary {
+    background: var(--neo-secondary);
+    color: var(--neo-ink);
+  }
+
+  .neo-learning-muted {
+    background: var(--neo-muted);
+    color: var(--neo-ink);
+  }
+
+  .neo-learning-note {
+    border: 2px solid var(--neo-ink);
+    border-radius: 0;
+    background: var(--neo-secondary);
+    color: var(--neo-ink);
+  }
+
+  .learning-units-toolbar-neo {
+    --ds-card: #ffffff;
+    --ds-panel: #c4b5fd;
+    --ds-panel-hover: #ffd93d;
+    --ds-border: #000000;
+    --ds-border-hover: #000000;
+  }
+
+  .learning-units-toolbar-neo > div {
+    border: 3px solid #000;
+    border-radius: 0;
+    background: #fffdf5;
+    box-shadow: 4px 4px 0 0 #000;
+    color: #000;
+    backdrop-filter: none;
+  }
+
+  .learning-units-toolbar-neo h2,
+  .learning-units-toolbar-neo button,
+  .learning-units-toolbar-neo span {
+    color: #000;
+  }
+
+  .learning-units-neo [data-testid='learning-plan-summary'] {
+    border: 3px solid #000;
+    border-radius: 0;
+    background: #fff;
+    box-shadow: 6px 6px 0 0 #000;
+  }
+
+  .learning-units-neo [data-testid='learning-plan-edit'] {
+    border: 2px solid #000;
+    border-radius: 0;
+    background: #ff6b6b;
+    box-shadow: 3px 3px 0 0 #000;
+    color: #000;
+    font-weight: 700;
+  }
+
+  .learning-units-neo [data-testid='learning-plan-edit']:active {
+    transform: translate(3px, 3px);
+    box-shadow: none;
+  }
+
+  .learning-units-neo [data-testid='learning-workload-metrics'] {
+    border: 2px solid #000;
+    border-radius: 0;
+    background: #c4b5fd;
+    color: #000;
+  }
+
+  .learning-plan-neo input,
+  .learning-plan-neo select {
+    border: 3px solid #000 !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    color: #000 !important;
+    font-weight: 700;
+  }
+
+  .learning-plan-neo input:focus-visible,
+  .learning-plan-neo select:focus-visible {
+    outline: none;
+    background: #ffd93d !important;
+    box-shadow: 4px 4px 0 0 #000;
+  }
+
+  .learning-plan-neo .ds-icon-button {
+    border: 2px solid #000;
+    border-radius: 0;
+    background: #fff;
+    box-shadow: 3px 3px 0 0 #000;
+    color: #000;
+  }
+
+  .learning-plan-neo .ds-icon-button:active {
+    transform: translate(3px, 3px);
+    box-shadow: none;
+  }
+
+  @media (hover: hover) {
+    .neo-learning-lift:hover {
+      transform: translateY(-2px);
+      box-shadow: 8px 8px 0 0 var(--neo-ink);
+    }
+
+    .neo-learning-hover-yellow:hover {
+      background: #ffd93d;
+    }
+
+    .neo-learning-hover-violet:hover {
+      background: #c4b5fd;
+    }
+  }
+
   .glass {
     @apply border border-ds-border bg-ds-card shadow-card;
   }

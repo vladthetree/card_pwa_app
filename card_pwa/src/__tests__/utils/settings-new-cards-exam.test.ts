@@ -31,8 +31,13 @@ describe('normalizeSettings — examDateIso', () => {
 
   it('übernimmt nur gültige ISO-Daten (YYYY-MM-DD)', () => {
     expect(normalizeSettings({ examDateIso: '2026-08-09' }).examDateIso).toBe('2026-08-09')
+    expect(normalizeSettings({ examDateIso: '2028-02-29' }).examDateIso).toBe('2028-02-29')
     expect(normalizeSettings({ examDateIso: '09.08.2026' }).examDateIso).toBeNull()
     expect(normalizeSettings({ examDateIso: '2026-13-40' }).examDateIso).toBeNull()
+    expect(normalizeSettings({ examDateIso: '2026-02-29' }).examDateIso).toBeNull()
+    expect(normalizeSettings({ examDateIso: '2026-02-31' }).examDateIso).toBeNull()
+    expect(normalizeSettings({ examDateIso: '2026-04-31' }).examDateIso).toBeNull()
+    expect(normalizeSettings({ examDateIso: '0000-01-01' }).examDateIso).toBeNull()
     expect(normalizeSettings({ examDateIso: 42 as unknown as string }).examDateIso).toBeNull()
   })
 })
