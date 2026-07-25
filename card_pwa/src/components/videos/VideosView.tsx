@@ -604,7 +604,6 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
   const [tagSheetOpen, setTagSheetOpen] = useState(false)
   const [noteFocused, setNoteFocused] = useState(false)
   const noteBlurTimer = useRef<number | undefined>(undefined)
-  const keyboardWasOpenRef = useRef(false)
   const [currentVideoTime, setCurrentVideoTime] = useState(0)
   const [seekRequest, setSeekRequest] = useState<{ id: number; seconds: number } | null>(null)
   const viewport = useVisualViewport()
@@ -741,31 +740,13 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
   }
   useEffect(() => () => { if (noteBlurTimer.current) window.clearTimeout(noteBlurTimer.current) }, [])
 
-  // Schreibmodus automatisch nur verlassen, wenn die Tastatur in DIESER
-  // Fokus-Session bereits sichtbar war und wieder verschwindet (System-Taste
-  // „Tastatur ausblenden"). Direkt nach dem Fokus ist keyboardOpen noch false
-  // (Einblend-Animation; auf manchen iOS-Ständen schlägt die Erkennung ganz
-  // fehl) — ein Blur in dem Moment würde die frisch geöffnete Tastatur killen.
-  useEffect(() => {
-    if (!isHandsetLayout || !noteFocused) {
-      keyboardWasOpenRef.current = false
-      return
-    }
-    if (keyboardOpen) {
-      keyboardWasOpenRef.current = true
-      return
-    }
-    if (!keyboardWasOpenRef.current) return
-    const timer = window.setTimeout(() => {
-      keyboardWasOpenRef.current = false
-      const active = document.activeElement
-      if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement) {
-        active.blur()
-      }
-      setNoteFocused(false)
-    }, 450)
-    return () => window.clearTimeout(timer)
-  }, [isHandsetLayout, keyboardOpen, noteFocused])
+  // KEIN automatischer Ausstieg über eine „Tastatur wieder zu"-Erkennung mehr:
+  // visualViewport-Messungen springen auf echten iPhones während des Tippens
+  // (Animationen, Autokorrektur-Leiste, unser eigenes Container-Resize) kurz
+  // unter den Schwellenwert und lösten so einen Fehl-Blur mitten im Schreiben
+  // aus — das Video kam dann zurück, obwohl die Tastatur noch offen war.
+  // Verlassen passiert jetzt nur noch explizit: „Video"-Button (exitWriting)
+  // oder ein echtes Blur des Textfelds (handleNoteFocusChange).
 
   // Zurück zur normalen Videoansicht: Tastatur schließen (Textfeld blur).
   const exitWriting = () => {
@@ -1184,13 +1165,17 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
             )}
           </div>
 
-          {/* Video bleibt beim Schreiben sichtbar und wird über keyboardOpen /
-              writingMode kompakt begrenzt. So kann die Notiz direkt zum sichtbaren
-              Inhalt entstehen, ohne dass die Tastatur den Player verdrängt. */}
-          <div className="flex shrink-0 justify-center px-3">
-            {renderPlayer(true)}
-          </div>
-          {!writingMode && !keyboardOpen && <div className="flex shrink-0 justify-center px-3">{renderStudyBar(true)}</div>}
+          {/* Schreibmodus: Video komplett ausblenden (nicht nur verkleinern),
+              damit der Notizzettel den freigewordenen Platz oben übernimmt und
+              die Tastatur ihn nicht verdeckt. */}
+          {!writingMode && (
+            <>
+              <div className="flex shrink-0 justify-center px-3">
+                {renderPlayer(true)}
+              </div>
+              <div className="flex shrink-0 justify-center px-3">{renderStudyBar(true)}</div>
+            </>
+          )}
 
           {/* Notizzettel: EINE Instanz (kein Remount beim Moduswechsel → Fokus bleibt).
               Im Schreibmodus füllt er den ganzen sichtbaren Bereich über der Tastatur. */}

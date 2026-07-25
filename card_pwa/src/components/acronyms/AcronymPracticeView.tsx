@@ -6,9 +6,11 @@
  * (analog zum Video-Recall-Check). Reiner Übungslauf, Score nur für die aktuelle Runde im Speicher.
  */
 import { useMemo, useState } from 'react'
-import { ArrowLeft, Check, Hash, RotateCcw, X } from 'lucide-react'
+import { ArrowLeft, Check, Hash, Info, RotateCcw, X } from 'lucide-react'
 import { SY0701_ACRONYMS } from '../../data/sy0701Acronyms'
+import { ACRONYM_DEFINITIONS } from '../../data/acronymDefinitions'
 import { buildAcronymQuestions, pickAcronymQuestions } from '../../utils/acronymQuiz'
+import AcronymDetailPanel from './AcronymDetailPanel'
 
 const ROUND_SIZE = 20
 
@@ -23,6 +25,7 @@ const COPY = {
     restart: 'Neue Runde',
     scoreLabel: 'Ergebnis dieser Runde',
     of: 'von',
+    whatIsThis: 'Was ist das genau?',
   },
   en: {
     title: 'Acronyms',
@@ -34,6 +37,7 @@ const COPY = {
     restart: 'New round',
     scoreLabel: 'Result for this round',
     of: 'of',
+    whatIsThis: 'What is this, exactly?',
   },
 } as const
 
@@ -53,6 +57,7 @@ export default function AcronymPracticeView({ language, embedded = false, onExit
   const [index, setIndex] = useState(0)
   const [picked, setPicked] = useState<string | null>(null)
   const [correctCount, setCorrectCount] = useState(0)
+  const [detailOpen, setDetailOpen] = useState(false)
 
   const current = round[index]
   const done = index >= round.length
@@ -65,6 +70,7 @@ export default function AcronymPracticeView({ language, embedded = false, onExit
 
   const next = () => {
     setPicked(null)
+    setDetailOpen(false)
     setIndex(i => i + 1)
   }
 
@@ -72,6 +78,7 @@ export default function AcronymPracticeView({ language, embedded = false, onExit
     setRoundSeed(Date.now())
     setIndex(0)
     setPicked(null)
+    setDetailOpen(false)
     setCorrectCount(0)
   }
 
@@ -152,6 +159,18 @@ export default function AcronymPracticeView({ language, embedded = false, onExit
                   )
                 })}
               </div>
+
+              {picked !== null && (
+                <button
+                  type="button"
+                  onClick={() => setDetailOpen(true)}
+                  data-testid="acronym-detail-open"
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-ds-xl border border-[#1f1f23] bg-[#0f0f0f] px-3.5 py-2.5 font-mono text-[12.5px] text-zinc-300 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
+                >
+                  <Info size={14} strokeWidth={1.5} />
+                  {copy.whatIsThis}
+                </button>
+              )}
             </div>
           )}
 
@@ -194,6 +213,16 @@ export default function AcronymPracticeView({ language, embedded = false, onExit
           </button>
         )}
       </div>
+
+      {detailOpen && current && (
+        <AcronymDetailPanel
+          abbr={current.abbr}
+          meaning={current.correctMeaning}
+          definition={ACRONYM_DEFINITIONS[current.id]}
+          language={language}
+          onClose={() => setDetailOpen(false)}
+        />
+      )}
     </div>
   )
 }
