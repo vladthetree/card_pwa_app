@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT:
  * Role: Profile-scoped persistence layer of the dedicated SY0-701 learning-unit system (Phase 2): unit lifecycle, frozen executions, video/recall progress, draft exam plan, one-time legacy owner import.
- * Used by: learning-unit tests and (later) the dedicated Lerneinheiten UI adapter — nothing in the existing app imports this yet.
+ * Used by: LearningUnitsView, VideosView, SettingsContext, useLearningUnits, learningUnitRunner, syncPull, dbBackup, and tests.
  * Important: Every function takes an explicit `profileId` and never re-derives scope after an `await` (Detailplan §16). Writes are atomic Dexie transactions; the legacy import runs exactly once via `migrationMeta['legacy-learning-v1']`.
  */
 import {

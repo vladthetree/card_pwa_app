@@ -1,6 +1,7 @@
 import 'fake-indexeddb/auto'
 import Dexie from 'dexie'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { DATABASE_NAMES } from '../../constants/appIdentity'
 import { LearningUnitsDB } from '../../db/learningUnitsDb'
 import type { LearningUnitExecution } from '../../utils/learningUnits'
 import {
@@ -33,7 +34,7 @@ import {
 let db: LearningUnitsDB
 
 beforeEach(async () => {
-  await Dexie.delete('card-pwa-learning-units')
+  await Dexie.delete(DATABASE_NAMES.learningUnits)
   db = new LearningUnitsDB()
 })
 

@@ -40,6 +40,7 @@ export const DATABASE_NAMES = {
   legacyApp: 'anki-pwa-db',
   syncQueue: 'card-pwa-sync-queue',
   legacySyncQueue: 'anki-pwa-sync-queue',
+  learningUnits: 'card-pwa-learning-units',
 } as const
 
 export const SW_CHANNELS = {

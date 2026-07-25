@@ -7,33 +7,13 @@
 import { useEffect, useState } from 'react'
 import { liveQuery } from 'dexie'
 import { type VideoTagMetaRecord } from '../db'
-import {
-  getVideoTagMeta,
-  listVideoTagMeta,
-  listVideoTagStats,
-  resolveVideoTagId,
-} from '../db/queries/videoTagMeta'
+import { getVideoTagMeta, listVideoTagStats } from '../db/queries/videoTagMeta'
 import type { VideoTagStat } from '../utils/videoTagStats'
 
 /**
  * Live-aktualisierte Tag-Metadaten und -Kennzahlen für den Videomodus. Alle Hooks
  * sind auf das aktive Profil (`profileId`) eingeschränkt.
  */
-
-/** Alle nicht-archivierten Tag-Metadaten des Profils (gepinnt zuerst). */
-export function useVideoTagMeta(profileId: string): VideoTagMetaRecord[] {
-  const [metas, setMetas] = useState<VideoTagMetaRecord[]>([])
-
-  useEffect(() => {
-    const subscription = liveQuery(() => listVideoTagMeta(profileId)).subscribe({
-      next: rows => setMetas(rows),
-      error: () => setMetas([]),
-    })
-    return () => subscription.unsubscribe()
-  }, [profileId])
-
-  return metas
-}
 
 /** Kennzahlen pro Tag (Notizen/Karten/Zeitmarken/Fragen/Kartenideen/verwandt). */
 export function useVideoTagStats(profileId: string): VideoTagStat[] {
@@ -67,23 +47,4 @@ export function useVideoTag(profileId: string, tag: string | null): VideoTagMeta
   }, [profileId, tag])
 
   return meta
-}
-
-/** Kanonische Tag-ID zu `rawTag` (folgt Aliassen), reaktiv. Leerer Tag ⇒ `''`. */
-export function useResolvedVideoTag(profileId: string, rawTag: string | null): string {
-  const [resolved, setResolved] = useState('')
-
-  useEffect(() => {
-    if (!rawTag) {
-      setResolved('')
-      return
-    }
-    const subscription = liveQuery(() => resolveVideoTagId(profileId, rawTag)).subscribe({
-      next: id => setResolved(id),
-      error: () => setResolved(''),
-    })
-    return () => subscription.unsubscribe()
-  }, [profileId, rawTag])
-
-  return resolved
 }

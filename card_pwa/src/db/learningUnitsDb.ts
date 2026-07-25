@@ -5,6 +5,7 @@
  * Important: Deliberately a SEPARATE database (`card-pwa-learning-units`), not a version bump of CardPwaDB: the existing system stays untouched (Detailplan §16.1 sieht v22 in der Haupt-DB vor; diese dedizierte DB ist das additive Äquivalent). Every key starts with profileId.
  */
 import Dexie, { type Table } from 'dexie'
+import { DATABASE_NAMES } from '../constants/appIdentity'
 import type {
   LearningUnitExecution,
   LearningUnitState,
@@ -112,7 +113,7 @@ export class LearningUnitsDB extends Dexie {
   labAttempts!: Table<LabAttemptRecord, string>
 
   /** `name` nur für Tests überschreibbar (z. B. Quelle/Ziel eines Restores). */
-  constructor(name = 'card-pwa-learning-units') {
+  constructor(name: string = DATABASE_NAMES.learningUnits) {
     super(name)
     // Indizes nach Detailplan §16.1 (Teilmenge ohne Server-Receipt-Stores;
     // assessment*/examAttempts folgen mit Phase 5).
