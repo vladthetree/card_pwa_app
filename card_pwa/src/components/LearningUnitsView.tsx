@@ -12,7 +12,8 @@ import { useSettings } from '../contexts/SettingsContext'
 import { profileScopeId } from '../services/profileService'
 import { useTodayPackage } from '../hooks/home/useTodayPackage'
 import { useLearningUnits } from '../hooks/home/useLearningUnits'
-import { HomeLearningUnitList, LEARNING_UNIT_COPY } from './home/HomeLearningUnitList'
+import { HomeLearningUnitList } from './home/HomeLearningUnitList'
+import { LEARNING_UNIT_COPY } from './home/learningUnitCopy'
 import {
   LearningPlanPanel,
   buildLearningPlanFormValues,

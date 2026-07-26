@@ -38,6 +38,10 @@ async function executeSyncCycle(): Promise<boolean> {
   }
 
   // Phase 2: pull remote deltas only when local push backlog is drained.
+  // pullAndApplySyncDeltas repeats this pending-check internally right before
+  // its network call — that is intentional, not leftover duplication: it
+  // closes the race where a new mutation gets enqueued between this check and
+  // the pull (see comment there before touching either check).
   if (navigator.onLine && pendingAfterFlush === 0) {
     await pullAndApplySyncDeltas()
   }

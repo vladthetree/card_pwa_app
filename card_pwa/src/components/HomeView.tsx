@@ -11,7 +11,7 @@ import { useDecks, useGamificationProfile, useShuffleCollections, useStats } fro
 import { usePwaInstall } from '../hooks/usePwaInstall'
 import { useServerHeartbeat } from '../hooks/useServerHeartbeat'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
-import type { Card, Deck, ShuffleCollection } from '../types'
+import { HOME_TABS, type Card, type Deck, type HomeTab, type ShuffleCollection } from '../types'
 import { UI_TOKENS } from '../constants/ui'
 import { HomeHeaderBar } from './home/HomeHeaderBar'
 import { HomeStatsSection } from './home/HomeStatsSection'
@@ -52,15 +52,7 @@ const HomeExportModal = lazy(() => import('./home/HomeExportModal').then(module 
 const HomeDeckCardsModal = lazy(() => import('./home/HomeDeckCardsModal').then(module => ({ default: module.HomeDeckCardsModal })))
 const HomeShuffleCollectionModal = lazy(() => import('./home/HomeShuffleCollectionModal').then(module => ({ default: module.HomeShuffleCollectionModal })))
 
-/** Home-Modi unter „Ansichten": Dashboard (Statistik-Widgets scrollbar),
- *  Deckliste, Tag-Ansicht, Daily Quest sowie die eingebetteten Lerneinheiten-
- *  und Labs-Bereiche. Die Homebar bleibt in allen Modi unverändert obendrüber;
- *  nur Karten-Session und Lernvideos sind Vollbild. */
-export type HomeTab = 'dashboard' | 'decks' | 'tags' | 'learning-units' | 'daily-quest' | 'labs' | 'acronyms'
-
 const HOME_TAB_STORAGE_KEY = 'card-pwa-home-tab'
-
-const HOME_TABS: readonly HomeTab[] = ['dashboard', 'decks', 'tags', 'learning-units', 'daily-quest', 'labs', 'acronyms']
 
 function readInitialHomeTab(): HomeTab {
   try {

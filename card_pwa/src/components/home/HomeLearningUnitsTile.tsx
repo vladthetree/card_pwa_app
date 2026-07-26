@@ -8,7 +8,7 @@ import { motion } from '../../ui/motion'
 import { ChevronRight, GraduationCap } from 'lucide-react'
 import type { LearningPhase, ReadinessStatus } from '../../utils/learningUnits'
 import type { RankedLearningUnit } from '../../utils/learningUnitRanking'
-import { LEARNING_UNIT_COPY } from './HomeLearningUnitList'
+import { LEARNING_UNIT_COPY } from './learningUnitCopy'
 
 interface Props {
   language: 'de' | 'en'

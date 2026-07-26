@@ -7,8 +7,7 @@ import { motion } from '../../ui/motion'
 import { Check, ChevronDown, Dices, Download, FlaskConical, FolderPlus, GraduationCap, Hash, LayoutDashboard, Loader2, Plus, RefreshCw, Search, Shuffle, Upload, Video, X } from 'lucide-react'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 import { useFloatingMenu } from '../../hooks/useFloatingMenu'
-
-type HomeTab = 'dashboard' | 'decks' | 'tags' | 'learning-units' | 'daily-quest' | 'labs' | 'acronyms'
+import type { HomeTab } from '../../types'
 
 interface Props {
   t: Record<string, string>

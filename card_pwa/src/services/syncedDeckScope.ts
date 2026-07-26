@@ -1,8 +1,11 @@
 /**
  * AI_CONTEXT:
  * Role: Computes which deck IDs are currently in scope for sync/study based on linked-profile selection, descendants, and review-deck visibility.
- * Used by: Home derived data, shuffle summaries, sync pull, and deck filtering.
+ * Used by: getSyncedDeckIds — Home derived data, shuffle summaries, deck filtering.
+ *   getSelectedDeckFilter — the canonical Set-based filter shared by syncQueue (push) and syncPull, so both apply identical selection rules.
  * Important: A null selection means default scope, an empty array means explicitly no decks; do not conflate those states.
+ * getSyncedDeckIds and getSelectedDeckFilter are intentionally separate: the former resolves userId/local-vs-linked itself and always
+ * returns a concrete array, the latter expects an already-linked profile and returns null to mean "no filter" to its callers.
  */
 import { db } from '../db'
 import { isSyncActive } from './syncConfig'
@@ -41,6 +44,34 @@ export async function getSyncedDeckIds(userId?: string): Promise<string[]> {
 
   // Local-only: all non-deleted decks are in scope.
   return localIds
+}
+
+/**
+ * Deck-Id-Filter für das verknüpfte Profil (Set | null; null = kein aktiver
+ * Filter). Kanonische Quelle für syncQueue (Push) und syncPull, damit beide
+ * exakt dieselbe Auswahl-/Review-Deck-/Hierarchie-Regel anwenden.
+ */
+export async function getSelectedDeckFilter(): Promise<Set<string> | null> {
+  try {
+    const profile = await db.profile.get('current')
+    if (!profile || profile.mode !== 'linked' || !profile.userId) return null
+    const selected = readSelectedDeckIds(profile.userId)
+    const decks = (await db.decks.toArray()).filter(deck => !deck.isDeleted)
+    const showReviewDecks = readReviewDecksEnabledFromStorage()
+
+    if (selected === null) return null
+    if (selected.length === 0) return new Set()
+
+    const visibleSelected = showReviewDecks
+      ? selected
+      : selected.filter(id => {
+          const deck = decks.find(item => item.id === id)
+          return deck ? !isReviewDeck(deck) : !isReviewDeckId(id)
+        })
+    return expandDeckIdsWithDescendants(decks, new Set(visibleSelected))
+  } catch {
+    return null
+  }
 }
 
 function expandDeckIdsWithDescendants(

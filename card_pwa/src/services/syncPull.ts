@@ -32,13 +32,14 @@ import {
   getOrCreateSyncClientId,
   fetchWithTimeout,
 } from './syncConfig'
-import { profileScopeId, readSelectedDeckIds } from './profileService'
+import { profileScopeId } from './profileService'
 import {
   isReviewDeck,
   isReviewDeckId,
   readReviewDecksEnabledFromStorage,
 } from '../utils/reviewDecks'
 import { filterDecksWithActiveCardsOrDescendants } from '../utils/deckContentScope'
+import { getSelectedDeckFilter } from './syncedDeckScope'
 import { logError } from './errorLog'
 import { EXAM_DATE_SYNCED_EVENT, STORAGE_KEYS } from '../constants/appIdentity'
 import { normalizeExamDateIso, normalizeExamDateUpdatedAt } from '../contexts/SettingsContext'
@@ -174,56 +175,6 @@ const syncApplier = createWorker<
   () => new Worker(new URL('../utils/workers/sync-applier.worker.ts', import.meta.url), { type: 'module' }),
   (payload) => resolveOperations(payload),
 )
-
-async function readSelectedDeckFilter(): Promise<Set<string> | null> {
-  try {
-    const profile = await db.profile.get('current')
-    if (!profile || profile.mode !== 'linked' || !profile.userId) return null
-    const selected = readSelectedDeckIds(profile.userId)
-    const decks = (await db.decks.toArray()).filter(deck => !deck.isDeleted)
-    const showReviewDecks = readReviewDecksEnabledFromStorage()
-
-    if (selected === null) {
-      return null
-    }
-
-    if (selected.length === 0) return new Set() // explicitly empty → sync nothing
-
-    const visibleSelected = showReviewDecks
-      ? selected
-      : selected.filter(id => {
-          const deck = decks.find(item => item.id === id)
-          return deck ? !isReviewDeck(deck) : !isReviewDeckId(id)
-        })
-    return expandDeckIdsWithDescendants(decks, new Set(visibleSelected))
-  } catch {
-    return null
-  }
-}
-
-function expandDeckIdsWithDescendants(
-  decks: Array<{ id: string; parentDeckId?: string | null }>,
-  selectedDeckIds: Set<string>,
-): Set<string> {
-  const childrenByParent = new Map<string, Array<{ id: string }>>()
-  const activeIds = new Set(decks.map(deck => deck.id))
-  for (const deck of decks) {
-    if (!deck.parentDeckId || !activeIds.has(deck.parentDeckId)) continue
-    const bucket = childrenByParent.get(deck.parentDeckId) ?? []
-    bucket.push(deck)
-    childrenByParent.set(deck.parentDeckId, bucket)
-  }
-
-  const expanded = new Set<string>()
-  const stack = Array.from(selectedDeckIds)
-  while (stack.length > 0) {
-    const deckId = stack.pop()
-    if (!deckId || expanded.has(deckId)) continue
-    expanded.add(deckId)
-    for (const child of childrenByParent.get(deckId) ?? []) stack.push(child.id)
-  }
-  return expanded
-}
 
 function filterSnapshotBySelectedDecks(
   selectedDecks: Set<string> | null,
@@ -1034,7 +985,7 @@ async function fetchAndApplySnapshot(clientId: string): Promise<boolean> {
       rawVideoNotes,
     })
 
-    const selectedDecks = await readSelectedDeckFilter()
+    const selectedDecks = await getSelectedDeckFilter()
     const filtered = filterSnapshotBySelectedDecks(selectedDecks, decks, cards, reviews)
     const snapshotDecks = filtered.decks
     const snapshotCards = filtered.cards
@@ -1133,7 +1084,7 @@ async function runBootstrapUpload(
         : Promise.resolve([] as ShuffleCollectionRecord[]),
       db.videoNotes2.where('profileId').equals(activeProfileId).toArray(),
     ])
-    const selectedDecks = await readSelectedDeckFilter()
+    const selectedDecks = await getSelectedDeckFilter()
     const {
       decks,
       cards,
@@ -1298,6 +1249,10 @@ export async function pullAndApplySyncDeltas(limit = 200) {
   const endpoint = getPullEndpoint()
   if (!endpoint) return
 
+  // syncCoordinator already gates this call on an empty push queue, but a new
+  // local mutation can be enqueued in the gap between that check and this
+  // network call. Re-checking here (rather than trusting the caller) closes
+  // that race window instead of duplicating it — do not remove.
   const pendingBeforeFlush = await getSyncQueuePendingCount()
   if (pendingBeforeFlush > 0 && navigator.onLine) {
     const flushResult = await flushSyncQueue({ limit: 200 })
@@ -1317,7 +1272,7 @@ export async function pullAndApplySyncDeltas(limit = 200) {
 
   let cursor = await readCursor()
   const appliedOpIds = await readAppliedOpIds()
-  const selectedDecks = await readSelectedDeckFilter()
+  const selectedDecks = await getSelectedDeckFilter()
 
   try {
     for (let page = 0; page < 20; page += 1) {

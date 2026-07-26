@@ -5,7 +5,6 @@ import { useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import {
   HelpCircle,
-  ChevronDown,
   Upload,
   FileText,
   Database,
@@ -16,6 +15,7 @@ import {
 import { STRINGS } from '../contexts/SettingsContext'
 import { useSettings } from '../contexts/SettingsContext'
 import { UI_TOKENS } from '../constants/ui'
+import { AccordionSection } from './AccordionSection'
 
 interface Props {
   isOpen: boolean
@@ -23,54 +23,6 @@ interface Props {
 }
 
 type FaqSectionKey = 'import_export' | 'study' | 'csv' | 'mc' | 'txt' | 'apkg' | 'badge' | 'tips'
-
-interface FaqSectionProps {
-  title: string
-  description: string
-  icon: React.ReactNode
-  isOpen: boolean
-  onToggle: () => void
-  children: React.ReactNode
-}
-
-function FaqSection({ title, description, icon, isOpen, onToggle, children }: FaqSectionProps) {
-  return (
-    <div className={`overflow-hidden rounded-ds-xl transition-all duration-300 ease-out ${isOpen ? 'border border-[#3f3f46] bg-[#0c0c0c] shadow-card' : 'border border-[#18181b] bg-[#0c0c0c]'}`}>
-      <button
-        type="button"
-        onClick={onToggle}
-        className="w-full flex items-center justify-between gap-4 px-4 py-4 text-left hover:bg-[#111] transition-all duration-300 ease-out"
-      >
-        <div className="flex items-start gap-3 min-w-0">
-          <div className={`mt-0.5 transition-colors duration-300 ease-out ${isOpen ? 'text-white' : 'text-zinc-700'}`}>{icon}</div>
-          <div className="min-w-0">
-            <p className="text-sm font-black text-white">{title}</p>
-            <p className="text-xs text-white/50 mt-1 leading-relaxed">{description}</p>
-          </div>
-        </div>
-        <ChevronDown
-          size={18}
-          strokeWidth={1.5}
-          className={`shrink-0 transition-all duration-300 ease-out ${isOpen ? 'rotate-180 text-white' : 'text-zinc-700'}`}
-        />
-      </button>
-
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="overflow-hidden"
-          >
-            <div className="px-4 pb-4 border-t border-[#18181b] space-y-4">{children}</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
-}
 
 export default function FaqModal({ isOpen, onClose }: Props) {
   const { settings } = useSettings()
@@ -137,7 +89,8 @@ export default function FaqModal({ isOpen, onClose }: Props) {
               className="overflow-y-auto px-4 py-4 sm:px-5 sm:py-5 space-y-4"
               style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - 9.25rem)' }}
             >
-              <FaqSection
+              <AccordionSection
+                variant="faq"
                 title={t.faq_import_export}
                 description={t.faq_import_export_help}
                 icon={<Upload size={18} />}
@@ -154,9 +107,10 @@ export default function FaqModal({ isOpen, onClose }: Props) {
                     {renderContent(t.faq_export_content)}
                   </div>
                 </div>
-              </FaqSection>
+              </AccordionSection>
 
-              <FaqSection
+              <AccordionSection
+                variant="faq"
                 title={t.faq_study_session}
                 description={t.faq_study_session_help}
                 icon={<CheckCircle2 size={18} />}
@@ -167,9 +121,10 @@ export default function FaqModal({ isOpen, onClose }: Props) {
                   <h4 className="text-sm font-medium text-white">{t.faq_study_title}</h4>
                   {renderContent(t.faq_study_content)}
                 </div>
-              </FaqSection>
+              </AccordionSection>
 
-              <FaqSection
+              <AccordionSection
+                variant="faq"
                 title={t.faq_csv_format}
                 description={t.faq_csv_format_help}
                 icon={<FileText size={18} />}
@@ -190,9 +145,10 @@ export default function FaqModal({ isOpen, onClose }: Props) {
                     </div>
                   </div>
                 </div>
-              </FaqSection>
+              </AccordionSection>
 
-              <FaqSection
+              <AccordionSection
+                variant="faq"
                 title={t.faq_mc_format}
                 description={t.faq_mc_format_help}
                 icon={<CheckCircle2 size={18} />}
@@ -203,9 +159,10 @@ export default function FaqModal({ isOpen, onClose }: Props) {
                   <h4 className="text-sm font-medium text-white">{t.faq_mc_title}</h4>
                   {renderContent(t.faq_mc_content)}
                 </div>
-              </FaqSection>
+              </AccordionSection>
 
-              <FaqSection
+              <AccordionSection
+                variant="faq"
                 title={t.faq_txt_format}
                 description={t.faq_txt_format_help}
                 icon={<FileText size={18} />}
@@ -218,9 +175,10 @@ export default function FaqModal({ isOpen, onClose }: Props) {
                     {t.faq_txt_structure}
                   </div>
                 </div>
-              </FaqSection>
+              </AccordionSection>
 
-              <FaqSection
+              <AccordionSection
+                variant="faq"
                 title={t.faq_apkg_format}
                 description={t.faq_apkg_format_help}
                 icon={<Database size={18} />}
@@ -230,9 +188,10 @@ export default function FaqModal({ isOpen, onClose }: Props) {
                 <div className="pt-3">
                   {renderContent(t.faq_apkg_info)}
                 </div>
-              </FaqSection>
+              </AccordionSection>
 
-              <FaqSection
+              <AccordionSection
+                variant="faq"
                 title={t.faq_badge_vs_session}
                 description={t.faq_badge_vs_session_help}
                 icon={<Lightbulb size={18} />}
@@ -243,9 +202,10 @@ export default function FaqModal({ isOpen, onClose }: Props) {
                   <h4 className="text-sm font-medium text-white">{t.faq_badge_vs_session_title}</h4>
                   {renderContent(t.faq_badge_vs_session_content)}
                 </div>
-              </FaqSection>
+              </AccordionSection>
 
-              <FaqSection
+              <AccordionSection
+                variant="faq"
                 title={t.faq_best_practices}
                 description={t.faq_best_practices_help}
                 icon={<Lightbulb size={18} />}
@@ -256,7 +216,7 @@ export default function FaqModal({ isOpen, onClose }: Props) {
                   <h4 className="text-sm font-medium text-white">{t.faq_tips_title}</h4>
                   {renderContent(t.faq_tips_content)}
                 </div>
-              </FaqSection>
+              </AccordionSection>
             </div>
 
             {/* Footer */}

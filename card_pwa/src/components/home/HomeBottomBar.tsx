@@ -14,8 +14,7 @@ import {
   MobileBottomSheetLabel,
 } from '../MobileBottomSheet'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
-
-type HomeTab = 'dashboard' | 'decks' | 'tags' | 'learning-units' | 'daily-quest' | 'labs' | 'acronyms'
+import type { HomeTab } from '../../types'
 import { UI_TOKENS } from '../../constants/ui'
 
 interface Props {

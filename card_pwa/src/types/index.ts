@@ -185,5 +185,10 @@ export interface ReviewUndoToken {
 }
 
 // 'learning-units' und 'labs' sind seit 2026-07-19 keine eigenen Views mehr,
-// sondern Home-Modi (HomeTab in HomeView) unter der unveränderten Homebar.
+// sondern Home-Modi (HomeTab) unter der unveränderten Homebar.
 export type View = 'home' | 'study' | 'shuffle-study' | 'shuffle-manage' | 'videos'
+
+/** Home-Modi unter „Ansichten"; kanonische Quelle für HomeView, HomeBottomBar und HomeDeckToolbar. */
+export type HomeTab = 'dashboard' | 'decks' | 'tags' | 'learning-units' | 'daily-quest' | 'labs' | 'acronyms'
+
+export const HOME_TABS: readonly HomeTab[] = ['dashboard', 'decks', 'tags', 'learning-units', 'daily-quest', 'labs', 'acronyms']
