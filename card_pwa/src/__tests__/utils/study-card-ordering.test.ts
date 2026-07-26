@@ -11,7 +11,7 @@ import {
   interleaveCardsByDeck,
   resolveNewCardAllowance,
   sortStudyCards,
-} from '../../services/studyCardOrdering'
+} from '../../utils/studyCardOrdering'
 import type { Card } from '../../types'
 
 function createCard(overrides: Partial<Card>): Card {

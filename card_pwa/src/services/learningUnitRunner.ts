@@ -25,7 +25,7 @@ import {
   type LearningUnitState,
   type VideoRecallRun,
 } from '../utils/learningUnits'
-import { sortStudyCards } from './studyCardOrdering'
+import { sortStudyCards } from '../utils/studyCardOrdering'
 import { getSecurityObjectiveDeckId } from '../utils/securityDeckHierarchy'
 import { listAnswerStats } from '../db/queries/answerStats'
 import {

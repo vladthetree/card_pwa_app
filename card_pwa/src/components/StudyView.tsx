@@ -11,7 +11,7 @@ import { ArrowLeft, RotateCcw, CheckCircle, AlertCircle, RefreshCw, Type, Sparkl
 import { useDeckCards } from '../hooks/useCardDb'
 import { recordReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession, readActiveSession } from '../db/queries'
 import { STRINGS, useSettings, type QuestionTextSize } from '../contexts/SettingsContext'
-import { buildStudySessionSelection, enforceDailyDeckCardLimit } from '../services/studyCardOrdering'
+import { buildStudySessionSelection, enforceDailyDeckCardLimit } from '../utils/studyCardOrdering'
 import { buildDragMatchModePlan } from '../services/studyModeSelector'
 import {
   buildPersistedStudySession,

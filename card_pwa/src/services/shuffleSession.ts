@@ -5,8 +5,8 @@ import type { ShuffleCollectionRecord } from '../db'
 import { listDeckStudyCandidates } from '../db/queries'
 import { DAY_MS, resolveDueAtMs } from '../utils/time'
 import type { Card } from '../types'
-import { compareByDueRank, getCardTypePriority, seededRank } from './cardOrdering'
-import { getCardWeight, sortStudyCards } from './studyCardOrdering'
+import { compareByDueRank, getCardTypePriority, seededRank } from '../utils/cardOrdering'
+import { getCardWeight, sortStudyCards } from '../utils/studyCardOrdering'
 import { getSyncedDeckIds } from './syncedDeckScope'
 
 export interface ShuffleStudyCard extends Card {

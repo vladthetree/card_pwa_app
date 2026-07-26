@@ -1,9 +1,9 @@
 /**
- * AI_CONTEXT: Application service for card Ordering; owns business logic outside React components for learning, sync, profile, update, or session flows.
+ * AI_CONTEXT: Pure card-priority/ordering primitives (type priority, seeded rank, due-rank comparator); no I/O.
  */
 import type { Card } from '../types'
-import { fnv1a32 } from '../utils/hash'
-import { resolveDueAtMs } from '../utils/time'
+import { fnv1a32 } from './hash'
+import { resolveDueAtMs } from './time'
 
 /**
  * Study-queue priority by card type (lower = earlier).

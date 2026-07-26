@@ -29,7 +29,7 @@ import {
   type ReadinessStatus,
 } from '../../utils/learningUnits'
 import type { Card } from '../../types'
-import { sortStudyCards } from '../../services/studyCardOrdering'
+import { sortStudyCards } from '../../utils/studyCardOrdering'
 import { SY0_701_OBJECTIVES, getSecurityObjectiveDeckId } from '../../utils/securityDeckHierarchy'
 import { listCardsByDeckIdsDirect, listCardsByIds } from '../../db/queries'
 import { listAnswerStats } from '../../db/queries/answerStats'

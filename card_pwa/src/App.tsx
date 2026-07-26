@@ -4,7 +4,7 @@
  * Used by: main.tsx mounts this component; feature views are lazy-loaded from here.
  * Important: App-level navigation is local state, not a router; add new primary screens by extending the View type and this switch flow.
  */
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { LazyMotion } from 'framer-motion'
 import { AnimatePresence, motion, useReducedMotion } from './ui/motion'
 import { ThemeProvider, useTheme } from './contexts/ThemeContext'
@@ -13,27 +13,17 @@ import AppInitializer from './components/AppInitializer'
 import AppErrorBoundary from './components/AppErrorBoundary'
 import ToastContainer from './components/ToastContainer'
 import StartupLoader from './components/StartupLoader'
-import type { Card, Deck, ShuffleCollection, View } from './types'
-import {
-  clearActiveSession,
-  getDeckNameMap,
-  getResumableStudySession,
-  listCardsByIds,
-  pickDailyQuestCards,
-} from './db/queries'
-import { APP_NAME, STORAGE_KEYS, SW_CHANNELS } from './constants/appIdentity'
+import { APP_NAME } from './constants/appIdentity'
 import { supportsServiceWorker } from './env'
 import { useAutoJoinDefaultProfile } from './hooks/useAutoJoinDefaultProfile'
 import { pickLaunchMotivationQuote } from './utils/motivationQuote'
-import { readTodayPackagePointer } from './utils/todayPackage'
 import { useFullscreenPreference } from './hooks/useFullscreen'
+import { useStartupSplash } from './hooks/app/useStartupSplash'
+import { useServiceWorkerUpdateFlow } from './hooks/app/useServiceWorkerUpdateFlow'
+import { useAppNavigation } from './hooks/app/useAppNavigation'
 import type { ServiceWorkerStartupReadiness } from './runtime/swRegistration'
 
 const SAFE_AREA_DEBUG_STORAGE_KEY = 'card-pwa-safe-area-debug'
-// Der Start-Splash bleibt stehen, bis der Nutzer tippt — der Motivationsspruch
-// soll in Ruhe lesbar sein. Der Tap wird erst nach dieser Zeit scharf, damit
-// ein hastiger Doppel-Tap beim Öffnen den Spruch nicht sofort wegwischt.
-const INITIAL_SPLASH_TAP_ENABLE_MS = 3000
 
 interface AppProps {
   startupReady?: Promise<ServiceWorkerStartupReadiness>
@@ -43,80 +33,6 @@ interface AppProps {
 // aus ui/motion rendern sofort und animieren, sobald das Paket da ist (nach dem
 // ersten Start aus dem SW-Cache praktisch verzögerungsfrei).
 const loadMotionFeatures = () => import('./ui/motionFeatures').then(mod => mod.default)
-
-/**
- * Resolves the initial view from URL params so PWA shortcuts (e.g. `/?view=study`
- * or `/?view=import` from the web-app manifest) navigate to the right place
- * on launch instead of always starting on home (Issue #4).
- */
-function getInitialView(): View {
-  if (typeof window !== 'undefined') {
-    const v = new URLSearchParams(window.location.search).get('view')
-    if (v === 'shuffle' || v === 'shuffle-manage') return 'shuffle-manage'
-    // 'study' startet nach der Initialisierung direkt eine Session (Resume oder
-    // Daily Quest) — siehe den Quick-Study-Effekt in AppShell.
-    // 'import' bleibt auf Home und öffnet dort das ImportModal (importRequest).
-  }
-  return 'home'
-}
-
-/** Reminder-Push und Manifest-Shortcut verlinken auf `/?view=study`. */
-function isQuickStudyRequested(): boolean {
-  if (typeof window === 'undefined') return false
-  return new URLSearchParams(window.location.search).get('view') === 'study'
-}
-
-/** Manifest-Shortcut und File-Handler verlinken auf `/?view=import`.
- *  Der SW-Install-/Update-Fluss lädt die Seite neu (controllerchange → reload),
- *  nachdem der URL-Sync `?view=…` bereits entfernt hat — deshalb wird die
- *  Anforderung in sessionStorage geparkt und erst beim Öffnen des ImportModals
- *  konsumiert (useHomeViewController). */
-function isImportRequested(): boolean {
-  if (typeof window === 'undefined') return false
-  if (new URLSearchParams(window.location.search).get('view') === 'import') {
-    try {
-      sessionStorage.setItem(STORAGE_KEYS.pendingImportRequest, '1')
-    } catch { /* best effort */ }
-    return true
-  }
-  try {
-    return sessionStorage.getItem(STORAGE_KEYS.pendingImportRequest) === '1'
-  } catch {
-    return false
-  }
-}
-
-/** Import-Anforderung an Home: token erzwingt den Effekt auch bei erneutem
- *  Öffnen, file kommt aus dem launchQueue-File-Handler (sonst null). */
-export interface HomeImportRequest {
-  token: number
-  file: File | null
-}
-
-function buildSyntheticDeck(id: string, name: string, cards: Card[]): Deck {
-  return {
-    id,
-    name,
-    total: cards.length,
-    new: cards.filter(c => c.type === 'new').length,
-    learning: cards.filter(c => c.type === 'learning' || c.type === 'relearning').length,
-    due: cards.filter(c => c.type === 'review').length,
-  }
-}
-
-/** Anzeigename einer persistierten Session (echtes Deck, Quest oder Tag-Batch). */
-async function resolveSessionDeckName(sessionId: string): Promise<string> {
-  if (sessionId === 'daily-quest') return 'Daily Quest'
-  if (sessionId.startsWith('tag:')) return `#${sessionId.slice(4)}`
-  if (sessionId.startsWith('unit-exec:')) {
-    const { getExecution } = await import('./db/queries/learningUnits')
-    const execution = await getExecution(sessionId.slice('unit-exec:'.length))
-    const match = execution ? /^unit:course:(\d{3})$/.exec(execution.unitId) : null
-    return match ? `Lerneinheit ${match[1]}` : 'Lerneinheit'
-  }
-  const names = await getDeckNameMap()
-  return names[sessionId] ?? 'Deck'
-}
 
 function readSafeAreaInset(edge: 'top' | 'bottom'): number {
   const probe = document.createElement('div')
@@ -360,396 +276,11 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
   useFullscreenPreference(settings.fullscreenEnabled)
   const swSupported = supportsServiceWorker()
   const prefersReducedMotion = useReducedMotion()
-  const [view, setView] = useState<View>(getInitialView)
-  const [activeDeck, setActiveDeck] = useState<Deck | null>(null)
-  const [activeTagCards, setActiveTagCards] = useState<Card[] | null>(null)
-  const [activeShuffleCollection, setActiveShuffleCollection] = useState<ShuffleCollection | null>(null)
-  // true nur für Flüsse, die eine unterbrochene Session fortsetzen sollen
-  // (Deck-Tap, Resume-Kachel, ?view=study) — frische Quest-/Tag-/Handoff-Starts
-  // mischen bewusst neu.
-  const [allowSessionResume, setAllowSessionResume] = useState(false)
-  const [resumeInfo, setResumeInfo] = useState<{ deckName: string; remaining: number } | null>(null)
-  // Beim ersten Render einfangen: der URL-Sync-Effekt unten räumt `?view=…`
-  // gleich nach dem Mount aus der Adresszeile, bevor spätere Effekte sie lesen.
-  const [quickStudyRequested] = useState(isQuickStudyRequested)
-  const quickStudyHandledRef = useRef(false)
-  const [importRequest, setImportRequest] = useState<HomeImportRequest | null>(
-    () => (isImportRequested() ? { token: 1, file: null } : null)
-  )
-  // Heute-Paket-Sprungziel für die Lernvideos-Ansicht (null = normale Öffnung).
-  const [videosInitialTarget, setVideosInitialTarget] = useState<{ videoIndex: number; openRecall: boolean } | null>(null)
-  // Herkunft „Lerneinheiten-Modus": aus ihm geöffnete Videos/Karten-Sessions
-  // kehren beim Schließen dorthin zurück statt auf Home bzw. in die Listenansicht.
-  const [videosReturnToUnits, setVideosReturnToUnits] = useState(false)
-  const [studyReturnToUnits, setStudyReturnToUnits] = useState(false)
-  const [updateInstalledNotice, setUpdateInstalledNotice] = useState(false)
-  const [pendingReloadAfterStudy, setPendingReloadAfterStudy] = useState(false)
-  const [showInitialSplash, setShowInitialSplash] = useState(true)
-  // Beide müssen wahr sein, bevor der Tap den Splash schließt: die App ist
-  // startbereit UND die Mindest-Lesezeit ist vorbei.
-  const [splashStartupDone, setSplashStartupDone] = useState(false)
-  const [splashTapEnabled, setSplashTapEnabled] = useState(false)
-  const [showUpdateSplash, setShowUpdateSplash] = useState(false)
-  const updateNoticeTimerRef = useRef<number | null>(null)
-  const updateActivationFallbackRef = useRef<number | null>(null)
-  const isStudyView = view === 'study' || view === 'shuffle-study'
 
-  useEffect(() => {
-    let cancelled = false
-
-    const tapTimer = window.setTimeout(() => {
-      if (!cancelled) setSplashTapEnabled(true)
-    }, INITIAL_SPLASH_TAP_ENABLE_MS)
-
-    void startupReady
-      .catch(() => ({ status: 'error', activatedUpdate: false }) satisfies ServiceWorkerStartupReadiness)
-      .then(readiness => {
-        if (cancelled) return
-
-        if (readiness.activatedUpdate) {
-          window.location.reload()
-          return
-        }
-
-        setSplashStartupDone(true)
-      })
-
-    return () => {
-      cancelled = true
-      window.clearTimeout(tapTimer)
-    }
-  }, [startupReady])
-
-  const splashContinueReady = splashStartupDone && splashTapEnabled
-
-  const dismissInitialSplash = () => {
-    if (!splashContinueReady) return
-    setShowInitialSplash(false)
-  }
-
-  useEffect(() => {
-    if (!swSupported) return
-
-    const onUpdate = (event: Event) => {
-      const customEvent = event as CustomEvent<{ waitingWorker: ServiceWorker | null }>
-      const waitingWorker = customEvent.detail?.waitingWorker ?? null
-      if (!waitingWorker) return
-
-      setUpdateInstalledNotice(true)
-      if (!isStudyView) {
-        setShowUpdateSplash(true)
-        if (updateActivationFallbackRef.current !== null) {
-          window.clearTimeout(updateActivationFallbackRef.current)
-        }
-        updateActivationFallbackRef.current = window.setTimeout(() => {
-          setShowUpdateSplash(false)
-          updateActivationFallbackRef.current = null
-        }, 8000)
-      }
-      waitingWorker.postMessage({ type: 'SKIP_WAITING' })
-    }
-
-    window.addEventListener(SW_CHANNELS.updateEvent, onUpdate)
-    return () => window.removeEventListener(SW_CHANNELS.updateEvent, onUpdate)
-  }, [isStudyView, swSupported])
-
-  useEffect(() => {
-    if (!updateInstalledNotice) return
-
-    if (updateNoticeTimerRef.current !== null) {
-      window.clearTimeout(updateNoticeTimerRef.current)
-    }
-
-    updateNoticeTimerRef.current = window.setTimeout(() => {
-      setUpdateInstalledNotice(false)
-      updateNoticeTimerRef.current = null
-    }, 5000)
-
-    return () => {
-      if (updateNoticeTimerRef.current !== null) {
-        window.clearTimeout(updateNoticeTimerRef.current)
-        updateNoticeTimerRef.current = null
-      }
-    }
-  }, [updateInstalledNotice])
-
-  useEffect(() => {
-    if (!swSupported) return
-
-    let reloadTimer: number | null = null
-
-    const onControllerChange = () => {
-      if (updateActivationFallbackRef.current !== null) {
-        window.clearTimeout(updateActivationFallbackRef.current)
-        updateActivationFallbackRef.current = null
-      }
-      setUpdateInstalledNotice(true)
-
-      if (isStudyView) {
-        setPendingReloadAfterStudy(true)
-        return
-      }
-
-      setShowUpdateSplash(true)
-      reloadTimer = window.setTimeout(() => {
-        window.location.reload()
-      }, 180)
-    }
-
-    navigator.serviceWorker.addEventListener('controllerchange', onControllerChange)
-    return () => {
-      navigator.serviceWorker.removeEventListener('controllerchange', onControllerChange)
-      if (reloadTimer !== null) {
-        window.clearTimeout(reloadTimer)
-      }
-    }
-  }, [isStudyView, swSupported])
-
-  useEffect(() => {
-    if (!pendingReloadAfterStudy) return
-    if (isStudyView) return
-
-    setShowUpdateSplash(true)
-    const reloadTimer = window.setTimeout(() => {
-      window.location.reload()
-    }, 180)
-
-    return () => window.clearTimeout(reloadTimer)
-  }, [isStudyView, pendingReloadAfterStudy])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const url = new URL(window.location.href)
-    if (view === 'shuffle-manage') {
-      url.searchParams.set('view', 'shuffle')
-    } else {
-      url.searchParams.delete('view')
-    }
-
-    window.history.replaceState({}, '', url)
-  }, [view])
-
-  // file_handlers aus dem Manifest (Chromium): geöffnete .apkg/.csv-Dateien
-  // landen über die launchQueue direkt im ImportModal auf Home.
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const launchQueue = (window as unknown as {
-      launchQueue?: { setConsumer: (consumer: (params: { files?: FileSystemFileHandle[] }) => void) => void }
-    }).launchQueue
-    if (!launchQueue) return
-
-    launchQueue.setConsumer(params => {
-      void (async () => {
-        const handle = params.files?.[0]
-        if (!handle) return
-        try {
-          const file = await handle.getFile()
-          setView('home')
-          setImportRequest(prev => ({ token: (prev?.token ?? 0) + 1, file }))
-        } catch (error) {
-          console.warn('[App] launchQueue-Datei konnte nicht gelesen werden:', error)
-        }
-      })()
-    })
-  }, [])
-
-  useEffect(() => {
-    if (settings.shuffleModeEnabled) return
-    if (view !== 'shuffle-manage') return
-    setView('home')
-  }, [settings.shuffleModeEnabled, view])
-
-  const startStudy = async (
-    deck: Deck,
-    fixedCardIds?: string[],
-    options?: { sessionId?: string; allowResume?: boolean; returnToUnits?: boolean },
-  ) => {
-    setStudyReturnToUnits(options?.returnToUnits ?? false)
-    if (fixedCardIds !== undefined) {
-      const packageCards = await listCardsByIds(fixedCardIds)
-      if (packageCards.length === 0) return
-      // Lerneinheiten übergeben eine eigene Session-ID (`unit-exec:{executionId}`):
-      // so kollidieren parallele Units desselben Objectives weder untereinander
-      // noch mit der Heute-Paket-Session, und die Session ist wiederaufnehmbar.
-      setAllowSessionResume(options?.allowResume ?? false)
-      setActiveDeck(buildSyntheticDeck(options?.sessionId ?? `today-package:${deck.id}`, deck.name, packageCards))
-      setActiveTagCards(packageCards)
-      setActiveShuffleCollection(null)
-      setView('study')
-      return
-    }
-
-    setAllowSessionResume(true)
-    setActiveDeck(deck)
-    setActiveTagCards(null)
-    setActiveShuffleCollection(null)
-    setView('study')
-  }
-
-  const startTagStudy = (tag: string, cards: Card[]) => {
-    setStudyReturnToUnits(false)
-    setAllowSessionResume(false)
-    setActiveDeck(buildSyntheticDeck(`tag:${tag}`, `#${tag}`, cards))
-    setActiveTagCards(cards)
-    setActiveShuffleCollection(null)
-    setView('study')
-  }
-
-  // Daily Quest (Pilot-Kachel): gemischte Session über mehrere Decks. Nutzt wie
-  // die Tag-Session ein synthetisches Deck mit vorab geladenen Karten; Reviews
-  // fließen über die deckId der Karten weiter in die Ursprungsdecks.
-  const startDailyQuest = (cards: Card[]) => {
-    setStudyReturnToUnits(false)
-    setAllowSessionResume(false)
-    setActiveDeck(buildSyntheticDeck('daily-quest', 'Daily Quest', cards))
-    setActiveTagCards(cards)
-    setActiveShuffleCollection(null)
-    setView('study')
-  }
-
-  // Abruf-Check-Handoff: „Nicht gewusst“-Fragen des Videos als reguläre,
-  // planungswirksame Mini-Session des Objective-Decks lernen.
-  const startObjectiveStudy = (input: { deckId: string; deckName: string; cards: Card[] }) => {
-    setStudyReturnToUnits(false)
-    setAllowSessionResume(false)
-    setActiveDeck(buildSyntheticDeck(input.deckId, input.deckName, input.cards))
-    setActiveTagCards(input.cards)
-    setActiveShuffleCollection(null)
-    setView('study')
-  }
-
-  /** Nimmt die jüngste unterbrochene Session wieder auf (Queue + Zähler). */
-  const resumeStudySession = async (): Promise<boolean> => {
-    const resumable = await getResumableStudySession()
-    if (!resumable) return false
-    const cards = await listCardsByIds(resumable.snapshot.cardIds)
-    if (cards.length === 0) {
-      void clearActiveSession(resumable.sessionId)
-      return false
-    }
-    const deckName = await resolveSessionDeckName(resumable.sessionId)
-    setStudyReturnToUnits(false)
-    setAllowSessionResume(true)
-    setActiveDeck(buildSyntheticDeck(resumable.sessionId, deckName, cards))
-    setActiveTagCards(cards)
-    setActiveShuffleCollection(null)
-    setView('study')
-    return true
-  }
-
-  // ?view=study (Reminder-Push, Manifest-Shortcut): direkt in eine Session statt
-  // auf Home stranden — erst Resume versuchen, sonst Daily Quest starten.
-  useEffect(() => {
-    if (!quickStudyRequested || quickStudyHandledRef.current) return
-    if (showInitialSplash || view !== 'home') return
-    quickStudyHandledRef.current = true
-    void (async () => {
-      if (await resumeStudySession()) return
-      const activePackageCardIds = readTodayPackagePointer().activeCardIds ?? []
-      const cards = await pickDailyQuestCards(settings.studyCardLimit, settings.nextDayStartsAt, {
-        excludeCardIds: activePackageCardIds,
-        runSeed: `quick-daily-quest:${Date.now()}:${Math.random()}`,
-      })
-      if (cards.length > 0) startDailyQuest(cards)
-    })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quickStudyRequested, showInitialSplash, view])
-
-  // Datengrundlage der „Weiterlernen“-Kachel auf Home.
-  useEffect(() => {
-    if (view !== 'home') return
-    let cancelled = false
-    void (async () => {
-      const resumable = await getResumableStudySession()
-      if (cancelled) return
-      if (!resumable) {
-        setResumeInfo(null)
-        return
-      }
-      const deckName = await resolveSessionDeckName(resumable.sessionId)
-      if (cancelled) return
-      setResumeInfo({ deckName, remaining: resumable.snapshot.cardIds.length })
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [view])
-
-  const startShuffleStudy = (collection: ShuffleCollection) => {
-    setActiveShuffleCollection(collection)
-    setActiveDeck(null)
-    setView('shuffle-study')
-  }
-
-  const openShuffleManager = () => {
-    setActiveDeck(null)
-    setActiveShuffleCollection(null)
-    setView('shuffle-manage')
-  }
-
-  // Lerneinheiten (SY0-701) sind ein Home-Modus unter der Homebar
-  // (Nutzerentscheidung 2026-07-19): App fordert den Modus per Token an —
-  // genutzt von der Rücknavigation aus Video-/Karten-Session einer Unit.
-  // Labs sind seitdem ebenfalls ein Home-Modus und laufen komplett in HomeView.
-  const [homeTabRequest, setHomeTabRequest] = useState<{ tab: 'learning-units'; token: number } | null>(null)
-  const openLearningUnits = () => {
-    setActiveDeck(null)
-    setActiveTagCards(null)
-    setActiveShuffleCollection(null)
-    setHomeTabRequest(prev => ({ tab: 'learning-units', token: (prev?.token ?? 0) + 1 }))
-    setView('home')
-  }
-
-  const openVideos = () => {
-    setActiveDeck(null)
-    setActiveTagCards(null)
-    setActiveShuffleCollection(null)
-    setVideosInitialTarget(null)
-    setVideosReturnToUnits(false)
-    setView('videos')
-  }
-
-  // Heute-Paket und Lerneinheiten: Lernvideos-Ansicht direkt bei einem
-  // bestimmten Kurs-Video öffnen (optional gleich mit Abruf-Check).
-  const openVideoAtIndex = (
-    videoIndex: number,
-    openRecall: boolean,
-    options?: { fromLearningUnits?: boolean },
-  ) => {
-    setActiveDeck(null)
-    setActiveTagCards(null)
-    setActiveShuffleCollection(null)
-    setVideosInitialTarget({ videoIndex, openRecall })
-    setVideosReturnToUnits(options?.fromLearningUnits ?? false)
-    setView('videos')
-  }
-
-  const exitVideos = () => {
-    setVideosInitialTarget(null)
-    if (videosReturnToUnits) {
-      setVideosReturnToUnits(false)
-      openLearningUnits()
-      return
-    }
-    goHome()
-  }
-
-  const exitStudy = () => {
-    if (studyReturnToUnits) {
-      setStudyReturnToUnits(false)
-      openLearningUnits()
-      return
-    }
-    goHome()
-  }
-
-  const goHome = () => {
-    setView('home')
-    setActiveDeck(null)
-    setActiveTagCards(null)
-    setActiveShuffleCollection(null)
-  }
+  const { showInitialSplash, splashContinueReady, dismissInitialSplash } = useStartupSplash(startupReady)
+  const nav = useAppNavigation({ showInitialSplash })
+  const isStudyView = nav.view === 'study' || nav.view === 'shuffle-study'
+  const { updateInstalledNotice, showUpdateSplash } = useServiceWorkerUpdateFlow({ swSupported, isStudyView })
 
   const activeSplashMode = showInitialSplash ? 'startup' : showUpdateSplash ? 'update' : null
 
@@ -779,7 +310,7 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                 einer Drag-Match-Antwort) und die Zielansicht nie mounten. Die
                 Views remounten über ihre Keys nur mit Enter-Animation.
                 Guard: __tests__/ui/no-animatepresence-wait.test.ts */}
-            {view === 'home' && (
+            {nav.view === 'home' && (
               <motion.div
                 key="home"
                 initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
@@ -788,22 +319,22 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                 className="flex-1 min-h-0 h-full home-view"
               >
                 <HomeView
-                  onStartStudy={startStudy}
-                  onStartTagStudy={startTagStudy}
-                  onStartShuffleStudy={startShuffleStudy}
-                  onOpenShuffleManager={openShuffleManager}
-                  onStartDailyQuest={startDailyQuest}
-                  onOpenVideos={openVideos}
-                  onOpenVideoAtIndex={openVideoAtIndex}
-                  resumeSession={resumeInfo}
-                  onResumeSession={() => void resumeStudySession()}
-                  importRequest={importRequest}
-                  homeTabRequest={homeTabRequest}
+                  onStartStudy={nav.startStudy}
+                  onStartTagStudy={nav.startTagStudy}
+                  onStartShuffleStudy={nav.startShuffleStudy}
+                  onOpenShuffleManager={nav.openShuffleManager}
+                  onStartDailyQuest={nav.startDailyQuest}
+                  onOpenVideos={nav.openVideos}
+                  onOpenVideoAtIndex={nav.openVideoAtIndex}
+                  resumeSession={nav.resumeInfo}
+                  onResumeSession={() => void nav.resumeStudySession()}
+                  importRequest={nav.importRequest}
+                  homeTabRequest={nav.homeTabRequest}
                 />
               </motion.div>
             )}
 
-            {view === 'shuffle-manage' && (
+            {nav.view === 'shuffle-manage' && (
               <motion.div
                 key="shuffle-manage"
                 initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
@@ -813,15 +344,15 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
               >
                 <HomeView
                   mode="shuffle-manage"
-                  onBackHome={goHome}
-                  onStartStudy={startStudy}
-                  onStartShuffleStudy={startShuffleStudy}
-                  onOpenShuffleManager={openShuffleManager}
+                  onBackHome={nav.goHome}
+                  onStartStudy={nav.startStudy}
+                  onStartShuffleStudy={nav.startShuffleStudy}
+                  onOpenShuffleManager={nav.openShuffleManager}
                 />
               </motion.div>
             )}
 
-            {view === 'study' && activeDeck && (
+            {nav.view === 'study' && nav.activeDeck && (
               <motion.div
                 key="study"
                 initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.995 }}
@@ -829,11 +360,11 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0 h-full study-view"
               >
-                <StudyView deck={activeDeck} preloadedCards={activeTagCards ?? undefined} allowResume={allowSessionResume} onExit={exitStudy} />
+                <StudyView deck={nav.activeDeck} preloadedCards={nav.activeTagCards ?? undefined} allowResume={nav.allowSessionResume} onExit={nav.exitStudy} />
               </motion.div>
             )}
 
-            {view === 'shuffle-study' && activeShuffleCollection && (
+            {nav.view === 'shuffle-study' && nav.activeShuffleCollection && (
               <motion.div
                 key="shuffle-study"
                 initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.995 }}
@@ -841,11 +372,11 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0 h-full study-view"
               >
-                <ShuffleStudyView collection={activeShuffleCollection} onExit={goHome} />
+                <ShuffleStudyView collection={nav.activeShuffleCollection} onExit={nav.goHome} />
               </motion.div>
             )}
 
-            {view === 'videos' && (
+            {nav.view === 'videos' && (
               <motion.div
                 key="videos"
                 initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
@@ -855,11 +386,11 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
               >
                 <VideosView
                   language={settings.language}
-                  onExit={exitVideos}
-                  onStartObjectiveStudy={startObjectiveStudy}
-                  initialVideoIndex={videosInitialTarget?.videoIndex ?? null}
-                  initialRecallOpen={videosInitialTarget?.openRecall ?? false}
-                  onCloseInitialVideo={videosReturnToUnits ? exitVideos : undefined}
+                  onExit={nav.exitVideos}
+                  onStartObjectiveStudy={nav.startObjectiveStudy}
+                  initialVideoIndex={nav.videosInitialTarget?.videoIndex ?? null}
+                  initialRecallOpen={nav.videosInitialTarget?.openRecall ?? false}
+                  onCloseInitialVideo={nav.videosReturnToUnits ? nav.exitVideos : undefined}
                 />
               </motion.div>
             )}

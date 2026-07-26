@@ -6,7 +6,7 @@
  */
 import type { Card } from '../types'
 import type { LocalVideoMeta } from './localVideoManifest'
-import { buildTodayPackageSelection } from '../services/studyCardOrdering'
+import { buildTodayPackageSelection } from './studyCardOrdering'
 
 // ── Statische Typen (Detailplan §5.1, §7, §9) ───────────────────────────────
 

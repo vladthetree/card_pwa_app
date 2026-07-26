@@ -7,20 +7,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowLeft,
-  Brain,
-  Check,
   ChevronDown,
   ChevronUp,
-  Clock,
-  Download,
   ExternalLink,
-  FileText,
   HardDriveDownload,
   Hash,
   Loader2,
   NotebookPen,
   Play,
-  Trash2,
   WifiOff,
   X,
 } from 'lucide-react'
@@ -30,24 +24,30 @@ import { useHandsetLayout } from '../../hooks/useHandsetLayout'
 import { useVisualViewport } from '../../hooks/useVisualViewport'
 import { useVideoNoteIndex } from '../../hooks/useVideoNotes'
 import { useSettings } from '../../contexts/SettingsContext'
-import { getDeckSuccessRates, type DeckSuccessRate } from '../../db/queries'
 import type { Card } from '../../types'
 import { profileScopeId } from '../../services/profileService'
 import { useMesserVideoProgress, resolveVideoStatus, type MesserVideoProgress, type VideoConfidence } from '../../hooks/useMesserVideoProgress'
 import { useVideoRecallScores, computeRecallVerdict, videoScoreKey, type VideoRecallVerdict } from '../../hooks/useVideoRecallScores'
 import { useLocalMesserVideos, useVideoSource, type LocalVideoItem, type LocalVideoObjectiveGroup } from '../../hooks/useLocalMesserVideos'
-import { summarizeDownloads } from '../../utils/videoDownloadQueue'
 import { markVideoOpened, markVideoWatched, setVideoConfidence } from '../../db/queries/learningUnits'
 import {
   getActiveCourseExecutionForVideo,
   recordCourseRecallRun,
 } from '../../services/learningUnitRunner'
+import { usePersistentBool } from '../../hooks/videos/usePersistentBool'
+import { useVideoTagPanels } from '../../hooks/videos/useVideoTagPanels'
+import { useVideoWritingMode } from '../../hooks/videos/useVideoWritingMode'
+import { useObjectiveDeckSuccessRates } from '../../hooks/videos/useObjectiveDeckSuccessRates'
 import MesserVideoPlayer from './MesserVideoPlayer'
 import VideoNotesPanel from './VideoNotesPanel'
 import VideoRecallCheck from './VideoRecallCheck'
 import VideoTranscriptPanel from './VideoTranscriptPanel'
 import TagCollectionPanel from './TagCollectionPanel'
 import VideoTagSidebar from './VideoTagSidebar'
+import { COPY, type Copy } from './videosCopy'
+import { VideoStudyBar } from './VideoStudyBar'
+import { VideoDownloadControl } from './VideoDownloadControl'
+import { ChapterDownloadButton, domainDownloadStats } from './ChapterDownloadButton'
 
 /**
  * Lernvideos — selbst gehostete Professor-Messer-Videos (kein YouTube-iframe).
@@ -60,142 +60,7 @@ import VideoTagSidebar from './VideoTagSidebar'
  * 3-stufige Status hängen weiterhin am Objective (1:1 zu den Decks).
  */
 
-const COPY = {
-  de: {
-    title: 'Lernvideos',
-    subtitle: 'Professor Messer · CompTIA Security+ SY0-701 · lokal',
-    back: 'Zurück',
-    close: 'Schließen',
-    courseIndex: 'Kompletter Kursindex (YouTube)',
-    objective: 'Objective',
-    seen: 'GESEHEN',
-    open: 'OFFEN',
-    pickVideo: 'Wähle links ein Video aus, um es hier abzuspielen.',
-    hasNote: 'Notiz vorhanden',
-    recall: 'Abruf-Check',
-    transcript: 'Transkript',
-    verdictUnderstood: 'VERSTANDEN',
-    verdictAlmost: 'FAST',
-    verdictReview: 'NOCHMAL',
-    confidenceLabel: 'Selbsteinschätzung',
-    confidenceHint: 'Schau das Video, prüf dich aktiv und setz ehrlich deinen Status — Schauen allein ist noch kein Können.',
-    deckRate: 'Deck-Quote: {rate} % ({total} Reviews)',
-    calibrationWarning: 'Deine Einschätzung liegt über der tatsächlichen Quote — prüf dich noch mal aktiv.',
-    gaps: 'LÜCKEN',
-    ok: 'OKAY',
-    solid: 'SICHER',
-    gapsFull: 'Lücken',
-    okFull: 'Okay',
-    solidFull: 'Sicher',
-    loading: 'Lade Videoliste …',
-    unreachableTitle: 'Server nicht erreichbar',
-    unreachableHint: 'Ohne Verbindung zum Pi sind nur heruntergeladene Videos verfügbar.',
-    noVideos: 'Keine lokalen Videos gefunden.',
-    download: 'Offline speichern',
-    downloading: 'Lädt',
-    offline: 'Offline',
-    removeDownload: 'Offline-Kopie entfernen',
-    allOffline: 'Alle offline',
-    streamOnly: 'Nur online (nicht heruntergeladen)',
-    resolving: 'Offline-Kopie wird geladen …',
-    storage: '{count} offline · {size}',
-    chapterDownload: 'Kapitel laden',
-    cancel: 'Abbrechen',
-    chapterOffline: 'Kapitel offline',
-    queued: 'Wartet',
-    quotaError: 'Gerätespeicher voll — nicht alle Videos konnten offline gesichert werden.',
-    fullscreen: 'Vollbild',
-    exitFullscreen: 'Vollbild verlassen',
-    speed: 'Geschwindigkeit',
-    noteStats: '{notes} Zettel · {tags} Tags',
-    tags: 'Tags',
-    course: 'Kurs',
-    showCourse: 'Kurs öffnen',
-    hideCourse: 'Kurs schließen',
-    collapseRecall: 'Abruf-Check einklappen',
-    done: 'Fertig',
-    backToVideo: 'Video',
-  },
-  en: {
-    title: 'Videos',
-    subtitle: 'Professor Messer · CompTIA Security+ SY0-701 · local',
-    back: 'Back',
-    close: 'Close',
-    courseIndex: 'Full course index (YouTube)',
-    objective: 'Objective',
-    seen: 'SEEN',
-    open: 'OPEN',
-    pickVideo: 'Pick a video on the left to play it here.',
-    hasNote: 'Has note',
-    recall: 'Recall check',
-    transcript: 'Transcript',
-    verdictUnderstood: 'GOT IT',
-    verdictAlmost: 'ALMOST',
-    verdictReview: 'REVIEW',
-    confidenceLabel: 'Self-assessment',
-    confidenceHint: 'Watch the video, quiz yourself, and set your status honestly — watching alone is not knowing.',
-    deckRate: 'Deck rate: {rate}% ({total} reviews)',
-    calibrationWarning: 'Your self-assessment is above your actual rate — quiz yourself again.',
-    gaps: 'GAPS',
-    ok: 'OKAY',
-    solid: 'SOLID',
-    gapsFull: 'Gaps',
-    okFull: 'Okay',
-    solidFull: 'Solid',
-    loading: 'Loading video list …',
-    unreachableTitle: 'Server unreachable',
-    unreachableHint: 'Without a connection to the Pi, only downloaded videos are available.',
-    noVideos: 'No local videos found.',
-    download: 'Save offline',
-    downloading: 'Loading',
-    offline: 'Offline',
-    removeDownload: 'Remove offline copy',
-    allOffline: 'All offline',
-    streamOnly: 'Online only (not downloaded)',
-    resolving: 'Loading offline copy …',
-    storage: '{count} offline · {size}',
-    chapterDownload: 'Download chapter',
-    cancel: 'Cancel',
-    chapterOffline: 'Chapter offline',
-    queued: 'Queued',
-    quotaError: 'Device storage full — not all videos could be saved offline.',
-    fullscreen: 'Fullscreen',
-    exitFullscreen: 'Exit fullscreen',
-    speed: 'Playback speed',
-    noteStats: '{notes} notes · {tags} tags',
-    tags: 'Tags',
-    course: 'Course',
-    showCourse: 'Open course',
-    hideCourse: 'Close course',
-    collapseRecall: 'Collapse recall',
-    done: 'Done',
-    backToVideo: 'Video',
-  },
-} as const
-
-type Copy = (typeof COPY)[keyof typeof COPY]
-
 const OBJECTIVE_TITLE = new Map(SY0_701_OBJECTIVES.map(o => [o.code, o.title]))
-
-/** Gerätelokal gemerkter Boolean (Panel auf/zu) — überlebt Reloads. */
-function usePersistentBool(key: string, fallback: boolean): [boolean, (next: boolean | ((prev: boolean) => boolean)) => void] {
-  const [value, setValue] = useState(() => {
-    try {
-      const raw = localStorage.getItem(key)
-      return raw === null ? fallback : raw === '1'
-    } catch {
-      return fallback
-    }
-  })
-  useEffect(() => {
-    try {
-      localStorage.setItem(key, value ? '1' : '0')
-    } catch {
-      /* privater Modus o. Ä. — Zustand bleibt für die Session erhalten */
-    }
-  }, [key, value])
-  return [value, setValue]
-}
 
 interface Props {
   language: 'de' | 'en'
@@ -250,324 +115,6 @@ const VERDICT_CHIP: Record<Exclude<VideoRecallVerdict, 'unknown'>, { labelKey: '
   review: { labelKey: 'verdictReview', cls: 'border-amber-500/30 bg-amber-500/10 text-amber-300' },
 }
 
-const CONFIDENCE_CHIPS: Array<{ level: VideoConfidence; labelKey: 'gapsFull' | 'okFull' | 'solidFull'; activeCls: string }> = [
-  { level: 'gaps', labelKey: 'gapsFull', activeCls: 'border-amber-400/70 bg-amber-500/20 text-amber-100' },
-  { level: 'ok', labelKey: 'okFull', activeCls: 'border-[--brand-secondary-80] bg-[--brand-secondary-20] text-ds-fg' },
-  { level: 'solid', labelKey: 'solidFull', activeCls: 'border-emerald-400/70 bg-emerald-500/20 text-emerald-100' },
-]
-
-function VideoStudyBar({
-  confidence,
-  deckStats,
-  onStartRecall,
-  onOpenTranscript,
-  onSetConfidence,
-  copy,
-  compact = false,
-  open,
-  onToggle,
-}: {
-  confidence: VideoConfidence | null
-  /** Tatsächliche Erfolgsquote des Objective-Decks (Kalibrierungs-Anker). */
-  deckStats?: { rate: number; total: number } | null
-  onStartRecall: () => void
-  onOpenTranscript: () => void
-  onSetConfidence: (next: VideoConfidence | null) => void
-  copy: Copy
-  compact?: boolean
-  open: boolean
-  onToggle: () => void
-}) {
-  // Eingeklappt: schlanke Leiste zum Ausklappen → mehr Platz fürs Video.
-  if (!open) {
-    return (
-      <div className="mt-2 flex w-full max-w-3xl items-stretch gap-2">
-        <button
-          type="button"
-          onClick={onToggle}
-          data-testid="video-studybar-toggle"
-          aria-expanded={false}
-          className={`flex min-w-0 flex-1 items-center justify-center gap-2 rounded-ds-lg border border-[#18181b] bg-[#080808] font-mono font-bold text-zinc-400 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary] ${
-            compact ? 'py-1.5 text-[11px]' : 'py-2 text-[12px]'
-          }`}
-        >
-          <Brain size={14} strokeWidth={1.5} />
-          {copy.recall}
-          <ChevronDown size={13} strokeWidth={1.5} />
-        </button>
-        <button
-          type="button"
-          onClick={onOpenTranscript}
-          data-testid="video-transcript-open"
-          title={copy.transcript}
-          aria-label={copy.transcript}
-          className={`flex shrink-0 items-center justify-center gap-2 rounded-ds-lg border border-[#1f1f23] bg-[#0c0c0c] font-mono font-bold text-zinc-300 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary] ${
-            compact ? 'h-8 w-10 text-[11px]' : 'px-4 text-[12px]'
-          }`}
-        >
-          <FileText size={14} strokeWidth={1.5} />
-          {!compact && copy.transcript}
-        </button>
-      </div>
-    )
-  }
-
-  const chips = (
-    <div className="flex gap-1.5">
-      {CONFIDENCE_CHIPS.map(chip => {
-        const active = confidence === chip.level
-        return (
-          <button
-            key={chip.level}
-            type="button"
-            onClick={() => onSetConfidence(active ? null : chip.level)}
-            data-testid={`video-confidence-${chip.level}`}
-            aria-pressed={active}
-            className={`rounded-ds border font-mono font-bold transition-colors ${compact ? 'px-2 py-1 text-[10px]' : 'px-2.5 py-1 text-[11px]'} ${
-              active ? chip.activeCls : 'border-[#1f1f23] bg-[#0c0c0c] text-zinc-400 hover:border-[#3f3f46]'
-            }`}
-          >
-            {copy[chip.labelKey]}
-          </button>
-        )
-      })}
-    </div>
-  )
-
-  const collapseBtn = (
-    <button
-      type="button"
-      onClick={onToggle}
-      data-testid="video-studybar-toggle"
-      aria-expanded={true}
-      aria-label={copy.collapseRecall}
-      title={copy.collapseRecall}
-      className="ds-icon-button flex h-7 w-7 shrink-0"
-    >
-      <ChevronUp size={14} strokeWidth={1.5} />
-    </button>
-  )
-
-  // Kompakt (Handy): eine Zeile + Einklapp-Pfeil.
-  if (compact) {
-    return (
-      <div className="mt-2 flex w-full max-w-3xl items-center gap-2">
-        <button
-          type="button"
-          onClick={onStartRecall}
-          data-testid="video-recall-start"
-          className="flex shrink-0 items-center gap-1.5 rounded-ds-lg border border-[--brand-secondary-50] bg-[--brand-secondary-12] px-3 py-1.5 font-mono text-[12px] font-bold text-[--brand-secondary] transition-colors hover:border-[--brand-secondary-80]"
-        >
-          <Brain size={14} strokeWidth={1.5} />
-          {copy.recall}
-        </button>
-        <button
-          type="button"
-          onClick={onOpenTranscript}
-          data-testid="video-transcript-open"
-          title={copy.transcript}
-          aria-label={copy.transcript}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-ds-lg border border-[#1f1f23] bg-[#0c0c0c] text-zinc-400 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
-        >
-          <FileText size={14} strokeWidth={1.5} />
-        </button>
-        <div className="flex flex-1 justify-end">{chips}</div>
-        {collapseBtn}
-      </div>
-    )
-  }
-
-  return (
-    <div className="mt-3 w-full max-w-3xl rounded-ds-2xl border border-[#18181b] bg-[#080808] p-3">
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">{copy.recall}</span>
-        {collapseBtn}
-      </div>
-      <div className="flex items-stretch gap-2">
-        <button
-          type="button"
-          onClick={onStartRecall}
-          data-testid="video-recall-start"
-          className="flex flex-1 items-center justify-center gap-2 rounded-ds-xl border border-[--brand-secondary-50] bg-[--brand-secondary-12] py-3 font-mono text-[13px] font-bold text-[--brand-secondary] transition-colors hover:border-[--brand-secondary-80]"
-        >
-          <Brain size={16} strokeWidth={1.5} />
-          {copy.recall}
-        </button>
-        <button
-          type="button"
-          onClick={onOpenTranscript}
-          data-testid="video-transcript-open"
-          className="flex shrink-0 items-center justify-center gap-2 rounded-ds-xl border border-[#1f1f23] bg-[#0c0c0c] px-4 font-mono text-[12px] font-bold text-zinc-300 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
-        >
-          <FileText size={14} strokeWidth={1.5} />
-          {copy.transcript}
-        </button>
-      </div>
-
-      <div className="mt-3 flex items-center justify-between gap-2">
-        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">{copy.confidenceLabel}</span>
-        {chips}
-      </div>
-
-      {/* Metakognitive Kalibrierung: Einschätzung neben der echten Deck-Quote.
-          Erst ab ~10 Reviews — davor ist die Quote kein belastbarer Anker. */}
-      {deckStats && deckStats.total >= 10 && (() => {
-        const overconfident =
-          (confidence === 'solid' && deckStats.rate < 75) ||
-          (confidence === 'ok' && deckStats.rate < 55)
-        return (
-          <p
-            data-testid="video-calibration"
-            className={`mt-2 font-mono text-[10px] leading-relaxed ${overconfident ? 'text-amber-300/90' : 'text-zinc-500'}`}
-          >
-            {copy.deckRate.replace('{rate}', String(deckStats.rate)).replace('{total}', String(deckStats.total))}
-            {overconfident ? ` — ${copy.calibrationWarning}` : ''}
-          </p>
-        )
-      })()}
-
-      <p className="mt-2 font-mono text-[10px] leading-relaxed text-zinc-600">{copy.confidenceHint}</p>
-    </div>
-  )
-}
-
-/** Download-/Offline-Steuerung für ein einzelnes Video. */
-function DownloadControl({
-  item,
-  copy,
-  onDownload,
-  onRemove,
-}: {
-  item: LocalVideoItem
-  copy: Copy
-  onDownload: () => void
-  onRemove: () => void
-}) {
-  if (item.progress !== undefined) {
-    const pct = Math.round(item.progress * 100)
-    return (
-      <span className="flex shrink-0 items-center gap-1 font-mono text-[10px] font-bold text-[--brand-secondary]" aria-label={`${copy.downloading} ${pct}%`}>
-        <Loader2 size={13} className="animate-spin" />
-        {pct}%
-      </span>
-    )
-  }
-  if (item.queued) {
-    return (
-      <span className="flex shrink-0 items-center gap-1 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-zinc-500" aria-label={copy.queued}>
-        <Clock size={12} strokeWidth={1.5} />
-        {copy.queued}
-      </span>
-    )
-  }
-  if (item.downloaded) {
-    return (
-      <button
-        type="button"
-        onClick={onRemove}
-        title={copy.removeDownload}
-        aria-label={copy.removeDownload}
-        data-testid={`video-remove-${item.file}`}
-        className="group/dl flex shrink-0 items-center gap-1 rounded-[6px] border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-emerald-300 transition-colors hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300"
-      >
-        <Check size={12} strokeWidth={2} className="group-hover/dl:hidden" />
-        <Trash2 size={12} strokeWidth={1.5} className="hidden group-hover/dl:block" />
-        {copy.offline}
-      </button>
-    )
-  }
-  return (
-    <button
-      type="button"
-      onClick={onDownload}
-      title={copy.download}
-      aria-label={copy.download}
-      data-testid={`video-download-${item.file}`}
-      className="flex shrink-0 items-center justify-center rounded-[6px] border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 text-zinc-400 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
-    >
-      <Download size={13} strokeWidth={1.5} />
-    </button>
-  )
-}
-
-interface DomainDownloadStats {
-  total: number
-  done: number
-  pending: LocalVideoItem[]
-  active: boolean
-}
-
-/** Aggregierter Offline-Status eines Kapitels (Domain). */
-function domainDownloadStats(groups: LocalVideoObjectiveGroup[]): DomainDownloadStats {
-  const videos = groups.flatMap(group => group.videos)
-  const summary = summarizeDownloads(videos)
-  return {
-    total: summary.total,
-    done: summary.done,
-    active: summary.active,
-    pending: videos.filter(video => !video.downloaded && video.progress === undefined && !video.queued),
-  }
-}
-
-/** „Kapitel offline laden" — lädt alle noch fehlenden Videos einer Domain. */
-function ChapterDownloadButton({
-  stats,
-  copy,
-  onDownload,
-  onCancel,
-}: {
-  stats: DomainDownloadStats
-  copy: Copy
-  onDownload: () => void
-  onCancel: () => void
-}) {
-  if (stats.total === 0) return null
-
-  if (stats.active) {
-    return (
-      <span className="flex shrink-0 items-center gap-1.5 rounded-ds border border-[--brand-secondary-50] bg-[--brand-secondary-12] px-2 py-1 font-mono text-[10px] font-bold text-[--brand-secondary]">
-        <Loader2 size={12} className="animate-spin" />
-        {stats.done}/{stats.total}
-        <button
-          type="button"
-          onClick={onCancel}
-          aria-label={copy.cancel}
-          title={copy.cancel}
-          data-testid="chapter-cancel"
-          className="ml-0.5 text-[--brand-secondary-80] transition-colors hover:text-rose-300"
-        >
-          <X size={12} />
-        </button>
-      </span>
-    )
-  }
-
-  if (stats.pending.length > 0) {
-    return (
-      <button
-        type="button"
-        onClick={onDownload}
-        data-testid="chapter-download"
-        title={copy.chapterDownload}
-        className="flex shrink-0 items-center gap-1.5 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 font-mono text-[10px] font-bold text-zinc-300 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
-      >
-        <HardDriveDownload size={12} strokeWidth={1.5} />
-        {copy.chapterDownload}
-      </button>
-    )
-  }
-
-  return (
-    <span
-      className="flex shrink-0 items-center gap-1 rounded-ds border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 font-mono text-[10px] font-bold text-emerald-300"
-      title={copy.chapterOffline}
-    >
-      <Check size={12} strokeWidth={2} />
-      {copy.chapterOffline}
-    </span>
-  )
-}
-
 export default function VideosView({ language, onExit, onStartObjectiveStudy, initialVideoIndex = null, initialRecallOpen = false, onCloseInitialVideo }: Props) {
   const copy = COPY[language]
   const { isHandsetLayout } = useHandsetLayout()
@@ -578,36 +125,22 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
   const { progress, markWatched, setConfidence } = useMesserVideoProgress()
   const { scores: recallScores, recordRun: recordRecallRun } = useVideoRecallScores()
 
-  // Echte Erfolgsquoten der Objective-Decks als Kalibrierungs-Anker neben der
-  // Selbsteinschätzung (einmal pro Mount; ein Batch-Read statt 35 Einzelqueries).
-  const [deckSuccessRates, setDeckSuccessRates] = useState<Record<string, DeckSuccessRate>>({})
-  useEffect(() => {
-    let cancelled = false
-    const deckIds = SY0_701_OBJECTIVES.map(objective => getSecurityObjectiveDeckId(objective.code))
-    void getDeckSuccessRates(deckIds).then(rates => {
-      if (!cancelled) setDeckSuccessRates(rates)
-    }).catch(() => {})
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  // Echte Erfolgsquoten der Objective-Decks als Kalibrierungs-Anker neben der Selbsteinschätzung.
+  const deckSuccessRates = useObjectiveDeckSuccessRates()
   const { status, groups, totalBytes, downloadedCount, downloadVideo, enqueueDownloads, cancelDownloads, removeVideo, downloadError } = useLocalMesserVideos()
 
   const [activeFile, setActiveFile] = useState<string | null>(null)
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set())
   const [recallOpen, setRecallOpen] = useState(false)
   const [transcriptOpen, setTranscriptOpen] = useState(false)
-  const [activeTag, setActiveTag] = useState<string | null>(null)
-  const [showTagSidebar, setShowTagSidebar] = usePersistentBool('card-pwa-video-tags-open-v2', false)
+  const { activeTag, setActiveTag, showTagSidebar, setShowTagSidebar, tagSheetOpen, setTagSheetOpen, openTagFromSidebar } = useVideoTagPanels()
   const [studyBarOpen, setStudyBarOpen] = usePersistentBool('card-pwa-video-studybar-open-v2', false)
   const [coursePanelOpen, setCoursePanelOpen] = usePersistentBool('card-pwa-video-course-panel-open', false)
-  const [tagSheetOpen, setTagSheetOpen] = useState(false)
-  const [noteFocused, setNoteFocused] = useState(false)
-  const noteBlurTimer = useRef<number | undefined>(undefined)
   const [currentVideoTime, setCurrentVideoTime] = useState(0)
   const [seekRequest, setSeekRequest] = useState<{ id: number; seconds: number } | null>(null)
   const viewport = useVisualViewport()
   const keyboardOpen = viewport?.keyboardOpen ?? false
+  const { writingMode, handleNoteFocusChange, exitWriting } = useVideoWritingMode({ isHandsetLayout, keyboardOpen })
 
   const activeItem = useMemo(
     () => groups.flatMap(group => group.videos).find(video => video.file === activeFile) ?? null,
@@ -710,12 +243,6 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
     setActiveTag(null)
   }
 
-  // Tag aus der Sidebar öffnen → Tag-Seite; auf Handy das Bottom-Sheet schließen.
-  const openTagFromSidebar = (tag: string) => {
-    setActiveTag(tag)
-    setTagSheetOpen(false)
-  }
-
   // Von einer Zeitmarke der Tag-Seite ins Video springen (evtl. anderes Video):
   // Video öffnen und Seek anfordern; der Player holt den Seek nach dem Laden nach.
   const openObjectiveAtTime = (objective: string, seconds: number) => {
@@ -726,36 +253,6 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
     }
     setActiveTag(null)
   }
-
-  // Handy-Schreibmodus: Textfeld fokussiert ODER Tastatur sichtbar → Notizzettel
-  // groß/oben, Video ausgeblendet, damit die Tastatur nichts verdeckt. Blur wird
-  // kurz entprellt, damit Zettel-Tool-Taps (die neu fokussieren) nicht flackern.
-  const handleNoteFocusChange = (focused: boolean) => {
-    if (focused) {
-      if (noteBlurTimer.current) window.clearTimeout(noteBlurTimer.current)
-      setNoteFocused(true)
-    } else {
-      noteBlurTimer.current = window.setTimeout(() => setNoteFocused(false), 250)
-    }
-  }
-  useEffect(() => () => { if (noteBlurTimer.current) window.clearTimeout(noteBlurTimer.current) }, [])
-
-  // KEIN automatischer Ausstieg über eine „Tastatur wieder zu"-Erkennung mehr:
-  // visualViewport-Messungen springen auf echten iPhones während des Tippens
-  // (Animationen, Autokorrektur-Leiste, unser eigenes Container-Resize) kurz
-  // unter den Schwellenwert und lösten so einen Fehl-Blur mitten im Schreiben
-  // aus — das Video kam dann zurück, obwohl die Tastatur noch offen war.
-  // Verlassen passiert jetzt nur noch explizit: „Video"-Button (exitWriting)
-  // oder ein echtes Blur des Textfelds (handleNoteFocusChange).
-
-  // Zurück zur normalen Videoansicht: Tastatur schließen (Textfeld blur).
-  const exitWriting = () => {
-    ;(document.activeElement as HTMLElement | null)?.blur()
-    if (noteBlurTimer.current) window.clearTimeout(noteBlurTimer.current)
-    setNoteFocused(false)
-  }
-
-  const writingMode = isHandsetLayout && (noteFocused || keyboardOpen)
 
   const hasTagActivity = objectivesWithNotes.size > 0 || allTags.length > 0
 
@@ -872,7 +369,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
                     </span>
                   )}
                 </button>
-                <DownloadControl
+                <VideoDownloadControl
                   item={video}
                   copy={copy}
                   onDownload={() => { void downloadVideo(video) }}

@@ -11,7 +11,7 @@ import { factorToDifficulty } from '../../utils/algorithmParams'
 import { getDayStartMs } from '../../utils/time'
 import { generateUuidV7 } from '../../utils/id'
 import { enqueueSyncOperation } from '../../services/syncQueue'
-import { buildDailyQuestSelection } from '../../services/studyCardOrdering'
+import { buildDailyQuestSelection } from '../../utils/studyCardOrdering'
 import { normalizeTagId } from '../../utils/tagIdentity'
 import type { Deck, Card, DeckScheduleOverview } from '../../types'
 

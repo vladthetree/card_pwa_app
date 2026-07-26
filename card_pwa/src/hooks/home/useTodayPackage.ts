@@ -14,7 +14,7 @@ import {
   listDeckCards,
   listDeckCardIdsReviewedSince,
 } from '../../db/queries'
-import { buildTodayPackageSelection } from '../../services/studyCardOrdering'
+import { buildTodayPackageSelection } from '../../utils/studyCardOrdering'
 import { buildLocalVideoManifest, type LocalVideoMeta } from '../../utils/localVideoManifest'
 import { getSecurityObjectiveDeckId, getSecurityObjectiveDeckName } from '../../utils/securityDeckHierarchy'
 import {

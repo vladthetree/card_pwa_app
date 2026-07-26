@@ -5,7 +5,7 @@
  * Important: This decides what the learner sees next; keep scheduling writes elsewhere and keep ordering deterministic under the same seed.
  */
 import type { Card } from '../types'
-import { DAY_MS, getDayStartMs, resolveDueAtMs } from '../utils/time'
+import { DAY_MS, getDayStartMs, resolveDueAtMs } from './time'
 import { compareByDueRank, getCardTypePriority, seededRank } from './cardOrdering'
 
 interface SortStudyCardsOptions {
