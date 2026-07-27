@@ -22,6 +22,7 @@ import { useStartupSplash } from './hooks/app/useStartupSplash'
 import { useServiceWorkerUpdateFlow } from './hooks/app/useServiceWorkerUpdateFlow'
 import { useAppNavigation } from './hooks/app/useAppNavigation'
 import type { ServiceWorkerStartupReadiness } from './runtime/swRegistration'
+import { UI_TOKENS } from './constants/ui'
 
 const SAFE_AREA_DEBUG_STORAGE_KEY = 'card-pwa-safe-area-debug'
 
@@ -179,7 +180,7 @@ function SafeAreaDebugOverlay() {
   if (!enabled) return null
 
   return (
-    <div className="neo-keep-dark fixed left-2 top-2 z-[9999] max-w-[calc(100vw-1rem)] rounded-ds border border-white/20 bg-black/90 p-2 font-mono text-[10px] leading-tight text-white shadow-2xl">
+    <div className={`neo-keep-dark fixed left-2 top-2 ${UI_TOKENS.zIndex.splash} max-w-[calc(100vw-1rem)] rounded-ds border border-white/20 bg-black/90 p-2 font-mono text-[10px] leading-tight text-white shadow-2xl`}>
       <div className="mb-1 flex items-center justify-between gap-3 text-[11px] font-bold">
         <span>safe-area debug</span>
         <button

@@ -31,6 +31,11 @@ function readServiceWorkerSource(): string {
   return readFileSync(resolve(here, '../../../public/service-worker.js'), 'utf8')
 }
 
+function readSyncPullApplySource(): string {
+  const here = dirname(fileURLToPath(import.meta.url))
+  return readFileSync(resolve(here, '../../services/syncPull/apply.ts'), 'utf8')
+}
+
 function projectRoot(): string {
   const here = dirname(fileURLToPath(import.meta.url))
   return resolve(here, '../../..')
@@ -76,6 +81,14 @@ describe('sync mutation contract', () => {
       scopeRule: 'selected-deck',
     })
     expect(SYNC_MUTATION_CONTRACT['deck.create'].notes).toContain('createDeck() intentionally')
+  })
+
+  it('keeps every contracted operation represented in applyOperation', () => {
+    const applySource = readSyncPullApplySource()
+
+    for (const type of SYNC_OPERATION_TYPES) {
+      expect(applySource, `applyOperation is missing case '${type}'`).toContain(`case '${type}':`)
+    }
   })
 
   it('keeps service-worker queue storage constants aligned with the app', () => {

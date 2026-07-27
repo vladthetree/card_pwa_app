@@ -172,7 +172,17 @@ vi.mock('../../services/syncQueue', () => ({
 }))
 
 describe('syncPull normalization', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    const syncQueue = await import('../../services/syncQueue')
+    vi.mocked(syncQueue.flushSyncQueue).mockReset()
+    vi.mocked(syncQueue.flushSyncQueue).mockResolvedValue({ processed: 0, pending: 0 })
+    vi.mocked(syncQueue.getSyncQueuePendingCount).mockReset()
+    vi.mocked(syncQueue.getSyncQueuePendingCount).mockResolvedValue(0)
+    Object.defineProperty(globalThis, 'navigator', {
+      value: { onLine: true },
+      configurable: true,
+    })
+
     const storage = new Map<string, string>()
     Object.defineProperty(globalThis, 'localStorage', {
       value: {
@@ -236,6 +246,38 @@ describe('syncPull normalization', () => {
 
     const handshakeCall = fetchWithTimeoutMock.mock.calls[0] as unknown as [string, { headers?: Record<string, string> }]
     expect(handshakeCall[1].headers).toMatchObject({ Authorization: 'Bearer secret-token' })
+  })
+
+  it('flushes pending local pushes before pulling remote deltas', async () => {
+    const syncQueue = await import('../../services/syncQueue')
+    vi.mocked(syncQueue.getSyncQueuePendingCount)
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(0)
+    vi.mocked(syncQueue.flushSyncQueue).mockResolvedValueOnce({ processed: 1, pending: 0 })
+    state.responses = [
+      { ok: true, needsSnapshot: false, serverCursor: 0 },
+      { ok: true, operations: [], nextCursor: 0, hasMore: false },
+    ]
+
+    const { pullAndApplySyncDeltas } = await import('../../services/syncPull')
+    await pullAndApplySyncDeltas()
+
+    expect(syncQueue.flushSyncQueue).toHaveBeenCalledWith({ limit: 200 })
+    expect(fetchWithTimeoutMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('does not pull remote deltas while local pushes remain pending after flush', async () => {
+    const syncQueue = await import('../../services/syncQueue')
+    vi.mocked(syncQueue.getSyncQueuePendingCount)
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(2)
+    vi.mocked(syncQueue.flushSyncQueue).mockResolvedValueOnce({ processed: 1, pending: 2 })
+
+    const { pullAndApplySyncDeltas } = await import('../../services/syncPull')
+    await pullAndApplySyncDeltas()
+
+    expect(syncQueue.flushSyncQueue).toHaveBeenCalledWith({ limit: 200 })
+    expect(fetchWithTimeoutMock).not.toHaveBeenCalled()
   })
 
   it('writes a sync-api error log when the pull API rejects delta fetches', async () => {

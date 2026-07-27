@@ -2,8 +2,18 @@
  * AI_CONTEXT: Shared constants for ui; centralizes app identity, animation, or UI values used across modules.
  */
 const T = 'transition-all duration-100 ease-linear'
+const Z_INDEX = {
+  base: 'z-0',
+  dropdown: 'z-50',
+  overlay: 'z-[1000]',
+  overlayNested: 'z-[1100]',
+  toast: 'z-[1150]',
+  splash: 'z-[1200]',
+} as const
 
 export const UI_TOKENS = {
+  zIndex: Z_INDEX,
+
   layout: {
     homeMaxWidth: 'max-w-7xl',
     contentPadding: 'px-4 py-10',
@@ -68,7 +78,7 @@ export const UI_TOKENS = {
   },
 
   modal: {
-    overlay:     'fixed inset-0 z-[1000] flex items-center justify-center px-safe pt-safe-4 pb-4 sm:px-4',
+    overlay:     `fixed inset-0 ${Z_INDEX.overlay} flex items-center justify-center px-safe pt-safe-4 pb-4 sm:px-4`,
     backdrop:    'absolute inset-0 bg-black/75',
     shell:       `relative flex min-h-0 w-full max-h-[calc(100dvh-env(safe-area-inset-top,0px)-2rem)] flex-col ds-modal ${T}`,
     header:      'sticky top-0 z-10 flex shrink-0 items-center justify-between gap-3 border-b-4 border-black bg-[#FFD93D] px-5 py-4',

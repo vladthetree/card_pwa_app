@@ -9,8 +9,8 @@ import type { HomeDashboardMode } from '../../components/home/HomeStatsSection'
 import { STORAGE_KEYS } from '../../constants/appIdentity'
 import type { Deck, ShuffleCollection } from '../../types'
 import { createDeck, deleteDeck, deleteShuffleCollection } from '../../db/queries'
-import { exportDbBackupAsCsv, exportDbBackupAsJson, exportDbBackupAsTxt } from '../../utils/dbBackup'
 import { subscribeToWebPushNotifications } from '../../services/webPush'
+import { useHomeExport } from './useHomeExport'
 import {
   persistDashboardMode,
   persistShuffleOnlyMode,
@@ -122,8 +122,13 @@ export function useHomeViewController(input: {
   const [showInstallHintModal, setShowInstallHintModal] = useState(false)
   const [showImport, setShowImport] = useState(false)
   const [showExportModal, setShowExportModal] = useState(false)
-  const [isExporting, setIsExporting] = useState(false)
   const [selectedDeckId, setSelectedDeckId] = useState<'all' | string>('all')
+  const {
+    isExporting,
+    exportTxt,
+    exportCsv,
+    exportJson,
+  } = useHomeExport(selectedDeckId)
   const [showFutureForecast, setShowFutureForecast] = useState(false)
   const [metricsDeck, setMetricsDeck] = useState<Deck | null>(null)
   const [metricsShuffleCollection, setMetricsShuffleCollection] = useState<ShuffleCollection | null>(null)
@@ -240,37 +245,17 @@ export function useHomeViewController(input: {
     await reload()
   }, [newDeckName, reload, t.deck_name_empty, t.deck_name_exists, t.save_failed])
 
-  const selectedDeckIds = selectedDeckId === 'all' ? undefined : [selectedDeckId]
-
   const handleExportTxt = useCallback(async () => {
-    try {
-      setIsExporting(true)
-      await exportDbBackupAsTxt({ deckIds: selectedDeckIds })
-      setShowExportModal(false)
-    } finally {
-      setIsExporting(false)
-    }
-  }, [selectedDeckIds])
+    await exportTxt(() => setShowExportModal(false))
+  }, [exportTxt])
 
   const handleExportCsv = useCallback(async () => {
-    try {
-      setIsExporting(true)
-      await exportDbBackupAsCsv({ deckIds: selectedDeckIds })
-      setShowExportModal(false)
-    } finally {
-      setIsExporting(false)
-    }
-  }, [selectedDeckIds])
+    await exportCsv(() => setShowExportModal(false))
+  }, [exportCsv])
 
   const handleExportJson = useCallback(async () => {
-    try {
-      setIsExporting(true)
-      await exportDbBackupAsJson({ deckIds: selectedDeckIds })
-      setShowExportModal(false)
-    } finally {
-      setIsExporting(false)
-    }
-  }, [selectedDeckIds])
+    await exportJson(() => setShowExportModal(false))
+  }, [exportJson])
 
   return {
     showCreateCard,

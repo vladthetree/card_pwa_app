@@ -4,7 +4,7 @@ Stand: 2026-07-27
 
 ## Status
 
-Vorgeschlagen.
+Angenommen.
 
 ## Kontext
 
@@ -14,10 +14,18 @@ und `FullscreenPanel`.
 
 ## Entscheidung
 
-Vor einer breiten Migration wird ein kleines projektinternes Primitive mit
-Tests gegen `ConfirmModal` und einen einfachen Anzeige-Dialog evaluiert. Die
-Entscheidung bleibt offen, bis Tastatur-, Fokus-, iOS-PWA- und Nested-Overlay-
-Verhalten nachgewiesen sind.
+Wir starten mit einem kleinen projektinternen Primitive in
+`card_pwa/src/ui/overlays/`. Es deckt die aktuelle Projektanforderung ab, ohne
+eine neue UI-Dependency einzufuehren:
+
+- `Dialog`
+- `AlertDialog`
+- `Sheet`
+- `FullscreenPanel`
+
+`ConfirmModal` ist als erster Adapter auf `AlertDialog` migriert. Weitere
+Migrationen bleiben inkrementell und muessen Tastatur-/Fokusverhalten mit
+Tests absichern, bevor komplexe verschachtelte Dialoge umgestellt werden.
 
 ## Muss-Kriterien
 
@@ -30,7 +38,6 @@ Verhalten nachgewiesen sind.
 
 ## Konsequenzen
 
-Die Store-Basis darf Overlay-Stack und leichte Payloads bereits modellieren.
-Die visuelle Migration startet erst, wenn das Primitive per Test abgesichert
-ist.
-
+Die Store-Basis darf Overlay-Stack und leichte Payloads modellieren. Die
+visuelle Migration nutzt die neuen Primitives und `UI_TOKENS.zIndex` bzw.
+`overlayTokens.zIndex` als einzige Quelle fuer neue Overlay-zIndex-Werte.

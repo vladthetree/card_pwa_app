@@ -100,6 +100,23 @@ Bereits erledigt oder begonnen:
   globalen Runtime-Events und ihre Rueckbaupfade.
 - F1-Inkrement umgesetzt: `scripts/check-architecture-imports.mjs` prueft
   Importgrenzen mit expliziter Baseline fuer bekannte Alt-Ausnahmen.
+- A1/A3-Nachhaertung umgesetzt: Der Contract-Test gleicht jede Operation gegen
+  `applyOperation()`-Cases ab; `pullAndApplySyncDeltas()` ist fuer
+  Pending-vor-Flush, erfolgreichem Flush und weiterhin blockierendem Pending
+  getestet.
+- D1/D2/D3-Inkrement umgesetzt: `src/ui/overlays/` enthaelt `Dialog`,
+  `AlertDialog`, `Sheet`, `FullscreenPanel`, Header, Close-Guard, Typen,
+  Tokens und einen Token-Test. `ConfirmModal` ist als erster Adapter auf
+  `AlertDialog` migriert.
+- D1-Z-Index-Inkrement umgesetzt: Neue Overlay-zIndex-Werte liegen in
+  `UI_TOKENS.zIndex`/`overlayTokens.zIndex`; rohe `z-[9999]`-Werte im App-Code
+  wurden entfernt.
+- E1-Inkrement umgesetzt: Home-Export-Kommandos sind aus
+  `useHomeViewController()` nach `useHomeExport()` extrahiert, ohne das
+  bestehende Controller-API fuer `HomeView` zu veraendern.
+- F1/F2-Inkrement umgesetzt: `verify:phase5` ruft den Architekturcheck auf;
+  `docs/architecture/` ist als wartbare Dossier-Struktur mit ADR-Links,
+  Sync-/SW-/Overlay-/State-Seiten und Import-Ausnahmen angelegt.
 
 Diese Punkte gelten als Phase A0-Basis und duerfen nicht zurueckgedreht werden.
 

@@ -9,6 +9,7 @@ import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { AlertTriangle, ArrowLeft, CalendarDays, Check, ChevronDown, Clock3, Layers3, Minus, Pencil, Plus, X } from 'lucide-react'
 import { AnimatePresence, motion } from '../ui/motion'
+import { UI_TOKENS } from '../constants/ui'
 import { useVisualViewport } from '../hooks/useVisualViewport'
 import type { LearningPacingResult } from '../utils/learningUnitRanking'
 import type { LearningPlanMappingSummary } from '../utils/learningPlanMapping'
@@ -802,7 +803,7 @@ export function LearningPlanPanel({
         <AnimatePresence>
           {open && (
             <div
-              className="learning-plan-neo fixed left-0 right-0 z-[9999] flex items-end justify-center px-safe pt-safe-2 sm:items-center sm:p-4"
+              className={`learning-plan-neo fixed left-0 right-0 ${UI_TOKENS.zIndex.splash} flex items-end justify-center px-safe pt-safe-2 sm:items-center sm:p-4`}
               style={viewport
                 ? { top: `${viewport.top}px`, height: `${viewport.height}px` }
                 : { top: 0, height: '100dvh' }}
