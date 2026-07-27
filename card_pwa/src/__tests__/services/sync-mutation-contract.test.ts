@@ -2,7 +2,7 @@
  * AI_CONTEXT: Verifies the canonical sync mutation contract against operation
  * types, pull support, and service-worker queue constants.
  */
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -31,19 +31,42 @@ function readServiceWorkerSource(): string {
   return readFileSync(resolve(here, '../../../public/service-worker.js'), 'utf8')
 }
 
+function projectRoot(): string {
+  const here = dirname(fileURLToPath(import.meta.url))
+  return resolve(here, '../../..')
+}
+
 describe('sync mutation contract', () => {
   it('documents every SyncOperationType exactly once', () => {
     expect([...SYNC_OPERATION_TYPES].sort()).toEqual([...expectedOperationTypes].sort())
   })
 
-  it('documents local producer, pull effect, idempotency, and scope for each operation', () => {
+  it('documents local producer, outbox behavior, server operation, pull effect, tests, idempotency, and scope for each operation', () => {
     for (const type of SYNC_OPERATION_TYPES) {
       const entry = SYNC_MUTATION_CONTRACT[type]
       expect(entry.localMutation).toBeTruthy()
+      expect(typeof entry.requiresTransactionalOutbox).toBe('boolean')
       expect(entry.queueProducer.length).toBeGreaterThan(0)
+      expect(entry.serverOperation).toBe('POST /sync')
       expect(entry.pullEffect).toBeTruthy()
       expect(entry.idempotency).toBeTruthy()
       expect(entry.scopeRule).toBeTruthy()
+      expect(entry.tests.length).toBeGreaterThan(0)
+      expect(entry.tests.some(test => test.endsWith('sync-mutation-contract.test.ts'))).toBe(true)
+      for (const testPath of entry.tests) {
+        expect(existsSync(resolve(projectRoot(), testPath)), `${type} references missing test ${testPath}`).toBe(true)
+      }
+    }
+  })
+
+  it('documents review as the transactional-outbox mutation', () => {
+    expect(SYNC_MUTATION_CONTRACT.review).toMatchObject({
+      queueSource: 'transactional-outbox',
+      requiresTransactionalOutbox: true,
+    })
+
+    for (const type of SYNC_OPERATION_TYPES.filter(type => type !== 'review')) {
+      expect(SYNC_MUTATION_CONTRACT[type].requiresTransactionalOutbox).toBe(false)
     }
   })
 
@@ -67,5 +90,15 @@ describe('sync mutation contract', () => {
 
     expect(serviceWorker).toContain('client.postMessage({ type: \'SYNC_NOW\' })')
     expect(serviceWorker).toContain('await flushQueueInServiceWorker()')
+  })
+
+  it('keeps service-worker autonomous sync using the same push envelope as the app queue', () => {
+    const serviceWorker = readServiceWorkerSource()
+
+    for (const field of ['opId', 'type', 'payload', 'clientTimestamp', 'source', 'clientId']) {
+      expect(serviceWorker).toContain(field)
+    }
+    expect(serviceWorker).toContain("method: 'POST'")
+    expect(serviceWorker).toContain("'X-Idempotency-Key'")
   })
 })

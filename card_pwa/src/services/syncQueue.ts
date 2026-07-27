@@ -57,6 +57,13 @@ export interface FlushOptions {
   limit?: number
 }
 
+export interface SyncQueueDiagnostics {
+  pendingCount: number
+  deadLetterCount: number
+  deferredCount: number
+  outboxCount: number
+}
+
 type SendResult = 'sent' | 'deferred' | 'failed'
 
 class SyncQueueDB extends Dexie {
@@ -401,6 +408,26 @@ export async function getSyncQueuePendingCount(): Promise<number> {
   return queued + outbox
 }
 
+export async function getSyncQueueDiagnostics(): Promise<SyncQueueDiagnostics> {
+  const [pendingCount, deadLetterCount, deferredCount, outboxCount] = await Promise.all([
+    getSyncQueuePendingCount(),
+    syncDb.queue
+      .filter(item => item.retries >= SYNC_MAX_RETRIES)
+      .count(),
+    syncDb.queue
+      .filter(item => item.retries < SYNC_MAX_RETRIES && item.nextRetryAt === Number.MAX_SAFE_INTEGER)
+      .count(),
+    db.syncOutbox.count(),
+  ])
+
+  return {
+    pendingCount,
+    deadLetterCount,
+    deferredCount,
+    outboxCount,
+  }
+}
+
 export async function wakeDeferredSyncQueue(): Promise<void> {
   const ts = now()
   await syncDb.queue
@@ -410,6 +437,23 @@ export async function wakeDeferredSyncQueue(): Promise<void> {
   if (isSyncActive()) {
     requestBackgroundDelivery()
   }
+}
+
+export async function releaseDeadLetterSyncQueue(): Promise<number> {
+  const ts = now()
+  const released = await syncDb.queue
+    .filter(item => item.retries >= SYNC_MAX_RETRIES)
+    .modify({
+      retries: 0,
+      nextRetryAt: ts,
+      updatedAt: ts,
+    })
+
+  if (released > 0 && isSyncActive()) {
+    requestBackgroundDelivery()
+  }
+
+  return released
 }
 
 export async function clearSyncQueue(): Promise<void> {

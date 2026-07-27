@@ -16,16 +16,20 @@ Akzeptanzkriterien und Tests.
    Exam-Date muessen lokal, in der Queue, serverseitig und im Pull konsistent
    bleiben.
 2. Bestehende Architektur inkrementell haerten. Keine grosse Rewrite-Phase,
-   keine Einfuehrung eines globalen State-Managers nur wegen Ordnung.
+   aber ein professionell begrenztes State Management fuer UI-, View-,
+   Overlay- und Runtime-State einfuehren.
 3. Dexie bleibt der reaktive Store. `liveQuery` bleibt der primaere Mechanismus
-   fuer persistente Daten; globale Events werden auf klar begruendete Faelle
-   reduziert.
+   fuer persistente Daten; der neue UI-State-Store darf keine dauerhaften
+   Karten-/Review-/Deck-Daten duplizieren.
 4. Service Worker bleibt eigenstaendig, aber vertraglich gebunden. Wenn der SW
    ohne offenen Tab selbst flushen kann, muss sein Verhalten gegen App-Dexie-
    Flush getestet und dokumentiert sein.
 5. Overlay-Vereinheitlichung erfolgt ueber getrennte Oberflaechen: `Dialog`,
    `AlertDialog`, `Sheet`, `FullscreenPanel`. Keine immer groessere
    `ModalShell` mit Varianten fuer alles.
+6. Der State-Manager wird an Use Cases geschnitten. Keine globale
+   "alles-in-einem"-Store-Datei; stattdessen kleine Slices mit stabilen
+   Selektoren, Actions und Tests.
 
 ## Zielbild nach Abschluss
 
@@ -36,6 +40,16 @@ src/
 |   |-- syncQueue.ts
 |   |-- syncCoordinator.ts
 |   `-- syncPull/
+|-- state/
+|   |-- appStore.ts
+|   |-- createSelectors.ts
+|   |-- slices/
+|   |   |-- navigationSlice.ts
+|   |   |-- overlaySlice.ts
+|   |   |-- syncRuntimeSlice.ts
+|   |   |-- homeUiSlice.ts
+|   |   `-- pwaRuntimeSlice.ts
+|   `-- __tests__/
 |-- ui/
 |   `-- overlays/
 |       |-- Dialog.tsx
@@ -69,8 +83,84 @@ Bereits erledigt oder begonnen:
   Schicht statt direkter `db.decks`-Zugriffe.
 - `CardFormModal` nutzt fuer die Kartenloeschung den vorhandenen
   `ConfirmModal` statt eines Inline-Duplikats.
+- A1-Inkrement umgesetzt: Der Sync-Mutationsvertrag dokumentiert jetzt pro
+  Operation `requiresTransactionalOutbox`, `serverOperation` und konkrete
+  Testdateien. Der Vertragstest prueft zudem, dass referenzierte Testdateien
+  existieren.
+- A2-Inkrement umgesetzt: Der Service-Worker-App-Vertrag prueft Queue-
+  Konstanten, Delegation an offene App-Clients und den gemeinsamen Push-
+  Envelope.
+- A3-Inkrement umgesetzt: Sync-Queue-Diagnosen liefern Pending-, Dead-Letter-,
+  Deferred- und Outbox-Zaehler. Dead-Letter-Eintraege koennen bewusst fuer
+  Retry freigegeben werden und blockieren Pull weiterhin nicht.
+- C1/C2-Inkrement umgesetzt: ADR `docs/adr/002-ui-state-management.md`
+  dokumentiert den UI-Store ohne neue Dependency; `src/state/` enthaelt
+  getestete Basis-Slices fuer Overlay-Stack und Sync-Runtime.
+- B2-Inkrement dokumentiert: `docs/architecture-events.md` beschreibt die
+  globalen Runtime-Events und ihre Rueckbaupfade.
+- F1-Inkrement umgesetzt: `scripts/check-architecture-imports.mjs` prueft
+  Importgrenzen mit expliziter Baseline fuer bekannte Alt-Ausnahmen.
 
 Diese Punkte gelten als Phase A0-Basis und duerfen nicht zurueckgedreht werden.
+
+## State-Management-Zielbild
+
+Empfehlung: Zustand als schlanker UI-State-Store, sofern eine Dependency
+akzeptiert wird. Alternative ohne neue Dependency: ein eigener Store auf Basis
+von `useSyncExternalStore`, aber nur wenn Bundle-/Dependency-Politik wichtiger
+ist als Wartbarkeit. Redux Toolkit ist fuer diese App nur sinnvoll, wenn
+Devtools/Time-Travel und sehr strikte Event-Logs fachlich gebraucht werden; fuer
+den aktuellen Bedarf waere es zu schwer.
+
+### Was in den Store gehoert
+
+- Navigation/View-State, der heute in `useAppNavigation()` und App-Shell
+  verteilt ist.
+- Overlay-/Dialog-Registry: welches Overlay offen ist, aktive Datensaetze,
+  Close-Grund, Stack-Top.
+- Home-UI-State: aktive Tabs, Dashboard-Modus, Shuffle-only-Modus,
+  ausgeklappte Subdecks, aktuell ausgewaehlte Home-Aktionen.
+- Sync-Runtime-UI: `idle | syncing | blocked | offline | error`,
+  letzter erfolgreicher Sync, Pending-/Dead-Letter-Zaehler fuer Anzeige.
+- PWA-Runtime-UI: Install-Prompt, SW-Update-Banner, Badge-/Notification-
+  Anzeigezustand.
+- kurzlebige Wizard-/Form-Drafts nur dann, wenn mehrere Komponenten denselben
+  Draft bearbeiten.
+
+### Was nicht in den Store gehoert
+
+- Karten, Decks, Reviews, ShuffleCollections, VideoNotes als dauerhafte Daten.
+  Diese bleiben in Dexie und werden ueber Query-Funktionen/liveQuery gelesen.
+- Sync-Queue-Records als Quelle der Wahrheit. Der Store darf nur abgeleitete
+  Anzeigezaehler halten.
+- Settings, die bereits in `SettingsContext` mit Persistenzvertrag leben, bis
+  ein eigener Migrationsschritt sie bewusst uebernimmt.
+- grosse Import-/Backup-Payloads oder Video-Blobs.
+
+### Zielstruktur
+
+```text
+src/state/
+|-- appStore.ts
+|-- createSelectors.ts
+|-- slices/
+|   |-- navigationSlice.ts
+|   |-- overlaySlice.ts
+|   |-- syncRuntimeSlice.ts
+|   |-- homeUiSlice.ts
+|   `-- pwaRuntimeSlice.ts
+`-- __tests__/
+```
+
+Store-Regeln:
+
+- Jeder Slice exportiert Typen, Initial State und Actions.
+- Komponenten nutzen Selektoren, nicht den ganzen Store.
+- Actions duerfen Query-/Service-Funktionen nur in klar benannten Command-
+  Funktionen ausloesen; reine State-Actions bleiben synchron.
+- Persistenz nur explizit und klein, z. B. mit `partialize` fuer UI-
+  Praeferenzen. Keine automatische Persistenz kompletter Stores.
+- Store-Reset fuer Tests und PWA-Full-Reset bereitstellen.
 
 ## Phase A - Sync- und Datenintegritaet haerten
 
@@ -275,9 +365,155 @@ Akzeptanzkriterien:
 - Keine neuen globalen Events fuer Daten, die Dexie bereits reaktiv melden kann.
 - Tests fuer `useCardDb`-Revision bleiben gruen.
 
-## Phase C - Overlay-Architektur umsetzen
+## Phase C - Professionelles UI-State-Management einfuehren
 
-### C1 - Overlay-Verhaltensvertrag definieren
+### C1 - State-Management-ADR entscheiden
+
+Ziel: Bewusst entscheiden, welche Store-Technik eingefuehrt wird und welche
+Grenzen sie hat.
+
+Empfehlung:
+
+- Primaer: Zustand mit `subscribeWithSelector`, kleinen Slices und stabilen
+  Selektoren.
+- Alternative: eigener `useSyncExternalStore`-Store, falls keine neue
+  Dependency gewuenscht ist.
+- Nicht empfohlen fuer diese App als erster Schritt: Redux Toolkit als
+  Vollersatz, weil persistente Domain-Daten bereits gut in Dexie liegen.
+
+Primaere Dateien:
+
+- neu: `docs/adr/002-ui-state-management.md`
+- `card_pwa/package.json`
+- neu: `card_pwa/src/state/`
+
+Aufgaben:
+
+1. ADR schreiben:
+   - Problem: verstreuter UI-/Modal-/Runtime-State
+   - Entscheidung: Zustand oder eigener Store
+   - Nicht-Ziele: kein Domain-Daten-Duplikat
+   - Migrationsreihenfolge
+2. Wenn Zustand gewaehlt wird:
+   - Dependency aufnehmen
+   - Bundle-/Build-Auswirkung dokumentieren
+3. Store-Teststrategie definieren:
+   - reine Slice-Tests
+   - Hook-/Komponententests nur fuer Integration
+
+Akzeptanzkriterien:
+
+- ADR ist vorhanden.
+- Store-Grenzen sind klar: Dexie = persistente Daten, Store = UI/Runtime.
+- `npm run build` bleibt gruen.
+
+### C2 - Store-Basis und Selektor-Helfer anlegen
+
+Ziel: Eine kleine, getestete Store-Basis schaffen, bevor View-Code migriert
+wird.
+
+Primaere Dateien:
+
+- `card_pwa/src/state/appStore.ts`
+- `card_pwa/src/state/createSelectors.ts`
+- `card_pwa/src/state/slices/overlaySlice.ts`
+- `card_pwa/src/state/slices/navigationSlice.ts`
+- `card_pwa/src/state/slices/syncRuntimeSlice.ts`
+- `card_pwa/src/state/__tests__/`
+
+Aufgaben:
+
+1. `appStore.ts` als Komposition der Slices anlegen.
+2. `createSelectors.ts` bereitstellen, damit Komponenten gezielte Selektoren
+   nutzen.
+3. `overlaySlice` modellieren:
+   - `openOverlay`
+   - `closeOverlay`
+   - `setActivePayload`
+   - `topOverlayId`
+4. `syncRuntimeSlice` modellieren:
+   - Status
+   - `pendingCount`
+   - `deadLetterCount`
+   - `lastSuccessfulSyncAt`
+   - `lastError`
+5. Test-Helfer fuer Store-Reset bauen.
+
+Akzeptanzkriterien:
+
+- Store kann in Tests isoliert zurueckgesetzt werden.
+- Komponenten muessen nicht den gesamten Store abonnieren.
+- Kein Slice importiert direkt React-Komponenten.
+
+Tests:
+
+- `src/state/__tests__/overlaySlice.test.ts`
+- `src/state/__tests__/syncRuntimeSlice.test.ts`
+
+### C3 - Navigation und Home-UI migrieren
+
+Ziel: Der Store loest verstreuten View-/Home-UI-State ab, ohne Dexie-Daten in
+den Store zu kopieren.
+
+Primaere Dateien:
+
+- `card_pwa/src/hooks/app/useAppNavigation.ts`
+- `card_pwa/src/App.tsx`
+- `card_pwa/src/hooks/home/useHomeViewController.ts`
+- `card_pwa/src/hooks/home/useHomeDerivedData.ts`
+- `card_pwa/src/components/HomeView.tsx`
+- `card_pwa/src/state/slices/navigationSlice.ts`
+- `card_pwa/src/state/slices/homeUiSlice.ts`
+
+Aufgaben:
+
+1. Navigation-State aus `useAppNavigation()` in `navigationSlice`
+   verschieben, Hook als Adapter erhalten.
+2. Home-UI-Preferences in `homeUiSlice` verschieben:
+   - aktiver Tab
+   - Dashboard-Modus
+   - Shuffle-only-Modus
+   - Expanded-Subdeck-IDs
+3. Persistenz nur fuer kleine UI-Praeferenzen aktivieren.
+4. `useHomeViewController` danach leichter schneiden, weil UI-State nicht mehr
+   im Controller haengt.
+
+Akzeptanzkriterien:
+
+- Deep-Link-Startverhalten bleibt unveraendert.
+- Home-View liest Domain-Daten weiter ueber Hooks/Queries.
+- Tests fuer `useAppNavigation` und Home-Shell bleiben gruen.
+
+### C4 - Overlay-State an neue Overlay-Architektur koppeln
+
+Ziel: Overlay-Stack und aktive Payloads werden zentral verwaltet, waehrend
+konkrete Dialoge weiter ihre Formularlogik selbst halten.
+
+Primaere Dateien:
+
+- `card_pwa/src/state/slices/overlaySlice.ts`
+- `card_pwa/src/ui/overlays/*`
+- `card_pwa/src/hooks/home/useHomeDialogs.ts`
+- `card_pwa/src/components/SettingsModal.tsx`
+- `card_pwa/src/components/ImportModal.tsx`
+
+Aufgaben:
+
+1. `overlaySlice` als Quelle fuer Stack/Top-Overlay verwenden.
+2. `useHomeDialogs` als Adapter auf den Store bauen.
+3. `ConfirmModal`/`AlertDialog` an `CloseReason` koppeln.
+4. Verschachtelte Dialoge in `SettingsModal`, `ImportModal` und
+   `HomeDeckCardsModal` ueber Stack-Top pruefen.
+
+Akzeptanzkriterien:
+
+- Nur oberstes Overlay reagiert auf Escape/Backdrop.
+- Aktive Datensaetze liegen typisiert im Store oder in einem klaren Adapter.
+- Form-Drafts bleiben lokal, solange sie nur ein Dialog nutzt.
+
+## Phase D - Overlay-Architektur umsetzen
+
+### D1 - Overlay-Verhaltensvertrag definieren
 
 Ziel: Vor der Implementierung steht fest, welches Verhalten alle Overlays
 garantieren muessen.
@@ -317,7 +553,7 @@ Akzeptanzkriterien:
   fuer Overlay-Zahlen.
 - Keine neue Komponente nutzt rohe `z-[9999]`-Werte.
 
-### C2 - Accessible Primitive evaluieren und entscheiden
+### D2 - Accessible Primitive evaluieren und entscheiden
 
 Ziel: Kein unnoetiger Eigenbau fuer Fokus-Trap und Inert-Verhalten.
 
@@ -351,7 +587,7 @@ Akzeptanzkriterien:
 - PoC besteht Tastaturtests.
 - Keine Migration startet ohne bestandenen PoC.
 
-### C3 - Overlay-Komponenten implementieren
+### D3 - Overlay-Komponenten implementieren
 
 Ziel: Getrennte Oberflaechen statt Monolith.
 
@@ -385,7 +621,7 @@ Akzeptanzkriterien:
 - Escape/Backdrop/Close-Button liefern `CloseReason`.
 - Tests decken Fokus und Close-Policy ab.
 
-### C4 - Migration in sicherer Reihenfolge
+### D4 - Migration in sicherer Reihenfolge
 
 Reihenfolge:
 
@@ -420,9 +656,9 @@ Akzeptanzkriterien:
 - Keine zwei vollen `z-[1000]`-Overlays ohne Overlay-Manager/Primitive.
 - Alle Dialoge haben Titelverknuepfung.
 
-## Phase D - Home-Controller und Feature-Grenzen schneiden
+## Phase E - Home-Controller und Feature-Grenzen schneiden
 
-### D1 - `useHomeViewController` nach Use Cases zerlegen
+### E1 - `useHomeViewController` nach Use Cases zerlegen
 
 Ziel: HomeView bleibt Komposition, nicht Sammelpunkt fuer alle Befehle.
 
@@ -456,7 +692,7 @@ Akzeptanzkriterien:
 - Jede neue Hook-Datei hat eine klare AI_CONTEXT-Rolle.
 - Kein Hook mischt Modal-State, DB-Write und Export in derselben Funktion.
 
-### D2 - Study/Shuffle-Session-Logik behutsam teilen
+### E2 - Study/Shuffle-Session-Logik behutsam teilen
 
 Ziel: Keine grosse Basiskomponente, sondern geteilte Controller-Logik.
 
@@ -480,9 +716,9 @@ Akzeptanzkriterien:
 - Tests fuer `StudyView` und `ShuffleStudyView` bleiben getrennt.
 - Gemeinsame Logik hat eigene Unit-Tests.
 
-## Phase E - Architekturregeln automatisieren
+## Phase F - Architekturregeln automatisieren
 
-### E1 - Importgrenzen pruefen
+### F1 - Importgrenzen pruefen
 
 Ziel: Dokumentierte Schichten werden technisch erzwungen.
 
@@ -508,7 +744,7 @@ Akzeptanzkriterien:
 - Check laeuft ohne Netzwerk und ohne Build.
 - Fehlermeldung nennt Datei, Import und verletzte Regel.
 
-### E2 - Dossier wartbarer machen
+### F2 - Dossier wartbarer machen
 
 Ziel: `card-pwa-architektur.md` bleibt hilfreich, ohne volatile Zahlen von
 Hand pflegen zu muessen.
@@ -551,25 +787,36 @@ Akzeptanzkriterien:
 
 Ergebnis: P0-Risiken sind nicht nur dokumentiert, sondern testbar.
 
-### Sprint 2 - Datenzugriff und Architekturgrenzen
+### Sprint 2 - Datenzugriff, State-ADR und Architekturgrenzen
 
 1. B1 restliche direkte DB-Zugriffe pruefen und umbauen/als Ausnahme
    dokumentieren.
-2. E1 Importgrenzen-Script einfuehren.
-3. B2 Event-Katalog erstellen und `REVIEW_UPDATED_EVENT`-Konsumenten ordnen.
+2. C1 State-Management-ADR entscheiden.
+3. F1 Importgrenzen-Script einfuehren.
+4. B2 Event-Katalog erstellen und `REVIEW_UPDATED_EVENT`-Konsumenten ordnen.
 
-Ergebnis: Schichten sind technisch kontrolliert.
+Ergebnis: Schichten und Store-Grenzen sind technisch kontrolliert.
 
-### Sprint 3 - Overlay-PoC
+### Sprint 3 - Store-Basis und erste Migration
 
-1. C1 Verhaltensvertrag und Tests schreiben.
-2. C2 Primitive-Entscheidung als ADR festhalten.
-3. C3 `Dialog` + `AlertDialog` minimal implementieren.
+1. C2 Store-Basis und Selektor-Helfer anlegen.
+2. C3 Navigation/Home-UI schrittweise migrieren.
+3. C4 Overlay-State an Stack-/CloseReason-Modell koppeln.
+4. Bestehende Home-/Navigation-Tests gruen halten.
+
+Ergebnis: UI-State hat eine professionelle, getestete Heimat ohne Dexie-Daten
+zu duplizieren.
+
+### Sprint 4 - Overlay-PoC
+
+1. D1 Verhaltensvertrag und Tests schreiben.
+2. D2 Primitive-Entscheidung als ADR festhalten.
+3. D3 `Dialog` + `AlertDialog` minimal implementieren.
 4. `ConfirmModal` und ein einfacher Anzeige-Dialog migrieren.
 
 Ergebnis: Overlay-Zielarchitektur ist beweisbar, nicht nur geplant.
 
-### Sprint 4 - Overlay-Migration niedriges Risiko
+### Sprint 5 - Overlay-Migration niedriges Risiko
 
 1. Vier aktuelle `ModalShell`-Nutzer migrieren.
 2. Metrik-/FAQ-Dialoge migrieren.
@@ -578,21 +825,21 @@ Ergebnis: Overlay-Zielarchitektur ist beweisbar, nicht nur geplant.
 
 Ergebnis: Wiederholtes Modal-Markup sinkt, Accessibility steigt.
 
-### Sprint 5 - Komplexe Dialoge und Home-Schnitt
+### Sprint 6 - Komplexe Dialoge und Home-Schnitt
 
 1. `useConfirmDialog()` oder AlertDialog-Adapter fuer Confirm-Flows.
 2. `HomeShuffleCollectionModal`, `HomeDeckCardsModal`, `ImportModal`
    migrieren.
-3. D1 `useHomeViewController` in Use-Case-Hooks schneiden.
+3. E1 `useHomeViewController` in Use-Case-Hooks schneiden.
 
 Ergebnis: weniger gestapelte Ad-hoc-Modals, kleinerer Home-God-Hook.
 
-### Sprint 6 - Panels, Sheets und Dokumentation
+### Sprint 7 - Panels, Sheets und Dokumentation
 
 1. `FullscreenPanel` auf `LearningPlanPanel` anwenden.
 2. Video-Panels und `AcronymDetailPanel` migrieren.
 3. `Sheet`/`MobileBottomSheet` final entscheiden.
-4. E2 Dossier aufteilen und generierte Inventare einbauen.
+4. F2 Dossier aufteilen und generierte Inventare einbauen.
 
 Ergebnis: Overlay-Landschaft ist systematisch, Doku bleibt wartbar.
 
@@ -609,7 +856,10 @@ Ergebnis: Overlay-Landschaft ist systematisch, Doku bleibt wartbar.
 ## Nicht-Ziele
 
 - Kein kompletter Rewrite.
-- Kein Redux/Zustand/Jotai nur wegen zentralem State.
+- Kein globaler Store als Ersatz fuer Dexie oder Query-Funktionen. Zustand
+  ist nur fuer UI-/View-/Overlay-/Runtime-State vorgesehen.
+- Kein Redux Toolkit als Default, solange die App keinen schweren
+  Event-Sourcing-/Devtools-/Time-Travel-Bedarf hat.
 - Keine Browser-E2E-Suite als Voraussetzung fuer alle Schritte; gezielte
   Tastatur-/Overlay-Tests reichen fuer die Overlay-Migration.
 - Kein ungepruefter Eigenbau eines vollstaendigen Dialog-/Focus-Trap-Systems,

@@ -19,6 +19,7 @@
     "validate:cards": "node ./scripts/validate-cards.mjs",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
+    "check:architecture": "node ./scripts/check-architecture-imports.mjs",
     "e2e:study": "node ./scripts/e2e-study-back-smoke.mjs"
   },
   "dependencies": {

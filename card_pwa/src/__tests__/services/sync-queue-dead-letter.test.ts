@@ -86,7 +86,12 @@ describe('syncQueue dead-letter pending count', () => {
 
   it('does not count retry-exhausted operations as pending work', async () => {
     const nowSpy = vi.spyOn(Date, 'now').mockReturnValue(1_000)
-    const { enqueueSyncOperation, flushSyncQueue, getSyncQueuePendingCount } = await import('../../services/syncQueue')
+    const {
+      enqueueSyncOperation,
+      flushSyncQueue,
+      getSyncQueueDiagnostics,
+      getSyncQueuePendingCount,
+    } = await import('../../services/syncQueue')
 
     await enqueueSyncOperation('examDate.upsert', { examDateIso: '2026-12-31', updatedAt: 1000 })
     expect(await getSyncQueuePendingCount()).toBe(1)
@@ -98,6 +103,38 @@ describe('syncQueue dead-letter pending count', () => {
     const second = await flushSyncQueue({ limit: 10 })
     expect(second.pending).toBe(0)
     expect(await getSyncQueuePendingCount()).toBe(0)
+    expect(await getSyncQueueDiagnostics()).toMatchObject({
+      pendingCount: 0,
+      deadLetterCount: 1,
+      deferredCount: 0,
+      outboxCount: 0,
+    })
     expect(state.fetchWithTimeout).toHaveBeenCalledTimes(2)
+  })
+
+  it('can release dead-letter operations for another retry', async () => {
+    const nowSpy = vi.spyOn(Date, 'now').mockReturnValue(1_000)
+    const {
+      enqueueSyncOperation,
+      flushSyncQueue,
+      getSyncQueueDiagnostics,
+      getSyncQueuePendingCount,
+      releaseDeadLetterSyncQueue,
+    } = await import('../../services/syncQueue')
+
+    await enqueueSyncOperation('examDate.upsert', { examDateIso: '2026-12-31', updatedAt: 1000 })
+    await flushSyncQueue({ limit: 10 })
+
+    nowSpy.mockReturnValue(10_000)
+    await flushSyncQueue({ limit: 10 })
+    expect(await getSyncQueuePendingCount()).toBe(0)
+
+    nowSpy.mockReturnValue(20_000)
+    await expect(releaseDeadLetterSyncQueue()).resolves.toBe(1)
+
+    expect(await getSyncQueueDiagnostics()).toMatchObject({
+      pendingCount: 1,
+      deadLetterCount: 0,
+    })
   })
 })

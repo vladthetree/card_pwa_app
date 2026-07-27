@@ -9,7 +9,7 @@
  * diagnostics/errorLogs/notificationPermission/*Status are owned by the parent (not
  * local state here) so they survive this accordion section collapsing.
  */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Database, Download, Upload } from 'lucide-react'
 import { useSettings, STRINGS } from '../../contexts/SettingsContext'
 import {
@@ -21,7 +21,13 @@ import {
 import { clearErrorLogs, downloadErrorLogsAsTxt, type ErrorLogEntry } from '../../services/errorLog'
 import { UI_TOKENS } from '../../constants/ui'
 import { STORAGE_KEYS } from '../../constants/appIdentity'
-import { clearSyncQueue } from '../../services/syncQueue'
+import {
+  clearSyncQueue,
+  getSyncQueueDiagnostics,
+  releaseDeadLetterSyncQueue,
+  wakeDeferredSyncQueue,
+  type SyncQueueDiagnostics,
+} from '../../services/syncQueue'
 import { resetSyncPullState } from '../../services/syncPull'
 import { readSyncAuthTokenFromSettings, writeSyncAuthTokenToSettings } from '../../services/syncConfig'
 import { resetLocalStudyDataForProfileSwitch } from '../../services/profileService'
@@ -130,9 +136,59 @@ export function SettingsDataSection({
   }
 
   const [syncAuthToken, setSyncAuthToken] = useState(() => readSyncAuthTokenFromSettings())
+  const [syncQueueDiagnostics, setSyncQueueDiagnostics] = useState<SyncQueueDiagnostics | null>(null)
+  const [syncQueueStatus, setSyncQueueStatus] = useState<string | null>(null)
+
+  const refreshSyncQueueDiagnostics = async () => {
+    try {
+      setSyncQueueDiagnostics(await getSyncQueueDiagnostics())
+    } catch {
+      setSyncQueueDiagnostics(null)
+    }
+  }
+
+  useEffect(() => {
+    if (!isOpen) return
+    void refreshSyncQueueDiagnostics()
+  }, [isOpen])
+
   const handleSyncAuthTokenChange = (value: string) => {
     setSyncAuthToken(value)
     writeSyncAuthTokenToSettings(value)
+  }
+
+  const releaseSyncRetries = async () => {
+    setSyncQueueStatus(null)
+    try {
+      await wakeDeferredSyncQueue()
+      const released = await releaseDeadLetterSyncQueue()
+      await refreshSyncQueueDiagnostics()
+      setSyncQueueStatus(isDE
+        ? `Retry freigegeben (${released} Dead-Letter Ops).`
+        : `Retry released (${released} dead-letter ops).`)
+    } catch {
+      setSyncQueueStatus(isDE ? 'Retry-Freigabe fehlgeschlagen.' : 'Retry release failed.')
+    }
+  }
+
+  const confirmClearSyncQueue = () => {
+    setConfirmModal({
+      title: isDE ? 'Sync-Queue leeren' : 'Clear sync queue',
+      message: isDE
+        ? 'Alle lokalen ausstehenden Sync-Operationen inklusive Dead-Letter und Outbox werden gelöscht. Nicht synchronisierte Änderungen können dadurch auf anderen Geräten fehlen.'
+        : 'All local pending sync operations including dead-letter and outbox entries will be deleted. Unsynced changes may be missing on other devices.',
+      confirmLabel: isDE ? 'Queue leeren' : 'Clear queue',
+      variant: 'danger',
+      onConfirm: async () => {
+        try {
+          await clearSyncQueue()
+          await refreshSyncQueueDiagnostics()
+          setSyncQueueStatus(isDE ? 'Sync-Queue geleert.' : 'Sync queue cleared.')
+        } catch {
+          setSyncQueueStatus(isDE ? 'Sync-Queue konnte nicht geleert werden.' : 'Could not clear sync queue.')
+        }
+      },
+    })
   }
 
   const runDataExport = async (format: 'txt' | 'csv' | 'json') => {
@@ -335,6 +391,49 @@ export function SettingsDataSection({
             placeholder="Leer = kein Token"
             className="w-full rounded-ds bg-[#0a0a0a] border border-[#18181b] px-2 py-1.5 text-white"
           />
+        </div>
+
+        <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
+          <p className="text-xs text-white/50 font-medium uppercase tracking-wide">
+            {isDE ? 'Sync-Queue Diagnose' : 'Sync queue diagnostics'}
+          </p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {[
+              [isDE ? 'Pending' : 'Pending', syncQueueDiagnostics?.pendingCount ?? '–'],
+              [isDE ? 'Dead-Letter' : 'Dead-letter', syncQueueDiagnostics?.deadLetterCount ?? '–'],
+              [isDE ? 'Deferred' : 'Deferred', syncQueueDiagnostics?.deferredCount ?? '–'],
+              [isDE ? 'Outbox' : 'Outbox', syncQueueDiagnostics?.outboxCount ?? '–'],
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] px-3 py-2">
+                <p className="text-[11px] uppercase tracking-wide text-white/40">{label}</p>
+                <p className="text-sm font-semibold text-white/85">{value}</p>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            <button
+              type="button"
+              onClick={() => { void releaseSyncRetries() }}
+              className={`${UI_TOKENS.button.ghost} py-2 border-amber-300/30 text-amber-100 hover:text-amber-50`}
+            >
+              {isDE ? 'Retry freigeben' : 'Release retry'}
+            </button>
+            <button
+              type="button"
+              onClick={() => { void refreshSyncQueueDiagnostics() }}
+              className={`${UI_TOKENS.button.ghost} py-2`}
+            >
+              {isDE ? 'Aktualisieren' : 'Refresh'}
+            </button>
+            <button
+              type="button"
+              onClick={confirmClearSyncQueue}
+              className={`${UI_TOKENS.button.ghost} py-2 border-rose-400/30 text-rose-200 hover:text-rose-100`}
+            >
+              {isDE ? 'Queue leeren' : 'Clear queue'}
+            </button>
+          </div>
+          {syncQueueStatus && <p className="text-xs text-amber-300/90 leading-relaxed">{syncQueueStatus}</p>}
         </div>
 
         <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-2`}>
