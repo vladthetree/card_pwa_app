@@ -7,15 +7,17 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { X, Plus, Loader2, CheckCircle, Trash2, Info, Minus } from 'lucide-react'
-import { db, type DeckRecord } from '../db'
-import { createCard, updateCard, deleteCard } from '../db/queries'
+import { createCard, updateCard, deleteCard, createDeck, listDeckOptions } from '../db/queries'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import { QuestionParser, AnswerParser, OrderingParser } from '../utils/cardTextParser'
 import { getCardVariant, type CardVariant } from '../utils/cardVariant'
 import { SM2 } from '../utils/sm2'
 import { UI_TOKENS } from '../constants/ui'
 import { generateUuidV7 } from '../utils/id'
-import type { Card } from '../types'
+import type { Card, Deck } from '../types'
+import ConfirmModal from './ConfirmModal'
+
+type DeckOption = Pick<Deck, 'id' | 'name'>
 
 type Props = {
   onClose: () => void
@@ -69,7 +71,7 @@ export default function CardFormModal(props: Props) {
   const t = STRINGS[settings.language]
   const prefersReducedMotion = useReducedMotion()
 
-  const [decks, setDecks] = useState<DeckRecord[]>([])
+  const [decks, setDecks] = useState<DeckOption[]>([])
   const [createNewDeck, setCreateNewDeck] = useState(false)
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'deleting' | 'error'>('idle')
   const [error, setError] = useState<string | null>(null)
@@ -78,7 +80,7 @@ export default function CardFormModal(props: Props) {
 
   useEffect(() => {
     if (props.mode === 'create') {
-      db.decks.orderBy('name').toArray().then(loaded => {
+      listDeckOptions().then(loaded => {
         setDecks(loaded)
         if (loaded.length === 0) setCreateNewDeck(true)
       })
@@ -275,15 +277,13 @@ export default function CardFormModal(props: Props) {
       if (createNewDeck) {
         const deckName = form.newDeckName.trim()
         if (!deckName) { setError(t.deck_name_empty); return }
-        deckId = generateId()
-        const createdAt = Date.now()
-        await db.decks.add({
-          id: deckId,
-          name: deckName,
-          createdAt,
-          updatedAt: createdAt,
-          source: 'manual',
-        })
+        const deckResult = await createDeck(deckName)
+        if (!deckResult.ok || !deckResult.deckId) {
+          setError(deckResult.error ?? t.unknown_error)
+          setStatus('error')
+          return
+        }
+        deckId = deckResult.deckId
       }
       if (!deckId) { setError(t.choose_deck); return }
 
@@ -346,6 +346,7 @@ export default function CardFormModal(props: Props) {
 
   const handleDelete = async () => {
     if (props.mode !== 'edit') return
+    if (status === 'deleting') return
     setStatus('deleting')
     setError(null)
     const result = await deleteCard(props.card.id)
@@ -706,44 +707,17 @@ export default function CardFormModal(props: Props) {
           )}
 
           {/* Delete confirmation — edit mode only */}
-          <AnimatePresence>
-            {showDeleteConfirm && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/80 rounded-[1.5rem] sm:rounded-[2rem] flex items-center justify-center"
-                onClick={e => e.stopPropagation()}
-              >
-                <motion.div
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.9, opacity: 0 }}
-                  className="bg-rose-950/80 border border-rose-500/30 rounded-ds-2xl p-6 max-w-sm shadow-modal"
-                >
-                  <h3 className="text-white font-black text-lg mb-2">{t.delete_card_title}</h3>
-                  <p className="text-white/70 text-sm mb-6">{t.delete_card_description}</p>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => setShowDeleteConfirm(false)}
-                      className="flex-1 px-4 py-2 rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] text-white text-sm hover:bg-[#111] hover:border-[#3f3f46] transition-all duration-200 ease-out active:scale-[0.98]"
-                    >
-                      {t.cancel}
-                    </button>
-                    <button
-                      onClick={handleDelete}
-                      disabled={status === 'deleting'}
-                      className="flex-1 px-4 py-2 rounded-ds-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium transition-all duration-200 ease-out active:scale-[0.98] disabled:opacity-40"
-                    >
-                      {status === 'deleting' ? t.deleting : t.yes_delete}
-                    </button>
-                  </div>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+          <ConfirmModal
+            isOpen={showDeleteConfirm}
+            title={t.delete_card_title}
+            message={t.delete_card_description}
+            confirmLabel={status === 'deleting' ? t.deleting : t.yes_delete}
+            variant="danger"
+            onConfirm={() => { void handleDelete() }}
+            onCancel={() => setShowDeleteConfirm(false)}
+          />
+	        </motion.div>
+	      </motion.div>
+	    </AnimatePresence>
   )
 }

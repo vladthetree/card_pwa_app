@@ -205,6 +205,13 @@ export async function listDecks(): Promise<Deck[]> {
   return buildDeckTree(deckRecords, statsByDeck)
 }
 
+export async function listDeckOptions(): Promise<Array<Pick<Deck, 'id' | 'name'>>> {
+  return (await readAllDecksShared())
+    .filter(deck => !deck.isDeleted)
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map(deck => ({ id: deck.id, name: deck.name }))
+}
+
 export async function listDeckCards(deckId: string): Promise<Card[]> {
   const deckIds = await resolveDeckScopeIds(deckId)
   const rows = (

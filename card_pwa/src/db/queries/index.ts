@@ -12,6 +12,7 @@ export { getAlgorithmDiagnostics, clearAlgorithmDiagnostics } from './diagnostic
 
 export {
   listDecks,
+  listDeckOptions,
   listDeckCards,
   listAllCards,
   listCardsByDeckIdsDirect,

@@ -2,7 +2,7 @@
  * AI_CONTEXT: Vitest coverage for deck schedule overview; protects db behavior from regressions in the learning PWA.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { countTodayDueFromDecks, getDeckScheduleOverview } from '../../db/queries'
+import { countTodayDueFromDecks, getDeckScheduleOverview, listDeckOptions } from '../../db/queries'
 import type { CardRecord, DeckRecord } from '../../db'
 import { SM2 } from '../../utils/sm2'
 
@@ -106,6 +106,19 @@ describe('getDeckScheduleOverview', () => {
     const result = await getDeckScheduleOverview([], 50)
     expect(result).toEqual({})
     expect(mockedDb.cards.toArray).not.toHaveBeenCalled()
+  })
+
+  it('lists flat active deck options ordered by name for card forms', async () => {
+    mockedDb.state.decks = [
+      createDeck({ id: 'child', name: 'Beta', parentDeckId: 'root' }),
+      createDeck({ id: 'deleted', name: 'A deleted', isDeleted: true }),
+      createDeck({ id: 'root', name: 'Alpha' }),
+    ]
+
+    await expect(listDeckOptions()).resolves.toEqual([
+      { id: 'root', name: 'Alpha' },
+      { id: 'child', name: 'Beta' },
+    ])
   })
 
   it('caps today total to configured daily limit when review already exceeds limit', async () => {
