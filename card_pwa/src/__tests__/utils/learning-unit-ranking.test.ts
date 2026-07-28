@@ -155,6 +155,23 @@ describe('rankLearningUnits', () => {
     expect(ranked[0].recommended).toBe(true)
   })
 
+  it('abgeschlossene Labs verdrängen trotz schwacher Evidenz keine offenen Empfehlungen', () => {
+    const done: LearningUnitState = {
+      profileId: 'p', evidenceEpoch: 1, unitId: lab1.unitId, activityStatus: 'completed',
+      currentStep: 'done', lastActivityAt: 1, updatedAt: 1,
+    }
+    const ranked = rank({
+      phase: 'deepening',
+      stateByUnitId: new Map([[lab1.unitId, done]]),
+      objectiveEvidence: new Map([['4.5', 'insufficientEvidence']]),
+    })
+    const lab = ranked.find(entry => entry.definition.unitId === lab1.unitId)
+
+    expect(lab?.recommended).toBe(false)
+    expect(lab?.reason).toBe('completed_activity')
+    expect(ranked[ranked.length - 1]?.definition.unitId).toBe(lab1.unitId)
+  })
+
   it('exam-Phase: Drills vor allem anderen, keine automatische Course-Empfehlung', () => {
     const ranked = rank({ phase: 'exam' })
     expect(ranked[0].definition.unitId).toBe('unit:exam:drill-1')

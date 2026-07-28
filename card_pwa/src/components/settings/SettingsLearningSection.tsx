@@ -7,7 +7,8 @@
  * parent (not local state here) so they survive this accordion section collapsing —
  * see SettingsModal's own comment on why that state stays up there.
  */
-import { Brain, RefreshCw } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { Brain, ChevronDown, RefreshCw } from 'lucide-react'
 import { useSettings, STRINGS } from '../../contexts/SettingsContext'
 import type { YoungCardLapseStats } from '../../db/queries'
 import { UI_TOKENS } from '../../constants/ui'
@@ -22,6 +23,21 @@ import { InfoHint } from '../InfoHint'
 import { SettingsSection } from '../SettingsSection'
 import { SettingsSliderRow } from '../SettingsSliderRow'
 import { SettingsSwitchRow } from '../SettingsSwitchRow'
+import { profileScopeId } from '../../services/profileService'
+import { useTodayPackage } from '../../hooks/home/useTodayPackage'
+import { useLearningUnits } from '../../hooks/home/useLearningUnits'
+import {
+  LearningPlanPanel,
+  buildLearningPlanFormValues,
+  learningPlanFormValuesEqual,
+  normalizeLearningPlanFormValues,
+  type LearningPlanField,
+  type LearningPlanFormValues,
+} from '../LearningPlanPanel'
+import { computeDraftPacing, computeExamTimeline, type LearningPacingResult } from '../../utils/learningUnitRanking'
+import { saveDraftLearnerExamPlan } from '../../db/queries/learningUnits'
+import { toast } from '../../hooks/useToast'
+import { SY0701_COVERAGE_SUMMARY } from '../../data/sy0701Coverage'
 
 interface Props {
   isOpen: boolean
@@ -60,6 +76,8 @@ export function SettingsLearningSection({
 }: Props) {
   const {
     settings,
+    profile,
+    isProfileHydrated,
     isAlgorithmMigrating,
     setAlgorithm,
     setShowReviewDecks,
@@ -79,6 +97,122 @@ export function SettingsLearningSection({
     resetAlgorithmParams,
   } = useSettings()
   const t = STRINGS[settings.language]
+  const profileId = isProfileHydrated ? profileScopeId(profile) : null
+  const todayPackage = useTodayPackage({
+    nextDayStartsAt: settings.nextDayStartsAt,
+    packageCardLimit: settings.newCardsPerDay,
+  })
+  const learningUnits = useLearningUnits({
+    catalog: todayPackage.catalog,
+    catalogLoading: todayPackage.loading,
+    profileId,
+    examDateIso: settings.examDateIso,
+    examDateUpdatedAt: settings.examDateUpdatedAt,
+    nextDayStartsAt: settings.nextDayStartsAt,
+    learnAheadMinutes: settings.learnAheadMinutes,
+  })
+  const { plan, pacing } = learningUnits
+  const planCopy = settings.language === 'de'
+    ? {
+        saved: 'Lernplan gespeichert.',
+        saveFailed: 'Der Lernplan konnte nicht gespeichert werden. Bitte erneut versuchen.',
+        progressTitle: 'So wird dein Fortschritt bewertet',
+        honesty: 'Bearbeitet bedeutet nicht automatisch sicher beherrscht. Empfehlungen gelten als erledigt, wenn die echte Lerneinheit-Ausführung abgeschlossen ist: Kursvideo gesehen, Abruf-Check der Einheit gespeichert und die eingefrorenen Karten bewertet. Reife/Evidenz steigt separat durch erfolgreiche Wissenschecks und Wiederholungen.',
+        coverageSummary: (covered: number, total: number, practiceGaps: number) =>
+          `${covered}/${total} Prüfungsziele abgedeckt · ${practiceGaps} offene Praxisbereiche`,
+      }
+    : {
+        saved: 'Study plan saved.',
+        saveFailed: 'The study plan could not be saved. Please try again.',
+        progressTitle: 'How your progress is measured',
+        honesty: 'Worked through does not automatically mean mastered. Recommendations are done when the real learning-unit execution is complete: course video watched, the unit recall check saved, and the frozen cards reviewed. Readiness/evidence grows separately through successful checks and reviews.',
+        coverageSummary: (covered: number, total: number, practiceGaps: number) =>
+          `${covered}/${total} exam objectives covered · ${practiceGaps} open practice areas`,
+      }
+  const storedPlanValues = useMemo(() => buildLearningPlanFormValues({
+    examDateIso: plan?.examDateIso ?? learningUnits.effectiveExamDateIso,
+    examLanguage: plan?.examLanguage,
+    weeklyMinutesAvailable: plan?.weeklyMinutesAvailable,
+    learningDaysPerWeek: plan?.learningDaysPerWeek,
+    bufferDays: plan?.bufferDays,
+  }), [
+    learningUnits.effectiveExamDateIso,
+    plan?.bufferDays,
+    plan?.examLanguage,
+    plan?.learningDaysPerWeek,
+    plan?.weeklyMinutesAvailable,
+  ])
+  const [planEditorOpen, setPlanEditorOpen] = useState(false)
+  const [planBaseline, setPlanBaseline] = useState<LearningPlanFormValues>(storedPlanValues)
+  const [planDraft, setPlanDraft] = useState<LearningPlanFormValues>(storedPlanValues)
+  const [planSaving, setPlanSaving] = useState(false)
+  const [planSaveError, setPlanSaveError] = useState<string | null>(null)
+  const planDirty = !learningPlanFormValuesEqual(planBaseline, planDraft)
+
+  useEffect(() => {
+    if (planEditorOpen || planSaving) return
+    setPlanBaseline(storedPlanValues)
+    setPlanDraft(storedPlanValues)
+  }, [planEditorOpen, planSaving, storedPlanValues])
+
+  const previewPacing = useMemo<LearningPacingResult>(() => {
+    const normalized = normalizeLearningPlanFormValues(planDraft)
+    if (!normalized) return computeDraftPacing({ daysLeft: null })
+    const timeline = computeExamTimeline({ examDateIso: normalized.examDateIso, now: Date.now() })
+    return computeDraftPacing({
+      daysLeft: timeline.daysLeft,
+      plan: normalized,
+      workload: pacing.workload,
+    })
+  }, [pacing.workload, planDraft])
+
+  const handleOpenPlan = () => {
+    setPlanBaseline(storedPlanValues)
+    setPlanDraft(storedPlanValues)
+    setPlanSaveError(null)
+    setPlanEditorOpen(true)
+  }
+
+  const handlePlanChange = (field: LearningPlanField, value: string) => {
+    setPlanSaveError(null)
+    setPlanDraft(current => ({ ...current, [field]: value }))
+  }
+
+  const handleSavePlan = async () => {
+    if (profileId === null || planSaving) return
+    const normalized = normalizeLearningPlanFormValues(planDraft)
+    if (!normalized) return
+    setPlanSaving(true)
+    setPlanSaveError(null)
+    try {
+      await saveDraftLearnerExamPlan({
+        profileId,
+        now: Date.now(),
+        examDateIso: normalized.examDateIso,
+        uiLanguage: settings.language,
+        examLanguage: normalized.examLanguage,
+        weeklyMinutesAvailable: normalized.weeklyMinutesAvailable,
+        learningDaysPerWeek: normalized.learningDaysPerWeek,
+        bufferDays: normalized.bufferDays,
+      })
+      if (
+        settings.examDateIso !== normalized.examDateIso ||
+        (settings.examDateUpdatedAt === null && (plan?.examDateIso ?? null) !== normalized.examDateIso)
+      ) {
+        await setExamDateIso(normalized.examDateIso, { planAlreadySaved: true })
+      }
+      setPlanBaseline(planDraft)
+      learningUnits.reload()
+      setPlanEditorOpen(false)
+      toast.success(planCopy.saved)
+    } catch (error) {
+      console.error('[SettingsLearningSection] Plan speichern fehlgeschlagen', error)
+      setPlanSaveError(planCopy.saveFailed)
+      toast.error(planCopy.saveFailed)
+    } finally {
+      setPlanSaving(false)
+    }
+  }
 
   const handleOptimizeFsrs = async () => {
     if (isOptimizingFsrs) return
@@ -286,6 +420,50 @@ export function SettingsLearningSection({
                 : 'Target date for the countdown and learning units. Changes are reconciled with the study plan and active profile.'}
             </p>
           </div>
+        </div>
+
+        <div className="space-y-3">
+          <LearningPlanPanel
+            language={settings.language}
+            summaryValues={planBaseline}
+            values={planDraft}
+            pacing={pacing}
+            previewPacing={previewPacing}
+            contentProgress={learningUnits.contentMapping.summary}
+            open={planEditorOpen}
+            dirty={planDirty}
+            saving={planSaving}
+            saveError={planSaveError}
+            configured={plan !== null}
+            collapseSignal={plan?.updatedAt ?? 0}
+            onOpen={handleOpenPlan}
+            onChange={handlePlanChange}
+            onSave={() => void handleSavePlan()}
+            onClose={() => {
+              setPlanEditorOpen(false)
+              setPlanDraft(planBaseline)
+              setPlanSaveError(null)
+            }}
+          />
+
+          <details className={`${UI_TOKENS.surface.panelSoft} group/progress p-4`}>
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-left">
+              <span className="text-xs font-medium uppercase tracking-wide text-white/55">
+                {planCopy.progressTitle}
+              </span>
+              <ChevronDown size={16} strokeWidth={1.75} className="shrink-0 text-white/35 transition-transform group-open/progress:rotate-180" />
+            </summary>
+            <div className="mt-3 space-y-3 border-t border-[#18181b] pt-3">
+              <p className="text-xs leading-relaxed text-white/45">{planCopy.honesty}</p>
+              <p className="rounded-ds border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-xs leading-relaxed text-white/55">
+                {planCopy.coverageSummary(
+                  SY0701_COVERAGE_SUMMARY.coveredCount,
+                  SY0701_COVERAGE_SUMMARY.requirementCount,
+                  SY0701_COVERAGE_SUMMARY.missingPracticalRequirementIds.length,
+                )}
+              </p>
+            </div>
+          </details>
         </div>
 
         <div>

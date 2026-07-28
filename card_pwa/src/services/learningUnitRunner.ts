@@ -35,6 +35,7 @@ import {
 } from '../data/sy0701ContentMap'
 import {
   abortUnitExecution,
+  completeReviewUnitExecution,
   completeUnitExecution,
   getActiveExecution,
   getActiveLabAttempt,
@@ -48,7 +49,7 @@ import {
   recordVideoRecallRun,
   startLabAttempt,
   startUnitExecution,
-  submitLabAttempt,
+  submitLabAttemptAndCompleteUnit,
   touchUnitActivity,
   updateLabAttempt,
 } from '../db/queries/learningUnits'
@@ -158,8 +159,14 @@ export async function startOrResumeCourseUnit(input: {
   }
 
   const executionId = crypto.randomUUID()
+  const resolvableRecallQuestionIds = content.recallQuestionIds.filter(
+    questionId => /^T\d{3}-\d{2}$/.test(questionId) || recallCardIdByQuestionId.has(questionId),
+  )
   const recall = selectRecallQuestionIds({
-    candidateQuestionIds: content.recallQuestionIds,
+    // Eine eingefrorene, lokal nicht renderbare M-Frage könnte nie als exakt
+    // vollständiger Run zurückkommen und würde die Unit dauerhaft blockieren.
+    // Transkriptfragen sind gebündelt; M-Fragen benötigen ihre echte Karte.
+    candidateQuestionIds: resolvableRecallQuestionIds,
     recallCardIdByQuestionId,
     recallCheckSize: settings.recallCheckSize,
     selectionSeed: executionId,
@@ -244,8 +251,11 @@ export async function reconcileCourseUnitProgress(
       const reviewedIds = new Set(await listCardIdsReviewedSince(execution.cardIds, execution.createdAt))
       if (execution.cardIds.every(cardId => reviewedIds.has(cardId))) {
         const now = Date.now()
-        await completeUnitExecution(profileId, execution.executionId, now)
-        await recordReviewUnitAttempt({
+        await completeReviewUnitExecution({
+          profileId,
+          executionId: execution.executionId,
+          now,
+          attempt: {
           attemptId: crypto.randomUUID(),
           profileId,
           unitId: state.unitId,
@@ -253,6 +263,7 @@ export async function reconcileCourseUnitProgress(
           localLearningDay: options.localLearningDay ?? formatFallbackLearningDay(now),
           completedAt: now,
           status: 'completed',
+          },
         })
         await clearActiveSession(`unit-exec:${execution.executionId}`)
         completedUnitIds.push(state.unitId)
@@ -464,21 +475,42 @@ export async function recordLabCheck(input: {
     })
     return result
   }
-  await submitLabAttempt({
+  const unitId = formatLabUnitId(input.scenarioId)
+  const execution = await getActiveExecution(input.profileId, unitId)
+  if (execution?.type !== 'lab' || execution.labAttemptId !== attempt.attemptId) {
+    throw new Error(`recordLabCheck: aktive Lab-Ausführung für ${input.scenarioId} fehlt`)
+  }
+  await submitLabAttemptAndCompleteUnit({
     profileId: input.profileId,
     attemptId: attempt.attemptId,
+    executionId: execution.executionId,
     answerByStepId: input.answerByStepId,
     scoreEarned: result.earnedPoints,
     scorePossible: result.possiblePoints,
     elapsedMs,
     now,
   })
-  const unitId = formatLabUnitId(input.scenarioId)
-  const execution = await getActiveExecution(input.profileId, unitId)
-  if (execution?.type === 'lab' && execution.labAttemptId === attempt.attemptId) {
-    await completeUnitExecution(input.profileId, execution.executionId, now)
-  }
   return result
+}
+
+/** Speichert einen gültig bearbeiteten Zwischenstand eines mehrstufigen Labs,
+ * ohne ihn als Fehlversuch oder Abschluss zu werten. */
+export async function saveLabProgress(input: {
+  profileId: string
+  scenarioId: string
+  answerByStepId: Record<string, unknown>
+}): Promise<boolean> {
+  const attempt = await getActiveLabAttempt(input.profileId, input.scenarioId)
+  if (!attempt) return false
+  const now = Date.now()
+  await updateLabAttempt({
+    profileId: input.profileId,
+    attemptId: attempt.attemptId,
+    answerByStepId: input.answerByStepId,
+    elapsedMs: Math.max(0, now - attempt.startedAt),
+    now,
+  })
+  return true
 }
 
 /**

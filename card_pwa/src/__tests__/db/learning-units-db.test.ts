@@ -7,11 +7,13 @@ import type { LearningUnitExecution } from '../../utils/learningUnits'
 import {
   abandonLabAttempt,
   abortUnitExecution,
+  clearVideoProgressForProfile,
   completeUnitExecution,
   getActiveExecution,
   getActiveLabAttempt,
   getLearnerExamPlan,
   getLearningUnitState,
+  getVideoProgress,
   getOrCreateProfileLearningState,
   countReviewUnitAttemptsForDay,
   listRecentVideoRecallRuns,
@@ -143,6 +145,15 @@ describe('Video-Fortschritt und Recall-Läufe', () => {
     expect(record?.watchedAt).toBe(NOW + 1)
     expect(record?.watchedMethod).toBe('ended')
     expect(record?.openedAt).toBe(NOW)
+  })
+
+  it('löscht dedizierten Video-Fortschritt nur für das gewählte Profil', async () => {
+    await markVideoWatched({ profileId: 'profil-a', videoIndex: 2, objectiveId: '1.1', method: 'ended', now: NOW }, db)
+    await markVideoWatched({ profileId: 'profil-b', videoIndex: 2, objectiveId: '1.1', method: 'manual', now: NOW }, db)
+
+    expect(await clearVideoProgressForProfile('profil-a', db)).toBe(1)
+    expect(await getVideoProgress('profil-a', 2, db)).toBeUndefined()
+    expect((await getVideoProgress('profil-b', 2, db))?.watchedMethod).toBe('manual')
   })
 
   it('Recall-Läufe sind append-only und an existierende eigene Ausführungen gebunden', async () => {
@@ -284,6 +295,25 @@ describe('resetProfileLearningEvidence (§16 Lernreset)', () => {
 
     const restarted = await startUnitExecution(courseExecution({ executionId: 'exec-3' }), NOW + 20, db)
     expect(restarted.evidenceEpoch).toBe(2)
+  })
+
+  it('bricht offene Labversuche der alten Evidence-Epoch ab', async () => {
+    await getOrCreateProfileLearningState('profil-a', NOW, db)
+    const attempt = await startLabAttempt({
+      profileId: 'profil-a',
+      scenarioId: 'lab-reset',
+      scenarioVersion: 'v1',
+      language: 'de',
+      sourceSnapshotId: 'snap',
+      contentManifestVersion: 'manifest',
+      scenarioSnapshot: { steps: [], rubric: [] },
+      now: NOW,
+    }, db)
+
+    await resetProfileLearningEvidence('profil-a', NOW + 100, db)
+
+    expect(await getActiveLabAttempt('profil-a', 'lab-reset', db)).toBeUndefined()
+    expect((await db.labAttempts.get(attempt.attemptId))?.status).toBe('abandoned')
   })
 })
 

@@ -136,6 +136,13 @@ export function HomeLearningUnitList({
         </div>
       )}
 
+      <div
+        data-testid="learning-unit-completion-rule"
+        className="neo-learning-note mt-4 px-3 py-2.5 font-sans text-[11px] font-bold leading-relaxed text-black"
+      >
+        {copy.completionRule}
+      </div>
+
       <ul className="mt-4 grid min-w-0 gap-3">
         {rows.map((row, index) => {
           const state = stateByUnitId.get(row.definition.unitId)
@@ -174,13 +181,20 @@ export function HomeLearningUnitList({
                       </span>
                     )}
                     <span>{`Objective ${row.definition.objectiveIds[0]}`}</span>
+                    <ActivityChip language={language} status={activity} />
                   </span>
                   <span className="mt-0.5 block break-words font-sans text-[11px] font-medium leading-relaxed text-black">
                     {copy.reason[row.reason]}
                   </span>
-                </span>
-                <span className="hidden shrink-0 sm:block">
-                  <ActivityChip language={language} status={activity} />
+                  {state && (
+                    <span className="mt-0.5 block break-words font-sans text-[11px] font-bold leading-relaxed text-black">
+                      {activity === 'completed'
+                        ? copy.completedDetail[row.definition.type]
+                        : activity === 'inProgress'
+                          ? copy.currentStep[state.currentStep]
+                          : null}
+                    </span>
+                  )}
                 </span>
                 <ChevronRight size={18} strokeWidth={3} className="shrink-0 text-black transition-transform group-hover:translate-x-0.5" />
               </button>

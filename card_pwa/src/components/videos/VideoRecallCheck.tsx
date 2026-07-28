@@ -130,7 +130,7 @@ interface Props {
   previousRuns?: RecallRunResult[]
   /** Wird bei jedem abgeschlossenen Durchlauf aufgerufen (Score-Historie);
    *  `questionIds` sind die gestellten Fragen in Abfragereihenfolge. */
-  onResult?: (known: number, total: number, questionIds: string[]) => void
+  onResult?: (known: number, total: number, questionIds: string[]) => void | Promise<void>
   /** Eingefrorene Fragen einer aktiven Kurs-Ausführung (§8.2): exakt diese IDs
    *  in exakt dieser Reihenfolge stellen (M-IDs → Deck-Karten, T-IDs →
    *  Transkriptfragen). Ohne Wert: freie Auswahl wie bisher. */
@@ -422,7 +422,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
   const view = current?.view ?? null
   const total = items.length
 
-  const grade = (known: boolean) => {
+  const grade = async (known: boolean) => {
     const nextKnown = knownCount + (known ? 1 : 0)
     // In den Study-Handoff gehören nur echte Deck-Karten; Transkript-Fragen
     // existieren nicht als Karten und zählen nur im Ergebnis.
@@ -433,7 +433,7 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
     if (index + 1 >= total) {
       setKnownCount(nextKnown)
       setRunHistory(prev => [...prev, { known: nextKnown, total, at: Date.now() }])
-      onResult?.(
+      await onResult?.(
         nextKnown,
         total,
         items.map(item => item.questionId).filter((id): id is string => typeof id === 'string'),

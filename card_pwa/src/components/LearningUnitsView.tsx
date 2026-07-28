@@ -1,12 +1,12 @@
 /**
  * AI_CONTEXT: Vollbild-Ansicht des dedizierten SY0-701-Lerneinheiten-Systems
  * (Nutzerentscheidung 2026-07-18: eigener Screen, das Dashboard trägt nur die
- * Referenz-Kachel). Enthält Lernplan-Editor, Empfehlungsliste und die Vollliste
- * aller Units gruppiert Domain → Objective mit Leaf-Coverage; Aktivität,
+ * Referenz-Kachel). Enthält Empfehlungsliste und die Vollliste aller Units
+ * gruppiert Domain → Objective mit Leaf-Coverage; Aktivität,
  * Evidenz und Reife bleiben getrennt beschriftet (§18). Startet Units exakt:
  * Course → Video/Recall/Karten, Review → eingefrorene Karten-Session.
  */
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowLeft, ChevronDown, Route, X } from 'lucide-react'
 import { useSettings } from '../contexts/SettingsContext'
 import { profileScopeId } from '../services/profileService'
@@ -14,14 +14,6 @@ import { useTodayPackage } from '../hooks/home/useTodayPackage'
 import { useLearningUnits } from '../hooks/home/useLearningUnits'
 import { HomeLearningUnitList } from './home/HomeLearningUnitList'
 import { LEARNING_UNIT_COPY } from './home/learningUnitCopy'
-import {
-  LearningPlanPanel,
-  buildLearningPlanFormValues,
-  learningPlanFormValuesEqual,
-  normalizeLearningPlanFormValues,
-  type LearningPlanField,
-  type LearningPlanFormValues,
-} from './LearningPlanPanel'
 import { SY0_701_OBJECTIVES, SY0_701_ROOT_DECKS, getSecurityObjectiveDeckId, getSecurityObjectiveDeckName } from '../utils/securityDeckHierarchy'
 import {
   objectiveIdOfDeckId,
@@ -32,14 +24,8 @@ import {
 } from '../utils/learningUnits'
 import { SY0701_REQUIREMENTS_MANIFEST } from '../data/sy0701Requirements'
 import { SY0701_COVERAGE_SUMMARY } from '../data/sy0701Coverage'
-import {
-  computeDraftPacing,
-  computeExamTimeline,
-  type LearningPacingResult,
-  type RankedLearningUnit,
-} from '../utils/learningUnitRanking'
+import type { RankedLearningUnit } from '../utils/learningUnitRanking'
 import { abortReviewUnit, startOrResumeCourseUnit, startOrResumeReviewUnit } from '../services/learningUnitRunner'
-import { saveDraftLearnerExamPlan } from '../db/queries/learningUnits'
 import { toast } from '../hooks/useToast'
 import type { Deck } from '../types'
 
@@ -95,11 +81,7 @@ const VIEW_COPY = {
     } satisfies Record<ObjectiveEvidenceStatus, string>,
     leafLine: (covered: number, total: number, samples: number) =>
       `${covered}/${total} Prüfungsziele abgedeckt · ${samples} Wissenschecks`,
-    coverageSummary: (covered: number, total: number, practiceGaps: number) =>
-      `${covered}/${total} Prüfungsziele abgedeckt · ${practiceGaps} offene Praxisbereiche`,
     practiceGaps: (count: number) => `${count} Praxisanforderungen benötigen noch eine passende Übung`,
-    honesty: 'Bearbeitet bedeutet nicht automatisch sicher beherrscht. Deine Reife steigt durch erfolgreiche Wissenschecks und Wiederholungen.',
-    progressDetails: 'So wird dein Fortschritt bewertet',
     unitType: {
       course: 'Video',
       review: 'Wiederholung',
@@ -110,25 +92,6 @@ const VIEW_COPY = {
     abortReview: 'Wiederholung abbrechen',
     reviewEmpty: 'Nichts zu wiederholen — in diesem Objective sind keine Karten fällig und keine Fehler ungelöst.',
     reviewStartFailed: 'Wiederholung konnte nicht gestartet werden.',
-    plan: {
-      title: 'Lernplan (Entwurf)',
-      examDate: (iso: string | null) => iso ? `Termin ${iso} — aus den Einstellungen` : 'Kein Termin — in den Einstellungen setzen',
-      language: 'Prüfungssprache',
-      weeklyHours: 'Stunden/Woche',
-      learningDays: 'Lerntage/Woche',
-      bufferDays: 'Puffertage',
-      save: 'Speichern',
-      saved: 'Gespeichert',
-      saveFailed: 'Der Lernplan konnte nicht gespeichert werden. Bitte erneut versuchen.',
-      pacing: {
-        'missing-plan': 'Pacing: Termin oder Wochenbudget fehlt.',
-        'past-exam': 'Termin überschritten — Termin aktualisieren.',
-        'missing-estimates': 'Dauerschätzungen der Einheiten fehlen noch (Phase 6) — keine Machbarkeitsaussage.',
-        'capacity-shortfall': 'Budget reicht nicht — Termin verschieben oder Budget erhöhen.',
-        'on-track': 'Machbar im aktuellen Budget.',
-      } satisfies Record<LearningPacingResult['reason'], string>,
-      perDay: (minutes: number) => `~${minutes} min je Lerntag nötig`,
-    },
   },
   en: {
     title: 'Learning units',
@@ -156,11 +119,7 @@ const VIEW_COPY = {
     } satisfies Record<ObjectiveEvidenceStatus, string>,
     leafLine: (covered: number, total: number, samples: number) =>
       `${covered}/${total} exam objectives covered · ${samples} knowledge checks`,
-    coverageSummary: (covered: number, total: number, practiceGaps: number) =>
-      `${covered}/${total} exam objectives covered · ${practiceGaps} open practice areas`,
     practiceGaps: (count: number) => `${count} practical requirements still need a matching exercise`,
-    honesty: 'Completed does not automatically mean confidently mastered. Readiness grows through successful knowledge checks and reviews.',
-    progressDetails: 'How your progress is measured',
     unitType: {
       course: 'Video',
       review: 'Review',
@@ -171,25 +130,6 @@ const VIEW_COPY = {
     abortReview: 'Abort review',
     reviewEmpty: 'Nothing to review — no cards due and no unresolved errors in this objective.',
     reviewStartFailed: 'Could not start the review.',
-    plan: {
-      title: 'Study plan (draft)',
-      examDate: (iso: string | null) => iso ? `Exam date ${iso} — from settings` : 'No exam date — set it in settings',
-      language: 'Exam language',
-      weeklyHours: 'Hours/week',
-      learningDays: 'Study days/week',
-      bufferDays: 'Buffer days',
-      save: 'Save',
-      saved: 'Saved',
-      saveFailed: 'The study plan could not be saved. Please try again.',
-      pacing: {
-        'missing-plan': 'Pacing: exam date or weekly budget missing.',
-        'past-exam': 'Exam date passed — update it.',
-        'missing-estimates': 'Unit duration estimates still missing (phase 6) — no feasibility verdict.',
-        'capacity-shortfall': 'Budget insufficient — move the date or raise the budget.',
-        'on-track': 'Feasible within the current budget.',
-      } satisfies Record<LearningPacingResult['reason'], string>,
-      perDay: (minutes: number) => `~${minutes} min per study day needed`,
-    },
   },
 } as const
 
@@ -206,7 +146,7 @@ interface Props {
 }
 
 export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtIndex, onOpenLabScenario, embedded = false }: Props) {
-  const { settings, profile, isProfileHydrated, setExamDateIso } = useSettings()
+  const { settings, profile, isProfileHydrated } = useSettings()
   const copy = VIEW_COPY[settings.language]
   const listCopy = LEARNING_UNIT_COPY[settings.language]
 
@@ -224,97 +164,6 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
     nextDayStartsAt: settings.nextDayStartsAt,
     learnAheadMinutes: settings.learnAheadMinutes,
   })
-  const { plan, pacing } = learningUnits
-
-  // Der profilgescopte Plan ist die autoritative Terminquelle. Settings wird
-  // beim Speichern nur als synchronisierter Countdown-Kompatibilitätscache
-  // nachgezogen.
-  const storedPlanValues = useMemo(() => buildLearningPlanFormValues({
-    examDateIso: plan?.examDateIso ?? learningUnits.effectiveExamDateIso,
-    examLanguage: plan?.examLanguage,
-    weeklyMinutesAvailable: plan?.weeklyMinutesAvailable,
-    learningDaysPerWeek: plan?.learningDaysPerWeek,
-    bufferDays: plan?.bufferDays,
-  }), [
-    learningUnits.effectiveExamDateIso,
-    plan?.bufferDays,
-    plan?.examLanguage,
-    plan?.learningDaysPerWeek,
-    plan?.weeklyMinutesAvailable,
-  ])
-  const [planEditorOpen, setPlanEditorOpen] = useState(false)
-  const [planBaseline, setPlanBaseline] = useState<LearningPlanFormValues>(storedPlanValues)
-  const [planDraft, setPlanDraft] = useState<LearningPlanFormValues>(storedPlanValues)
-  const [planSaving, setPlanSaving] = useState(false)
-  const [planSaveError, setPlanSaveError] = useState<string | null>(null)
-  const planDirty = !learningPlanFormValuesEqual(planBaseline, planDraft)
-
-  useEffect(() => {
-    if (planEditorOpen || planSaving) return
-    setPlanBaseline(storedPlanValues)
-    setPlanDraft(storedPlanValues)
-  }, [planEditorOpen, planSaving, storedPlanValues])
-
-  const previewPacing = useMemo<LearningPacingResult>(() => {
-    const normalized = normalizeLearningPlanFormValues(planDraft)
-    if (!normalized) return computeDraftPacing({ daysLeft: null })
-    const timeline = computeExamTimeline({ examDateIso: normalized.examDateIso, now: Date.now() })
-    return computeDraftPacing({
-      daysLeft: timeline.daysLeft,
-      plan: normalized,
-      workload: pacing.workload,
-    })
-  }, [pacing.workload, planDraft])
-
-  const handleOpenPlan = () => {
-    setPlanBaseline(storedPlanValues)
-    setPlanDraft(storedPlanValues)
-    setPlanSaveError(null)
-    setPlanEditorOpen(true)
-  }
-
-  const handlePlanChange = (field: LearningPlanField, value: string) => {
-    setPlanSaveError(null)
-    setPlanDraft(current => ({ ...current, [field]: value }))
-  }
-
-  const handleSavePlan = async () => {
-    if (profileId === null || planSaving) return
-    const normalized = normalizeLearningPlanFormValues(planDraft)
-    if (!normalized) return
-    setPlanSaving(true)
-    setPlanSaveError(null)
-    try {
-      await saveDraftLearnerExamPlan({
-        profileId,
-        now: Date.now(),
-        examDateIso: normalized.examDateIso,
-        uiLanguage: settings.language,
-        examLanguage: normalized.examLanguage,
-        weeklyMinutesAvailable: normalized.weeklyMinutesAvailable,
-        learningDaysPerWeek: normalized.learningDaysPerWeek,
-        bufferDays: normalized.bufferDays,
-      })
-      // Settings bleibt eine abgeleitete Kompatibilitätsansicht für Countdown
-      // und Legacy-Sync. Der Plan wurde direkt darüber bereits geschrieben.
-      if (
-        settings.examDateIso !== normalized.examDateIso ||
-        (settings.examDateUpdatedAt === null && (plan?.examDateIso ?? null) !== normalized.examDateIso)
-      ) {
-        await setExamDateIso(normalized.examDateIso, { planAlreadySaved: true })
-      }
-      setPlanBaseline(planDraft)
-      learningUnits.reload()
-      setPlanEditorOpen(false)
-      toast.success(copy.plan.saved)
-    } catch (error) {
-      console.error('[LearningUnitsView] Plan speichern fehlgeschlagen', error)
-      setPlanSaveError(copy.plan.saveFailed)
-      toast.error(copy.plan.saveFailed)
-    } finally {
-      setPlanSaving(false)
-    }
-  }
 
   const handleOpenUnit = async (definition: LearningUnitDefinition) => {
     if (definition.type === 'lab') {
@@ -494,78 +343,27 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
             </div>
           )}
 
-          <div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr),340px] lg:items-start lg:gap-4">
-            <div className="flex min-w-0 flex-col gap-3 lg:col-start-1 lg:row-start-1">
-              {learningUnits.loading && (
-                <p className="font-mono text-[12px] text-ds-muted">{copy.loading}</p>
-              )}
-              {!learningUnits.loading && !learningUnits.available && (
-                <p className="font-mono text-[12px] text-ds-muted">{copy.unavailable}</p>
-              )}
+          <div className="flex min-w-0 flex-col gap-3">
+            {learningUnits.loading && (
+              <p className="font-mono text-[12px] text-ds-muted">{copy.loading}</p>
+            )}
+            {!learningUnits.loading && !learningUnits.available && (
+              <p className="font-mono text-[12px] text-ds-muted">{copy.unavailable}</p>
+            )}
 
-              {learningUnits.available && learningUnits.ranked.length > 0 && (
-                <HomeLearningUnitList
-                  language={settings.language}
-                  phase={learningUnits.phase}
-                  daysLeft={learningUnits.daysLeft}
-                  readiness={learningUnits.readiness}
-                  courseCompleted={learningUnits.courseCompleted}
-                  courseTotal={learningUnits.courseTotal}
-                  ranked={learningUnits.ranked}
-                  stateByUnitId={learningUnits.stateByUnitId}
-                  onOpenUnit={handleOpenUnit}
-                />
-              )}
-            </div>
-
-            <aside className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-2 lg:col-start-2 lg:row-start-1">
-              <LearningPlanPanel
+            {learningUnits.available && learningUnits.ranked.length > 0 && (
+              <HomeLearningUnitList
                 language={settings.language}
-                summaryValues={planBaseline}
-                values={planDraft}
-                pacing={pacing}
-                previewPacing={previewPacing}
-                contentProgress={learningUnits.contentMapping.summary}
-                open={planEditorOpen}
-                dirty={planDirty}
-                saving={planSaving}
-                saveError={planSaveError}
-                configured={plan !== null}
-                collapseSignal={plan?.updatedAt ?? 0}
-                onOpen={handleOpenPlan}
-                onChange={handlePlanChange}
-                onSave={() => void handleSavePlan()}
-                onClose={() => {
-                  setPlanEditorOpen(false)
-                  setPlanDraft(planBaseline)
-                  setPlanSaveError(null)
-                }}
+                phase={learningUnits.phase}
+                daysLeft={learningUnits.daysLeft}
+                readiness={learningUnits.readiness}
+                courseCompleted={learningUnits.courseCompleted}
+                courseTotal={learningUnits.courseTotal}
+                ranked={learningUnits.ranked}
+                stateByUnitId={learningUnits.stateByUnitId}
+                onOpenUnit={handleOpenUnit}
               />
-
-              <details className="neo-learning-card group">
-                <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 bg-[#C4B5FD] px-3 py-2.5 font-sans text-[13px] font-black uppercase text-black marker:hidden">
-                  <span>{copy.progressDetails}</span>
-                  <ChevronDown
-                    size={16}
-                    strokeWidth={1.75}
-                    className="shrink-0 text-black transition-transform group-open:rotate-180"
-                  />
-                </summary>
-                <div className="border-t-[3px] border-black px-3 pb-3 pt-2.5">
-                  <p className="font-sans text-[13px] font-medium leading-relaxed text-black">{copy.honesty}</p>
-                  <div
-                    className="neo-learning-note mt-3 px-3 py-2.5 font-sans text-[11px] font-bold leading-relaxed"
-                    data-testid="learning-units-coverage-summary"
-                  >
-                    {copy.coverageSummary(
-                      SY0701_COVERAGE_SUMMARY.coveredCount,
-                      SY0701_COVERAGE_SUMMARY.requirementCount,
-                      SY0701_COVERAGE_SUMMARY.missingPracticalRequirementIds.length,
-                    )}
-                  </div>
-                </div>
-              </details>
-            </aside>
+            )}
           </div>
 
           {learningUnits.available && (
@@ -693,7 +491,8 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
                               )}
                               <ul className="ml-2 grid min-w-0 gap-3 border-l-2 border-black pl-3">
                                 {units.map(unit => {
-                                  const activity = learningUnits.stateByUnitId.get(unit.definition.unitId)?.activityStatus ?? 'notStarted'
+                                  const state = learningUnits.stateByUnitId.get(unit.definition.unitId)
+                                  const activity = state?.activityStatus ?? 'notStarted'
                                   const abortable = unit.definition.type === 'review' && activity === 'inProgress'
                                   const unitMapping = learningUnits.contentMapping.byUnitId.get(unit.definition.unitId)
                                   const sourceSubDeckObjectives = (unitMapping?.sourceSubDeckIds ?? [])
@@ -740,6 +539,13 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
                                             }`}>
                                               {listCopy.activity[activity]}
                                             </span>
+                                            {state && activity !== 'notStarted' && (
+                                              <span className="basis-full font-sans text-[10px] font-bold leading-relaxed text-black">
+                                                {activity === 'completed'
+                                                  ? listCopy.completedDetail[unit.definition.type]
+                                                  : listCopy.currentStep[state.currentStep]}
+                                              </span>
+                                            )}
                                             {unit.recommended && (
                                               <span className="font-sans text-[10px] font-black text-black">
                                                 {listCopy.reason[unit.reason]}

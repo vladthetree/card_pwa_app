@@ -2,6 +2,7 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import { HomeLearningUnitList } from '../../components/home/HomeLearningUnitList'
+import type { LearningUnitState } from '../../utils/learningUnits'
 import type { RankedLearningUnit } from '../../utils/learningUnitRanking'
 
 function rankedUnit(order: number, recommended = false): RankedLearningUnit {
@@ -48,5 +49,33 @@ describe('HomeLearningUnitList responsive summary', () => {
     expect(html).toContain('data-testid="learning-unit-row-course-3"')
     expect(html).not.toContain('data-testid="learning-unit-row-course-4"')
     expect(html).toContain('neo-learning-card')
+    expect(html).toContain('Kurs fertig: Video angesehen')
+  })
+
+  it('zeigt auf der Einheit klar den nächsten offenen Schritt', () => {
+    const state: LearningUnitState = {
+      profileId: 'p',
+      evidenceEpoch: 1,
+      unitId: 'course-1',
+      activityStatus: 'inProgress',
+      currentStep: 'recall',
+      activeExecutionId: 'exec-1',
+      lastActivityAt: 1,
+      updatedAt: 1,
+    }
+    const html = renderToStaticMarkup(createElement(HomeLearningUnitList, {
+      language: 'de',
+      phase: 'foundation',
+      daysLeft: 30,
+      readiness: 'notReady',
+      courseCompleted: 0,
+      courseTotal: 120,
+      ranked: [rankedUnit(1, true)],
+      stateByUnitId: new Map([['course-1', state]]),
+      onOpenUnit: () => undefined,
+    }))
+
+    expect(html).toContain('in Bearbeitung')
+    expect(html).toContain('Nächster Schritt: Abruf-Check beenden')
   })
 })

@@ -147,7 +147,7 @@ export function useMesserVideoProgress() {
       const existing = prev[objective] ?? EMPTY_ENTRY
       const next = {
         ...prev,
-        [objective]: { ...existing, watched: true, confidence, updatedAt: Date.now() },
+        [objective]: { ...existing, confidence, updatedAt: Date.now() },
       }
       persist(next)
       return next

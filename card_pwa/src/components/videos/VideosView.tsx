@@ -170,17 +170,25 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
     }
   }, [profileId, activeVideoIndex])
 
-  /** Selbsteinschätzung: legacy objective-weit UND dediziert pro Profil/Video;
-   *  als expliziter Nutzerbefehl zählt sie zugleich als „gesehen“ (§8.2).
-   *  `null` (Abwahl) löscht nur legacy — watchedAt bleibt bewusst bestehen. */
+  /** Selbsteinschätzung und Gesehen-Status sind getrennte Signale: Confidence
+   *  darf eine Course-Unit niemals still als angesehen markieren. */
   const applyConfidence = (item: LocalVideoItem, next: VideoConfidence | null) => {
     setConfidence(item.objective, next)
     if (next === null) return
     const now = Date.now()
     void setVideoConfidence({ profileId, videoIndex: item.index, objectiveId: item.objective, confidence: next, now })
       .catch(error => console.error('[VideosView] setVideoConfidence', error))
-    void markVideoWatched({ profileId, videoIndex: item.index, objectiveId: item.objective, method: 'manual', now })
-      .catch(error => console.error('[VideosView] markVideoWatched', error))
+  }
+
+  const markItemWatched = (item: LocalVideoItem, method: 'ended' | 'manual') => {
+    markWatched(item.objective)
+    void markVideoWatched({
+      profileId,
+      videoIndex: item.index,
+      objectiveId: item.objective,
+      method,
+      now: Date.now(),
+    }).catch(error => console.error(`[VideosView] markVideoWatched(${method})`, error))
   }
   const { src: videoSrc, resolving } = useVideoSource(activeItem?.file ?? null, activeItem?.downloaded ?? false)
   const noteStatsLabel = copy.noteStats
@@ -204,7 +212,6 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
   }
 
   const openVideo = (item: LocalVideoItem) => {
-    markWatched(item.objective)
     // Dediziert zählt Öffnen NICHT als gesehen (§8.2) — nur als openedAt.
     void markVideoOpened({ profileId, videoIndex: item.index, objectiveId: item.objective, now: Date.now() })
       .catch(error => console.error('[VideosView] markVideoOpened', error))
@@ -280,8 +287,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
           seekRequest={seekRequest}
           onEnded={() => {
             // Zu Ende geschaut → dediziertes watchedAt (Methode 'ended', §8.2).
-            void markVideoWatched({ profileId, videoIndex: activeItem.index, objectiveId: activeItem.objective, method: 'ended', now: Date.now() })
-              .catch(error => console.error('[VideosView] markVideoWatched(ended)', error))
+            markItemWatched(activeItem, 'ended')
           }}
           labels={{ fullscreen: copy.fullscreen, exitFullscreen: copy.exitFullscreen, speed: copy.speed }}
         />
@@ -471,6 +477,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
         deckStats={deckSuccessRates[getSecurityObjectiveDeckId(activeItem.objective)] ?? null}
         onStartRecall={() => setRecallOpen(true)}
         onOpenTranscript={() => setTranscriptOpen(true)}
+        onMarkWatched={() => markItemWatched(activeItem, 'manual')}
         onSetConfidence={next => applyConfidence(activeItem, next)}
         copy={copy}
         compact={compact}
@@ -742,13 +749,16 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
           previousRuns={recallScores[videoScoreKey(activeItem.index)]}
           frozenQuestionIds={activeCourseExecution?.recallQuestionIds}
           frozenRecallCardIds={activeCourseExecution?.recallCardIds}
-          onResult={(known, total, questionIds) => {
+          onResult={async (known, total, questionIds) => {
             recordRecallRun(activeItem.index, known, total)
-            // Dedizierter Lauf (append-only): mit executionId nur, wenn er die
-            // eingefrorene Auswahl beantwortet hat — sonst freier Lauf.
+            // Dedizierter Lauf (append-only): die aktive Ausführung beim
+            // Abschluss noch einmal frisch lesen. Beim direkten Öffnen des
+            // Recall-Checks kann der initiale State-Load sonst knapp zu spät
+            // kommen und der Lauf würde fälschlich als freier Check zählen.
             const execution = activeCourseExecution
+              ?? await getActiveCourseExecutionForVideo(profileId, activeItem.index)
             const matchesExecution = execution !== null && questionIds.length > 0
-            void recordCourseRecallRun({
+            await recordCourseRecallRun({
               profileId,
               videoIndex: activeItem.index,
               objectiveId: activeItem.objective,

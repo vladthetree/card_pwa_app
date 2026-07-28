@@ -4,7 +4,7 @@
  * calibration hint against the real deck success rate).
  * Used by: VideosView.
  */
-import { Brain, ChevronDown, ChevronUp, FileText } from 'lucide-react'
+import { Brain, CheckCircle2, ChevronDown, ChevronUp, FileText } from 'lucide-react'
 import type { VideoConfidence } from '../../hooks/useMesserVideoProgress'
 import type { Copy } from './videosCopy'
 
@@ -19,6 +19,7 @@ export function VideoStudyBar({
   deckStats,
   onStartRecall,
   onOpenTranscript,
+  onMarkWatched,
   onSetConfidence,
   copy,
   compact = false,
@@ -30,6 +31,7 @@ export function VideoStudyBar({
   deckStats?: { rate: number; total: number } | null
   onStartRecall: () => void
   onOpenTranscript: () => void
+  onMarkWatched: () => void
   onSetConfidence: (next: VideoConfidence | null) => void
   copy: Copy
   compact?: boolean
@@ -129,6 +131,16 @@ export function VideoStudyBar({
         >
           <FileText size={14} strokeWidth={1.5} />
         </button>
+        <button
+          type="button"
+          onClick={onMarkWatched}
+          data-testid="video-mark-watched"
+          title={copy.markWatched}
+          aria-label={copy.markWatched}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-ds-lg border border-[#1f1f23] bg-[#0c0c0c] text-zinc-400 transition-colors hover:border-emerald-500/50 hover:text-emerald-300"
+        >
+          <CheckCircle2 size={14} strokeWidth={1.5} />
+        </button>
         <div className="flex flex-1 justify-end">{chips}</div>
         {collapseBtn}
       </div>
@@ -159,6 +171,15 @@ export function VideoStudyBar({
         >
           <FileText size={14} strokeWidth={1.5} />
           {copy.transcript}
+        </button>
+        <button
+          type="button"
+          onClick={onMarkWatched}
+          data-testid="video-mark-watched"
+          className="flex shrink-0 items-center justify-center gap-2 rounded-ds-xl border border-emerald-500/30 bg-emerald-500/5 px-4 font-mono text-[12px] font-bold text-emerald-300 transition-colors hover:border-emerald-500/60"
+        >
+          <CheckCircle2 size={14} strokeWidth={1.5} />
+          {copy.markWatched}
         </button>
       </div>
 

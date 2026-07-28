@@ -166,6 +166,7 @@ export function computeLearningWorkload(input: {
 
 export type LearningUnitReason =
   | 'active_execution'
+  | 'completed_activity'
   | 'scheduler_due'
   | 'unresolved_error_retest'
   | 'next_course_in_sequence'
@@ -356,11 +357,26 @@ export function rankLearningUnits(input: {
       continue
     }
 
+    const isCompleted = state?.activityStatus === 'completed'
+    const isReviewDue = input.reviewDueUnitIds.has(definition.unitId)
+    // Course-, Lab- und Exam-Abschlüsse sowie aktuell nicht wieder fällige
+    // Review-Zyklen bleiben in der Vollliste erreichbar, verdrängen aber keine
+    // offene Empfehlung aus der kompakten Top-Auswahl.
+    if (isCompleted && (definition.type !== 'review' || !isReviewDue)) {
+      rest.push({
+        definition,
+        priority: 2_000 + definition.order,
+        reason: 'completed_activity',
+        recommended: false,
+        blocked: noGo,
+      })
+      continue
+    }
+
     let priority = 900
     let reason: LearningUnitReason = 'objective_practice_gap'
     let recommended = false
 
-    const isReviewDue = input.reviewDueUnitIds.has(definition.unitId)
     const hasWeakEvidence = definition.objectiveIds.some(
       id => input.objectiveEvidence.get(id) === 'insufficientEvidence',
     )

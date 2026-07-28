@@ -132,6 +132,15 @@ describe('startOrResumeCourseUnit', () => {
     expect(second.execution.cardIds).toEqual(first.execution.cardIds)
   })
 
+  it('friert fehlende M-Fragen nicht ein und verhindert damit einen unlösbaren Recall-Schritt', async () => {
+    mocks.listCardsByIds.mockImplementation(async ids => ids.map(id => makeCard(id, `Frage ${id}`)))
+
+    const launch = await startUnit()
+
+    expect(launch.execution.recallQuestionIds).toEqual([])
+    expect(launch.execution.recallCardIds).toEqual([])
+  })
+
   it('meldet beim Resume den exakten Schrittstand samt Restkarten', async () => {
     const { execution } = await startUnit()
     await markVideoWatched({ profileId: PROFILE, videoIndex: VIDEO_INDEX, objectiveId: '1.1', method: 'ended', now: Date.now() })

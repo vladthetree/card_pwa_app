@@ -4,7 +4,7 @@
 import { useCallback, useState, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from '../../ui/motion'
-import { Check, ChevronDown, Dices, Download, FlaskConical, FolderPlus, GraduationCap, Hash, LayoutDashboard, Loader2, Plus, RefreshCw, Search, Shuffle, Upload, Video, X } from 'lucide-react'
+import { Check, ChevronDown, Dices, Download, FlaskConical, FolderPlus, GraduationCap, LayoutDashboard, Loader2, Plus, RefreshCw, Search, Shuffle, Upload, Video, X } from 'lucide-react'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 import { useFloatingMenu } from '../../hooks/useFloatingMenu'
 import type { HomeTab } from '../../types'
@@ -20,6 +20,7 @@ interface Props {
   canInstall: boolean
   isInstalled: boolean
   isInstalling: boolean
+  questStarting?: boolean
   onHomeTabChange: (tab: HomeTab) => void
   onDeckSearchQueryChange: (value: string) => void
   onDeckSortModeChange: (value: DeckSortMode) => void
@@ -31,8 +32,10 @@ interface Props {
   onImport: () => void
   onExport: () => void
   onInstall: () => void
-  /** Lernvideos-Ansicht — im Aktionsmenü. */
+  /** Lernvideos-Ansicht — eigener Modus-Eintrag. */
   onOpenVideos?: () => void
+  /** Daily Quest startet direkt, ohne eigenen Home-Tab. */
+  onStartDailyQuest?: () => void
 }
 
 export function HomeDeckToolbar({
@@ -46,6 +49,7 @@ export function HomeDeckToolbar({
   canInstall,
   isInstalled,
   isInstalling,
+  questStarting = false,
   onHomeTabChange,
   onDeckSearchQueryChange,
   onDeckSortModeChange,
@@ -58,6 +62,7 @@ export function HomeDeckToolbar({
   onExport,
   onInstall,
   onOpenVideos,
+  onStartDailyQuest,
 }: Props) {
   const [showActionsMenu, setShowActionsMenu] = useState(false)
   const [showFilterMenu, setShowFilterMenu] = useState(false)
@@ -127,15 +132,12 @@ export function HomeDeckToolbar({
   const shuffleDecksLabel = language === 'de' ? 'Shuffle-Decks' : 'Shuffle decks'
   const questLabel = 'Daily Quest'
   const labsLabel = 'Labs'
-  const acronymsLabel = language === 'de' ? 'Akronyme' : 'Acronyms'
   const tabLabels: Record<HomeTab, string> = {
     dashboard: dashboardLabel,
     decks: decksLabel,
     tags: tagsLabel,
     'learning-units': unitsLabel,
-    'daily-quest': questLabel,
     labs: labsLabel,
-    acronyms: acronymsLabel,
   }
   const activeFilterValue = showShuffleOnly ? shuffleDecksLabel : tabLabels[homeTab]
   const sectionTitle = showShuffleOnly
@@ -249,6 +251,24 @@ export function HomeDeckToolbar({
                     {showShuffleOnly && <Check size={14} strokeWidth={1.5} />}
                   </button>
                 )}
+                <div className="border-t border-ds-border px-4 pb-1 pt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
+                  {language === 'de' ? 'Modus' : 'Mode'}
+                </div>
+                {onStartDailyQuest && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (showShuffleOnly) onToggleShuffleOnly()
+                      closeFilterMenu()
+                      onStartDailyQuest()
+                    }}
+                    className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
+                    role="menuitem"
+                  >
+                    <span className="inline-flex items-center gap-2"><Dices size={13} strokeWidth={1.5} /> {questLabel}</span>
+                    {questStarting && <Loader2 size={14} strokeWidth={1.5} className="animate-spin" />}
+                  </button>
+                )}
                 {onOpenVideos && (
                   <button
                     type="button"
@@ -262,23 +282,6 @@ export function HomeDeckToolbar({
                     <span className="inline-flex items-center gap-2"><Video size={13} strokeWidth={1.5} /> {language === 'de' ? 'Lernvideos' : 'Videos'}</span>
                   </button>
                 )}
-
-                <div className="border-t border-ds-border px-4 pb-1 pt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
-                  {language === 'de' ? 'Modus' : 'Mode'}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (showShuffleOnly) onToggleShuffleOnly()
-                    onHomeTabChange('daily-quest')
-                    closeFilterMenu()
-                  }}
-                  className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
-                  role="menuitem"
-                >
-                  <span className="inline-flex items-center gap-2"><Dices size={13} strokeWidth={1.5} /> {questLabel}</span>
-                  {!showShuffleOnly && homeTab === 'daily-quest' && <Check size={14} strokeWidth={1.5} />}
-                </button>
                 <button
                   type="button"
                   onClick={() => {
@@ -317,19 +320,6 @@ export function HomeDeckToolbar({
                 >
                   <span className="inline-flex items-center gap-2"><FlaskConical size={13} strokeWidth={1.5} /> {labsLabel}</span>
                   {!showShuffleOnly && homeTab === 'labs' && <Check size={14} strokeWidth={1.5} />}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (showShuffleOnly) onToggleShuffleOnly()
-                    onHomeTabChange('acronyms')
-                    closeFilterMenu()
-                  }}
-                  className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm text-white/78 transition hover:bg-ds-panel hover:text-white"
-                  role="menuitem"
-                >
-                  <span className="inline-flex items-center gap-2"><Hash size={13} strokeWidth={1.5} /> {acronymsLabel}</span>
-                  {!showShuffleOnly && homeTab === 'acronyms' && <Check size={14} strokeWidth={1.5} />}
                 </button>
                 {!showShuffleOnly && (homeTab === 'decks' || homeTab === 'tags') && (
                   <>

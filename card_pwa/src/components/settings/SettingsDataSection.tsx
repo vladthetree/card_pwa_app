@@ -215,9 +215,21 @@ export function SettingsDataSection({
         : 'Watched state and self-assessment of all course videos will be cleared. Cards, reviews, and notes are kept.',
       confirmLabel: settings.language === 'de' ? 'Zurücksetzen' : 'Reset',
       variant: 'danger',
-      onConfirm: () => {
+      onConfirm: async () => {
         clearVideoProgress()
-        setLocalDataStatus(settings.language === 'de' ? 'Video-Fortschritt zurückgesetzt.' : 'Video progress reset.')
+        try {
+          const [{ clearVideoProgressForProfile }, { profileScopeId }] = await Promise.all([
+            import('../../db/queries/learningUnits'),
+            import('../../services/profileService'),
+          ])
+          await clearVideoProgressForProfile(profileScopeId(profile))
+          setLocalDataStatus(settings.language === 'de' ? 'Video-Fortschritt zurückgesetzt.' : 'Video progress reset.')
+        } catch (error) {
+          console.error('[SettingsModal] Dedizierter Video-Fortschritt-Reset fehlgeschlagen', error)
+          setLocalDataStatus(settings.language === 'de'
+            ? 'Video-Fortschritt konnte nicht vollständig zurückgesetzt werden.'
+            : 'Video progress could not be fully reset.')
+        }
       },
     })
   }

@@ -189,6 +189,6 @@ export interface ReviewUndoToken {
 export type View = 'home' | 'study' | 'shuffle-study' | 'shuffle-manage' | 'videos'
 
 /** Home-Modi unter „Ansichten"; kanonische Quelle für HomeView, HomeBottomBar und HomeDeckToolbar. */
-export type HomeTab = 'dashboard' | 'decks' | 'tags' | 'learning-units' | 'daily-quest' | 'labs' | 'acronyms'
+export type HomeTab = 'dashboard' | 'decks' | 'tags' | 'learning-units' | 'labs'
 
-export const HOME_TABS: readonly HomeTab[] = ['dashboard', 'decks', 'tags', 'learning-units', 'daily-quest', 'labs', 'acronyms']
+export const HOME_TABS: readonly HomeTab[] = ['dashboard', 'decks', 'tags', 'learning-units', 'labs']

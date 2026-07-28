@@ -32,6 +32,8 @@ const COPY = {
     retry: 'Nochmal versuchen',
     back: 'Zurück',
     remediate: 'Objective vertiefen (Lerneinheiten)',
+    saving: 'Speichere Ergebnis …',
+    saveFailed: 'Das Ergebnis konnte nicht gespeichert werden. Bitte erneut versuchen.',
     workflowProgress: (current: number, total: number) => `Schritt ${current} von ${total}`,
     nextStep: 'Schritt korrekt — weiter zur nächsten Analyse.',
   },
@@ -49,6 +51,8 @@ const COPY = {
     retry: 'Try again',
     back: 'Back',
     remediate: 'Deepen this objective (learning units)',
+    saving: 'Saving result …',
+    saveFailed: 'The result could not be saved. Please try again.',
     workflowProgress: (current: number, total: number) => `Step ${current} of ${total}`,
     nextStep: 'Step correct — continue to the next analysis.',
   },
@@ -61,7 +65,11 @@ interface Props {
   onSolved: (scenarioId: string) => void
   /** Jeder Lösungsversuch (auch fehlgeschlagene) mit Antworten und Score-Anteil
    *  0..1 — additive Instrumentierung für das Lerneinheiten-Versuchsprotokoll. */
-  onCheck?: (detail: { scenarioId: string; score: number; answerByStepId: Record<string, unknown> }) => void
+  onCheck?: (detail: { scenarioId: string; score: number; answerByStepId: Record<string, unknown> }) => boolean | Promise<boolean>
+  /** Persistierter Zwischenstand eines laufenden Versuchs. */
+  initialAnswerByStepId?: Record<string, unknown>
+  /** Erfolgreicher Zwischenschritt eines Workflow-Labs, noch ohne Scoring. */
+  onProgress?: (detail: { scenarioId: string; answerByStepId: Record<string, unknown> }) => boolean | Promise<boolean>
   /** Nach der Abgabe: Link zur normalen Remediation (Lerneinheiten-Screen, §13.2). */
   onRemediate?: () => void
 }
@@ -72,6 +80,17 @@ const MONO_BOX = 'whitespace-pre-wrap rounded-ds-xl border border-[#1f1f23] bg-[
 type SingleStepScenario = Omit<LabScenario, 'interaction'> & { interaction: LabSingleInteraction }
 type WorkflowScenario = Omit<LabScenario, 'interaction'> & { interaction: LabWorkflowInteraction }
 
+function stringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []
+}
+
+function stringRecord(value: unknown): Record<string, string> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
+  return Object.fromEntries(
+    Object.entries(value).filter((entry): entry is [string, string] => typeof entry[1] === 'string'),
+  )
+}
+
 export default function LabScenarioView(props: Props) {
   if (props.scenario.interaction.type === 'workflow') {
     return <WorkflowLabScenarioView {...props} scenario={props.scenario as WorkflowScenario} />
@@ -79,13 +98,32 @@ export default function LabScenarioView(props: Props) {
   return <SingleStepLabScenarioView {...props} scenario={props.scenario as SingleStepScenario} />
 }
 
-function WorkflowLabScenarioView({ language, scenario, onBack, onSolved, onCheck, onRemediate }: Omit<Props, 'scenario'> & { scenario: WorkflowScenario }) {
+function WorkflowLabScenarioView({
+  language,
+  scenario,
+  onBack,
+  onSolved,
+  onCheck,
+  initialAnswerByStepId,
+  onProgress,
+  onRemediate,
+}: Omit<Props, 'scenario'> & { scenario: WorkflowScenario }) {
   const copy = COPY[language]
   const badge = LAB_DIFFICULTY_BADGE[scenario.difficulty]
   const steps = scenario.interaction.steps
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [answerByStepId, setAnswerByStepId] = useState<Record<string, string[]>>({})
+  const initialWorkflowAnswers = Object.fromEntries(
+    steps
+      .map(step => [step.stepId, stringArray(initialAnswerByStepId?.[step.stepId])] as const)
+      .filter(([, values]) => values.length > 0),
+  )
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    const firstOpen = steps.findIndex(step => stringArray(initialAnswerByStepId?.[step.stepId]).length === 0)
+    return firstOpen < 0 ? Math.max(0, steps.length - 1) : firstOpen
+  })
+  const [answerByStepId, setAnswerByStepId] = useState<Record<string, string[]>>(initialWorkflowAnswers)
   const [result, setResult] = useState<'idle' | 'failed' | 'solved'>('idle')
+  const [checking, setChecking] = useState(false)
+  const [saveFailed, setSaveFailed] = useState(false)
   const current = steps[currentIndex]
   const selected = answerByStepId[current.stepId] ?? []
 
@@ -106,24 +144,51 @@ function WorkflowLabScenarioView({ language, scenario, onBack, onSolved, onCheck
     0,
   ) / steps.length
 
-  const handleCheck = () => {
-    if (selected.length === 0 || result === 'solved') return
+  const handleCheck = async () => {
+    if (selected.length === 0 || result === 'solved' || checking) return
+    setChecking(true)
+    setSaveFailed(false)
     const stepScore = computeDecisionScore(selected, current.interaction.correctIds)
     const normalizedAnswers: Record<string, unknown> = Object.fromEntries(
       Object.entries(answerByStepId).map(([stepId, values]) => [stepId, [...values]]),
     )
     if (stepScore !== 1) {
       setResult('failed')
-      onCheck?.({ scenarioId: scenario.id, score: scoreAll(answerByStepId), answerByStepId: normalizedAnswers })
+      const persisted = await onCheck?.({
+        scenarioId: scenario.id,
+        score: scoreAll(answerByStepId),
+        answerByStepId: normalizedAnswers,
+      }) ?? true
+      setSaveFailed(!persisted)
+      setChecking(false)
       return
     }
     if (currentIndex < steps.length - 1) {
+      const persisted = await onProgress?.({
+        scenarioId: scenario.id,
+        answerByStepId: normalizedAnswers,
+      }) ?? true
+      if (!persisted) {
+        setChecking(false)
+        setSaveFailed(true)
+        return
+      }
       setCurrentIndex(index => index + 1)
       setResult('idle')
+      setChecking(false)
+      return
+    }
+    const persisted = await onCheck?.({
+      scenarioId: scenario.id,
+      score: 1,
+      answerByStepId: normalizedAnswers,
+    }) ?? true
+    setChecking(false)
+    if (!persisted) {
+      setSaveFailed(true)
       return
     }
     setResult('solved')
-    onCheck?.({ scenarioId: scenario.id, score: 1, answerByStepId: normalizedAnswers })
     onSolved(scenario.id)
   }
 
@@ -211,30 +276,45 @@ function WorkflowLabScenarioView({ language, scenario, onBack, onSolved, onCheck
               {onRemediate && <button type="button" onClick={onRemediate} className="mt-2 rounded-ds-lg border border-[#27272a] px-3 py-2 font-mono text-[12px] text-zinc-300">{copy.remediate}</button>}
             </div>
           )}
+          {saveFailed && (
+            <p className="mt-4 rounded-ds-xl border border-rose-500/40 bg-rose-500/8 px-3.5 py-3 font-mono text-[13px] text-rose-300">
+              {copy.saveFailed}
+            </p>
+          )}
         </div>
       </div>
       <div className="shrink-0 border-t border-[#18181b] bg-[#050505] px-4 pb-safe-3 pt-3">
         <button
           type="button"
           data-testid="lab-check-answer"
-          onClick={handleCheck}
-          disabled={selected.length === 0 || result === 'solved'}
+          onClick={() => { void handleCheck() }}
+          disabled={selected.length === 0 || result === 'solved' || checking}
           className="min-h-[52px] w-full rounded-ds-2xl border border-violet-500/60 bg-violet-500/10 px-4 font-mono text-[15px] text-zinc-100 disabled:border-[#1f1f23] disabled:text-zinc-600"
         >
-          {result === 'solved' ? copy.solved : copy.check}
+          {checking ? copy.saving : result === 'solved' ? copy.solved : copy.check}
         </button>
       </div>
     </div>
   )
 }
 
-function SingleStepLabScenarioView({ language, scenario, onBack, onSolved, onCheck, onRemediate }: Omit<Props, 'scenario'> & { scenario: SingleStepScenario }) {
+function SingleStepLabScenarioView({
+  language,
+  scenario,
+  onBack,
+  onSolved,
+  onCheck,
+  initialAnswerByStepId,
+  onRemediate,
+}: Omit<Props, 'scenario'> & { scenario: SingleStepScenario }) {
   const copy = COPY[language]
   const badge = LAB_DIFFICULTY_BADGE[scenario.difficulty]
   const interaction = scenario.interaction
 
   // Matching-Zustand: links → gewählte Option. Optionen einmal pro Szenario mischen.
-  const [selections, setSelections] = useState<Record<string, string>>({})
+  const [selections, setSelections] = useState<Record<string, string>>(
+    interaction.type === 'matching' ? stringRecord(initialAnswerByStepId?.['step-1']) : {},
+  )
   const shuffledOptions = useMemo(() => {
     if (interaction.type !== 'matching') return []
     const out = [...interaction.options]
@@ -248,13 +328,21 @@ function SingleStepLabScenarioView({ language, scenario, onBack, onSolved, onChe
 
   // Ordering-Zustand: aktuelle Reihenfolge (Strings aus `steps`).
   const [order, setOrder] = useState<string[]>(
-    interaction.type === 'ordering' ? interaction.steps : [],
+    interaction.type === 'ordering'
+      ? stringArray(initialAnswerByStepId?.['step-1']).length > 0
+        ? stringArray(initialAnswerByStepId?.['step-1'])
+        : interaction.steps
+      : [],
   )
 
   // Decision-Zustand: gewählte Options-IDs.
-  const [decisionSelected, setDecisionSelected] = useState<string[]>([])
+  const [decisionSelected, setDecisionSelected] = useState<string[]>(
+    interaction.type === 'decision' ? stringArray(initialAnswerByStepId?.['step-1']) : [],
+  )
 
   const [result, setResult] = useState<'idle' | 'solved' | 'failed'>('idle')
+  const [checking, setChecking] = useState(false)
+  const [saveFailed, setSaveFailed] = useState(false)
 
   const allSelected = interaction.type === 'matching'
     ? interaction.items.every(item => Boolean(selections[item.left]))
@@ -275,8 +363,10 @@ function SingleStepLabScenarioView({ language, scenario, onBack, onSolved, onChe
     ))
   }
 
-  const handleCheck = () => {
-    if (result === 'solved') return
+  const handleCheck = async () => {
+    if (result === 'solved' || checking) return
+    setChecking(true)
+    setSaveFailed(false)
     let score = 0
     if (interaction.type === 'matching') {
       score = computeMatchingScore(selections, interaction.items)
@@ -285,7 +375,7 @@ function SingleStepLabScenarioView({ language, scenario, onBack, onSolved, onChe
     } else {
       score = computeDecisionScore(decisionSelected, interaction.correctIds)
     }
-    onCheck?.({
+    const persisted = await onCheck?.({
       scenarioId: scenario.id,
       score,
       // 'step-1' = kanonische Schritt-ID des §13.2-Snapshots (labSnapshot.ts).
@@ -294,7 +384,12 @@ function SingleStepLabScenarioView({ language, scenario, onBack, onSolved, onChe
         : interaction.type === 'ordering'
         ? { 'step-1': [...order] }
         : { 'step-1': [...decisionSelected] },
-    })
+    }) ?? true
+    setChecking(false)
+    if (!persisted) {
+      setSaveFailed(true)
+      return
+    }
     if (score === 1) {
       setResult('solved')
       onSolved(scenario.id)
@@ -491,6 +586,11 @@ function SingleStepLabScenarioView({ language, scenario, onBack, onSolved, onChe
               )}
             </div>
           )}
+          {saveFailed && (
+            <p className="mt-4 rounded-ds-xl border border-rose-500/40 bg-rose-500/8 px-3.5 py-3 font-mono text-[13px] text-rose-300">
+              {copy.saveFailed}
+            </p>
+          )}
           {result === 'failed' && (
             <div className="mt-4 rounded-ds-xl border border-rose-500/40 bg-rose-500/8 px-3.5 py-3">
               <p className="font-mono text-[13px] text-rose-300">{copy.failed}</p>
@@ -511,8 +611,8 @@ function SingleStepLabScenarioView({ language, scenario, onBack, onSolved, onChe
         <button
           type="button"
           data-testid="lab-check-answer"
-          onClick={handleCheck}
-          disabled={!allSelected || result === 'solved'}
+          onClick={() => { void handleCheck() }}
+          disabled={!allSelected || result === 'solved' || checking}
           className={`w-full min-h-[52px] rounded-ds-2xl border px-4 font-mono text-[15px] transition-all duration-150 ${
             result === 'solved'
               ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-300'
@@ -521,7 +621,7 @@ function SingleStepLabScenarioView({ language, scenario, onBack, onSolved, onChe
               : 'border-[#1f1f23] bg-[#0c0c0c] text-zinc-600'
           }`}
         >
-          {result === 'solved' ? copy.solved : copy.check}
+          {checking ? copy.saving : result === 'solved' ? copy.solved : copy.check}
         </button>
       </div>
     </div>

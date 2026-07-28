@@ -20,7 +20,6 @@ import { HomeDeckListSection } from './home/HomeDeckListSection'
 import { HomeShuffleSection } from './home/HomeShuffleSection'
 import { HomeBottomBar } from './home/HomeBottomBar'
 import { HomeTagBrowseSection } from './home/HomeTagBrowseSection'
-import { HomeDailyQuestTile } from './home/HomeDailyQuestTile'
 import { useTagCardIndex } from '../hooks/home/useTagCardIndex'
 import { useHomeDeckFilters } from '../hooks/home/useHomeDeckFilters'
 import { useHomeStorageEstimate } from '../hooks/home/useHomeStorageEstimate'
@@ -37,7 +36,6 @@ import { pickDailyQuestCards } from '../db/queries'
 // Inhalte rendern unter der Homebar; die Chunks laden weiterhin lazy.
 const LearningUnitsView = lazy(() => import('./LearningUnitsView'))
 const LabsView = lazy(() => import('./labs/LabsView'))
-const AcronymPracticeView = lazy(() => import('./acronyms/AcronymPracticeView'))
 const CreateCardModal = lazy(() => import('./CreateCardModal.tsx'))
 const SettingsModal = lazy(() => import('./SettingsModal.tsx'))
 const FaqModal = lazy(() => import('./FaqModal.tsx'))
@@ -291,6 +289,7 @@ export default function HomeView({
               canInstall={canInstall}
               isInstalled={isInstalled}
               isInstalling={isInstalling}
+              questStarting={questStarting}
               examDaysLeft={examDaysLeft}
               onHomeTabChange={setHomeTab}
               onDeckSortModeChange={setDeckSortMode}
@@ -303,6 +302,7 @@ export default function HomeView({
               onShowSettings={controller.openSettings}
               onInstall={() => { void controller.handleInstall() }}
               onOpenVideos={onOpenVideos}
+              onStartDailyQuest={() => { void handleStartDailyQuest() }}
             />
           </div>
         )}
@@ -360,6 +360,7 @@ export default function HomeView({
               canInstall={canInstall}
               isInstalled={isInstalled}
               isInstalling={isInstalling}
+              questStarting={questStarting}
               onHomeTabChange={setHomeTab}
               onDeckSearchQueryChange={setDeckSearchQuery}
               onDeckSortModeChange={setDeckSortMode}
@@ -372,6 +373,7 @@ export default function HomeView({
               onExport={controller.openExport}
               onInstall={() => { void controller.handleInstall() }}
               onOpenVideos={onOpenVideos}
+              onStartDailyQuest={() => { void handleStartDailyQuest() }}
             />
           </div>
         )}
@@ -445,8 +447,8 @@ export default function HomeView({
           <>
             {/* Dashboard-Modus: reine Statistik-Widgets (KPIs, Quests, Heatmap)
                 untereinander, nach unten scrollbar. Heute-Paket, Lerneinheiten
-                und Daily Quest sind hier bewusst NICHT mehr enthalten
-                (Nutzerentscheidung 2026-07-19) — sie haben eigene Modi. */}
+                bewusst NICHT mehr enthalten (Nutzerentscheidung 2026-07-19);
+                Daily Quest startet direkt aus dem Modus-Menue. */}
             {homeTab === 'dashboard' && (
               <div className="min-h-0 flex-1 overflow-y-auto pb-safe-2" data-study-scroll="allow">
                 <HomeStatsSection
@@ -464,22 +466,6 @@ export default function HomeView({
                   questHasDecks={decks.length > 0}
                   questStarting={questStarting}
                   onStartDailyQuest={() => { void handleStartDailyQuest() }}
-                />
-              </div>
-            )}
-
-            {/* Daily-Quest-Modus: eigener Reiter unter „Modus" im Ansicht-Menü. */}
-            {homeTab === 'daily-quest' && (
-              <div className="min-h-0 flex-1 overflow-y-auto pb-safe-2" data-study-scroll="allow">
-                <HomeDailyQuestTile
-                  language={settings.language}
-                  questSize={questSize}
-                  loading={questLoading}
-                  dueTodayTotal={stats?.nowDue ?? 0}
-                  topDeckName={questTopDeckName}
-                  hasDecks={decks.length > 0}
-                  starting={questStarting}
-                  onStart={() => { void handleStartDailyQuest() }}
                 />
               </div>
             )}
@@ -520,15 +506,6 @@ export default function HomeView({
                       setHomeTab('learning-units')
                     }}
                   />
-                </Suspense>
-              </div>
-            )}
-
-            {/* Akronyme-Modus: Übungsrunde unter der Homebar (2026-07-20). */}
-            {homeTab === 'acronyms' && (
-              <div className="min-h-0 flex-1 overflow-hidden">
-                <Suspense fallback={null}>
-                  <AcronymPracticeView embedded language={settings.language} />
                 </Suspense>
               </div>
             )}

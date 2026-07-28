@@ -11,7 +11,7 @@ import { LAB_DIFFICULTY_BADGE } from './labUi'
 import LabScenarioView from './LabScenarioView'
 import { useSettings } from '../../contexts/SettingsContext'
 import { profileScopeId } from '../../services/profileService'
-import { recordLabCheck, startOrResumeLabUnit } from '../../services/learningUnitRunner'
+import { recordLabCheck, saveLabProgress, startOrResumeLabUnit } from '../../services/learningUnitRunner'
 
 /**
  * Labs — Liste "Interaktive Sicherheits-Szenarien", rekonstruiert aus dem
@@ -58,6 +58,11 @@ export default function LabsView({ language, onExit, initialScenarioId, onBackFr
   const [activeScenario, setActiveScenario] = useState<LabScenario | null>(
     () => LAB_SCENARIOS.find(scenario => scenario.id === initialScenarioId) ?? null,
   )
+  const [activeAttempt, setActiveAttempt] = useState<{
+    scenarioId: string
+    attemptId: string
+    answerByStepId: Record<string, unknown>
+  } | null>(null)
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
 
   const totalInventory = Math.max(LAB_TARGET_INVENTORY, LAB_SCENARIOS.length)
@@ -103,22 +108,64 @@ export default function LabsView({ language, onExit, initialScenarioId, onBackFr
   // Szenarios startet/fortsetzt den eingefrorenen Labversuch samt Lab-Unit;
   // Trainings-Labs (generiert) bleiben bewusst außen vor.
   useEffect(() => {
-    if (!activeScenario || labProfileId === null) return
+    let cancelled = false
+    setActiveAttempt(null)
+    if (!activeScenario || labProfileId === null) return () => { cancelled = true }
     void startOrResumeLabUnit({
       profileId: labProfileId,
       scenario: activeScenario,
       language,
+    }).then(launch => {
+      if (cancelled) return
+      setActiveAttempt({
+        scenarioId: activeScenario.id,
+        attemptId: launch.attempt.attemptId,
+        answerByStepId: launch.attempt.answerByStepId,
+      })
     }).catch(error => console.error('[LabsView] Lab-Unit-Start fehlgeschlagen', error))
+    return () => { cancelled = true }
   }, [activeScenario, labProfileId, language])
 
-  const handleScenarioCheck = (detail: { scenarioId: string; score: number; answerByStepId: Record<string, unknown> }) => {
-    if (labProfileId === null) return
-    void recordLabCheck({
-      profileId: labProfileId,
-      scenarioId: detail.scenarioId,
-      answerByStepId: detail.answerByStepId,
-      score: detail.score,
-    }).catch(error => console.error('[LabsView] Lab-Versuch speichern fehlgeschlagen', error))
+  const handleScenarioCheck = async (
+    detail: { scenarioId: string; score: number; answerByStepId: Record<string, unknown> },
+  ): Promise<boolean> => {
+    if (labProfileId === null) return false
+    const scenario = LAB_SCENARIOS.find(candidate => candidate.id === detail.scenarioId)
+    if (!scenario) return false
+    try {
+      // Der Effekt oben bereitet den Versuch vor; dieser idempotente Await
+      // schließt zusätzlich das Rennen „sehr schnell gelöst vor Start-Commit“.
+      await startOrResumeLabUnit({ profileId: labProfileId, scenario, language })
+      const result = await recordLabCheck({
+        profileId: labProfileId,
+        scenarioId: detail.scenarioId,
+        answerByStepId: detail.answerByStepId,
+        score: detail.score,
+      })
+      return result !== null
+    } catch (error) {
+      console.error('[LabsView] Lab-Versuch speichern fehlgeschlagen', error)
+      return false
+    }
+  }
+
+  const handleScenarioProgress = async (
+    detail: { scenarioId: string; answerByStepId: Record<string, unknown> },
+  ): Promise<boolean> => {
+    if (labProfileId === null) return false
+    const scenario = LAB_SCENARIOS.find(candidate => candidate.id === detail.scenarioId)
+    if (!scenario) return false
+    try {
+      await startOrResumeLabUnit({ profileId: labProfileId, scenario, language })
+      return await saveLabProgress({
+        profileId: labProfileId,
+        scenarioId: detail.scenarioId,
+        answerByStepId: detail.answerByStepId,
+      })
+    } catch (error) {
+      console.error('[LabsView] Lab-Zwischenstand speichern fehlgeschlagen', error)
+      return false
+    }
   }
 
   const toggleCategory = (categoryId: string) => {
@@ -133,8 +180,12 @@ export default function LabsView({ language, onExit, initialScenarioId, onBackFr
   if (activeScenario) {
     return (
       <LabScenarioView
+        key={`${activeScenario.id}:${activeAttempt?.attemptId ?? 'loading'}`}
         language={language}
         scenario={activeScenario}
+        initialAnswerByStepId={
+          activeAttempt?.scenarioId === activeScenario.id ? activeAttempt.answerByStepId : undefined
+        }
         onBack={() => {
           // Deep-Link aus dem Lerneinheiten-Screen: Zurück führt dorthin,
           // nicht in die Labs-Liste. Selbst gewählte Szenarien bleiben normal.
@@ -146,6 +197,7 @@ export default function LabsView({ language, onExit, initialScenarioId, onBackFr
         }}
         onSolved={handleSolved}
         onCheck={handleScenarioCheck}
+        onProgress={handleScenarioProgress}
         onRemediate={onOpenLearningUnits}
       />
     )

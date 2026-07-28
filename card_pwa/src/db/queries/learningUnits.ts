@@ -184,6 +184,58 @@ export async function completeUnitExecution(
   })
 }
 
+/** Schließt einen Review-Zyklus samt Tagesprotokoll in derselben Learning-DB-
+ * Transaktion ab. So kann ein Fehler zwischen Status und Tageskappe keinen
+ * halb abgeschlossenen Zustand hinterlassen. */
+export async function completeReviewUnitExecution(
+  input: {
+    profileId: string
+    executionId: string
+    attempt: ReviewUnitAttemptRecord
+    now: number
+  },
+  db: Db = defaultDb,
+): Promise<LearningUnitState> {
+  return db.transaction(
+    'rw',
+    [db.learningUnitState, db.unitExecutions, db.reviewUnitAttempts],
+    async () => {
+      const execution = await db.unitExecutions.get(input.executionId)
+      if (!execution || execution.profileId !== input.profileId || execution.type !== 'review') {
+        throw new Error(`completeReviewUnitExecution: ungültige Review-Ausführung ${input.executionId}`)
+      }
+      const state = await db.learningUnitState.get([input.profileId, execution.unitId])
+      if (!state || state.activeExecutionId !== input.executionId) {
+        throw new Error(`completeReviewUnitExecution: ${input.executionId} ist nicht aktiv`)
+      }
+      if (
+        input.attempt.profileId !== input.profileId ||
+        input.attempt.executionId !== input.executionId ||
+        input.attempt.unitId !== execution.unitId
+      ) {
+        throw new Error('completeReviewUnitExecution: Attempt gehört nicht zur Ausführung')
+      }
+      if (await db.reviewUnitAttempts.get(input.attempt.attemptId)) {
+        throw new Error(`completeReviewUnitExecution: attemptId ${input.attempt.attemptId} existiert bereits`)
+      }
+
+      const completed: LearningUnitState = {
+        ...state,
+        activityStatus: 'completed',
+        currentStep: 'done',
+        activeExecutionId: undefined,
+        completedAt: input.now,
+        lastCompletedAt: input.now,
+        lastActivityAt: input.now,
+        updatedAt: input.now,
+      }
+      await db.reviewUnitAttempts.put(input.attempt)
+      await db.learningUnitState.put(completed)
+      return completed
+    },
+  )
+}
+
 /** Expliziter Abbruch: Reservierung lösen, Ausführung als Historie behalten. */
 export async function abortUnitExecution(
   profileId: string,
@@ -225,7 +277,7 @@ export async function resetProfileLearningEvidence(
   now: number,
   db: Db = defaultDb,
 ): Promise<ResetLearningEvidenceResult> {
-  return db.transaction('rw', [db.profileLearningState, db.learningUnitState, db.unitExecutions], async () => {
+  return db.transaction('rw', [db.profileLearningState, db.learningUnitState, db.unitExecutions, db.labAttempts], async () => {
     const existing = await db.profileLearningState.get(profileId)
     const resetEventId = crypto.randomUUID()
     const next: ProfileLearningStateRecord = {
@@ -256,6 +308,22 @@ export async function resetProfileLearningEvidence(
         updatedAt: now,
       })
       abortedUnits += 1
+    }
+
+    // Ein Labversuch ohne aktive Unit darf nach dem Epoch-Wechsel nicht später
+    // wieder aufgenommen und als Abschluss der neuen Epoch eingereicht werden.
+    const activeLabAttempts = await db.labAttempts
+      .where('[profileId+status]')
+      .equals([profileId, 'inProgress'])
+      .toArray()
+    for (const attempt of activeLabAttempts) {
+      await db.labAttempts.put({
+        ...attempt,
+        status: 'abandoned',
+        abandonedAt: now,
+        revision: attempt.revision + 1,
+        updatedAt: now,
+      })
     }
 
     return { evidenceEpoch: next.evidenceEpoch, abortedUnits, resetEventId }
@@ -356,6 +424,17 @@ export async function markVideoWatched(
     }
     await db.videoProgressByProfile.put(record)
     return record
+  })
+}
+
+/** Entfernt den dedizierten, profil-/videobezogenen Gesehen- und Confidence-
+ * Stand. Unit-Abschlusshistorie bleibt erhalten; ein bewusst gestarteter neuer
+ * Course-Durchlauf muss das Video danach aber wieder ansehen. */
+export async function clearVideoProgressForProfile(profileId: string, db: Db = defaultDb): Promise<number> {
+  return db.transaction('rw', db.videoProgressByProfile, async () => {
+    const rows = await db.videoProgressByProfile.where('profileId').equals(profileId).toArray()
+    await db.videoProgressByProfile.bulkDelete(rows.map(row => [row.profileId, row.videoIndex]))
+    return rows.length
   })
 }
 
@@ -572,6 +651,74 @@ export async function submitLabAttempt(
     await db.labAttempts.put(submitted)
     return submitted
   })
+}
+
+/** Atomare Lab-Abgabe plus Unit-Abschluss. Der Versuch und der sichtbare
+ * ActivityStatus können damit nicht mehr auseinanderlaufen. */
+export async function submitLabAttemptAndCompleteUnit(
+  input: {
+    profileId: string
+    attemptId: string
+    executionId: string
+    answerByStepId?: Record<string, unknown>
+    scoreEarned: number
+    scorePossible: number
+    elapsedMs?: number
+    now: number
+  },
+  db: Db = defaultDb,
+): Promise<{ attempt: LabAttemptRecord; state: LearningUnitState }> {
+  return db.transaction(
+    'rw',
+    [db.labAttempts, db.learningUnitState, db.unitExecutions],
+    async () => {
+      const attempt = await db.labAttempts.get(input.attemptId)
+      if (!attempt || attempt.profileId !== input.profileId || attempt.status !== 'inProgress') {
+        throw new Error(`submitLabAttemptAndCompleteUnit: Versuch ${input.attemptId} ist nicht aktiv`)
+      }
+      const execution = await db.unitExecutions.get(input.executionId)
+      if (
+        !execution ||
+        execution.type !== 'lab' ||
+        execution.profileId !== input.profileId ||
+        execution.labAttemptId !== input.attemptId
+      ) {
+        throw new Error(`submitLabAttemptAndCompleteUnit: Ausführung ${input.executionId} passt nicht zum Versuch`)
+      }
+      const state = await db.learningUnitState.get([input.profileId, execution.unitId])
+      if (!state || state.activeExecutionId !== execution.executionId) {
+        throw new Error(`submitLabAttemptAndCompleteUnit: Ausführung ${input.executionId} ist nicht aktiv`)
+      }
+      if (attempt.evidenceEpoch !== execution.evidenceEpoch || state.evidenceEpoch !== execution.evidenceEpoch) {
+        throw new Error('submitLabAttemptAndCompleteUnit: Evidence-Epoch stimmt nicht überein')
+      }
+
+      const submitted: LabAttemptRecord = {
+        ...attempt,
+        answerByStepId: input.answerByStepId ?? attempt.answerByStepId,
+        scoreEarned: input.scoreEarned,
+        scorePossible: input.scorePossible,
+        elapsedMs: input.elapsedMs ?? attempt.elapsedMs,
+        revision: attempt.revision + 1,
+        status: 'submitted',
+        submittedAt: input.now,
+        updatedAt: input.now,
+      }
+      const completed: LearningUnitState = {
+        ...state,
+        activityStatus: 'completed',
+        currentStep: 'done',
+        activeExecutionId: undefined,
+        completedAt: input.now,
+        lastCompletedAt: input.now,
+        lastActivityAt: input.now,
+        updatedAt: input.now,
+      }
+      await db.labAttempts.put(submitted)
+      await db.learningUnitState.put(completed)
+      return { attempt: submitted, state: completed }
+    },
+  )
 }
 
 export async function abandonLabAttempt(

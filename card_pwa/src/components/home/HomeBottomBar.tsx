@@ -3,7 +3,7 @@
  */
 import { useState, useCallback } from 'react'
 import {
-  CalendarClock, Check, Download, FolderPlus, Plus,
+  CalendarClock, Check, Download, FolderPlus, Loader2, Plus,
   Settings, SlidersHorizontal, Upload,
   Shuffle,
 } from 'lucide-react'
@@ -27,6 +27,7 @@ interface Props {
   canInstall: boolean
   isInstalled: boolean
   isInstalling: boolean
+  questStarting?: boolean
   examDaysLeft: number | null
   onHomeTabChange: (tab: HomeTab) => void
   onDeckSortModeChange: (v: DeckSortMode) => void
@@ -38,8 +39,10 @@ interface Props {
   onExport: () => void
   onShowSettings: () => void
   onInstall: () => void
-  /** Lernvideos (Professor Messer) im ANSICHT-Menü. */
+  /** Lernvideos (Professor Messer) als Modus-Eintrag. */
   onOpenVideos?: () => void
+  /** Daily Quest startet direkt, ohne eigenen Home-Tab. */
+  onStartDailyQuest?: () => void
 }
 
 export function HomeBottomBar({
@@ -52,6 +55,7 @@ export function HomeBottomBar({
   canInstall,
   isInstalled,
   isInstalling,
+  questStarting = false,
   examDaysLeft,
   onHomeTabChange,
   onDeckSortModeChange,
@@ -64,6 +68,7 @@ export function HomeBottomBar({
   onShowSettings,
   onInstall,
   onOpenVideos,
+  onStartDailyQuest,
 }: Props) {
   const [filterOpen,  setFilterOpen]  = useState(false)
   const [actionsOpen, setActionsOpen] = useState(false)
@@ -171,18 +176,19 @@ export function HomeBottomBar({
             {showShuffleOnly && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
           </MobileBottomSheetItem>
         )}
+        <MobileBottomSheetDivider />
+        <MobileBottomSheetLabel>{language === 'de' ? 'Modus' : 'Mode'}</MobileBottomSheetLabel>
+        {onStartDailyQuest && (
+          <MobileBottomSheetItem onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); closeFilter(); onStartDailyQuest() }}>
+            <span>Daily Quest</span>
+            {questStarting && <Loader2 size={16} strokeWidth={1.5} className="animate-spin text-[--brand-primary]" />}
+          </MobileBottomSheetItem>
+        )}
         {onOpenVideos && (
           <MobileBottomSheetItem onClick={() => { closeFilter(); onOpenVideos() }}>
             <span>{language === 'de' ? 'Lernvideos' : 'Videos'}</span>
           </MobileBottomSheetItem>
         )}
-
-        <MobileBottomSheetDivider />
-        <MobileBottomSheetLabel>{language === 'de' ? 'Modus' : 'Mode'}</MobileBottomSheetLabel>
-        <MobileBottomSheetItem onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('daily-quest'); closeFilter() }}>
-          <span>Daily Quest</span>
-          {!showShuffleOnly && homeTab === 'daily-quest' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
-        </MobileBottomSheetItem>
         <MobileBottomSheetItem onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('learning-units'); closeFilter() }}>
           <span>{language === 'de' ? 'Lerneinheiten' : 'Learning units'}</span>
           {!showShuffleOnly && homeTab === 'learning-units' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
@@ -195,11 +201,6 @@ export function HomeBottomBar({
           <span>Labs</span>
           {!showShuffleOnly && homeTab === 'labs' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
         </MobileBottomSheetItem>
-        <MobileBottomSheetItem onClick={() => { if (showShuffleOnly) onToggleShuffleOnly(); onHomeTabChange('acronyms'); closeFilter() }}>
-          <span>{language === 'de' ? 'Akronyme' : 'Acronyms'}</span>
-          {!showShuffleOnly && homeTab === 'acronyms' && <Check size={16} strokeWidth={1.5} className="text-[--brand-primary]" />}
-        </MobileBottomSheetItem>
-
         {!showShuffleOnly && (homeTab === 'decks' || homeTab === 'tags') && (
           <>
             <MobileBottomSheetDivider />
