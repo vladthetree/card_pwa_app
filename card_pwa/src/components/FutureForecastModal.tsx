@@ -1,8 +1,7 @@
 /**
  * AI_CONTEXT: Reusable React component for future Forecast Modal; contributes to the card-learning UI and shared app interactions.
  */
-import { useReducedMotion } from '../ui/motion'
-import { ModalShell } from './ModalShell'
+import { Dialog } from '../ui/overlays/Dialog'
 
 interface FutureForecastItem {
   dayStartMs: number
@@ -24,19 +23,17 @@ export default function FutureForecastModal({
   forecast,
   onClose,
 }: Props) {
-  const prefersReducedMotion = useReducedMotion()
-
   if (!isOpen) return null
 
   return (
-    <ModalShell
+    <Dialog
       title={language === 'de' ? 'Prognose: Naechste 15 Tage' : 'Forecast: Next 15 Days'}
       subtitle={language === 'de'
         ? 'Geplante Zukunftskarten pro Tag'
         : 'Scheduled future cards per day'}
-      onClose={onClose}
-      prefersReducedMotion={prefersReducedMotion}
-      maxWidthClass="max-w-3xl"
+      closeLabel={language === 'de' ? 'Schliessen' : 'Close'}
+      onClose={() => onClose()}
+      size="xl"
     >
         {loading ? (
           <div
@@ -123,6 +120,6 @@ export default function FutureForecastModal({
             })()}
           </div>
         )}
-    </ModalShell>
+    </Dialog>
   )
 }

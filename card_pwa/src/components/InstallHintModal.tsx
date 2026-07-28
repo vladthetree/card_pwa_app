@@ -1,8 +1,7 @@
 /**
  * AI_CONTEXT: Reusable React component for install Hint Modal; contributes to the card-learning UI and shared app interactions.
  */
-import { useReducedMotion } from '../ui/motion'
-import { ModalShell } from './ModalShell'
+import { Dialog } from '../ui/overlays/Dialog'
 
 interface Props {
   isOpen: boolean
@@ -21,17 +20,15 @@ export default function InstallHintModal({
   closeLabel,
   onClose,
 }: Props) {
-  const prefersReducedMotion = useReducedMotion()
-
   if (!isOpen) return null
 
   return (
-    <ModalShell
+    <Dialog
       title={title}
       subtitle={subtitle}
-      onClose={onClose}
-      prefersReducedMotion={prefersReducedMotion}
-      maxWidthClass="max-w-md"
+      closeLabel={closeLabel}
+      onClose={() => onClose()}
+      size="md"
     >
         <p className="text-sm text-zinc-300 leading-relaxed rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-3 shadow-card">
           {hintText}
@@ -46,6 +43,6 @@ export default function InstallHintModal({
             {closeLabel}
           </button>
         </div>
-    </ModalShell>
+    </Dialog>
   )
 }

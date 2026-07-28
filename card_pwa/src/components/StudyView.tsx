@@ -26,11 +26,12 @@ import {
   initialSessionState,
 } from '../services/studySessionReducer'
 import { buildLearningCoachSummary } from '../services/learningCoach'
-import type { Deck, Card, Rating, ReviewAnswerDetails } from '../types'
+import type { Deck, Card, Rating } from '../types'
 import { formatDeckName } from '../utils/cardTextParser'
 import { getCardVariant } from '../utils/cardVariant'
 import { useSessionRewards } from '../hooks/useSessionRewards'
 import { useSessionPersistence } from '../hooks/useSessionPersistence'
+import { useStudyAnswerState } from '../hooks/study/useStudyAnswerState'
 import { useHandsetLayout } from '../hooks/useHandsetLayout'
 import { useWakeLock } from '../hooks/useWakeLock'
 import CardFace from './CardFace.tsx'
@@ -100,21 +101,12 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
 
   const [session, dispatch] = useReducer(sessionReducer, initialSessionState)
   const [editingCard, setEditingCard] = useState<Card | null>(null)
-  const [answerWasIncorrect, setAnswerWasIncorrect] = useState(false)
-  // Antwortseite der aktuellen Karte war schon sichtbar → Antwort-Eingaben
-  // bleiben gesperrt (verhindert „Lösung ansehen, zurückswipen, richtig klicken“).
-  const [answerRevealed, setAnswerRevealed] = useState(false)
-  // Read-only-Blick zurück auf die zuletzt bewertete Karte (ersetzt das Undo):
-  // ansehen ja — erneut beantworten/bewerten und zweites XP nein.
-  const [peeking, setPeeking] = useState(false)
-  const [peekFlipped, setPeekFlipped] = useState(true)
   const { isHandsetLayout, isHandsetLandscape } = useHandsetLayout()
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
   // Konkrete Antwort der aktuellen Karte (MC/Drag-Match/Reihenfolge/Zuordnung),
   // bis sie mit der Bewertung als Review persistiert ist. Ref statt State: die
   // Zuordnung zur cardId passiert im selben Closure wie recordReview, und der
   // Kartenwechsel-Reset verhindert ein Verrutschen auf die nächste Karte.
-  const pendingAnswerRef = useRef<ReviewAnswerDetails | null>(null)
   const { rewardToast, registerSessionReward } = useSessionRewards({
     language: settings.language,
     nextDayStartsAt: settings.nextDayStartsAt,
@@ -360,20 +352,21 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     () => session.cards[0] ?? null,
     [session.cards]
   )
-
-  // Pro Karte zurücksetzen (sessionCount zählt Requeues mit); Peek schließen.
-  // Auch die gepufferte Antwort verfällt: sie darf nie einer anderen Karte
-  // zugeordnet werden.
-  useEffect(() => {
-    setAnswerRevealed(false)
-    setPeeking(false)
-    setPeekFlipped(true)
-    pendingAnswerRef.current = null
-  }, [currentCard?.id, session.sessionCount])
-
-  useEffect(() => {
-    if (session.isFlipped) setAnswerRevealed(true)
-  }, [session.isFlipped])
+  const {
+    answerWasIncorrect,
+    answerRevealed,
+    peeking,
+    setPeeking,
+    peekFlipped,
+    setPeekFlipped,
+    pendingAnswerRef,
+    handleAnswerEvaluated,
+    resetAnswerState,
+  } = useStudyAnswerState({
+    currentCard,
+    sessionCount: session.sessionCount,
+    isFlipped: session.isFlipped,
+  })
   if (!loading && session.cards.length > 0 && !dragMatchModePlanReadyRef.current) {
     dragMatchModePlanRef.current = buildDragMatchModePlan(session.cards, dragMatchModeSeedRef.current)
     dragMatchModePlanReadyRef.current = true
@@ -468,11 +461,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     }
   }, [isHandsetLayout, session.isDone, session.isSubmitting, session.lastRatedCard, peeking, currentCard, handleFlip])
 
-  const handleAnswerEvaluated = useCallback((score: number, answer?: Pick<ReviewAnswerDetails, 'selected' | 'correct'>) => {
-    setAnswerWasIncorrect(score < 1.0)
-    pendingAnswerRef.current = answer ? { ...answer, wasCorrect: score >= 1.0 } : null
-  }, [])
-
   const handleRate = useCallback(
     async (rating: Rating) => {
       if (!currentCard || peeking || session.isSubmitting || session.isDone || isAlgorithmMigrating) return
@@ -497,8 +485,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
             hardPracticeMaxPasses: settings.hardPracticeMaxPasses,
             learnAheadMinutes: settings.learnAheadMinutes,
           })
-          setAnswerWasIncorrect(false)
-          pendingAnswerRef.current = null
+          resetAnswerState()
           return
         }
 
@@ -539,8 +526,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
         })
         registerSessionReward(effectiveRating, elapsedMs)
         noteOfflineSave()
-        setAnswerWasIncorrect(false)
-        pendingAnswerRef.current = null
+        resetAnswerState()
       } catch (err) {
         const message = err instanceof Error ? err.message : t.unknown_error
         dispatch({ type: 'RATE_ERROR', message })
@@ -611,8 +597,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
         })
         registerSessionReward(rating, elapsedMs)
         noteOfflineSave()
-        setAnswerWasIncorrect(false)
-        pendingAnswerRef.current = null
+        resetAnswerState()
       } else {
         dispatch({ type: 'RATE_ERROR', message: result.error || t.save_failed })
       }
@@ -678,7 +663,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
   const handleRestart = useCallback(() => {
     const sortedCards = buildSessionCards(cards, studyCardLimit)
     clearPersistedSession()
-    setAnswerWasIncorrect(false)
+    resetAnswerState()
     dragMatchModePlanRef.current = new Set()
     dragMatchModePlanReadyRef.current = false
     dragMatchModeSeedRef.current = `${deck.id}:restart:${Date.now()}:${Math.random()}`

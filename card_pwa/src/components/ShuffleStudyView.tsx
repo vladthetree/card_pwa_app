@@ -23,10 +23,11 @@ import {
 import { initialSessionState, sessionReducer } from '../services/studySessionReducer'
 import { buildDragMatchModePlan } from '../services/studyModeSelector'
 import { buildLearningCoachSummary } from '../services/learningCoach'
-import type { Card, Rating, ReviewAnswerDetails, ShuffleCollection } from '../types'
+import type { Card, Rating, ShuffleCollection } from '../types'
 import { formatDeckName } from '../utils/cardTextParser'
 import { flattenDeckTree } from '../utils/securityDeckHierarchy'
 import { useSessionRewards } from '../hooks/useSessionRewards'
+import { useStudyAnswerState } from '../hooks/study/useStudyAnswerState'
 import CardFace from './CardFace'
 import EditCardModal from './EditCardModal'
 import RatingBar from './RatingBar'
@@ -85,14 +86,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
 
   const [session, dispatch] = useReducer(sessionReducer, initialSessionState)
   const [editingCard, setEditingCard] = useState<Card | null>(null)
-  const [answerWasIncorrect, setAnswerWasIncorrect] = useState(false)
   const [sessionDeckCounts, setSessionDeckCounts] = useState<Record<string, number>>({})
-  // Antwortseite der aktuellen Karte war schon sichtbar → Antwort-Eingaben
-  // bleiben gesperrt (verhindert „Lösung ansehen, zurückflippen, richtig klicken“).
-  const [answerRevealed, setAnswerRevealed] = useState(false)
-  // Read-only-Blick zurück auf die zuletzt bewertete Karte (ersetzt das Undo).
-  const [peeking, setPeeking] = useState(false)
-  const [peekFlipped, setPeekFlipped] = useState(true)
   const { rewardToast, registerSessionReward } = useSessionRewards({
     language: settings.language,
     nextDayStartsAt: settings.nextDayStartsAt,
@@ -100,9 +94,6 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   })
   const dragMatchModePlanRef = useRef<Set<string>>(new Set())
   const dragMatchModePlanReadyRef = useRef(false)
-  // Konkrete Antwort der aktuellen Karte bis zur Persistierung puffern
-  // (gleiches Prinzip wie StudyView; Reset beim Kartenwechsel).
-  const pendingAnswerRef = useRef<ReviewAnswerDetails | null>(null)
 
   useWakeLock()
 
@@ -119,20 +110,21 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     [decks],
   )
   const currentCard = useMemo(() => session.cards[0] ?? null, [session.cards])
-
-  // Pro Karte zurücksetzen (sessionCount zählt Requeues mit); Peek schließen.
-  // Auch die gepufferte Antwort verfällt: sie darf nie einer anderen Karte
-  // zugeordnet werden.
-  useEffect(() => {
-    setAnswerRevealed(false)
-    setPeeking(false)
-    setPeekFlipped(true)
-    pendingAnswerRef.current = null
-  }, [currentCard?.id, session.sessionCount])
-
-  useEffect(() => {
-    if (session.isFlipped) setAnswerRevealed(true)
-  }, [session.isFlipped])
+  const {
+    answerWasIncorrect,
+    answerRevealed,
+    peeking,
+    setPeeking,
+    peekFlipped,
+    setPeekFlipped,
+    pendingAnswerRef,
+    handleAnswerEvaluated,
+    resetAnswerState,
+  } = useStudyAnswerState({
+    currentCard,
+    sessionCount: session.sessionCount,
+    isFlipped: session.isFlipped,
+  })
   if (!loading && session.cards.length > 0 && !dragMatchModePlanReadyRef.current) {
     dragMatchModePlanRef.current = buildDragMatchModePlan(session.cards, dragMatchModeSeedRef.current)
     dragMatchModePlanReadyRef.current = true
@@ -262,11 +254,6 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     dispatch({ type: 'FLIP' })
   }, [peeking])
 
-  const handleAnswerEvaluated = useCallback((score: number, answer?: Pick<ReviewAnswerDetails, 'selected' | 'correct'>) => {
-    setAnswerWasIncorrect(score < 1.0)
-    pendingAnswerRef.current = answer ? { ...answer, wasCorrect: score >= 1.0 } : null
-  }, [])
-
   const handleRate = useCallback(async (rating: Rating) => {
     if (!currentCard || peeking || session.isSubmitting || session.isDone || isAlgorithmMigrating) return
 
@@ -288,8 +275,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
           hardPracticeMaxPasses: settings.hardPracticeMaxPasses,
           learnAheadMinutes: settings.learnAheadMinutes,
         })
-        setAnswerWasIncorrect(false)
-        pendingAnswerRef.current = null
+        resetAnswerState()
         return
       }
 
@@ -325,8 +311,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
         learnAheadMinutes: settings.learnAheadMinutes,
       })
       registerSessionReward(effectiveRating, elapsedMs)
-      setAnswerWasIncorrect(false)
-      pendingAnswerRef.current = null
+      resetAnswerState()
     } catch (err) {
       dispatch({ type: 'RATE_ERROR', message: err instanceof Error ? err.message : t.unknown_error })
     }
@@ -392,8 +377,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
         learnAheadMinutes: settings.learnAheadMinutes,
       })
       registerSessionReward(rating, elapsedMs)
-      setAnswerWasIncorrect(false)
-      pendingAnswerRef.current = null
+      resetAnswerState()
     } catch (err) {
       dispatch({ type: 'RATE_ERROR', message: err instanceof Error ? err.message : t.unknown_error })
     }
@@ -428,7 +412,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
 
   const handleRestart = useCallback(() => {
     clearPersistedSession()
-    setAnswerWasIncorrect(false)
+    resetAnswerState()
     setSessionDeckCounts(buildDeckCounts(cards))
     dispatch({ type: 'INIT', cards })
   }, [cards, clearPersistedSession])

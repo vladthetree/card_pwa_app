@@ -12,10 +12,10 @@ import {
 } from './slices/homeUiSlice'
 import {
   initialNavigationState,
-  type AppView,
   type NavigationSlice,
   type NavigationSliceState,
 } from './slices/navigationSlice'
+import type { View } from '../types'
 import {
   initialOverlayState,
   type CloseReason,
@@ -128,7 +128,7 @@ export function getAppStoreState(): AppStore {
       syncStatus: 'error',
       lastError: message,
     }),
-    setActiveView: (activeView: AppView) => setState(current => ({
+    setActiveView: (activeView: View) => setState(current => ({
       ...current,
       activeView,
       previousView: current.activeView === activeView ? current.previousView : current.activeView,

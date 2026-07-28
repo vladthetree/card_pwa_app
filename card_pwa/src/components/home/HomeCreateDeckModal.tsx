@@ -2,7 +2,7 @@
  * AI_CONTEXT: Home-screen React component for home Create Deck Modal; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
 import { UI_TOKENS } from '../../constants/ui'
-import { ModalShell } from '../ModalShell'
+import { Dialog } from '../../ui/overlays/Dialog'
 
 interface Props {
   isOpen: boolean
@@ -27,15 +27,16 @@ export function HomeCreateDeckModal({
   onNewDeckNameChange,
   onSubmit,
 }: Props) {
+  void prefersReducedMotion
   if (!isOpen) return null
 
   return (
-    <ModalShell
+    <Dialog
       title={t.create_deck}
       subtitle={t.create_deck_empty_hint}
-      onClose={onClose}
-      prefersReducedMotion={prefersReducedMotion}
-      maxWidthClass="max-w-md"
+      closeLabel={t.cancel}
+      onClose={() => onClose()}
+      size="md"
     >
         <label className="block text-xs text-white/50 font-medium mb-2 uppercase tracking-wide">
           {t.deck}
@@ -73,6 +74,6 @@ export function HomeCreateDeckModal({
             {isCreatingDeck ? t.saving : t.create_deck}
           </button>
         </div>
-    </ModalShell>
+    </Dialog>
   )
 }

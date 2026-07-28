@@ -3,7 +3,7 @@
  */
 import { Download } from 'lucide-react'
 import { UI_TOKENS } from '../../constants/ui'
-import { ModalShell } from '../ModalShell'
+import { Dialog } from '../../ui/overlays/Dialog'
 
 interface Props {
   isOpen: boolean
@@ -32,15 +32,16 @@ export function HomeExportModal({
   onExportCsv,
   onExportJson,
 }: Props) {
+  void prefersReducedMotion
   if (!isOpen) return null
 
   return (
-    <ModalShell
+    <Dialog
       title={t.backup_export_title}
       subtitle={t.backup_export_subtitle}
-      onClose={onClose}
-      prefersReducedMotion={prefersReducedMotion}
-      maxWidthClass="max-w-lg"
+      closeLabel={t.cancel}
+      onClose={() => onClose()}
+      size="lg"
     >
         <div>
           <label className="block text-xs text-white/50 font-medium mb-2 uppercase tracking-wide">
@@ -96,6 +97,6 @@ export function HomeExportModal({
             <Download size={12} strokeWidth={1.5} /> .csv
           </button>
         </div>
-    </ModalShell>
+    </Dialog>
   )
 }

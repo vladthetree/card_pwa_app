@@ -117,6 +117,19 @@ Bereits erledigt oder begonnen:
 - F1/F2-Inkrement umgesetzt: `verify:phase5` ruft den Architekturcheck auf;
   `docs/architecture/` ist als wartbare Dossier-Struktur mit ADR-Links,
   Sync-/SW-/Overlay-/State-Seiten und Import-Ausnahmen angelegt.
+- D4-Inkrement umgesetzt: Alle verbliebenen `ModalShell`-Nutzer wurden auf
+  `Dialog`/`AlertDialog` migriert; `ModalShell.tsx` wurde entfernt.
+- C3-Inkrement umgesetzt: `useAppNavigation()` liest den kanonischen View-State
+  aus `navigationSlice`/`appStore`; Payloads bleiben bewusst lokal, damit keine
+  Deck-/Karten-Domain-Daten in den UI-Store kopiert werden.
+- E1-Inkrement umgesetzt: `useHomeViewController()` ist in
+  `useHomeDialogs`, `useDeckCommands`, `useShuffleCollectionCommands`,
+  `useHomeExport` und `usePwaInstallActions` geschnitten; sein Public Shape fuer
+  `HomeView` bleibt stabil.
+- E2-Inkrement umgesetzt: Gemeinsame transiente Antwort-/Peek-/PendingAnswer-
+  Logik von `StudyView` und `ShuffleStudyView` liegt in
+  `hooks/study/useStudyAnswerState.ts`. Rating-/Scheduling-Unterschiede bleiben
+  getrennt.
 
 Diese Punkte gelten als Phase A0-Basis und duerfen nicht zurueckgedreht werden.
 

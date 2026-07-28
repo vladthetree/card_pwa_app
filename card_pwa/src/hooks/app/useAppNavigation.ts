@@ -20,28 +20,13 @@ import {
 import { STORAGE_KEYS } from '../../constants/appIdentity'
 import { useSettings } from '../../contexts/SettingsContext'
 import { readTodayPackagePointer } from '../../utils/todayPackage'
+import { getAppStoreState, useAppStore } from '../../state/appStore'
 
 /** Import-Anforderung an Home: token erzwingt den Effekt auch bei erneutem
  *  Öffnen, file kommt aus dem launchQueue-File-Handler (sonst null). */
 export interface HomeImportRequest {
   token: number
   file: File | null
-}
-
-/**
- * Resolves the initial view from URL params so PWA shortcuts (e.g. `/?view=study`
- * or `/?view=import` from the web-app manifest) navigate to the right place
- * on launch instead of always starting on home (Issue #4).
- */
-function getInitialView(): View {
-  if (typeof window !== 'undefined') {
-    const v = new URLSearchParams(window.location.search).get('view')
-    if (v === 'shuffle' || v === 'shuffle-manage') return 'shuffle-manage'
-    // 'study' startet nach der Initialisierung direkt eine Session (Resume oder
-    // Daily Quest) — siehe den Quick-Study-Effekt weiter unten.
-    // 'import' bleibt auf Home und öffnet dort das ImportModal (importRequest).
-  }
-  return 'home'
 }
 
 /** Reminder-Push und Manifest-Shortcut verlinken auf `/?view=study`. */
@@ -131,7 +116,8 @@ export function useAppNavigation(input: { showInitialSplash: boolean }): {
   const { showInitialSplash } = input
   const { settings } = useSettings()
 
-  const [view, setView] = useState<View>(getInitialView)
+  const view = useAppStore(store => store.activeView)
+  const setView = (nextView: View) => getAppStoreState().setActiveView(nextView)
   const [activeDeck, setActiveDeck] = useState<Deck | null>(null)
   const [activeTagCards, setActiveTagCards] = useState<Card[] | null>(null)
   const [activeShuffleCollection, setActiveShuffleCollection] = useState<ShuffleCollection | null>(null)

@@ -6,17 +6,17 @@
  */
 import { useCallback, useEffect, useState } from 'react'
 import type { HomeDashboardMode } from '../../components/home/HomeStatsSection'
-import { STORAGE_KEYS } from '../../constants/appIdentity'
 import type { Deck, ShuffleCollection } from '../../types'
-import { createDeck, deleteDeck, deleteShuffleCollection } from '../../db/queries'
-import { subscribeToWebPushNotifications } from '../../services/webPush'
 import { useHomeExport } from './useHomeExport'
+import { useHomeDialogs, type HomeConfirmModalState } from './useHomeDialogs'
+import { useDeckCommands } from './useDeckCommands'
+import { useShuffleCollectionCommands } from './useShuffleCollectionCommands'
+import { usePwaInstallActions } from './usePwaInstallActions'
 import {
   persistDashboardMode,
   persistShuffleOnlyMode,
   readInitialDashboardMode,
   readInitialShuffleOnlyMode,
-  submitHomeDeckCreation,
 } from './homeControllerHelpers'
 
 export {
@@ -27,13 +27,7 @@ export {
   submitHomeDeckCreation,
 } from './homeControllerHelpers'
 
-export interface HomeConfirmModalState {
-  title: string
-  message: string
-  confirmLabel?: string
-  variant?: 'danger' | 'default'
-  onConfirm: () => void
-}
+export type { HomeConfirmModalState } from './useHomeDialogs'
 
 export function useHomeViewController(input: {
   t: Record<string, string>
@@ -112,16 +106,7 @@ export function useHomeViewController(input: {
   handleExportJson: () => Promise<void>
 } {
   const { t, settings, reload, hasNativePrompt, install } = input
-  const [showCreateCard, setShowCreateCard] = useState(false)
-  const [showCreateDeckModal, setShowCreateDeckModal] = useState(false)
-  const [newDeckName, setNewDeckName] = useState('')
-  const [createDeckError, setCreateDeckError] = useState<string | null>(null)
-  const [isCreatingDeck, setIsCreatingDeck] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
-  const [showFaq, setShowFaq] = useState(false)
-  const [showInstallHintModal, setShowInstallHintModal] = useState(false)
-  const [showImport, setShowImport] = useState(false)
-  const [showExportModal, setShowExportModal] = useState(false)
+  const dialogs = useHomeDialogs(input.importRequest)
   const [selectedDeckId, setSelectedDeckId] = useState<'all' | string>('all')
   const {
     isExporting,
@@ -129,16 +114,21 @@ export function useHomeViewController(input: {
     exportCsv,
     exportJson,
   } = useHomeExport(selectedDeckId)
-  const [showFutureForecast, setShowFutureForecast] = useState(false)
-  const [metricsDeck, setMetricsDeck] = useState<Deck | null>(null)
-  const [metricsShuffleCollection, setMetricsShuffleCollection] = useState<ShuffleCollection | null>(null)
-  const [cardsDeck, setCardsDeck] = useState<Deck | null>(null)
-  const [editingShuffleCollection, setEditingShuffleCollection] = useState<ShuffleCollection | null>(null)
-  const [showShuffleCollectionModal, setShowShuffleCollectionModal] = useState(false)
-  const [confirmModal, setConfirmModal] = useState<HomeConfirmModalState | null>(null)
-  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | 'unsupported'>(() => {
-    if (typeof Notification === 'undefined') return 'unsupported'
-    return Notification.permission
+  const deckCommands = useDeckCommands({
+    t,
+    reload,
+    setConfirmModal: dialogs.setConfirmModal,
+    closeCreateDeckModal: () => dialogs.setShowCreateDeckModal(false),
+  })
+  const shuffleCommands = useShuffleCollectionCommands({
+    language: settings.language,
+    setConfirmModal: dialogs.setConfirmModal,
+  })
+  const pwaActions = usePwaInstallActions({
+    settings,
+    hasNativePrompt,
+    install,
+    openInstallHintModal: () => dialogs.setShowInstallHintModal(true),
   })
   const [dashboardMode, setDashboardMode] = useState<HomeDashboardMode>(readInitialDashboardMode)
   const [showShuffleOnly, setShowShuffleOnly] = useState<boolean>(readInitialShuffleOnlyMode)
@@ -151,17 +141,6 @@ export function useHomeViewController(input: {
     persistShuffleOnlyMode(showShuffleOnly)
   }, [showShuffleOnly])
 
-  // ?view=import (Manifest-Shortcut) bzw. launchQueue-Datei: ImportModal öffnen.
-  // Token statt Objekt-Identität, damit wiederholte Anforderungen erneut öffnen.
-  const importRequestToken = input.importRequest?.token ?? 0
-  const importRequestFile = input.importRequest?.file ?? null
-  const [importFile, setImportFile] = useState<File | null>(null)
-  useEffect(() => {
-    if (importRequestToken <= 0) return
-    setImportFile(importRequestFile)
-    setShowImport(true)
-  }, [importRequestToken, importRequestFile])
-
   useEffect(() => {
     if (!navigator.serviceWorker?.controller) return
     navigator.serviceWorker.controller.postMessage({
@@ -170,177 +149,77 @@ export function useHomeViewController(input: {
     })
   }, [])
 
-  const handleInstall = useCallback(async () => {
-    if (hasNativePrompt) {
-      await install()
-      return
-    }
-    setShowInstallHintModal(true)
-  }, [hasNativePrompt, install])
-
-  const requestNotificationPermission = useCallback(async () => {
-    if (typeof Notification === 'undefined') return
-
-    try {
-      const permission = await Notification.requestPermission()
-      setNotificationPermission(permission)
-
-      if (permission === 'granted') {
-        void subscribeToWebPushNotifications(settings.language, {
-          enabled: settings.dailyReminderEnabled,
-          time: settings.dailyReminderTime,
-        })
-      }
-    } catch {
-      // no-op: permission prompt is best effort
-    }
-  }, [settings.dailyReminderEnabled, settings.dailyReminderTime, settings.language])
-
-  const handleDelete = useCallback((deckId: string, name: string) => {
-    setConfirmModal({
-      title: t.deck_delete_title,
-      message: t.delete_deck_confirm.replace('{name}', name),
-      confirmLabel: t.yes_delete,
-      variant: 'danger',
-      onConfirm: () => {
-        void (async () => {
-          await deleteDeck(deckId)
-          await reload()
-        })()
-      },
-    })
-  }, [reload, t.deck_delete_title, t.delete_deck_confirm, t.yes_delete])
-
-  const handleDeleteShuffleCollection = useCallback((collection: ShuffleCollection) => {
-    setConfirmModal({
-      title: settings.language === 'de' ? 'Shuffle-Sammlung löschen' : 'Delete shuffle collection',
-      message: settings.language === 'de'
-        ? `Soll "${collection.name}" wirklich gelöscht werden?`
-        : `Do you really want to delete "${collection.name}"?`,
-      confirmLabel: settings.language === 'de' ? 'Ja, löschen' : 'Yes, delete',
-      variant: 'danger',
-      onConfirm: () => {
-        void deleteShuffleCollection(collection.id)
-      },
-    })
-  }, [settings.language])
-
-  const handleCreateDeck = useCallback(async () => {
-    setIsCreatingDeck(true)
-    const result = await submitHomeDeckCreation(newDeckName, {
-      deck_name_empty: t.deck_name_empty,
-      deck_name_exists: t.deck_name_exists,
-      save_failed: t.save_failed,
-    }, createDeck)
-    setIsCreatingDeck(false)
-
-    if (!result.ok) {
-      setCreateDeckError(result.error)
-      return
-    }
-
-    setCreateDeckError(null)
-    setShowCreateDeckModal(false)
-    setNewDeckName('')
-    await reload()
-  }, [newDeckName, reload, t.deck_name_empty, t.deck_name_exists, t.save_failed])
-
   const handleExportTxt = useCallback(async () => {
-    await exportTxt(() => setShowExportModal(false))
+    await exportTxt(() => dialogs.setShowExportModal(false))
   }, [exportTxt])
 
   const handleExportCsv = useCallback(async () => {
-    await exportCsv(() => setShowExportModal(false))
+    await exportCsv(() => dialogs.setShowExportModal(false))
   }, [exportCsv])
 
   const handleExportJson = useCallback(async () => {
-    await exportJson(() => setShowExportModal(false))
+    await exportJson(() => dialogs.setShowExportModal(false))
   }, [exportJson])
 
   return {
-    showCreateCard,
-    showCreateDeckModal,
-    newDeckName,
-    createDeckError,
-    isCreatingDeck,
-    showSettings,
-    showFaq,
-    showInstallHintModal,
-    showImport,
-    importFile,
-    showExportModal,
+    showCreateCard: dialogs.showCreateCard,
+    showCreateDeckModal: dialogs.showCreateDeckModal,
+    newDeckName: deckCommands.newDeckName,
+    createDeckError: deckCommands.createDeckError,
+    isCreatingDeck: deckCommands.isCreatingDeck,
+    showSettings: dialogs.showSettings,
+    showFaq: dialogs.showFaq,
+    showInstallHintModal: dialogs.showInstallHintModal,
+    showImport: dialogs.showImport,
+    importFile: dialogs.importFile,
+    showExportModal: dialogs.showExportModal,
     isExporting,
     selectedDeckId,
-    showFutureForecast,
-    metricsDeck,
-    metricsShuffleCollection,
-    cardsDeck,
-    editingShuffleCollection,
-    showShuffleCollectionModal,
-    confirmModal,
-    notificationPermission,
+    showFutureForecast: dialogs.showFutureForecast,
+    metricsDeck: dialogs.metricsDeck,
+    metricsShuffleCollection: dialogs.metricsShuffleCollection,
+    cardsDeck: dialogs.cardsDeck,
+    editingShuffleCollection: dialogs.editingShuffleCollection,
+    showShuffleCollectionModal: dialogs.showShuffleCollectionModal,
+    confirmModal: dialogs.confirmModal,
+    notificationPermission: pwaActions.notificationPermission,
     dashboardMode,
     showShuffleOnly,
-    setNewDeckName,
+    setNewDeckName: deckCommands.setNewDeckName,
     setSelectedDeckId,
     setDashboardMode,
     toggleShuffleOnly: () => setShowShuffleOnly(current => !current),
-    openCreateCard: () => setShowCreateCard(true),
-    closeCreateCard: () => setShowCreateCard(false),
-    openCreateDeckModal: () => {
-      setNewDeckName('')
-      setCreateDeckError(null)
-      setShowCreateDeckModal(true)
-    },
-    closeCreateDeckModal: () => setShowCreateDeckModal(false),
-    openSettings: () => setShowSettings(true),
-    closeSettings: () => setShowSettings(false),
-    openFaq: () => setShowFaq(true),
-    closeFaq: () => setShowFaq(false),
-    closeInstallHintModal: () => setShowInstallHintModal(false),
-    openImport: () => setShowImport(true),
-    closeImport: () => {
-      setShowImport(false)
-      setImportFile(null)
-      // Geparkte ?view=import-Anforderung gilt erst jetzt als erledigt: das
-      // Flag muss den SW-Install-/Update-Reload überleben, der direkt nach
-      // dem ersten Öffnen feuern kann (App.tsx: controllerchange → reload).
-      try {
-        sessionStorage.removeItem(STORAGE_KEYS.pendingImportRequest)
-      } catch { /* best effort */ }
-    },
-    openExport: () => setShowExportModal(true),
-    closeExport: () => setShowExportModal(false),
-    openFutureForecast: () => setShowFutureForecast(true),
-    closeFutureForecast: () => setShowFutureForecast(false),
-    openMetricsDeck: setMetricsDeck,
-    closeMetricsDeck: () => setMetricsDeck(null),
-    openMetricsShuffleCollection: setMetricsShuffleCollection,
-    closeMetricsShuffleCollection: () => setMetricsShuffleCollection(null),
-    openCardsDeck: setCardsDeck,
-    closeCardsDeck: () => setCardsDeck(null),
-    openCreateShuffleCollection: () => {
-      setEditingShuffleCollection(null)
-      setShowShuffleCollectionModal(true)
-    },
-    openEditShuffleCollection: (collection: ShuffleCollection) => {
-      setEditingShuffleCollection(collection)
-      setShowShuffleCollectionModal(true)
-    },
-    closeShuffleCollectionModal: () => {
-      setShowShuffleCollectionModal(false)
-      setEditingShuffleCollection(null)
-    },
-    confirmAction: () => {
-      confirmModal?.onConfirm()
-      setConfirmModal(null)
-    },
-    cancelConfirmModal: () => setConfirmModal(null),
-    handleInstall,
-    requestNotificationPermission,
-    handleDelete,
-    handleDeleteShuffleCollection,
-    handleCreateDeck,
+    openCreateCard: dialogs.openCreateCard,
+    closeCreateCard: dialogs.closeCreateCard,
+    openCreateDeckModal: () => deckCommands.openCreateDeckModal(() => dialogs.setShowCreateDeckModal(true)),
+    closeCreateDeckModal: () => dialogs.setShowCreateDeckModal(false),
+    openSettings: dialogs.openSettings,
+    closeSettings: dialogs.closeSettings,
+    openFaq: dialogs.openFaq,
+    closeFaq: dialogs.closeFaq,
+    closeInstallHintModal: dialogs.closeInstallHintModal,
+    openImport: dialogs.openImport,
+    closeImport: dialogs.closeImport,
+    openExport: dialogs.openExport,
+    closeExport: dialogs.closeExport,
+    openFutureForecast: dialogs.openFutureForecast,
+    closeFutureForecast: dialogs.closeFutureForecast,
+    openMetricsDeck: dialogs.openMetricsDeck,
+    closeMetricsDeck: dialogs.closeMetricsDeck,
+    openMetricsShuffleCollection: dialogs.openMetricsShuffleCollection,
+    closeMetricsShuffleCollection: dialogs.closeMetricsShuffleCollection,
+    openCardsDeck: dialogs.openCardsDeck,
+    closeCardsDeck: dialogs.closeCardsDeck,
+    openCreateShuffleCollection: dialogs.openCreateShuffleCollection,
+    openEditShuffleCollection: dialogs.openEditShuffleCollection,
+    closeShuffleCollectionModal: dialogs.closeShuffleCollectionModal,
+    confirmAction: dialogs.confirmAction,
+    cancelConfirmModal: dialogs.cancelConfirmModal,
+    handleInstall: pwaActions.handleInstall,
+    requestNotificationPermission: pwaActions.requestNotificationPermission,
+    handleDelete: deckCommands.handleDelete,
+    handleDeleteShuffleCollection: shuffleCommands.handleDeleteShuffleCollection,
+    handleCreateDeck: deckCommands.handleCreateDeck,
     handleExportTxt,
     handleExportCsv,
     handleExportJson,
