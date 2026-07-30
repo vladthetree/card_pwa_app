@@ -86,16 +86,50 @@ function normalizeSchedulingInput(
   }
 }
 
-function computeSuccessRate(reviews: { rating: number }[]): number {
-  if (reviews.length === 0) return 0
-  return Math.round((reviews.filter(r => r.rating >= 3).length / reviews.length) * 100)
+export interface DeckSuccessRate {
+  /**
+   * Ganzzahliger Anzeigewert: `Math.round(ratio * 100)`.
+   * Nicht für Schwellwertentscheidungen verwenden; dafür `ratio`.
+   */
+  rate: number
+  /** Exakter Quotient vor der Rundung, 0 bei `total === 0`. */
+  ratio: number
+  /** Erfolgreiche Reviews (Rating 3 = Good oder 4 = Easy). */
+  successful: number
+  /**
+   * Anzahl aller gespeicherten Reviews der betrachteten Card-IDs. Es gilt kein
+   * Zeitfenster; die vollständige vorhandene Review-Historie wird verwendet.
+   * Unter ~10 ist die Quote kaum belastbar.
+   */
+  total: number
 }
 
-export interface DeckSuccessRate {
-  /** Erfolgsquote in Prozent (Rating ≥ 3). */
-  rate: number
-  /** Anzahl zugrunde liegender Reviews — unter ~10 ist die Quote kaum belastbar. */
-  total: number
+/**
+ * Eine kanonische Erfolgsmetrik für Deck- und Card-ID-Mengen.
+ *
+ * - erfolgreich: Scheduler-Rating 3 (Good) oder 4 (Easy)
+ * - Zeitraum: vollständige gespeicherte Review-Historie
+ * - 0 Antworten: `ratio = 0`, `rate = 0`, `total = 0`; die UI zeigt dafür
+ *   „Noch keine Bewertungen“ statt eines Misserfolgs
+ * - Rundung: nur der Anzeigewert `rate` wird mit `Math.round` ganzzahlig;
+ *   fachliche Schwellen vergleichen den ungerundeten `ratio`
+ */
+export function computeCanonicalReviewSuccessRate(
+  reviews: readonly { rating: number }[],
+): DeckSuccessRate {
+  const total = reviews.length
+  const successful = reviews.filter(review => review.rating >= 3).length
+  const ratio = total === 0 ? 0 : successful / total
+  return {
+    rate: Math.round(ratio * 100),
+    ratio,
+    successful,
+    total,
+  }
+}
+
+function computeSuccessRate(reviews: { rating: number }[]): number {
+  return computeCanonicalReviewSuccessRate(reviews).rate
 }
 
 /**
@@ -108,33 +142,61 @@ export async function getDeckSuccessRates(deckIds: string[]): Promise<Record<str
 
   const cards = (await db.cards.where('deckId').anyOf(deckIds).toArray()).filter(c => !c.isDeleted)
   if (cards.length === 0) {
-    return Object.fromEntries(deckIds.map(id => [id, { rate: 0, total: 0 }]))
+    return Object.fromEntries(deckIds.map(id => [id, computeCanonicalReviewSuccessRate([])]))
   }
 
   const cardToDeck = new Map(cards.map(card => [card.id, card.deckId]))
   const cardIds = cards.map(card => card.id)
   const reviews = await db.reviews.where('cardId').anyOf(cardIds).toArray()
 
-  const totals = new Map<string, { total: number; success: number }>()
+  const reviewsByDeckId = new Map<string, Array<{ rating: number }>>()
   for (const id of deckIds) {
-    totals.set(id, { total: 0, success: 0 })
+    reviewsByDeckId.set(id, [])
   }
 
   for (const review of reviews) {
     const deckId = cardToDeck.get(review.cardId)
     if (!deckId) continue
-    const current = totals.get(deckId)
+    const current = reviewsByDeckId.get(deckId)
     if (!current) continue
-    current.total += 1
-    if (review.rating >= 3) current.success += 1
+    current.push(review)
   }
 
   const result: Record<string, DeckSuccessRate> = {}
-  for (const [deckId, { total, success }] of totals.entries()) {
-    result[deckId] = { rate: total === 0 ? 0 : Math.round((success / total) * 100), total }
+  for (const [deckId, deckReviews] of reviewsByDeckId.entries()) {
+    result[deckId] = computeCanonicalReviewSuccessRate(deckReviews)
   }
 
   return result
+}
+
+/**
+ * Dieselbe kanonische Erfolgsmetrik wie `getDeckSuccessRates`, aber für
+ * explizite, stabile Card-ID-Mengen. Diese Lernplan-Abfrage bleibt korrekt,
+ * wenn eine Karte physisch in ein anderes Deck verschoben wird.
+ */
+export async function getCardSetSuccessRates(
+  cardIdsByScope: Readonly<Record<string, readonly string[]>>,
+): Promise<Record<string, DeckSuccessRate>> {
+  const entries = Object.entries(cardIdsByScope)
+  if (entries.length === 0) return {}
+
+  const uniqueCardIds = [...new Set(entries.flatMap(([, cardIds]) => cardIds))]
+  const reviews = uniqueCardIds.length === 0
+    ? []
+    : await db.reviews.where('cardId').anyOf(uniqueCardIds).toArray()
+  const reviewsByCardId = new Map<string, typeof reviews>()
+  for (const review of reviews) {
+    const bucket = reviewsByCardId.get(review.cardId) ?? []
+    bucket.push(review)
+    reviewsByCardId.set(review.cardId, bucket)
+  }
+
+  return Object.fromEntries(entries.map(([scopeId, cardIds]) => {
+    const scopedReviews = [...new Set(cardIds)]
+      .flatMap(cardId => reviewsByCardId.get(cardId) ?? [])
+    return [scopeId, computeCanonicalReviewSuccessRate(scopedReviews)]
+  }))
 }
 
 export interface YoungCardLapseStats {

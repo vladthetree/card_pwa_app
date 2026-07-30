@@ -7,6 +7,7 @@ import {
   getActiveExecution,
   getLearningUnitState,
   markVideoWatched,
+  setVideoConfidence,
 } from '../../db/queries/learningUnits'
 import { SY0701_CONTENT_MAP_BY_VIDEO_INDEX } from '../../data/sy0701ContentMap'
 import type { LearningUnitDefinition } from '../../utils/learningUnits'
@@ -37,6 +38,7 @@ import {
   recordCourseRecallRun,
   recordLabCheck,
   reconcileCourseUnitProgress,
+  reconcileLegacyPointerCourseProgress,
   startOrResumeCourseUnit,
   startOrResumeLabUnit,
   startOrResumeReviewUnit,
@@ -102,26 +104,19 @@ async function startUnit() {
 }
 
 describe('startOrResumeCourseUnit', () => {
-  it('friert beim Erststart Karten- und Recall-Auswahl regelkonform ein', async () => {
+  it('friert beim Erststart den Recall ein und hält Karten aus der Video-Unit heraus', async () => {
     const launch = await startUnit()
     expect(launch.step).toBe('video')
     expect(launch.state.activityStatus).toBe('inProgress')
 
     const execution = launch.execution
-    expect(execution.cardIds.length).toBe(SETTINGS.packageCardLimit)
-    for (const cardId of execution.cardIds) {
-      expect(CONTENT.courseCardIds).toContain(cardId)
-    }
+    expect(execution.cardIds).toEqual([])
     // normalizeRecallCheckSize klemmt auf mindestens 3
     expect(execution.recallQuestionIds.length).toBe(3)
     for (const questionId of execution.recallQuestionIds) {
       expect(CONTENT.recallQuestionIds).toContain(questionId)
     }
-    // Recall-Karten derselben Sitzung sind aus dem Karten-Schritt ausgeschlossen
-    for (const recallCardId of execution.recallCardIds) {
-      expect(execution.cardIds).not.toContain(recallCardId)
-    }
-    expect(launch.remainingCardIds).toEqual(execution.cardIds)
+    expect(launch.remainingCardIds).toEqual([])
     expect((await getActiveCourseExecutionForVideo(PROFILE, VIDEO_INDEX))?.executionId).toBe(execution.executionId)
   })
 
@@ -141,9 +136,8 @@ describe('startOrResumeCourseUnit', () => {
     expect(launch.execution.recallCardIds).toEqual([])
   })
 
-  it('meldet beim Resume den exakten Schrittstand samt Restkarten', async () => {
+  it('meldet nach einem vollständigen Recall ohne zusätzliches Watched- oder Karten-Gate done', async () => {
     const { execution } = await startUnit()
-    await markVideoWatched({ profileId: PROFILE, videoIndex: VIDEO_INDEX, objectiveId: '1.1', method: 'ended', now: Date.now() })
     await recordCourseRecallRun({
       profileId: PROFILE,
       videoIndex: VIDEO_INDEX,
@@ -154,22 +148,26 @@ describe('startOrResumeCourseUnit', () => {
       correct: 3,
       total: 3,
     })
-    mocks.listCardIdsReviewedSince.mockResolvedValue(execution.cardIds.slice(0, 2))
-
+    await setVideoConfidence({
+      profileId: PROFILE,
+      videoIndex: VIDEO_INDEX,
+      objectiveId: '1.1',
+      confidence: 'solid',
+      now: Date.now(),
+    })
     const resumed = await startUnit()
-    expect(resumed.step).toBe('cards')
-    expect(resumed.remainingCardIds).toEqual(execution.cardIds.slice(2))
+    expect(resumed.step).toBe('done')
+    expect(resumed.remainingCardIds).toEqual([])
   })
 })
 
 describe('reconcileCourseUnitProgress', () => {
-  it('schließt eine Unit nur ab, wenn Video, Recall und alle Karten belegt sind', async () => {
+  it('schließt eine Unit nach dem ausführungsgebundenen Recall ohne versteckte Zusatzschritte ab', async () => {
     const { execution } = await startUnit()
 
     await reconcileCourseUnitProgress(PROFILE)
     expect((await getLearningUnitState(PROFILE, DEFINITION.unitId))?.activityStatus).toBe('inProgress')
 
-    await markVideoWatched({ profileId: PROFILE, videoIndex: VIDEO_INDEX, objectiveId: '1.1', method: 'ended', now: Date.now() })
     await recordCourseRecallRun({
       profileId: PROFILE,
       videoIndex: VIDEO_INDEX,
@@ -180,12 +178,13 @@ describe('reconcileCourseUnitProgress', () => {
       correct: 2,
       total: 3,
     })
-    await reconcileCourseUnitProgress(PROFILE)
-    const midway = await getLearningUnitState(PROFILE, DEFINITION.unitId)
-    expect(midway?.activityStatus).toBe('inProgress')
-    expect(midway?.currentStep).toBe('cards')
-
-    mocks.listCardIdsReviewedSince.mockResolvedValue([...execution.cardIds])
+    await setVideoConfidence({
+      profileId: PROFILE,
+      videoIndex: VIDEO_INDEX,
+      objectiveId: '1.1',
+      confidence: 'solid',
+      now: Date.now(),
+    })
     const { completedUnitIds } = await reconcileCourseUnitProgress(PROFILE)
     expect(completedUnitIds).toEqual([DEFINITION.unitId])
     const done = await getLearningUnitState(PROFILE, DEFINITION.unitId)
@@ -210,6 +209,80 @@ describe('reconcileCourseUnitProgress', () => {
     const { completedUnitIds } = await reconcileCourseUnitProgress(PROFILE)
     expect(completedUnitIds).toEqual([])
     expect((await getLearningUnitState(PROFILE, DEFINITION.unitId))?.currentStep).toBe('recall')
+  })
+
+  it('schließt eine alte Pointer-Ausführung über die nach dem Check gesetzte Confidence ab', async () => {
+    const now = Date.now()
+    const executionId = `legacy:pointer:${VIDEO_INDEX}`
+    await learningUnitsDb.unitExecutions.put({
+      executionId,
+      unitId: DEFINITION.unitId,
+      profileId: PROFILE,
+      evidenceEpoch: 1,
+      type: 'course',
+      createdAt: now - 1_000,
+      cardIds: [...CONTENT.courseCardIds],
+      recallQuestionIds: [],
+      recallQuestionVersions: {},
+      recallCardIds: [],
+      recallSeed: 'legacy',
+      sourceSnapshotId: 'legacy',
+      contentManifestVersion: 'legacy',
+      contentVersions: {},
+    })
+    await learningUnitsDb.learningUnitState.put({
+      profileId: PROFILE,
+      evidenceEpoch: 1,
+      unitId: DEFINITION.unitId,
+      activityStatus: 'inProgress',
+      currentStep: 'video',
+      activeExecutionId: executionId,
+      startedAt: now - 1_000,
+      lastActivityAt: now - 1_000,
+      updatedAt: now - 1_000,
+    })
+    await setVideoConfidence({
+      profileId: PROFILE,
+      videoIndex: VIDEO_INDEX,
+      objectiveId: '1.1',
+      confidence: 'solid',
+      now,
+    })
+
+    const result = await reconcileCourseUnitProgress(PROFILE)
+    expect(result.completedUnitIds).toEqual([DEFINITION.unitId])
+    expect((await getLearningUnitState(PROFILE, DEFINITION.unitId))?.activityStatus).toBe('completed')
+  })
+})
+
+describe('reconcileLegacyPointerCourseProgress', () => {
+  it('persistiert einen nur im Overlay sichtbaren Abschluss aus Recall plus Lernstatus', async () => {
+    const startedAt = Date.now() - 10_000
+    await recordCourseRecallRun({
+      profileId: PROFILE,
+      videoIndex: VIDEO_INDEX,
+      objectiveId: '1.1',
+      executionId: null,
+      questionIds: ['M1-001', 'M1-002', 'M1-003'],
+      questionVersionById: { 'M1-001': 'v1', 'M1-002': 'v1', 'M1-003': 'v1' },
+      correct: 3,
+      total: 3,
+    })
+    await setVideoConfidence({
+      profileId: PROFILE,
+      videoIndex: VIDEO_INDEX,
+      objectiveId: '1.1',
+      confidence: 'solid',
+      now: Date.now(),
+    })
+
+    const repaired = await reconcileLegacyPointerCourseProgress(PROFILE, {
+      activeIndex: VIDEO_INDEX,
+      activeStartedAt: startedAt,
+    })
+
+    expect(repaired).toBe(true)
+    expect((await getLearningUnitState(PROFILE, DEFINITION.unitId))?.activityStatus).toBe('completed')
   })
 })
 

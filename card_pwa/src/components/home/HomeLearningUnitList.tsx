@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import type { LearningPhase, LearningUnitDefinition, LearningUnitState, ReadinessStatus } from '../../utils/learningUnits'
 import type { RankedLearningUnit } from '../../utils/learningUnitRanking'
+import type { ActiveUnitCardProgress } from '../../hooks/home/useLearningUnits'
 import { LEARNING_UNIT_COPY } from './learningUnitCopy'
 
 const MAX_COMPACT_ROWS = 3
@@ -31,6 +32,7 @@ interface Props {
   courseTotal: number
   ranked: RankedLearningUnit[]
   stateByUnitId: ReadonlyMap<string, LearningUnitState>
+  activeCardProgressByUnitId?: ReadonlyMap<string, ActiveUnitCardProgress>
   /** Öffnet die Einheit (Course → Video in der Lernvideos-Ansicht). */
   onOpenUnit: (definition: LearningUnitDefinition) => void
   /** Öffnet die Vollliste; ohne Callback entfällt der Button (z. B. im
@@ -41,9 +43,9 @@ interface Props {
 function ActivityChip({ language, status }: { language: 'de' | 'en'; status: 'notStarted' | 'inProgress' | 'completed' }) {
   const copy = LEARNING_UNIT_COPY[language]
   const tone = status === 'completed'
-    ? 'border-black bg-[#C4B5FD] text-black'
+    ? 'border-black bg-[#86EFAC] text-black'
     : status === 'inProgress'
-      ? 'border-black bg-[#FF6B6B] text-black'
+      ? 'border-black bg-[#FDBA74] text-black'
       : 'border-black bg-white text-black'
   return (
     <span className={`shrink-0 rounded-full border px-2 py-0.5 font-mono text-[11px] leading-4 ${tone}`}>
@@ -83,7 +85,7 @@ function UnitTypeMark({
 
 export function HomeLearningUnitList({
   language, phase, daysLeft, readiness, courseCompleted, courseTotal,
-  ranked, stateByUnitId, onOpenUnit, onShowAll,
+  ranked, stateByUnitId, activeCardProgressByUnitId, onOpenUnit, onShowAll,
 }: Props) {
   const copy = LEARNING_UNIT_COPY[language]
   const rows = ranked.slice(0, MAX_COMPACT_ROWS)
@@ -147,20 +149,27 @@ export function HomeLearningUnitList({
         {rows.map((row, index) => {
           const state = stateByUnitId.get(row.definition.unitId)
           const activity = state?.activityStatus ?? 'notStarted'
+          const activeCardProgress = activeCardProgressByUnitId?.get(row.definition.unitId)
           const highlighted = index === 0 && row.recommended
+          const rowTone = activity === 'completed'
+            ? 'bg-[#86EFAC]'
+            : activity === 'inProgress'
+              ? 'bg-[#FDBA74]'
+              : highlighted
+                ? 'neo-learning-accent'
+                : 'neo-learning-hover-yellow bg-white'
           return (
             <li key={row.definition.unitId} className="min-w-0">
               <button
                 type="button"
                 data-testid={`learning-unit-row-${row.definition.unitId}`}
                 onClick={() => onOpenUnit(row.definition)}
-                className={`neo-learning-press group flex min-h-16 w-full min-w-0 items-center gap-3 p-3 text-left ${
-                  highlighted
-                    ? 'neo-learning-accent'
-                    : 'neo-learning-hover-yellow bg-white'
-                }`}
+                className={`neo-learning-press group flex min-h-16 w-full min-w-0 items-center gap-3 p-3 text-left ${rowTone}`}
               >
-                <UnitTypeMark type={row.definition.type} recommended={highlighted} />
+                <UnitTypeMark
+                  type={row.definition.type}
+                  recommended={highlighted && activity === 'notStarted'}
+                />
                 <span className="min-w-0 flex-1">
                   <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
                     <span className="break-words font-sans text-[15px] font-bold leading-snug text-black">
@@ -193,6 +202,11 @@ export function HomeLearningUnitList({
                         : activity === 'inProgress'
                           ? copy.currentStep[state.currentStep]
                           : null}
+                    </span>
+                  )}
+                  {activity === 'inProgress' && activeCardProgress && (
+                    <span className="mt-0.5 block break-words font-sans text-[11px] font-bold leading-relaxed text-black">
+                      {copy.activeCardProgress(activeCardProgress.reviewed, activeCardProgress.total)}
                     </span>
                   )}
                 </span>

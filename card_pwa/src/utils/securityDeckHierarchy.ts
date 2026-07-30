@@ -83,6 +83,20 @@ export function getSecurityObjectiveDeckId(code: string): string {
   return `sy0-701-objective-${code.replace('.', '-')}`
 }
 
+/**
+ * Explizite, stabile Deck-ID → Objective-Zuordnung des Lernplans. Die aktuelle
+ * physische Parent-Position oder der veränderbare Deckname sind ausdrücklich
+ * keine Fallback-Quellen.
+ */
+export const SY0_701_OBJECTIVE_BY_SUBDECK_ID: Readonly<Record<string, string>> =
+  Object.freeze(Object.fromEntries(
+    SY0_701_OBJECTIVES.map(objective => [getSecurityObjectiveDeckId(objective.code), objective.code]),
+  ))
+
+export function getSecurityObjectiveIdForSubDeckId(deckId: string): string | null {
+  return SY0_701_OBJECTIVE_BY_SUBDECK_ID[deckId] ?? null
+}
+
 export function getSecurityObjectiveDeckName(code: string): string {
   const objective = objectiveByCode.get(code)
   return objective ? `${objective.code} ${objective.title}` : code

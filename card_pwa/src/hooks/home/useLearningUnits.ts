@@ -17,6 +17,7 @@ import {
   buildCourseUnits,
   buildLabUnits,
   buildReviewUnits,
+  computeCourseStepState,
   formatReviewUnitId,
   objectiveIdOfDeckId,
   overlayLegacyCourseStates,
@@ -31,7 +32,12 @@ import {
 import type { Card } from '../../types'
 import { sortStudyCards } from '../../utils/studyCardOrdering'
 import { SY0_701_OBJECTIVES, getSecurityObjectiveDeckId } from '../../utils/securityDeckHierarchy'
-import { listCardsByDeckIdsDirect, listCardsByIds } from '../../db/queries'
+import {
+  getCardSetSuccessRates,
+  listCardIdsReviewedSince,
+  listCardsByDeckIdsDirect,
+  listCardsByIds,
+} from '../../db/queries'
 import { listAnswerStats } from '../../db/queries/answerStats'
 import {
   computeDraftPacing,
@@ -49,16 +55,22 @@ import {
 } from '../../data/sy0701ContentMap'
 import {
   countReviewUnitAttemptsForDay,
+  getExecution,
   getLearnerExamPlan,
   getOrCreateProfileLearningState,
+  getVideoProgress,
   listLearningUnitStates,
+  listRecentVideoRecallRuns,
   listVideoRecallRunsForProfile,
   runLegacyLabsImport,
   runLegacyLearningImport,
 } from '../../db/queries/learningUnits'
 import { LAB_SCENARIOS } from '../../data/labScenarios'
 import { readCompletedLabs } from '../../utils/labProgress'
-import { reconcileCourseUnitProgress } from '../../services/learningUnitRunner'
+import {
+  reconcileCourseUnitProgress,
+  reconcileLegacyPointerCourseProgress,
+} from '../../services/learningUnitRunner'
 import { readTodayPackagePointer } from '../../utils/todayPackage'
 import { readVideoProgress } from '../useMesserVideoProgress'
 import { readRecallScores } from '../useVideoRecallScores'
@@ -67,10 +79,25 @@ import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
 import { DAY_MS, resolveDueAtMs } from '../../utils/time'
 import {
   buildLearningPlanContentMapping,
+  buildLearningPlanSubDeckReadModels,
   collectLearningPlanCardIds,
   EMPTY_LEARNING_PLAN_CONTENT_MAPPING,
   type LearningPlanContentMapping,
+  type LearningPlanSubDeckReadModel,
 } from '../../utils/learningPlanMapping'
+
+export interface ActiveUnitCardProgress {
+  /** Karten der beim Start eingefrorenen Ausführung, seit ihrem Start bewertet. */
+  reviewed: number
+  /** Gesamte beim Start eingefrorene Kartenauswahl dieser Ausführung. */
+  total: number
+}
+
+export interface ActiveCourseCriteriaProgress {
+  videoDone: boolean
+  recallDone: boolean
+  confidenceDone: boolean
+}
 
 export interface LearningUnitsHomeData {
   loading: boolean
@@ -85,6 +112,11 @@ export interface LearningUnitsHomeData {
   /** Vollständige deterministische Rangliste (Kachel nimmt Platz 1, Liste ~5). */
   ranked: RankedLearningUnit[]
   stateByUnitId: ReadonlyMap<string, LearningUnitState>
+  /** Laufender, ausführungsbezogener Kartenfortschritt — bewusst getrennt vom
+   *  historischen „schon einmal bewertet“-Stand des Content-Mappings. */
+  activeCardProgressByUnitId: ReadonlyMap<string, ActiveUnitCardProgress>
+  /** Live-Kriterien einer laufenden Video-Unit für die erklärende Checkliste. */
+  activeCourseCriteriaByUnitId: ReadonlyMap<string, ActiveCourseCriteriaProgress>
   objectiveEvidence: ReadonlyMap<string, ObjectiveEvidenceStatus>
   /** Formative Recall-Läufe der aktuellen Evidence-Epoch je Objective —
    *  Stichprobenanzeige, ausdrücklich keine Mastery-Evidenz (§8.2). */
@@ -93,6 +125,8 @@ export interface LearningUnitsHomeData {
   plan: DraftLearnerExamPlanRecord | null
   /** Card-ID-basiertes Read-Model: Course-Unit → Objective-Deck → Karten. */
   contentMapping: LearningPlanContentMapping
+  /** Nur abgeleiteter Lernplanstatus; verändert niemals Deck oder Scheduler. */
+  subDecksByObjectiveId: ReadonlyMap<string, LearningPlanSubDeckReadModel>
   /** Effektiver Termin für Anzeige, Phase und Pacing. */
   effectiveExamDateIso: string | null
   /** Draft-Pacing aus Termin, Budget und Dauerschätzungen (§12). */
@@ -125,9 +159,12 @@ const EMPTY_RESULT = {
   courseTotal: COURSE_UNIT_COUNT,
   ranked: [] as RankedLearningUnit[],
   stateByUnitId: new Map<string, LearningUnitState>(),
+  activeCardProgressByUnitId: new Map<string, ActiveUnitCardProgress>(),
+  activeCourseCriteriaByUnitId: new Map<string, ActiveCourseCriteriaProgress>(),
   formativeRecallByObjective: new Map<string, number>(),
   plan: null as DraftLearnerExamPlanRecord | null,
   contentMapping: EMPTY_LEARNING_PLAN_CONTENT_MAPPING,
+  subDecksByObjectiveId: new Map<string, LearningPlanSubDeckReadModel>(),
   effectiveExamDateIso: null as string | null,
   pacing: computeDraftPacing({ daysLeft: null }),
 }
@@ -241,6 +278,15 @@ export function useLearningUnits({
 
       const localLearningDay = formatLocalLearningDay(todayStartMs)
 
+      // Der alte Heute-Paket-Pointer konnte nur im Read-Model ein synthetisches
+      // inProgress erzeugen. Vor dem normalen Reconcile daraus bei vorhandenen
+      // sichtbaren Signalen einen echten, dauerhaften Abschluss machen.
+      try {
+        await reconcileLegacyPointerCourseProgress(profileId, legacyPointer)
+      } catch (error) {
+        console.error('[useLearningUnits] Legacy-Pointer-Reconcile fehlgeschlagen', error)
+      }
+
       // Laufende Ausführungen mit den echten Signalen abgleichen (Schrittstand
       // nachziehen, vollständig erledigte Units abschließen), bevor gelistet wird.
       try {
@@ -273,10 +319,37 @@ export function useLearningUnits({
         listCardsByIds(mappedCardIds),
         countReviewUnitAttemptsForDay(profileId, localLearningDay),
       ])
-      const objectiveStats = await listAnswerStats({
-        groupBy: 'objective',
-        itemIds: objectiveCards.map(card => card.id),
+      const contentMapping = buildLearningPlanContentMapping({
+        courseDefinitions: definitions,
+        contentMapByVideoIndex: SY0701_CONTENT_MAP_BY_VIDEO_INDEX,
+        cards: mappedCards,
       })
+      const [objectiveStats, successRateByDeckId] = await Promise.all([
+        listAnswerStats({
+          groupBy: 'objective',
+          itemIds: objectiveCards.map(card => card.id),
+        }),
+        getCardSetSuccessRates(Object.fromEntries(
+          [...contentMapping.byDeckId.values()]
+            .map(deck => [deck.deckId, deck.installedCardIds] as const),
+        )),
+      ])
+      const subDecksByObjectiveId = buildLearningPlanSubDeckReadModels({
+        contentMapping,
+        successRateByDeckId,
+      })
+      if (import.meta.env.DEV) {
+        const diagnostics = {
+          duplicateCardIds: contentMapping.duplicateCardIds,
+          objectiveMismatchUnitIds: contentMapping.objectiveMismatchUnitIds,
+          missingCardIds: [...contentMapping.byDeckId.values()].flatMap(deck => deck.missingCardIds),
+          missingAcronymCardIds: contentMapping.missingAcronymCardIds,
+          invalidAcronymObjectiveCardIds: contentMapping.invalidAcronymObjectiveCardIds,
+        }
+        if (Object.values(diagnostics).some(values => values.length > 0)) {
+          console.warn('[learning-plan-mapping]', diagnostics)
+        }
+      }
       if (computeVersionRef.current !== version) return
 
       // Review-Fälligkeit je Objective: dieselbe Eligibility wie die
@@ -324,15 +397,64 @@ export function useLearningUnits({
         evidenceEpoch: profileState.evidenceEpoch,
         now,
       })
+      type ActiveProgressEntry = {
+        unitId: string
+        cardProgress?: ActiveUnitCardProgress
+        courseCriteria?: ActiveCourseCriteriaProgress
+      }
+      const activeProgressEntries: Array<ActiveProgressEntry | null> = await Promise.all(
+        [...stateByUnitId.values()]
+          .filter(state => state.activityStatus === 'inProgress' && state.activeExecutionId)
+          .map(async (state): Promise<ActiveProgressEntry | null> => {
+            const execution = await getExecution(state.activeExecutionId!)
+            if (!execution || execution.profileId !== profileId) return null
+            if (execution.type === 'review') {
+              const reviewedCardIds = await listCardIdsReviewedSince(execution.cardIds, execution.createdAt)
+              return {
+                unitId: state.unitId,
+                cardProgress: { reviewed: reviewedCardIds.length, total: execution.cardIds.length },
+              }
+            }
+            if (execution.type === 'course') {
+              const match = /^unit:course:(\d{3})$/.exec(execution.unitId)
+              const videoIndex = match ? Number(match[1]) : -1
+              const [videoProgress, recallRuns] = await Promise.all([
+                getVideoProgress(profileId, videoIndex),
+                listRecentVideoRecallRuns(profileId, videoIndex, undefined, 100),
+              ])
+              const snapshot = computeCourseStepState({
+                execution,
+                videoProgress,
+                recallRuns,
+                reviewedCardIdsSinceStart: new Set(),
+              })
+              return {
+                unitId: state.unitId,
+                courseCriteria: {
+                  videoDone: snapshot.videoDone,
+                  recallDone: snapshot.recallDone,
+                  confidenceDone: snapshot.confidenceDone,
+                },
+              }
+            }
+            return null
+          }),
+      )
+      if (computeVersionRef.current !== version) return
+      const activeCardProgressByUnitId = new Map(
+        activeProgressEntries
+          .filter((entry): entry is ActiveProgressEntry => entry?.cardProgress !== undefined)
+          .map(entry => [entry.unitId, entry.cardProgress!] as const),
+      )
+      const activeCourseCriteriaByUnitId = new Map(
+        activeProgressEntries
+          .filter((entry): entry is ActiveProgressEntry => entry?.courseCriteria !== undefined)
+          .map(entry => [entry.unitId, entry.courseCriteria!] as const),
+      )
 
       const courseCompleted = definitions.filter(
         definition => stateByUnitId.get(definition.unitId)?.activityStatus === 'completed',
       ).length
-      const contentMapping = buildLearningPlanContentMapping({
-        courseDefinitions: definitions,
-        contentMapByVideoIndex: SY0701_CONTENT_MAP_BY_VIDEO_INDEX,
-        cards: mappedCards,
-      })
 
       // Der profilgescopte Plan gewinnt einschließlich einer expliziten
       // Löschung. Settings wird nur für Altinstallationen ohne Plan gelesen.
@@ -401,9 +523,12 @@ export function useLearningUnits({
         courseTotal: COURSE_UNIT_COUNT,
         ranked,
         stateByUnitId,
+        activeCardProgressByUnitId,
+        activeCourseCriteriaByUnitId,
         formativeRecallByObjective,
         plan: plan ?? null,
         contentMapping,
+        subDecksByObjectiveId,
         effectiveExamDateIso,
         pacing,
       })

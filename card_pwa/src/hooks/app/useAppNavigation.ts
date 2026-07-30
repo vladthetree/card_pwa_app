@@ -76,6 +76,7 @@ async function resolveSessionDeckName(sessionId: string): Promise<string> {
     const match = execution ? /^unit:course:(\d{3})$/.exec(execution.unitId) : null
     return match ? `Lerneinheit ${match[1]}` : 'Lerneinheit'
   }
+  if (sessionId.startsWith('learning-plan:acronyms:')) return 'Acronym-Karten'
   const names = await getDeckNameMap()
   return names[sessionId] ?? 'Deck'
 }
@@ -190,7 +191,9 @@ export function useAppNavigation(input: { showInitialSplash: boolean }): {
   ) => {
     setStudyReturnToUnits(options?.returnToUnits ?? false)
     if (fixedCardIds !== undefined) {
-      const packageCards = await listCardsByIds(fixedCardIds)
+      // Jeder kanonische Card.id darf pro Session nur einmal vorkommen, auch
+      // wenn mehrere Lernplan-Referenzen dieselbe echte Karte beisteuern.
+      const packageCards = await listCardsByIds([...new Set(fixedCardIds)])
       if (packageCards.length === 0) return
       // Lerneinheiten übergeben eine eigene Session-ID (`unit-exec:{executionId}`):
       // so kollidieren parallele Units desselben Objectives weder untereinander

@@ -43,15 +43,17 @@ export const LEARNING_UNIT_COPY = {
     },
     currentStep: {
       video: 'Nächster Schritt: Video ansehen',
-      recall: 'Nächster Schritt: Abruf-Check beenden',
+      recall: 'Nächster Schritt: Abruf-Check beenden und Lernstatus wählen',
       cards: 'Nächster Schritt: ausgewählte Karten bewerten',
       lab: 'Nächster Schritt: Lab vollständig lösen',
       exam: 'Nächster Schritt: Prüfung abgeben',
       done: 'Alle erforderlichen Schritte erledigt',
     },
-    completionRule: 'Kurs fertig: Video angesehen, Abruf-Check beendet und alle ausgewählten Karten bewertet. Wiederholung fertig: jede ausgewählte Karte bewertet. Lab fertig: vollständig gelöst. Ergebnis und Rating bestimmen die Evidenz, nicht den Aktivitätsabschluss.',
+    activeCardProgress: (reviewed: number, total: number) =>
+      `${reviewed}/${total} Karten in dieser Einheit seit Start bewertet`,
+    completionRule: 'Video-Einheit fertig: Abruf-Check vollständig beendet und Lernstatus (Lücken, Okay oder Sicher) gewählt. Karten werden separat in Wiederholungs-Einheiten gelernt. Wiederholung fertig: jede ausgewählte Karte bewertet. Lab fertig: vollständig gelöst.',
     completedDetail: {
-      course: 'Fertig: Video, Abruf-Check und Karten bearbeitet',
+      course: 'Fertig: Video und Abruf-Check bearbeitet',
       review: 'Wiederholungszyklus fertig · kann erneut fällig werden',
       lab: 'Fertig: Lab vollständig gelöst',
       exam: 'Fertig: Prüfung abgegeben',
@@ -106,15 +108,17 @@ export const LEARNING_UNIT_COPY = {
     },
     currentStep: {
       video: 'Next step: watch the video',
-      recall: 'Next step: finish the recall check',
+      recall: 'Next step: finish the recall check and choose a learning status',
       cards: 'Next step: rate the selected cards',
       lab: 'Next step: solve the lab completely',
       exam: 'Next step: submit the exam',
       done: 'All required steps completed',
     },
-    completionRule: 'Course done: video watched, recall check finished, and every selected card rated. Review done: every selected card rated. Lab done: solved completely. Results and ratings affect evidence, not activity completion.',
+    activeCardProgress: (reviewed: number, total: number) =>
+      `${reviewed}/${total} cards in this unit rated since it started`,
+    completionRule: 'Video unit done: recall check fully completed and a learning status (Gaps, Okay, or Solid) selected. Cards are studied separately in review units. Review done: every selected card rated. Lab done: solved completely.',
     completedDetail: {
-      course: 'Done: video, recall check, and cards completed',
+      course: 'Done: video and recall check completed',
       review: 'Review cycle done · it can become due again',
       lab: 'Done: lab solved completely',
       exam: 'Done: exam submitted',

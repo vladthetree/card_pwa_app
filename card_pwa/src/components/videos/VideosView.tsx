@@ -32,6 +32,7 @@ import { useLocalMesserVideos, useVideoSource, type LocalVideoItem, type LocalVi
 import { markVideoOpened, markVideoWatched, setVideoConfidence } from '../../db/queries/learningUnits'
 import {
   getActiveCourseExecutionForVideo,
+  reconcileCourseUnitProgress,
   recordCourseRecallRun,
 } from '../../services/learningUnitRunner'
 import { usePersistentBool } from '../../hooks/videos/usePersistentBool'
@@ -178,6 +179,39 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
     const now = Date.now()
     void setVideoConfidence({ profileId, videoIndex: item.index, objectiveId: item.objective, confidence: next, now })
       .catch(error => console.error('[VideosView] setVideoConfidence', error))
+  }
+
+  /** Abschlussaktion des sichtbaren Recall-Flows: Confidence und angesehen
+   *  werden zuerst dauerhaft gespeichert, danach wird die aktive Unit sofort
+   *  abgeglichen. So hängt der Status nicht von Navigation/Reload-Timing ab. */
+  const finishRecallWithConfidence = async (item: LocalVideoItem, next: VideoConfidence) => {
+    const now = Date.now()
+    setConfidence(item.objective, next)
+    markWatched(item.objective)
+    try {
+      // Absichtlich sequenziell: beide Writer lesen und ersetzen denselben
+      // IndexedDB-Datensatz. So kann kein paralleler Last-Write das jeweils
+      // andere Signal (watched/confidence) wieder entfernen.
+      await markVideoWatched({
+        profileId,
+        videoIndex: item.index,
+        objectiveId: item.objective,
+        method: 'manual',
+        now,
+      })
+      await setVideoConfidence({
+        profileId,
+        videoIndex: item.index,
+        objectiveId: item.objective,
+        confidence: next,
+        now,
+      })
+      await reconcileCourseUnitProgress(profileId)
+    } catch (error) {
+      console.error('[VideosView] finishRecallWithConfidence', error)
+    } finally {
+      setRecallOpen(false)
+    }
   }
 
   const markItemWatched = (item: LocalVideoItem, method: 'ended' | 'manual') => {
@@ -773,8 +807,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
           }}
           onClose={() => setRecallOpen(false)}
           onConfidence={next => {
-            applyConfidence(activeItem, next)
-            setRecallOpen(false)
+            void finishRecallWithConfidence(activeItem, next)
           }}
           onStudyMissed={onStartObjectiveStudy
             ? cards => {

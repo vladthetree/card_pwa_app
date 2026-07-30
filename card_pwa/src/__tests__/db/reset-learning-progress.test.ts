@@ -130,6 +130,19 @@ describe('resetLearningProgress', () => {
     expect(mockedRuntime.state.activeSessionsCleared).toBe(1)
   })
 
+  it('bewahrt die kanonische Card-ID und Deckzuordnung für Lernplan-Mappings', async () => {
+    const cardId = '1781206500017'
+    mockedRuntime.state.cards = [
+      buildCard({ id: cardId, deckId: 'sy0-701-acronyms-bonus' }),
+    ]
+
+    await resetLearningProgress()
+
+    expect(mockedRuntime.state.cards[0].id).toBe(cardId)
+    expect(mockedRuntime.state.cards[0].deckId).toBe('sy0-701-acronyms-bonus')
+    expect(mockedRuntime.state.cards[0].reps).toBe(0)
+  })
+
   it('lässt gelöschte Karten (Tombstones) unangetastet', async () => {
     mockedRuntime.state.cards = [
       buildCard({ id: 'c1' }),

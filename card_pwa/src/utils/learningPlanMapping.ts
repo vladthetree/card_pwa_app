@@ -8,6 +8,10 @@
  *            join key is always Card.id.
  */
 import type { Card } from '../types'
+import {
+  SY0701_LEARNING_PLAN_ACRONYM_REFERENCES,
+  type Sy0701LearningPlanAcronymReference,
+} from '../data/sy0701LearningPlanAcronymMap'
 import type { LearningUnitDefinition, VideoContentMapEntry } from './learningUnits'
 import {
   SY0_701_OBJECTIVES,
@@ -49,6 +53,33 @@ export interface LearningPlanDeckCardMapping {
   physicalDeckIds: readonly string[]
 }
 
+export interface LearningPlanAcronymCardMapping {
+  cardId: string
+  label: string
+  objectiveIds: readonly string[]
+  rationale: string
+  installed: boolean
+  reviewed: boolean
+  /** Rein informativ; fachliche Zuordnung und Fortschritt hängen an cardId. */
+  physicalDeckId: string | null
+}
+
+export interface LearningPlanCanonicalSuccessRate {
+  /** Ganzzahliger, gerundeter Anzeigewert. */
+  rate: number
+  /** Exakter, ungerundeter Quotient für die 90-%-Schwelle. */
+  ratio: number
+  successful: number
+  total: number
+}
+
+export type LearningPlanSubDeckStatus = 'open' | 'inProgress' | 'fulfilled'
+
+export interface LearningPlanSubDeckReadModel extends LearningPlanDeckCardMapping {
+  successRate: LearningPlanCanonicalSuccessRate
+  status: LearningPlanSubDeckStatus
+}
+
 export interface LearningPlanMappingSummary {
   rootDeckCount: number
   deckCount: number
@@ -63,14 +94,47 @@ export interface LearningPlanContentMapping {
   byUnitId: ReadonlyMap<string, LearningPlanUnitCardMapping>
   byDeckId: ReadonlyMap<string, LearningPlanDeckCardMapping>
   byObjectiveId: ReadonlyMap<string, LearningPlanDeckCardMapping>
+  byAcronymCardId: ReadonlyMap<string, LearningPlanAcronymCardMapping>
+  acronymCardsByObjectiveId: ReadonlyMap<string, readonly LearningPlanAcronymCardMapping[]>
   summary: LearningPlanMappingSummary
   /** Content-QA diagnostics; expected to remain empty for a released manifest. */
   duplicateCardIds: readonly string[]
   objectiveMismatchUnitIds: readonly string[]
+  missingAcronymCardIds: readonly string[]
+  invalidAcronymObjectiveCardIds: readonly string[]
 }
 
 function unique<T>(values: readonly T[]): T[] {
   return [...new Set(values)]
+}
+
+export const LEARNING_PLAN_SUBDECK_SUCCESS_THRESHOLD = 0.9
+
+/**
+ * Reiner Lernplanstatus. Der echte Deck-/Kartenstatus bleibt unberührt.
+ * Fehlende Karten sperren „Erfüllt“, damit eine unvollständige Installation
+ * nicht aufgrund der verbleibenden Reviews fälschlich grün wird.
+ */
+export function computeLearningPlanSubDeckStatus(input: {
+  ratio: number
+  totalAnswers: number
+  missingCardCount?: number
+}): LearningPlanSubDeckStatus {
+  if (input.totalAnswers <= 0) return 'open'
+  if (
+    (input.missingCardCount ?? 0) === 0
+    && input.ratio >= LEARNING_PLAN_SUBDECK_SUCCESS_THRESHOLD
+  ) {
+    return 'fulfilled'
+  }
+  return 'inProgress'
+}
+
+/** Entfernt doppelte Card-IDs in einer gestarteten Lernplan-Session stabil. */
+export function buildUniqueLearningPlanSessionCardIds(
+  ...cardIdGroups: ReadonlyArray<readonly string[]>
+): string[] {
+  return unique(cardIdGroups.flat())
 }
 
 /** IDs needed from IndexedDB. This list is stable and independent of deck
@@ -78,6 +142,7 @@ function unique<T>(values: readonly T[]): T[] {
 export function collectLearningPlanCardIds(input: {
   courseDefinitions: readonly LearningUnitDefinition[]
   contentMapByVideoIndex: ReadonlyMap<number, VideoContentMapEntry>
+  acronymReferences?: readonly Sy0701LearningPlanAcronymReference[]
 }): string[] {
   const ids: string[] = []
   const seen = new Set<string>()
@@ -91,6 +156,11 @@ export function collectLearningPlanCardIds(input: {
       seen.add(cardId)
       ids.push(cardId)
     }
+  }
+  for (const reference of input.acronymReferences ?? SY0701_LEARNING_PLAN_ACRONYM_REFERENCES) {
+    if (seen.has(reference.cardId)) continue
+    seen.add(reference.cardId)
+    ids.push(reference.cardId)
   }
   return ids
 }
@@ -123,6 +193,7 @@ export function buildLearningPlanContentMapping(input: {
   courseDefinitions: readonly LearningUnitDefinition[]
   contentMapByVideoIndex: ReadonlyMap<number, VideoContentMapEntry>
   cards: readonly Card[]
+  acronymReferences?: readonly Sy0701LearningPlanAcronymReference[]
 }): LearningPlanContentMapping {
   const cardById = new Map(input.cards.map(card => [card.id, card]))
   const cardOwnerUnitId = new Map<string, string>()
@@ -130,6 +201,7 @@ export function buildLearningPlanContentMapping(input: {
   const objectiveMismatchUnitIds: string[] = []
   const byUnitId = new Map<string, LearningPlanUnitCardMapping>()
   const mutableByObjective = new Map<string, MutableDeckMapping>()
+  const validObjectiveIds = new Set(SY0_701_OBJECTIVES.map(objective => objective.code))
 
   const definitions = [...input.courseDefinitions].sort((a, b) => a.order - b.order)
   for (const definition of definitions) {
@@ -231,10 +303,46 @@ export function buildLearningPlanContentMapping(input: {
   const cardIds = unique([...byUnitId.values()].flatMap(mapping => mapping.cardIds))
   const installedCardIds = cardIds.filter(cardId => cardById.has(cardId))
   const reviewedCardIds = installedCardIds.filter(cardId => cardWasReviewed(cardById.get(cardId)!))
+  const byAcronymCardId = new Map<string, LearningPlanAcronymCardMapping>()
+  const mutableAcronymCardsByObjectiveId = new Map<string, LearningPlanAcronymCardMapping[]>()
+  const invalidAcronymObjectiveCardIds: string[] = []
+  for (const reference of input.acronymReferences ?? SY0701_LEARNING_PLAN_ACRONYM_REFERENCES) {
+    const card = cardById.get(reference.cardId)
+    const objectiveIds = unique(reference.objectiveIds)
+    if (objectiveIds.some(objectiveId => !validObjectiveIds.has(objectiveId))) {
+      invalidAcronymObjectiveCardIds.push(reference.cardId)
+    }
+    const mapping: LearningPlanAcronymCardMapping = {
+      cardId: reference.cardId,
+      label: reference.label,
+      objectiveIds,
+      rationale: reference.rationale,
+      installed: card !== undefined,
+      reviewed: card !== undefined && cardWasReviewed(card),
+      physicalDeckId: card?.deckId ?? null,
+    }
+    byAcronymCardId.set(mapping.cardId, mapping)
+    for (const objectiveId of objectiveIds) {
+      if (!validObjectiveIds.has(objectiveId)) continue
+      const list = mutableAcronymCardsByObjectiveId.get(objectiveId) ?? []
+      list.push(mapping)
+      mutableAcronymCardsByObjectiveId.set(objectiveId, list)
+    }
+  }
+  const acronymCardsByObjectiveId = new Map<string, readonly LearningPlanAcronymCardMapping[]>(
+    [...mutableAcronymCardsByObjectiveId.entries()]
+      .map(([objectiveId, mappings]) => [
+        objectiveId,
+        [...mappings].sort((a, b) => a.label.localeCompare(b.label) || a.cardId.localeCompare(b.cardId)),
+      ]),
+  )
+
   return {
     byUnitId,
     byDeckId,
     byObjectiveId,
+    byAcronymCardId,
+    acronymCardsByObjectiveId,
     summary: {
       rootDeckCount: new Set([...byUnitId.values()].map(mapping => mapping.rootDeckName).filter(Boolean)).size,
       deckCount: byDeckId.size,
@@ -246,13 +354,45 @@ export function buildLearningPlanContentMapping(input: {
     },
     duplicateCardIds: unique(duplicateCardIds),
     objectiveMismatchUnitIds: unique(objectiveMismatchUnitIds),
+    missingAcronymCardIds: [...byAcronymCardId.values()]
+      .filter(mapping => !mapping.installed)
+      .map(mapping => mapping.cardId),
+    invalidAcronymObjectiveCardIds: unique(invalidAcronymObjectiveCardIds),
   }
+}
+
+/** Baut die reine Lernplan-Projektion aus Card-ID-Mapping und kanonischer Rate. */
+export function buildLearningPlanSubDeckReadModels(input: {
+  contentMapping: LearningPlanContentMapping
+  successRateByDeckId: Readonly<Record<string, LearningPlanCanonicalSuccessRate | undefined>>
+}): ReadonlyMap<string, LearningPlanSubDeckReadModel> {
+  const result = new Map<string, LearningPlanSubDeckReadModel>()
+  for (const [objectiveId, deck] of input.contentMapping.byObjectiveId) {
+    const successRate = input.successRateByDeckId[deck.deckId] ?? {
+      rate: 0,
+      ratio: 0,
+      successful: 0,
+      total: 0,
+    }
+    result.set(objectiveId, {
+      ...deck,
+      successRate,
+      status: computeLearningPlanSubDeckStatus({
+        ratio: successRate.ratio,
+        totalAnswers: successRate.total,
+        missingCardCount: deck.missingCardIds.length,
+      }),
+    })
+  }
+  return result
 }
 
 export const EMPTY_LEARNING_PLAN_CONTENT_MAPPING: LearningPlanContentMapping = {
   byUnitId: new Map(),
   byDeckId: new Map(),
   byObjectiveId: new Map(),
+  byAcronymCardId: new Map(),
+  acronymCardsByObjectiveId: new Map(),
   summary: {
     rootDeckCount: 0,
     deckCount: 0,
@@ -264,4 +404,6 @@ export const EMPTY_LEARNING_PLAN_CONTENT_MAPPING: LearningPlanContentMapping = {
   },
   duplicateCardIds: [],
   objectiveMismatchUnitIds: [],
+  missingAcronymCardIds: [],
+  invalidAcronymObjectiveCardIds: [],
 }

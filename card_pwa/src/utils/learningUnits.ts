@@ -671,16 +671,11 @@ export function createCourseExecution(input: {
 
 // ── Schrittstatus (Vertrag §23.2, Gating §8.2) ──────────────────────────────
 
-function sameStringSet(a: readonly string[], b: readonly string[]): boolean {
-  if (a.length !== b.length) return false
-  const set = new Set(a)
-  return b.every(item => set.has(item))
-}
-
-/** Recall zählt nur von einem Run derselben Execution nach deren Start mit
- *  exakt den eingefrorenen Frage-IDs und -Versionen. Ein Tageswechsel ändert
- *  nichts: alle Vergleiche hängen an `execution.createdAt`, nie an einem
- *  Tagesanfang. Öffnen eines Videos allein zählt nicht als angesehen. */
+/** Recall zählt nur von einem abgeschlossenen Run derselben Execution nach
+ *  deren Start. Die Execution-Bindung wird erst nach dem vollständig sichtbaren
+ *  Check geschrieben; deshalb ist sie das stabile Abschlusskriterium. Alte
+ *  Frage-Sets oder inzwischen aktualisierte Manifest-Metadaten dürfen einen
+ *  tatsächlich beendeten Lauf nicht nachträglich blockieren. */
 export function computeCourseStepState(input: {
   execution: LearningUnitExecution
   videoProgress?: VideoProgressRecord
@@ -689,6 +684,7 @@ export function computeCourseStepState(input: {
 }): {
   videoDone: boolean
   recallDone: boolean
+  confidenceDone: boolean
   cardsDone: boolean
   currentStep: 'video' | 'recall' | 'cards' | 'done'
 } {
@@ -697,30 +693,48 @@ export function computeCourseStepState(input: {
     throw new Error(`computeCourseStepState: Execution ${execution.executionId} ist kein Course`)
   }
 
-  const videoDone =
-    input.videoProgress?.watchedAt !== undefined &&
-    (input.videoProgress.watchedMethod === 'ended' || input.videoProgress.watchedMethod === 'manual')
-
+  const isLegacyExecution =
+    execution.executionId.startsWith('legacy:pointer:')
+    || execution.contentManifestVersion === 'legacy'
+  // Alte Pointer-Ausführungen hatten absichtlich keine eingefrorenen
+  // Frage-IDs. Ein danach gespeicherter Recall-Lauf konnte deshalb niemals
+  // den strikten Set-Vergleich einer modernen Execution erfüllen. Für genau
+  // diese Altform ist ein tatsächlich gespeicherter Lauf (oder die erst nach
+  // dem Ergebnis gesetzte Confidence) der Migrationsbeleg.
+  const legacyRecallDone = isLegacyExecution && (
+    input.recallRuns.some(run => run.total > 0)
+    || input.videoProgress?.confidenceAt !== undefined
+  )
+  const confidenceDone =
+    input.videoProgress?.confidenceAt !== undefined
+    || input.videoProgress?.legacyHint?.confidence !== undefined
   const hasRecallStep = execution.recallQuestionIds.length > 0
   const recallDone =
-    !hasRecallStep ||
+    legacyRecallDone ||
+    (!hasRecallStep && !isLegacyExecution) ||
     input.recallRuns.some(run => {
       if (run.executionId !== execution.executionId) return false
       if (run.profileId !== execution.profileId) return false
       if (run.completedAt < execution.createdAt) return false
-      if (run.contentManifestVersion !== execution.contentManifestVersion) return false
-      if (run.sourceSnapshotId !== execution.sourceSnapshotId) return false
-      if (!sameStringSet(run.questionIds, execution.recallQuestionIds)) return false
-      return execution.recallQuestionIds.every(
-        id => run.questionVersionById[id] === execution.recallQuestionVersions[id],
-      )
+      return run.total > 0
     })
+  const videoDone =
+    (
+      input.videoProgress?.watchedAt !== undefined
+      && (input.videoProgress.watchedMethod === 'ended' || input.videoProgress.watchedMethod === 'manual')
+    )
+    || (hasRecallStep && recallDone)
+    || legacyRecallDone
+    || (isLegacyExecution && input.videoProgress?.legacyHint?.watched === true)
 
+  // Karten gehören in die eigenständige Wiederholungs-Unit. Der Wert bleibt
+  // als Diagnose für alte eingefrorene Course-Executions erhalten, blockiert
+  // deren sichtbaren Video-/Recall-Abschluss aber nicht mehr.
   const hasCardsStep = execution.cardIds.length > 0
   const cardsDone = !hasCardsStep || execution.cardIds.every(id => input.reviewedCardIdsSinceStart.has(id))
 
-  const currentStep = !videoDone ? 'video' : !recallDone ? 'recall' : !cardsDone ? 'cards' : 'done'
-  return { videoDone, recallDone, cardsDone, currentStep }
+  const currentStep = !videoDone ? 'video' : !recallDone || !confidenceDone ? 'recall' : 'done'
+  return { videoDone, recallDone, confidenceDone, cardsDone, currentStep }
 }
 
 // ── Legacy-Pointer-Overlay (Übergang bis Phase-2-Verkabelung) ───────────────

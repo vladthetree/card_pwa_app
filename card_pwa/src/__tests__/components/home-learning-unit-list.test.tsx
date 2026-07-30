@@ -49,7 +49,7 @@ describe('HomeLearningUnitList responsive summary', () => {
     expect(html).toContain('data-testid="learning-unit-row-course-3"')
     expect(html).not.toContain('data-testid="learning-unit-row-course-4"')
     expect(html).toContain('neo-learning-card')
-    expect(html).toContain('Kurs fertig: Video angesehen')
+    expect(html).toContain('Abruf-Check vollständig beendet und Lernstatus')
   })
 
   it('zeigt auf der Einheit klar den nächsten offenen Schritt', () => {
@@ -76,6 +76,35 @@ describe('HomeLearningUnitList responsive summary', () => {
     }))
 
     expect(html).toContain('in Bearbeitung')
-    expect(html).toContain('Nächster Schritt: Abruf-Check beenden')
+    expect(html).toContain('Nächster Schritt: Abruf-Check beenden und Lernstatus wählen')
+    expect(html).toContain('bg-[#FDBA74]')
+  })
+
+  it('kennzeichnet eine abgeschlossene Einheit eindeutig grün', () => {
+    const state: LearningUnitState = {
+      profileId: 'p',
+      evidenceEpoch: 1,
+      unitId: 'course-1',
+      activityStatus: 'completed',
+      currentStep: 'done',
+      lastActivityAt: 2,
+      completedAt: 2,
+      updatedAt: 2,
+    }
+    const html = renderToStaticMarkup(createElement(HomeLearningUnitList, {
+      language: 'de',
+      phase: 'foundation',
+      daysLeft: 30,
+      readiness: 'notReady',
+      courseCompleted: 1,
+      courseTotal: 120,
+      ranked: [rankedUnit(1)],
+      stateByUnitId: new Map([['course-1', state]]),
+      onOpenUnit: () => undefined,
+    }))
+
+    expect(html).toContain('abgeschlossen')
+    expect(html).toContain('Fertig: Video und Abruf-Check bearbeitet')
+    expect(html).toContain('bg-[#86EFAC]')
   })
 })

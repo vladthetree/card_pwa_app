@@ -184,6 +184,34 @@ export async function completeUnitExecution(
   })
 }
 
+/** Persistiert den Abschluss einer rein synthetischen Legacy-Pointer-Unit, für
+ *  die nie eine echte Execution angelegt wurde. Ausschließlich für die
+ *  Migration bereits vorhandener Video-/Recall-Signale; moderne Ausführungen
+ *  werden weiterhin nur über completeUnitExecution abgeschlossen. */
+export async function completeLegacyPointerCourseUnit(
+  input: { profileId: string; unitId: string; now: number },
+  db: Db = defaultDb,
+): Promise<LearningUnitState> {
+  return db.transaction('rw', [db.learningUnitState, db.profileLearningState], async () => {
+    const existing = await db.learningUnitState.get([input.profileId, input.unitId])
+    const profileState = await db.profileLearningState.get(input.profileId)
+    const completed: LearningUnitState = {
+      profileId: input.profileId,
+      evidenceEpoch: existing?.evidenceEpoch ?? profileState?.evidenceEpoch ?? 1,
+      unitId: input.unitId,
+      activityStatus: 'completed',
+      currentStep: 'done',
+      startedAt: existing?.startedAt,
+      completedAt: input.now,
+      lastCompletedAt: input.now,
+      lastActivityAt: input.now,
+      updatedAt: input.now,
+    }
+    await db.learningUnitState.put(completed)
+    return completed
+  })
+}
+
 /** Schließt einen Review-Zyklus samt Tagesprotokoll in derselben Learning-DB-
  * Transaktion ab. So kann ein Fehler zwischen Status und Tageskappe keinen
  * halb abgeschlossenen Zustand hinterlassen. */

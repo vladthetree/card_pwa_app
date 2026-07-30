@@ -17,7 +17,6 @@ import {
   createCourseExecution,
   formatCourseUnitId,
   formatLabUnitId,
-  selectCourseCardIds,
   selectRecallQuestionIds,
   computeRecallRunVerdict,
   type LearningUnitDefinition,
@@ -35,6 +34,7 @@ import {
 } from '../data/sy0701ContentMap'
 import {
   abortUnitExecution,
+  completeLegacyPointerCourseUnit,
   completeReviewUnitExecution,
   completeUnitExecution,
   getActiveExecution,
@@ -172,31 +172,16 @@ export async function startOrResumeCourseUnit(input: {
     selectionSeed: executionId,
   })
 
-  const excludedCardIds = await listReservedCardIds(profileId)
-  const pointer = readTodayPackagePointer()
-  if (pointer.activeIndex !== definition.videoIndex && pointer.activeCardIds) {
-    for (const cardId of pointer.activeCardIds) excludedCardIds.add(cardId)
-  }
-
-  const selectedCardIds = selectCourseCardIds({
-    candidateCards,
-    excludedCardIds,
-    selectedRecallCardIds: new Set(recall.selectedRecallCardIds),
-    cardLimit: settings.packageCardLimit,
-    now,
-    nextDayStartsAt: settings.nextDayStartsAt,
-    learnAheadMinutes: settings.learnAheadMinutes,
-    algorithm: settings.algorithm,
-    runSeed: executionId,
-  })
-
   const execution = createCourseExecution({
     executionId,
     profileId,
     evidenceEpoch: profileState.evidenceEpoch,
     definition,
     content,
-    selectedCardIds,
+    // Kartenwiederholungen sind eigenständige Review-Units. Eine Video-Unit
+    // darf nicht nach ihrem sichtbaren Abruf-Check an einer zweiten,
+    // überraschenden Kartenpflicht hängen bleiben.
+    selectedCardIds: [],
     selectedRecallQuestionIds: recall.selectedQuestionIds,
     selectedRecallCardIds: recall.selectedRecallCardIds,
     recallSeed: executionId,
@@ -271,6 +256,46 @@ export async function reconcileCourseUnitProgress(
     }
   }
   return { completedUnitIds }
+}
+
+/** Repariert den alten read-only Heute-Paket-Overlay-Fall: Der Pointer konnte
+ *  eine Course-Unit als inProgress anzeigen, obwohl in der Learning-DB weder
+ *  State noch Execution existierten. Ein vorhandener Recall-Lauf plus der
+ *  anschließend gewählte Lernstatus sind die sichtbaren Abschlusskriterien. */
+export async function reconcileLegacyPointerCourseProgress(
+  profileId: string,
+  pointer: { activeIndex: number; activeStartedAt: number } | null,
+): Promise<boolean> {
+  if (
+    !pointer
+    || pointer.activeIndex < 2
+    || pointer.activeIndex > 121
+    || pointer.activeStartedAt <= 0
+  ) {
+    return false
+  }
+  const unitId = formatCourseUnitId(pointer.activeIndex)
+  const existingState = await getLearningUnitState(profileId, unitId)
+  if (existingState?.activityStatus === 'completed') return false
+  if (existingState?.activeExecutionId) {
+    const execution = await getActiveExecution(profileId, unitId)
+    // Echte aktuelle Executions unterliegen weiterhin dem strikten Snapshot.
+    if (execution && !execution.executionId.startsWith('legacy:pointer:')) return false
+  }
+
+  const [videoProgress, recallRuns] = await Promise.all([
+    getVideoProgress(profileId, pointer.activeIndex),
+    listRecentVideoRecallRuns(profileId, pointer.activeIndex, undefined, 100),
+  ])
+  const confidenceDone =
+    videoProgress?.confidenceAt !== undefined
+    || videoProgress?.legacyHint?.confidence !== undefined
+  const recallDone = recallRuns.some(run => run.total > 0)
+  if (!confidenceDone || !recallDone) return false
+
+  await completeLegacyPointerCourseUnit({ profileId, unitId, now: Date.now() })
+  await clearActiveSession(`unit-exec:legacy:pointer:${pointer.activeIndex}`)
+  return true
 }
 
 export interface ReviewUnitStartSettings {

@@ -38,6 +38,8 @@ export {
   listCardIdsReviewedSince,
   getFutureDueForecast,
   getDeckSuccessRates,
+  getCardSetSuccessRates,
+  computeCanonicalReviewSuccessRate,
   type DeckSuccessRate,
   getYoungCardLapseRate,
   type YoungCardLapseStats,

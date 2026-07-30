@@ -345,6 +345,11 @@ describe('computeCourseStepState', () => {
     profileId: 'profil-a', evidenceEpoch: 1, videoIndex: 2, objectiveId: '1.1',
     watchedAt: 900_000, watchedMethod: 'ended' as const, updatedAt: 900_000,
   }
+  const watchedWithConfidence = {
+    ...watched,
+    confidence: 'solid' as const,
+    confidenceAt: 950_000,
+  }
 
   it('zählt Öffnen nicht als angesehen; nur ended/manual setzen videoDone', () => {
     const opened = { ...watched, watchedAt: undefined, watchedMethod: undefined, openedAt: 950_000 }
@@ -352,17 +357,26 @@ describe('computeCourseStepState', () => {
     expect(computeCourseStepState({ execution, videoProgress: watched, recallRuns: [], reviewedCardIdsSinceStart: new Set() }).videoDone).toBe(true)
   })
 
-  it('akzeptiert Recall nur von derselben Execution mit exakten IDs und Versionen', () => {
+  it('akzeptiert einen vollständig beendeten Recall derselben Execution trotz älterer Frage-/Manifest-Metadaten', () => {
     const run = makeRun(execution)
     const state = (runs: VideoRecallRun[]) =>
-      computeCourseStepState({ execution, videoProgress: watched, recallRuns: runs, reviewedCardIdsSinceStart: new Set() })
+      computeCourseStepState({ execution, recallRuns: runs, reviewedCardIdsSinceStart: new Set() })
     expect(state([run]).recallDone).toBe(true)
+    expect(state([run]).videoDone).toBe(true)
+    expect(state([run]).confidenceDone).toBe(false)
+    expect(state([run]).currentStep).toBe('recall')
+    expect(computeCourseStepState({
+      execution,
+      videoProgress: watchedWithConfidence,
+      recallRuns: [run],
+      reviewedCardIdsSinceStart: new Set(),
+    }).currentStep).toBe('done')
     expect(state([makeRun(execution, { executionId: null })]).recallDone).toBe(false)
     expect(state([makeRun(execution, { executionId: 'andere-exec' })]).recallDone).toBe(false)
     expect(state([makeRun(execution, { completedAt: execution.createdAt - 1 })]).recallDone).toBe(false)
-    expect(state([makeRun(execution, { questionIds: ['M1-001'] })]).recallDone).toBe(false)
-    expect(state([makeRun(execution, { questionVersionById: { 'M1-001': 'v9', 'T002-01': 'v1' } })]).recallDone).toBe(false)
-    expect(state([makeRun(execution, { contentManifestVersion: 'anderes-manifest' })]).recallDone).toBe(false)
+    expect(state([makeRun(execution, { questionIds: ['M1-001'] })]).recallDone).toBe(true)
+    expect(state([makeRun(execution, { questionVersionById: { 'M1-001': 'v9', 'T002-01': 'v1' } })]).recallDone).toBe(true)
+    expect(state([makeRun(execution, { contentManifestVersion: 'anderes-manifest' })]).recallDone).toBe(true)
   })
 
   it('überlebt den Tageswechsel: Vergleiche hängen an createdAt, nie am Tagesanfang', () => {
@@ -370,20 +384,76 @@ describe('computeCourseStepState', () => {
     const run = makeRun(execution, { completedAt: twoDaysLater })
     const result = computeCourseStepState({
       execution,
-      videoProgress: watched,
+      videoProgress: watchedWithConfidence,
       recallRuns: [run],
       reviewedCardIdsSinceStart: new Set(['c1', 'c2']),
     })
-    expect(result).toEqual({ videoDone: true, recallDone: true, cardsDone: true, currentStep: 'done' })
+    expect(result).toEqual({
+      videoDone: true,
+      recallDone: true,
+      confidenceDone: true,
+      cardsDone: true,
+      currentStep: 'done',
+    })
   })
 
-  it('erfüllt den Karten-Schritt nur über die eingefrorenen cardIds und überspringt leere Schritte', () => {
-    const partial = computeCourseStepState({ execution, videoProgress: watched, recallRuns: [makeRun(execution)], reviewedCardIdsSinceStart: new Set(['c1', 'fremde-karte']) })
+  it('führt alte Course-Karten nur diagnostisch und blockiert damit den Videoabschluss nicht', () => {
+    const partial = computeCourseStepState({ execution, videoProgress: watchedWithConfidence, recallRuns: [makeRun(execution)], reviewedCardIdsSinceStart: new Set(['c1', 'fremde-karte']) })
     expect(partial.cardsDone).toBe(false)
-    expect(partial.currentStep).toBe('cards')
+    expect(partial.currentStep).toBe('done')
     const empty = makeExecution({ cardIds: [], recallQuestionIds: [], recallQuestionVersions: {}, recallCardIds: [] }) as Extract<LearningUnitExecution, { type: 'course' }>
-    const skipped = computeCourseStepState({ execution: empty, videoProgress: watched, recallRuns: [], reviewedCardIdsSinceStart: new Set() })
-    expect(skipped).toEqual({ videoDone: true, recallDone: true, cardsDone: true, currentStep: 'done' })
+    const skipped = computeCourseStepState({ execution: empty, videoProgress: watchedWithConfidence, recallRuns: [], reviewedCardIdsSinceStart: new Set() })
+    expect(skipped).toEqual({
+      videoDone: true,
+      recallDone: true,
+      confidenceDone: true,
+      cardsDone: true,
+      currentStep: 'done',
+    })
+  })
+
+  it('repariert eine alte Pointer-Ausführung anhand des vorhandenen Recall-/Confidence-Signals', () => {
+    const legacy = makeExecution({
+      executionId: 'legacy:pointer:2',
+      recallQuestionIds: [],
+      recallQuestionVersions: {},
+      recallCardIds: [],
+      sourceSnapshotId: 'legacy',
+      contentManifestVersion: 'legacy',
+    }) as Extract<LearningUnitExecution, { type: 'course' }>
+    const legacyRun = makeRun(legacy, {
+      executionId: null,
+      sourceSnapshotId: 'legacy',
+      contentManifestVersion: 'legacy',
+      questionIds: [],
+      questionVersionById: {},
+      total: 3,
+    })
+
+    const fromRecall = computeCourseStepState({
+      execution: legacy,
+      recallRuns: [legacyRun],
+      reviewedCardIdsSinceStart: new Set(),
+    })
+    expect(fromRecall.recallDone).toBe(true)
+    expect(fromRecall.confidenceDone).toBe(false)
+    expect(fromRecall.currentStep).toBe('recall')
+
+    const fromConfidence = computeCourseStepState({
+      execution: legacy,
+      videoProgress: {
+        profileId: legacy.profileId,
+        evidenceEpoch: legacy.evidenceEpoch,
+        videoIndex: 2,
+        objectiveId: '1.1',
+        confidence: 'solid',
+        confidenceAt: legacy.createdAt + 1,
+        updatedAt: legacy.createdAt + 1,
+      },
+      recallRuns: [],
+      reviewedCardIdsSinceStart: new Set(),
+    })
+    expect(fromConfidence.currentStep).toBe('done')
   })
 })
 

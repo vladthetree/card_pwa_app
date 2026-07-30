@@ -162,6 +162,29 @@ describe('dbBackup', () => {
     expect(payload.data.videoNotes).toEqual([])
   })
 
+  it('sichert kanonische Lernplan-Card-IDs und ihre Reviews unverändert', async () => {
+    const cardId = '1781206500017'
+    mockedDb.state.decks = [
+      createDeck({ id: 'sy0-701-acronyms-bonus', name: 'Acronym-Bonus (ABCD + PBQ)' }),
+    ]
+    mockedDb.state.cards = [
+      createCard({
+        id: cardId,
+        noteId: 'note-ztna',
+        deckId: 'sy0-701-acronyms-bonus',
+        reps: 3,
+      }),
+    ]
+    mockedDb.state.reviews = [
+      { id: 1, cardId, rating: 4, timeMs: 1200, timestamp: 10 },
+    ]
+
+    const payload = await buildDbBackupPayload()
+
+    expect(payload.data.cards[0].id).toBe(cardId)
+    expect(payload.data.reviews[0].cardId).toBe(cardId)
+  })
+
   it('includes profile-scoped video notes in JSON backups', async () => {
     mockedDb.state.decks = [createDeck({ id: 'deck-active' })]
     mockedDb.state.videoNotes = [

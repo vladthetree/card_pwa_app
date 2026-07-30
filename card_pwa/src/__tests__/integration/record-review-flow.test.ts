@@ -74,7 +74,7 @@ vi.mock('../../services/syncQueue', () => ({
   drainTransactionalOutbox: mockedRuntime.drainTransactionalOutbox,
 }))
 
-import { recordReview, undoReview } from '../../db/queries'
+import { computeCanonicalReviewSuccessRate, recordReview, undoReview } from '../../db/queries'
 
 describe('recordReview integration flow', () => {
   beforeEach(() => {
@@ -220,6 +220,35 @@ describe('recordReview integration flow', () => {
       selectedAnswer: 'D: RADIUS',
       correctAnswer: 'D: RADIUS',
       answerCorrect: true,
+    })
+  })
+
+  it('bewertet aus dem Lernplan dieselbe echte Card.id über den normalen Scheduler', async () => {
+    const canonicalCardId = '1781206500017'
+    const initialCard = createNewCard({
+      id: canonicalCardId,
+      deckId: 'sy0-701-acronyms-bonus',
+      type: 0,
+      queue: 0,
+      algorithm: 'fsrs',
+    })
+    mockedRuntime.state.card = initialCard
+
+    const result = await recordReview(canonicalCardId, 4, 1300, 'fsrs', undefined, {
+      selected: 'C: Zero Trust Network Access',
+      correct: 'C: Zero Trust Network Access',
+      wasCorrect: true,
+    })
+
+    expect(result.ok).toBe(true)
+    expect(mockedRuntime.state.card?.id).toBe(canonicalCardId)
+    expect(mockedRuntime.state.card?.deckId).toBe('sy0-701-acronyms-bonus')
+    expect(mockedRuntime.state.card?.reps).toBe(1)
+    expect(mockedRuntime.state.reviews[0].cardId).toBe(canonicalCardId)
+    expect(computeCanonicalReviewSuccessRate(mockedRuntime.state.reviews)).toMatchObject({
+      rate: 100,
+      ratio: 1,
+      total: 1,
     })
   })
 
