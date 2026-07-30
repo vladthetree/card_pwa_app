@@ -174,7 +174,6 @@ export type LearningUnitReason =
   | 'lab_retry'
   | 'weak_domain'
   | 'exam_practice'
-  | 'scheduled_holdout_mock'
   | 'readiness_no_go'
 
 export interface RankedLearningUnit {
@@ -436,11 +435,7 @@ export function rankLearningUnits(input: {
 
       case 'exam':
         // Keine automatische Empfehlung neuer Course-Units.
-        if (definition.type === 'exam') {
-          priority = definition.examLaunch?.purpose === 'readiness' ? 5 : 10
-          reason = definition.examLaunch?.purpose === 'readiness' ? 'scheduled_holdout_mock' : 'exam_practice'
-          recommended = true
-        } else if (definition.type === 'review' && isReviewDue) {
+        if (definition.type === 'review' && isReviewDue) {
           priority = 20
           reason = 'unresolved_error_retest'
           recommended = true
@@ -462,13 +457,6 @@ export function rankLearningUnits(input: {
           priority = 10
           reason = 'unresolved_error_retest'
           recommended = true
-        } else if (definition.type === 'exam' && definition.examLaunch?.mode === 'drill') {
-          priority = 20
-          reason = 'exam_practice'
-          recommended = true
-        } else if (definition.type === 'exam') {
-          priority = 100
-          reason = 'exam_practice'
         } else if (definition.type === 'lab') {
           priority = 500
           reason = 'objective_practice_gap'

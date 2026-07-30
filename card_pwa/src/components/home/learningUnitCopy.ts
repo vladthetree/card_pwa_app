@@ -17,7 +17,6 @@ export const LEARNING_UNIT_COPY = {
       course: 'Video',
       review: 'Wiederholung',
       lab: 'Lab',
-      exam: 'Prüfung',
     },
     progress: (done: number, total: number) => `${done}/${total} bearbeitet`,
     daysLeft: (days: number) => days === 1 ? 'noch 1 Tag' : `noch ${days} Tage`,
@@ -46,7 +45,6 @@ export const LEARNING_UNIT_COPY = {
       recall: 'Nächster Schritt: Abruf-Check beenden und Lernstatus wählen',
       cards: 'Nächster Schritt: ausgewählte Karten bewerten',
       lab: 'Nächster Schritt: Lab vollständig lösen',
-      exam: 'Nächster Schritt: Prüfung abgeben',
       done: 'Alle erforderlichen Schritte erledigt',
     },
     activeCardProgress: (reviewed: number, total: number) =>
@@ -56,7 +54,6 @@ export const LEARNING_UNIT_COPY = {
       course: 'Fertig: Video und Abruf-Check bearbeitet',
       review: 'Wiederholungszyklus fertig · kann erneut fällig werden',
       lab: 'Fertig: Lab vollständig gelöst',
-      exam: 'Fertig: Prüfung abgegeben',
     },
     reason: {
       active_execution: 'Angefangen — fortsetzen',
@@ -68,7 +65,6 @@ export const LEARNING_UNIT_COPY = {
       lab_retry: 'Lab erneut versuchen',
       weak_domain: 'Schwache Domain vertiefen',
       exam_practice: 'Prüfungs-Drill',
-      scheduled_holdout_mock: 'Geplante Vollsimulation',
       readiness_no_go: 'Termin/Plan prüfen',
     } satisfies Record<LearningUnitReason, string>,
     noGo: 'Der Prüfungstermin ist überschritten. Termin oder Plan aktualisieren — bis dahin gibt es keine aktuelle Empfehlung.',
@@ -82,7 +78,6 @@ export const LEARNING_UNIT_COPY = {
       course: 'Video',
       review: 'Review',
       lab: 'Lab',
-      exam: 'Exam',
     },
     progress: (done: number, total: number) => `${done}/${total} worked through`,
     daysLeft: (days: number) => days === 1 ? '1 day left' : `${days} days left`,
@@ -111,7 +106,6 @@ export const LEARNING_UNIT_COPY = {
       recall: 'Next step: finish the recall check and choose a learning status',
       cards: 'Next step: rate the selected cards',
       lab: 'Next step: solve the lab completely',
-      exam: 'Next step: submit the exam',
       done: 'All required steps completed',
     },
     activeCardProgress: (reviewed: number, total: number) =>
@@ -121,7 +115,6 @@ export const LEARNING_UNIT_COPY = {
       course: 'Done: video and recall check completed',
       review: 'Review cycle done · it can become due again',
       lab: 'Done: lab solved completely',
-      exam: 'Done: exam submitted',
     },
     reason: {
       active_execution: 'Started — continue',
@@ -133,7 +126,6 @@ export const LEARNING_UNIT_COPY = {
       lab_retry: 'Retry the lab',
       weak_domain: 'Strengthen a weak domain',
       exam_practice: 'Exam drill',
-      scheduled_holdout_mock: 'Scheduled full mock',
       readiness_no_go: 'Check exam date/plan',
     } satisfies Record<LearningUnitReason, string>,
     noGo: 'The exam date has passed. Update the date or plan — until then there is no current recommendation.',

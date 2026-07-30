@@ -53,7 +53,6 @@ const VIEW_COPY = {
       course: 'Video',
       review: 'Wiederholung',
       lab: 'Lab',
-      exam: 'Prüfung',
     },
     duration: (minutes: number) => `ca. ${minutes} Min.`,
     criteriaOpen: (title: string) => `Abschlusskriterien für ${title} anzeigen`,
@@ -68,7 +67,6 @@ const VIEW_COPY = {
       reviewCards: (reviewed: number, total: number) =>
         total > 0 ? `Alle ausgewählten Karten bewerten (${reviewed}/${total})` : 'Alle ausgewählten Karten bewerten',
       lab: 'Lab vollständig lösen und Ergebnis prüfen',
-      exam: 'Prüfung vollständig abgeben',
     },
     abortReview: 'Wiederholung abbrechen',
     reviewEmpty: 'Nichts zu wiederholen — in diesem Objective sind keine Karten fällig und keine Fehler ungelöst.',
@@ -93,7 +91,6 @@ const VIEW_COPY = {
       course: 'Video',
       review: 'Review',
       lab: 'Lab',
-      exam: 'Exam',
     },
     duration: (minutes: number) => `about ${minutes} min`,
     criteriaOpen: (title: string) => `Show completion criteria for ${title}`,
@@ -108,7 +105,6 @@ const VIEW_COPY = {
       reviewCards: (reviewed: number, total: number) =>
         total > 0 ? `Rate every selected card (${reviewed}/${total})` : 'Rate every selected card',
       lab: 'Solve the lab completely and check the result',
-      exam: 'Submit the complete exam',
     },
     abortReview: 'Abort review',
     reviewEmpty: 'Nothing to review — no cards due and no unresolved errors in this objective.',
@@ -350,10 +346,7 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
         done: completed || (progress !== undefined && progress.reviewed === progress.total),
       }]
     }
-    if (unit.definition.type === 'lab') {
-      return [{ label: copy.criteria.lab, done: completed }]
-    }
-    return [{ label: copy.criteria.exam, done: completed }]
+    return [{ label: copy.criteria.lab, done: completed }]
   }
 
   return (

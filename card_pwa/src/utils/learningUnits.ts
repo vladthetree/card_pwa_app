@@ -9,7 +9,7 @@ import type { LocalVideoMeta } from './localVideoManifest'
 
 // ── Statische Typen (Detailplan §5.1, §7, §9) ───────────────────────────────
 
-export type LearningUnitType = 'course' | 'review' | 'lab' | 'exam'
+export type LearningUnitType = 'course' | 'review' | 'lab'
 export type ActivityStatus = 'notStarted' | 'inProgress' | 'completed'
 export type ObjectiveEvidenceStatus = 'insufficientEvidence' | 'learning' | 'mastered'
 export type ReadinessStatus = 'notReady' | 'approaching' | 'examReady'
@@ -27,23 +27,6 @@ export interface ValidationResult {
   warnings: Array<{ code: string; message: string; contentId?: string }>
 }
 
-export interface ExamLaunchDescriptor {
-  descriptorId: string
-  descriptorVersion: string
-  purpose: 'diagnostic' | 'practice' | 'readiness'
-  mode: 'drill' | 'full'
-  blueprintId: string
-  blueprintVersion: string
-  sourceSnapshotId: string
-  contentManifestVersion: string
-  scoringRegistryVersion: string
-  languagePolicy: { kind: 'fixed'; language: string } | { kind: 'confirmed-exam-language' }
-  itemCount: number
-  durationSec: number
-  eligiblePhaseIds: LearningPhase[]
-  earliestStartAt?: number
-}
-
 export interface LearningUnitDefinition {
   unitId: string
   type: LearningUnitType
@@ -54,7 +37,6 @@ export interface LearningUnitDefinition {
   estimatedMinutes?: number
   videoIndex?: number
   labScenarioId?: string
-  examLaunch?: ExamLaunchDescriptor
   definitionVersion: string
 }
 
@@ -63,7 +45,7 @@ export interface LearningUnitState {
   evidenceEpoch: number
   unitId: string
   activityStatus: ActivityStatus
-  currentStep: 'video' | 'recall' | 'cards' | 'lab' | 'exam' | 'done'
+  currentStep: 'video' | 'recall' | 'cards' | 'lab' | 'done'
   activeExecutionId?: string
   startedAt?: number
   completedAt?: number
@@ -111,16 +93,6 @@ export type LearningUnitExecution =
       createdAt: number
       labAttemptId: string
       scenarioVersion: string
-    }
-  | {
-      executionId: string
-      unitId: string
-      profileId: string
-      evidenceEpoch: number
-      type: 'exam'
-      createdAt: number
-      examAttemptId: string
-      formVersion: string
     }
 
 // ── Content-Map / Crosswalk (Detailplan §5.1, §8.1) ─────────────────────────
@@ -860,26 +832,4 @@ export function buildRequirementCoverage(input: {
     blockingRequirementIds,
     generatedAt: input.now,
   }
-}
-
-export interface ObjectiveLeafCoverage {
-  totalLeafs: number
-  coveredLeafs: number
-}
-
-/** Leaf-Abdeckung je Objective aus dem Coverage-Report — sichtbare Gaps pro
- *  kleinstem prüfbarem Pfad, keine Ressourcensummen (§5.1). */
-export function summarizeLeafCoverageByObjective(input: {
-  requirements: ExamRequirement[]
-  report: CoverageReport
-}): Map<string, ObjectiveLeafCoverage> {
-  const blocking = new Set(input.report.blockingRequirementIds)
-  const byObjective = new Map<string, ObjectiveLeafCoverage>()
-  for (const requirement of input.requirements) {
-    const entry = byObjective.get(requirement.objectiveId) ?? { totalLeafs: 0, coveredLeafs: 0 }
-    entry.totalLeafs += 1
-    if (!blocking.has(requirement.requirementId)) entry.coveredLeafs += 1
-    byObjective.set(requirement.objectiveId, entry)
-  }
-  return byObjective
 }

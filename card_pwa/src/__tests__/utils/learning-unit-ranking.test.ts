@@ -87,15 +87,6 @@ const course2 = unit({ unitId: 'unit:course:002', type: 'course', order: 2 })
 const course3 = unit({ unitId: 'unit:course:003', type: 'course', order: 3 })
 const review11 = unit({ unitId: 'unit:review:1.1', type: 'review', order: 1 })
 const lab1 = unit({ unitId: 'unit:lab:fw-01', type: 'lab', order: 50, objectiveIds: ['4.5'] })
-const drill = unit({
-  unitId: 'unit:exam:drill-1', type: 'exam', order: 90,
-  examLaunch: {
-    descriptorId: 'drill-1', descriptorVersion: 'v1', purpose: 'practice', mode: 'drill',
-    blueprintId: 'bp', blueprintVersion: 'v1', sourceSnapshotId: 's', contentManifestVersion: 'm',
-    scoringRegistryVersion: 'v1', languagePolicy: { kind: 'fixed', language: 'en' },
-    itemCount: 15, durationSec: 900, eligiblePhaseIds: ['exam', 'final'],
-  },
-})
 
 const okPacing: LearningPacingResult = {
   requiredMinutes: 100, availableMinutesAfterBuffer: 500, requiredMinutesPerLearningDay: 30,
@@ -104,7 +95,7 @@ const okPacing: LearningPacingResult = {
 
 function rank(overrides: Partial<Parameters<typeof rankLearningUnits>[0]> = {}) {
   return rankLearningUnits({
-    definitions: [course2, course3, review11, lab1, drill],
+    definitions: [course2, course3, review11, lab1],
     stateByUnitId: new Map<string, LearningUnitState>(),
     phase: 'foundation',
     localLearningDay: '2026-07-15',
@@ -172,20 +163,19 @@ describe('rankLearningUnits', () => {
     expect(ranked[ranked.length - 1]?.definition.unitId).toBe(lab1.unitId)
   })
 
-  it('exam-Phase: Drills vor allem anderen, keine automatische Course-Empfehlung', () => {
+  it('exam-Phase: fällige Wiederholung vor allem anderen, keine automatische Course-Empfehlung', () => {
     const ranked = rank({ phase: 'exam' })
-    expect(ranked[0].definition.unitId).toBe('unit:exam:drill-1')
+    expect(ranked[0].definition.unitId).toBe('unit:review:1.1')
     expect(ranked[0].recommended).toBe(true)
     for (const entry of ranked.filter(r => r.definition.type === 'course')) {
       expect(entry.recommended).toBe(false)
     }
   })
 
-  it('final-Phase: nur kurze Reviews/Drills, keine Course-/Lab-Empfehlung', () => {
+  it('final-Phase: nur kurze Reviews, keine Course-/Lab-Empfehlung', () => {
     const ranked = rank({ phase: 'final' })
     const recommendedIds = ranked.filter(r => r.recommended).map(r => r.definition.unitId)
     expect(recommendedIds).toContain('unit:review:1.1')
-    expect(recommendedIds).toContain('unit:exam:drill-1')
     expect(recommendedIds).not.toContain('unit:course:002')
     expect(recommendedIds).not.toContain('unit:lab:fw-01')
   })
@@ -215,7 +205,7 @@ describe('rankLearningUnits', () => {
 
   it('No-Go-Pacing blockiert Empfehlungen, versteckt aber keine Einheit', () => {
     const ranked = rank({ pacing: { ...okPacing, feasible: false, reason: 'capacity-shortfall' } })
-    expect(ranked).toHaveLength(5)
+    expect(ranked).toHaveLength(4)
     expect(ranked.every(r => r.blocked)).toBe(true)
     expect(ranked.every(r => !r.recommended)).toBe(true)
   })

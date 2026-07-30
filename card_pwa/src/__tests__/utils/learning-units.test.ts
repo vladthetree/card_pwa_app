@@ -18,7 +18,6 @@ import {
   buildReviewSelection,
   formatReviewUnitId,
   selectRecallQuestionIds,
-  summarizeLeafCoverageByObjective,
   validateCourseCatalog,
   type LearningUnitExecution,
   type RequirementCoverage,
@@ -177,7 +176,6 @@ describe('validateCourseCatalog / buildCourseUnits', () => {
       // Dauerschätzung = ffprobe-Videodauer + Draft-Overhead (Pacing-Grundlage).
       expect(unit.estimatedMinutes).toBeGreaterThan(COURSE_UNIT_RECALL_OVERHEAD_MINUTES)
       expect(unit.labScenarioId).toBeUndefined()
-      expect(unit.examLaunch).toBeUndefined()
     }
   })
 
@@ -501,41 +499,6 @@ describe('buildRequirementCoverage', () => {
     expect(SY0701_COVERAGE_SUMMARY.blockingRequirementIds).toEqual(contentQaReport.blockingRequirementIds)
     expect(SY0701_COVERAGE_SUMMARY.missingPracticalRequirementIds).toEqual(contentQaReport.missingPracticalRequirementIds)
     expect(contentQaReport.statusCounts).toMatchObject({ covered: 655, 'practice-missing': 0 })
-  })
-})
-
-describe('summarizeLeafCoverageByObjective', () => {
-  const reqs = SY0701_REQUIREMENTS_MANIFEST.requirements
-
-  it('verteilt alle 655 Leafs auf die 28 Objectives; ohne Einträge ist nichts nachgewiesen', () => {
-    const report = buildRequirementCoverage({ sourceSnapshotId: 'snap', requirements: reqs, criticalErrorDefinitions: [], coverage: [], now: 1 })
-    const summary = summarizeLeafCoverageByObjective({ requirements: reqs, report })
-    expect(summary.size).toBe(28)
-    let total = 0
-    for (const entry of summary.values()) {
-      total += entry.totalLeafs
-      expect(entry.coveredLeafs).toBe(0)
-    }
-    expect(total).toBe(655)
-  })
-
-  it('zählt covered Leafs je Objective, nicht objektivübergreifend', () => {
-    const plain = reqs.filter(r => !r.scenarioRequired && r.criticality !== 'critical')
-    const covered = plain[0]
-    const coverage: RequirementCoverage[] = [{
-      requirementId: covered.requirementId,
-      learningAssetIds: ['video:2'],
-      assessmentItemIds: ['M1-001'],
-      practicalItemIds: [],
-      qaStatus: 'covered',
-      reviewer: 'vlad',
-    }]
-    const report = buildRequirementCoverage({ sourceSnapshotId: 'snap', requirements: reqs, criticalErrorDefinitions: [], coverage, now: 1 })
-    const summary = summarizeLeafCoverageByObjective({ requirements: reqs, report })
-    expect(summary.get(covered.objectiveId)?.coveredLeafs).toBe(1)
-    for (const [objectiveId, entry] of summary) {
-      if (objectiveId !== covered.objectiveId) expect(entry.coveredLeafs).toBe(0)
-    }
   })
 })
 
