@@ -537,7 +537,17 @@ export function useLearningUnits({
       if (computeVersionRef.current !== version) return
       setData(prev => ({ ...prev, loading: false, available: false }))
     }
-  }, [catalog, catalogLoading, profileId, examDateIso, examDateUpdatedAt, todayStartMs, objectiveEvidence])
+  }, [
+    catalog,
+    catalogLoading,
+    profileId,
+    examDateIso,
+    examDateUpdatedAt,
+    todayStartMs,
+    nextDayStartsAt,
+    learnAheadMinutes,
+    objectiveEvidence,
+  ])
 
   useEffect(() => {
     void compute()

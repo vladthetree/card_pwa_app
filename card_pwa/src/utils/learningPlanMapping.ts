@@ -112,17 +112,22 @@ export const LEARNING_PLAN_SUBDECK_SUCCESS_THRESHOLD = 0.9
 
 /**
  * Reiner Lernplanstatus. Der echte Deck-/Kartenstatus bleibt unberührt.
- * Fehlende Karten sperren „Erfüllt“, damit eine unvollständige Installation
- * nicht aufgrund der verbleibenden Reviews fälschlich grün wird.
+ * Fehlende oder noch nie bewertete Karten sperren „Erfüllt“. Eine hohe Quote
+ * aus wenigen Antworten darf ein größeres Sub-Deck nicht fälschlich grün
+ * markieren; deshalb ist vollständige Kartenabdeckung ein eigenes Kriterium.
  */
 export function computeLearningPlanSubDeckStatus(input: {
   ratio: number
   totalAnswers: number
-  missingCardCount?: number
+  installedCardCount: number
+  reviewedCardCount: number
+  missingCardCount: number
 }): LearningPlanSubDeckStatus {
   if (input.totalAnswers <= 0) return 'open'
   if (
-    (input.missingCardCount ?? 0) === 0
+    input.installedCardCount > 0
+    && input.missingCardCount === 0
+    && input.reviewedCardCount >= input.installedCardCount
     && input.ratio >= LEARNING_PLAN_SUBDECK_SUCCESS_THRESHOLD
   ) {
     return 'fulfilled'
@@ -380,6 +385,8 @@ export function buildLearningPlanSubDeckReadModels(input: {
       status: computeLearningPlanSubDeckStatus({
         ratio: successRate.ratio,
         totalAnswers: successRate.total,
+        installedCardCount: deck.installedCardIds.length,
+        reviewedCardCount: deck.reviewedCardIds.length,
         missingCardCount: deck.missingCardIds.length,
       }),
     })

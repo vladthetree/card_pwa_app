@@ -11,6 +11,7 @@ import {
   restoreCardsByOrder,
   matchesPersistedStudyCardLimit,
   normalizeStudyCardLimit,
+  resolveStudyReturnTarget,
 } from '../../services/studySessionPersistence'
 import type { Card, Rating } from '../../types'
 
@@ -154,6 +155,40 @@ describe('study session persistence helpers', () => {
 
   it('builds a namespaced shuffle session id', () => {
     expect(buildShuffleSessionId('collection-1')).toBe('shuffle:collection-1')
+  })
+
+  it('persistiert und rekonstruiert den Rückweg einer Lernplan-Session', () => {
+    const payload = buildPersistedStudySession({
+      deckId: 'learning-plan:subdeck:4.5',
+      cardIds: ['c1'],
+      cardLimit: 50,
+      sessionCount: 0,
+      isFlipped: false,
+      isDone: false,
+      lastRating: null,
+      lowRatingCounts: {},
+      relearnSuccessCounts: {},
+      forcedTomorrowCardIds: [],
+      againCounts: {},
+      returnTarget: 'learning-units',
+      startTime: 100,
+      nowMs: 100,
+    })
+
+    expect(payload.returnTarget).toBe('learning-units')
+    expect(resolveStudyReturnTarget(payload.deckId, payload)).toBe('learning-units')
+  })
+
+  it.each([
+    'unit-exec:execution-1',
+    'learning-plan:acronyms:4.5',
+    'learning-plan:subdeck:4.5',
+  ])('erhält für alte namespacete Session %s den Lernplan-Rückweg', sessionId => {
+    expect(resolveStudyReturnTarget(sessionId, {})).toBe('learning-units')
+  })
+
+  it('ordnet normale Deck-Sessions weiterhin Home zu', () => {
+    expect(resolveStudyReturnTarget('deck-1', {})).toBeNull()
   })
 
   it('extends expiry to the next study-day boundary when nextDayStartsAt is given', () => {

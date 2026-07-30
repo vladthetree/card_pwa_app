@@ -361,7 +361,13 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
                 transition={{ duration: prefersReducedMotion ? 0.16 : 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0 h-full study-view"
               >
-                <StudyView deck={nav.activeDeck} preloadedCards={nav.activeTagCards ?? undefined} allowResume={nav.allowSessionResume} onExit={nav.exitStudy} />
+                <StudyView
+                  deck={nav.activeDeck}
+                  preloadedCards={nav.activeTagCards ?? undefined}
+                  allowResume={nav.allowSessionResume}
+                  returnTarget={nav.studyReturnToUnits ? 'learning-units' : undefined}
+                  onExit={nav.exitStudy}
+                />
               </motion.div>
             )}
 

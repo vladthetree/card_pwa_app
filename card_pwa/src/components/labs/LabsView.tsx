@@ -12,6 +12,7 @@ import LabScenarioView from './LabScenarioView'
 import { useSettings } from '../../contexts/SettingsContext'
 import { profileScopeId } from '../../services/profileService'
 import { recordLabCheck, saveLabProgress, startOrResumeLabUnit } from '../../services/learningUnitRunner'
+import { readFrozenLabScenario } from '../../utils/labSnapshot'
 
 /**
  * Labs — Liste "Interaktive Sicherheits-Szenarien", rekonstruiert aus dem
@@ -62,6 +63,7 @@ export default function LabsView({ language, onExit, initialScenarioId, onBackFr
     scenarioId: string
     attemptId: string
     answerByStepId: Record<string, unknown>
+    scenario: LabScenario
   } | null>(null)
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
 
@@ -121,6 +123,7 @@ export default function LabsView({ language, onExit, initialScenarioId, onBackFr
         scenarioId: activeScenario.id,
         attemptId: launch.attempt.attemptId,
         answerByStepId: launch.attempt.answerByStepId,
+        scenario: readFrozenLabScenario(launch.attempt.scenarioSnapshot) ?? activeScenario,
       })
     }).catch(error => console.error('[LabsView] Lab-Unit-Start fehlgeschlagen', error))
     return () => { cancelled = true }
@@ -178,11 +181,14 @@ export default function LabsView({ language, onExit, initialScenarioId, onBackFr
   }
 
   if (activeScenario) {
+    const renderedScenario = activeAttempt?.scenarioId === activeScenario.id
+      ? activeAttempt.scenario
+      : activeScenario
     return (
       <LabScenarioView
         key={`${activeScenario.id}:${activeAttempt?.attemptId ?? 'loading'}`}
         language={language}
-        scenario={activeScenario}
+        scenario={renderedScenario}
         initialAnswerByStepId={
           activeAttempt?.scenarioId === activeScenario.id ? activeAttempt.answerByStepId : undefined
         }

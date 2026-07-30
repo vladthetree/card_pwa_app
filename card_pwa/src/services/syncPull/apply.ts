@@ -26,6 +26,7 @@ import { EXAM_DATE_SYNCED_EVENT, STORAGE_KEYS } from '../../constants/appIdentit
 import { normalizeExamDateIso, normalizeExamDateUpdatedAt } from '../../contexts/SettingsContext'
 import { getLearnerExamPlan, saveDraftLearnerExamPlan } from '../../db/queries/learningUnits'
 import { hasShuffleCollectionsTable } from './shared'
+import { isSupportedExamLanguage } from '../../utils/learningPlan'
 
 export interface PulledOperation {
   id: number
@@ -358,11 +359,33 @@ async function applyExamDateUpsert(payload: unknown) {
     || (existingPlan && existingPlan.updatedAt > updatedAt)
   ) return
 
+  const incomingExamLanguage = isSupportedExamLanguage(value.examLanguage)
+    ? value.examLanguage
+    : undefined
+  const incomingWeeklyMinutes = Number(value.weeklyMinutesAvailable)
+  const incomingLearningDays = Number(value.learningDaysPerWeek)
+  const incomingBufferDays = Number(value.bufferDays)
+  const incomingUiLanguage = value.uiLanguage === 'en' || value.uiLanguage === 'de'
+    ? value.uiLanguage
+    : undefined
+
   await saveDraftLearnerExamPlan({
     profileId,
     now: updatedAt,
     examDateIso,
-    uiLanguage: existingPlan?.uiLanguage ?? (stored.language === 'en' ? 'en' : 'de'),
+    uiLanguage: incomingUiLanguage
+      ?? existingPlan?.uiLanguage
+      ?? (stored.language === 'en' ? 'en' : 'de'),
+    ...(incomingExamLanguage !== undefined ? { examLanguage: incomingExamLanguage } : {}),
+    ...(Number.isInteger(incomingWeeklyMinutes) && incomingWeeklyMinutes >= 30 && incomingWeeklyMinutes <= 4_800
+      ? { weeklyMinutesAvailable: incomingWeeklyMinutes }
+      : {}),
+    ...(Number.isInteger(incomingLearningDays) && incomingLearningDays >= 1 && incomingLearningDays <= 7
+      ? { learningDaysPerWeek: incomingLearningDays }
+      : {}),
+    ...(Number.isInteger(incomingBufferDays) && incomingBufferDays >= 0 && incomingBufferDays <= 60
+      ? { bufferDays: incomingBufferDays }
+      : {}),
   })
 
   localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify({

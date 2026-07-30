@@ -75,6 +75,12 @@ export interface LabScenarioSnapshot {
   scenarioId: string
   /** Content-Hash über den normalisierten Snapshot-Kern. */
   scenarioVersion: string
+  /**
+   * Vollständige renderbare Kopie. `steps` und `rubric` bleiben zusätzlich als
+   * normalisierte Bewertungsstruktur erhalten. Ältere Snapshots dürfen dieses
+   * Feld noch nicht besitzen und werden von der UI kontrolliert migriert.
+   */
+  scenario: LabScenario
   title: string
   objectiveLabel: string
   difficulty: LabScenario['difficulty']
@@ -161,6 +167,10 @@ function snapshotStep(input: {
  * Szenarien bleiben ein Schritt; Workflow-Capstones frieren jeden fachlichen
  * Schritt mit eigener Rubrik und stabiler ID ein. */
 export function buildLabScenarioSnapshot(scenario: LabScenario): LabScenarioSnapshot {
+  // LabScenario besteht ausschließlich aus JSON-kompatiblen Inhaltsdaten.
+  // Die Kopie verhindert, dass spätere Mutationen der Registry den laufenden
+  // Versuch oder dessen Hash unbemerkt verändern.
+  const frozenScenario = JSON.parse(JSON.stringify(scenario)) as LabScenario
   const normalized = scenario.interaction.type === 'workflow'
     ? scenario.interaction.steps.map(workflowStep => snapshotStep({
         stepId: workflowStep.stepId,
@@ -175,6 +185,7 @@ export function buildLabScenarioSnapshot(scenario: LabScenario): LabScenarioSnap
 
   const core = {
     scenarioId: scenario.id,
+    scenario: frozenScenario,
     title: scenario.title,
     objectiveLabel: scenario.objective,
     difficulty: scenario.difficulty,
@@ -183,6 +194,19 @@ export function buildLabScenarioSnapshot(scenario: LabScenario): LabScenarioSnap
     rubric: normalized.map(entry => entry.criterion),
   }
   return { ...core, scenarioVersion: `v-${fnv1a32(JSON.stringify(core)).toString(16)}` }
+}
+
+/** Liefert nur einen vollständig renderbaren, zum Versuch passenden Snapshot.
+ * Alte Datensätze ohne `scenario` fallen bewusst auf die Registry zurück. */
+export function readFrozenLabScenario(snapshot: unknown): LabScenario | null {
+  if (!snapshot || typeof snapshot !== 'object') return null
+  const value = snapshot as Partial<LabScenarioSnapshot>
+  const scenario = value.scenario
+  if (!scenario || typeof scenario !== 'object') return null
+  if (typeof scenario.id !== 'string' || scenario.id !== value.scenarioId) return null
+  if (typeof scenario.title !== 'string' || typeof scenario.objective !== 'string') return null
+  if (!scenario.interaction || typeof scenario.interaction !== 'object') return null
+  return scenario
 }
 
 export interface LabCriterionResult {

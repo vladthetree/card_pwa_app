@@ -21,6 +21,8 @@ import { STORAGE_KEYS } from '../../constants/appIdentity'
 import { useSettings } from '../../contexts/SettingsContext'
 import { readTodayPackagePointer } from '../../utils/todayPackage'
 import { getAppStoreState, useAppStore } from '../../state/appStore'
+import { resolveStudyReturnTarget } from '../../services/studySessionPersistence'
+import { getSecurityObjectiveDeckName } from '../../utils/securityDeckHierarchy'
 
 /** Import-Anforderung an Home: token erzwingt den Effekt auch bei erneutem
  *  Öffnen, file kommt aus dem launchQueue-File-Handler (sonst null). */
@@ -77,6 +79,9 @@ async function resolveSessionDeckName(sessionId: string): Promise<string> {
     return match ? `Lerneinheit ${match[1]}` : 'Lerneinheit'
   }
   if (sessionId.startsWith('learning-plan:acronyms:')) return 'Acronym-Karten'
+  if (sessionId.startsWith('learning-plan:subdeck:')) {
+    return getSecurityObjectiveDeckName(sessionId.slice('learning-plan:subdeck:'.length))
+  }
   const names = await getDeckNameMap()
   return names[sessionId] ?? 'Deck'
 }
@@ -87,6 +92,7 @@ export function useAppNavigation(input: { showInitialSplash: boolean }): {
   activeTagCards: Card[] | null
   activeShuffleCollection: ShuffleCollection | null
   allowSessionResume: boolean
+  studyReturnToUnits: boolean
   resumeInfo: { deckName: string; remaining: number } | null
   importRequest: HomeImportRequest | null
   videosInitialTarget: { videoIndex: number; openRecall: boolean } | null
@@ -189,12 +195,12 @@ export function useAppNavigation(input: { showInitialSplash: boolean }): {
     fixedCardIds?: string[],
     options?: { sessionId?: string; allowResume?: boolean; returnToUnits?: boolean },
   ) => {
-    setStudyReturnToUnits(options?.returnToUnits ?? false)
     if (fixedCardIds !== undefined) {
       // Jeder kanonische Card.id darf pro Session nur einmal vorkommen, auch
       // wenn mehrere Lernplan-Referenzen dieselbe echte Karte beisteuern.
       const packageCards = await listCardsByIds([...new Set(fixedCardIds)])
       if (packageCards.length === 0) return
+      setStudyReturnToUnits(options?.returnToUnits ?? false)
       // Lerneinheiten übergeben eine eigene Session-ID (`unit-exec:{executionId}`):
       // so kollidieren parallele Units desselben Objectives weder untereinander
       // noch mit der Heute-Paket-Session, und die Session ist wiederaufnehmbar.
@@ -206,6 +212,7 @@ export function useAppNavigation(input: { showInitialSplash: boolean }): {
       return
     }
 
+    setStudyReturnToUnits(options?.returnToUnits ?? false)
     setAllowSessionResume(true)
     setActiveDeck(deck)
     setActiveTagCards(null)
@@ -255,7 +262,9 @@ export function useAppNavigation(input: { showInitialSplash: boolean }): {
       return false
     }
     const deckName = await resolveSessionDeckName(resumable.sessionId)
-    setStudyReturnToUnits(false)
+    setStudyReturnToUnits(
+      resolveStudyReturnTarget(resumable.sessionId, resumable.snapshot) === 'learning-units',
+    )
     setAllowSessionResume(true)
     setActiveDeck(buildSyntheticDeck(resumable.sessionId, deckName, cards))
     setActiveTagCards(cards)
@@ -383,6 +392,7 @@ export function useAppNavigation(input: { showInitialSplash: boolean }): {
     activeTagCards,
     activeShuffleCollection,
     allowSessionResume,
+    studyReturnToUnits,
     resumeInfo,
     importRequest,
     videosInitialTarget,

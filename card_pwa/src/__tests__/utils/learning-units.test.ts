@@ -3,7 +3,7 @@ import type { Card } from '../../types'
 import type { LocalVideoMeta } from '../../utils/localVideoManifest'
 import {
   COURSE_UNIT_COUNT,
-  COURSE_UNIT_PRACTICE_OVERHEAD_MINUTES,
+  COURSE_UNIT_RECALL_OVERHEAD_MINUTES,
   SY0701_OBJECTIVE_IDS,
   buildCourseUnits,
   buildRequirementCoverage,
@@ -17,7 +17,6 @@ import {
   buildReviewUnits,
   buildReviewSelection,
   formatReviewUnitId,
-  selectCourseCardIds,
   selectRecallQuestionIds,
   summarizeLeafCoverageByObjective,
   validateCourseCatalog,
@@ -176,7 +175,7 @@ describe('validateCourseCatalog / buildCourseUnits', () => {
       expect(unit.type).toBe('course')
       expect(unit.videoIndex).toBe(unit.order)
       // Dauerschätzung = ffprobe-Videodauer + Draft-Overhead (Pacing-Grundlage).
-      expect(unit.estimatedMinutes).toBeGreaterThan(COURSE_UNIT_PRACTICE_OVERHEAD_MINUTES)
+      expect(unit.estimatedMinutes).toBeGreaterThan(COURSE_UNIT_RECALL_OVERHEAD_MINUTES)
       expect(unit.labScenarioId).toBeUndefined()
       expect(unit.examLaunch).toBeUndefined()
     }
@@ -259,37 +258,6 @@ describe('selectRecallQuestionIds', () => {
   })
 })
 
-describe('selectCourseCardIds', () => {
-  const base = { now: 1_000_000, nextDayStartsAt: 0, learnAheadMinutes: 20, algorithm: 'fsrs' as const, runSeed: 'seed-1' }
-  const cards = [
-    makeCard('due-1', { type: 'review', dueAt: 500_000, reps: 3 }),
-    makeCard('new-1'),
-    makeCard('new-2'),
-    makeCard('recall-1'),
-    makeCard('excluded-1'),
-  ]
-
-  it('schließt Recall-Karten derselben Sitzung und fremde Ausführungen aus; 0 = alle verbleibenden', () => {
-    const ids = selectCourseCardIds({
-      candidateCards: cards,
-      excludedCardIds: new Set(['excluded-1']),
-      selectedRecallCardIds: new Set(['recall-1']),
-      cardLimit: 0,
-      ...base,
-    })
-    expect(ids).toHaveLength(3)
-    expect(ids).not.toContain('recall-1')
-    expect(ids).not.toContain('excluded-1')
-    expect(ids[0]).toBe('due-1') // fällige vor neuen Karten (bestehende Paket-Eligibility)
-  })
-
-  it('respektiert das Limit und ist deterministisch unter demselben Seed', () => {
-    const run = () => selectCourseCardIds({ candidateCards: cards, excludedCardIds: new Set(), selectedRecallCardIds: new Set(), cardLimit: 2, ...base })
-    expect(run()).toEqual(run())
-    expect(run()).toHaveLength(2)
-  })
-})
-
 // ── Eingefrorene Ausführung ─────────────────────────────────────────────────
 
 describe('createCourseExecution', () => {
@@ -357,7 +325,7 @@ describe('computeCourseStepState', () => {
     expect(computeCourseStepState({ execution, videoProgress: watched, recallRuns: [], reviewedCardIdsSinceStart: new Set() }).videoDone).toBe(true)
   })
 
-  it('akzeptiert einen vollständig beendeten Recall derselben Execution trotz älterer Frage-/Manifest-Metadaten', () => {
+  it('akzeptiert nur den vollständigen eingefrorenen Recall derselben Execution', () => {
     const run = makeRun(execution)
     const state = (runs: VideoRecallRun[]) =>
       computeCourseStepState({ execution, recallRuns: runs, reviewedCardIdsSinceStart: new Set() })
@@ -374,8 +342,10 @@ describe('computeCourseStepState', () => {
     expect(state([makeRun(execution, { executionId: null })]).recallDone).toBe(false)
     expect(state([makeRun(execution, { executionId: 'andere-exec' })]).recallDone).toBe(false)
     expect(state([makeRun(execution, { completedAt: execution.createdAt - 1 })]).recallDone).toBe(false)
-    expect(state([makeRun(execution, { questionIds: ['M1-001'] })]).recallDone).toBe(true)
-    expect(state([makeRun(execution, { questionVersionById: { 'M1-001': 'v9', 'T002-01': 'v1' } })]).recallDone).toBe(true)
+    expect(state([makeRun(execution, { questionIds: ['M1-001'], total: 1 })]).recallDone).toBe(false)
+    expect(state([makeRun(execution, { questionIds: [...execution.recallQuestionIds].reverse() })]).recallDone).toBe(false)
+    expect(state([makeRun(execution, { questionVersionById: { 'M1-001': 'v9', 'T002-01': 'v1' } })]).recallDone).toBe(false)
+    expect(state([makeRun(execution, { total: 1 })]).recallDone).toBe(false)
     expect(state([makeRun(execution, { contentManifestVersion: 'anderes-manifest' })]).recallDone).toBe(true)
   })
 

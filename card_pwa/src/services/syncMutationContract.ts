@@ -232,13 +232,16 @@ export const SYNC_MUTATION_CONTRACT = {
     ],
   },
   'examDate.upsert': {
-    localMutation: 'Update the profile-scoped exam date setting.',
+    localMutation: 'Update the complete profile-scoped learning plan, including its exam date.',
     requiresTransactionalOutbox: false,
     queueSource: 'direct-queue',
-    queueProducer: ['contexts/SettingsContext.tsx:setExamDate'],
+    queueProducer: [
+      'contexts/SettingsContext.tsx:setExamDate',
+      'components/settings/SettingsLearningSection.tsx:handleSavePlan',
+    ],
     serverOperation: 'POST /sync',
     pullEffect: 'settings-upsert',
-    idempotency: 'Exam date update carries updatedAt and refreshes local settings state.',
+    idempotency: 'Learning-plan update carries updatedAt; pull applies profile-scoped last-write-wins.',
     scopeRule: 'global',
     tests: [
       'src/__tests__/services/sync-mutation-contract.test.ts',

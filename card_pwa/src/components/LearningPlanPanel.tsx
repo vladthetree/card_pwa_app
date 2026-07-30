@@ -14,9 +14,14 @@ import { useVisualViewport } from '../hooks/useVisualViewport'
 import type { LearningPacingResult } from '../utils/learningUnitRanking'
 import type { LearningPlanMappingSummary } from '../utils/learningPlanMapping'
 import { isValidExamDateIso } from '../utils/examDate'
+import {
+  SUPPORTED_EXAM_LANGUAGES,
+  isSupportedExamLanguage,
+  type ExamLanguage,
+} from '../utils/learningPlan'
 
-export const EXAM_LANGUAGES = ['en', 'ja', 'pt', 'es', 'th'] as const
-export type ExamLanguage = (typeof EXAM_LANGUAGES)[number]
+export const EXAM_LANGUAGES = SUPPORTED_EXAM_LANGUAGES
+export type { ExamLanguage }
 
 export interface LearningPlanFormValues {
   examDateIso: string
@@ -45,7 +50,7 @@ export function buildLearningPlanFormValues(input: {
 }): LearningPlanFormValues {
   return {
     examDateIso: input.examDateIso ?? '',
-    examLanguage: EXAM_LANGUAGES.includes(input.examLanguage as ExamLanguage) ? input.examLanguage! : 'en',
+    examLanguage: isSupportedExamLanguage(input.examLanguage) ? input.examLanguage : 'en',
     weeklyHours: String((input.weeklyMinutesAvailable ?? 300) / 60),
     learningDays: String(input.learningDaysPerWeek ?? 6),
     bufferDays: String(input.bufferDays ?? 7),
@@ -61,7 +66,7 @@ export function normalizeLearningPlanFormValues(values: LearningPlanFormValues):
   const learningDays = Number(values.learningDays)
   const bufferDays = Number(values.bufferDays)
   const dateValid = values.examDateIso === '' || isValidExamDateIso(values.examDateIso)
-  const languageValid = EXAM_LANGUAGES.includes(values.examLanguage as ExamLanguage)
+  const languageValid = isSupportedExamLanguage(values.examLanguage)
   if (
     !dateValid || !languageValid ||
     !Number.isFinite(weeklyHours) || weeklyHours < 0.5 || weeklyHours > 80 ||
@@ -90,6 +95,7 @@ const COPY = {
     examDatePreset: (days: number) => `+${days} Tage`,
     noExamDate: 'Noch kein Prüfungstermin',
     language: 'Prüfungssprache',
+    languageScope: 'Planungsangabe: Lernvideos und Karten bleiben in ihrer vorhandenen Inhaltssprache.',
     weeklyHours: 'Stunden pro Woche',
     learningDays: 'Lerntage pro Woche',
     bufferDays: 'Puffertage',
@@ -155,6 +161,7 @@ const COPY = {
     examDatePreset: (days: number) => `+${days} days`,
     noExamDate: 'No exam date yet',
     language: 'Exam language',
+    languageScope: 'Planning metadata: videos and cards remain in their available content language.',
     weeklyHours: 'Hours per week',
     learningDays: 'Study days per week',
     bufferDays: 'Buffer days',
@@ -632,6 +639,9 @@ export function LearningPlanPanel({
                 </button>
               )
             })}
+            <p className="mt-1 font-mono text-[10px] leading-relaxed text-ds-muted">
+              {copy.languageScope}
+            </p>
           </div>
         )}
 
@@ -952,6 +962,7 @@ export function LearningPlanPanel({
                         <option key={code} value={code}>{LANGUAGE_LABELS[code][language]} ({code.toUpperCase()})</option>
                       ))}
                     </select>
+                    <span className="text-[10px] leading-relaxed">{copy.languageScope}</span>
                   </label>
                   <label className="col-span-2 grid gap-1.5 font-mono text-[11px] text-ds-muted sm:col-span-2">
                     {copy.weeklyHours}

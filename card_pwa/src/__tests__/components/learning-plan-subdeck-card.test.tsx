@@ -24,7 +24,7 @@ function subDeck(
     unitIds: ['unit:course:080'],
     cardIds: ['c1', 'c2'],
     installedCardIds: ['c1', 'c2'],
-    reviewedCardIds: ['c1'],
+    reviewedCardIds: ['c1', 'c2'],
     missingCardIds: [],
     physicalDeckIds: ['sy0-701-objective-4-5'],
     successRate: { rate: 90, ratio: 0.9, successful: 9, total: 10 },
@@ -46,8 +46,9 @@ describe('LearningPlanSubDeckCard', () => {
     expect(html).toContain('bg-[#86EFAC]')
     expect(html).toContain('Sub-Deck')
     expect(html).toContain('90 % Erfolgsrate · 10 Bewertungen')
+    expect(html).toContain('2/2 Karten bewertet')
     expect(html).toContain('Erfüllt')
-    expect(html).toContain('Im Lernplan erfüllt ab 90 % Erfolgsrate')
+    expect(html).toContain('Erfüllt: alle Karten bewertet und mindestens 90 % Erfolgsrate')
     expect(html).toContain('aria-label="Sub-Deck 4.5 Enterprise Security öffnen"')
     expect(html).not.toContain('Echtes Subdeck lernen')
   })
@@ -95,7 +96,7 @@ describe('LearningPlanSubDeckCard', () => {
 
     expect(html).toContain('role="dialog"')
     expect(html).toContain('aria-modal="true"')
-    expect(html).toContain('Mindestens 90 % kanonische Erfolgsrate')
+    expect(html).toContain('Jede installierte Karte mindestens einmal bewertet')
     expect(html).toContain('90 % Erfolgsrate · 10 Bewertungen')
     expect(html).toContain('Der Wert stammt aus allen Reviews der echten Karten-IDs')
     expect(html).toContain('Erfüllt')

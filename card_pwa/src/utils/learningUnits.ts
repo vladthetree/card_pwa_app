@@ -6,7 +6,6 @@
  */
 import type { Card } from '../types'
 import type { LocalVideoMeta } from './localVideoManifest'
-import { buildTodayPackageSelection } from './studyCardOrdering'
 
 // ── Statische Typen (Detailplan §5.1, §7, §9) ───────────────────────────────
 
@@ -250,6 +249,23 @@ export function computeRecallRunVerdict(correct: number, total: number): VideoRe
   return 'review'
 }
 
+type CourseExecution = Extract<LearningUnitExecution, { type: 'course' }>
+
+/** Prüft die unveränderliche Fragenauswahl einer Course-Ausführung. Reihenfolge
+ * ist Teil des sichtbaren Checks; Duplikate, Teilmengen und andere Versionen
+ * dürfen die Ausführung nicht abschließen. */
+export function matchesFrozenCourseRecallSelection(
+  execution: CourseExecution,
+  input: Pick<VideoRecallRun, 'questionIds' | 'questionVersionById' | 'total'>,
+): boolean {
+  if (input.total !== execution.recallQuestionIds.length) return false
+  if (input.questionIds.length !== execution.recallQuestionIds.length) return false
+  return execution.recallQuestionIds.every((questionId, index) => (
+    input.questionIds[index] === questionId
+    && input.questionVersionById[questionId] === execution.recallQuestionVersions[questionId]
+  ))
+}
+
 // ── Konstanten ──────────────────────────────────────────────────────────────
 
 export const SY0701_OBJECTIVE_IDS: readonly string[] = [
@@ -484,12 +500,12 @@ export function buildCourseUnits(input: {
     })
 }
 
-/** Kalibrierbarer Draft-Aufschlag je Course-Unit für Abruf-Check + Karten-Dosis
- *  (Minuten); die Videodauer kommt exakt aus dem Source-Snapshot. */
-export const COURSE_UNIT_PRACTICE_OVERHEAD_MINUTES = 10
+/** Zeitaufschlag je Course-Unit für Abruf-Check und Selbsteinschätzung.
+ * Kartenwiederholungen werden ausschließlich in Review-Units budgetiert. */
+export const COURSE_UNIT_RECALL_OVERHEAD_MINUTES = 10
 
 export function computeCourseUnitEstimatedMinutes(durationSec: number): number {
-  return Math.ceil(durationSec / 60) + COURSE_UNIT_PRACTICE_OVERHEAD_MINUTES
+  return Math.ceil(durationSec / 60) + COURSE_UNIT_RECALL_OVERHEAD_MINUTES
 }
 
 // ── Video↔Karten-Index (Vertrag §23.2, Regel §8.1) ─────────────────────────
@@ -573,36 +589,6 @@ export function selectRecallQuestionIds(input: {
   return { selectedQuestionIds, selectedRecallCardIds }
 }
 
-/** Kartenauswahl des Karten-Schritts. Nutzt exakt die Eligibility der
- *  bestehenden Paketauswahl (buildTodayPackageSelection) und schließt aktive
- *  fremde Ausführungen, Holdouts und die Recall-Karten derselben Sitzung aus.
- *  `cardLimit = 0` übernimmt alle verbleibenden Kandidaten. */
-export function selectCourseCardIds(input: {
-  candidateCards: readonly Card[]
-  excludedCardIds: ReadonlySet<string>
-  selectedRecallCardIds: ReadonlySet<string>
-  cardLimit: number
-  now: number
-  nextDayStartsAt: number
-  learnAheadMinutes: number
-  algorithm: 'fsrs' | 'sm2'
-  runSeed: string
-}): string[] {
-  const candidates = input.candidateCards.filter(
-    card => !input.excludedCardIds.has(card.id) && !input.selectedRecallCardIds.has(card.id),
-  )
-  // `algorithm` dient der Vertragsparität mit der Study-Session; die
-  // schedulerspezifische Fälligkeit steckt bereits in den Kartenfeldern,
-  // die buildTodayPackageSelection/sortStudyCards auswerten.
-  void input.algorithm
-  return buildTodayPackageSelection(candidates as Card[], input.cardLimit, {
-    nowMs: input.now,
-    nextDayStartsAt: input.nextDayStartsAt,
-    learnAheadMinutes: input.learnAheadMinutes,
-    runSeed: input.runSeed,
-  }).map(card => card.id)
-}
-
 // ── Eingefrorene Kursausführung (Vertrag §23.2) ─────────────────────────────
 
 export function createCourseExecution(input: {
@@ -671,11 +657,9 @@ export function createCourseExecution(input: {
 
 // ── Schrittstatus (Vertrag §23.2, Gating §8.2) ──────────────────────────────
 
-/** Recall zählt nur von einem abgeschlossenen Run derselben Execution nach
- *  deren Start. Die Execution-Bindung wird erst nach dem vollständig sichtbaren
- *  Check geschrieben; deshalb ist sie das stabile Abschlusskriterium. Alte
- *  Frage-Sets oder inzwischen aktualisierte Manifest-Metadaten dürfen einen
- *  tatsächlich beendeten Lauf nicht nachträglich blockieren. */
+/** Recall zählt nur von einem vollständigen Lauf derselben Execution nach
+ * deren Start. Frage-IDs und -Versionen müssen exakt der eingefrorenen,
+ * tatsächlich gerenderten Auswahl entsprechen. */
 export function computeCourseStepState(input: {
   execution: LearningUnitExecution
   videoProgress?: VideoProgressRecord
@@ -686,7 +670,7 @@ export function computeCourseStepState(input: {
   recallDone: boolean
   confidenceDone: boolean
   cardsDone: boolean
-  currentStep: 'video' | 'recall' | 'cards' | 'done'
+  currentStep: 'video' | 'recall' | 'done'
 } {
   const execution = input.execution
   if (execution.type !== 'course') {
@@ -716,7 +700,7 @@ export function computeCourseStepState(input: {
       if (run.executionId !== execution.executionId) return false
       if (run.profileId !== execution.profileId) return false
       if (run.completedAt < execution.createdAt) return false
-      return run.total > 0
+      return matchesFrozenCourseRecallSelection(execution, run)
     })
   const videoDone =
     (

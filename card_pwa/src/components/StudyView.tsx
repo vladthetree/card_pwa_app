@@ -20,6 +20,7 @@ import {
   DEFAULT_STUDY_CARD_LIMIT,
   normalizeStudyCardLimit,
   type PersistedStudySession,
+  type StudyReturnTarget,
 } from '../services/studySessionPersistence'
 import {
   sessionReducer,
@@ -53,6 +54,8 @@ interface Props {
    *  Explizite Neustarts (frische Quest, Tag-Session, Abruf-Check-Handoff)
    *  lassen das aus und starten sauber. */
   allowResume?: boolean
+  /** Persistiertes Rücksprungziel für Sessions aus dem Lernplan. */
+  returnTarget?: StudyReturnTarget
   /** Callback when user exits study session */
   onExit: () => void
 }
@@ -90,7 +93,7 @@ function ErrorAlert({ message, onRetry }: { message: string; onRetry: () => void
  * StudyView: Main study session component
  * Nutzt studyCardOrdering (Sortierung/Gewichtung) und studySessionReducer für State-Management
  */
-export default function StudyView({ deck, preloadedCards, allowResume = false, onExit }: Props) {
+export default function StudyView({ deck, preloadedCards, allowResume = false, returnTarget, onExit }: Props) {
   const { cards: deckCards, loading: deckLoading, error: deckError, reload } = useDeckCards(preloadedCards ? null : deck.id)
   const cards = preloadedCards ?? deckCards
   const loading = preloadedCards ? false : deckLoading
@@ -293,6 +296,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
       hardPracticeCardIds: session.hardPracticeCardIds,
       hardPracticePassCounts: session.hardPracticePassCounts,
       reviewEvents: session.reviewEvents,
+      returnTarget,
       startTime: session.startTime,
       nextDayStartsAt: settings.nextDayStartsAt,
     })
@@ -311,6 +315,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, o
     session.hardPracticeCardIds,
     session.hardPracticePassCounts,
     session.reviewEvents,
+    returnTarget,
     session.startTime,
     deck.id,
     studyCardLimit,

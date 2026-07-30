@@ -1,10 +1,10 @@
 /**
- * AI_CONTEXT: Vollbild-Ansicht des dedizierten SY0-701-Lerneinheiten-Systems
- * (Nutzerentscheidung 2026-07-18: eigener Screen, das Dashboard trägt nur die
- * Referenz-Kachel). Zeigt den Lernpfad gruppiert nach Domain → Objective,
+ * AI_CONTEXT: Home-Modus des dedizierten SY0-701-Lerneinheiten-Systems
+ * (optional weiterhin eigenständig renderbar). Zeigt den Lernpfad gruppiert
+ * nach Domain → Objective,
  * ohne vorläufige Evidenz-/Reifeanzeigen oder einen redundanten Videocounter.
  * Startet Units exakt:
- * Course → Video/Recall/Karten, Review → eingefrorene Karten-Session.
+ * Course → Video/Recall/Selbsteinschätzung, Review → eingefrorene Karten-Session.
  */
 import { useEffect, useState } from 'react'
 import { ArrowLeft, CheckCircle2, ChevronDown, Circle, Info, Route, X } from 'lucide-react'
@@ -168,7 +168,7 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
       {
         // Dasselbe Session-Ziel wie das echte Deck; die Karten selbst werden
         // weiterhin über ihre kanonischen IDs geladen und bewertet.
-        sessionId: deck.deckId,
+        sessionId: `learning-plan:subdeck:${deck.objectiveId}`,
         allowResume: true,
         returnToUnits: true,
       },
@@ -257,32 +257,10 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
         profileId,
         definition,
         settings: {
-          packageCardLimit: settings.newCardsPerDay,
-          nextDayStartsAt: settings.nextDayStartsAt,
-          learnAheadMinutes: settings.learnAheadMinutes,
           recallCheckSize: settings.recallCheckSize,
-          algorithm: settings.algorithm,
         },
       })
       learningUnits.reload()
-      if (launch.step === 'cards' && launch.remainingCardIds.length > 0) {
-        const objectiveId = definition.objectiveIds[0]
-        onStartStudy(
-          {
-            id: getSecurityObjectiveDeckId(objectiveId),
-            name: getSecurityObjectiveDeckName(objectiveId),
-            total: launch.remainingCardIds.length,
-            new: 0,
-            learning: 0,
-            due: 0,
-          },
-          launch.remainingCardIds,
-          // Session per Execution persistieren (§16): parallele Units bleiben
-          // getrennt und eine unterbrochene Karten-Session ist wiederaufnehmbar.
-          { sessionId: `unit-exec:${launch.execution.executionId}`, allowResume: true, returnToUnits: true },
-        )
-        return
-      }
       onOpenVideoAtIndex(videoIndex, launch.step === 'recall')
     } catch (error) {
       // Startfehler darf die Navigation nicht blockieren — Video read-only öffnen.

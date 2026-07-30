@@ -116,7 +116,6 @@ describe('startOrResumeCourseUnit', () => {
     for (const questionId of execution.recallQuestionIds) {
       expect(CONTENT.recallQuestionIds).toContain(questionId)
     }
-    expect(launch.remainingCardIds).toEqual([])
     expect((await getActiveCourseExecutionForVideo(PROFILE, VIDEO_INDEX))?.executionId).toBe(execution.executionId)
   })
 
@@ -157,7 +156,6 @@ describe('startOrResumeCourseUnit', () => {
     })
     const resumed = await startUnit()
     expect(resumed.step).toBe('done')
-    expect(resumed.remainingCardIds).toEqual([])
   })
 })
 

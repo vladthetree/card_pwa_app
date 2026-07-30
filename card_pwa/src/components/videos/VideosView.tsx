@@ -39,6 +39,7 @@ import { usePersistentBool } from '../../hooks/videos/usePersistentBool'
 import { useVideoTagPanels } from '../../hooks/videos/useVideoTagPanels'
 import { useVideoWritingMode } from '../../hooks/videos/useVideoWritingMode'
 import { useObjectiveDeckSuccessRates } from '../../hooks/videos/useObjectiveDeckSuccessRates'
+import { matchesFrozenCourseRecallSelection } from '../../utils/learningUnits'
 import MesserVideoPlayer from './MesserVideoPlayer'
 import VideoNotesPanel from './VideoNotesPanel'
 import VideoRecallCheck from './VideoRecallCheck'
@@ -791,16 +792,20 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
             // kommen und der Lauf würde fälschlich als freier Check zählen.
             const execution = activeCourseExecution
               ?? await getActiveCourseExecutionForVideo(profileId, activeItem.index)
-            const matchesExecution = execution !== null && questionIds.length > 0
+            const questionVersionById = Object.fromEntries(
+              questionIds.map(id => [id, execution?.recallQuestionVersions[id] ?? 'v1']),
+            )
+            const matchesExecution = execution !== null && matchesFrozenCourseRecallSelection(
+              execution,
+              { questionIds, questionVersionById, total },
+            )
             await recordCourseRecallRun({
               profileId,
               videoIndex: activeItem.index,
               objectiveId: activeItem.objective,
               executionId: matchesExecution ? execution.executionId : null,
               questionIds,
-              questionVersionById: Object.fromEntries(
-                questionIds.map(id => [id, execution?.recallQuestionVersions[id] ?? 'v1']),
-              ),
+              questionVersionById,
               correct: known,
               total,
             }).catch(error => console.error('[VideosView] recordCourseRecallRun', error))

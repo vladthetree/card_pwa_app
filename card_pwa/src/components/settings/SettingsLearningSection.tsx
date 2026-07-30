@@ -12,7 +12,7 @@ import { Brain, ChevronDown, RefreshCw } from 'lucide-react'
 import { useSettings, STRINGS } from '../../contexts/SettingsContext'
 import type { YoungCardLapseStats } from '../../db/queries'
 import { UI_TOKENS } from '../../constants/ui'
-import { wakeDeferredSyncQueue } from '../../services/syncQueue'
+import { enqueueSyncOperation, wakeDeferredSyncQueue } from '../../services/syncQueue'
 import { optimizeFsrsParameters } from '../../services/fsrsOptimizer'
 import {
   MIN_STUDY_CARD_LIMIT,
@@ -117,7 +117,7 @@ export function SettingsLearningSection({
         saved: 'Lernplan gespeichert.',
         saveFailed: 'Der Lernplan konnte nicht gespeichert werden. Bitte erneut versuchen.',
         progressTitle: 'So wird dein Fortschritt bewertet',
-        honesty: 'Bearbeitet bedeutet nicht automatisch sicher beherrscht. Empfehlungen gelten als erledigt, wenn die echte Lerneinheit-Ausführung abgeschlossen ist: Kursvideo gesehen, Abruf-Check der Einheit gespeichert und die eingefrorenen Karten bewertet. Reife/Evidenz steigt separat durch erfolgreiche Wissenschecks und Wiederholungen.',
+        honesty: 'Bearbeitet bedeutet nicht automatisch sicher beherrscht. Eine Kurs-Einheit ist erledigt, wenn das Video gesehen, der Abruf-Check gespeichert und die Selbsteinschätzung abgegeben wurde. Kartenwiederholungen laufen als eigene Einheiten. Reife/Evidenz steigt separat durch erfolgreiche Wissenschecks und Wiederholungen.',
         coverageSummary: (covered: number, total: number, practiceGaps: number) =>
           `${covered}/${total} Prüfungsziele abgedeckt · ${practiceGaps} offene Praxisbereiche`,
       }
@@ -125,7 +125,7 @@ export function SettingsLearningSection({
         saved: 'Study plan saved.',
         saveFailed: 'The study plan could not be saved. Please try again.',
         progressTitle: 'How your progress is measured',
-        honesty: 'Worked through does not automatically mean mastered. Recommendations are done when the real learning-unit execution is complete: course video watched, the unit recall check saved, and the frozen cards reviewed. Readiness/evidence grows separately through successful checks and reviews.',
+        honesty: 'Worked through does not automatically mean mastered. A course unit is done after the video, saved recall check, and confidence rating. Card reviews are separate units. Readiness/evidence grows separately through successful checks and reviews.',
         coverageSummary: (covered: number, total: number, practiceGaps: number) =>
           `${covered}/${total} exam objectives covered · ${practiceGaps} open practice areas`,
       }
@@ -185,9 +185,10 @@ export function SettingsLearningSection({
     setPlanSaving(true)
     setPlanSaveError(null)
     try {
+      const planUpdatedAt = Date.now()
       await saveDraftLearnerExamPlan({
         profileId,
-        now: Date.now(),
+        now: planUpdatedAt,
         examDateIso: normalized.examDateIso,
         uiLanguage: settings.language,
         examLanguage: normalized.examLanguage,
@@ -201,6 +202,19 @@ export function SettingsLearningSection({
       ) {
         await setExamDateIso(normalized.examDateIso, { planAlreadySaved: true })
       }
+      // Der bestehende globale Settings-Op transportiert den vollständigen
+      // profilgescopten Plan. Damit synchronisieren auch Änderungen, bei denen
+      // das Prüfungsdatum unverändert bleibt.
+      await enqueueSyncOperation('examDate.upsert', {
+        profileId,
+        examDateIso: normalized.examDateIso,
+        examLanguage: normalized.examLanguage,
+        weeklyMinutesAvailable: normalized.weeklyMinutesAvailable,
+        learningDaysPerWeek: normalized.learningDaysPerWeek,
+        bufferDays: normalized.bufferDays,
+        uiLanguage: settings.language,
+        updatedAt: Math.max(Date.now(), planUpdatedAt),
+      })
       setPlanBaseline(planDraft)
       learningUnits.reload()
       setPlanEditorOpen(false)

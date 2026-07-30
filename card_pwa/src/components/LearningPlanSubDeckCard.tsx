@@ -22,7 +22,8 @@ const COPY = {
     availability: (installed: number, mapped: number) => `${installed}/${mapped} installiert`,
     noRatings: 'Noch keine Bewertungen',
     successRate: (rate: number, total: number) => `${rate} % Erfolgsrate · ${total} Bewertungen`,
-    threshold: 'Im Lernplan erfüllt ab 90 % Erfolgsrate',
+    coverage: (reviewed: number, total: number) => `${reviewed}/${total} Karten bewertet`,
+    threshold: 'Erfüllt: alle Karten bewertet und mindestens 90 % Erfolgsrate',
     status: {
       open: 'Offen',
       inProgress: 'In Bearbeitung',
@@ -32,7 +33,7 @@ const COPY = {
     info: (name: string) => `Information zum Lernplanstatus von ${name}`,
     dialogTitle: 'Sub-Deck im Lernplan',
     criterion: 'Abschlusskriterium',
-    criterionValue: 'Mindestens 90 % kanonische Erfolgsrate und mindestens eine Bewertung.',
+    criterionValue: 'Jede installierte Karte mindestens einmal bewertet, keine Karte fehlt und mindestens 90 % kanonische Erfolgsrate.',
     currentRate: 'Aktuelle Erfolgsrate',
     currentStatus: 'Lernplanstatus',
     source: 'Der Wert stammt aus allen Reviews der echten Karten-IDs. Der Deckstatus und der Scheduler werden dadurch nicht verändert.',
@@ -51,7 +52,8 @@ const COPY = {
     availability: (installed: number, mapped: number) => `${installed}/${mapped} installed`,
     noRatings: 'No ratings yet',
     successRate: (rate: number, total: number) => `${rate}% success rate · ${total} ratings`,
-    threshold: 'Completed in the learning plan at a 90% success rate',
+    coverage: (reviewed: number, total: number) => `${reviewed}/${total} cards rated`,
+    threshold: 'Completed: all cards rated and at least 90% success',
     status: {
       open: 'Open',
       inProgress: 'In progress',
@@ -61,7 +63,7 @@ const COPY = {
     info: (name: string) => `Learning-plan status information for ${name}`,
     dialogTitle: 'Sub-deck in the learning plan',
     criterion: 'Completion criterion',
-    criterionValue: 'At least a 90% canonical success rate and at least one rating.',
+    criterionValue: 'Every installed card rated at least once, no card missing, and at least a 90% canonical success rate.',
     currentRate: 'Current success rate',
     currentStatus: 'Learning-plan status',
     source: 'The value comes from all reviews of the real card IDs. It does not change deck status or scheduling.',
@@ -126,6 +128,9 @@ export function LearningPlanSubDeckCard({
               <span>{copy.availability(deck.installedCardIds.length, deck.cardIds.length)}</span>
             )}
             <span data-testid={`learning-plan-subdeck-rate-${deck.objectiveId}`}>{rateLabel}</span>
+            <span data-testid={`learning-plan-subdeck-coverage-${deck.objectiveId}`}>
+              {copy.coverage(deck.reviewedCardIds.length, deck.installedCardIds.length)}
+            </span>
             <span className={`rounded-full border-2 border-black px-2 py-0.5 leading-4 ${
               deck.status === 'fulfilled'
                 ? 'bg-[#86EFAC]'

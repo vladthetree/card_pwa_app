@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { buildLabScenarioSnapshot, scoreLabAnswers } from '../../utils/labSnapshot'
+import { buildLabScenarioSnapshot, readFrozenLabScenario, scoreLabAnswers } from '../../utils/labSnapshot'
 import type { LabScenario } from '../../data/labScenarios'
 import { LAB_SCENARIOS } from '../../data/labScenarios'
 
@@ -60,6 +60,27 @@ const DECISION: LabScenario = {
 }
 
 describe('buildLabScenarioSnapshot', () => {
+  it('friert das vollständig renderbare Szenario unabhängig von Registry-Mutationen ein', () => {
+    const source = structuredClone(MATCHING)
+    const snapshot = buildLabScenarioSnapshot(source)
+    source.title = 'Nachträglich geändert'
+    if (source.interaction.type !== 'matching') throw new Error('Matching erwartet')
+    source.interaction.items[0].left = 'Geänderte Regel'
+
+    const frozen = readFrozenLabScenario(snapshot)
+    expect(frozen?.title).toBe(MATCHING.title)
+    expect(frozen?.interaction).toEqual(MATCHING.interaction)
+    expect(frozen).not.toBe(source)
+  })
+
+  it('lehnt unvollständige Alt-Snapshots als Renderquelle ab', () => {
+    expect(readFrozenLabScenario({
+      scenarioId: MATCHING.id,
+      title: MATCHING.title,
+      rubric: [],
+    })).toBeNull()
+  })
+
   it('normalisiert deterministisch: stabile Schritt-ID, Rubrik und Content-Hash-Version', () => {
     const first = buildLabScenarioSnapshot(MATCHING)
     const second = buildLabScenarioSnapshot(MATCHING)

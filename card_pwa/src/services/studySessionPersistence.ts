@@ -8,6 +8,7 @@ import type { Card, Rating, SessionReviewEvent } from '../types'
 import { DAY_MS, getDayStartMs } from '../utils/time'
 
 export type StudySessionKind = 'deck' | 'shuffle'
+export type StudyReturnTarget = 'learning-units'
 
 export interface PersistedStudySession {
   version: 5
@@ -30,6 +31,8 @@ export interface PersistedStudySession {
   hardPracticeCardIds: string[]
   hardPracticePassCounts: Record<string, number>
   reviewEvents?: SessionReviewEvent[]
+  /** Herkunft der Session, damit Zurück/Abschluss auch nach Reload konsistent ist. */
+  returnTarget?: StudyReturnTarget
   expiresAt: number
   startTime: number
 }
@@ -107,6 +110,7 @@ export function buildPersistedStudySession(input: {
   hardPracticeCardIds?: string[]
   hardPracticePassCounts?: Record<string, number>
   reviewEvents?: SessionReviewEvent[]
+  returnTarget?: StudyReturnTarget
   startTime: number
   nowMs?: number
   /** Tag-Wechsel-Stunde: verlängert die Gültigkeit bis zur nächsten Tagesgrenze,
@@ -139,7 +143,23 @@ export function buildPersistedStudySession(input: {
     hardPracticeCardIds: input.hardPracticeCardIds ?? [],
     hardPracticePassCounts: input.hardPracticePassCounts ?? {},
     reviewEvents: input.reviewEvents ?? [],
+    returnTarget: input.returnTarget,
     expiresAt,
     startTime: input.startTime,
   }
+}
+
+/** Neue Sessions speichern ihr Ziel explizit. Die Namensräume erhalten den
+ * korrekten Rückweg auch für bereits persistierte Payloads ohne dieses Feld. */
+export function resolveStudyReturnTarget(
+  sessionId: string,
+  snapshot: Pick<PersistedStudySession, 'returnTarget'>,
+): StudyReturnTarget | null {
+  if (snapshot.returnTarget === 'learning-units') return snapshot.returnTarget
+  if (
+    sessionId.startsWith('unit-exec:')
+    || sessionId.startsWith('learning-plan:acronyms:')
+    || sessionId.startsWith('learning-plan:subdeck:')
+  ) return 'learning-units'
+  return null
 }

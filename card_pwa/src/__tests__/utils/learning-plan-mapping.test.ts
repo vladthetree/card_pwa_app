@@ -183,18 +183,30 @@ describe('learning plan card/deck mapping', () => {
 
 describe('learning plan subdeck completion projection', () => {
   it.each([
-    { ratio: 0.8999, totalAnswers: 10_000, expected: 'inProgress' },
-    { ratio: 0.9, totalAnswers: 10, expected: 'fulfilled' },
-    { ratio: 0.975, totalAnswers: 40, expected: 'fulfilled' },
-    { ratio: 0, totalAnswers: 0, expected: 'open' },
+    { ratio: 0.8999, totalAnswers: 10_000, installedCardCount: 2, reviewedCardCount: 2, missingCardCount: 0, expected: 'inProgress' },
+    { ratio: 0.9, totalAnswers: 10, installedCardCount: 2, reviewedCardCount: 2, missingCardCount: 0, expected: 'fulfilled' },
+    { ratio: 0.975, totalAnswers: 40, installedCardCount: 2, reviewedCardCount: 2, missingCardCount: 0, expected: 'fulfilled' },
+    { ratio: 0, totalAnswers: 0, installedCardCount: 2, reviewedCardCount: 0, missingCardCount: 0, expected: 'open' },
   ] as const)('$ratio bei $totalAnswers Antworten → $expected', input => {
     expect(computeLearningPlanSubDeckStatus(input)).toBe(input.expected)
+  })
+
+  it('wird nach einer einzigen guten Bewertung in einem größeren Deck nicht erfüllt', () => {
+    expect(computeLearningPlanSubDeckStatus({
+      ratio: 1,
+      totalAnswers: 1,
+      installedCardCount: 30,
+      reviewedCardCount: 1,
+      missingCardCount: 0,
+    })).toBe('inProgress')
   })
 
   it('wertet fehlende Karten auch bei hoher Rate nicht fälschlich als erfüllt', () => {
     expect(computeLearningPlanSubDeckStatus({
       ratio: 1,
       totalAnswers: 5,
+      installedCardCount: 2,
+      reviewedCardCount: 2,
       missingCardCount: 1,
     })).toBe('inProgress')
   })

@@ -6,8 +6,8 @@
  *       and records execution-bound recall runs.
  * Used by: HomeView (unit tap → exact resume), VideosView (recall wiring),
  *          hooks/home/useLearningUnits (reconcile before ranking).
- * Important: Selection is frozen at start (§7) and immutable afterwards; the
- *            cards step reuses the existing study eligibility. Completion is
+ * Important: Selection is frozen at start (§7) and immutable afterwards.
+ *            Card reviews are separate Review-Units. Course completion is
  *            derived ONLY from computeCourseStepState signals — never from
  *            button clicks. Nothing here writes reviews, XP, or the scheduler.
  */
@@ -63,7 +63,6 @@ import {
 } from '../utils/labSnapshot'
 import { clearActiveSession, listCardsByDeckIdsDirect, listCardsByIds, listCardIdsReviewedSince } from '../db/queries'
 import { readTodayPackagePointer } from '../utils/todayPackage'
-import type { Algorithm } from '../contexts/SettingsContext'
 
 type CourseExecution = Extract<LearningUnitExecution, { type: 'course' }>
 type ReviewExecution = Extract<LearningUnitExecution, { type: 'review' }>
@@ -72,20 +71,13 @@ type LabExecution = Extract<LearningUnitExecution, { type: 'lab' }>
 const M_ID_PREFIX = /^(M\d-\d{3}):/
 
 export interface CourseUnitStartSettings {
-  /** Dosis des Karten-Schritts (wie Heute-Paket); 0 = unbegrenzt. */
-  packageCardLimit: number
-  nextDayStartsAt: number
-  learnAheadMinutes: number
   recallCheckSize: number
-  algorithm: Algorithm
 }
 
 export interface CourseUnitLaunch {
   execution: CourseExecution
   state: LearningUnitState
-  step: 'video' | 'recall' | 'cards' | 'done'
-  /** Noch nicht bewertete Karten der eingefrorenen Auswahl (Session-Start). */
-  remainingCardIds: string[]
+  step: 'video' | 'recall' | 'done'
 }
 
 function courseVideoIndexOf(execution: CourseExecution): number {
@@ -95,35 +87,29 @@ function courseVideoIndexOf(execution: CourseExecution): number {
 
 /** Schrittstand einer Ausführung aus den echten Signalen (read-only). */
 async function computeStepSnapshot(execution: CourseExecution): Promise<{
-  step: 'video' | 'recall' | 'cards' | 'done'
-  remainingCardIds: string[]
+  step: 'video' | 'recall' | 'done'
 }> {
   const videoIndex = courseVideoIndexOf(execution)
-  const [videoProgress, recallRuns, reviewedIds] = await Promise.all([
+  const [videoProgress, recallRuns] = await Promise.all([
     getVideoProgress(execution.profileId, videoIndex),
     // Alle relevanten Läufe seit Start, nicht nur die UI-üblichen letzten fünf.
     listRecentVideoRecallRuns(execution.profileId, videoIndex, undefined, 100),
-    listCardIdsReviewedSince(execution.cardIds, execution.createdAt),
   ])
-  const reviewedSet = new Set(reviewedIds)
   const stepState = computeCourseStepState({
     execution,
     videoProgress,
     recallRuns,
-    reviewedCardIdsSinceStart: reviewedSet,
+    // Alte Ausführungen dürfen cardIds noch zur Diagnose tragen; sie sind kein
+    // Course-Schritt mehr und werden deshalb hier nicht abgefragt.
+    reviewedCardIdsSinceStart: new Set(),
   })
-  return {
-    step: stepState.currentStep,
-    remainingCardIds: execution.cardIds.filter(cardId => !reviewedSet.has(cardId)),
-  }
+  return { step: stepState.currentStep }
 }
 
 /**
  * Startet eine Course-Unit mit frisch eingefrorener Auswahl oder setzt die
- * bereits aktive Ausführung exakt an ihrem Schrittstand fort (§7/§8.2).
- * Ausschlussmenge der Kartenauswahl: Reservierungen aller anderen aktiven
- * Ausführungen des Profils plus die feste Kartenmenge des Heute-Pakets,
- * sofern dieses gerade ein ANDERES Video bearbeitet (keine Doppelvergabe).
+ * bereits aktive Ausführung exakt an ihrem Video-/Recall-Schritt fort (§7/§8.2).
+ * Kartenwiederholungen sind ausschließlich eigenständige Review-Units.
  */
 export async function startOrResumeCourseUnit(input: {
   profileId: string
@@ -140,7 +126,7 @@ export async function startOrResumeCourseUnit(input: {
     const snapshot = await computeStepSnapshot(active)
     const state = await getLearningUnitState(profileId, definition.unitId)
     if (!state) throw new Error(`startOrResumeCourseUnit: Unit-State zu ${definition.unitId} fehlt`)
-    return { execution: active, state, step: snapshot.step, remainingCardIds: snapshot.remainingCardIds }
+    return { execution: active, state, step: snapshot.step }
   }
 
   const content = SY0701_CONTENT_MAP_BY_VIDEO_INDEX.get(definition.videoIndex)
@@ -197,7 +183,7 @@ export async function startOrResumeCourseUnit(input: {
   if (snapshot.step !== state.currentStep && snapshot.step !== 'done') {
     await touchUnitActivity(profileId, definition.unitId, snapshot.step, now)
   }
-  return { execution, state, step: snapshot.step, remainingCardIds: snapshot.remainingCardIds }
+  return { execution, state, step: snapshot.step }
 }
 
 /** Lokales Lerntagsdatum (YYYY-MM-DD) als Fallback, wenn der Aufrufer keins liefert. */
@@ -577,9 +563,9 @@ export async function getActiveCourseExecutionForVideo(
 
 /**
  * Persistiert einen Abruf-Lauf im dedizierten System (append-only). Läufe mit
- * `executionId` zählen nur dann als Schritt-Abschluss, wenn ihre Frage-IDs und
- * -Versionen exakt der eingefrorenen Auswahl entsprechen — das prüft
- * computeCourseStepState, nicht dieser Writer.
+ * `executionId` zählen nur dann als Schritt-Abschluss, wenn ihre Frage-IDs,
+ * Reihenfolge, Anzahl und Versionen exakt der eingefrorenen Auswahl entsprechen
+ * — das prüft computeCourseStepState zusätzlich zum UI-Handoff.
  */
 export async function recordCourseRecallRun(input: {
   profileId: string
