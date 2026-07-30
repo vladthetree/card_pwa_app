@@ -8,8 +8,12 @@
  * Important: shouldApplyIncomingCardState is the reps-first rule — an incoming card
  * state is only accepted if its reps have caught up, or (on a tie) it is not older.
  * Do not add a delete/update path that bypasses it silently.
+ * Warning: for every op type in supportsWorkerResolution() (operationResolver.ts),
+ * this file's conflict/ownership logic is duplicated there for the worker path. A
+ * fix here (e.g. the review.undo cardId ownership check) must be mirrored there too
+ * — that exact divergence was a real bug, caught by operationResolver.test.ts.
  */
-import { db, type CardRecord, type DeckRecord, type ShuffleCollectionRecord } from '../../db'
+import { db, type CardRecord, type DeckRecord, type ReviewRecord, type ShuffleCollectionRecord } from '../../db'
 import { buildResetCardRecord } from '../../db/queries/reviews'
 import type { SyncOperationType } from '../syncQueue'
 import { createWorker } from '../../utils/workers/workerPool'
@@ -42,7 +46,7 @@ export interface PulledOperation {
 const syncApplier = createWorker<
   {
     operations: ResolverOperation[]
-    existing: { cards: CardRecord[]; decks: DeckRecord[]; shuffleCollections: ShuffleCollectionRecord[] }
+    existing: { cards: CardRecord[]; decks: DeckRecord[]; shuffleCollections: ShuffleCollectionRecord[]; reviews: ReviewRecord[] }
     fallbackTs: number
   },
   OperationDiff
@@ -455,9 +459,10 @@ export function isSyncWorkerEnabled(): boolean {
   }
 }
 
-function collectTouchedIds(operations: PulledOperation[]): { cardIds: string[]; deckIds: string[] } {
+function collectTouchedIds(operations: PulledOperation[]): { cardIds: string[]; deckIds: string[]; reviewIds: number[] } {
   const cardIds = new Set<string>()
   const deckIds = new Set<string>()
+  const reviewIds = new Set<number>()
 
   for (const operation of operations) {
     const payload = operation.payload
@@ -480,11 +485,18 @@ function collectTouchedIds(operations: PulledOperation[]): { cardIds: string[]; 
     if (operation.type === 'card.create' && typeof value.id === 'string' && value.id) {
       cardIds.add(value.id)
     }
+    if (operation.type === 'review.undo') {
+      const reviewId = Number(value.reviewId)
+      if (Number.isFinite(reviewId) && reviewId > 0) {
+        reviewIds.add(reviewId)
+      }
+    }
   }
 
   return {
     cardIds: Array.from(cardIds),
     deckIds: Array.from(deckIds),
+    reviewIds: Array.from(reviewIds),
   }
 }
 
@@ -547,7 +559,7 @@ async function applyOperationDiff(diff: OperationDiff): Promise<void> {
 
 export async function applyOperationsWithWorker(operations: PulledOperation[], fallbackTs: number): Promise<void> {
   const touched = collectTouchedIds(operations)
-  const [existingCardsRaw, existingDecksRaw, existingShuffleCollections] = await Promise.all([
+  const [existingCardsRaw, existingDecksRaw, existingShuffleCollections, existingReviewsRaw] = await Promise.all([
     touched.cardIds.length > 0
       ? db.cards.bulkGet(touched.cardIds)
       : Promise.resolve([] as Array<CardRecord | undefined>),
@@ -557,10 +569,14 @@ export async function applyOperationsWithWorker(operations: PulledOperation[], f
     hasShuffleCollectionsTable()
       ? db.shuffleCollections.toArray()
       : Promise.resolve([] as ShuffleCollectionRecord[]),
+    touched.reviewIds.length > 0
+      ? db.reviews.bulkGet(touched.reviewIds)
+      : Promise.resolve([] as Array<ReviewRecord | undefined>),
   ])
 
   const existingCards: CardRecord[] = existingCardsRaw.filter((entry): entry is CardRecord => entry !== undefined)
   const existingDecks: DeckRecord[] = existingDecksRaw.filter((entry): entry is DeckRecord => entry !== undefined)
+  const existingReviews: ReviewRecord[] = existingReviewsRaw.filter((entry): entry is ReviewRecord => entry !== undefined)
 
   const diff = await syncApplier.run({
     operations,
@@ -568,6 +584,7 @@ export async function applyOperationsWithWorker(operations: PulledOperation[], f
       cards: existingCards,
       decks: existingDecks,
       shuffleCollections: existingShuffleCollections,
+      reviews: existingReviews,
     },
     fallbackTs,
   })

@@ -2,6 +2,9 @@
  * AI_CONTEXT:
  * Role: UI-only overlay stack state; stores ids and lightweight payloads, not
  * form drafts or persistent domain data.
+ * Important: CloseReason is canonically defined here (the store's `closeOverlay`
+ * needs the full set including 'programmatic'); ui/overlays/overlayTypes.ts
+ * re-exports this type instead of redeclaring a narrower one.
  */
 export type CloseReason = 'escape' | 'backdrop' | 'close-button' | 'cancel' | 'submit' | 'programmatic'
 

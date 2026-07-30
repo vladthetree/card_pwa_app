@@ -16,6 +16,8 @@ export interface OperationResolverInput {
     cards: CardRecord[]
     decks: DeckRecord[]
     shuffleCollections?: ShuffleCollectionRecord[]
+    /** Only the review rows referenced by `review.undo` ops in this batch — see reviewId ownership check below. */
+    reviews?: ReviewRecord[]
   }
   fallbackTs: number
 }
@@ -84,6 +86,11 @@ export function resolveOperations(input: OperationResolverInput): OperationDiff 
   const cards = new Map(input.existing.cards.map(card => [card.id, card]))
   const decks = new Map(input.existing.decks.map(deck => [deck.id, deck]))
   const shuffleCollections = new Map((input.existing.shuffleCollections ?? []).map(collection => [collection.id, collection]))
+  const reviewsById = new Map(
+    (input.existing.reviews ?? [])
+      .filter((review): review is ReviewRecord & { id: number } => review.id !== undefined)
+      .map(review => [review.id, review]),
+  )
 
   const diff: OperationDiff = {
     decks: { upsert: [], delete: [] },
@@ -244,8 +251,13 @@ export function resolveOperations(input: OperationResolverInput): OperationDiff 
         }
       }
 
+      // payload.reviewId is the sending device's LOCAL auto-increment id — it almost
+      // certainly points at a different row here. Only delete by id when the row is
+      // confirmed to belong to this card (same rule as the main-thread applier in
+      // syncPull/apply.ts); otherwise fall back to the card's most recent review.
       const reviewId = Number(value.reviewId)
-      if (Number.isFinite(reviewId) && reviewId > 0) {
+      const candidate = Number.isFinite(reviewId) && reviewId > 0 ? reviewsById.get(reviewId) : undefined
+      if (candidate && candidate.cardId === cardId) {
         diff.reviews.deleteById.push(reviewId)
       } else {
         diff.reviews.deleteLatestByCardId.push(cardId)

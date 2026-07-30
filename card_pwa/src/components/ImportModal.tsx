@@ -4,10 +4,11 @@
  * Used by: HomeView import action.
  * Important: Heavy parsing is lazy-loaded through utils/import/importPipeline; keep this component focused on user flow and status states.
  */
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, useId } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { Upload, AlertCircle, CheckCircle, Loader2, X } from 'lucide-react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
+import { getAppStoreState, useAppStore } from '../state/appStore'
 import DuplicateReviewModal from './DuplicateReviewModal'
 import type { ImportPlan, ParsedImport } from '../utils/import/types'
 import { UI_TOKENS } from '../constants/ui'
@@ -88,15 +89,28 @@ export default function ImportModal({ isOpen, onClose, initialFile = null }: Pro
     }
   }, [isOpen])
 
-  // Close on Escape
+  // Registers this modal in the global overlay stack (ADR 001) while open, so a
+  // caller stacked underneath (e.g. SettingsModal opening Import) correctly cedes
+  // Escape/backdrop to Import instead of also reacting to the same event.
+  const overlayId = useId()
   useEffect(() => {
+    if (!isOpen) return
+    getAppStoreState().openOverlay({ id: overlayId })
+    return () => getAppStoreState().closeOverlay(overlayId)
+  }, [isOpen, overlayId])
+  const isTopmost = useAppStore(store => store.topOverlayId() === overlayId)
+
+  // Close on Escape — only while actually open, on top of the overlay stack, and
+  // not mid-import (previously fired even while closed: no `isOpen` guard here).
+  useEffect(() => {
+    if (!isOpen) return
     const onKey = (e: KeyboardEvent) => {
       const processing = status.phase === 'parsing' || status.phase === 'importing'
-      if (e.key === 'Escape' && !processing) onClose()
+      if (e.key === 'Escape' && !processing && isTopmost) onClose()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [onClose, status.phase])
+  }, [isOpen, onClose, status.phase, isTopmost])
 
   const handleConflictsResolved = useCallback(
     async (resolvedPlan: ImportPlan) => {
@@ -219,7 +233,7 @@ export default function ImportModal({ isOpen, onClose, initialFile = null }: Pro
           {/* Backdrop */}
           <div
             className={UI_TOKENS.modal.backdrop}
-            onClick={() => { if (!isProcessing) onClose() }}
+            onClick={() => { if (!isProcessing && isTopmost) onClose() }}
           />
 
           {/* Modal */}

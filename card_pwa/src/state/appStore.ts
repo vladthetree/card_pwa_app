@@ -78,76 +78,83 @@ function subscribe(listener: Listener): () => void {
   return () => listeners.delete(listener)
 }
 
+// Built once at module load, not per getAppStoreState() call: every action here
+// closes over the `state`/`setState` module bindings rather than a function
+// parameter, so there is nothing to recreate on each read. This keeps action
+// references stable across calls — required for useAppStore(store => store.someAction)
+// to work with useSyncExternalStore's Object.is snapshot comparison; rebuilding
+// these closures per call previously made any such selector "always changed".
+const actions: Omit<AppStore, keyof AppStoreState> = {
+  openOverlay: entry => {
+    const dismissible = entry.dismissible ?? true
+    setState(current => ({
+      ...current,
+      overlayStack: [
+        ...current.overlayStack.filter(overlay => overlay.id !== entry.id),
+        { ...entry, dismissible, openedAt: Date.now() },
+      ],
+      lastCloseReason: null,
+    }))
+  },
+  closeOverlay: (id?: string, reason: CloseReason = 'programmatic') => {
+    setState(current => {
+      const targetId = id ?? current.overlayStack[current.overlayStack.length - 1]?.id
+      return {
+        ...current,
+        overlayStack: targetId
+          ? current.overlayStack.filter(overlay => overlay.id !== targetId)
+          : current.overlayStack,
+        lastCloseReason: reason,
+      }
+    })
+  },
+  setActivePayload: (id: string, payload: unknown) => {
+    setState(current => ({
+      ...current,
+      overlayStack: current.overlayStack.map(overlay => (
+        overlay.id === id ? { ...overlay, payload } : overlay
+      )),
+    }))
+  },
+  topOverlayId: () => state.overlayStack[state.overlayStack.length - 1]?.id ?? null,
+  setSyncStatus: (syncStatus: SyncRuntimeStatus) => setState({ syncStatus }),
+  setSyncCounters: counters => setState(current => ({
+    ...current,
+    pendingCount: counters.pendingCount ?? current.pendingCount,
+    deadLetterCount: counters.deadLetterCount ?? current.deadLetterCount,
+  })),
+  markSyncSuccess: timestamp => setState({
+    syncStatus: 'idle',
+    lastSuccessfulSyncAt: timestamp,
+    lastError: null,
+  }),
+  markSyncError: message => setState({
+    syncStatus: 'error',
+    lastError: message,
+  }),
+  setActiveView: (activeView: View) => setState(current => ({
+    ...current,
+    activeView,
+    previousView: current.activeView === activeView ? current.previousView : current.activeView,
+  })),
+  setHomeActiveTab: (homeActiveTab: HomeActiveTab) => setState({ homeActiveTab }),
+  setDashboardMode: (dashboardMode: boolean) => setState({ dashboardMode }),
+  setShuffleOnlyMode: (shuffleOnlyMode: boolean) => setState({ shuffleOnlyMode }),
+  toggleExpandedSubdeck: (deckId: string) => {
+    setState(current => ({
+      ...current,
+      expandedSubdeckIds: current.expandedSubdeckIds.includes(deckId)
+        ? current.expandedSubdeckIds.filter(id => id !== deckId)
+        : [...current.expandedSubdeckIds, deckId],
+    }))
+  },
+  setInstallPromptAvailable: (installPromptAvailable: boolean) => setState({ installPromptAvailable }),
+  setServiceWorkerUpdateAvailable: (serviceWorkerUpdateAvailable: boolean) => setState({ serviceWorkerUpdateAvailable }),
+  setNotificationsEnabled: (notificationsEnabled: boolean) => setState({ notificationsEnabled }),
+}
+
 export function getAppStoreState(): AppStore {
-  return {
-    ...state,
-    openOverlay: entry => {
-      const dismissible = entry.dismissible ?? true
-      setState(current => ({
-        ...current,
-        overlayStack: [
-          ...current.overlayStack.filter(overlay => overlay.id !== entry.id),
-          { ...entry, dismissible, openedAt: Date.now() },
-        ],
-        lastCloseReason: null,
-      }))
-    },
-    closeOverlay: (id?: string, reason: CloseReason = 'programmatic') => {
-      setState(current => {
-        const targetId = id ?? current.overlayStack[current.overlayStack.length - 1]?.id
-        return {
-          ...current,
-          overlayStack: targetId
-            ? current.overlayStack.filter(overlay => overlay.id !== targetId)
-            : current.overlayStack,
-          lastCloseReason: reason,
-        }
-      })
-    },
-    setActivePayload: (id: string, payload: unknown) => {
-      setState(current => ({
-        ...current,
-        overlayStack: current.overlayStack.map(overlay => (
-          overlay.id === id ? { ...overlay, payload } : overlay
-        )),
-      }))
-    },
-    topOverlayId: () => state.overlayStack[state.overlayStack.length - 1]?.id ?? null,
-    setSyncStatus: (syncStatus: SyncRuntimeStatus) => setState({ syncStatus }),
-    setSyncCounters: counters => setState(current => ({
-      ...current,
-      pendingCount: counters.pendingCount ?? current.pendingCount,
-      deadLetterCount: counters.deadLetterCount ?? current.deadLetterCount,
-    })),
-    markSyncSuccess: timestamp => setState({
-      syncStatus: 'idle',
-      lastSuccessfulSyncAt: timestamp,
-      lastError: null,
-    }),
-    markSyncError: message => setState({
-      syncStatus: 'error',
-      lastError: message,
-    }),
-    setActiveView: (activeView: View) => setState(current => ({
-      ...current,
-      activeView,
-      previousView: current.activeView === activeView ? current.previousView : current.activeView,
-    })),
-    setHomeActiveTab: (homeActiveTab: HomeActiveTab) => setState({ homeActiveTab }),
-    setDashboardMode: (dashboardMode: boolean) => setState({ dashboardMode }),
-    setShuffleOnlyMode: (shuffleOnlyMode: boolean) => setState({ shuffleOnlyMode }),
-    toggleExpandedSubdeck: (deckId: string) => {
-      setState(current => ({
-        ...current,
-        expandedSubdeckIds: current.expandedSubdeckIds.includes(deckId)
-          ? current.expandedSubdeckIds.filter(id => id !== deckId)
-          : [...current.expandedSubdeckIds, deckId],
-      }))
-    },
-    setInstallPromptAvailable: (installPromptAvailable: boolean) => setState({ installPromptAvailable }),
-    setServiceWorkerUpdateAvailable: (serviceWorkerUpdateAvailable: boolean) => setState({ serviceWorkerUpdateAvailable }),
-    setNotificationsEnabled: (notificationsEnabled: boolean) => setState({ notificationsEnabled }),
-  }
+  return { ...state, ...actions }
 }
 
 export function useAppStore<T>(selector: (store: AppStore) => T): T {

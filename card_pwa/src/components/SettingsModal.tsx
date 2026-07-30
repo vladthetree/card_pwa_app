@@ -11,10 +11,11 @@
  * into a child would reset in-flight async status (e.g. FSRS optimizing, PWA reset)
  * every time the user collapses that section, not just when the whole modal closes.
  */
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useId, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { Settings as SettingsIcon, X } from 'lucide-react'
 import { useSettings, STRINGS } from '../contexts/SettingsContext'
+import { getAppStoreState, useAppStore } from '../state/appStore'
 import { getAlgorithmDiagnostics, getYoungCardLapseRate, type AlgorithmDiagnosticsEntry, type YoungCardLapseStats } from '../db/queries'
 import { getErrorLogs, type ErrorLogEntry } from '../services/errorLog'
 import { UI_TOKENS } from '../constants/ui'
@@ -42,15 +43,27 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
   // Entscheidungsgrundlage für FSRS-Learning-Steps (Audit ⑥): erst messen.
   const [youngLapseStats, setYoungLapseStats] = useState<YoungCardLapseStats | null>(null)
 
-  // Dialog-Grundverhalten: Escape schließt das Modal.
+  // Registriert dieses Modal im globalen Overlay-Stack (ADR 001), solange es offen
+  // ist, damit verschachtelte Overlays (z. B. ConfirmModal für destruktive Aktionen)
+  // Escape/Backdrop exklusiv fürs oberste Overlay beanspruchen können.
+  const overlayId = useId()
+  useEffect(() => {
+    if (!isOpen) return
+    getAppStoreState().openOverlay({ id: overlayId })
+    return () => getAppStoreState().closeOverlay(overlayId)
+  }, [isOpen, overlayId])
+  const isTopmost = useAppStore(store => store.topOverlayId() === overlayId)
+
+  // Dialog-Grundverhalten: Escape schließt das Modal — aber nur, wenn kein
+  // verschachteltes Overlay (z. B. eine Lösch-/Reset-Bestätigung) darüber liegt.
   useEffect(() => {
     if (!isOpen) return
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
+      if (event.key === 'Escape' && isTopmost) onClose()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [isOpen, onClose])
+  }, [isOpen, onClose, isTopmost])
 
   useEffect(() => {
     if (openSection !== 'learning' || youngLapseStats !== null) return
@@ -112,7 +125,7 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/80"
-            onClick={onClose}
+            onClick={() => { if (isTopmost) onClose() }}
           />
 
           {/* Modal */}
