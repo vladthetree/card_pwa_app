@@ -4,16 +4,18 @@
  * Used by: VideosView right-side/compact notes pane.
  * Important: Notes stay plain text; structure is derived by videoTags, tagSuggestions, videoNoteSignals, and videoTimeAnchors rather than stored as separate rich blocks.
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { ArrowUpRight, Check, CircleHelp, Clock, Hash, Lightbulb, Link2, Loader2, NotebookPen, Plus, SquarePen } from 'lucide-react'
 import { saveVideoNote } from '../../db/queries/videoNotes'
 import { useAllVideoNoteTags, useBacklinks, useVideoNote } from '../../hooks/useVideoNotes'
+import { useVisualViewport } from '../../hooks/useVisualViewport'
 import { SY0_701_OBJECTIVES } from '../../utils/securityDeckHierarchy'
 import { filterTagSuggestions, findTagDraftAtCursor, insertSuggestedTag } from '../../utils/tagSuggestions'
 import { countVideoNoteSignals, summarizeVideoNoteSignals } from '../../utils/videoNoteSignals'
-import { extractTags, splitTagSegments } from '../../utils/videoTags'
-import { extractLinks, splitLinkSegments } from '../../utils/videoLinks'
-import { extractVideoTimeAnchors, formatVideoTime } from '../../utils/videoTimeAnchors'
+import { extractTags } from '../../utils/videoTags'
+import { extractLinks } from '../../utils/videoLinks'
+import { buildVideoTimeToken, extractVideoTimeAnchors, formatVideoTime } from '../../utils/videoTimeAnchors'
+import { buildRenderSegments, splitSegmentsAtOffset } from '../../utils/videoNoteRender'
 
 const OBJECTIVE_TITLE = new Map(SY0_701_OBJECTIVES.map(o => [o.code, o.title]))
 
@@ -22,23 +24,10 @@ function linkTitle(target: string): string {
   return OBJECTIVE_TITLE.get(target.trim()) ?? ''
 }
 
-type RenderSegment = { text: string; kind: 'text' | 'tag' | 'link' }
-
-/** Vereint Tag- und Wiki-Link-Hervorhebung zu einer Segmentliste für das
- *  Backdrop-Overlay: erst nach `#tags` trennen, Resttext nach `[[links]]`. */
-function buildRenderSegments(content: string): RenderSegment[] {
-  const out: RenderSegment[] = []
-  for (const seg of splitTagSegments(content)) {
-    if (seg.isTag) {
-      out.push({ text: seg.text, kind: 'tag' })
-      continue
-    }
-    for (const piece of splitLinkSegments(seg.text)) {
-      out.push({ text: piece.text, kind: piece.isLink ? 'link' : 'text' })
-    }
-  }
-  return out
-}
+/** Breite/Sicherheitsabstand des Autocomplete-Popovers — für die
+ *  Viewport-Klemmung (Rand + Tastaturbereich auf dem Handy). */
+const POPOVER_WIDTH = 208
+const POPOVER_MARGIN = 8
 
 const COPY = {
   de: {
@@ -69,6 +58,7 @@ const COPY = {
     linkHint: 'Verweise mit [[1.2]] auf ein anderes Objective — Klick öffnet es.',
     backlinks: 'Erwähnt in',
     openLink: 'Öffnen',
+    sharedNote: 'Ein Zettel für alle {n} Videos dieses Objectives',
   },
   en: {
     heading: 'Notepad',
@@ -98,6 +88,7 @@ const COPY = {
     linkHint: 'Reference another objective with [[1.2]] — click to open it.',
     backlinks: 'Mentioned in',
     openLink: 'Open',
+    sharedNote: 'One shared note for all {n} videos of this objective',
   },
 } as const
 
@@ -114,12 +105,25 @@ const SNIPPETS = {
   },
 } as const
 
+/** Ein Video innerhalb desselben Objectives — für Mehr-Video-Objectives, deren
+ *  Notiz sich alle Videos der Gruppe teilen (Compound-Key `[profileId+objective]`). */
+export interface ObjectiveVideoRef {
+  index: number
+  title: string
+}
+
 interface Props {
   /** Aktives Profil — Notizen sind pro Profil getrennt. */
   profileId: string
   objective: string | null
   videoId: string | null
   videoTitle: string | null
+  /** `index` des aktuell offenen Videos — für video-gebundene Zeitmarken. */
+  videoIndex?: number | null
+  /** Alle Videos desselben Objectives (inkl. des aktuell offenen). Bei mehr
+   *  als einem Eintrag: neue Zeitmarken werden video-gebunden eingefügt und
+   *  die Notiz zeigt einen Hinweis, dass sie sich alle Videos der Gruppe teilt. */
+  objectiveVideos?: ObjectiveVideoRef[]
   language: 'de' | 'en'
   /** Öffnet die Tag-Ansicht (verbundene Videos) für den geklickten Tag. */
   onOpenTag: (tag: string) => void
@@ -127,8 +131,10 @@ interface Props {
   onOpenObjective?: (objective: string) => void
   /** Aktuelle Player-Zeit; wird fuer `@MM:SS`-Zeitmarken genutzt. */
   currentTimeSec?: number | null
-  /** Springt im Player zu einer angeklickten Zeitmarke. */
-  onSeekToTime?: (seconds: number) => void
+  /** Springt im Player zu einer angeklickten Zeitmarke — `videoIndex` wenn die
+   *  Marke an ein bestimmtes Video der Objective-Gruppe gebunden ist (sonst
+   *  seekt der Aufrufer im aktuell offenen Video). */
+  onSeekToTime?: (seconds: number, videoIndex?: number) => void
   /** Schreibmodus (Handy): blendet die unteren Extras aus → mehr Platz fürs Textfeld. */
   writing?: boolean
   /** Meldet Fokuswechsel des Textfelds (Handy-Schreibmodus). */
@@ -165,11 +171,33 @@ function SignalList({
   )
 }
 
+/** Ein Hervorhebungs-Segment als Backdrop-`<span>` — von der normalen
+ *  Darstellung und der Cursor-Split-Darstellung (Popover-Ankerung) geteilt. */
+function renderSegmentSpan(seg: { text: string; kind: 'text' | 'tag' | 'link' }, key: string) {
+  if (seg.kind === 'tag') {
+    return (
+      <span key={key} className="rounded-[4px] bg-[--brand-secondary-15] font-semibold text-[--brand-secondary]">
+        {seg.text}
+      </span>
+    )
+  }
+  if (seg.kind === 'link') {
+    return (
+      <span key={key} className="rounded-[4px] bg-fuchsia-500/15 font-semibold text-fuchsia-300">
+        {seg.text}
+      </span>
+    )
+  }
+  return <span key={key}>{seg.text}</span>
+}
+
 export default function VideoNotesPanel({
   profileId,
   objective,
   videoId,
   videoTitle,
+  videoIndex = null,
+  objectiveVideos = [],
   language,
   onOpenTag,
   onOpenObjective,
@@ -186,12 +214,16 @@ export default function VideoNotesPanel({
   const [content, setContent] = useState('')
   const [cursorPosition, setCursorPosition] = useState(0)
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle')
+  const [focused, setFocused] = useState(false)
+  const [popoverPos, setPopoverPos] = useState<{ top: number; left: number } | null>(null)
 
   const hydratedForRef = useRef<string | null>(null)
   const timerRef = useRef<number | undefined>(undefined)
   const pendingRef = useRef<{ profileId: string; objective: string; videoId: string; content: string } | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const backdropRef = useRef<HTMLDivElement | null>(null)
+  const caretMarkerRef = useRef<HTMLSpanElement | null>(null)
+  const viewport = useVisualViewport()
 
   // Tags werden live aus dem Inhalt erkannt („sofort erkennen").
   const tags = useMemo(() => extractTags(content), [content])
@@ -207,6 +239,48 @@ export default function VideoNotesPanel({
     () => filterTagSuggestions(allTags, tags, tagDraft?.query ?? '', 6),
     [allTags, tags, tagDraft],
   )
+  // Popover statt Bottom-Panel-Liste: funktioniert dadurch auch während des
+  // mobilen Schreibmodus (Tastatur offen) identisch zu Desktop — vorher lag der
+  // Vorschlag im ausgeblendeten unteren Block und war beim Tippen unerreichbar.
+  const showAutocomplete = focused && tagDraft !== null && suggestedTags.length > 0
+
+  // Backdrop-Segmente inkl. unsichtbarem Cursor-Marker, wenn das Popover aktiv
+  // ist — der Marker misst die reale Bildschirmposition des Cursors (statt sie
+  // nachzubauen), damit die Ankerung auf allen Plattformen gleich funktioniert.
+  const backdropContent = useMemo(() => {
+    if (!showAutocomplete) return segments.map((seg, i) => renderSegmentSpan(seg, `s${i}`))
+    const { before, after } = splitSegmentsAtOffset(segments, cursorPosition)
+    return [
+      ...before.map((seg, i) => renderSegmentSpan(seg, `b${i}`)),
+      <span key="caret-marker" ref={caretMarkerRef} />,
+      ...after.map((seg, i) => renderSegmentSpan(seg, `a${i}`)),
+    ]
+  }, [segments, showAutocomplete, cursorPosition])
+
+  // Popover-Position aus der gemessenen Cursor-Position ableiten; an
+  // `viewport` geklemmt, damit sie auf dem Handy nicht hinter der Tastatur
+  // landet (dieselbe visualViewport-Quelle wie der mobile Vollbild-Player).
+  useLayoutEffect(() => {
+    if (!showAutocomplete || !caretMarkerRef.current) {
+      setPopoverPos(prev => (prev === null ? prev : null))
+      return
+    }
+    const rect = caretMarkerRef.current.getBoundingClientRect()
+    const viewTop = viewport?.top ?? 0
+    const viewHeight = viewport?.height ?? window.innerHeight
+    const viewBottom = viewTop + viewHeight
+    const estimatedHeight = Math.min(180, suggestedTags.length * 30 + 16)
+
+    let left = Math.min(rect.left, window.innerWidth - POPOVER_WIDTH - POPOVER_MARGIN)
+    left = Math.max(POPOVER_MARGIN, left)
+
+    const fitsBelow = rect.bottom + estimatedHeight + POPOVER_MARGIN <= viewBottom
+    const top = fitsBelow
+      ? rect.bottom + 4
+      : Math.max(viewTop + POPOVER_MARGIN, rect.top - estimatedHeight - 4)
+
+    setPopoverPos({ top, left })
+  }, [showAutocomplete, cursorPosition, content, viewport, suggestedTags.length])
 
   // Backdrop-Scroll mit dem Textfeld synchron halten (Overlay-Technik).
   const syncScroll = () => {
@@ -315,7 +389,10 @@ export default function VideoNotesPanel({
   }
 
   const insertTimeAnchor = () => {
-    insertSnippet(`@${formatVideoTime(currentTimeSec ?? 0)} `)
+    // Video-Bindung nur, wenn dieses Objective wirklich mehrere Videos hat —
+    // sonst bleibt die Syntax für den Normalfall unverändert `@mm:ss`.
+    const boundVideoIndex = objectiveVideos.length > 1 ? videoIndex ?? undefined : undefined
+    insertSnippet(`${buildVideoTimeToken(currentTimeSec ?? 0, boundVideoIndex)} `)
   }
 
   // `[[]]` einfügen und den Cursor zwischen die Klammern setzen (Obsidian-artig).
@@ -356,6 +433,15 @@ export default function VideoNotesPanel({
               {copy.forVideo} {objective} · {videoTitle}
             </div>
           )}
+          {/* Transparenz für Mehr-Video-Objectives: die Notiz ist KEINE
+              Video-, sondern eine Objective-/Themen-Notiz (Zettelkasten-Prinzip,
+              nicht 1:1 zum einzelnen Video) — ohne diesen Hinweis wirkt das
+              Vermischen von Inhalten mehrerer Videos wie ein Bug. */}
+          {objectiveVideos.length > 1 && (
+            <div className="truncate font-mono text-[10px] text-zinc-600">
+              {copy.sharedNote.replace('{n}', String(objectiveVideos.length))}
+            </div>
+          )}
         </div>
         <span className="flex shrink-0 items-center gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
           {saveState === 'saving' && <Loader2 size={11} className="animate-spin" />}
@@ -365,48 +451,73 @@ export default function VideoNotesPanel({
         </span>
       </div>
 
-      <div className={`${writing ? 'hidden' : 'flex'} shrink-0 items-center gap-1.5 overflow-x-auto border-b border-[#18181b] px-4 py-2`}>
-        <span className="mr-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600">{copy.zettelTools}</span>
+      {/* Zettel-Toolbar: bewusst IMMER sichtbar (auch im mobilen Schreibmodus) —
+          Zeit-/Wiki-Einfügen braucht man gerade WÄHREND des Tippens. Labels nur
+          ab `sm:` (Desktop); auf dem Handy icon-only, damit alle fünf Aktionen
+          ohne Scroll-Abschneiden in eine Zeile passen. */}
+      <div className="flex shrink-0 items-center gap-1.5 overflow-x-auto border-b border-[#18181b] px-4 py-2">
+        <span className="mr-1 hidden shrink-0 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600 sm:inline">
+          {copy.zettelTools}
+        </span>
+        {/* Kompakter Speicherstatus — NUR im Schreibmodus sichtbar (der Kopf
+            mit dem normalen Indikator ist dann ausgeblendet); ohne das gäbe es
+            beim Tippen auf dem Handy gar keine Rückmeldung, ob autosave greift. */}
+        {writing && (saveState === 'saving' || saveState === 'saved') && (
+          <span className="mr-1 flex shrink-0 items-center gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+            {saveState === 'saving' && <Loader2 size={11} className="animate-spin" />}
+            {saveState === 'saved' && <Check size={11} className="text-emerald-400" />}
+          </span>
+        )}
         <button
           type="button"
           onClick={() => insertSnippet(SNIPPETS[language].question)}
-          className="inline-flex h-8 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
+          title={copy.insertQuestion}
+          aria-label={copy.insertQuestion}
+          className="inline-flex h-8 shrink-0 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
         >
           <CircleHelp size={12} strokeWidth={1.5} />
-          {copy.insertQuestion}
+          <span className="hidden sm:inline">{copy.insertQuestion}</span>
         </button>
         <button
           type="button"
           onClick={() => insertSnippet(SNIPPETS[language].cue)}
-          className="inline-flex h-8 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-amber-500/40 hover:text-amber-200"
+          title={copy.insertCue}
+          aria-label={copy.insertCue}
+          className="inline-flex h-8 shrink-0 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-amber-500/40 hover:text-amber-200"
         >
           <Lightbulb size={12} strokeWidth={1.5} />
-          {copy.insertCue}
+          <span className="hidden sm:inline">{copy.insertCue}</span>
         </button>
         <button
           type="button"
           onClick={() => insertSnippet(SNIPPETS[language].card)}
-          className="inline-flex h-8 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-emerald-500/40 hover:text-emerald-200"
+          title={copy.insertCard}
+          aria-label={copy.insertCard}
+          className="inline-flex h-8 shrink-0 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-emerald-500/40 hover:text-emerald-200"
         >
           <Plus size={12} strokeWidth={1.5} />
-          {copy.insertCard}
+          <span className="hidden sm:inline">{copy.insertCard}</span>
         </button>
         <button
           type="button"
           onClick={insertTimeAnchor}
-          className="inline-flex h-8 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-violet-500/40 hover:text-violet-200"
+          title={copy.insertTime}
+          aria-label={copy.insertTime}
+          className="inline-flex h-8 shrink-0 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-violet-500/40 hover:text-violet-200"
         >
           <Clock size={12} strokeWidth={1.5} />
-          {copy.insertTime}
+          <span className="hidden sm:inline">{copy.insertTime}</span>
         </button>
         <button
           type="button"
           onClick={insertWikiLink}
+          title={copy.insertLink}
+          aria-label={copy.insertLink}
           data-testid="video-note-insert-link"
-          className="inline-flex h-8 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-fuchsia-500/40 hover:text-fuchsia-200"
+          className="inline-flex h-8 shrink-0 items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 font-mono text-[11px] text-zinc-300 transition-colors hover:border-fuchsia-500/40 hover:text-fuchsia-200"
         >
           <Link2 size={12} strokeWidth={1.5} />
-          {copy.insertLink}
+          <span className="hidden sm:inline">{copy.insertLink}</span>
         </button>
       </div>
 
@@ -418,23 +529,7 @@ export default function VideoNotesPanel({
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words px-4 py-3 font-mono text-[13px] leading-relaxed text-zinc-100"
         >
-          {segments.map((seg, i) => {
-            if (seg.kind === 'tag') {
-              return (
-                <span key={i} className="rounded-[4px] bg-[--brand-secondary-15] font-semibold text-[--brand-secondary]">
-                  {seg.text}
-                </span>
-              )
-            }
-            if (seg.kind === 'link') {
-              return (
-                <span key={i} className="rounded-[4px] bg-fuchsia-500/15 font-semibold text-fuchsia-300">
-                  {seg.text}
-                </span>
-              )
-            }
-            return <span key={i}>{seg.text}</span>
-          })}
+          {backdropContent}
           {/* Letzte Zeile sichtbar halten, wenn der Inhalt mit \n endet. */}
           {'​'}
         </div>
@@ -446,12 +541,41 @@ export default function VideoNotesPanel({
           onSelect={updateCursorFromTextarea}
           onClick={updateCursorFromTextarea}
           onKeyUp={updateCursorFromTextarea}
-          onFocus={() => { updateCursorFromTextarea(); onFocusChange?.(true) }}
-          onBlur={() => onFocusChange?.(false)}
+          onFocus={() => { updateCursorFromTextarea(); setFocused(true); onFocusChange?.(true) }}
+          onBlur={() => { setFocused(false); onFocusChange?.(false) }}
           placeholder={copy.placeholder}
           data-testid="video-note-content"
           className="neo-video-note-input absolute inset-0 resize-none whitespace-pre-wrap break-words bg-white px-4 py-3 font-mono text-[13px] leading-relaxed text-black caret-black placeholder:text-black/55 focus:outline-none"
         />
+        {/* Tag-Autocomplete als caret-verankertes Popover — läuft an der
+            gemessenen Cursor-Position, damit Desktop UND der mobile
+            Schreibmodus (Tastatur offen) dasselbe Verhalten haben. */}
+        {popoverPos && (
+          <div
+            role="listbox"
+            aria-label={copy.suggestions}
+            data-testid="video-note-suggestion-popover"
+            style={{ top: popoverPos.top, left: popoverPos.left, width: POPOVER_WIDTH }}
+            className="fixed z-[70] max-h-[180px] overflow-y-auto rounded-ds-lg border border-[--brand-secondary-50] bg-[#0c0c0c] p-1 shadow-lg"
+          >
+            {suggestedTags.map(tag => (
+              <button
+                key={tag}
+                type="button"
+                role="option"
+                onMouseDown={event => event.preventDefault()}
+                onClick={() => applySuggestedTag(tag)}
+                title={`${copy.addTag} #${tag}`}
+                aria-label={`${copy.addTag} #${tag}`}
+                data-testid={`video-note-suggestion-${tag}`}
+                className="flex w-full items-center gap-1 rounded-ds px-2 py-1.5 text-left font-mono text-[11px] text-zinc-300 transition-colors hover:bg-[--brand-secondary-15] hover:text-[--brand-secondary]"
+              >
+                <Hash size={10} strokeWidth={2} className="shrink-0 text-zinc-600" />
+                <span className="truncate">{tag}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Erkannte Tags — anklickbar → verbundene Videos. Im Schreibmodus (Handy,
@@ -464,18 +588,28 @@ export default function VideoNotesPanel({
               {copy.timeAnchors}
             </div>
             <div className="flex flex-wrap gap-1.5">
-              {timeAnchors.map(anchor => (
-                <button
-                  key={`${anchor.start}-${anchor.token}`}
-                  type="button"
-                  onClick={() => onSeekToTime?.(anchor.seconds)}
-                  data-testid={`video-note-time-${anchor.seconds}`}
-                  className="flex items-center gap-1 rounded-ds border border-violet-500/30 bg-violet-500/10 px-2 py-1 font-mono text-[11px] text-violet-200 transition-colors hover:border-violet-400/70 hover:text-violet-100"
-                >
-                  <Clock size={10} strokeWidth={1.5} className="opacity-70" />
-                  {anchor.token}
-                </button>
-              ))}
+              {timeAnchors.map(anchor => {
+                // Bei Mehr-Video-Objectives zeigt der Chip, WELCHES Video gemeint
+                // ist (statt des rohen `@v7:…`-Tokens) — sonst bleibt unklar, ob
+                // die Marke zum gerade offenen Video gehört.
+                const anchorVideo = anchor.videoIndex !== undefined
+                  ? objectiveVideos.find(v => v.index === anchor.videoIndex)
+                  : undefined
+                const label = anchorVideo ? `${anchorVideo.title} · ${formatVideoTime(anchor.seconds)}` : anchor.token
+                return (
+                  <button
+                    key={`${anchor.start}-${anchor.token}`}
+                    type="button"
+                    onClick={() => onSeekToTime?.(anchor.seconds, anchor.videoIndex)}
+                    title={label}
+                    data-testid={`video-note-time-${anchor.seconds}`}
+                    className="flex items-center gap-1 rounded-ds border border-violet-500/30 bg-violet-500/10 px-2 py-1 font-mono text-[11px] text-violet-200 transition-colors hover:border-violet-400/70 hover:text-violet-100"
+                  >
+                    <Clock size={10} strokeWidth={1.5} className="opacity-70" />
+                    <span className="max-w-[160px] truncate">{label}</span>
+                  </button>
+                )
+              })}
             </div>
           </div>
         )}
@@ -576,28 +710,6 @@ export default function VideoNotesPanel({
           </div>
         ) : (
           <div className="font-mono text-[11px] text-zinc-600">{copy.noTags}</div>
-        )}
-        {suggestedTags.length > 0 && (
-          <div className="mt-3">
-            <div className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600">{copy.suggestions}</div>
-            <div className="flex flex-wrap gap-1.5">
-              {suggestedTags.map(tag => (
-                <button
-                  key={tag}
-                  type="button"
-                  onMouseDown={event => event.preventDefault()}
-                  onClick={() => applySuggestedTag(tag)}
-                  title={`${copy.addTag} #${tag}`}
-                  aria-label={`${copy.addTag} #${tag}`}
-                  data-testid={`video-note-suggestion-${tag}`}
-                  className="flex items-center gap-1 rounded-ds border border-[#1f1f23] bg-[#0c0c0c] px-2 py-1 font-mono text-[11px] text-zinc-300 transition-colors hover:border-[--brand-secondary-50] hover:text-[--brand-secondary]"
-                >
-                  <Hash size={10} strokeWidth={2} className="text-zinc-600" />
-                  {tag}
-                </button>
-              ))}
-            </div>
-          </div>
         )}
         <div className="mt-1.5 font-mono text-[10px] text-zinc-600">{copy.tagHint}</div>
         <div className="mt-1 font-mono text-[10px] text-zinc-600">{copy.linkHint}</div>

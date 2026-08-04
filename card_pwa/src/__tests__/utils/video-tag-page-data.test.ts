@@ -36,6 +36,15 @@ describe('buildTagPageSections', () => {
     ])
   })
 
+  it('übernimmt den video-gebundenen Index bei Mehr-Video-Objectives', () => {
+    const { timestamps } = buildTagPageSections([
+      { objective: '1.2', content: '@v7:00:30 Zero Trust' },
+    ])
+    expect(timestamps).toEqual([
+      { objective: '1.2', seconds: 30, token: '00:30', label: 'Zero Trust', videoIndex: 7 },
+    ])
+  })
+
   it('liefert leere Segmente ohne Signale', () => {
     expect(buildTagPageSections([{ objective: '1.1', content: 'nur Prosa ohne alles' }])).toEqual({
       timestamps: [],

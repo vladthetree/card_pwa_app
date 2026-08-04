@@ -15,6 +15,10 @@ export interface TagTimestamp {
   token: string
   /** Freitext direkt nach der Zeitmarke (Rest der Zeile). */
   label: string
+  /** Video-`index` bei Mehr-Video-Objectives (`@v<index>:mm:ss`); `undefined`
+   *  bei unpräfixten/alten Ankern — der Aufrufer fällt dann auf ein
+   *  Standard-Video des Objectives zurück (siehe VideosView.openObjectiveAtTime). */
+  videoIndex?: number
 }
 
 /** Eine extrahierte Zeile (Frage oder Kartenidee) mit ihrer Quelle. */
@@ -59,6 +63,7 @@ export function buildTagPageSections(notes: Array<{ objective: string; content: 
         seconds: anchor.seconds,
         token: formatVideoTime(anchor.seconds),
         label: rest,
+        ...(anchor.videoIndex !== undefined ? { videoIndex: anchor.videoIndex } : {}),
       })
     }
 

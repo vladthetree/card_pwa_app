@@ -149,6 +149,13 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
     [groups, activeFile],
   )
 
+  // Alle Videos desselben Objectives wie das aktive — für video-gebundene
+  // Zeitmarken im Notizzettel (Mehr-Video-Objectives teilen sich EINE Notiz).
+  const activeObjectiveVideos = useMemo(
+    () => (activeItem ? groups.find(group => group.objective === activeItem.objective)?.videos ?? [] : []),
+    [groups, activeItem],
+  )
+
   // Aktive Kurs-Ausführung (Lerneinheiten-System) zum geöffneten Video: friert
   // den Abruf-Check auf die Ausführungsfragen ein und bindet Läufe an sie.
   type ActiveCourseExecution = NonNullable<Awaited<ReturnType<typeof getActiveCourseExecutionForVideo>>>
@@ -258,7 +265,15 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
     setActiveFile(item.file)
   }
 
-  const seekToTime = (seconds: number) => {
+  // `videoIndex` kommt von video-gebundenen Zeitmarken (`@v<index>:mm:ss`,
+  // siehe videoTimeAnchors.ts) — bei Mehr-Video-Objectives kann die Marke zu
+  // einem ANDEREN Video als dem gerade offenen gehören; dann erst dorthin
+  // wechseln, bevor geseekt wird.
+  const seekToTime = (seconds: number, videoIndex?: number) => {
+    if (videoIndex !== undefined && videoIndex !== activeItem?.index) {
+      const target = groups.flatMap(group => group.videos).find(item => item.index === videoIndex)
+      if (target) openVideo(target)
+    }
     setSeekRequest({ id: Date.now(), seconds })
     setCurrentVideoTime(seconds)
   }
@@ -287,8 +302,13 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
 
   // Von einer Zeitmarke der Tag-Seite ins Video springen (evtl. anderes Video):
   // Video öffnen und Seek anfordern; der Player holt den Seek nach dem Laden nach.
-  const openObjectiveAtTime = (objective: string, seconds: number) => {
-    const video = groups.find(group => group.objective === objective)?.videos[0]
+  // `videoIndex` (aus einer video-gebundenen Zeitmarke) wählt bei Mehr-Video-
+  // Objectives das RICHTIGE Video aus der Gruppe; ohne das (alte, unpräfixte
+  // Zeitmarken) fällt es wie bisher auf das erste Video der Gruppe zurück.
+  const openObjectiveAtTime = (objective: string, seconds: number, videoIndex?: number) => {
+    const objectiveVideos = groups.find(group => group.objective === objective)?.videos ?? []
+    const video = (videoIndex !== undefined ? objectiveVideos.find(v => v.index === videoIndex) : undefined)
+      ?? objectiveVideos[0]
     if (video) {
       openVideo(video)
       seekToTime(seconds)
@@ -637,6 +657,8 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
               objective={activeItem?.objective ?? null}
               videoId={activeItem?.file ?? null}
               videoTitle={activeItem?.title ?? null}
+              videoIndex={activeItem?.index ?? null}
+              objectiveVideos={activeObjectiveVideos}
               language={language}
               onOpenTag={setActiveTag}
               onOpenObjective={openObjectiveFromTag}
@@ -724,6 +746,8 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
               objective={activeItem.objective}
               videoId={activeItem.file}
               videoTitle={activeItem.title}
+              videoIndex={activeItem.index}
+              objectiveVideos={activeObjectiveVideos}
               language={language}
               onOpenTag={setActiveTag}
               onOpenObjective={openObjectiveFromTag}

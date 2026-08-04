@@ -8,15 +8,28 @@
  * Zeitmarken in Video-Notizen. Sichtbare Syntax: `@03:42` oder `@1:02:03`.
  * Die Notiz bleibt Freitext, aber die App kann daraus klickbare Video-Anker
  * ableiten.
+ *
+ * Ein Objective kann mehrere Videos haben (z. B. 1.2 mit 7 Videos), aber nur
+ * EINE geteilte Notiz — ohne Video-Bindung würde ein Klick auf `@03:42` immer
+ * im gerade offenen Video seeken, auch wenn die Marke beim Schauen eines
+ * ANDEREN Videos derselben Gruppe gesetzt wurde. Deshalb optionaler
+ * `v<index>:`-Präfix: `@v7:03:42`. Nur eingefügt, wenn das Objective wirklich
+ * mehrere Videos hat (siehe `buildVideoTimeToken`) — bei Single-Video-
+ * Objectives bleibt die Syntax unverändert `@03:42`. Alte, unpräfixte Anker
+ * bleiben gültig (kein videoIndex → Aufrufer fällt auf das aktuell offene
+ * Video zurück).
  */
 
-const TIME_ANCHOR_PATTERN = /(^|\s)@(\d{1,3}:\d{2}(?::\d{2})?)(?=$|\s|[.,;:!?])/g
+const TIME_ANCHOR_PATTERN = /(^|\s)@(?:v(\d+):)?(\d{1,3}:\d{2}(?::\d{2})?)(?=$|\s|[.,;:!?])/g
 
 export interface VideoTimeAnchor {
   token: string
   seconds: number
   start: number
   end: number
+  /** Video-`index`, wenn die Marke mit `@v<index>:…` an ein bestimmtes Video
+   *  innerhalb eines Mehr-Video-Objectives gebunden ist; sonst `undefined`. */
+  videoIndex?: number
 }
 
 function pad2(value: number): string {
@@ -61,20 +74,30 @@ export function extractVideoTimeAnchors(content: string): VideoTimeAnchor[] {
 
   for (const match of content.matchAll(TIME_ANCHOR_PATTERN)) {
     const lead = match[1] ?? ''
-    const value = match[2] ?? ''
+    const videoIndexRaw = match[2]
+    const value = match[3] ?? ''
     const seconds = parseVideoTimeToken(value)
     if (seconds === null) continue
 
     const matchStart = match.index ?? 0
     const start = matchStart + lead.length
-    const token = `@${value}`
+    const videoPrefix = videoIndexRaw !== undefined ? `v${videoIndexRaw}:` : ''
+    const token = `@${videoPrefix}${value}`
     anchors.push({
       token,
       seconds,
       start,
       end: start + token.length,
+      ...(videoIndexRaw !== undefined ? { videoIndex: Number(videoIndexRaw) } : {}),
     })
   }
 
   return anchors
+}
+
+/** Baut das Zeitmarken-Token zum Einfügen. `videoIndex` nur setzen, wenn das
+ *  Objective mehrere Videos hat — sonst bleibt die Syntax `@mm:ss` unverändert. */
+export function buildVideoTimeToken(totalSeconds: number, videoIndex?: number): string {
+  const time = formatVideoTime(totalSeconds)
+  return videoIndex === undefined ? `@${time}` : `@v${videoIndex}:${time}`
 }

@@ -54,29 +54,6 @@ export const THEMES = {
     cardBorder: '#111111',
     glow: 'rgba(204,0,0,0.15)',
   },
-  neodark: {
-    name: 'Neo-Brutalismus Dark',
-    primary: '#FF6B6B',
-    secondary: '#C4B5FD',
-    accent: '#FFD93D',
-    background: '#15130E',
-    floor: '#15130E',
-    card: '#211D15',
-    surface: '#211D15',
-    surfaceHover: '#FFD93D',
-    panel: '#C4B5FD',
-    panelHover: '#FFD93D',
-    border: '#FFFDF5',
-    borderStrong: '#FFFDF5',
-    borderHover: '#FFFDF5',
-    text: '#FFFDF5',
-    textSecondary: 'rgba(255,253,245,0.72)',
-    textMuted: '#FFFDF5',
-    subtle: '#FFFDF5',
-    codeBg: '#211D15',
-    cardBorder: '#FFFDF5',
-    glow: 'rgba(255,107,107,0.18)',
-  },
   dopamine: {
     name: 'Dopamine',
     primary: '#FF3AF2',
@@ -161,13 +138,11 @@ const THEME_BODY_CLASS: Record<ThemeKey, string> = {
   default: 'neo-app',
   newsprint: 'newsprint-app',
   dopamine: 'dopamine-app',
-  neodark: 'neo-dark-app',
 }
 const THEME_DATA_ATTR: Record<ThemeKey, string> = {
   default: 'neo',
   newsprint: 'newsprint',
   dopamine: 'dopamine',
-  neodark: 'neo-dark',
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {

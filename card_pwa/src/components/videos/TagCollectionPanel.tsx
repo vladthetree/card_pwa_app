@@ -104,8 +104,10 @@ interface Props {
   onClose: () => void
   /** Optional: nur im Videomodus — springt zum Video des Objectives. */
   onOpenObjective?: (objective: string) => void
-  /** Optional: nur im Videomodus — öffnet das Video und springt zur Zeitmarke. */
-  onOpenObjectiveAtTime?: (objective: string, seconds: number) => void
+  /** Optional: nur im Videomodus — öffnet das Video und springt zur Zeitmarke.
+   *  `videoIndex` wenn die Marke bei einem Mehr-Video-Objective an ein
+   *  bestimmtes Video gebunden ist (siehe videoTimeAnchors.ts). */
+  onOpenObjectiveAtTime?: (objective: string, seconds: number, videoIndex?: number) => void
   /** Optional: öffnet einen verwandten Tag in derselben Sammlung. */
   onOpenTag?: (tag: string) => void
 }
@@ -355,7 +357,7 @@ export default function TagCollectionPanel({
               <button
                 key={`${ts.objective}-${ts.seconds}-${i}`}
                 type="button"
-                onClick={() => onOpenObjectiveAtTime(ts.objective, ts.seconds)}
+                onClick={() => onOpenObjectiveAtTime(ts.objective, ts.seconds, ts.videoIndex)}
                 data-testid={`tag-panel-timestamp-${ts.objective}-${ts.seconds}`}
                 className="group flex items-center gap-2 rounded-ds-lg border border-[#1f1f23] bg-[#0c0c0c] px-3 py-2 text-left transition-colors hover:border-[--brand-secondary-50] hover:bg-[--brand-secondary-08]"
               >
