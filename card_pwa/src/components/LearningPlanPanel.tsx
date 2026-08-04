@@ -14,6 +14,7 @@ import { useVisualViewport } from '../hooks/useVisualViewport'
 import type { LearningPacingResult } from '../utils/learningUnitRanking'
 import type { LearningPlanMappingSummary } from '../utils/learningPlanMapping'
 import { isValidExamDateIso } from '../utils/examDate'
+import { useTheme, themeScopeClass } from '../contexts/ThemeContext'
 import {
   SUPPORTED_EXAM_LANGUAGES,
   isSupportedExamLanguage,
@@ -321,6 +322,7 @@ export function LearningPlanPanel({
 }: Props) {
   const copy = COPY[language]
   const titleId = useId()
+  const { themeKey } = useTheme()
   const formId = useId()
   const dateInputRef = useRef<HTMLInputElement>(null)
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -813,7 +815,7 @@ export function LearningPlanPanel({
         <AnimatePresence>
           {open && (
             <div
-              className={`learning-plan-neo fixed left-0 right-0 ${UI_TOKENS.zIndex.splash} flex items-end justify-center px-safe pt-safe-2 sm:items-center sm:p-4`}
+              className={`${themeScopeClass(themeKey, 'learning-plan')} fixed left-0 right-0 ${UI_TOKENS.zIndex.splash} flex items-end justify-center px-safe pt-safe-2 sm:items-center sm:p-4`}
               style={viewport
                 ? { top: `${viewport.top}px`, height: `${viewport.height}px` }
                 : { top: 0, height: '100dvh' }}

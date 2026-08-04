@@ -21,7 +21,7 @@ export const UI_TOKENS = {
 
   // ─── Radius scale ──────────────────────────────────────────────────────────
   radius: {
-    sm: 'rounded-[4px]',
+    sm: 'rounded-ds-sm',
     md: 'rounded-ds',
     lg: 'rounded-ds-lg',
     xl: 'rounded-ds-lg',

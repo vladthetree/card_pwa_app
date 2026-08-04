@@ -9,6 +9,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowLeft, CheckCircle2, ChevronDown, Circle, Info, Route, X } from 'lucide-react'
 import { useSettings } from '../contexts/SettingsContext'
+import { useTheme, themeScopeClass } from '../contexts/ThemeContext'
 import { profileScopeId } from '../services/profileService'
 import { useTodayPackage } from '../hooks/home/useTodayPackage'
 import { useLearningUnits } from '../hooks/home/useLearningUnits'
@@ -127,6 +128,7 @@ interface Props {
 
 export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtIndex, onOpenLabScenario, embedded = false }: Props) {
   const { settings, profile, isProfileHydrated } = useSettings()
+  const { themeKey } = useTheme()
   const copy = VIEW_COPY[settings.language]
   const listCopy = LEARNING_UNIT_COPY[settings.language]
 
@@ -350,7 +352,7 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
   }
 
   return (
-    <div className="learning-units-neo flex h-full min-h-0 flex-col">
+    <div className={`${themeScopeClass(themeKey, 'learning-units')} flex h-full min-h-0 flex-col`}>
       {!embedded && (
         <div className="shrink-0 border-b-4 border-black bg-[#FFD93D] px-4 pb-3 pt-safe-2">
           <div className="flex items-center gap-3">

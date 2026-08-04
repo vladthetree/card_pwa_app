@@ -7,6 +7,7 @@ import { motion } from '../../ui/motion'
 import { Check, ChevronDown, Dices, Download, FlaskConical, FolderPlus, GraduationCap, LayoutDashboard, Loader2, Plus, RefreshCw, Search, Shuffle, Upload, Video, X } from 'lucide-react'
 import type { DeckSortMode } from '../../hooks/home/useHomeDeckFilters'
 import { useFloatingMenu } from '../../hooks/useFloatingMenu'
+import { useTheme, themeScopeClass } from '../../contexts/ThemeContext'
 import type { HomeTab } from '../../types'
 
 interface Props {
@@ -66,6 +67,7 @@ export function HomeDeckToolbar({
 }: Props) {
   const [showActionsMenu, setShowActionsMenu] = useState(false)
   const [showFilterMenu, setShowFilterMenu] = useState(false)
+  const { themeKey } = useTheme()
 
   const closeActionsMenu = useCallback(() => {
     setShowActionsMenu(false)
@@ -149,7 +151,7 @@ export function HomeDeckToolbar({
 
   return (
     <div className={`sticky top-0 z-[90] mb-2 mt-2 flex-shrink-0 sm:mb-3 sm:mt-4 ${
-      homeTab === 'learning-units' ? 'learning-units-toolbar-neo' : ''
+      homeTab === 'learning-units' ? themeScopeClass(themeKey, 'learning-units-toolbar') : ''
     }`}>
       <div className="rounded-ds border border-ds-border bg-ds-bg/92 p-2 shadow-card backdrop-blur-md sm:border-0 sm:bg-ds-bg/70 sm:p-0 sm:shadow-none sm:backdrop-blur-sm">
       <div className="flex min-w-0 flex-wrap items-center gap-2 overflow-x-hidden overflow-y-visible sm:flex-nowrap sm:gap-1 sm:pb-1">

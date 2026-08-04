@@ -31,6 +31,75 @@ export const THEMES = {
     cardBorder: '#000000',
     glow: 'rgba(255,107,107,0.18)',
   },
+  newsprint: {
+    name: 'Newsprint',
+    primary: '#CC0000',
+    secondary: '#404040',
+    accent: '#E5E5E0',
+    background: '#F9F9F7',
+    floor: '#F9F9F7',
+    card: '#FFFFFF',
+    surface: '#FFFFFF',
+    surfaceHover: '#F5F5F5',
+    panel: '#E5E5E0',
+    panelHover: '#DCDCD6',
+    border: '#111111',
+    borderStrong: '#111111',
+    borderHover: '#111111',
+    text: '#111111',
+    textSecondary: '#4D4D4D',
+    textMuted: '#595959',
+    subtle: '#666666',
+    codeBg: '#F5F5F5',
+    cardBorder: '#111111',
+    glow: 'rgba(204,0,0,0.15)',
+  },
+  neodark: {
+    name: 'Neo-Brutalismus Dark',
+    primary: '#FF6B6B',
+    secondary: '#C4B5FD',
+    accent: '#FFD93D',
+    background: '#15130E',
+    floor: '#15130E',
+    card: '#211D15',
+    surface: '#211D15',
+    surfaceHover: '#FFD93D',
+    panel: '#C4B5FD',
+    panelHover: '#FFD93D',
+    border: '#FFFDF5',
+    borderStrong: '#FFFDF5',
+    borderHover: '#FFFDF5',
+    text: '#FFFDF5',
+    textSecondary: 'rgba(255,253,245,0.72)',
+    textMuted: '#FFFDF5',
+    subtle: '#FFFDF5',
+    codeBg: '#211D15',
+    cardBorder: '#FFFDF5',
+    glow: 'rgba(255,107,107,0.18)',
+  },
+  dopamine: {
+    name: 'Dopamine',
+    primary: '#FF3AF2',
+    secondary: '#00F5D4',
+    accent: '#FFE600',
+    background: '#0D0D1A',
+    floor: '#0D0D1A',
+    card: '#2D1B4E',
+    surface: '#2D1B4E',
+    surfaceHover: '#3D2568',
+    panel: '#2D1B4E',
+    panelHover: '#3D2568',
+    border: '#FF3AF2',
+    borderStrong: '#FF3AF2',
+    borderHover: '#FF3AF2',
+    text: '#FFFFFF',
+    textSecondary: '#D9D3F0',
+    textMuted: '#B8AED9',
+    subtle: '#8A7FB0',
+    codeBg: '#241640',
+    cardBorder: '#FF3AF2',
+    glow: 'rgba(255,58,242,0.4)',
+  },
 } as const
 
 export type ThemeKey = keyof typeof THEMES
@@ -71,12 +140,34 @@ function getThemeChromeColor(key: ThemeKey): string {
   return APP_CHROME_COLOR
 }
 
-function normalizeSavedThemeKey(value: string | null): ThemeKey {
-  // Frühere Theme-Keys werden bewusst auf das einzige aktuelle System
-  // migriert. Eine Auswahl gibt es erst wieder, wenn weitere Designs fertig
-  // und vollständig durch alle Ansichten gezogen sind.
-  void value
+export function normalizeSavedThemeKey(value: string | null): ThemeKey {
+  if (value !== null && Object.prototype.hasOwnProperty.call(THEMES, value)) {
+    return value as ThemeKey
+  }
   return 'default'
+}
+
+// Lernplan-Views setzen zusätzlich zur Body-Klasse eine lokal gescopte
+// Wrapper-Klasse (z.B. `learning-units-neo`/`-newsprint`/`-dopamine`), deren
+// CSS-Block (index.css) dieselben --neo-*-Variablennamen wie .neo-app pro
+// Theme neu belegt. 'default' behält den historischen Suffix 'neo'.
+export function themeScopeClass(themeKey: ThemeKey, base: string): string {
+  return `${base}-${themeKey === 'default' ? 'neo' : themeKey}`
+}
+
+// Body-Klasse pro Theme — trägt die CSS-Var- und Selektor-Repaint-Verträge
+// aus index.css (`.neo-app` / `.newsprint-app`, jeweils @layer components).
+const THEME_BODY_CLASS: Record<ThemeKey, string> = {
+  default: 'neo-app',
+  newsprint: 'newsprint-app',
+  dopamine: 'dopamine-app',
+  neodark: 'neo-dark-app',
+}
+const THEME_DATA_ATTR: Record<ThemeKey, string> = {
+  default: 'neo',
+  newsprint: 'newsprint',
+  dopamine: 'dopamine',
+  neodark: 'neo-dark',
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
@@ -95,14 +186,18 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   // Apply theme to CSS custom properties
   useEffect(() => {
     const root = document.documentElement
-    // Das einzige visuelle Grundsystem ist appweit Neo-Brutalismus. Die Klasse
-    // sitzt auf body, damit auch Portale und Modale dieselben Tokens erben.
-    document.body.classList.add('neo-app')
+    // Die Body-Klasse trägt den vollständigen visuellen Vertrag (CSS-Vars +
+    // Selektor-Repaints) für das aktive Theme; Portale/Modale erben davon,
+    // weil sie im DOM unter body hängen. Die jeweils andere Theme-Klasse wird
+    // entfernt, damit nie zwei Verträge gleichzeitig aktiv sind.
+    for (const key of Object.keys(THEME_BODY_CLASS) as ThemeKey[]) {
+      document.body.classList.toggle(THEME_BODY_CLASS[key], key === themeKey)
+    }
     const themeColor = getThemeChromeColor(themeKey)
     const [primaryR, primaryG, primaryB] = hexToRgbTuple(theme.primary)
     const [secondaryR, secondaryG, secondaryB] = hexToRgbTuple(theme.secondary)
 
-    root.setAttribute('data-theme', 'neo')
+    root.setAttribute('data-theme', THEME_DATA_ATTR[themeKey])
 
     root.style.setProperty('--brand-primary', `rgb(${primaryR}, ${primaryG}, ${primaryB})`)
     root.style.setProperty('--brand-primary-08', `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.08)`)

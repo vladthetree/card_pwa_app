@@ -717,13 +717,12 @@ export async function listPublicProfiles(endpoint: string, profileToken?: string
   }
 }
 
-/** POST /auth/profile/join — Default-Profil ohne Nachweis, persönliche Profile nur mit Familien-PIN. */
+/** POST /auth/profile/join — jedes Profil ist ohne Nachweis beitretbar. */
 export async function joinPublicProfile(
   endpoint: string,
   userId: string,
   deviceId: string,
   deviceLabel?: string,
-  joinPin?: string,
 ): Promise<JoinProfileResponse> {
   const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
   const target = `${base}/auth/profile/join`
@@ -737,7 +736,6 @@ export async function joinPublicProfile(
           userId,
           deviceId,
           deviceLabel: deviceLabel ?? 'Browser',
-          ...(joinPin ? { joinPin } : {}),
         }),
       },
       SYNC_FETCH_TIMEOUT_MS,

@@ -12,7 +12,22 @@ import {
   normalizeLearningPlanFormValues,
 } from '../../components/LearningPlanPanel'
 import { resolveEffectiveLearningPlanExamDate } from '../../hooks/home/useLearningUnits'
+import { ThemeProvider } from '../../contexts/ThemeContext'
 import { computeDraftPacing, computeLearningWorkload } from '../../utils/learningUnitRanking'
+
+// Node-Testumgebung kennt kein localStorage; ThemeProvider liest es nur beim
+// Initialisieren (kein Effekt läuft unter renderToStaticMarkup), ein leerer
+// Stub genügt, damit LearningPlanPanels useTheme()-Aufruf funktioniert.
+if (typeof globalThis.localStorage === 'undefined') {
+  globalThis.localStorage = {
+    getItem: () => null,
+    setItem: () => undefined,
+    removeItem: () => undefined,
+    clear: () => undefined,
+    key: () => null,
+    length: 0,
+  } as Storage
+}
 
 const contentProgress = {
   rootDeckCount: 5,
@@ -133,7 +148,7 @@ describe('LearningPlanPanel summary', () => {
       plan: { weeklyMinutesAvailable: 300, learningDaysPerWeek: 6 },
       workload,
     })
-    const html = renderToStaticMarkup(createElement(LearningPlanPanel, {
+    const html = renderToStaticMarkup(createElement(ThemeProvider, null, createElement(LearningPlanPanel, {
       language: 'de',
       summaryValues: values,
       values,
@@ -150,7 +165,7 @@ describe('LearningPlanPanel summary', () => {
       onChange: () => undefined,
       onSave: () => undefined,
       onClose: () => undefined,
-    }))
+    })))
 
     expect(html).toContain('data-testid="learning-workload-metrics"')
     expect(html).toContain('Kurs/Labs: Planwerte · Reviews bis Termin')
@@ -168,7 +183,7 @@ describe('LearningPlanPanel summary', () => {
       learningDaysPerWeek: 6,
     })
     const pacing = computeDraftPacing({ daysLeft: null })
-    const html = renderToStaticMarkup(createElement(LearningPlanPanel, {
+    const html = renderToStaticMarkup(createElement(ThemeProvider, null, createElement(LearningPlanPanel, {
       language: 'de',
       summaryValues: values,
       values,
@@ -185,7 +200,7 @@ describe('LearningPlanPanel summary', () => {
       onChange: () => undefined,
       onSave: () => undefined,
       onClose: () => undefined,
-    }))
+    })))
     expect(html).toContain('data-testid="learning-plan-summary"')
     expect(html).toContain('data-testid="learning-plan-edit"')
     expect(html).toContain('data-testid="learning-plan-toggle"')
@@ -205,7 +220,7 @@ describe('LearningPlanPanel summary', () => {
       learningDaysPerWeek: 6,
     })
     const pacing = computeDraftPacing({ daysLeft: null })
-    const html = renderToStaticMarkup(createElement(LearningPlanPanel, {
+    const html = renderToStaticMarkup(createElement(ThemeProvider, null, createElement(LearningPlanPanel, {
       language: 'de',
       summaryValues: values,
       values,
@@ -222,7 +237,7 @@ describe('LearningPlanPanel summary', () => {
       onChange: () => undefined,
       onSave: () => undefined,
       onClose: () => undefined,
-    }))
+    })))
     expect(html).toContain('aria-expanded="false"')
     expect(html).toContain('42/412 Karten bearbeitet')
     expect(html).not.toContain('5 Std./Woche')

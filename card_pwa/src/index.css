@@ -187,6 +187,21 @@
     font-family: var(--app-font-family-mono) !important;
   }
 
+  /* Newsprint-Theme: Fließtext-Serif für die Kartenfront/-rückseite. Muss im
+     selben Layer wie .font-sans oben stehen — bei !important gewinnt bei
+     Cascade Layers der frühere Layer immer, ein Override aus @layer
+     components (wo .newsprint-app sonst lebt) würde sonst verlieren, egal
+     wie hoch seine Spezifität ist. */
+  .newsprint-app .card-face-text {
+    font-family: 'Lora', Georgia, serif !important;
+  }
+
+  /* Dopamine-Theme: DM Sans (Fließtext) statt Outfit (Headline/UI-Sans) für
+     die Kartenfront/-rückseite — gleicher Cascade-Layer-Grund wie oben. */
+  .dopamine-app .card-face-text {
+    font-family: 'DM Sans', system-ui, sans-serif !important;
+  }
+
   #root {
     min-height: 100vh;
     min-height: 100svh;
@@ -1047,11 +1062,11 @@
     }
 
     .neo-learning-hover-yellow:hover {
-      background: #ffd93d;
+      background: var(--neo-secondary);
     }
 
     .neo-learning-hover-violet:hover {
-      background: #c4b5fd;
+      background: var(--neo-muted);
     }
   }
 
@@ -1136,4 +1151,821 @@
   .glow-purple { box-shadow: 0 0 0 1px rgba(59,130,246,0.18); }
   .glow-blue   { box-shadow: 0 0 0 1px rgba(59,130,246,0.18); }
   .glow-green  { box-shadow: 0 0 0 1px rgba(16,185,129,0.18);  }
+
+  /* ── Newsprint-Theme-Vertrag ──────────────────────────────────────────────
+     Spiegelt .neo-app 1:1 (gleiche Struktur, gleiche Selektor-Liste), damit
+     .neo-app selbst unangetastet bleibt. Editorial-Zeitungslook: Off-White/
+     Ink-Schwarz/Editorial-Rot, scharfe Ecken, harte Versatzschatten, Serif-
+     Schlagzeilen. */
+  .newsprint-app {
+    --news-canvas: #f9f9f7;
+    --news-ink: #111111;
+    --news-white: #ffffff;
+    --news-accent: #cc0000;
+    --news-muted: #e5e5e0;
+    --news-muted-hover: #dcdcd6;
+    --news-secondary: #404040;
+    --ds-bg: var(--news-canvas);
+    --ds-floor: var(--news-canvas);
+    --ds-card: var(--news-white);
+    --ds-panel: var(--news-muted);
+    --ds-panel-hover: var(--news-muted-hover);
+    --ds-border: var(--news-ink);
+    --ds-border-strong: var(--news-ink);
+    --ds-border-hover: var(--news-ink);
+    --ds-fg: var(--news-ink);
+    --ds-text-normal: #4d4d4d;
+    --ds-muted: #595959;
+    --ds-subtle: #666666;
+    --ds-code-bg: #f5f5f5;
+    --ds-accent-primary: var(--news-accent);
+    --ds-accent-secondary: var(--news-secondary);
+    --brand-primary: var(--news-accent);
+    --brand-primary-08: var(--news-accent);
+    --brand-primary-12: var(--news-accent);
+    --brand-primary-15: var(--news-accent);
+    --brand-primary-20: var(--news-accent);
+    --brand-primary-25: var(--news-accent);
+    --brand-primary-50: var(--news-accent);
+    --brand-primary-80: var(--news-accent);
+    --brand-primary-100: var(--news-accent);
+    --brand-secondary: var(--news-secondary);
+    --brand-secondary-08: var(--news-muted);
+    --brand-secondary-12: var(--news-muted);
+    --brand-secondary-15: var(--news-muted);
+    --brand-secondary-20: var(--news-muted);
+    --brand-secondary-25: var(--news-muted);
+    --brand-secondary-50: var(--news-secondary);
+    --brand-secondary-80: var(--news-secondary);
+    --brand-secondary-100: var(--news-secondary);
+    --theme-primary: var(--news-accent);
+    --theme-secondary: var(--news-secondary);
+    --theme-accent: var(--news-muted);
+    --theme-background: var(--news-canvas);
+    --theme-floor: var(--news-canvas);
+    --theme-card: var(--news-white);
+    --theme-surface: var(--news-white);
+    --theme-surface-hover: #f5f5f5;
+    --theme-panel: var(--news-muted);
+    --theme-panel-hover: var(--news-muted-hover);
+    --theme-border: var(--news-ink);
+    --theme-border-strong: var(--news-ink);
+    --theme-border-hover: var(--news-ink);
+    --theme-text: var(--news-ink);
+    --theme-text-secondary: #4d4d4d;
+    --theme-text-muted: #595959;
+    --app-background: var(--news-canvas);
+    --home-bottom-bar-bg: var(--news-canvas);
+    --card-border-color: var(--news-ink);
+    --card-border-width: 1px;
+    --app-font-family-sans: 'Inter', 'Helvetica Neue', sans-serif;
+    --app-font-family-mono: 'JetBrains Mono', 'Courier New', monospace;
+    --radius-ds-sm: 0px;
+    --radius-ds-md: 0px;
+    --radius-ds-lg: 0px;
+    --radius-ds-xl: 0px;
+    --radius-ds-2xl: 0px;
+    --radius-ds-sheet: 0px;
+    --shadow-card: 4px 4px 0 0 var(--news-ink);
+    --shadow-menu: 6px 6px 0 0 var(--news-ink);
+    --shadow-modal: 8px 8px 0 0 var(--news-ink);
+    color: var(--news-ink);
+    color-scheme: light;
+    background-color: var(--news-canvas) !important;
+    font-family: 'Inter', 'Helvetica Neue', sans-serif;
+    font-weight: 400;
+  }
+
+  .newsprint-app::before,
+  .newsprint-app #root {
+    background-color: var(--news-canvas) !important;
+    background-image: radial-gradient(rgba(17, 17, 17, 0.14) 1px, transparent 1px) !important;
+    background-size: 4px 4px !important;
+  }
+
+  .newsprint-app :is(h1, h2, h3, h4, h5, h6):not(.font-sans) {
+    color: var(--news-ink);
+    font-family: 'Playfair Display', 'Times New Roman', serif;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .newsprint-app :is(button, [role='button']) {
+    transition-duration: 100ms;
+    transition-timing-function: linear;
+  }
+
+  .newsprint-app [class*='rounded-']:not(.rounded-full),
+  .newsprint-app .rounded {
+    border-radius: 0 !important;
+  }
+
+  .newsprint-app [class~='border'] {
+    border-width: 1px;
+    border-color: var(--news-ink);
+  }
+
+  .newsprint-app :is(.ds-card, .ds-panel, .glass) {
+    border: 1px solid var(--news-ink);
+    border-radius: 0;
+    background: var(--news-white);
+    box-shadow: var(--shadow-card);
+    color: var(--news-ink);
+  }
+
+  .newsprint-app :is(.ds-modal, .ds-menu) {
+    border: 2px solid var(--news-ink);
+    border-radius: 0;
+    background: var(--news-white);
+    box-shadow: var(--shadow-modal);
+    color: var(--news-ink);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .newsprint-app .ds-icon-button {
+    border: 1px solid var(--news-ink);
+    border-radius: 0;
+    background: var(--news-white);
+    box-shadow: 2px 2px 0 0 var(--news-ink);
+    color: var(--news-ink);
+  }
+
+  .newsprint-app .ds-icon-button:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+  }
+
+  /* Newsprint-Inputs folgen der Spec statt Neos Vollrand-Look: nur
+     Unterstrich, transparenter Hintergrund, Monospace für Dateneingaben. */
+  .newsprint-app :is(input, select, textarea) {
+    border: none !important;
+    border-bottom: 2px solid var(--news-ink) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: var(--news-ink) !important;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-weight: 400;
+  }
+
+  .newsprint-app :is(input, select, textarea):focus-visible {
+    outline: none;
+    background: #f0f0f0 !important;
+    box-shadow: none;
+  }
+
+  .newsprint-app :is(input, textarea)::placeholder {
+    color: var(--news-ink) !important;
+    opacity: 0.5;
+  }
+
+  /* Legacy literal text utilities werden auf Ink normalisiert — Bedeutung von
+     Status-/Semantikfarben kommt über Hintergrund-Wash/Icons, nicht über
+     Textfarbe (identisches Prinzip wie .neo-app). Dunkel-Insel via
+     neo-keep-dark (dieselbe DOM-Klasse wie bei .neo-app, s.u.) bleibt außen vor. */
+  .newsprint-app .text-white,
+  .newsprint-app [class*='text-white/'],
+  .newsprint-app [class*='text-zinc-'],
+  .newsprint-app [class*='text-amber-'],
+  .newsprint-app [class*='text-emerald-'],
+  .newsprint-app [class*='text-red-'],
+  .newsprint-app [class*='text-rose-'] {
+    color: var(--news-ink) !important;
+  }
+
+  .newsprint-app [class*='border-white/'],
+  .newsprint-app [class*='border-zinc-'],
+  .newsprint-app [class*='border-amber-'],
+  .newsprint-app [class*='border-emerald-'],
+  .newsprint-app [class*='border-red-'],
+  .newsprint-app [class*='border-rose-'] {
+    border-color: var(--news-ink) !important;
+  }
+
+  .newsprint-app [class*='bg-white/'],
+  .newsprint-app [class*='bg-[#050505]'],
+  .newsprint-app [class*='bg-[#060606]'],
+  .newsprint-app [class*='bg-[#070707]'],
+  .newsprint-app [class*='bg-[#080808]'],
+  .newsprint-app [class*='bg-[#0a0a0a]'],
+  .newsprint-app [class*='bg-[#0c0c0c]'],
+  .newsprint-app [class*='bg-[#0f0f0f]'],
+  .newsprint-app .bg-zinc-950,
+  .newsprint-app .bg-zinc-900,
+  .newsprint-app .bg-\[\#050505\],
+  .newsprint-app .bg-\[\#060606\],
+  .newsprint-app .bg-\[\#070707\],
+  .newsprint-app .bg-\[\#080808\],
+  .newsprint-app .bg-\[\#0a0a0a\],
+  .newsprint-app .bg-\[\#0c0c0c\],
+  .newsprint-app .bg-\[\#0f0f0f\],
+  .newsprint-app .bg-\[\#111\],
+  .newsprint-app .bg-\[\#18181b\],
+  .newsprint-app .bg-\[\#27272a\] {
+    background-color: var(--news-white) !important;
+  }
+
+  .newsprint-app .bg-zinc-500,
+  .newsprint-app .bg-zinc-300,
+  .newsprint-app .bg-zinc-200 {
+    background-color: var(--news-muted) !important;
+  }
+
+  .newsprint-app .border-\[\#18181b\],
+  .newsprint-app .border-\[\#1f1f22\],
+  .newsprint-app .border-\[\#1f1f23\],
+  .newsprint-app .border-\[\#27272a\],
+  .newsprint-app .border-\[\#3f3f46\] {
+    border-color: var(--news-ink) !important;
+  }
+
+  .newsprint-app [class*='backdrop-blur'] {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .newsprint-app [class*='hover:bg-[#050505]']:hover,
+  .newsprint-app [class*='hover:bg-[#060606]']:hover,
+  .newsprint-app [class*='hover:bg-[#070707]']:hover,
+  .newsprint-app [class*='hover:bg-[#080808]']:hover,
+  .newsprint-app [class*='hover:bg-[#0a0a0a]']:hover,
+  .newsprint-app [class*='hover:bg-[#0c0c0c]']:hover,
+  .newsprint-app [class*='hover:bg-[#0f0f0f]']:hover,
+  .newsprint-app [class*='hover:bg-[#111]']:hover {
+    background-color: var(--news-muted) !important;
+    color: var(--news-ink) !important;
+  }
+
+  /* Lücken-Bucket: Neos eigene Akzent-Hex-Farben fängt .neo-app naturgemäß
+     nicht ab (sind ja für Neo korrekt) — für Newsprint werden sie zu einer
+     neutralen hellen Fläche, die mit dem überall danebenstehenden text-black
+     sicher lesbar bleibt (deckt u.a. UI_TOKENS.modal/button/input und die
+     Lernplan-Badges zentral ab). */
+  .newsprint-app [class*='bg-[#FFD93D]'],
+  .newsprint-app [class*='bg-[#FF6B6B]'],
+  .newsprint-app [class*='bg-[#C4B5FD]'],
+  .newsprint-app [class*='bg-[#FFFDF5]'],
+  .newsprint-app [class*='bg-[#86EFAC]'],
+  .newsprint-app [class*='bg-[#FDBA74]'],
+  .newsprint-app .bg-\[\#FFD93D\],
+  .newsprint-app .bg-\[\#FF6B6B\],
+  .newsprint-app .bg-\[\#C4B5FD\],
+  .newsprint-app .bg-\[\#FFFDF5\],
+  .newsprint-app .bg-\[\#86EFAC\],
+  .newsprint-app .bg-\[\#FDBA74\] {
+    background-color: var(--news-muted) !important;
+  }
+
+  /* text-[#150b08] steht im Code ausnahmslos auf bg-[--brand-primary] (=
+     Editorial-Rot #CC0000 unter Newsprint) — Ink-Text auf Rot fällt unter
+     4.5:1 AA-Kontrast, Weiß bleibt sicher lesbar. */
+  .newsprint-app [class*='text-[#150b08]'],
+  .newsprint-app .text-\[\#150b08\] {
+    color: var(--news-white) !important;
+  }
+
+  /* Gleicher Kontrastfall, andere Klassenkombination: die Lernplan-Wizard-
+     Buttons kombinieren bg-[--brand-primary] mit text-black statt
+     text-[#150b08] — schwarz auf Rot fällt ebenfalls unter 4.5:1. */
+  .newsprint-app [class*='bg-[--brand-primary]'].text-black {
+    color: var(--news-white) !important;
+  }
+
+  .newsprint-app .neo-keep-dark,
+  .newsprint-app .neo-keep-dark .bg-black {
+    background: #000 !important;
+    color: #fff !important;
+  }
+
+  .newsprint-app .neo-keep-dark [class*='bg-[#050505]'],
+  .newsprint-app .neo-keep-dark [class*='bg-[#060606]'],
+  .newsprint-app .neo-keep-dark [class*='bg-[#070707]'],
+  .newsprint-app .neo-keep-dark [class*='bg-[#080808]'],
+  .newsprint-app .neo-keep-dark [class*='bg-[#0a0a0a]'],
+  .newsprint-app .neo-keep-dark [class*='bg-[#0c0c0c]'],
+  .newsprint-app .neo-keep-dark [class*='bg-[#0f0f0f]'],
+  .newsprint-app .neo-keep-dark [class*='bg-[#111]'] {
+    background-color: #111 !important;
+  }
+
+  .newsprint-app .neo-keep-dark .text-white,
+  .newsprint-app .neo-keep-dark [class*='text-white/'],
+  .newsprint-app .neo-keep-dark [class*='text-zinc-'] {
+    color: #fff !important;
+  }
+
+  .newsprint-app .neo-keep-dark :is(button, [role='button']) {
+    color: #fff;
+  }
+
+  .newsprint-app .neo-keep-dark .ds-icon-button {
+    border-color: #000 !important;
+    background: var(--news-muted) !important;
+    box-shadow: 2px 2px 0 0 #fff;
+    color: #000 !important;
+  }
+
+  .newsprint-app .neo-keep-dark [class*='hover:bg-[#0']:hover,
+  .newsprint-app .neo-keep-dark [class*='hover:bg-[#111]']:hover {
+    background-color: #27272a !important;
+    color: #fff !important;
+  }
+
+  .newsprint-app .neo-keep-dark .neo-video-note-input,
+  .newsprint-app .neo-keep-dark .neo-video-note-input:focus-visible {
+    border: 2px solid #000 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    color: #000 !important;
+    caret-color: #000 !important;
+  }
+
+  .newsprint-app .neo-keep-dark .neo-video-note-input::placeholder {
+    color: rgba(0, 0, 0, 0.55) !important;
+    opacity: 1;
+  }
+
+  /* Lernplan-spezifische Wrapper — spiegeln .learning-units-neo /
+     .learning-plan-neo / .learning-units-toolbar-neo. Die generischen
+     .neo-learning-*-Utility-Klassen (Karten/Panels/Labels) konsumieren
+     dieselben --neo-*-Variablennamen; hier lokal mit Newsprint-Werten neu
+     belegt, damit LearningUnitsView/LearningPlanPanel/HomeDeckToolbar diese
+     Klassen nur themeKey-abhängig wählen müssen, ohne die inneren
+     .neo-learning-*-Klassennamen anzufassen. */
+  .learning-units-newsprint,
+  .learning-plan-newsprint {
+    --neo-canvas: #f9f9f7;
+    --neo-ink: #111111;
+    --neo-accent: #cc0000;
+    --neo-secondary: #e5e5e0;
+    --neo-muted: #e5e5e0;
+    --neo-white: #ffffff;
+    --ds-bg: var(--neo-canvas);
+    --ds-floor: var(--neo-canvas);
+    --ds-card: var(--neo-white);
+    --ds-panel: var(--neo-muted);
+    --ds-panel-hover: #dcdcd6;
+    --ds-border: var(--neo-ink);
+    --ds-border-strong: var(--neo-ink);
+    --ds-border-hover: var(--neo-ink);
+    --ds-fg: var(--neo-ink);
+    --ds-text-normal: var(--neo-ink);
+    --ds-muted: var(--neo-ink);
+    --ds-subtle: var(--neo-ink);
+    --brand-primary: var(--neo-accent);
+    --brand-primary-08: var(--neo-accent);
+    --brand-primary-12: var(--neo-accent);
+    --brand-primary-15: var(--neo-accent);
+    --brand-primary-20: var(--neo-accent);
+    --brand-primary-25: var(--neo-accent);
+    --brand-primary-50: var(--neo-accent);
+    --brand-primary-80: var(--neo-accent);
+    --brand-primary-100: var(--neo-accent);
+    --brand-secondary: #404040;
+    --brand-secondary-08: var(--neo-muted);
+    --brand-secondary-12: var(--neo-muted);
+    --brand-secondary-25: var(--neo-muted);
+    --brand-secondary-50: #404040;
+    --radius-ds-sm: 0px;
+    --radius-ds-md: 0px;
+    --radius-ds-lg: 0px;
+    --radius-ds-xl: 0px;
+    --radius-ds-2xl: 0px;
+    --radius-ds-sheet: 0px;
+    --shadow-card: 4px 4px 0 0 #111111;
+    --shadow-menu: 6px 6px 0 0 #111111;
+    --shadow-modal: 8px 8px 0 0 #111111;
+    color: var(--neo-ink);
+    color-scheme: light;
+    background-color: var(--neo-canvas);
+    background-image: radial-gradient(rgba(17, 17, 17, 0.14) 1px, transparent 1px);
+    background-size: 4px 4px;
+  }
+
+  .learning-units-toolbar-newsprint {
+    --ds-card: #ffffff;
+    --ds-panel: #e5e5e0;
+    --ds-panel-hover: #dcdcd6;
+    --ds-border: #111111;
+    --ds-border-hover: #111111;
+  }
+
+  .learning-units-toolbar-newsprint > div {
+    border: 2px solid #111111;
+    border-radius: 0;
+    background: #f9f9f7;
+    box-shadow: 3px 3px 0 0 #111111;
+    color: #111111;
+    backdrop-filter: none;
+  }
+
+  .learning-units-toolbar-newsprint h2,
+  .learning-units-toolbar-newsprint button,
+  .learning-units-toolbar-newsprint span {
+    color: #111111;
+  }
+
+  /* ── Dopamine-Theme-Vertrag ───────────────────────────────────────────────
+     Maximalismus/Y2K-Hyperpop: dunkler Fond, 5 Neon-Akzente, dicke pinke
+     Ränder, mehrschichtige Leucht-/Hartschatten. Erstes dunkles Theme — die
+     Repaint-Polarität kehrt sich gegenüber .neo-app/.newsprint-app teilweise
+     um (Details siehe Plan-Notiz im Commit): altes Dark-Mode-Vokabular
+     (text-white, text-zinc-*, Status-Washes) ist bereits kompatibel und
+     bleibt unangetastet; dafür müssen text-black/bg-white/border-black —
+     bislang nie nötig, weil beide bisherigen Themes ohnehin hell sind —
+     neu gedreht werden. Keine Dauer-Animationen, keine Deko-Emojis/XXL-
+     Hintergrundtypografie (Scope-Entscheidung). */
+  .dopamine-app {
+    --dope-canvas: #0d0d1a;
+    --dope-ink: #170b2e;
+    --dope-fg: #ffffff;
+    --dope-card: #2d1b4e;
+    --dope-card-hover: #3d2568;
+    --dope-magenta: #ff3af2;
+    --dope-cyan: #00f5d4;
+    --dope-yellow: #ffe600;
+    --dope-orange: #ff6b35;
+    --dope-purple: #7b2fff;
+    --ds-bg: var(--dope-canvas);
+    --ds-floor: var(--dope-canvas);
+    --ds-card: var(--dope-card);
+    --ds-panel: var(--dope-card);
+    --ds-panel-hover: var(--dope-card-hover);
+    --ds-border: var(--dope-magenta);
+    --ds-border-strong: var(--dope-magenta);
+    --ds-border-hover: var(--dope-cyan);
+    --ds-fg: var(--dope-fg);
+    --ds-text-normal: #d9d3f0;
+    --ds-muted: #b8aed9;
+    --ds-subtle: #8a7fb0;
+    --ds-code-bg: #241640;
+    --ds-accent-primary: var(--dope-magenta);
+    --ds-accent-secondary: var(--dope-cyan);
+    --brand-primary: var(--dope-magenta);
+    /* -08/-12/-15/-20/-25 sind "Wash"-Hintergrundstufen für Badge-Muster wie
+       bg-[--brand-primary-12] text-[--brand-primary] (viele Consumer, z.B.
+       HomeDailyQuestTile/CardFormModal/StreakBadge) — müssen sich von der
+       vollen Akzentfarbe (Textfarbe!) unterscheiden, sonst Text=Hintergrund
+       und unsichtbar. Dunkle Karten-Fläche statt Vollton, -50 aufwärts bleibt
+       Vollton (Border/Hover-Text). */
+    --brand-primary-08: var(--dope-card);
+    --brand-primary-12: var(--dope-card);
+    --brand-primary-15: var(--dope-card);
+    --brand-primary-20: var(--dope-card);
+    --brand-primary-25: var(--dope-card);
+    --brand-primary-50: var(--dope-magenta);
+    --brand-primary-80: var(--dope-magenta);
+    --brand-primary-100: var(--dope-magenta);
+    --brand-secondary: var(--dope-cyan);
+    --brand-secondary-08: var(--dope-card);
+    --brand-secondary-12: var(--dope-card);
+    --brand-secondary-15: var(--dope-card);
+    --brand-secondary-20: var(--dope-card);
+    --brand-secondary-25: var(--dope-card);
+    --brand-secondary-50: var(--dope-cyan);
+    --brand-secondary-80: var(--dope-cyan);
+    --brand-secondary-100: var(--dope-cyan);
+    --theme-primary: var(--dope-magenta);
+    --theme-secondary: var(--dope-cyan);
+    --theme-accent: var(--dope-yellow);
+    --theme-background: var(--dope-canvas);
+    --theme-floor: var(--dope-canvas);
+    --theme-card: var(--dope-card);
+    --theme-surface: var(--dope-card);
+    --theme-surface-hover: var(--dope-card-hover);
+    --theme-panel: var(--dope-card);
+    --theme-panel-hover: var(--dope-card-hover);
+    --theme-border: var(--dope-magenta);
+    --theme-border-strong: var(--dope-magenta);
+    --theme-border-hover: var(--dope-cyan);
+    --theme-text: var(--dope-fg);
+    --theme-text-secondary: #d9d3f0;
+    --theme-text-muted: #b8aed9;
+    --app-background: var(--dope-canvas);
+    --home-bottom-bar-bg: var(--dope-canvas);
+    --card-border-color: var(--dope-magenta);
+    --card-border-width: 4px;
+    --app-font-family-sans: 'Outfit', 'Helvetica Neue', sans-serif;
+    --radius-ds-sm: 12px;
+    --radius-ds-md: 20px;
+    --radius-ds-lg: 24px;
+    --radius-ds-xl: 28px;
+    --radius-ds-2xl: 32px;
+    --radius-ds-sheet: 32px;
+    --shadow-card: 0 0 20px rgba(255, 58, 242, 0.35), 6px 6px 0 0 var(--dope-yellow), 12px 12px 0 0 var(--dope-cyan);
+    --shadow-menu: 0 0 30px rgba(255, 58, 242, 0.4), 8px 8px 0 0 var(--dope-cyan), 16px 16px 0 0 var(--dope-purple);
+    --shadow-modal: 0 0 40px rgba(255, 58, 242, 0.45), 10px 10px 0 0 var(--dope-orange), 20px 20px 0 0 var(--dope-yellow);
+    color: var(--dope-fg);
+    color-scheme: dark;
+    background-color: var(--dope-canvas) !important;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-weight: 400;
+  }
+
+  .dopamine-app::before,
+  .dopamine-app #root {
+    background-color: var(--dope-canvas) !important;
+    background-image:
+      radial-gradient(circle, rgba(255, 58, 242, 0.08) 1px, transparent 1px),
+      repeating-linear-gradient(45deg, transparent, transparent 12px, rgba(0, 245, 212, 0.03) 12px, rgba(0, 245, 212, 0.03) 24px) !important;
+    background-size: 24px 24px, auto !important;
+  }
+
+  .dopamine-app :is(h1, h2, h3, h4, h5, h6):not(.font-sans) {
+    color: var(--dope-fg);
+    font-family: 'Outfit', 'Helvetica Neue', sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-shadow: 2px 2px 0 var(--dope-purple), 4px 4px 0 var(--dope-magenta);
+  }
+
+  .dopamine-app :is(button, [role='button']) {
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+  }
+
+  .dopamine-app [class~='border'] {
+    border-width: 3px;
+    border-color: var(--dope-magenta);
+  }
+
+  .dopamine-app :is(.ds-card, .ds-panel, .glass) {
+    border: 4px solid var(--dope-magenta);
+    background: var(--dope-card);
+    box-shadow: var(--shadow-card);
+    color: var(--dope-fg);
+  }
+
+  .dopamine-app :is(.ds-modal, .ds-menu) {
+    border: 4px solid var(--dope-magenta);
+    background: var(--dope-card);
+    box-shadow: var(--shadow-modal);
+    color: var(--dope-fg);
+  }
+
+  .dopamine-app .ds-icon-button {
+    border: 3px solid var(--dope-magenta);
+    background: var(--dope-card);
+    box-shadow: 3px 3px 0 0 var(--dope-cyan);
+    color: var(--dope-fg);
+  }
+
+  .dopamine-app .ds-icon-button:active {
+    transform: translate(3px, 3px);
+    box-shadow: none;
+  }
+
+  .dopamine-app :is(input, select, textarea) {
+    border: 4px solid var(--dope-magenta) !important;
+    background: var(--dope-card) !important;
+    color: var(--dope-fg) !important;
+    font-weight: 600;
+  }
+
+  .dopamine-app :is(input, select, textarea):focus-visible {
+    outline: none;
+    border-color: var(--dope-cyan) !important;
+    background: var(--dope-card-hover) !important;
+    box-shadow: 0 0 20px rgba(0, 245, 212, 0.5);
+  }
+
+  .dopamine-app :is(input, textarea)::placeholder {
+    color: var(--dope-fg) !important;
+    opacity: 0.4;
+  }
+
+  /* Nur die "hell-spezifischen" Buckets brauchen ein Repaint — altes
+     Dark-Mode-Vokabular (text-white, text-zinc-*, Status-Washes) ist auf
+     dunklem Grund schon korrekt und bleibt bewusst unangetastet. */
+  .dopamine-app [class*='border-white/'],
+  .dopamine-app [class*='border-zinc-'],
+  .dopamine-app [class*='border-amber-'],
+  .dopamine-app [class*='border-emerald-'],
+  .dopamine-app [class*='border-red-'],
+  .dopamine-app [class*='border-rose-'],
+  .dopamine-app .border-black {
+    border-color: var(--dope-magenta) !important;
+  }
+
+  .dopamine-app [class*='bg-[#050505]'],
+  .dopamine-app [class*='bg-[#060606]'],
+  .dopamine-app [class*='bg-[#070707]'],
+  .dopamine-app [class*='bg-[#080808]'],
+  .dopamine-app [class*='bg-[#0a0a0a]'],
+  .dopamine-app [class*='bg-[#0c0c0c]'],
+  .dopamine-app [class*='bg-[#0f0f0f]'],
+  .dopamine-app .bg-zinc-950,
+  .dopamine-app .bg-zinc-900,
+  .dopamine-app .bg-\[\#050505\],
+  .dopamine-app .bg-\[\#060606\],
+  .dopamine-app .bg-\[\#070707\],
+  .dopamine-app .bg-\[\#080808\],
+  .dopamine-app .bg-\[\#0a0a0a\],
+  .dopamine-app .bg-\[\#0c0c0c\],
+  .dopamine-app .bg-\[\#0f0f0f\],
+  .dopamine-app .bg-\[\#111\],
+  .dopamine-app .bg-\[\#18181b\],
+  .dopamine-app .bg-\[\#27272a\] {
+    background-color: var(--dope-card) !important;
+  }
+
+  .dopamine-app .bg-zinc-500,
+  .dopamine-app .bg-zinc-300,
+  .dopamine-app .bg-zinc-200 {
+    background-color: var(--dope-card-hover) !important;
+  }
+
+  .dopamine-app .border-\[\#18181b\],
+  .dopamine-app .border-\[\#1f1f22\],
+  .dopamine-app .border-\[\#1f1f23\],
+  .dopamine-app .border-\[\#27272a\],
+  .dopamine-app .border-\[\#3f3f46\] {
+    border-color: var(--dope-magenta) !important;
+  }
+
+  .dopamine-app [class*='hover:bg-[#050505]']:hover,
+  .dopamine-app [class*='hover:bg-[#060606]']:hover,
+  .dopamine-app [class*='hover:bg-[#070707]']:hover,
+  .dopamine-app [class*='hover:bg-[#080808]']:hover,
+  .dopamine-app [class*='hover:bg-[#0a0a0a]']:hover,
+  .dopamine-app [class*='hover:bg-[#0c0c0c]']:hover,
+  .dopamine-app [class*='hover:bg-[#0f0f0f]']:hover,
+  .dopamine-app [class*='hover:bg-[#111]']:hover {
+    background-color: var(--dope-card-hover) !important;
+    color: var(--dope-fg) !important;
+  }
+
+  /* Dark-Theme-spezifische Pflicht-Buckets: bislang nie nötig, weil Neo UND
+     Newsprint beide hell sind — auf #0D0D1A wären unangetastete Weiß-/
+     Schwarz-Flächen entweder blendend hell oder unsichtbar. */
+  .dopamine-app .bg-white,
+  .dopamine-app [class*='bg-[#FFD93D]'],
+  .dopamine-app [class*='bg-[#FF6B6B]'],
+  .dopamine-app [class*='bg-[#C4B5FD]'],
+  .dopamine-app [class*='bg-[#FFFDF5]'],
+  .dopamine-app [class*='bg-[#86EFAC]'],
+  .dopamine-app [class*='bg-[#FDBA74]'],
+  .dopamine-app .bg-\[\#FFD93D\],
+  .dopamine-app .bg-\[\#FF6B6B\],
+  .dopamine-app .bg-\[\#C4B5FD\],
+  .dopamine-app .bg-\[\#FFFDF5\],
+  .dopamine-app .bg-\[\#86EFAC\],
+  .dopamine-app .bg-\[\#FDBA74\] {
+    background-color: var(--dope-card) !important;
+  }
+
+  .dopamine-app .text-black {
+    color: var(--dope-fg) !important;
+  }
+
+  /* text-[#150b08] steht ausnahmslos auf bg-[--brand-primary] (= Magenta
+     unter Dopamine) — Magenta braucht dunkle statt helle Tinte (Kontrast
+     Weiß/Magenta nur 3.03:1, Ink/Magenta 6.9:1). */
+  .dopamine-app [class*='text-[#150b08]'],
+  .dopamine-app .text-\[\#150b08\] {
+    color: var(--dope-ink) !important;
+  }
+
+  /* Gleicher Kontrastfall, andere Klassenkombination (Lernplan-Wizard-
+     Buttons: bg-[--brand-primary] + text-black statt text-[#150b08]) —
+     hier gewinnt die generelle text-black→Weiß-Regel sonst fälschlich. */
+  .dopamine-app [class*='bg-[--brand-primary]'].text-black {
+    color: var(--dope-ink) !important;
+  }
+
+  /* Schwarze Hartschatten aus UI_TOKENS (button/input/modal-Chrome) sind auf
+     #0D0D1A unsichtbar — auf Magenta drehen. */
+  .dopamine-app .shadow-\[3px_3px_0_0_\#000\] { box-shadow: 3px 3px 0 0 var(--dope-magenta) !important; }
+  .dopamine-app .shadow-\[4px_4px_0_0_\#000\] { box-shadow: 4px 4px 0 0 var(--dope-magenta) !important; }
+  .dopamine-app .shadow-\[6px_6px_0_0_\#000\] { box-shadow: 6px 6px 0 0 var(--dope-magenta) !important; }
+  .dopamine-app .shadow-\[7px_7px_0_0_\#000\] { box-shadow: 7px 7px 0 0 var(--dope-magenta) !important; }
+  .dopamine-app .shadow-\[8px_8px_0_0_\#000\] { box-shadow: 8px 8px 0 0 var(--dope-magenta) !important; }
+
+  .dopamine-app .neo-keep-dark,
+  .dopamine-app .neo-keep-dark .bg-black {
+    background: #000 !important;
+    color: #fff !important;
+  }
+
+  .dopamine-app .neo-keep-dark [class*='bg-[#050505]'],
+  .dopamine-app .neo-keep-dark [class*='bg-[#060606]'],
+  .dopamine-app .neo-keep-dark [class*='bg-[#070707]'],
+  .dopamine-app .neo-keep-dark [class*='bg-[#080808]'],
+  .dopamine-app .neo-keep-dark [class*='bg-[#0a0a0a]'],
+  .dopamine-app .neo-keep-dark [class*='bg-[#0c0c0c]'],
+  .dopamine-app .neo-keep-dark [class*='bg-[#0f0f0f]'],
+  .dopamine-app .neo-keep-dark [class*='bg-[#111]'] {
+    background-color: #111 !important;
+  }
+
+  .dopamine-app .neo-keep-dark .text-white,
+  .dopamine-app .neo-keep-dark [class*='text-white/'],
+  .dopamine-app .neo-keep-dark [class*='text-zinc-'] {
+    color: #fff !important;
+  }
+
+  .dopamine-app .neo-keep-dark :is(button, [role='button']) {
+    color: #fff;
+  }
+
+  .dopamine-app .neo-keep-dark .ds-icon-button {
+    border-color: var(--dope-magenta) !important;
+    background: #111 !important;
+    box-shadow: 3px 3px 0 0 var(--dope-magenta);
+    color: #fff !important;
+  }
+
+  .dopamine-app .neo-keep-dark [class*='hover:bg-[#0']:hover,
+  .dopamine-app .neo-keep-dark [class*='hover:bg-[#111]']:hover {
+    background-color: #27272a !important;
+    color: #fff !important;
+  }
+
+  .dopamine-app .neo-keep-dark .neo-video-note-input,
+  .dopamine-app .neo-keep-dark .neo-video-note-input:focus-visible {
+    border: 3px solid var(--dope-magenta) !important;
+    background: #000 !important;
+    box-shadow: none !important;
+    color: #fff !important;
+    caret-color: #fff !important;
+  }
+
+  .dopamine-app .neo-keep-dark .neo-video-note-input::placeholder {
+    color: rgba(255, 255, 255, 0.55) !important;
+    opacity: 1;
+  }
+
+  /* Lernplan-spezifische Wrapper — spiegeln .learning-units-neo/-newsprint. */
+  .learning-units-dopamine,
+  .learning-plan-dopamine {
+    --neo-canvas: #0d0d1a;
+    --neo-ink: #ff3af2;
+    --neo-accent: #ff3af2;
+    --neo-secondary: #ffe600;
+    --neo-muted: #2d1b4e;
+    --neo-white: #2d1b4e;
+    --ds-bg: var(--neo-canvas);
+    --ds-floor: var(--neo-canvas);
+    --ds-card: var(--neo-white);
+    --ds-panel: var(--neo-muted);
+    --ds-panel-hover: #3d2568;
+    --ds-border: var(--neo-ink);
+    --ds-border-strong: var(--neo-ink);
+    --ds-border-hover: #00f5d4;
+    --ds-fg: #ffffff;
+    --ds-text-normal: #ffffff;
+    --ds-muted: #d9d3f0;
+    --ds-subtle: #b8aed9;
+    --brand-primary: var(--neo-accent);
+    --brand-primary-08: var(--neo-white);
+    --brand-primary-12: var(--neo-white);
+    --brand-primary-15: var(--neo-white);
+    --brand-primary-20: var(--neo-white);
+    --brand-primary-25: var(--neo-white);
+    --brand-primary-50: var(--neo-accent);
+    --brand-primary-80: var(--neo-accent);
+    --brand-primary-100: var(--neo-accent);
+    --brand-secondary: #00f5d4;
+    --brand-secondary-08: var(--neo-white);
+    --brand-secondary-12: var(--neo-white);
+    --brand-secondary-25: var(--neo-white);
+    --brand-secondary-50: #00f5d4;
+    --radius-ds-sm: 12px;
+    --radius-ds-md: 20px;
+    --radius-ds-lg: 24px;
+    --radius-ds-xl: 28px;
+    --radius-ds-2xl: 32px;
+    --radius-ds-sheet: 32px;
+    --shadow-card: 0 0 20px rgba(255, 58, 242, 0.35), 6px 6px 0 0 #ffe600, 12px 12px 0 0 #00f5d4;
+    --shadow-menu: 0 0 30px rgba(255, 58, 242, 0.4), 8px 8px 0 0 #00f5d4, 16px 16px 0 0 #7b2fff;
+    --shadow-modal: 0 0 40px rgba(255, 58, 242, 0.45), 10px 10px 0 0 #ff6b35, 20px 20px 0 0 #ffe600;
+    color: #ffffff;
+    color-scheme: dark;
+    background-color: var(--neo-canvas);
+    background-image:
+      radial-gradient(circle, rgba(255, 58, 242, 0.08) 1px, transparent 1px),
+      repeating-linear-gradient(45deg, transparent, transparent 12px, rgba(0, 245, 212, 0.03) 12px, rgba(0, 245, 212, 0.03) 24px);
+    background-size: 24px 24px, auto;
+  }
+
+  .learning-units-toolbar-dopamine {
+    --ds-card: #2d1b4e;
+    --ds-panel: #2d1b4e;
+    --ds-panel-hover: #3d2568;
+    --ds-border: #ff3af2;
+    --ds-border-hover: #00f5d4;
+  }
+
+  .learning-units-toolbar-dopamine > div {
+    border: 3px solid #ff3af2;
+    background: #2d1b4e;
+    box-shadow: 4px 4px 0 0 #ffe600;
+    color: #ffffff;
+  }
+
+  .learning-units-toolbar-dopamine h2,
+  .learning-units-toolbar-dopamine button,
+  .learning-units-toolbar-dopamine span {
+    color: #ffffff;
+  }
 }

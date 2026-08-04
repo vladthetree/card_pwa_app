@@ -3,7 +3,7 @@
  */
 import { Palette } from 'lucide-react'
 import { useSettings, STRINGS, type FontFamily, FONT_FAMILY_OPTIONS } from '../../contexts/SettingsContext'
-import { useTheme } from '../../contexts/ThemeContext'
+import { useTheme, type ThemeKey } from '../../contexts/ThemeContext'
 import { UI_TOKENS } from '../../constants/ui'
 import { formatBuildVersionTitle, formatServiceWorkerVersionLabel } from '../../utils/buildInfo'
 import { SettingsSection } from '../SettingsSection'
@@ -15,9 +15,56 @@ interface Props {
   onToggle: () => void
 }
 
+interface ThemeOption {
+  key: ThemeKey
+  nameKey: string
+  helpKey: string
+  cardBg: string
+  swatches: Array<{ color: string; label: string }>
+}
+
+const THEME_OPTIONS: ThemeOption[] = [
+  {
+    key: 'default',
+    nameKey: 'theme_neo_name',
+    helpKey: 'theme_neo_help',
+    cardBg: 'bg-[#C4B5FD]',
+    swatches: [
+      { color: '#FFFDF5', label: 'Cream' },
+      { color: '#FF6B6B', label: 'Red' },
+      { color: '#FFD93D', label: 'Yellow' },
+      { color: '#C4B5FD', label: 'Violet' },
+    ],
+  },
+  {
+    key: 'newsprint',
+    nameKey: 'theme_newsprint_name',
+    helpKey: 'theme_newsprint_help',
+    cardBg: 'bg-[#E5E5E0]',
+    swatches: [
+      { color: '#F9F9F7', label: 'Off-White' },
+      { color: '#111111', label: 'Ink' },
+      { color: '#CC0000', label: 'Editorial Red' },
+      { color: '#E5E5E0', label: 'Divider Grey' },
+    ],
+  },
+  {
+    key: 'dopamine',
+    nameKey: 'theme_dopamine_name',
+    helpKey: 'theme_dopamine_help',
+    cardBg: 'bg-[#E5D9FF]',
+    swatches: [
+      { color: '#0D0D1A', label: 'Canvas' },
+      { color: '#FF3AF2', label: 'Magenta' },
+      { color: '#00F5D4', label: 'Cyan' },
+      { color: '#FFE600', label: 'Yellow' },
+    ],
+  },
+]
+
 export function SettingsAppearanceSection({ isOpen, onToggle }: Props) {
   const { settings, setLanguage, setFontFamily, setShowBuildVersion, setFocusMode } = useSettings()
-  const { setTheme } = useTheme()
+  const { themeKey, setTheme } = useTheme()
   const t = STRINGS[settings.language]
   const buildVersionLabel = useMemo(() => formatServiceWorkerVersionLabel(), [])
   const buildVersionTitle = useMemo(() => formatBuildVersionTitle(), [])
@@ -112,38 +159,46 @@ export function SettingsAppearanceSection({ isOpen, onToggle }: Props) {
 
         <div>
           <label className="mb-2 block text-xs font-black uppercase tracking-wide text-black">
-            {settings.language === 'de' ? 'Design' : 'Design'}
+            {t.theme}
           </label>
           <p className="mb-3 text-xs font-bold leading-relaxed text-black">
-            {settings.language === 'de'
-              ? 'Aktuell ist ausschließlich Neo-Brutalismus verfügbar.'
-              : 'Neo-Brutalism is currently the only available design.'}
+            {t.theme_help}
           </p>
-          <button
-            type="button"
-            onClick={() => setTheme('default')}
-            aria-pressed="true"
-            data-testid="theme-option-neo"
-            className="w-full border-4 border-black bg-[#C4B5FD] p-4 text-left shadow-[7px_7px_0_0_#000] transition-all duration-100 active:translate-x-[7px] active:translate-y-[7px] active:shadow-none"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-base font-black uppercase text-black">Neo-Brutalismus</p>
-                <p className="mt-1 text-xs font-bold text-black">
-                  {settings.language === 'de' ? 'Aktuelles App-Design' : 'Current app design'}
-                </p>
-              </div>
-              <span className="border-2 border-black bg-[#FFD93D] px-2 py-1 text-[10px] font-black uppercase tracking-widest text-black">
-                {settings.language === 'de' ? 'Aktiv' : 'Active'}
-              </span>
-            </div>
-            <div className="mt-4 grid grid-cols-4 border-2 border-black">
-              <span className="h-8 bg-[#FFFDF5]" aria-label="Cream" />
-              <span className="h-8 bg-[#FF6B6B]" aria-label="Red" />
-              <span className="h-8 bg-[#FFD93D]" aria-label="Yellow" />
-              <span className="h-8 bg-[#C4B5FD]" aria-label="Violet" />
-            </div>
-          </button>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {THEME_OPTIONS.map(option => {
+              const selected = option.key === themeKey
+              const name = t[option.nameKey]
+              const help = t[option.helpKey]
+
+              return (
+                <button
+                  key={option.key}
+                  type="button"
+                  onClick={() => setTheme(option.key)}
+                  aria-pressed={selected}
+                  data-testid={`theme-option-${option.key === 'default' ? 'neo' : 'newsprint'}`}
+                  className={`w-full border-4 border-black ${option.cardBg} p-4 text-left shadow-[7px_7px_0_0_#000] transition-all duration-100 active:translate-x-[7px] active:translate-y-[7px] active:shadow-none`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-base font-black uppercase text-black">{name}</p>
+                      <p className="mt-1 text-xs font-bold text-black">{help}</p>
+                    </div>
+                    {selected && (
+                      <span className="border-2 border-black bg-[#FFD93D] px-2 py-1 text-[10px] font-black uppercase tracking-widest text-black">
+                        {t.current_selection}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-4 grid grid-cols-4 border-2 border-black">
+                    {option.swatches.map(swatch => (
+                      <span key={swatch.label} className="h-8" style={{ backgroundColor: swatch.color }} aria-label={swatch.label} />
+                    ))}
+                  </div>
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>

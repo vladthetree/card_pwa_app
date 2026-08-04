@@ -412,7 +412,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                 </div>
 
                 <div className={`${bodyClass} flex flex-col`}>
-                  <p className={`font-sans font-medium leading-[1.55] text-ds-fg ${compactQuestionClass}`}>
+                  <p className={`card-face-text font-sans font-medium leading-[1.55] text-ds-fg ${compactQuestionClass}`}>
                     {question.question}
                   </p>
 
@@ -544,7 +544,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                     </>
                   )}
 
-                  <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-ds-fg`}>
+                  <p className={`card-face-text ${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-ds-fg`}>
                     {answered.answer}
                   </p>
 
