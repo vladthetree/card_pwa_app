@@ -26,6 +26,7 @@ export function useSessionPersistence({
 
       const payload = buildPersistedStudySession({
         deckId,
+        sessionRunId: current.sessionRunId,
         cardIds: current.cards.map(card => card.id),
         cardLimit: studyCardLimitRef.current ?? 0,
         sessionCount: current.sessionCount,

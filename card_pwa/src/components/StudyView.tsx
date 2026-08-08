@@ -18,6 +18,7 @@ import {
   matchesPersistedStudyCardLimit,
   parsePersistedStudySession,
   DEFAULT_STUDY_CARD_LIMIT,
+  createSessionRunId,
   normalizeStudyCardLimit,
   type PersistedStudySession,
   type StudyReturnTarget,
@@ -190,7 +191,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
   const handleStartRepair = useCallback((repairCards: Card[]) => {
     if (repairCards.length === 0) return
     sessionWallStartRef.current = null
-    dispatch({ type: 'INIT', cards: repairCards })
+    dispatch({ type: 'INIT', cards: repairCards, sessionRunId: createSessionRunId() })
   }, [])
 
   // Einmal pro Session: bestätigt beim ersten Offline-Rating, dass die Bewertung
@@ -224,7 +225,11 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
 
     const startFresh = () => {
       clearPersistedSession()
-      dispatch({ type: 'INIT', cards: buildSessionCards(cards, studyCardLimit) })
+      dispatch({
+        type: 'INIT',
+        cards: buildSessionCards(cards, studyCardLimit),
+        sessionRunId: createSessionRunId(),
+      })
     }
 
     // Wiederaufnahme vor Neu-Mischen: eine unterbrochene Session (Queue,
@@ -283,6 +288,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
 
     const payload: PersistedStudySession = buildPersistedStudySession({
       deckId: deck.id,
+      sessionRunId: session.sessionRunId,
       cardIds: session.cards.map(card => card.id),
       cardLimit: studyCardLimit,
       sessionCount: session.sessionCount,
@@ -304,6 +310,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
     void writeActiveSession(deck.id, JSON.stringify(payload))
   }, [
     session.cards,
+    session.sessionRunId,
     session.sessionCount,
     session.isFlipped,
     session.isDone,
@@ -356,6 +363,17 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
   const currentCard = useMemo(
     () => session.cards[0] ?? null,
     [session.cards]
+  )
+  const sessionUniqueReviewedCount = useMemo(
+    () => new Set(session.reviewEvents.map(event => event.cardId)).size,
+    [session.reviewEvents],
+  )
+  const sessionUniqueTotalCount = useMemo(
+    () => new Set([
+      ...session.reviewEvents.map(event => event.cardId),
+      ...session.cards.map(card => card.id),
+    ]).size,
+    [session.cards, session.reviewEvents],
   )
   const {
     answerWasIncorrect,
@@ -501,6 +519,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
           settings.algorithm,
           settings.algorithmParams,
           pendingAnswerRef.current ?? undefined,
+          session.sessionRunId,
         )
 
         if (!result.ok) {
@@ -550,6 +569,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
       session.startTime,
       session.againCounts,
       session.hardPracticeCardIds,
+      session.sessionRunId,
       answerWasIncorrect,
       settings.algorithm,
       settings.algorithmParams,
@@ -580,6 +600,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
         settings.algorithm,
         settings.algorithmParams,
         pendingAnswerRef.current ?? undefined,
+        session.sessionRunId,
       )
       if (result.ok) {
         // P2.3: Apply the force-tomorrow rule on retry just as in handleRate.
@@ -615,6 +636,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
     }
   }, [
     session.lastRating,
+    session.sessionRunId,
     session.isSubmitting,
     session.againCounts,
     currentCard,
@@ -676,7 +698,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
     dragMatchModePlanRef.current = new Set()
     dragMatchModePlanReadyRef.current = false
     dragMatchModeSeedRef.current = `${deck.id}:restart:${Date.now()}:${Math.random()}`
-    dispatch({ type: 'INIT', cards: sortedCards })
+    dispatch({ type: 'INIT', cards: sortedCards, sessionRunId: createSessionRunId() })
   }, [buildSessionCards, cards, studyCardLimit, clearPersistedSession, deck.id])
 
   const handleEditCard = useCallback(() => {
@@ -759,7 +781,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
     const forcedCount = session.forcedTomorrowCardIds.length
     // forcedCount zählt mit: Force-Tomorrow löscht die Again-Zähler der Karte
     // (sessionRecovery), sonst gälte eine komplett gescheiterte Session als perfekt.
-    const isPerfectSession = session.sessionCount >= 3 && difficultCards === 0 && forcedCount === 0
+    const isPerfectSession = sessionUniqueReviewedCount >= 3 && difficultCards === 0 && forcedCount === 0
     const coachSummary = buildLearningCoachSummary({
       reviewEvents: session.reviewEvents,
       cards,
@@ -816,7 +838,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
 
             <div className="grid grid-cols-3 gap-2 mb-6">
               <div className="rounded-ds border border-ds-border bg-ds-floor p-3">
-                <p className="text-lg font-bold font-mono text-white">{session.sessionCount}</p>
+                <p className="text-lg font-bold font-mono text-white">{sessionUniqueReviewedCount}</p>
                 <p className="text-[10px] uppercase tracking-wide text-white/45 mt-0.5">{t.cards_reviewed.replace('{count}', '').trim() || t.completion_cards_label}</p>
               </div>
               <div className="rounded-ds border border-ds-border bg-ds-floor p-3">
@@ -990,8 +1012,8 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
             </div>
             <div className={focusHidden}>
               <StudyHeaderProgress
-                current={session.sessionCount}
-                total={session.sessionCount + session.cards.length}
+                current={sessionUniqueReviewedCount}
+                total={sessionUniqueTotalCount}
                 reward={rewardToast}
                 reducedMotion={prefersReducedMotion}
               />
@@ -1003,8 +1025,8 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
         {isHandsetLayout && (
           <div className={focusHidden}>
             <StudyHeaderProgress
-              current={session.sessionCount}
-              total={session.sessionCount + session.cards.length}
+              current={sessionUniqueReviewedCount}
+              total={sessionUniqueTotalCount}
               reward={rewardToast}
               reducedMotion={prefersReducedMotion}
             />

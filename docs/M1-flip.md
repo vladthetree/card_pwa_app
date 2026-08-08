@@ -13,14 +13,16 @@ wird als M1 gerendert. Studientext rendert durchgängig in Mono (Share Tech Mono
 ## Eingabe-/Encoding-Format
 
 ```
-front: <Frage als Fließtext, eine Aussage, keine Optionszeilen>
-back:  <Antwort als Fließtext>
+front: <englische Frage als Fließtext, eine Aussage, keine Optionszeilen>
+back:  <deutsche Antwort als Fließtext>
 
        [optional] Eselsbruecke: <Merkhilfe — wird als MERKHILFE-Block gerendert>
-       [optional] PDF-Bezug: SY0-701 Obj <x.y>
 extra: { acronym?, examples?, port?, protocol? }   // optionale Zusatzfelder
 tags:  [ "<Objective-Tag>", ... ]
 ```
+
+Quellen und Objective-Zuordnung gehören in den QA-Katalog, niemals in den
+Lerntext. Fachenglische Abkürzungen werden beim ersten Auftreten ausgeschrieben.
 
 - Beginnt `front` mit `A:`/`B:`-Optionszeilen → die Karte wird **M2**, nicht M1.
 - Beginnt `front` mit `ORDERING:`/`MATCHING:` → PBQ-Renderer. Mit `RECALL:` → M3.
@@ -35,7 +37,7 @@ tags:  [ "<Objective-Tag>", ... ]
 - Eine Frage = ein Konzept; aktive Formulierung („Welche Funktion erfüllt …?").
 - Antwort in 1–3 Sätzen; zuerst die Kernaussage, dann die Begründung.
 - `Eselsbruecke:` nutzen, wenn ein Konzept verwechslungsanfällig ist.
-- `PDF-Bezug: SY0-701 Obj x.y` an das Ende der Antwort (Quellenanker).
+- Frage auf Englisch, Erklärung auf Deutsch; Quellen nur als Metadaten führen.
 
 **Don't**
 - Keine Multi-Part-Fragen („Nenne X und erkläre Y und vergleiche Z").
@@ -53,19 +55,17 @@ tags:  [ "<Objective-Tag>", ... ]
 
 ## Beispiel-Prompt
 
-> Erstelle 5 M1-Flip-Karten (Deutsch, Umlaute als ue/oe/ae) zu SY0-701 Objective 1.2
-> (Zero Trust). Format je Karte: `front` = eine Frage, `back` = Antwort in 2–3 Sätzen
-> + optional `Eselsbruecke:` + abschließend `PDF-Bezug: SY0-701 Obj 1.2`.
+> Erstelle 5 M1-Flip-Karten zu Zero Trust. Format je Karte: `front` = englische,
+> eigenständig verständliche Frage; `back` = deutsche Antwort in 2–3 Sätzen
+> + optional `Eselsbruecke:`. Quellen separat als QA-Metadaten liefern.
 > Keine Antwortoptionen, kein Markdown.
 
 ## Beispiel-Output
 
 ```
-front: Warum ersetzt ZTNA das klassische Network-Level-VPN?
+front: Why does Zero Trust Network Access (ZTNA) replace broad network-level VPN access?
 back: ZTNA gewaehrt Brokered Access zu einzelnen Apps statt Zugriff aufs ganze Netz.
 Authentifizierung erfolgt pro Session, es gibt keinen impliziten Trust.
 
 Eselsbruecke: ZTNA = Tuersteher an jeder Tuer, kein Generalpass wie beim VPN.
-
-PDF-Bezug: SY0-701 Obj 1.2
 ```

@@ -17,6 +17,7 @@ import { useWakeLock } from '../hooks/useWakeLock'
 import {
   buildPersistedStudySession,
   buildShuffleSessionId,
+  createSessionRunId,
   DEFAULT_STUDY_CARD_LIMIT,
   normalizeStudyCardLimit,
 } from '../services/studySessionPersistence'
@@ -110,6 +111,17 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     [decks],
   )
   const currentCard = useMemo(() => session.cards[0] ?? null, [session.cards])
+  const sessionUniqueReviewedCount = useMemo(
+    () => new Set(session.reviewEvents.map(event => event.cardId)).size,
+    [session.reviewEvents],
+  )
+  const sessionUniqueTotalCount = useMemo(
+    () => new Set([
+      ...session.reviewEvents.map(event => event.cardId),
+      ...session.cards.map(card => card.id),
+    ]).size,
+    [session.cards, session.reviewEvents],
+  )
   const {
     answerWasIncorrect,
     answerRevealed,
@@ -159,7 +171,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
 
     clearPersistedSession()
     setSessionDeckCounts(buildDeckCounts(cards))
-    dispatch({ type: 'INIT', cards })
+    dispatch({ type: 'INIT', cards, sessionRunId: createSessionRunId() })
   }, [cards, clearPersistedSession, loading, session.cards.length, session.isDone])
 
   useEffect(() => {
@@ -173,6 +185,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     const cardOrigins = Object.fromEntries(cards.map(card => [card.id, card.deckId]))
     const payload = buildPersistedStudySession({
       deckId: sessionId,
+      sessionRunId: session.sessionRunId,
       kind: 'shuffle',
       collectionId: collection.id,
       deckIds: collection.deckIds,
@@ -201,6 +214,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     collection.deckIds,
     collection.id,
     session.cards,
+    session.sessionRunId,
     session.againCounts,
     session.hardPracticeCardIds,
     session.hardPracticePassCounts,
@@ -286,6 +300,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
         settings.algorithm,
         settings.algorithmParams,
         pendingAnswerRef.current ?? undefined,
+        session.sessionRunId,
       )
 
       if (!result.ok) {
@@ -328,6 +343,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     isAlgorithmMigrating,
     session.againCounts,
     session.hardPracticeCardIds,
+    session.sessionRunId,
     session.isDone,
     session.isSubmitting,
     session.startTime,
@@ -359,6 +375,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
         settings.algorithm,
         settings.algorithmParams,
         pendingAnswerRef.current ?? undefined,
+        session.sessionRunId,
       )
       if (!result.ok) {
         dispatch({ type: 'RATE_ERROR', message: result.error || t.save_failed })
@@ -399,6 +416,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     session.againCounts,
     session.isSubmitting,
     session.lastRating,
+    session.sessionRunId,
     settings.algorithm,
     settings.algorithmParams,
     settings.hardPracticeEnabled,
@@ -426,7 +444,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     clearPersistedSession()
     resetAnswerState()
     setSessionDeckCounts(buildDeckCounts(cards))
-    dispatch({ type: 'INIT', cards })
+    dispatch({ type: 'INIT', cards, sessionRunId: createSessionRunId() })
   }, [cards, clearPersistedSession])
 
   const handleEditCard = useCallback(() => {
@@ -587,8 +605,8 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
         </div>
         <div className={`mx-auto max-w-5xl ${isHandsetLayout ? 'mt-2' : 'mt-3'} ${focusHidden}`}>
           <StudyHeaderProgress
-            current={session.sessionCount}
-            total={session.sessionCount + session.cards.length}
+            current={sessionUniqueReviewedCount}
+            total={sessionUniqueTotalCount}
             reward={rewardToast}
             reducedMotion={prefersReducedMotion}
           />

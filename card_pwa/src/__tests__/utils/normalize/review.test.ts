@@ -45,9 +45,11 @@ describe('normalizeReview', () => {
       rating: 3,
       time_ms: 900,
       reviewed_at: 2000,
+      session_run_id: 'run-snake-1',
       selected_answer: 'D: RADIUS',
       correct_answer: 'D: RADIUS',
       answerCorrect: true,
+      sessionRunId: 'run-snake-1',
     })
 
     expect(normalized).toMatchObject({

@@ -461,12 +461,15 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       correct_answer = answer.get("correct") if isinstance(answer.get("correct"), str) else None
       was_correct = answer.get("wasCorrect")
       answer_correct = (1 if was_correct else 0) if isinstance(was_correct, bool) else None
+      session_run_id = payload.get("sessionRunId")
+      if not isinstance(session_run_id, str) or not session_run_id.strip():
+        session_run_id = None
       conn.execute(
         """
         INSERT OR IGNORE INTO server_reviews
         (review_op_id, card_id, rating, time_ms, reviewed_at, source_client, created_at, undone_at, user_id,
-         selected_answer, correct_answer, answer_correct)
-        VALUES (?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)
+         selected_answer, correct_answer, answer_correct, session_run_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)
         """,
         (
           review_op_id,
@@ -480,6 +483,7 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
           selected_answer,
           correct_answer,
           answer_correct,
+          session_run_id,
         )
       )
 

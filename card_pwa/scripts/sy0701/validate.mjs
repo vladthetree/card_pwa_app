@@ -624,6 +624,7 @@ const normalizeQuestionText = value => String(value ?? '')
   .replace(/[^a-z0-9]+/g, ' ')
   .trim()
 const parseCardMc = card => {
+  if (card.qaBlocked) return null
   if (OrderingParser.isOrdering(card.front ?? '') || MatchingParser.isMatching(card.front ?? '')) return null
   const optionMatches = [...String(card.front ?? '').matchAll(/^[A-D]:\s*(.+)$/gm)]
   if (optionMatches.length !== 4 || !Number.isInteger(card.type) || card.type < 0 || card.type > 3) return null

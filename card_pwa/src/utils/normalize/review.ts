@@ -13,6 +13,7 @@ export function normalizeReview(raw: unknown): Omit<ReviewRecord, 'id'> | null {
   const createdAt = Number(value.createdAt ?? value.created_at)
   const opIdRaw = value.opId ?? value.reviewOpId ?? value.review_op_id
   const sourceClientRaw = value.sourceClient ?? value.source_client
+  const sessionRunIdRaw = value.sessionRunId ?? value.session_run_id
 
   if (typeof cardId !== 'string' || !cardId) return null
   if (![1, 2, 3, 4].includes(rating)) return null
@@ -38,6 +39,9 @@ export function normalizeReview(raw: unknown): Omit<ReviewRecord, 'id'> | null {
       ? sourceClientRaw.trim()
       : undefined,
     createdAt: Number.isFinite(createdAt) ? createdAt : undefined,
+    ...(typeof sessionRunIdRaw === 'string' && sessionRunIdRaw.trim()
+      ? { sessionRunId: sessionRunIdRaw.trim() }
+      : {}),
     ...(typeof selectedAnswerRaw === 'string' && selectedAnswerRaw ? { selectedAnswer: selectedAnswerRaw } : {}),
     ...(typeof correctAnswerRaw === 'string' && correctAnswerRaw ? { correctAnswer: correctAnswerRaw } : {}),
     ...(answerCorrectRaw !== undefined ? { answerCorrect: answerCorrectRaw } : {}),

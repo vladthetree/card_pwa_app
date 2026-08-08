@@ -44,7 +44,8 @@ vi.mock('../../hooks/useHandsetLayout', () => ({
 
 import OrderingCard from '../../components/OrderingCard'
 import CardFace from '../../components/CardFace'
-import { OrderingParser, OrderingAnswerParser } from '../../utils/cardTextParser'
+import IncorrectReasonsSection from '../../components/IncorrectReasonsSection'
+import { AnswerParser, OrderingParser, OrderingAnswerParser, QuestionParser } from '../../utils/cardTextParser'
 
 const ORDERING_FRONT = `ORDERING: Sortiere die OSI-Schichten von unten nach oben
 1. Physical
@@ -55,12 +56,20 @@ const ORDERING_FRONT = `ORDERING: Sortiere die OSI-Schichten von unten nach oben
 const ORDERING_BACK = `CORRECT_ORDER: 1,2,3,4
 Vom Kabel zum Ende-zu-Ende-Transport.`
 
-const MC_FRONT = `Was ist die Hauptstadt von Frankreich?
+const MC_FRONT = `Which city is the capital of France?
 A) Berlin
 B) Paris
-C) Madrid`
+C) Madrid
+D) Rome`
 
-const MC_BACK = `>> CORRECT: B | Paris ist die Hauptstadt Frankreichs.`
+const MC_BACK = `>> CORRECT: B |
+
+Paris ist die Hauptstadt Frankreichs.
+
+Nicht:
+A | Berlin ist die Hauptstadt Deutschlands.
+C | Madrid ist die Hauptstadt Spaniens.
+D | Rom ist die Hauptstadt Italiens.`
 
 const baseCard = {
   id: 'c1', noteId: 'n1', type: 'new', extra: {}, tags: [],
@@ -95,11 +104,28 @@ describe('CardFace (MC) — Rückseite trägt die Lösung', () => {
         card: { ...baseCard, front: MC_FRONT, back: MC_BACK },
         flipped: true,
         onFlip: () => {},
+        useDragMatchMode: false,
       }),
     )
     expect(html).toContain('RICHTIG:')
     expect(html).toContain('Paris')
+    expect(html).toContain('Warum richtig?')
+    expect(html).toContain('Warum nicht?')
+    expect(html).toContain('Berlin ist die Hauptstadt Deutschlands.')
     // Ohne Antwort darf kein "Falsch:"-Banner erscheinen
     expect(html).not.toContain('FALSCH:')
+  })
+
+  it('hebt die kanonisch gewählte falsche Option in den Distraktorerklärungen hervor', () => {
+    const html = renderToStaticMarkup(
+      createElement(IncorrectReasonsSection, {
+        answer: AnswerParser.parse(MC_BACK),
+        options: QuestionParser.parse(MC_FRONT).options,
+        selectedKey: 'A',
+      }),
+    )
+
+    expect(html).toContain('data-selected-wrong-option="true"')
+    expect(html).toContain('Berlin ist die Hauptstadt Deutschlands.')
   })
 })

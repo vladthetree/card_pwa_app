@@ -9,6 +9,7 @@ import type { AnswerEvaluatedHandler, Card } from '../types'
 import type { Question, Answer } from '../utils/cardTextParser'
 import { correctDragMatchKey, scoreDragMatchChoice } from '../utils/dragMatchScoring'
 import { seededShuffle } from '../utils/hash'
+import IncorrectReasonsSection from './IncorrectReasonsSection'
 
 /**
  * DragMatchCard — Studien-Renderer "M2 Drag-Match" (rekonstruiert aus den
@@ -183,7 +184,7 @@ const DragMatchCard = memo(function DragMatchCard({
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2">
                 <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted">
-                  {isCorrect ? t.answer : t.wrong_answer}
+                  {submitted && !isCorrect ? t.wrong_answer : t.answer}
                 </span>
                 {renderOriginBadge()}
               </div>
@@ -199,26 +200,31 @@ const DragMatchCard = memo(function DragMatchCard({
           </div>
 
           <div data-study-scroll="allow" className={`${bodyClass} flex flex-col overscroll-y-contain`}>
-            {submitted && (
-              <>
-                {!isCorrect && (
-                  <div className="mb-2 flex items-center gap-2 rounded-ds border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-rose-300">
-                    <span className="font-mono font-bold text-sm">
-                      {`${t.wrong_label}: ${selectedText}`}
-                    </span>
-                  </div>
-                )}
-                <div className="mb-3 flex items-center gap-2 rounded-ds border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-emerald-300">
-                  <span className="font-mono font-bold text-sm">
-                    {`${t.correct_label}: ${correctText}`}
-                  </span>
-                </div>
-              </>
+            {submitted && !isCorrect && (
+              <div className="mb-2 flex items-center gap-2 rounded-ds border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-rose-300">
+                <span className="font-mono font-bold text-sm">
+                  {`${t.wrong_label}: ${selectedText}`}
+                </span>
+              </div>
+            )}
+            {correctKey && (
+              <div className="mb-3 flex items-center gap-2 rounded-ds border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-emerald-300">
+                <span className="font-mono font-bold text-sm">
+                  {`${t.correct_label}: ${correctText}`}
+                </span>
+              </div>
             )}
 
-            <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-ds-fg`}>
-              {answer.answer}
-            </p>
+            {answer.answer && (
+              <section>
+                <h3 className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-emerald-300">
+                  {t.why_correct}
+                </h3>
+                <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-ds-fg`}>
+                  {answer.answer}
+                </p>
+              </section>
+            )}
 
             {answer.merkhilfe && (
               <div className="mt-3 border-l-2 border-[--brand-primary-50] bg-[--brand-primary-08] px-[10px] py-[6px]">
@@ -226,6 +232,13 @@ const DragMatchCard = memo(function DragMatchCard({
                 <span className="font-sans text-[12px] italic leading-[1.4] text-zinc-300/70">{answer.merkhilfe}</span>
               </div>
             )}
+
+            <IncorrectReasonsSection
+              answer={answer}
+              options={question.options}
+              selectedKey={selectedKey}
+              compact={compact}
+            />
           </div>
         </div>
       </div>

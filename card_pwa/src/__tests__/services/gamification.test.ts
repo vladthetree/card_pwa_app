@@ -102,6 +102,21 @@ describe('gamification profile', () => {
     expect(profile.quests.find(quest => quest.id === 'streak-shield')?.isComplete).toBe(false)
   })
 
+  it('uses unique session-card pairs for daily goals but keeps attempts for XP', () => {
+    const nowMs = new Date('2026-04-18T12:00:00.000Z').getTime()
+    const reviews = [
+      { cardId: 'card-a', sessionRunId: 'run-1', rating: 1 as const, timeMs: 20_000, timestamp: nowMs - 3_000 },
+      { cardId: 'card-a', sessionRunId: 'run-1', rating: 3 as const, timeMs: 20_000, timestamp: nowMs - 2_000 },
+      { cardId: 'card-a', sessionRunId: 'run-2', rating: 2 as const, timeMs: 20_000, timestamp: nowMs - 1_000 },
+    ]
+
+    const profile = buildGamificationProfile({ reviews, activeCardCount: 1, nowMs })
+    expect(profile.totalReviews).toBe(3)
+    expect(profile.reviewedToday).toBe(2)
+    expect(profile.successToday).toBe(2)
+    expect(profile.todayXp).toBeGreaterThan(3 * 10)
+  })
+
   it('keeps level progress bounded for large XP totals', () => {
     const progress = getLevelProgress(12_000)
 

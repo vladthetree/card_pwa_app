@@ -5,11 +5,11 @@ cloze_to_mc.py — Cloze/T-F-Karten via Claude API in MC-Format konvertieren
 Strategie
 ---------
 1. Lädt alle Karten mit tag source_messer / source_soc_analyst (außer Abkürzungen)
-2. Spiegel-Paare werden dedupliziert:
+2. Spiegel-Paare werden für die Entwurfserzeugung gruppiert:
    - Pro Note-GUID wird die Karte mit dem kürzesten Back behalten (Term-Karte)
-   - Das Duplikat wird nach erfolgreicher Konvertierung soft-deleted
+   - Duplikate bleiben unverändert verwaltbar; eine spätere QA sperrt sie bei Bedarf
 3. Konvertierung via Claude API → MC-Format mit A:/B:/C:/D: + >> CORRECT:
-4. DB-Update über card.update (LWW-Pfad identisch zu echtem Client)
+4. DB-Update als qa-blocked-Entwurf; Freigabe erfolgt erst im separaten QA-Audit
 5. Checkpoint (.cloze_mc_progress.json) für Resume bei Unterbrechung
 6. Nach Lauf: validate_all_cards() zeigt verbleibende Probleme
 
@@ -67,8 +67,10 @@ INCORRECT for this specific question.
 3. All options must be of the same category/type (all terms, all protocols, all processes, etc.).
 4. The question must be a clear standalone sentence — NOT a fill-in-the-blank pattern.
 5. Correct answer placement: randomise across A/B/C/D (do not always put it at A).
-6. The German explanation (explanation_de) should be 1–2 sentences: \
-why the answer is correct + a mnemonic if helpful.
+6. The question and all options MUST be English. The explanation and every \
+incorrect-option rationale MUST be German.
+7. Expand an acronym on first use, for example Online Certificate Status Protocol (OCSP).
+8. Provide a primary/standard source reference; the result remains a blocked draft until human QA.
 
 OUTPUT: Respond with valid JSON only — no markdown, no extra text:
 {
@@ -78,7 +80,9 @@ OUTPUT: Respond with valid JSON only — no markdown, no extra text:
   "C": "...",
   "D": "...",
   "correct": "B",
-  "explanation_de": "..."
+  "explanation_de": "...",
+  "incorrect_explanations_de": {"A": "...", "C": "...", "D": "..."},
+  "source_refs": ["https://..."]
 }
 
 If you cannot produce 3 validated, factually correct distractors for a question, respond:
@@ -144,32 +148,22 @@ def deduplicate(cards: list[dict]) -> tuple[list[dict], dict[str, list[str]]]:
     return keep, duplicates
 
 
-def soft_delete_cards(ids: list[str], user_id: str, dry_run: bool) -> int:
-    if not ids or dry_run:
-        return 0
-    ts   = now_ms()
-    conn = open_db()
-    with conn:
-        for cid in ids:
-            apply_operation(
-                conn, "card.update",
-                {"cardId": cid, "updates": {"isDeleted": True, "deletedAt": ts}},
-                client_timestamp=ts, source_client=SOURCE_CLIENT, user_id=user_id,
-            )
-    conn.close()
-    return len(ids)
-
-
 def update_card_mc(card_id: str, front_mc: str, back_mc: str,
                    user_id: str, dry_run: bool) -> None:
     if dry_run:
         return
     ts   = now_ms()
     conn = open_db()
+    row = conn.execute(
+        "SELECT tags_json FROM server_cards WHERE id=? AND user_id=?",
+        (card_id, user_id),
+    ).fetchone()
+    tags = json.loads(row[0] or "[]") if row else []
+    tags = [tag for tag in tags if str(tag).strip().lower() != "qa-blocked"] + ["qa-blocked"]
     with conn:
         apply_operation(
             conn, "card.update",
-            {"cardId": card_id, "updates": {"front": front_mc, "back": back_mc}},
+            {"cardId": card_id, "updates": {"front": front_mc, "back": back_mc, "tags": tags}},
             client_timestamp=ts, source_client=SOURCE_CLIENT, user_id=user_id,
         )
     conn.close()
@@ -196,9 +190,11 @@ def build_mc_front(question: str, options: dict) -> str:
     return "\n".join(lines)
 
 
-def build_mc_back(correct: str, options: dict, explanation_de: str) -> str:
-    answer_text = options[correct]
-    return f">> CORRECT: {correct} | {answer_text}\n\n{explanation_de}"
+def build_mc_back(correct: str, explanation_de: str, incorrect_de: dict) -> str:
+    wrong = "\n".join(
+        f"{letter} | {incorrect_de[letter]}" for letter in "ABCD" if letter != correct
+    )
+    return f">> CORRECT: {correct} |\n\n{explanation_de}\n\nNicht:\n{wrong}"
 
 
 # ── Validierung des API-Outputs ───────────────────────────────────────────────
@@ -218,6 +214,15 @@ def validate_mc(data: dict) -> str | None:
     unique = set(v.strip().lower() for v in options.values())
     if len(unique) < 4:
         return "Doppelte Antwortoptionen"
+    wrong_letters = _VALID_LETTERS - {data["correct"].upper()}
+    incorrect = data.get("incorrect_explanations_de")
+    if not isinstance(incorrect, dict) or set(incorrect) != wrong_letters:
+        return "Distraktorerklärungen fehlen"
+    if any(not isinstance(incorrect[key], str) or not incorrect[key].strip() for key in wrong_letters):
+        return "Distraktorerklärung leer"
+    source_refs = data.get("source_refs")
+    if not isinstance(source_refs, list) or not source_refs or any(not isinstance(ref, str) or not ref.strip() for ref in source_refs):
+        return "Primärquelle fehlt"
     return None
 
 
@@ -276,7 +281,7 @@ def print_report(cp: dict, total: int) -> None:
     print(f"  Gesamt zu konvertieren : {total}")
     print(f"  Konvertiert (MC)       : {done}")
     print(f"  Fehlgeschlagen         : {failed}")
-    print(f"  Duplikate gelöscht     : {deleted}")
+    print(f"  Historisch gelöscht    : {deleted}")
     print(f"  Noch ausstehend        : {pending}")
     if cp["failed"]:
         print(f"\n  Erste 5 Fehler:")
@@ -313,7 +318,7 @@ def main() -> None:
     # Deduplizieren
     candidates, dup_map = deduplicate(all_cards)
     total_dups = sum(len(v) for v in dup_map.values())
-    print(f"  {len(candidates)} einzigartige Konzepte ({total_dups} Spiegel-Duplikate werden nach Konvertierung gelöscht)")
+    print(f"  {len(candidates)} einzigartige Konzepte ({total_dups} Spiegel-Duplikate bleiben für QA erhalten)")
 
     cp = load_checkpoint()
 
@@ -392,14 +397,13 @@ def main() -> None:
         correct  = data["correct"].upper()
         options  = {k: data[k] for k in "ABCD"}
         front_mc = build_mc_front(data["question"], options)
-        back_mc  = build_mc_back(correct, options, data["explanation_de"])
+        back_mc  = build_mc_back(correct, data["explanation_de"], data["incorrect_explanations_de"])
 
         update_card_mc(card["id"], front_mc, back_mc, user_id, dry_run=False)
 
-        # Duplikate dieser Note soft-deleten
-        dup_ids = dup_map.get(card["id"], [])
-        deleted_n = soft_delete_cards(dup_ids, user_id, dry_run=False)
-        cp["deleted_duplicates"].extend(dup_ids)
+        # Entwürfe löschen keine vermeintlichen Duplikate. Diese Entscheidung
+        # fällt erst beim fachlichen Review der zugehörigen Karten-IDs.
+        deleted_n = 0
 
         cp["done"].append(card["id"])
         save_checkpoint(cp)

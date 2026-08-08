@@ -109,6 +109,7 @@ export async function runBootstrapUpload(
             timestamp: review.timestamp,
             sourceClient: review.sourceClient,
             createdAt: review.createdAt,
+            sessionRunId: review.sessionRunId,
             // Antwortdetails (flach, wie im Dexie-Record) — der Server
             // akzeptiert flach wie verschachtelt.
             selectedAnswer: review.selectedAnswer,

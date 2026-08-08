@@ -8,6 +8,7 @@ import type {
   Rating,
 } from '../types'
 import { getDayStartMs } from './time'
+import { buildLatestSessionCardReviews } from './reviewIdentity'
 
 const DAY_MS = 86_400_000
 const DAILY_REVIEW_GOAL = 20
@@ -23,6 +24,7 @@ export interface GamificationReviewInput {
   /** Card-level identity: a note can have several card variants, success is
    *  measured per card id (not per note). Optional for backward compatibility. */
   cardId?: string
+  sessionRunId?: string
 }
 
 /**
@@ -116,15 +118,15 @@ function computeDayXp(dayReviews: GamificationReviewInput[]): number {
   if (dayReviews.length === 0) return 0
   const ordered = [...dayReviews].sort((a, b) => a.timestamp - b.timestamp)
   let combo = 0
-  let successes = 0
   let xp = 0
   for (const review of ordered) {
     combo = isFluentRating(review.rating) ? combo + 1 : 0
-    if (isRecalledRating(review.rating)) successes += 1
     xp += getReviewXp(review.rating, review.timeMs) + getComboBonusXp(combo)
   }
-  if (ordered.length >= DAILY_REVIEW_GOAL) xp += QUEST_REVIEW_REWARD_XP
-  if (successes >= DAILY_SUCCESS_GOAL) xp += QUEST_SUCCESS_REWARD_XP
+  const uniqueReviews = buildLatestSessionCardReviews(dayReviews)
+  const uniqueSuccesses = uniqueReviews.filter(review => isRecalledRating(review.rating)).length
+  if (uniqueReviews.length >= DAILY_REVIEW_GOAL) xp += QUEST_REVIEW_REWARD_XP
+  if (uniqueSuccesses >= DAILY_SUCCESS_GOAL) xp += QUEST_SUCCESS_REWARD_XP
   return xp + QUEST_STREAK_REWARD_XP
 }
 
@@ -249,9 +251,10 @@ export function buildGamificationProfile({
   const dayBuckets = getDayBuckets(reviews, nextDayStartsAt)
   const todayStart = getDayStartMs(nowMs, nextDayStartsAt)
   const todayReviews = dayBuckets.get(todayStart) ?? []
+  const uniqueTodayReviews = buildLatestSessionCardReviews(todayReviews)
   const totalReviews = reviews.length
   const successfulReviews = reviews.filter(review => isRecalledRating(review.rating)).length
-  const successToday = todayReviews.filter(review => isRecalledRating(review.rating)).length
+  const successToday = uniqueTodayReviews.filter(review => isRecalledRating(review.rating)).length
   let totalXp = 0
   for (const dayReviews of dayBuckets.values()) totalXp += computeDayXp(dayReviews)
   const todayXp = computeDayXp(todayReviews)
@@ -265,12 +268,12 @@ export function buildGamificationProfile({
     totalXp,
     totalReviews,
     successRate,
-    reviewedToday: todayReviews.length,
+    reviewedToday: uniqueTodayReviews.length,
     successToday,
     todayXp,
     activeCardCount,
     quests: buildQuests({
-      reviewedToday: todayReviews.length,
+      reviewedToday: uniqueTodayReviews.length,
       successToday,
     }),
     ...streakStats,

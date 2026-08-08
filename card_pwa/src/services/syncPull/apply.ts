@@ -174,6 +174,7 @@ async function applyReview(op: PulledOperation) {
     rating?: 1 | 2 | 3 | 4
     timeMs?: number
     timestamp?: number
+    sessionRunId?: unknown
     updated?: Partial<CardRecord>
     answer?: { selected?: unknown; correct?: unknown; wasCorrect?: unknown }
   }
@@ -213,6 +214,9 @@ async function applyReview(op: PulledOperation) {
     timestamp: Number.isFinite(value.timestamp) ? Number(value.timestamp) : Date.now(),
     sourceClient: typeof op.sourceClient === 'string' ? op.sourceClient : undefined,
     createdAt: Number.isFinite(op.createdAt) ? Number(op.createdAt) : undefined,
+    ...(typeof value.sessionRunId === 'string' && value.sessionRunId.trim()
+      ? { sessionRunId: value.sessionRunId.trim() }
+      : {}),
     ...answerFields,
   })
 }

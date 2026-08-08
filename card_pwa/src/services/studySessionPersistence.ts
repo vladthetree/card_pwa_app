@@ -6,12 +6,14 @@
  */
 import type { Card, Rating, SessionReviewEvent } from '../types'
 import { DAY_MS, getDayStartMs } from '../utils/time'
+import { generateUuidV7 } from '../utils/id'
+import { isStudyableCard } from '../utils/sm2'
 
 export type StudySessionKind = 'deck' | 'shuffle'
 export type StudyReturnTarget = 'learning-units'
 
 export interface PersistedStudySession {
-  version: 5
+  version: 6
   /** For shuffle sessions this stores the namespaced key, e.g. shuffle:<id>. */
   deckId: string
   kind?: StudySessionKind
@@ -19,6 +21,8 @@ export interface PersistedStudySession {
   deckIds?: string[]
   cardOrigins?: Record<string, string>
   cardIds: string[]
+  /** Stable across reload/resume; changes only when a genuinely new run starts. */
+  sessionRunId: string
   cardLimit?: number
   sessionCount: number
   isFlipped: boolean
@@ -37,7 +41,7 @@ export interface PersistedStudySession {
   startTime: number
 }
 
-export const STUDY_SESSION_VERSION = 5
+export const STUDY_SESSION_VERSION = 6
 export const STUDY_SESSION_TTL_MS = 45 * 60 * 1000
 export const DEFAULT_STUDY_CARD_LIMIT = 50
 export const MIN_STUDY_CARD_LIMIT = 10
@@ -46,6 +50,10 @@ export const STUDY_CARD_LIMIT_STEP = 10
 
 export function buildShuffleSessionId(collectionId: string): string {
   return `shuffle:${collectionId}`
+}
+
+export function createSessionRunId(): string {
+  return `study-${generateUuidV7()}`
 }
 
 export function normalizeStudyCardLimit(value: unknown): number {
@@ -69,8 +77,8 @@ export function parsePersistedStudySession(raw: string | null, sessionId: string
   if (!raw) return null
 
   try {
-    const parsed = JSON.parse(raw) as PersistedStudySession
-    if (parsed.version !== STUDY_SESSION_VERSION || parsed.deckId !== sessionId) return null
+    const parsed = JSON.parse(raw) as PersistedStudySession & { version?: number; sessionRunId?: string }
+    if (![5, STUDY_SESSION_VERSION].includes(Number(parsed.version)) || parsed.deckId !== sessionId) return null
     if (!Number.isFinite(parsed.expiresAt) || parsed.expiresAt <= nowMs) return null
     if (!Array.isArray(parsed.cardIds) || parsed.cardIds.length === 0) return null
     // Provide default for sessions persisted before againCounts was added.
@@ -79,7 +87,10 @@ export function parsePersistedStudySession(raw: string | null, sessionId: string
     if (!parsed.hardPracticePassCounts || typeof parsed.hardPracticePassCounts !== 'object') parsed.hardPracticePassCounts = {}
     if (!Array.isArray(parsed.reviewEvents)) parsed.reviewEvents = []
     if (parsed.kind !== 'shuffle') parsed.kind = 'deck'
-    return parsed
+    const sessionRunId = typeof parsed.sessionRunId === 'string' && parsed.sessionRunId.trim()
+      ? parsed.sessionRunId.trim()
+      : `legacy-session-${sessionId}-${Number(parsed.startTime) || 0}`
+    return { ...parsed, version: STUDY_SESSION_VERSION, sessionRunId }
   } catch {
     return null
   }
@@ -88,7 +99,7 @@ export function parsePersistedStudySession(raw: string | null, sessionId: string
 export function restoreCardsByOrder(cards: Card[], cardIds: string[]): Card[] {
   return cardIds
     .map(id => cards.find(card => card.id === id) ?? null)
-    .filter((card): card is Card => card !== null)
+    .filter((card): card is Card => card !== null && isStudyableCard(card))
 }
 
 export function buildPersistedStudySession(input: {
@@ -98,6 +109,7 @@ export function buildPersistedStudySession(input: {
   deckIds?: string[]
   cardOrigins?: Record<string, string>
   cardIds: string[]
+  sessionRunId?: string
   cardLimit: number
   sessionCount: number
   isFlipped: boolean
@@ -131,6 +143,7 @@ export function buildPersistedStudySession(input: {
     deckIds: input.deckIds,
     cardOrigins: input.cardOrigins,
     cardIds: input.cardIds,
+    sessionRunId: input.sessionRunId?.trim() || createSessionRunId(),
     cardLimit: input.cardLimit,
     sessionCount: input.sessionCount,
     isFlipped: input.isFlipped,

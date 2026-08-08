@@ -7,6 +7,7 @@
 import type { Card } from '../types'
 import { DAY_MS, getDayStartMs, resolveDueAtMs } from './time'
 import { compareByDueRank, getCardTypePriority, seededRank } from './cardOrdering'
+import { isStudyableCard } from './sm2'
 
 interface SortStudyCardsOptions {
   maxCards?: number
@@ -50,6 +51,7 @@ export function sortStudyCards(cards: Card[], options: SortStudyCardsOptions = {
   const resolveDueAt = resolveDueAtMs
 
   const dueCards = cards.filter(card => {
+    if (!isStudyableCard(card)) return false
     if (card.type === 'new') return true
     if (card.type === 'learning' || card.type === 'relearning') {
       // Exakte Intraday-Schritte respektieren; nur Ankis 20-Minuten-
@@ -234,7 +236,7 @@ export function enforceDailyDeckCardLimit(
 ): Card[] {
   const parsedLimit = Number(configuredDeckLimit)
   if (!Number.isFinite(parsedLimit)) return []
-  return cards.slice(0, Math.max(0, Math.floor(parsedLimit)))
+  return cards.filter(isStudyableCard).slice(0, Math.max(0, Math.floor(parsedLimit)))
 }
 
 /**
@@ -247,7 +249,9 @@ export function buildStudySessionSelection(
   cards: Card[],
   options: StudySessionSelectionOptions,
 ): Card[] {
-  if (options.sessionId === 'daily-quest' || options.sessionId.startsWith('today-package:')) return cards
+  if (options.sessionId === 'daily-quest' || options.sessionId.startsWith('today-package:')) {
+    return cards.filter(isStudyableCard)
+  }
   const configuredDeckLimit = Number(options.maxCards)
   if (!Number.isFinite(configuredDeckLimit) || configuredDeckLimit <= 0) return []
   const ordered = sortStudyCards(cards, {

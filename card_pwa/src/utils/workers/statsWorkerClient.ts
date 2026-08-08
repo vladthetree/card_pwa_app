@@ -17,6 +17,7 @@ type StreakRequest = {
   profileId?: string
   reviews: ReviewRecord[]
   nowMs?: number
+  nextDayStartsAt?: number
 }
 
 type ForecastRequest = {
@@ -35,7 +36,7 @@ const statsWorker = createWorker<StatsRequest, StatsResponse>(
   () => new Worker(new URL('./stats.worker.ts', import.meta.url), { type: 'module' }),
   (payload) => {
     if (payload.type === 'heatmap') return buildHeatmap(payload.reviews, payload.year)
-    if (payload.type === 'streak') return calculateStreak(payload.reviews, payload.nowMs)
+    if (payload.type === 'streak') return calculateStreak(payload.reviews, payload.nowMs, payload.nextDayStartsAt)
     return forecastDue(payload.cards, payload.days, payload.nowMs)
   },
 )

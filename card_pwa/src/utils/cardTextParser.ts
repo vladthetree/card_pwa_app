@@ -79,6 +79,7 @@ export interface MatchingQuestion {
 export interface MatchingAnswer {
   type: 'matching'
   pairs: Array<{ left: string; right: string }>
+  explanation: string
   merkhilfe: string | null
 }
 
@@ -202,6 +203,9 @@ export interface Answer {
   answer: string
   merkhilfe: string | null
   nicht: string | null
+  /** Per canonical option key (A, B, …). Stored under `Nicht:` as
+   *  `A | Begründung`; raw `nicht` remains the legacy fallback. */
+  incorrectReasons: Record<string, string>
 }
 
 /**
@@ -217,6 +221,19 @@ export class AnswerParser {
       .split(/[\s,;/|]+/)
       .map(token => token.trim().toUpperCase())
       .filter(token => /^[A-Z]+$/.test(token))
+  }
+
+  private static extractIncorrectReasons(text: string | null): Record<string, string> {
+    if (!text) return {}
+    const reasons: Record<string, string> = {}
+    for (const line of text.split('\n')) {
+      const match = line.trim().match(/^([A-Z]|[0-9]{1,2})\s*(?:\||:|\))\s*(.+)$/i)
+      if (!match) continue
+      const key = match[1].toUpperCase()
+      const reason = match[2].trim()
+      if (reason) reasons[key] = reason
+    }
+    return reasons
   }
 
   /**
@@ -263,6 +280,7 @@ export class AnswerParser {
       answer,
       merkhilfe,
       nicht,
+      incorrectReasons: this.extractIncorrectReasons(nicht),
     }
   }
 }
@@ -382,9 +400,10 @@ export class MatchingAnswerParser {
 
     const joined = rest.join('\n').trim()
     const idx = joined.indexOf('Merkhilfe:')
+    const explanation = idx !== -1 ? joined.slice(0, idx).trim() : joined
     const merkhilfe = idx !== -1 ? joined.slice(idx + 10).trim() : null
 
-    return { type: 'matching', pairs, merkhilfe }
+    return { type: 'matching', pairs, explanation, merkhilfe }
   }
 }
 

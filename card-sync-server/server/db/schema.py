@@ -196,6 +196,7 @@ def init_db():
       source_client TEXT,
       created_at INTEGER NOT NULL,
       undone_at INTEGER NULL,
+      session_run_id TEXT,
       user_id TEXT NOT NULL DEFAULT ''
     )
   """)
@@ -327,6 +328,9 @@ def init_db():
     conn.commit()
   if "answer_correct" not in review_cols:
     conn.execute("ALTER TABLE server_reviews ADD COLUMN answer_correct INTEGER")
+    conn.commit()
+  if "session_run_id" not in review_cols:
+    conn.execute("ALTER TABLE server_reviews ADD COLUMN session_run_id TEXT")
     conn.commit()
 
   shuffle_cols = [r[1] for r in conn.execute("PRAGMA table_info(server_shuffle_collections)").fetchall()]

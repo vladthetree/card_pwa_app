@@ -12,7 +12,7 @@ interface Props {
 export default function StreakBadge({ compact = false }: Props) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
-  const { days, atRisk } = useStreak()
+  const { days, atRisk } = useStreak(settings.nextDayStartsAt)
 
   if (days === 0 && !atRisk) return null
 

@@ -341,13 +341,11 @@ def answer_letter(card_id: str) -> str:
     return "ABCD"[int(hashlib.sha256(card_id.encode("utf-8")).hexdigest(), 16) % 4]
 
 
-def explanation(candidate: Candidate) -> str:
+def draft_explanation(candidate: Candidate) -> str:
     answer = clean_ws(candidate.card.back)
     source = clean_ws(candidate.card.front.replace("[...]", answer))
     return (
-        f"{answer} ist der passende Security+-Begriff für diese Beschreibung: {source}. "
-        "Die anderen Optionen sind echte verwandte Begriffe, treffen diese Beschreibung aber nicht.\n\n \n\n "
-        f"Merkhilfe: {answer} = dieser genaue Prüfbegriff."
+        f"ENTWURF — fachlich gegen Primärquelle prüfen: {answer}. Ausgangsaussage: {source}."
     )
 
 
@@ -383,7 +381,12 @@ def build_entry(candidate: Candidate, number: int, pools: dict[str, list[str]]) 
         "C": options["C"],
         "D": options["D"],
         "correct": letter,
-        "explanation_de": explanation(candidate),
+        "explanation_de": draft_explanation(candidate),
+        "incorrect_explanations_de": {
+            option_letter: "" for option_letter in "ABCD" if option_letter != letter
+        },
+        "source_refs": [f"messer-transcript:{candidate.card.id}", "comptia-sy0-701-objectives"],
+        "qa_status": "draft",
         "delete_duplicates": candidate.duplicates,
     }
 

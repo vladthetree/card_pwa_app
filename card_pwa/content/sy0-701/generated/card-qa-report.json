@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "card-qa-report-1",
+  "generatedAt": 1786216017371,
+  "cardCount": 803,
+  "profileCardCounts": {
+    "Default": 803,
+    "Vlad": 803
+  },
+  "profileParity": true,
+  "statusCounts": {
+    "approved": 803
+  },
+  "kindCounts": {
+    "mc": 780,
+    "ordering": 7,
+    "matching": 16
+  },
+  "issueCounts": {},
+  "studyableCardCount": 803,
+  "blockedCardCount": 0,
+  "historyMutationRequired": false,
+  "gates": {
+    "all803Addressed": true,
+    "profileParity": true,
+    "studyableCardsFollowPolicy": true,
+    "qaBlockTagsMatchCatalog": true,
+    "historyMutationNotRequired": true
+  },
+  "backup": "card-sync-server/backups/sync.db.before-card-qa-20260808T210651",
+  "auditExport": "card-sync-server/backups/card-qa-audit-before-20260808T210651.json",
+  "initialBackup": "card-sync-server/backups/sync.db.before-card-qa-20260808T190546",
+  "initialAuditExport": "card-sync-server/backups/card-qa-audit-before-20260808T190546.json",
+  "initialPublish": {
+    "applied": 1606,
+    "unchanged": 0
+  },
+  "publish": {
+    "applied": 1540,
+    "unchanged": 66
+  }
+}

@@ -16,6 +16,7 @@ type StatsRequest =
       profileId?: string
       reviews: ReviewRecord[]
       nowMs?: number
+      nextDayStartsAt?: number
     }
   | {
       type: 'forecast'
@@ -67,7 +68,7 @@ function getSignature(payload: StatsRequest): string {
   }
   if (payload.type === 'streak') {
     const last = payload.reviews[payload.reviews.length - 1]
-    return `${payload.nowMs ?? 0}:${payload.reviews.length}:${last?.timestamp ?? 0}`
+    return `${payload.nowMs ?? 0}:${payload.nextDayStartsAt ?? 0}:${payload.reviews.length}:${last?.timestamp ?? 0}`
   }
   const last = payload.cards[payload.cards.length - 1]
   return `${payload.days}:${payload.nowMs ?? 0}:${payload.cards.length}:${last?.updatedAt ?? last?.createdAt ?? 0}`
@@ -78,7 +79,7 @@ function compute(payload: StatsRequest): StatsResult {
     return buildHeatmap(payload.reviews, payload.year)
   }
   if (payload.type === 'streak') {
-    return calculateStreak(payload.reviews, payload.nowMs)
+    return calculateStreak(payload.reviews, payload.nowMs, payload.nextDayStartsAt)
   }
   return forecastDue(payload.cards, payload.days, payload.nowMs)
 }

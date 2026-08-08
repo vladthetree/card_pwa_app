@@ -161,7 +161,7 @@ describe('recordReview integration flow', () => {
       selected: 'B: Federation',
       correct: 'C: Single Sign-On',
       wasCorrect: false,
-    })
+    }, 'run-review-1')
 
     expect(result.ok).toBe(true)
     expect(mockedRuntime.state.reviews).toHaveLength(1)
@@ -171,6 +171,7 @@ describe('recordReview integration flow', () => {
       selectedAnswer: 'B: Federation',
       correctAnswer: 'C: Single Sign-On',
       answerCorrect: false,
+      sessionRunId: 'run-review-1',
     })
     expect(mockedRuntime.state.reviews[0].timestamp).toBeGreaterThan(0)
     // Sync-Op trägt dieselben Antwortdetails — Offline-Queue und Server
@@ -180,6 +181,7 @@ describe('recordReview integration flow', () => {
       expect.objectContaining({
         cardId: initialCard.id,
         answer: { selected: 'B: Federation', correct: 'C: Single Sign-On', wasCorrect: false },
+        sessionRunId: 'run-review-1',
       }),
       expect.any(String),
     )

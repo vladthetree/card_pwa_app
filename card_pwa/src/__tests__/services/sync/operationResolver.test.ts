@@ -18,7 +18,7 @@ describe('operationResolver', () => {
           id: 2,
           opId: 'op-review',
           type: 'review',
-          payload: { cardId: 'c1', rating: 4, timeMs: 1200, timestamp: 10 },
+          payload: { cardId: 'c1', rating: 4, timeMs: 1200, timestamp: 10, sessionRunId: 'run-sync-1' },
           sourceClient: 'remote',
         },
       ],
@@ -53,6 +53,7 @@ describe('operationResolver', () => {
     expect(result.cards.update.length).toBeGreaterThan(0)
     expect(result.reviews.add).toHaveLength(1)
     expect(result.reviews.add[0].cardId).toBe('c1')
+    expect(result.reviews.add[0].sessionRunId).toBe('run-sync-1')
   })
 
   it('marks card.delete as soft delete side effects', () => {

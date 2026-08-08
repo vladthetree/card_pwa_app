@@ -19,19 +19,22 @@ Buchstabe in den Daten muss also nur konsistent zur eigenen Karte sein.
 ## Eingabe-/Encoding-Format
 
 ```
-front: <Frage (erste Zeile(n))>
-A: <Option A>
+front: <englische Frage (erste Zeile(n))>
+A: <englische Option A>
 B: <Option B>
 C: <Option C>
 D: <Option D>
 
-back: >> CORRECT: <Buchstabe> | <Kurzantwort>
+back: >> CORRECT: <Buchstabe> |
 
-<Erklaerungs-Absatz 1>
+<deutsche Erklärung: Warum richtig?>
 
 [optional] Eselsbruecke: <Merkhilfe>
 
-[optional] PDF-Bezug: SY0-701 Obj <x.y>
+Nicht:
+<falscher Buchstabe> | <deutsche Begründung>
+<falscher Buchstabe> | <deutsche Begründung>
+<falscher Buchstabe> | <deutsche Begründung>
 ```
 
 - Erkennung: genau 4 Optionszeilen (`A:`–`D:`) im `front` **und** genau ein Correct-Marker
@@ -44,7 +47,8 @@ back: >> CORRECT: <Buchstabe> | <Kurzantwort>
 **Do**
 - Distraktoren plausibel und gleich lang halten (ähnliche Wortanzahl wie die Lösung).
 - Distraktoren aus typischen Verwechslungen bauen (z. B. ähnliche Akronyme).
-- Erklärung im `back` so schreiben, dass sie als „ERKLÄRUNG AUS DER KARTE" allein trägt.
+- Für jeden Distraktor konkret erklären, warum er im Szenario nicht passt.
+- Quellen und Objectives ausschließlich im QA-Katalog speichern.
 
 **Don't**
 - Keine „Alle Antworten sind richtig"/„Keine der genannten"-Optionen.
@@ -60,27 +64,29 @@ back: >> CORRECT: <Buchstabe> | <Kurzantwort>
 
 ## Beispiel-Prompt
 
-> Erstelle 5 M2-Drag-Match-Karten (Deutsch, ue/oe/ae) zu SY0-701 Obj 1.2, Akronym-Fokus.
-> `front`: Frage + 4 Optionszeilen `A:`–`D:`. `back`: erste Zeile
-> `>> CORRECT: <Buchstabe> | <Kurzantwort>`, danach Leerzeile + 2 Erklärungs-Absätze,
-> optional `Eselsbruecke:`, abschließend `PDF-Bezug:`. Distraktoren: ähnliche Akronyme,
+> Erstelle 5 M2-Drag-Match-Karten zu Zero Trust. `front`: englische Frage +
+> 4 englische Optionszeilen `A:`–`D:`. `back`: erste Zeile
+> `>> CORRECT: <Buchstabe> |`, danach deutsche Richtig-Erklärung und `Nicht:`-
+> Begründung für jeden Distraktor. Quellen separat als QA-Metadaten. Distraktoren: ähnliche Akronyme,
 > keine Buchstaben-Bezüge im Erklärungstext.
 
 ## Beispiel-Output (verifiziertes Original-Encoding)
 
 ```
-front: Welche Bedeutung hat das Acronym 'ZTNA' im SY0-701-Kontext (Obj 1.2)?
+front: What does Zero Trust Network Access (ZTNA) provide?
 A: Zoned Trust Network Architecture
 B: Zero Trust Network Access
 C: Zone-based Tunneling Network Access
 D: Zero-Touch Network Authentication
 
-back: >> CORRECT: B | ZTNA = Zero Trust Network Access
+back: >> CORRECT: B |
 
 Brokered Access zu Apps statt Network-Level VPN. Authentifizierung pro Session,
 kein impliziter Trust.
 
 Eselsbruecke: ZTNA = wie ein Tuersteher bei jeder Tuer. Kein Generalpass wie bei VPN.
-
-PDF-Bezug: SY0-701 Obj 1.2
+Nicht:
+A | Dieser erfundene Begriff bezeichnet keine standardisierte Zugriffstechnik.
+C | Tunneling beschreibt einen Transportmechanismus, nicht anwendungsbezogenen Zero-Trust-Zugriff.
+D | Zero-touch provisioning automatisiert Bereitstellung; es ist keine Zugriffskontrolle pro Anwendung.
 ```

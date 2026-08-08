@@ -40,8 +40,15 @@ export const SM2 = {
  * New/Learning/Due-Zählern auftauchen. Überall verwenden, wo Karten für
  * Auswahl oder Statistik gefiltert werden.
  */
-export function isStudyableCard(card: { queue?: number; isDeleted?: boolean }): boolean {
+export const QA_BLOCKED_TAG = 'qa-blocked'
+
+export function isQaBlockedCard(card: { tags?: readonly string[] }): boolean {
+  return (card.tags ?? []).some(tag => tag.trim().toLowerCase() === QA_BLOCKED_TAG)
+}
+
+export function isStudyableCard(card: { queue?: number; isDeleted?: boolean; tags?: readonly string[] }): boolean {
   if (card.isDeleted) return false
+  if (isQaBlockedCard(card)) return false
   return card.queue !== SM2.QUEUE_SUSPENDED
 }
 

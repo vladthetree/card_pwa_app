@@ -10,6 +10,7 @@ wenn sich Kartenbestand oder Videobestand ändern:
 """
 
 import json
+import argparse
 import re
 import sqlite3
 import subprocess
@@ -94,11 +95,15 @@ def export_cards() -> dict:
                 "id": str(r["id"]),
                 "deckId": r["deck_id"],
                 "front": r["front"],
+                "qaBlocked": any(
+                    str(tag).strip().lower() == "qa-blocked"
+                    for tag in json.loads(r["tags_json"] or "[]")
+                ),
                 "type": r["type"],
             }
             for r in db.execute(
-                "SELECT id, deck_id, front, type FROM server_cards"
-                " WHERE user_id = ? AND deleted_at IS NULL ORDER BY id",
+                "SELECT id, deck_id, front, tags_json, type FROM server_cards"
+                " WHERE user_id = ? AND deleted_at IS NULL AND IFNULL(is_deleted, 0)=0 ORDER BY id",
                 (user_id,),
             )
         ]
@@ -117,14 +122,22 @@ def export_cards() -> dict:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--cards-only",
+        action="store_true",
+        help="Nur den Karten-Snapshot aktualisieren, wenn die unveränderten lokalen Videos nicht verfügbar sind.",
+    )
+    args = parser.parse_args()
     SOURCE_DIR.mkdir(parents=True, exist_ok=True)
 
-    videos = export_videos()
-    (SOURCE_DIR / "videos-manifest.json").write_text(
-        json.dumps(videos, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
-    course = [v for v in videos["videos"] if v["index"] >= 2]
-    print(f"videos-manifest.json: {len(videos['videos'])} Videos mit Objective-Code, {len(course)} Kurs-Einheiten (002+)")
+    if not args.cards_only:
+        videos = export_videos()
+        (SOURCE_DIR / "videos-manifest.json").write_text(
+            json.dumps(videos, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
+        course = [v for v in videos["videos"] if v["index"] >= 2]
+        print(f"videos-manifest.json: {len(videos['videos'])} Videos mit Objective-Code, {len(course)} Kurs-Einheiten (002+)")
 
     cards = export_cards()
     (SOURCE_DIR / "cards-snapshot.json").write_text(

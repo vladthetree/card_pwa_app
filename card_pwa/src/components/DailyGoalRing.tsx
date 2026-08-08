@@ -14,7 +14,7 @@ interface Props {
 export default function DailyGoalRing({ size = 44, strokeWidth = 4, showLabel = false }: Props) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
-  const { reviewedToday } = useStreak()
+  const { reviewedToday } = useStreak(settings.nextDayStartsAt)
   const goal = settings.dailyGoal
 
   const { pct, ringColor, reached } = useMemo(() => {

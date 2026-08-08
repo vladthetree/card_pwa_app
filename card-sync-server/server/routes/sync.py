@@ -461,12 +461,13 @@ class SyncRoutesMixin:
         selected_answer = answer.get("selected") or review.get("selectedAnswer")
         correct_answer = answer.get("correct") or review.get("correctAnswer")
         was_correct = answer.get("wasCorrect") if isinstance(answer.get("wasCorrect"), bool) else review.get("answerCorrect")
+        session_run_id = review.get("sessionRunId") or review.get("session_run_id")
         conn.execute(
           """
           INSERT INTO server_reviews
           (review_op_id, card_id, rating, time_ms, reviewed_at, source_client, created_at, undone_at, user_id,
-           selected_answer, correct_answer, answer_correct)
-          VALUES (?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)
+           selected_answer, correct_answer, answer_correct, session_run_id)
+          VALUES (?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)
           """,
           (
             review_op_id,
@@ -480,6 +481,7 @@ class SyncRoutesMixin:
             selected_answer if isinstance(selected_answer, str) else None,
             correct_answer if isinstance(correct_answer, str) else None,
             (1 if was_correct else 0) if isinstance(was_correct, bool) else None,
+            session_run_id.strip() if isinstance(session_run_id, str) and session_run_id.strip() else None,
           )
         )
         summary["reviewsInserted"] += 1
@@ -1044,7 +1046,7 @@ class SyncRoutesMixin:
         """
       review_rows = conn.execute(
         f"""SELECT review_op_id, card_id, rating, time_ms, reviewed_at, source_client, created_at,
-                   selected_answer, correct_answer, answer_correct
+                   selected_answer, correct_answer, answer_correct, session_run_id
             FROM server_reviews {where_review}
             ORDER BY reviewed_at ASC, id ASC""",
         user_params
@@ -1067,6 +1069,8 @@ class SyncRoutesMixin:
             "correct": r["correct_answer"] or "",
             "wasCorrect": bool(r["answer_correct"]),
           }
+        if r["session_run_id"]:
+          review["sessionRunId"] = r["session_run_id"]
         reviews.append(review)
       
       self._send_json(200, {

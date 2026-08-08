@@ -5,11 +5,12 @@ import { db } from '../../db'
 import { buildGamificationProfile, getTrailingComboCount } from '../../utils/gamification'
 import { getDayStartMs } from '../../utils/time'
 import type { GamificationProfile, Rating } from '../../types'
+import { isStudyableCard } from '../../utils/sm2'
 
 export async function getGamificationProfile(nextDayStartsAt = 0): Promise<GamificationProfile> {
   const [reviews, activeCardCount] = await Promise.all([
     db.reviews.toArray(),
-    db.cards.filter(card => !card.isDeleted).count(),
+    db.cards.filter(isStudyableCard).count(),
   ])
 
   return buildGamificationProfile({
@@ -18,6 +19,7 @@ export async function getGamificationProfile(nextDayStartsAt = 0): Promise<Gamif
       timeMs: review.timeMs,
       timestamp: review.timestamp,
       cardId: review.cardId,
+      sessionRunId: review.sessionRunId,
     })),
     activeCardCount,
     nextDayStartsAt,

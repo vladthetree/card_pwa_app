@@ -2,7 +2,8 @@
  * AI_CONTEXT: Statistics utility for aggregate; aggregates review/card metrics for dashboards and analysis.
  */
 import type { CardRecord, ReviewRecord } from '../../db'
-import { resolveDueAtMs } from '../time'
+import { getDayStartMs, resolveDueAtMs } from '../time'
+import { buildLatestSessionCardReviews } from '../reviewIdentity'
 
 export interface HeatmapBucket {
   dayStartMs: number
@@ -39,16 +40,18 @@ export function buildHeatmap(reviews: ReviewRecord[], year: number): HeatmapBuck
     .sort((a, b) => a.dayStartMs - b.dayStartMs)
 }
 
-export function calculateStreak(reviews: ReviewRecord[], nowMs = Date.now()): StreakStats {
+export function calculateStreak(reviews: ReviewRecord[], nowMs = Date.now(), nextDayStartsAt = 0): StreakStats {
   const byDay = new Map<number, number>()
   for (const review of reviews) {
     if (!Number.isFinite(review.timestamp)) continue
-    const key = startOfDayMs(Number(review.timestamp))
+    const key = getDayStartMs(Number(review.timestamp), nextDayStartsAt)
     byDay.set(key, (byDay.get(key) ?? 0) + 1)
   }
 
-  const todayStart = startOfDayMs(nowMs)
-  const reviewedToday = byDay.get(todayStart) ?? 0
+  const todayStart = getDayStartMs(nowMs, nextDayStartsAt)
+  const reviewedToday = buildLatestSessionCardReviews(
+    reviews.filter(review => getDayStartMs(review.timestamp, nextDayStartsAt) === todayStart),
+  ).length
   const hasToday = reviewedToday > 0
 
   let current = 0

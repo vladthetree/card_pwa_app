@@ -84,6 +84,9 @@ export interface ReviewRecord {
   timestamp: number
   sourceClient?: string
   createdAt?: number
+  /** Stable identity of the study run. Together with cardId this powers
+   *  unique-card counters while the row itself remains an attempt. */
+  sessionRunId?: string
   // Antwortdetails interaktiver Karten (MC/Drag-Match/Reihenfolge/Zuordnung).
   // Additiv und optional: ältere Zeilen und Karten ohne Auswahl haben keine.
   /** Vom Nutzer gewählte Antwort (kanonischer Schlüssel + Text). */
@@ -583,6 +586,11 @@ export class CardPwaDB extends Dexie {
           }
         })
       })
+
+    // Version 22: sessionRunId is deliberately not indexed. Review rows are
+    // schemaless for non-indexed fields; declaring the version documents the
+    // persisted contract without adding write overhead.
+    this.version(22).stores({})
   }
 }
 

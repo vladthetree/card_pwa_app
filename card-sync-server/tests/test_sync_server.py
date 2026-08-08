@@ -1022,6 +1022,7 @@ class TestReviewOperations:
             op_type="review",
             payload={
                 "cardId": "card-answer", "rating": 1, "timeMs": 2500, "timestamp": 1500,
+                "sessionRunId": "run-answer-1",
                 "answer": {"selected": "B: Federation", "correct": "C: Single Sign-On", "wasCorrect": False},
                 "updated": {
                     "type": 1, "queue": 1, "due": 100, "dueAt": 2000, "interval": 0,
@@ -1059,13 +1060,13 @@ class TestReviewOperations:
         )
 
         rows = db_helper.query(
-            "SELECT review_op_id, selected_answer, correct_answer, answer_correct "
+            "SELECT review_op_id, selected_answer, correct_answer, answer_correct, session_run_id "
             "FROM server_reviews WHERE card_id='card-answer' ORDER BY reviewed_at"
         )
         assert rows == [
-            ("rev-answer-wrong", "B: Federation", "C: Single Sign-On", 0),
-            ("rev-answer-right", "C: Single Sign-On", "C: Single Sign-On", 1),
-            ("rev-answer-none", None, None, None),
+            ("rev-answer-wrong", "B: Federation", "C: Single Sign-On", 0, "run-answer-1"),
+            ("rev-answer-right", "C: Single Sign-On", "C: Single Sign-On", 1, None),
+            ("rev-answer-none", None, None, None, None),
         ]
 
         snap = api.snapshot("answer-reader")
@@ -1073,6 +1074,7 @@ class TestReviewOperations:
         assert by_op["rev-answer-wrong"]["answer"] == {
             "selected": "B: Federation", "correct": "C: Single Sign-On", "wasCorrect": False,
         }
+        assert by_op["rev-answer-wrong"]["sessionRunId"] == "run-answer-1"
         assert by_op["rev-answer-right"]["answer"]["wasCorrect"] is True
         assert "answer" not in by_op["rev-answer-none"]
 
@@ -2330,6 +2332,7 @@ class TestBootstrapUpload:
                 "rating": 4,
                 "timeMs": 1200,
                 "timestamp": 6500,
+                "sessionRunId": "run-bootstrap-1",
                 "sourceClient": "origin-a",
                 "createdAt": 6500,
             }],
@@ -2345,6 +2348,7 @@ class TestBootstrapUpload:
         assert review["rating"] == 4
         assert review["timeMs"] == 1200
         assert review["timestamp"] == 6500
+        assert review["sessionRunId"] == "run-bootstrap-1"
 
     def test_bootstrap_upload_is_idempotent_for_duplicate_batch(self, api, db_helper):
         payload_decks = [{"id": "deck-dup", "name": "Dup", "createdAt": 1000, "updatedAt": 1000}]

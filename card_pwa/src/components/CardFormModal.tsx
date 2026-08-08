@@ -6,10 +6,16 @@
  */
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
-import { X, Plus, Loader2, CheckCircle, Trash2, Info, Minus } from 'lucide-react'
+import { X, Plus, Loader2, CheckCircle, Trash2, Info } from 'lucide-react'
 import { createCard, updateCard, deleteCard, createDeck, listDeckOptions } from '../db/queries'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
-import { QuestionParser, AnswerParser, OrderingParser } from '../utils/cardTextParser'
+import {
+  QuestionParser,
+  AnswerParser,
+  OrderingParser,
+  OrderingAnswerParser,
+  MatchingAnswerParser,
+} from '../utils/cardTextParser'
 import { getCardVariant, type CardVariant } from '../utils/cardVariant'
 import { SM2 } from '../utils/sm2'
 import { UI_TOKENS } from '../constants/ui'
@@ -33,6 +39,8 @@ interface FormState {
   back: string
   tags: string
   mnemonic: string           // Merkhilfe (both MC and non-MC)
+  correctExplanation: string // deutsche „Warum richtig?“-Auflösung für MC
+  incorrectReasons: string[] // pro kanonischer MC-Option; richtige Option bleibt leer
   isMultipleChoice: boolean
   mcOptions: string[]        // dynamic answer options
   correctAnswer: string | null
@@ -113,6 +121,8 @@ export default function CardFormModal(props: Props) {
           back: backText,
           tags: props.card.tags.join('; '),
           mnemonic,
+          correctExplanation: '',
+          incorrectReasons: ['', '', '', ''],
           isMultipleChoice: false,
           mcOptions: ['', '', '', ''],
           correctAnswer: null,
@@ -127,8 +137,10 @@ export default function CardFormModal(props: Props) {
         ? (optionValues.length >= 4 ? optionValues : [...optionValues, ...Array(Math.max(0, 4 - optionValues.length)).fill('')])
         : ['', '', '', '']
       const { backText, mnemonic } = isMC
-        ? { backText: '', mnemonic: parsedAnswer.answer || '' }
+        ? { backText: '', mnemonic: parsedAnswer.merkhilfe || '' }
         : extractMnemonic(props.card.back)
+      const optionKeys = Object.keys(parsedQuestion.options)
+      const incorrectReasons = mcOptions.map((_, index) => parsedAnswer.incorrectReasons[optionKeys[index] ?? ''] ?? '')
       return {
         deckId: '',
         newDeckName: '',
@@ -136,6 +148,8 @@ export default function CardFormModal(props: Props) {
         back: backText,
         tags: props.card.tags.join('; '),
         mnemonic,
+        correctExplanation: isMC ? parsedAnswer.answer : '',
+        incorrectReasons,
         isMultipleChoice: isMC,
         mcOptions,
         correctAnswer: parsedAnswer.correct,
@@ -149,6 +163,8 @@ export default function CardFormModal(props: Props) {
       back: '',
       tags: '',
       mnemonic: '',
+      correctExplanation: '',
+      incorrectReasons: ['', '', '', ''],
       isMultipleChoice: false,
       mcOptions: ['', '', '', ''],
       correctAnswer: null,
@@ -169,8 +185,8 @@ export default function CardFormModal(props: Props) {
   })()
   const [cardVariant, setCardVariantState] = useState<CardVariant>(initialVariant)
 
-  const ORDERING_TEMPLATE = `ORDERING:\n[Aufgabenstellung hier eingeben]\n\n1) Step eins\n2) Step zwei\n3) Step drei\n4) Step vier`
-  const MATCHING_TEMPLATE = `MATCHING:\n[Aufgabenstellung hier eingeben]\n\nBegriff A >> Kategorie X\nBegriff B >> Kategorie Y\nBegriff C >> Kategorie X`
+  const ORDERING_TEMPLATE = `ORDERING:\n[Enter the task in English]\n\n1) First step\n2) Second step\n3) Third step\n4) Fourth step`
+  const MATCHING_TEMPLATE = `MATCHING:\n[Enter the task in English]\n\nTerm A >> Category X\nTerm B >> Category Y\nTerm C >> Category X`
 
   const handleVariantChange = (variant: CardVariant) => {
     setCardVariantState(variant)
@@ -189,7 +205,13 @@ export default function CardFormModal(props: Props) {
     const parsed = OrderingParser.parse(form.front)
     if (parsed.items.length === 0) return
     const orderStr = parsed.items.map((_, i) => i + 1).join(',')
-    setForm(prev => ({ ...prev, back: `CORRECT_ORDER: ${orderStr}\n` }))
+    setForm(prev => {
+      const explanation = OrderingAnswerParser.parse(prev.back).explanation.trim()
+      return {
+        ...prev,
+        back: `CORRECT_ORDER: ${orderStr}${explanation ? `\n\n${explanation}` : '\n'}`,
+      }
+    })
   }
 
   // Set default deckId once decks load (create mode)
@@ -211,22 +233,11 @@ export default function CardFormModal(props: Props) {
       return { ...prev, mcOptions: updated }
     }), [])
 
-  const addMcOption = useCallback(() =>
-    setForm(prev => ({ ...prev, mcOptions: [...prev.mcOptions, ''] })), [])
-
-  const removeMcOption = useCallback((index: number) =>
+  const setIncorrectReason = useCallback((index: number) => (e: React.ChangeEvent<HTMLTextAreaElement>) =>
     setForm(prev => {
-      if (prev.mcOptions.length <= 2) return prev
-      const updated = prev.mcOptions.filter((_, i) => i !== index)
-      const removedLabel = String.fromCharCode(65 + index)
-      let newCorrect = prev.correctAnswer
-      if (newCorrect === removedLabel) {
-        newCorrect = null
-      } else if (newCorrect) {
-        const correctIdx = newCorrect.charCodeAt(0) - 65
-        if (correctIdx > index) newCorrect = String.fromCharCode(correctIdx - 1 + 65)
-      }
-      return { ...prev, mcOptions: updated, correctAnswer: newCorrect }
+      const updated = [...prev.incorrectReasons]
+      updated[index] = e.target.value
+      return { ...prev, incorrectReasons: updated }
     }), [])
 
   const buildContent = (): { frontContent: string; backContent: string } | null => {
@@ -236,7 +247,9 @@ export default function CardFormModal(props: Props) {
       if (!front) { setError(t.front_back_required); return null }
       if (!back)  { setError(t.front_back_required); return null }
       if (!/^ORDERING:/i.test(front)) { setError(t.front_back_required); return null }
-      return { frontContent: front, backContent: back }
+      if (!OrderingAnswerParser.parse(back).explanation.trim()) { setError(t.explanation_required); return null }
+      const backContent = form.mnemonic.trim() ? `${back}\n\nMerkhilfe: ${form.mnemonic.trim()}` : back
+      return { frontContent: front, backContent }
     }
     if (cardVariant === 'matching') {
       const front = form.front.trim()
@@ -244,18 +257,36 @@ export default function CardFormModal(props: Props) {
       if (!front) { setError(t.front_back_required); return null }
       if (!back)  { setError(t.front_back_required); return null }
       if (!/^MATCHING:/i.test(front)) { setError(t.front_back_required); return null }
-      return { frontContent: front, backContent: back }
+      const parsedAnswer = MatchingAnswerParser.parse(back)
+      if (parsedAnswer.pairs.length === 0 || !parsedAnswer.explanation.trim()) {
+        setError(t.explanation_required)
+        return null
+      }
+      const backContent = form.mnemonic.trim() ? `${back}\n\nMerkhilfe: ${form.mnemonic.trim()}` : back
+      return { frontContent: front, backContent }
     }
     if (cardVariant === 'mc' || form.isMultipleChoice) {
       if (!form.questionText.trim()) { setError(t.question_empty); return null }
-      const filledOptions = form.mcOptions.filter(o => o.trim())
-      if (filledOptions.length < 2) { setError(t.all_options_required); return null }
+      if (form.mcOptions.length !== 4) { setError(t.all_options_required); return null }
       if (form.mcOptions.some(o => !o.trim())) { setError(t.all_options_required); return null }
       if (!form.correctAnswer) { setError(t.choose_correct_answer); return null }
+      const normalizedOptions = form.mcOptions.map(option => option.trim().toLocaleLowerCase())
+      if (new Set(normalizedOptions).size !== normalizedOptions.length) { setError(t.all_options_required); return null }
+      if (!form.correctExplanation.trim()) { setError(t.explanation_required); return null }
+      const correctIndex = form.correctAnswer.charCodeAt(0) - 65
+      const missingIncorrectReason = form.mcOptions.some((_, index) => (
+        index !== correctIndex && !form.incorrectReasons[index]?.trim()
+      ))
+      if (missingIncorrectReason) { setError(t.incorrect_reasons_required); return null }
       const optionLines = form.mcOptions.map((opt, i) => `${String.fromCharCode(65 + i)}: ${opt.trim()}`)
+      const incorrectReasonLines = form.mcOptions
+        .map((_, index) => ({ index, reason: form.incorrectReasons[index]?.trim() ?? '' }))
+        .filter(entry => entry.index !== correctIndex)
+        .map(entry => `${String.fromCharCode(65 + entry.index)} | ${entry.reason}`)
+      const mnemonicSection = form.mnemonic.trim() ? `\n\nMerkhilfe: ${form.mnemonic.trim()}` : ''
       return {
         frontContent: [form.questionText.trim(), ...optionLines].join('\n'),
-        backContent: `>> CORRECT: ${form.correctAnswer} | ${form.mnemonic.trim() || t.no_additional_info}`,
+        backContent: `>> CORRECT: ${form.correctAnswer} |\n\n${form.correctExplanation.trim()}${mnemonicSection}\n\nNicht:\n${incorrectReasonLines.join('\n')}`,
       }
     }
     const frontContent = form.front.trim()
@@ -321,8 +352,9 @@ export default function CardFormModal(props: Props) {
         setTimeout(() => {
           setForm(prev => ({
             ...prev,
-            front: '', back: '', tags: '', mnemonic: '',
+            front: '', back: '', tags: '', mnemonic: '', correctExplanation: '',
             mcOptions: ['', '', '', ''],
+            incorrectReasons: ['', '', '', ''],
             correctAnswer: null, questionText: '',
           }))
           setStatus('idle')
@@ -480,45 +512,50 @@ export default function CardFormModal(props: Props) {
                   <div className="space-y-2">
                     {form.mcOptions.map((opt, i) => {
                       const letter = String.fromCharCode(65 + i)
+                      const isCorrectOption = form.correctAnswer === letter
                       return (
-                        <div key={i} className="flex items-center gap-2">
-                          <input
-                            type="radio"
-                            name="correctAnswer"
-                            value={letter}
-                            checked={form.correctAnswer === letter}
-                            onChange={() => setForm(prev => ({ ...prev, correctAnswer: letter }))}
-                            className="h-5 w-5 shrink-0 cursor-pointer"
-                          />
-                          <input
-                            type="text"
-                            value={opt}
-                            onChange={setMcOption(i)}
-                            placeholder={`${t.option_prefix} ${letter}...`}
-                            className={`${inputCls} flex-1`}
-                          />
-                          {form.mcOptions.length > 2 && (
-                            <button
-                              type="button"
-                              onClick={() => removeMcOption(i)}
-                              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-ds-xl text-white/30 transition-all duration-200 ease-out active:scale-[0.98] hover:bg-rose-500/10 hover:text-rose-400 sm:h-9 sm:w-9"
-                              title={t.remove_answer_option}
-                            >
-                              <Minus size={14} strokeWidth={1.5} />
-                            </button>
+                        <div key={i} className="space-y-2 rounded-ds border border-white/5 p-2">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="radio"
+                              name="correctAnswer"
+                              value={letter}
+                              checked={isCorrectOption}
+                              onChange={() => setForm(prev => ({ ...prev, correctAnswer: letter }))}
+                              className="h-5 w-5 shrink-0 cursor-pointer"
+                            />
+                            <input
+                              type="text"
+                              value={opt}
+                              onChange={setMcOption(i)}
+                              placeholder={`${t.option_prefix} ${letter}...`}
+                              className={`${inputCls} flex-1`}
+                            />
+                          </div>
+                          {!isCorrectOption && (
+                            <textarea
+                              value={form.incorrectReasons[i] ?? ''}
+                              onChange={setIncorrectReason(i)}
+                              placeholder={`${t.why_not_required} — ${opt || `${t.option_prefix} ${letter}`}`}
+                              rows={2}
+                              className={`${inputCls} resize-none text-sm`}
+                            />
                           )}
                         </div>
                       )
                     })}
                   </div>
-                  <button
-                    type="button"
-                    onClick={addMcOption}
-                    className="text-xs text-white/40 hover:text-white/70 transition flex items-center gap-1.5 pt-1"
-                  >
-                    <Plus size={12} strokeWidth={1.5} /> {t.add_answer_option}
-                  </button>
                 </div>
+
+                <Field label={t.why_correct_required}>
+                  <textarea
+                    value={form.correctExplanation}
+                    onChange={set('correctExplanation')}
+                    placeholder={t.explanation_required}
+                    rows={3}
+                    className={`${inputCls} resize-none`}
+                  />
+                </Field>
 
                 <Field label={t.extra_explanation_optional}>
                   <textarea
@@ -559,6 +596,15 @@ export default function CardFormModal(props: Props) {
                     className={`${inputCls} resize-none font-mono text-[13px]`}
                   />
                 </Field>
+                <Field label={t.extra_explanation_optional}>
+                  <textarea
+                    value={form.mnemonic}
+                    onChange={set('mnemonic')}
+                    placeholder={t.extra_explanation_placeholder}
+                    rows={2}
+                    className={`${inputCls} resize-none`}
+                  />
+                </Field>
               </>
             ) : cardVariant === 'matching' ? (
               <>
@@ -574,9 +620,18 @@ export default function CardFormModal(props: Props) {
                   <textarea
                     value={form.back}
                     onChange={set('back')}
-                    placeholder={'Begriff A = Kategorie X\nBegriff B = Kategorie Y\n\nMerkhilfe: ...'}
+                    placeholder={'Term A = Category X\nTerm B = Category Y\n\n[Deutsche Auswertung]'}
                     rows={4}
                     className={`${inputCls} resize-none font-mono text-[13px]`}
+                  />
+                </Field>
+                <Field label={t.extra_explanation_optional}>
+                  <textarea
+                    value={form.mnemonic}
+                    onChange={set('mnemonic')}
+                    placeholder={t.extra_explanation_placeholder}
+                    rows={2}
+                    className={`${inputCls} resize-none`}
                   />
                 </Field>
               </>

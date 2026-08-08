@@ -47,6 +47,18 @@ describe('studyCardOrdering', () => {
     expect(result).toHaveLength(4)
   })
 
+  it('excludes qa-blocked cards from normal and special study selections', () => {
+    const allowed = createCard({ id: 'allowed' })
+    const blocked = createCard({ id: 'blocked', tags: ['qa-blocked'] })
+
+    expect(sortStudyCards([blocked, allowed]).map(card => card.id)).toEqual(['allowed'])
+    expect(buildStudySessionSelection([blocked, allowed], {
+      sessionId: 'daily-quest',
+      maxCards: 10,
+    }).map(card => card.id)).toEqual(['allowed'])
+    expect(buildTodayPackageSelection([blocked, allowed], 10).map(card => card.id)).toEqual(['allowed'])
+  })
+
   it('prioritizes due review cards before new cards', () => {
     const nowMs = Date.now()
     const dueReview = createCard({ id: 'review-due', type: 'review', dueAt: nowMs - 1, due: 1 })

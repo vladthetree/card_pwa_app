@@ -3,7 +3,8 @@
 apply_mc_data.py — MC-JSON-Dateien auf die DB anwenden
 
 Liest mc_data/section*.json und aktualisiert front/back der Karten via card.update.
-Karten die als needs_review markiert sind, werden nur getaggt, nicht konvertiert.
+Nur explizit fachlich freigegebene Einträge werden veröffentlicht. Entwürfe
+oder unvollständige Einträge erhalten qa-blocked und bleiben in der DB.
 
 Usage:
     python scripts/apply_mc_data.py                    # alle mc_data/*.json
@@ -17,6 +18,7 @@ import json
 import sqlite3
 import sys
 from pathlib import Path
+from urllib.parse import urlparse
 
 _ROOT = Path(__file__).resolve().parent.parent
 if str(_ROOT) not in sys.path:
@@ -26,22 +28,66 @@ from sync_server import apply_operation, open_db, now_ms, get_default_profile_id
 
 MC_DIR        = _ROOT / "mc_data"
 SOURCE_CLIENT = "apply_mc_data"
+PRIMARY_SOURCE_HOSTS = {
+    "cisa.gov",
+    "csrc.nist.gov",
+    "eur-lex.europa.eu",
+    "ietf.org",
+    "lecbyo.files.cmp.optimizely.com",
+    "nist.gov",
+    "nvlpubs.nist.gov",
+    "owasp.org",
+    "rfc-editor.org",
+    "www.cisa.gov",
+    "www.ietf.org",
+    "www.nist.gov",
+    "www.owasp.org",
+    "www.rfc-editor.org",
+}
 
 
 def build_front(question: str, opts: dict) -> str:
     return f"{question}\nA: {opts['A']}\nB: {opts['B']}\nC: {opts['C']}\nD: {opts['D']}"
 
 
-def build_back(correct: str, opts: dict, explanation: str) -> str:
-    return f">> CORRECT: {correct} | {opts[correct]}\n\n{explanation}"
+def build_back(correct: str, explanation: str, incorrect: dict) -> str:
+    wrong_lines = [f"{letter} | {incorrect[letter]}" for letter in "ABCD" if letter != correct]
+    return f">> CORRECT: {correct} |\n\n{explanation}\n\nNicht:\n" + "\n".join(wrong_lines)
 
 
-def delete_duplicates(conn: sqlite3.Connection, entry: dict, ts: int, user_id: str) -> None:
+def with_qa_blocked(tags: list[str], blocked: bool) -> list[str]:
+    normalized = [tag for tag in tags if str(tag).strip().lower() != "qa-blocked"]
+    if blocked:
+        normalized.append("qa-blocked")
+    return normalized
+
+
+def has_primary_source(source_refs: object) -> bool:
+    if not isinstance(source_refs, list) or not source_refs:
+        return False
+    for ref in source_refs:
+        if not isinstance(ref, str) or not ref.strip():
+            continue
+        parsed = urlparse(ref.strip())
+        if parsed.scheme == "https" and parsed.hostname in PRIMARY_SOURCE_HOSTS:
+            return True
+    return False
+
+
+def block_duplicates(conn: sqlite3.Connection, entry: dict, ts: int, user_id: str) -> None:
+    """Legacy manifests may identify duplicate IDs; quarantine instead of deleting them."""
     for dup_id in entry.get("delete_duplicates", []):
+        row = conn.execute(
+            "SELECT tags_json FROM server_cards WHERE id=? AND user_id=? AND IFNULL(is_deleted, 0)=0",
+            (str(dup_id), user_id),
+        ).fetchone()
+        if not row:
+            continue
+        tags = with_qa_blocked(json.loads(row[0] or "[]"), True)
         apply_operation(
             conn, "card.update",
             {"cardId": str(dup_id),
-             "updates": {"isDeleted": True, "deletedAt": ts}},
+             "updates": {"tags": tags}},
             client_timestamp=ts, source_client=SOURCE_CLIENT, user_id=user_id,
         )
 
@@ -63,30 +109,31 @@ def apply_file(path: Path, user_id: str, dry_run: bool) -> dict:
 
         # Karte existiert?
         row = conn.execute(
-            "SELECT id, front, back FROM server_cards WHERE id=? AND user_id=? AND is_deleted=0",
+            "SELECT id, front, back, tags_json FROM server_cards WHERE id=? AND user_id=? AND is_deleted=0",
             (card_id, user_id),
         ).fetchone()
         if not row:
             stats["not_found"] += 1
             continue
 
-        # needs_review → nur Tag setzen, nicht konvertieren
-        if entry.get("needs_review"):
+        # Nur ein vollständig kuratierter, quellenbelegter Datensatz darf aktiv
+        # werden. Generatoren liefern absichtlich qa_status=draft.
+        if entry.get("needs_review") or entry.get("qa_status") != "approved":
             if not dry_run:
                 existing_tags = json.loads(
-                    conn.execute("SELECT tags_json FROM server_cards WHERE id=?", (card_id,))
+                    conn.execute("SELECT tags_json FROM server_cards WHERE id=? AND user_id=?", (card_id, user_id))
                     .fetchone()[0] or "[]"
                 )
-                if "needs_review" not in existing_tags:
-                    existing_tags.append("needs_review")
+                next_tags = with_qa_blocked(existing_tags, True)
+                if next_tags != existing_tags:
                     with conn:
                         apply_operation(
                             conn, "card.update",
-                            {"cardId": card_id, "updates": {"tags": existing_tags}},
+                            {"cardId": card_id, "updates": {"tags": next_tags}},
                             client_timestamp=ts, source_client=SOURCE_CLIENT, user_id=user_id,
                         )
                 with conn:
-                    delete_duplicates(conn, entry, ts, user_id)
+                    block_duplicates(conn, entry, ts, user_id)
             stats["skipped"] += 1
             continue
 
@@ -95,23 +142,44 @@ def apply_file(path: Path, user_id: str, dry_run: bool) -> dict:
         correct = (entry.get("correct") or "").upper()
         question = entry.get("question", "")
         explanation = entry.get("explanation_de", "")
+        incorrect = entry.get("incorrect_explanations_de") or {}
+        source_refs = entry.get("source_refs") or []
 
-        if not all([question, correct in "ABCD", all(opts.values()), explanation]):
+        wrong_letters = {letter for letter in "ABCD" if letter != correct}
+        valid_incorrect = isinstance(incorrect, dict) and set(incorrect) == wrong_letters and all(
+            isinstance(incorrect[letter], str) and incorrect[letter].strip() for letter in wrong_letters
+        )
+        unique_options = len({value.strip().casefold() for value in opts.values()}) == 4
+        if not all([
+            question,
+            correct in "ABCD",
+            all(opts.values()),
+            unique_options,
+            explanation,
+            valid_incorrect,
+            isinstance(source_refs, list) and bool(source_refs)
+            and all(isinstance(ref, str) and ref.strip() for ref in source_refs)
+            and has_primary_source(source_refs),
+        ]):
             stats["errors"].append({"id": card_id, "reason": "Unvollständiger MC-Eintrag"})
             continue
 
         front_mc = build_front(question, opts)
-        back_mc  = build_back(correct, opts, explanation)
+        back_mc  = build_back(correct, explanation, incorrect)
 
         if not dry_run:
             with conn:
                 apply_operation(
                     conn, "card.update",
-                    {"cardId": card_id, "updates": {"front": front_mc, "back": back_mc}},
+                    {"cardId": card_id, "updates": {
+                        "front": front_mc,
+                        "back": back_mc,
+                        "tags": with_qa_blocked(json.loads(row[3] or "[]"), False),
+                    }},
                     client_timestamp=ts, source_client=SOURCE_CLIENT, user_id=user_id,
                 )
-                # Duplikat-IDs soft-deleten wenn angegeben
-                delete_duplicates(conn, entry, ts, user_id)
+                # Duplikat-IDs bleiben verwaltbar und werden nur quarantänisiert.
+                block_duplicates(conn, entry, ts, user_id)
 
         stats["converted"] += 1
 

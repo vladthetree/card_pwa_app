@@ -14,6 +14,7 @@ import { drainTransactionalOutbox, enqueueSyncOperation } from '../../services/s
 import { buildOpId } from '../../services/syncConfig'
 import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
 import { getDayStartMs, resolveDueAtMs } from '../../utils/time'
+import { buildLatestSessionCardReviews } from '../../utils/reviewIdentity'
 import {
   shouldSmoothBacklog,
   computeNewDueDay,
@@ -358,8 +359,9 @@ export async function getGlobalStats(nextDayStartsAt = 0): Promise<GlobalStats> 
   }
 
   const deckCount = decks.filter(d => !d.isDeleted).length
-  const reviewedToday = reviewsToday.length
-  const successfulToday = reviewsToday.filter(review => isRecalledRating(review.rating)).length
+  const uniqueReviewsToday = buildLatestSessionCardReviews(reviewsToday)
+  const reviewedToday = uniqueReviewsToday.length
+  const successfulToday = uniqueReviewsToday.filter(review => isRecalledRating(review.rating)).length
   const successToday = reviewedToday === 0 ? 0 : Math.round((successfulToday / reviewedToday) * 100)
 
   return {
@@ -535,11 +537,14 @@ export async function recordReview(
   algorithmParams?: Partial<AlgorithmParams>,
   /** Konkrete Antwort interaktiver Karten — richtige wie falsche laufen über
    *  denselben Pfad; Karten ohne Auswahl übergeben nichts. */
-  answer?: ReviewAnswerDetails
+  answer?: ReviewAnswerDetails,
+  /** Stable study-run identity; optional for non-session/legacy callers. */
+  sessionRunId?: string,
 ): Promise<{ ok: boolean; error?: string; undoToken?: ReviewUndoToken; cardState?: CardSchedulingState }> {
   try {
     const card = await db.cards.get(cardId)
     if (!card) throw new Error(`Karte ${cardId} nicht gefunden`)
+    if (!isStudyableCard(card)) throw new Error(`Karte ${cardId} ist für Lern-Sessions gesperrt`)
 
     const previousState: CardSchedulingState = {
       type: card.type,
@@ -620,6 +625,7 @@ export async function recordReview(
       algorithmVersion: effectiveAlgorithm === 'fsrs' ? 2 : 1,
       updated: persistedCardUpdate,
       timestamp: reviewTimestamp,
+      ...(sessionRunId?.trim() ? { sessionRunId: sessionRunId.trim() } : {}),
       ...(answer ? { answer } : {}),
     }
     let reviewId = 0
@@ -632,6 +638,7 @@ export async function recordReview(
         timeMs,
         timestamp: reviewTimestamp,
         createdAt: reviewTimestamp,
+        ...(sessionRunId?.trim() ? { sessionRunId: sessionRunId.trim() } : {}),
         ...answerFields,
       })
       await db.syncOutbox.put({

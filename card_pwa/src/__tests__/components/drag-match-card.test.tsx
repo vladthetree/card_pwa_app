@@ -44,19 +44,20 @@ vi.mock('../../contexts/SettingsContext', async () => {
 import DragMatchCard from '../../components/DragMatchCard'
 import { parseMcQuestion, parseMcAnswer } from '../../utils/cardTextParser'
 
-const ZTNA_FRONT = `Welche Bedeutung hat das Acronym 'ZTNA' im SY0-701-Kontext (Obj 1.2)?
+const ZTNA_FRONT = `Which expansion describes the application-level access model abbreviated as Zero Trust Network Access (ZTNA)?
 A: Zoned Trust Network Architecture
 B: Zero Trust Network Access
 C: Zone-based Tunneling Network Access
 D: Zero-Touch Network Authentication`
 
-const ZTNA_BACK = `>> CORRECT: B | ZTNA = Zero Trust Network Access
+const ZTNA_BACK = `>> CORRECT: B |
 
-Brokered Access zu Apps statt Network-Level VPN. Authentifizierung pro Session, kein impliziter Trust.
+Zero Trust Network Access vermittelt Zugriff auf einzelne Anwendungen statt pauschal auf ein Netzwerk. Die Zugriffsprüfung erfolgt pro Sitzung ohne implizites Vertrauen.
 
-Eselsbruecke: ZTNA = wie ein Tuersteher bei jeder Tuer. Kein Generalpass wie bei VPN.
-
-PDF-Bezug: SY0-701 Obj 1.2`
+Nicht:
+A | Dieser Ausdruck ist kein etabliertes Zero-Trust-Zugriffsmodell.
+C | Tunneling allein beschreibt nicht die identitätsbasierte Zugriffsentscheidung.
+D | Zero-Touch-Bereitstellung ist ein anderes Konzept als Anwendungszugriff.`
 
 const card = {
   id: '1779669260169', noteId: 'n1', type: 'review', front: ZTNA_FRONT, back: ZTNA_BACK,
@@ -90,7 +91,7 @@ describe('DragMatchCard — Vorderseite (rekonstruiert aus Drag-Match1)', () => 
   })
 
   it('zeigt die Frage und alle vier Antwort-Optionen', () => {
-    expect(html).toContain('Welche Bedeutung hat das Acronym')
+    expect(html).toContain('Which expansion describes')
     expect(html).toContain('Zoned Trust Network Architecture')
     expect(html).toContain('Zero Trust Network Access')
     expect(html).toContain('Zone-based Tunneling Network Access')
@@ -111,9 +112,12 @@ describe('DragMatchCard — Vorderseite (rekonstruiert aus Drag-Match1)', () => 
 })
 
 describe('DragMatchCard — Rückseite (Erklärung)', () => {
-  it('zeigt die Erklärung aus der Karte inkl. Eselsbruecke und PDF-Bezug', () => {
+  it('zeigt richtige Lösung, deutsche Erklärung und alle Distraktorerklärungen ohne Quellen-Metatext', () => {
     const html = render(true)
-    expect(html).toContain('Brokered Access zu Apps')
-    expect(html).toContain('PDF-Bezug: SY0-701 Obj 1.2')
+    expect(html).toContain('RICHTIG: Zero Trust Network Access')
+    expect(html).toContain('vermittelt Zugriff auf einzelne Anwendungen')
+    expect(html).toContain('Warum nicht?')
+    expect(html).toContain('Tunneling allein beschreibt nicht')
+    expect(html).not.toContain('PDF-Bezug')
   })
 })

@@ -11,6 +11,7 @@ import type { OrderingAnswer, MatchingAnswer } from '../utils/cardTextParser'
 import { isDragMatchShape, isFreeRecallCard } from '../utils/cardVariant'
 import { seededShuffle } from '../utils/hash'
 import type { AnswerEvaluatedHandler, Card } from '../types'
+import IncorrectReasonsSection from './IncorrectReasonsSection'
 
 const OrderingCard   = lazy(() => import('./OrderingCard'))
 const MatchingCard   = lazy(() => import('./MatchingCard'))
@@ -544,9 +545,16 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                     </>
                   )}
 
-                  <p className={`card-face-text ${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-ds-fg`}>
-                    {answered.answer}
-                  </p>
+                  {answered.answer && (
+                    <section>
+                      <h3 className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-emerald-300">
+                        {t.why_correct}
+                      </h3>
+                      <p className={`card-face-text ${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-ds-fg`}>
+                        {answered.answer}
+                      </p>
+                    </section>
+                  )}
 
                   {answered.merkhilfe && (
                     <div className={`${answered.answer ? 'mt-3' : 'mt-0'} border-l-2 border-[--brand-primary-50] bg-[--brand-primary-08] px-[10px] py-[6px]`}>
@@ -559,12 +567,12 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                     </div>
                   )}
 
-                  {answered.nicht && (
-                    <div className="mt-3 border-l-2 border-rose-300 bg-rose-500/10 px-3 py-2">
-                      <span className="mb-1 block font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-rose-300">{t.not_label}</span>
-                      <span className="text-xs text-white/85">{answered.nicht}</span>
-                    </div>
-                  )}
+                  <IncorrectReasonsSection
+                    answer={answered}
+                    options={question.options}
+                    selectedKey={selectedAnswer}
+                    compact={compact}
+                  />
 
                   {hasExtra && (
                     <div className={`${answered.merkhilfe || answered.nicht ? 'mt-3' : 'mt-auto pt-4'} grid grid-cols-1 gap-2 border-t border-ds-border pt-3 text-xs sm:grid-cols-2`}>

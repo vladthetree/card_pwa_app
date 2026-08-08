@@ -406,9 +406,16 @@ const OrderingCard = memo(function OrderingCard({
             </div>
           )}
 
-          <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-mono font-medium leading-[1.55] text-ds-fg`}>
-            {answer.explanation}
-          </p>
+          {answer.explanation && (
+            <section>
+              <h3 className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-emerald-300">
+                {t.why_correct}
+              </h3>
+              <p className={`${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-ds-fg`}>
+                {answer.explanation}
+              </p>
+            </section>
+          )}
 
           {answer.merkhilfe && (
             <div className={`${answer.explanation ? 'mt-3' : 'mt-0'} border-l-2 border-[--brand-primary-50] bg-[--brand-primary-08] px-[10px] py-[6px]`}>

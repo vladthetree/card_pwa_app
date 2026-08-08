@@ -7,11 +7,13 @@
  * Karte wird nur als read-only Snapshot (lastRatedCard) fürs Nochmal-Ansehen gehalten.
  */
 import { applyRating } from './sessionRecovery'
-import type { PersistedStudySession } from './studySessionPersistence'
+import { createSessionRunId, type PersistedStudySession } from './studySessionPersistence'
 import type { Card, CardSchedulingState, Rating, SessionReviewEvent } from '../types'
+import { isStudyableCard } from '../utils/sm2'
 
 export interface SessionState {
   cards: Card[]
+  sessionRunId: string
   sessionCount: number
   isFlipped: boolean
   isDone: boolean
@@ -31,7 +33,7 @@ export interface SessionState {
 }
 
 export type SessionAction =
-  | { type: 'INIT'; cards: Card[] }
+  | { type: 'INIT'; cards: Card[]; sessionRunId?: string }
   | { type: 'RESTORE'; cards: Card[]; snapshot: PersistedStudySession }
   | { type: 'SYNC_CARDS'; cards: Card[] }
   | { type: 'FLIP' }
@@ -50,10 +52,11 @@ export type SessionAction =
     }
   | { type: 'RATE_ERROR'; message: string }
   | { type: 'CLEAR_ERROR' }
-  | { type: 'RESTART' }
+  | { type: 'RESTART'; sessionRunId?: string }
 
 export const initialSessionState: SessionState = {
   cards: [],
+  sessionRunId: '',
   sessionCount: 0,
   isFlipped: false,
   isDone: false,
@@ -78,19 +81,24 @@ export function upsertUnique(values: string[], nextValue: string): string[] {
 
 export function sessionReducer(state: SessionState, action: SessionAction): SessionState {
   switch (action.type) {
-    case 'INIT':
+    case 'INIT': {
+      const cards = action.cards.filter(isStudyableCard)
       return {
         ...initialSessionState,
-        cards: action.cards,
-        isDone: action.cards.length === 0,
+        cards,
+        sessionRunId: action.sessionRunId?.trim() || createSessionRunId(),
+        isDone: cards.length === 0,
         startTime: Date.now(),
       }
-    case 'RESTORE':
+    }
+    case 'RESTORE': {
+      const cards = action.cards.filter(isStudyableCard)
       return {
-        cards: action.cards,
+        cards,
+        sessionRunId: action.snapshot.sessionRunId,
         sessionCount: action.snapshot.sessionCount,
         isFlipped: action.snapshot.isFlipped,
-        isDone: action.snapshot.isDone,
+        isDone: action.snapshot.isDone || cards.length === 0,
         error: null,
         isSubmitting: false,
         lastRating: action.snapshot.lastRating,
@@ -104,10 +112,11 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
         reviewEvents: [...(action.snapshot.reviewEvents ?? [])],
         startTime: action.snapshot.startTime,
       }
+    }
     case 'SYNC_CARDS':
       return {
         ...state,
-        cards: action.cards,
+        cards: action.cards.filter(isStudyableCard),
       }
     case 'FLIP':
       if (state.isDone || !state.cards[0]) return state
@@ -222,6 +231,7 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
       return {
         ...initialSessionState,
         cards: [...state.cards],
+        sessionRunId: action.sessionRunId?.trim() || createSessionRunId(),
         isDone: state.cards.length === 0,
         startTime: Date.now(),
       }

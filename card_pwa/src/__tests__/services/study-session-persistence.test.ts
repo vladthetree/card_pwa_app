@@ -56,6 +56,7 @@ describe('study session persistence helpers', () => {
     expect(parsed?.cardIds).toEqual(['c1', 'c2'])
     expect(parsed?.kind).toBe('deck')
     expect(parsed?.reviewEvents).toEqual([])
+    expect(parsed?.sessionRunId).toBe(`legacy-session-deck-1-${now - 30_000}`)
   })
 
   it('rejects persisted session when deck id differs', () => {
@@ -116,8 +117,9 @@ describe('study session persistence helpers', () => {
   })
 
   it('restores card order from persisted ids and skips missing ids', () => {
-    const cards = [createCard('a'), createCard('b'), createCard('c')]
-    const restored = restoreCardsByOrder(cards, ['c', 'missing', 'a'])
+    const blocked = { ...createCard('blocked'), tags: ['qa-blocked'] }
+    const cards = [createCard('a'), createCard('b'), createCard('c'), blocked]
+    const restored = restoreCardsByOrder(cards, ['c', 'blocked', 'missing', 'a'])
 
     expect(restored.map(card => card.id)).toEqual(['c', 'a'])
   })
@@ -130,6 +132,7 @@ describe('study session persistence helpers', () => {
     const payload = buildPersistedStudySession({
       deckId: 'deck-1',
       cardIds: ['c1', 'c2'],
+      sessionRunId: 'run-persisted-1',
       cardLimit: 50,
       sessionCount: 3,
       isFlipped: true,
@@ -143,11 +146,12 @@ describe('study session persistence helpers', () => {
       startTime: now - 5_000,
     })
 
-    expect(payload.version).toBe(5)
+    expect(payload.version).toBe(6)
     expect(payload.deckId).toBe('deck-1')
     expect(payload.kind).toBe('deck')
     expect(payload.cardIds).toEqual(['c1', 'c2'])
     expect(payload.reviewEvents).toEqual([{ cardId: 'c1', rating: 3, elapsedMs: 1234 }])
+    expect(payload.sessionRunId).toBe('run-persisted-1')
     expect(payload.expiresAt).toBe(now + STUDY_SESSION_TTL_MS)
 
     vi.useRealTimers()
@@ -155,6 +159,28 @@ describe('study session persistence helpers', () => {
 
   it('builds a namespaced shuffle session id', () => {
     expect(buildShuffleSessionId('collection-1')).toBe('shuffle:collection-1')
+  })
+
+  it('preserves the run id when a version 6 session is resumed', () => {
+    const now = Date.UTC(2026, 3, 10, 12, 0, 0)
+    const raw = JSON.stringify({
+      version: 6,
+      deckId: 'deck-1',
+      cardIds: ['c1'],
+      sessionRunId: 'run-resume-1',
+      sessionCount: 1,
+      isFlipped: false,
+      isDone: false,
+      lastRating: null,
+      lowRatingCounts: {},
+      relearnSuccessCounts: {},
+      forcedTomorrowCardIds: [],
+      againCounts: {},
+      expiresAt: now + 1_000,
+      startTime: now - 1_000,
+    })
+
+    expect(parsePersistedStudySession(raw, 'deck-1', now)?.sessionRunId).toBe('run-resume-1')
   })
 
   it('persistiert und rekonstruiert den Rückweg einer Lernplan-Session', () => {

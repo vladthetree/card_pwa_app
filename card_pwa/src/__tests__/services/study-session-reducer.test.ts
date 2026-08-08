@@ -59,6 +59,30 @@ describe('study session reducer', () => {
     expect(state.againCounts[card.id]).toBe(1)
   })
 
+  it('creates a fresh run id for init and restart while restore keeps its id', () => {
+    const card = createCard('card-run-id')
+    const initialized = sessionReducer(initialSessionState, { type: 'INIT', cards: [card] })
+    expect(initialized.sessionRunId).toMatch(/^study-/)
+
+    const restarted = sessionReducer(initialized, { type: 'RESTART' })
+    expect(restarted.sessionRunId).toMatch(/^study-/)
+    expect(restarted.sessionRunId).not.toBe(initialized.sessionRunId)
+  })
+
+  it('removes qa-blocked cards from initialization and resumed queues', () => {
+    const allowed = createCard('allowed')
+    const blocked = { ...createCard('blocked'), tags: ['qa-blocked'] }
+    const initialized = sessionReducer(initialSessionState, {
+      type: 'INIT',
+      cards: [blocked, allowed],
+      sessionRunId: 'run-filter-1',
+    })
+    expect(initialized.cards.map(card => card.id)).toEqual(['allowed'])
+
+    const synced = sessionReducer(initialized, { type: 'SYNC_CARDS', cards: [blocked] })
+    expect(synced.cards).toEqual([])
+  })
+
   it('shows the next queued card after an Again and moves the failed card to the back', () => {
     const first = createCard('card-1')
     const second = createCard('card-2')

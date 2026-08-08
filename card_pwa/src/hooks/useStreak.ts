@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { db } from '../db'
 import { REVIEW_UPDATED_EVENT } from '../constants/appIdentity'
 import { runStatsStreak } from '../utils/workers/statsWorkerClient'
+import { getDayStartMs } from '../utils/time'
 
 interface StreakState {
   days: number
@@ -12,7 +13,7 @@ interface StreakState {
   reviewedToday: number
 }
 
-export function useStreak(): StreakState {
+export function useStreak(nextDayStartsAt = 0): StreakState {
   const [state, setState] = useState<StreakState>({ days: 0, atRisk: false, reviewedToday: 0 })
 
   useEffect(() => {
@@ -20,8 +21,7 @@ export function useStreak(): StreakState {
 
     const compute = async () => {
       const nowMs = Date.now()
-      const today = new Date(nowMs)
-      const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()
+      const todayStart = getDayStartMs(nowMs, nextDayStartsAt)
       const lookbackMs = todayStart - 400 * 86_400_000
 
       try {
@@ -31,6 +31,7 @@ export function useStreak(): StreakState {
           profileId: 'default',
           reviews: rows,
           nowMs,
+          nextDayStartsAt,
         })
 
         if (!cancelled) {
@@ -56,7 +57,7 @@ export function useStreak(): StreakState {
       window.removeEventListener(REVIEW_UPDATED_EVENT, onReviewUpdated)
       document.removeEventListener('visibilitychange', onVisible)
     }
-  }, [])
+  }, [nextDayStartsAt])
 
   return state
 }

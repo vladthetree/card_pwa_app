@@ -37,6 +37,17 @@ describe('stats aggregate', () => {
     expect(streak.atRisk).toBe(false)
   })
 
+  it('counts a repeated card only once per run and uses its latest rating', () => {
+    const now = new Date('2026-04-26T10:00:00Z').getTime()
+    const streak = calculateStreak([
+      { cardId: 'c1', sessionRunId: 'run-a', rating: 1, timeMs: 1, timestamp: now - 2_000 },
+      { cardId: 'c1', sessionRunId: 'run-a', rating: 3, timeMs: 1, timestamp: now - 1_000 },
+      { cardId: 'c1', sessionRunId: 'run-b', rating: 4, timeMs: 1, timestamp: now },
+    ], now)
+
+    expect(streak.reviewedToday).toBe(2)
+  })
+
   it('forecasts future due counts by day', () => {
     const now = new Date('2026-04-26T10:00:00Z').getTime()
     const tomorrow = new Date('2026-04-27T00:00:00Z').getTime()

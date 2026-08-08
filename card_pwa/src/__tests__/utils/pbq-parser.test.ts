@@ -109,16 +109,19 @@ RSA >> Asymmetric`
 
 describe('MatchingAnswerParser', () => {
   it('parst = Paare und Merkhilfe', () => {
-    const text = `HTTP = Anwendungsschicht
-TCP = Transportschicht
+    const text = `HTTP = Application layer
+TCP = Transport layer
+
+HTTP arbeitet auf der Anwendungsschicht; TCP stellt den Ende-zu-Ende-Transport bereit.
 
 Merkhilfe: Layers 7 down`
     const result = MatchingAnswerParser.parse(text)
     expect(result.type).toBe('matching')
     expect(result.pairs).toEqual([
-      { left: 'HTTP', right: 'Anwendungsschicht' },
-      { left: 'TCP',  right: 'Transportschicht' },
+      { left: 'HTTP', right: 'Application layer' },
+      { left: 'TCP',  right: 'Transport layer' },
     ])
+    expect(result.explanation).toContain('HTTP arbeitet auf der Anwendungsschicht')
     expect(result.merkhilfe).toBe('Layers 7 down')
   })
 })
