@@ -8,6 +8,7 @@ import { db, type CardRecord } from '../../db'
 import { readAllCardsShared, readAllDecksShared } from './sharedReads'
 import { calculateCardStateAfterReview, SM2, isStudyableCard } from '../../utils/sm2'
 import { calculateCardStateAfterReviewFSRS } from '../../utils/fsrs'
+import { isRecalledRating } from '../../utils/gamification'
 import { type AlgorithmParams } from '../../utils/algorithmParams'
 import { drainTransactionalOutbox, enqueueSyncOperation } from '../../services/syncQueue'
 import { buildOpId } from '../../services/syncConfig'
@@ -94,7 +95,7 @@ export interface DeckSuccessRate {
   rate: number
   /** Exakter Quotient vor der Rundung, 0 bei `total === 0`. */
   ratio: number
-  /** Erfolgreiche Reviews (Rating 3 = Good oder 4 = Easy). */
+  /** Erfolgreiche Reviews (alles außer Rating 1 = Nochmal, siehe isRecalledRating). */
   successful: number
   /**
    * Anzahl aller gespeicherten Reviews der betrachteten Card-IDs. Es gilt kein
@@ -107,7 +108,9 @@ export interface DeckSuccessRate {
 /**
  * Eine kanonische Erfolgsmetrik für Deck- und Card-ID-Mengen.
  *
- * - erfolgreich: Scheduler-Rating 3 (Good) oder 4 (Easy)
+ * - erfolgreich: alles außer echtem „Nochmal" (isRecalledRating; Trainer-
+ *   Feedback 2026-08-08 — ein ehrliches „Schwierig" ist kein Fehlschlag und
+ *   soll die Erfolgsquote nicht wie ein kompletter Fehler drücken)
  * - Zeitraum: vollständige gespeicherte Review-Historie
  * - 0 Antworten: `ratio = 0`, `rate = 0`, `total = 0`; die UI zeigt dafür
  *   „Noch keine Bewertungen“ statt eines Misserfolgs
@@ -118,7 +121,7 @@ export function computeCanonicalReviewSuccessRate(
   reviews: readonly { rating: number }[],
 ): DeckSuccessRate {
   const total = reviews.length
-  const successful = reviews.filter(review => review.rating >= 3).length
+  const successful = reviews.filter(review => isRecalledRating(review.rating)).length
   const ratio = total === 0 ? 0 : successful / total
   return {
     rate: Math.round(ratio * 100),
@@ -356,7 +359,7 @@ export async function getGlobalStats(nextDayStartsAt = 0): Promise<GlobalStats> 
 
   const deckCount = decks.filter(d => !d.isDeleted).length
   const reviewedToday = reviewsToday.length
-  const successfulToday = reviewsToday.filter(review => review.rating >= 3).length
+  const successfulToday = reviewsToday.filter(review => isRecalledRating(review.rating)).length
   const successToday = reviewedToday === 0 ? 0 : Math.round((successfulToday / reviewedToday) * 100)
 
   return {
@@ -772,7 +775,9 @@ export async function resetLearningProgress(): Promise<{ ok: boolean; cards: num
   }
 }
 
-export async function forceCardReviewTomorrow(cardId: string): Promise<{ ok: boolean; error?: string }> {
+export async function forceCardReviewTomorrow(
+  cardId: string,
+): Promise<{ ok: boolean; error?: string; cardState?: CardSchedulingState }> {
   try {
     const card = await db.cards.get(cardId)
     if (!card) {
@@ -787,6 +792,7 @@ export async function forceCardReviewTomorrow(cardId: string): Promise<{ ok: boo
     // the `due` field is never behind today's UTC day in UTC+ timezones, which
     // would cause the card to appear prematurely in today's workload KPI.
     const tomorrowDays = Math.floor(Date.now() / 86_400_000) + 1
+    const interval = Math.max(1, card.interval || 1)
 
     const update: Partial<CardRecord> = {
       type: SM2.CARD_TYPE_REVIEW,
@@ -794,7 +800,7 @@ export async function forceCardReviewTomorrow(cardId: string): Promise<{ ok: boo
       due: tomorrowDays,
       dueAt: tomorrowMs,
       learningStep: 0,
-      interval: Math.max(1, card.interval || 1),
+      interval,
       updatedAt: Date.now(),
     }
 
@@ -806,7 +812,28 @@ export async function forceCardReviewTomorrow(cardId: string): Promise<{ ok: boo
       timestamp: Date.now(),
     })
 
-    return { ok: true }
+    // Der Aufrufer (StudyView/ShuffleStudyView) hängt diesen Zustand an den
+    // RATE_SUCCESS-Dispatch — sonst würde der Reducer weiterhin den alten,
+    // kurzfristigen Relearning-Schritt aus dem vorangegangenen recordReview
+    // sehen und die Karte trotz „morgen erzwungen" noch einmal in derselben
+    // Sitzung requeuen (P2.3 wäre wirkungslos).
+    const cardState: CardSchedulingState = {
+      type: SM2.CARD_TYPE_REVIEW,
+      queue: SM2.QUEUE_REVIEW,
+      due: tomorrowDays,
+      dueAt: tomorrowMs,
+      learningStep: 0,
+      lastReviewedAt: card.lastReviewedAt,
+      interval,
+      factor: card.factor,
+      stability: card.stability,
+      difficulty: card.difficulty,
+      reps: card.reps,
+      lapses: card.lapses,
+      algorithm: card.algorithm,
+    }
+
+    return { ok: true, cardState }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     console.error('[forceCardReviewTomorrow]', message)

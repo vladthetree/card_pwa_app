@@ -511,10 +511,14 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
         // P2.3: After the 3rd consecutive Again on this card within the session,
         // force it to tomorrow and remove it from the active queue.
         let forcedTomorrow = false
+        let cardState = result.cardState
         if (effectiveRating === 1 && (session.againCounts[currentCard.id] ?? 0) >= 2) {
           const forceResult = await forceCardReviewTomorrow(currentCard.id)
           if (forceResult.ok) {
             forcedTomorrow = true
+            // Ersetzt den kurzfristigen Relearning-Zustand aus recordReview —
+            // sonst requeued der Reducer die Karte trotz "morgen" noch einmal.
+            if (forceResult.cardState) cardState = forceResult.cardState
           }
         }
 
@@ -523,7 +527,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
           rating: effectiveRating,
           cardId: currentCard.id,
           forcedTomorrow,
-          cardState: result.cardState,
+          cardState,
           hardPracticeEnabled: settings.hardPracticeEnabled,
           hardPracticeGoodStreak: settings.hardPracticeGoodStreak,
           hardPracticeMaxPasses: settings.hardPracticeMaxPasses,

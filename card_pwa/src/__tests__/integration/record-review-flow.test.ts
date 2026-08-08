@@ -74,7 +74,7 @@ vi.mock('../../services/syncQueue', () => ({
   drainTransactionalOutbox: mockedRuntime.drainTransactionalOutbox,
 }))
 
-import { computeCanonicalReviewSuccessRate, recordReview, undoReview } from '../../db/queries'
+import { computeCanonicalReviewSuccessRate, forceCardReviewTomorrow, recordReview, undoReview } from '../../db/queries'
 
 describe('recordReview integration flow', () => {
   beforeEach(() => {
@@ -311,5 +311,42 @@ describe('recordReview integration flow', () => {
     expect(mockedRuntime.state.card?.reps).toBe(1)
     expect(mockedRuntime.state.outbox).toHaveLength(1)
     expect(mockedRuntime.enqueueSyncOperation).not.toHaveBeenCalled()
+  })
+
+  it('forceCardReviewTomorrow liefert den "morgen"-Zustand als cardState zurück (Bugfix P2.3)', async () => {
+    // Simuliert eine Karte, die gerade zum 3. Mal in Folge "Nochmal" bekommen
+    // hat: recordReview hätte sie zuvor auf Relearning mit kurzer Fälligkeit
+    // (~10 Min) gesetzt. forceCardReviewTomorrow überschreibt das auf "morgen"
+    // und muss den DAFÜR passenden cardState zurückgeben — sonst requeued
+    // StudyView/ShuffleStudyView die Karte trotzdem noch in derselben Sitzung.
+    const initialCard = createNewCard({
+      id: 'card-force-tomorrow-1',
+      type: 3, // relearning
+      queue: 1,
+      due: Math.floor(Date.now() / 86_400_000),
+      dueAt: Date.now() + 10 * 60_000,
+      interval: 0,
+      factor: 2500,
+      reps: 4,
+      lapses: 3,
+      algorithm: 'fsrs',
+      stability: 0.8,
+      difficulty: 7,
+    })
+    mockedRuntime.state.card = initialCard
+
+    const result = await forceCardReviewTomorrow(initialCard.id)
+
+    expect(result.ok).toBe(true)
+    // type=2 ist der numerische CardRecord-Wert für "review" (SM2.CARD_TYPE_REVIEW).
+    expect(result.cardState).toMatchObject({ type: 2, queue: 2, learningStep: 0 })
+    // "Morgen" als Epochentag (zeitzonenunabhängig, wie forceCardReviewTomorrow selbst rechnet).
+    expect(result.cardState?.due).toBe(Math.floor(Date.now() / 86_400_000) + 1)
+    expect(result.cardState?.dueAt).toBeGreaterThan(Date.now()) // nie sofort wieder fällig
+    expect(result.cardState?.lapses).toBe(3) // bleibt als Beleg des Lapse-Verlaufs erhalten
+    // Persistierte Karte und zurückgegebener cardState müssen übereinstimmen —
+    // sonst driftet der Session-State vom echten DB-Zustand ab.
+    expect(mockedRuntime.state.card?.type).toBe(result.cardState?.type)
+    expect(mockedRuntime.state.card?.dueAt).toBe(result.cardState?.dueAt)
   })
 })

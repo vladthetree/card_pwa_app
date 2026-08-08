@@ -294,9 +294,15 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       }
 
       let forcedTomorrow = false
+      let cardState = result.cardState
       if (effectiveRating === 1 && (session.againCounts[currentCard.id] ?? 0) >= 2) {
         const forceResult = await forceCardReviewTomorrow(currentCard.id)
-        if (forceResult.ok) forcedTomorrow = true
+        if (forceResult.ok) {
+          forcedTomorrow = true
+          // Ersetzt den kurzfristigen Relearning-Zustand aus recordReview —
+          // sonst requeued der Reducer die Karte trotz "morgen" noch einmal.
+          if (forceResult.cardState) cardState = forceResult.cardState
+        }
       }
 
       dispatch({
@@ -304,7 +310,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
         rating: effectiveRating,
         cardId: currentCard.id,
         forcedTomorrow,
-        cardState: result.cardState,
+        cardState,
         hardPracticeEnabled: settings.hardPracticeEnabled,
         hardPracticeGoodStreak: settings.hardPracticeGoodStreak,
         hardPracticeMaxPasses: settings.hardPracticeMaxPasses,
@@ -360,9 +366,15 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       }
 
       let forcedTomorrow = false
+      let cardState = result.cardState
       if (rating === 1 && (session.againCounts[currentCard.id] ?? 0) >= 2) {
         const forceResult = await forceCardReviewTomorrow(currentCard.id)
-        if (forceResult.ok) forcedTomorrow = true
+        if (forceResult.ok) {
+          forcedTomorrow = true
+          // Ersetzt den kurzfristigen Relearning-Zustand aus recordReview —
+          // sonst requeued der Reducer die Karte trotz "morgen" noch einmal.
+          if (forceResult.cardState) cardState = forceResult.cardState
+        }
       }
 
       dispatch({
@@ -370,7 +382,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
         rating,
         cardId: currentCard.id,
         forcedTomorrow,
-        cardState: result.cardState,
+        cardState,
         hardPracticeEnabled: settings.hardPracticeEnabled,
         hardPracticeGoodStreak: settings.hardPracticeGoodStreak,
         hardPracticeMaxPasses: settings.hardPracticeMaxPasses,

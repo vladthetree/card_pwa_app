@@ -7,7 +7,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getTodayTrailingCombo } from '../db/queries'
-import { getComboBonusXp, getReviewXp } from '../utils/gamification'
+import { getComboBonusXp, getReviewXp, isFluentRating } from '../utils/gamification'
 import type { RewardHint } from '../components/StudyHeaderProgress'
 import type { Rating } from '../types'
 
@@ -45,7 +45,9 @@ export function useSessionRewards({ language, nextDayStartsAt, resetKey }: {
 
   const registerSessionReward = useCallback((rating: Rating, elapsedMs: number) => {
     momentumEpochRef.current += 1
-    const isSuccess = rating >= 3
+    // Combo/Toast bleiben bewusst bei Mühelosigkeit (isFluentRating), nicht bei
+    // "grundsätzlich gewusst" — das ist hier der Speed-/Fluency-Bonus.
+    const isSuccess = isFluentRating(rating)
     const nextCombo = isSuccess ? momentumRef.current + 1 : 0
     momentumRef.current = nextCombo
 

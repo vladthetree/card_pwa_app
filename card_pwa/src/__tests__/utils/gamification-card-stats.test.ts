@@ -29,14 +29,14 @@ describe('buildCardSuccessStats — Aggregation pro cardId', () => {
     expect(stats.get('note1-variant-b')).toMatchObject({ totalReviews: 1, successfulReviews: 0, successRate: 0 })
   })
 
-  it('zählt rating >= 3 als Erfolg (gleiche Regel wie Deck-/Global-Stats)', () => {
+  it('zählt alles außer Nochmal als Erfolg (isRecalledRating, gleiche Regel wie Deck-/Global-Stats)', () => {
     const stats = buildCardSuccessStats([
       review('c1', 1, 1_000),
       review('c1', 2, 2_000),
       review('c1', 3, 3_000),
       review('c1', 4, 4_000),
     ])
-    expect(stats.get('c1')).toMatchObject({ totalReviews: 4, successfulReviews: 2, successRate: 50 })
+    expect(stats.get('c1')).toMatchObject({ totalReviews: 4, successfulReviews: 3, successRate: 75 })
   })
 
   it('führt lastReviewedAt als jüngsten Zeitstempel', () => {

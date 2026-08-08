@@ -66,7 +66,8 @@ describe('gamification profile', () => {
     expect(profile.todayXp).toBe(41)
     // Tage: 16+25, 10+25, 6+25, 12+25
     expect(profile.totalXp).toBe(144)
-    expect(profile.successRate).toBe(75)
+    // Ratings 4,3,2,3 — alle vier zählen als Erfolg (isRecalledRating: alles außer Nochmal).
+    expect(profile.successRate).toBe(100)
   })
 
   it('credits quest rewards and combo bonuses per learning day', () => {

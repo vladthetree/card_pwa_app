@@ -110,7 +110,7 @@ describe('getGlobalStats', () => {
     mockedDb.reviews.where.mockClear()
   })
 
-  it('computes all counters for mixed card states and reviews', async () => {
+  it('computes all counters for mixed card states and reviews (successToday counts everything except Nochmal)', async () => {
     const now = Date.now()
     const today = Math.floor(now / DAY_MS)
 
@@ -143,7 +143,8 @@ describe('getGlobalStats', () => {
     expect(stats.overdueGt2Days).toBe(1)
     expect(stats.deckCount).toBe(2)
     expect(stats.reviewedToday).toBe(3)
-    expect(stats.successToday).toBe(67)
+    // Ratings 4, 2, 3 — alle drei zählen (isRecalledRating: alles außer Nochmal).
+    expect(stats.successToday).toBe(100)
   })
 
   it('excludes deleted cards and decks from all counters', async () => {

@@ -5,6 +5,7 @@
  * Important: This is advisory only; it must not mutate scheduling or persistence state.
  */
 import type { Card, Rating, SessionReviewEvent } from '../types'
+import { isRecalledRating } from '../utils/gamification'
 
 export type LearningCoachFocus = 'continue' | 'repair' | 'slow_down' | 'short_break'
 
@@ -46,7 +47,7 @@ export function buildLearningCoachSummary(input: {
 
   for (const event of input.reviewEvents) {
     ratingCounts[event.rating] += 1
-    if (event.rating >= 3) successful += 1
+    if (isRecalledRating(event.rating)) successful += 1
     totalElapsedMs += Math.max(0, event.elapsedMs)
     if (event.elapsedMs >= SLOW_REVIEW_MS) slowReviewCount += 1
   }

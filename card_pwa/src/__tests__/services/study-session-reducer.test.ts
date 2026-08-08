@@ -92,12 +92,44 @@ describe('study session reducer', () => {
       rating: 1,
       cardId: card.id,
       forcedTomorrow: true,
+      // Realistischer Dispatch (Bugfix): forceCardReviewTomorrow liefert den
+      // "morgen"-Zustand (type=review) statt des kurzfristigen Relearning-
+      // Zustands aus dem vorangegangenen recordReview — sonst würde der
+      // Reducer die Karte trotz forcedTomorrow noch einmal requeuen.
+      cardState: scheduledState(card, 2, { due: 99, dueAt: 99 * 86_400_000, interval: 1 }),
     })
 
     expect(state.cards).toEqual([])
     expect(state.isDone).toBe(true)
     expect(state.forcedTomorrowCardIds).toEqual([card.id])
     expect(state.againCounts[card.id]).toBeUndefined()
+  })
+
+  it('would wrongly requeue the forced-tomorrow card if the stale relearning cardState were dispatched (regression guard)', () => {
+    const card = createCard('card-1')
+    let state = sessionReducer(initialSessionState, { type: 'INIT', cards: [card] })
+    state = {
+      ...state,
+      againCounts: { [card.id]: 2 },
+      lowRatingCounts: { [card.id]: 2 },
+    }
+
+    state = sessionReducer(state, { type: 'RATE_START', rating: 1, elapsedMs: 900 })
+    state = sessionReducer(state, {
+      type: 'RATE_SUCCESS',
+      rating: 1,
+      cardId: card.id,
+      forcedTomorrow: true,
+      // Der ALTE Bug: die Aufrufer hängten hier noch den kurzfristigen
+      // Relearning-Zustand (fällig in ~10 Min) aus recordReview an, statt des
+      // "morgen"-Zustands aus forceCardReviewTomorrow.
+      cardState: scheduledState(card, 3, { lapses: 3 }),
+    })
+
+    // Dokumentiert die alte Fehlwirkung: ohne den korrekten cardState taucht
+    // die Karte trotz "morgen erzwungen" noch einmal in der Session auf.
+    expect(state.cards.map(nextCard => nextCard.id)).toEqual([card.id])
+    expect(state.isDone).toBe(false)
   })
 
   it('records review events and keeps the rated card only as read-only snapshot', () => {

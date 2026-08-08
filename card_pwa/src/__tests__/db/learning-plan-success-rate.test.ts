@@ -39,7 +39,7 @@ describe('kanonische Lernplan-Erfolgsrate', () => {
     mockedReviews.table.where.mockClear()
   })
 
-  it('verwendet Rating 3/4, die gesamte Historie und rundet nur die Anzeige', () => {
+  it('zählt alles außer Nochmal (Rating 1) als Erfolg, nutzt die gesamte Historie und rundet nur die Anzeige', () => {
     const stats = computeCanonicalReviewSuccessRate([
       review('c1', 1, 1),
       review('c1', 2, 2),
@@ -49,9 +49,9 @@ describe('kanonische Lernplan-Erfolgsrate', () => {
     ])
 
     expect(stats).toEqual({
-      rate: 60,
-      ratio: 0.6,
-      successful: 3,
+      rate: 80,
+      ratio: 0.8,
+      successful: 4,
       total: 5,
     })
   })

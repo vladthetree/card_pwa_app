@@ -25,11 +25,29 @@ export interface GamificationReviewInput {
   cardId?: string
 }
 
+/**
+ * Zwei getrennte Schwellen für zwei verschiedene Fragen (Trainer-Feedback,
+ * 2026-08-08): „hast du's grundsätzlich gewusst" vs. „wie mühelos". Beide
+ * nehmen bewusst `number` statt `Rating`, damit auch lose typisierte
+ * DB-Leseresultate (z. B. `{ rating: number }[]`) sie ohne Cast nutzen können.
+ */
+/** Alles außer echtem „Nochmal" zählt als gewusst — Grundlage für Erfolgsquote
+ *  und die tägliche Erfolgs-Quest. Ein ehrliches „Schwierig" ist kein Fehlschlag. */
+export function isRecalledRating(rating: number): boolean {
+  return rating >= 2
+}
+
+/** Nur „Gut"/„Leicht" — Grundlage für Combo-Kette und Tempo-Bonus, die gezielt
+ *  Mühelosigkeit belohnen, nicht bloßes Wissen. */
+export function isFluentRating(rating: number): boolean {
+  return rating >= 3
+}
+
 export interface CardSuccessStats {
   cardId: string
   totalReviews: number
   successfulReviews: number
-  /** 0–100, rating >= 3 counts as success (same rule as deck/global stats). */
+  /** 0–100, siehe isRecalledRating (alles außer „Nochmal" zählt). */
   successRate: number
   lastReviewedAt: number | null
 }
@@ -48,7 +66,7 @@ export function buildCardSuccessStats(reviews: GamificationReviewInput[]): Map<s
       stats.set(review.cardId, entry)
     }
     entry.totalReviews += 1
-    if (review.rating >= 3) entry.successfulReviews += 1
+    if (isRecalledRating(review.rating)) entry.successfulReviews += 1
     entry.lastReviewedAt = Math.max(entry.lastReviewedAt ?? 0, review.timestamp)
   }
   for (const entry of stats.values()) {
@@ -72,20 +90,20 @@ export function getReviewXp(rating: Rating, timeMs: number): number {
     4: 14,
   }
   const cleanTimeMs = Number.isFinite(timeMs) ? Math.max(0, timeMs) : 0
-  const speedBonus = rating >= 3 && cleanTimeMs > 0 && cleanTimeMs <= 12_000 ? 2 : 0
+  const speedBonus = isFluentRating(rating) && cleanTimeMs > 0 && cleanTimeMs <= 12_000 ? 2 : 0
   return baseByRating[rating] + speedBonus
 }
 
-/** Combo-Bonus für die n-te sichere Antwort in Folge (comboCount 0 = Fehlversuch). */
+/** Combo-Bonus für die n-te mühelose Antwort in Folge (comboCount 0 = Bruch). */
 export function getComboBonusXp(comboCount: number): number {
   return Math.min(12, Math.floor(Math.max(0, comboCount) / 3) * 2)
 }
 
-/** Anzahl der letzten ununterbrochenen Erfolge (rating >= 3) in Zeitreihenfolge. */
+/** Anzahl der letzten ununterbrochenen mühelosen Antworten (isFluentRating) in Zeitreihenfolge. */
 export function getTrailingComboCount(reviews: Pick<GamificationReviewInput, 'rating' | 'timestamp'>[]): number {
   const ordered = [...reviews].sort((a, b) => a.timestamp - b.timestamp)
   let combo = 0
-  for (const review of ordered) combo = review.rating >= 3 ? combo + 1 : 0
+  for (const review of ordered) combo = isFluentRating(review.rating) ? combo + 1 : 0
   return combo
 }
 
@@ -101,8 +119,8 @@ function computeDayXp(dayReviews: GamificationReviewInput[]): number {
   let successes = 0
   let xp = 0
   for (const review of ordered) {
-    combo = review.rating >= 3 ? combo + 1 : 0
-    if (review.rating >= 3) successes += 1
+    combo = isFluentRating(review.rating) ? combo + 1 : 0
+    if (isRecalledRating(review.rating)) successes += 1
     xp += getReviewXp(review.rating, review.timeMs) + getComboBonusXp(combo)
   }
   if (ordered.length >= DAILY_REVIEW_GOAL) xp += QUEST_REVIEW_REWARD_XP
@@ -232,8 +250,8 @@ export function buildGamificationProfile({
   const todayStart = getDayStartMs(nowMs, nextDayStartsAt)
   const todayReviews = dayBuckets.get(todayStart) ?? []
   const totalReviews = reviews.length
-  const successfulReviews = reviews.filter(review => review.rating >= 3).length
-  const successToday = todayReviews.filter(review => review.rating >= 3).length
+  const successfulReviews = reviews.filter(review => isRecalledRating(review.rating)).length
+  const successToday = todayReviews.filter(review => isRecalledRating(review.rating)).length
   let totalXp = 0
   for (const dayReviews of dayBuckets.values()) totalXp += computeDayXp(dayReviews)
   const todayXp = computeDayXp(todayReviews)

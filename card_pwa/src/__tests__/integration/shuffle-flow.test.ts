@@ -266,7 +266,8 @@ describe('shuffle flow integration', () => {
     expect(metricsA.ratingCounts[4]).toBe(1)
 
     expect(metricsB.totalReviews).toBe(1)
-    expect(metricsB.successRate).toBe(0)
+    // Rating 2 (Schwierig) zählt als Erfolg (isRecalledRating: alles außer Nochmal).
+    expect(metricsB.successRate).toBe(100)
     expect(metricsB.ratingCounts[2]).toBe(1)
     expect(aggregate.totalReviews).toBe(2)
     expect(aggregate.cardCount).toBe(2)
