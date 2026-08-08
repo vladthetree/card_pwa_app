@@ -11,7 +11,6 @@ import {
   computeCourseStepState,
   createCourseExecution,
   formatCourseUnitId,
-  normalizeRecallCheckSize,
   objectiveIdOfDeckId,
   buildLabUnits,
   buildReviewUnits,
@@ -235,20 +234,18 @@ describe('selectRecallQuestionIds', () => {
   const candidates = Array.from({ length: 20 }, (_, i) => `Q-${String(i + 1).padStart(2, '0')}`)
   const cardByQuestion = new Map(candidates.slice(0, 10).map(id => [id, `card-${id}`]))
 
-  it('ist deterministisch unter demselben Seed und normalisiert die Größe auf 3–15', () => {
-    const a = selectRecallQuestionIds({ candidateQuestionIds: candidates, recallCardIdByQuestionId: cardByQuestion, recallCheckSize: 7, selectionSeed: 's1' })
-    const b = selectRecallQuestionIds({ candidateQuestionIds: candidates, recallCardIdByQuestionId: cardByQuestion, recallCheckSize: 7, selectionSeed: 's1' })
+  it('ist deterministisch unter demselben Seed und liefert IMMER alle Kandidaten (kein Umfangs-Limit mehr)', () => {
+    const a = selectRecallQuestionIds({ candidateQuestionIds: candidates, recallCardIdByQuestionId: cardByQuestion, selectionSeed: 's1' })
+    const b = selectRecallQuestionIds({ candidateQuestionIds: candidates, recallCardIdByQuestionId: cardByQuestion, selectionSeed: 's1' })
     expect(a).toEqual(b)
-    expect(a.selectedQuestionIds).toHaveLength(7)
-    expect(selectRecallQuestionIds({ candidateQuestionIds: candidates, recallCardIdByQuestionId: cardByQuestion, recallCheckSize: 99, selectionSeed: 's' }).selectedQuestionIds).toHaveLength(15)
-    expect(selectRecallQuestionIds({ candidateQuestionIds: candidates, recallCardIdByQuestionId: cardByQuestion, recallCheckSize: 0, selectionSeed: 's' }).selectedQuestionIds).toHaveLength(3)
-    expect(normalizeRecallCheckSize(undefined)).toBe(7)
+    expect(a.selectedQuestionIds).toHaveLength(candidates.length)
+    expect(new Set(a.selectedQuestionIds)).toEqual(new Set(candidates))
   })
 
-  it('kappt auf die Kandidatenzahl und liefert Card-IDs nur der ausgewählten Fragen', () => {
-    const small = candidates.slice(0, 2)
-    const result = selectRecallQuestionIds({ candidateQuestionIds: small, recallCardIdByQuestionId: cardByQuestion, recallCheckSize: 7, selectionSeed: 's' })
-    expect(result.selectedQuestionIds).toHaveLength(2)
+  it('liefert Card-IDs nur der Fragen mit gemappter Karte', () => {
+    const result = selectRecallQuestionIds({ candidateQuestionIds: candidates, recallCardIdByQuestionId: cardByQuestion, selectionSeed: 's' })
+    expect(result.selectedQuestionIds).toHaveLength(candidates.length)
+    expect(result.selectedRecallCardIds).toHaveLength(10)
     for (const cardId of result.selectedRecallCardIds) {
       const questionId = cardId.replace('card-', '')
       expect(result.selectedQuestionIds).toContain(questionId)
@@ -319,35 +316,57 @@ describe('computeCourseStepState', () => {
 
   it('zählt Öffnen nicht als angesehen; nur ended/manual setzen videoDone', () => {
     const opened = { ...watched, watchedAt: undefined, watchedMethod: undefined, openedAt: 950_000 }
-    expect(computeCourseStepState({ execution, videoProgress: opened, recallRuns: [], reviewedCardIdsSinceStart: new Set() }).videoDone).toBe(false)
-    expect(computeCourseStepState({ execution, videoProgress: watched, recallRuns: [], reviewedCardIdsSinceStart: new Set() }).videoDone).toBe(true)
+    expect(computeCourseStepState({ execution, videoProgress: opened, recallRuns: [], reviewedCardIdsSinceStart: new Set(), now: 1_000_000 }).videoDone).toBe(false)
+    expect(computeCourseStepState({ execution, videoProgress: watched, recallRuns: [], reviewedCardIdsSinceStart: new Set(), now: 1_000_000 }).videoDone).toBe(true)
   })
 
-  it('akzeptiert nur den vollständigen eingefrorenen Recall derselben Execution', () => {
-    const run = makeRun(execution)
-    const state = (runs: VideoRecallRun[]) =>
-      computeCourseStepState({ execution, recallRuns: runs, reviewedCardIdsSinceStart: new Set() })
-    expect(state([run]).recallDone).toBe(true)
-    expect(state([run]).videoDone).toBe(true)
-    expect(state([run]).confidenceDone).toBe(false)
-    expect(state([run]).currentStep).toBe('recall')
+  it('markiert Recall erst dann erledigt, wenn JEDE eingefrorene Frage im Mastery-Modell besteht — profilweit über alle Läufe des Videos, unabhängig von Ausführung', () => {
+    const now = execution.createdAt + 60_000
+    const state = (runs: VideoRecallRun[], at = now) =>
+      computeCourseStepState({ execution, recallRuns: runs, reviewedCardIdsSinceStart: new Set(), now: at })
+
+    // Voller Lauf, alles richtig → sofort bestanden (frische Retrievability ~1).
+    const fullRun = makeRun(execution)
+    expect(state([fullRun]).recallDone).toBe(true)
+    expect(state([fullRun]).videoDone).toBe(true)
+    expect(state([fullRun]).confidenceDone).toBe(false)
+    expect(state([fullRun]).currentStep).toBe('recall')
     expect(computeCourseStepState({
       execution,
       videoProgress: watchedWithConfidence,
-      recallRuns: [run],
+      recallRuns: [fullRun],
       reviewedCardIdsSinceStart: new Set(),
+      now,
     }).currentStep).toBe('done')
-    expect(state([makeRun(execution, { executionId: null })]).recallDone).toBe(false)
-    expect(state([makeRun(execution, { executionId: 'andere-exec' })]).recallDone).toBe(false)
-    expect(state([makeRun(execution, { completedAt: execution.createdAt - 1 })]).recallDone).toBe(false)
-    expect(state([makeRun(execution, { questionIds: ['M1-001'], total: 1 })]).recallDone).toBe(false)
-    expect(state([makeRun(execution, { questionIds: [...execution.recallQuestionIds].reverse() })]).recallDone).toBe(false)
-    expect(state([makeRun(execution, { questionVersionById: { 'M1-001': 'v9', 'T002-01': 'v1' } })]).recallDone).toBe(false)
-    expect(state([makeRun(execution, { total: 1 })]).recallDone).toBe(false)
+
+    // Eine falsch beantwortete Frage hält den Schritt offen, bis sie separat
+    // richtig beantwortet wird (Tilgung selbst ist recallMastery.test.ts' Job).
+    const partialRun = makeRun(execution, { missedQuestionIds: ['M1-001'], correct: 1, total: 2 })
+    expect(state([partialRun]).recallDone).toBe(false)
+
+    // Läufe anderer Profile zählen nicht mit.
+    expect(state([makeRun(execution, { profileId: 'jemand-anders' })]).recallDone).toBe(false)
+
+    // Läufe zählen unabhängig von executionId, Reihenfolge, Version und
+    // Content-Manifest — gemessen wird Wissen pro Frage, kein Identitätsabgleich
+    // gegen eine bestimmte Ausführung.
+    expect(state([makeRun(execution, { executionId: null })]).recallDone).toBe(true)
+    expect(state([makeRun(execution, { executionId: 'andere-exec' })]).recallDone).toBe(true)
+    expect(state([makeRun(execution, { completedAt: execution.createdAt - 1 })], execution.createdAt).recallDone).toBe(true)
+    expect(state([makeRun(execution, { questionIds: [...execution.recallQuestionIds].reverse() })]).recallDone).toBe(true)
+    expect(state([makeRun(execution, { questionVersionById: { 'M1-001': 'v9', 'T002-01': 'v1' } })]).recallDone).toBe(true)
     expect(state([makeRun(execution, { contentManifestVersion: 'anderes-manifest' })]).recallDone).toBe(true)
+
+    // Nur ein Teil der eingefrorenen Fragen beantwortet: die unbeantwortete bleibt offen.
+    expect(state([makeRun(execution, {
+      questionIds: ['M1-001'],
+      questionVersionById: { 'M1-001': 'v1' },
+      correct: 1,
+      total: 1,
+    })]).recallDone).toBe(false)
   })
 
-  it('überlebt den Tageswechsel: Vergleiche hängen an createdAt, nie am Tagesanfang', () => {
+  it('überlebt den Tageswechsel: Mastery hängt an der Antwortzeit, nie am Tagesanfang', () => {
     const twoDaysLater = execution.createdAt + 2 * 86_400_000
     const run = makeRun(execution, { completedAt: twoDaysLater })
     const result = computeCourseStepState({
@@ -355,6 +374,7 @@ describe('computeCourseStepState', () => {
       videoProgress: watchedWithConfidence,
       recallRuns: [run],
       reviewedCardIdsSinceStart: new Set(['c1', 'c2']),
+      now: twoDaysLater,
     })
     expect(result).toEqual({
       videoDone: true,
@@ -366,11 +386,12 @@ describe('computeCourseStepState', () => {
   })
 
   it('führt alte Course-Karten nur diagnostisch und blockiert damit den Videoabschluss nicht', () => {
-    const partial = computeCourseStepState({ execution, videoProgress: watchedWithConfidence, recallRuns: [makeRun(execution)], reviewedCardIdsSinceStart: new Set(['c1', 'fremde-karte']) })
+    const now = execution.createdAt + 60_000
+    const partial = computeCourseStepState({ execution, videoProgress: watchedWithConfidence, recallRuns: [makeRun(execution)], reviewedCardIdsSinceStart: new Set(['c1', 'fremde-karte']), now })
     expect(partial.cardsDone).toBe(false)
     expect(partial.currentStep).toBe('done')
     const empty = makeExecution({ cardIds: [], recallQuestionIds: [], recallQuestionVersions: {}, recallCardIds: [] }) as Extract<LearningUnitExecution, { type: 'course' }>
-    const skipped = computeCourseStepState({ execution: empty, videoProgress: watchedWithConfidence, recallRuns: [], reviewedCardIdsSinceStart: new Set() })
+    const skipped = computeCourseStepState({ execution: empty, videoProgress: watchedWithConfidence, recallRuns: [], reviewedCardIdsSinceStart: new Set(), now })
     expect(skipped).toEqual({
       videoDone: true,
       recallDone: true,
@@ -402,6 +423,7 @@ describe('computeCourseStepState', () => {
       execution: legacy,
       recallRuns: [legacyRun],
       reviewedCardIdsSinceStart: new Set(),
+      now: legacy.createdAt + 1_000,
     })
     expect(fromRecall.recallDone).toBe(true)
     expect(fromRecall.confidenceDone).toBe(false)
@@ -420,6 +442,7 @@ describe('computeCourseStepState', () => {
       },
       recallRuns: [],
       reviewedCardIdsSinceStart: new Set(),
+      now: legacy.createdAt + 1_000,
     })
     expect(fromConfidence.currentStep).toBe('done')
   })

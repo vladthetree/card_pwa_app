@@ -276,6 +276,7 @@ describe('VideoRecallCheck — Render-Smoke-Test', () => {
         deckId: 'sy0-701-objective-1-2',
         objective: '1.2',
         videoTitle: 'The CIA Triad',
+        profileId: 'profil-a',
         language: 'de' as const,
         onClose: () => {},
         onConfidence: () => {},

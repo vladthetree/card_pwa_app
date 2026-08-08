@@ -5,8 +5,8 @@
  * Important: The green/orange state is local to this view. Study actions pass
  *            canonical Card.ids into the normal StudyView/review pipeline.
  */
-import { useEffect, useRef } from 'react'
-import { Info, Play, X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { ChevronDown, Info, Play, X } from 'lucide-react'
 import {
   SY0701_ACRONYM_DECK_NAME,
 } from '../data/sy0701LearningPlanAcronymMap'
@@ -115,14 +115,14 @@ export function LearningPlanSubDeckCard({
         aria-label={copy.open(deck.subDeckName)}
         className="grid min-h-14 w-full min-w-0 grid-cols-[auto,minmax(0,1fr)] items-start gap-2.5 px-3 py-3 pr-14 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-black disabled:cursor-not-allowed disabled:opacity-50"
       >
-        <span className="border-2 border-black bg-white px-1.5 py-1 font-sans text-[10px] font-black uppercase tracking-[0.06em] text-black">
+        <span className="border-2 border-black bg-white px-1.5 py-1 font-sans text-[10px] font-black uppercase tracking-[0.06em] text-black 2xl:text-xs">
           {copy.type}
         </span>
         <span className="min-w-0">
-          <span className="block break-words font-sans text-[14px] font-black leading-snug">
+          <span className="block break-words font-sans text-[14px] font-black leading-snug 2xl:text-base">
             {deck.subDeckName}
           </span>
-          <span className="mt-1.5 flex flex-wrap items-center gap-1.5 font-sans text-[10px] font-bold">
+          <span className="mt-1.5 flex flex-wrap items-center gap-1.5 font-sans text-[10px] font-bold 2xl:text-xs">
             <span>{copy.cards(deck.installedCardIds.length)}</span>
             {deck.missingCardIds.length > 0 && (
               <span>{copy.availability(deck.installedCardIds.length, deck.cardIds.length)}</span>
@@ -220,7 +220,7 @@ export function LearningPlanSubDeckInfoModal({ language, deck, onClose }: InfoMo
         aria-labelledby="learning-plan-subdeck-dialog-title"
         aria-describedby="learning-plan-subdeck-dialog-description"
         onKeyDown={keepFocusInDialog}
-        className="w-full max-w-md border-[3px] border-black bg-[#FFFDF5] p-4 text-black shadow-[6px_6px_0_0_#000]"
+        className="neo-learning-modal w-full max-w-md bg-[#FFFDF5] p-4 text-black"
       >
         <div className="flex items-start gap-3">
           <Info size={22} strokeWidth={3} className="mt-0.5 shrink-0" />
@@ -277,33 +277,57 @@ interface AcronymReferencesProps {
   language: 'de' | 'en'
   cards: readonly LearningPlanAcronymCardMapping[]
   onStudy: (card: LearningPlanAcronymCardMapping) => void
+  /** Referenzmaterial startet eingeklappt, damit es den Lernpfad nicht dominiert. */
+  defaultOpen?: boolean
 }
 
 export function LearningPlanAcronymReferences({
   language,
   cards,
   onStudy,
+  defaultOpen = false,
 }: AcronymReferencesProps) {
+  const [open, setOpen] = useState(defaultOpen)
   if (cards.length === 0) return null
   const copy = COPY[language]
 
   return (
     <section
       data-testid="learning-plan-acronym-references"
-      className="border-2 border-black bg-[#C4B5FD] p-3 text-black"
+      className="border-2 border-black bg-[#C4B5FD] text-black"
     >
-      <h4 className="font-sans text-[13px] font-black uppercase tracking-wide">{copy.acronymTitle}</h4>
-      <p className="mt-1 font-sans text-[10px] font-bold leading-relaxed">{copy.acronymHint}</p>
-      <ul className="mt-2 grid gap-1.5">
-        {cards.map(card => (
+      <button
+        type="button"
+        onClick={() => setOpen(prev => !prev)}
+        aria-expanded={open}
+        data-testid="learning-plan-acronym-toggle"
+        className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-black"
+      >
+        <span className="font-sans text-[13px] font-black uppercase tracking-wide 2xl:text-[14px]">
+          {copy.acronymTitle}
+          {' '}
+          <span className="tabular-nums">({cards.length})</span>
+        </span>
+        <ChevronDown
+          size={15}
+          strokeWidth={2.5}
+          className={`shrink-0 transition-transform ${open ? 'rotate-180' : 'rotate-0'}`}
+          aria-hidden="true"
+        />
+      </button>
+      {open && (
+        <div className="px-3 pb-3">
+          <p className="font-sans text-[10px] font-bold leading-relaxed 2xl:text-xs">{copy.acronymHint}</p>
+          <ul className="mt-2 grid gap-1.5 sm:grid-cols-2 xl:grid-cols-3">
+            {cards.map(card => (
           <li
             key={card.cardId}
             data-card-id={card.cardId}
             className="flex min-w-0 items-center gap-2 border-2 border-black bg-white px-2.5 py-2"
           >
             <span className="min-w-0 flex-1">
-              <span className="block break-words font-sans text-[12px] font-black">{card.label}</span>
-              <span className="block font-sans text-[10px] font-bold">
+              <span className="block break-words font-sans text-[12px] font-black 2xl:text-[14px]">{card.label}</span>
+              <span className="block font-sans text-[10px] font-bold 2xl:text-xs">
                 {!card.installed ? copy.unavailable : card.reviewed ? copy.reviewed : copy.unreviewed}
               </span>
             </span>
@@ -319,7 +343,9 @@ export function LearningPlanAcronymReferences({
             </button>
           </li>
         ))}
-      </ul>
+          </ul>
+        </div>
+      )}
     </section>
   )
 }

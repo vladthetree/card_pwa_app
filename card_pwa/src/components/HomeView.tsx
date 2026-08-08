@@ -306,7 +306,7 @@ export default function HomeView({
             />
           </div>
         )}
-        <div className={`grid gap-2 sm:gap-3 ${homeTab === 'learning-units' ? 'md:min-h-0' : 'md:min-h-[140px]'}`}>
+        <div className="grid gap-2 sm:gap-3 md:min-h-0">
           <div className="w-full min-w-0 flex flex-col gap-3">
             <motion.div
               initial={{ opacity: 0, y: -16 }}

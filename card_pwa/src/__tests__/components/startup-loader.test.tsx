@@ -15,6 +15,8 @@ describe('StartupLoader', () => {
 
     expect(html).toContain('data-testid="startup-loader"')
     expect(html).toContain('startup-loader__orbit--outer')
+    expect(html).toContain('startup-loader__sparks')
+    expect(html).toContain('startup-loader__spark--6')
     expect(html).toContain('startup-loader__card--front')
     expect(html).not.toContain('<canvas')
     expect(html).not.toContain('filter:')

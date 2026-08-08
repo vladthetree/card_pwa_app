@@ -196,12 +196,6 @@
     font-family: 'Lora', Georgia, serif !important;
   }
 
-  /* Dopamine-Theme: DM Sans (Fließtext) statt Outfit (Headline/UI-Sans) für
-     die Kartenfront/-rückseite — gleicher Cascade-Layer-Grund wie oben. */
-  .dopamine-app .card-face-text {
-    font-family: 'DM Sans', system-ui, sans-serif !important;
-  }
-
   #root {
     min-height: 100vh;
     min-height: 100svh;
@@ -591,11 +585,11 @@
     --ds-accent-primary: var(--neo-accent);
     --ds-accent-secondary: #6f5ae8;
     --brand-primary: var(--neo-accent);
-    --brand-primary-08: var(--neo-accent);
-    --brand-primary-12: var(--neo-accent);
-    --brand-primary-15: var(--neo-accent);
-    --brand-primary-20: var(--neo-accent);
-    --brand-primary-25: var(--neo-accent);
+    --brand-primary-08: var(--neo-white);
+    --brand-primary-12: var(--neo-white);
+    --brand-primary-15: var(--neo-white);
+    --brand-primary-20: var(--neo-white);
+    --brand-primary-25: var(--neo-white);
     --brand-primary-50: var(--neo-accent);
     --brand-primary-80: var(--neo-accent);
     --brand-primary-100: var(--neo-accent);
@@ -673,6 +667,12 @@
   .neo-app [class~='border'] {
     border-width: 2px;
     border-color: var(--neo-ink);
+  }
+
+  /* Streak-Badge: Wash-Fläche ist seit dem Stufen-Fix hell — Text/Flamme in
+     Ink statt Akzentrot (Rot-auf-Weiß wäre zu kontrastschwach für 10px). */
+  .neo-app .streak-badge-active {
+    color: var(--neo-ink);
   }
 
   .neo-app :is(.ds-card, .ds-panel, .glass) {
@@ -884,11 +884,11 @@
     --ds-muted: var(--neo-ink);
     --ds-subtle: var(--neo-ink);
     --brand-primary: var(--neo-accent);
-    --brand-primary-08: #ff6b6b;
-    --brand-primary-12: #ff6b6b;
-    --brand-primary-15: #ff6b6b;
-    --brand-primary-20: #ff6b6b;
-    --brand-primary-25: #ff6b6b;
+    --brand-primary-08: var(--neo-white);
+    --brand-primary-12: var(--neo-white);
+    --brand-primary-15: var(--neo-white);
+    --brand-primary-20: var(--neo-white);
+    --brand-primary-25: var(--neo-white);
     --brand-primary-50: #ff6b6b;
     --brand-primary-80: #ff6b6b;
     --brand-primary-100: #ff6b6b;
@@ -919,7 +919,7 @@
     border: 3px solid var(--neo-ink);
     border-radius: 0;
     background: var(--neo-white);
-    box-shadow: 6px 6px 0 0 var(--neo-ink);
+    box-shadow: var(--shadow-card);
   }
 
   .neo-learning-panel {
@@ -931,7 +931,7 @@
   .neo-learning-press {
     border: 2px solid var(--neo-ink);
     border-radius: 0;
-    box-shadow: 3px 3px 0 0 var(--neo-ink);
+    box-shadow: 3px 3px 0 0 var(--neo-shadow-ink, var(--neo-ink));
     transition-duration: 100ms;
     transition-timing-function: linear;
   }
@@ -939,6 +939,21 @@
   .neo-learning-press:active {
     transform: translate(3px, 3px);
     box-shadow: none;
+  }
+
+  /* Elevationsskala der Lerneinheiten: 3px interaktiv/Fläche (press/tile),
+     6px Container/Modal (card/modal) — immer auf var(--neo-ink), damit alle
+     drei Theme-Scopes denselben Schattenton wie ihre Ränder tragen. */
+  .neo-learning-tile {
+    border: 2px solid var(--neo-ink);
+    border-radius: 0;
+    box-shadow: 3px 3px 0 0 var(--neo-shadow-ink, var(--neo-ink));
+  }
+
+  .neo-learning-modal {
+    border: 3px solid var(--neo-ink);
+    border-radius: 0;
+    box-shadow: 6px 6px 0 0 var(--neo-shadow-ink, var(--neo-ink));
   }
 
   .neo-learning-label {
@@ -987,9 +1002,12 @@
     border: 3px solid #000;
     border-radius: 0;
     background: #fffdf5;
-    box-shadow: 4px 4px 0 0 #000;
+    box-shadow: 3px 3px 0 0 #000;
     color: #000;
     backdrop-filter: none;
+    /* Basis-Toolbar ist ab sm rahmenlos (sm:p-0); mit Theme-Rahmen braucht
+       der Inhalt wieder Abstand zur Border. */
+    padding: 0.5rem 0.75rem;
   }
 
   .learning-units-toolbar-neo h2,
@@ -1058,7 +1076,7 @@
   @media (hover: hover) {
     .neo-learning-lift:hover {
       transform: translateY(-2px);
-      box-shadow: 8px 8px 0 0 var(--neo-ink);
+      box-shadow: 8px 8px 0 0 var(--neo-shadow-ink, var(--neo-ink));
     }
 
     .neo-learning-hover-yellow:hover {
@@ -1097,6 +1115,34 @@
     overscroll-behavior: contain;
     padding-bottom: calc(var(--app-bottom-safe-area) + 1rem);
     -webkit-overflow-scrolling: touch;
+  }
+
+  /* Die App blendet Scrollbars global aus. In langen Lerneinheiten bleibt auf
+     Desktop sonst unsichtbar, dass unterhalb des Viewports weitere Objectives
+     liegen. Nur Maus-/Trackpad-Geräte erhalten deshalb eine schmale, themen-
+     abhängige Scroll-Affordance; Touch-Layouts bleiben unverändert. */
+  @media (hover: hover) and (pointer: fine) {
+    .learning-units-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: var(--ds-border) transparent;
+    }
+
+    .learning-units-scroll::-webkit-scrollbar {
+      display: block;
+      width: 8px;
+    }
+
+    .learning-units-scroll::-webkit-scrollbar-track {
+      display: block;
+      background: transparent;
+    }
+
+    .learning-units-scroll::-webkit-scrollbar-thumb {
+      display: block;
+      border: 2px solid transparent;
+      background: var(--ds-border);
+      background-clip: padding-box;
+    }
   }
 
   /* Untere Scroll-Polsterung: nur noch Home-Indicator-Schutz, kein sichtbarer
@@ -1181,11 +1227,11 @@
     --ds-accent-primary: var(--news-accent);
     --ds-accent-secondary: var(--news-secondary);
     --brand-primary: var(--news-accent);
-    --brand-primary-08: var(--news-accent);
-    --brand-primary-12: var(--news-accent);
-    --brand-primary-15: var(--news-accent);
-    --brand-primary-20: var(--news-accent);
-    --brand-primary-25: var(--news-accent);
+    --brand-primary-08: var(--news-muted);
+    --brand-primary-12: var(--news-muted);
+    --brand-primary-15: var(--news-muted);
+    --brand-primary-20: var(--news-muted);
+    --brand-primary-25: var(--news-muted);
     --brand-primary-50: var(--news-accent);
     --brand-primary-80: var(--news-accent);
     --brand-primary-100: var(--news-accent);
@@ -1226,9 +1272,9 @@
     --radius-ds-xl: 0px;
     --radius-ds-2xl: 0px;
     --radius-ds-sheet: 0px;
-    --shadow-card: 4px 4px 0 0 var(--news-ink);
-    --shadow-menu: 6px 6px 0 0 var(--news-ink);
-    --shadow-modal: 8px 8px 0 0 var(--news-ink);
+    --shadow-card: 3px 3px 0 0 rgba(17, 17, 17, 0.22);
+    --shadow-menu: 5px 5px 0 0 rgba(17, 17, 17, 0.26);
+    --shadow-modal: 7px 7px 0 0 rgba(17, 17, 17, 0.3);
     color: var(--news-ink);
     color-scheme: light;
     background-color: var(--news-canvas) !important;
@@ -1239,8 +1285,7 @@
   .newsprint-app::before,
   .newsprint-app #root {
     background-color: var(--news-canvas) !important;
-    background-image: radial-gradient(rgba(17, 17, 17, 0.14) 1px, transparent 1px) !important;
-    background-size: 4px 4px !important;
+    background-image: none !important;
   }
 
   .newsprint-app :is(h1, h2, h3, h4, h5, h6):not(.font-sans) {
@@ -1265,6 +1310,10 @@
     border-color: var(--news-ink);
   }
 
+  .newsprint-app .streak-badge-active {
+    color: var(--news-ink);
+  }
+
   .newsprint-app :is(.ds-card, .ds-panel, .glass) {
     border: 1px solid var(--news-ink);
     border-radius: 0;
@@ -1287,7 +1336,7 @@
     border: 1px solid var(--news-ink);
     border-radius: 0;
     background: var(--news-white);
-    box-shadow: 2px 2px 0 0 var(--news-ink);
+    box-shadow: 2px 2px 0 0 rgba(17, 17, 17, 0.3);
     color: var(--news-ink);
   }
 
@@ -1416,6 +1465,12 @@
     background-color: var(--news-muted) !important;
   }
 
+  /* border-black (#000) stand neben Newsprint-Ink (#111) — sichtbar zwei
+     Schwarztöne bei Rändern und Hartschatten; auf Ink normalisieren. */
+  .newsprint-app .border-black {
+    border-color: var(--news-ink);
+  }
+
   /* text-[#150b08] steht im Code ausnahmslos auf bg-[--brand-primary] (=
      Editorial-Rot #CC0000 unter Newsprint) — Ink-Text auf Rot fällt unter
      4.5:1 AA-Kontrast, Weiß bleibt sicher lesbar. */
@@ -1485,6 +1540,70 @@
     opacity: 1;
   }
 
+  /* ── Dark-Insel: Brand-Washes themenunabhängig dunkel ─────────────────────
+     Die hellen Themes belegen --brand-*-08..-25 mit hellen Flächen (weiß/
+     grau) — auf den dunklen Video-Inseln (.neo-keep-dark) ergäbe das helle
+     Chips mit weißem Insel-Text (Weiß-auf-Hell, unlesbar). Die Insel kehrt
+     deshalb zu transluzenten rgba-Stufen des ursprünglichen Dunkel-Designs
+     zurück; Textfarben liefern die bestehenden Insel-Regeln (#fff). */
+  .neo-app .neo-keep-dark,
+  .newsprint-app .neo-keep-dark {
+    --ds-fg: #ffffff;
+    --brand-primary: #ff6b6b;
+    --brand-primary-08: rgba(255, 107, 107, 0.08);
+    --brand-primary-12: rgba(255, 107, 107, 0.12);
+    --brand-primary-15: rgba(255, 107, 107, 0.15);
+    --brand-primary-20: rgba(255, 107, 107, 0.2);
+    --brand-primary-25: rgba(255, 107, 107, 0.25);
+    --brand-primary-50: rgba(255, 107, 107, 0.5);
+    --brand-primary-80: rgba(255, 107, 107, 0.8);
+    --brand-primary-100: #ff6b6b;
+    --brand-secondary: #c4b5fd;
+    --brand-secondary-08: rgba(196, 181, 253, 0.08);
+    --brand-secondary-12: rgba(196, 181, 253, 0.12);
+    --brand-secondary-15: rgba(196, 181, 253, 0.15);
+    --brand-secondary-20: rgba(196, 181, 253, 0.2);
+    --brand-secondary-25: rgba(196, 181, 253, 0.25);
+    --brand-secondary-50: rgba(196, 181, 253, 0.5);
+    --brand-secondary-80: rgba(196, 181, 253, 0.8);
+    --brand-secondary-100: #c4b5fd;
+  }
+
+  /* Die App-weiten Hell-Buckets drehen Emerald/Amber-Text auf Ink — auf der
+     dunklen Insel wäre das Dunkel-auf-Dunkel (z.B. „Als angesehen bestätigen“,
+     Kalibrierungshinweis). Insel-Ausnahmen zurück auf helle Statusfarben. */
+  .neo-app .neo-keep-dark [class*='text-emerald-'],
+  .newsprint-app .neo-keep-dark [class*='text-emerald-'] {
+    color: #6ee7b7 !important;
+  }
+
+  .neo-app .neo-keep-dark [class*='text-amber-'],
+  .newsprint-app .neo-keep-dark [class*='text-amber-'] {
+    color: #fcd34d !important;
+  }
+
+  .neo-app .neo-keep-dark [class*='border-emerald-'],
+  .newsprint-app .neo-keep-dark [class*='border-emerald-'] {
+    border-color: rgba(16, 185, 129, 0.45) !important;
+  }
+
+  .neo-app .neo-keep-dark [class*='border-amber-'],
+  .newsprint-app .neo-keep-dark [class*='border-amber-'] {
+    border-color: rgba(245, 158, 11, 0.5) !important;
+  }
+
+  /* Die hellen [class~='border']-Ink-Buckets machen Akzent-Borders auf der
+     Insel unsichtbar (Ink auf Schwarz) — Brand-Borders wieder sichtbar. */
+  .neo-app .neo-keep-dark [class*='border-[--brand-primary'],
+  .newsprint-app .neo-keep-dark [class*='border-[--brand-primary'] {
+    border-color: var(--brand-primary-50);
+  }
+
+  .neo-app .neo-keep-dark [class*='border-[--brand-secondary'],
+  .newsprint-app .neo-keep-dark [class*='border-[--brand-secondary'] {
+    border-color: var(--brand-secondary-50);
+  }
+
   /* Lernplan-spezifische Wrapper — spiegeln .learning-units-neo /
      .learning-plan-neo / .learning-units-toolbar-neo. Die generischen
      .neo-learning-*-Utility-Klassen (Karten/Panels/Labels) konsumieren
@@ -1513,11 +1632,11 @@
     --ds-muted: var(--neo-ink);
     --ds-subtle: var(--neo-ink);
     --brand-primary: var(--neo-accent);
-    --brand-primary-08: var(--neo-accent);
-    --brand-primary-12: var(--neo-accent);
-    --brand-primary-15: var(--neo-accent);
-    --brand-primary-20: var(--neo-accent);
-    --brand-primary-25: var(--neo-accent);
+    --brand-primary-08: var(--neo-muted);
+    --brand-primary-12: var(--neo-muted);
+    --brand-primary-15: var(--neo-muted);
+    --brand-primary-20: var(--neo-muted);
+    --brand-primary-25: var(--neo-muted);
     --brand-primary-50: var(--neo-accent);
     --brand-primary-80: var(--neo-accent);
     --brand-primary-100: var(--neo-accent);
@@ -1532,14 +1651,13 @@
     --radius-ds-xl: 0px;
     --radius-ds-2xl: 0px;
     --radius-ds-sheet: 0px;
-    --shadow-card: 4px 4px 0 0 #111111;
-    --shadow-menu: 6px 6px 0 0 #111111;
-    --shadow-modal: 8px 8px 0 0 #111111;
+    --neo-shadow-ink: rgba(17, 17, 17, 0.25);
+    --shadow-card: 3px 3px 0 0 rgba(17, 17, 17, 0.22);
+    --shadow-menu: 5px 5px 0 0 rgba(17, 17, 17, 0.26);
+    --shadow-modal: 7px 7px 0 0 rgba(17, 17, 17, 0.3);
     color: var(--neo-ink);
     color-scheme: light;
     background-color: var(--neo-canvas);
-    background-image: radial-gradient(rgba(17, 17, 17, 0.14) 1px, transparent 1px);
-    background-size: 4px 4px;
   }
 
   .learning-units-toolbar-newsprint {
@@ -1554,9 +1672,10 @@
     border: 2px solid #111111;
     border-radius: 0;
     background: #f9f9f7;
-    box-shadow: 3px 3px 0 0 #111111;
+    box-shadow: var(--shadow-card);
     color: #111111;
     backdrop-filter: none;
+    padding: 0.5rem 0.75rem;
   }
 
   .learning-units-toolbar-newsprint h2,
@@ -1565,407 +1684,98 @@
     color: #111111;
   }
 
-  /* ── Dopamine-Theme-Vertrag ───────────────────────────────────────────────
-     Maximalismus/Y2K-Hyperpop: dunkler Fond, 5 Neon-Akzente, dicke pinke
-     Ränder, mehrschichtige Leucht-/Hartschatten. Erstes dunkles Theme — die
-     Repaint-Polarität kehrt sich gegenüber .neo-app/.newsprint-app teilweise
-     um (Details siehe Plan-Notiz im Commit): altes Dark-Mode-Vokabular
-     (text-white, text-zinc-*, Status-Washes) ist bereits kompatibel und
-     bleibt unangetastet; dafür müssen text-black/bg-white/border-black —
-     bislang nie nötig, weil beide bisherigen Themes ohnehin hell sind —
-     neu gedreht werden. Keine Dauer-Animationen, keine Deko-Emojis/XXL-
-     Hintergrundtypografie (Scope-Entscheidung). */
-  .dopamine-app {
-    --dope-canvas: #0d0d1a;
-    --dope-ink: #170b2e;
-    --dope-fg: #ffffff;
-    --dope-card: #2d1b4e;
-    --dope-card-hover: #3d2568;
-    --dope-magenta: #ff3af2;
-    --dope-cyan: #00f5d4;
-    --dope-yellow: #ffe600;
-    --dope-orange: #ff6b35;
-    --dope-purple: #7b2fff;
-    --ds-bg: var(--dope-canvas);
-    --ds-floor: var(--dope-canvas);
-    --ds-card: var(--dope-card);
-    --ds-panel: var(--dope-card);
-    --ds-panel-hover: var(--dope-card-hover);
-    --ds-border: var(--dope-magenta);
-    --ds-border-strong: var(--dope-magenta);
-    --ds-border-hover: var(--dope-cyan);
-    --ds-fg: var(--dope-fg);
-    --ds-text-normal: #d9d3f0;
-    --ds-muted: #b8aed9;
-    --ds-subtle: #8a7fb0;
-    --ds-code-bg: #241640;
-    --ds-accent-primary: var(--dope-magenta);
-    --ds-accent-secondary: var(--dope-cyan);
-    --brand-primary: var(--dope-magenta);
-    /* -08/-12/-15/-20/-25 sind "Wash"-Hintergrundstufen für Badge-Muster wie
-       bg-[--brand-primary-12] text-[--brand-primary] (viele Consumer, z.B.
-       HomeDailyQuestTile/CardFormModal/StreakBadge) — müssen sich von der
-       vollen Akzentfarbe (Textfarbe!) unterscheiden, sonst Text=Hintergrund
-       und unsichtbar. Dunkle Karten-Fläche statt Vollton, -50 aufwärts bleibt
-       Vollton (Border/Hover-Text). */
-    --brand-primary-08: var(--dope-card);
-    --brand-primary-12: var(--dope-card);
-    --brand-primary-15: var(--dope-card);
-    --brand-primary-20: var(--dope-card);
-    --brand-primary-25: var(--dope-card);
-    --brand-primary-50: var(--dope-magenta);
-    --brand-primary-80: var(--dope-magenta);
-    --brand-primary-100: var(--dope-magenta);
-    --brand-secondary: var(--dope-cyan);
-    --brand-secondary-08: var(--dope-card);
-    --brand-secondary-12: var(--dope-card);
-    --brand-secondary-15: var(--dope-card);
-    --brand-secondary-20: var(--dope-card);
-    --brand-secondary-25: var(--dope-card);
-    --brand-secondary-50: var(--dope-cyan);
-    --brand-secondary-80: var(--dope-cyan);
-    --brand-secondary-100: var(--dope-cyan);
-    --theme-primary: var(--dope-magenta);
-    --theme-secondary: var(--dope-cyan);
-    --theme-accent: var(--dope-yellow);
-    --theme-background: var(--dope-canvas);
-    --theme-floor: var(--dope-canvas);
-    --theme-card: var(--dope-card);
-    --theme-surface: var(--dope-card);
-    --theme-surface-hover: var(--dope-card-hover);
-    --theme-panel: var(--dope-card);
-    --theme-panel-hover: var(--dope-card-hover);
-    --theme-border: var(--dope-magenta);
-    --theme-border-strong: var(--dope-magenta);
-    --theme-border-hover: var(--dope-cyan);
-    --theme-text: var(--dope-fg);
-    --theme-text-secondary: #d9d3f0;
-    --theme-text-muted: #b8aed9;
-    --app-background: var(--dope-canvas);
-    --home-bottom-bar-bg: var(--dope-canvas);
-    --card-border-color: var(--dope-magenta);
-    --card-border-width: 4px;
-    --app-font-family-sans: 'Outfit', 'Helvetica Neue', sans-serif;
-    --radius-ds-sm: 12px;
-    --radius-ds-md: 20px;
-    --radius-ds-lg: 24px;
-    --radius-ds-xl: 28px;
-    --radius-ds-2xl: 32px;
-    --radius-ds-sheet: 32px;
-    --shadow-card: 0 0 20px rgba(255, 58, 242, 0.35), 6px 6px 0 0 var(--dope-yellow), 12px 12px 0 0 var(--dope-cyan);
-    --shadow-menu: 0 0 30px rgba(255, 58, 242, 0.4), 8px 8px 0 0 var(--dope-cyan), 16px 16px 0 0 var(--dope-purple);
-    --shadow-modal: 0 0 40px rgba(255, 58, 242, 0.45), 10px 10px 0 0 var(--dope-orange), 20px 20px 0 0 var(--dope-yellow);
-    color: var(--dope-fg);
+  /* ── Newsprint Dark (optionaler Modus) ────────────────────────────────────
+     Kein eigener Theme-Block: der Body trägt `newsprint-app newsprint-dark`,
+     alle var-getriebenen Newsprint-Regeln (Buckets, ds-Karten, Borders,
+     Streak-Badge, Insel) laufen weiter — dieser Block stimmt nur die
+     --news-*-Palette dunkel und ergänzt die Polaritäts-Buckets, die ein
+     helles Theme nie brauchte (text-black/bg-white/ring-black; vgl.
+     Theme-Memory „Hell→Dunkel kehrt die Repaint-Polarität um“). */
+  .newsprint-app.newsprint-dark {
+    --news-canvas: #141413;
+    --news-ink: #e8e8e3;
+    --news-white: #1e1e1c;
+    --news-accent: #ff6166;
+    --news-muted: #2c2c29;
+    --news-muted-hover: #343431;
+    --news-secondary: #b3b3ad;
+    --ds-text-normal: #c9c9c2;
+    --ds-muted: #a3a39c;
+    --ds-subtle: #8a8a83;
+    --ds-code-bg: #232320;
+    --theme-surface-hover: #232320;
+    --theme-text-secondary: #c9c9c2;
+    --theme-text-muted: #a3a39c;
+    --shadow-card: 3px 3px 0 0 rgba(0, 0, 0, 0.5);
+    --shadow-menu: 5px 5px 0 0 rgba(0, 0, 0, 0.55);
+    --shadow-modal: 7px 7px 0 0 rgba(0, 0, 0, 0.6);
     color-scheme: dark;
-    background-color: var(--dope-canvas) !important;
-    font-family: 'DM Sans', system-ui, sans-serif;
-    font-weight: 400;
   }
 
-  .dopamine-app::before,
-  .dopamine-app #root {
-    background-color: var(--dope-canvas) !important;
-    background-image:
-      radial-gradient(circle, rgba(255, 58, 242, 0.08) 1px, transparent 1px),
-      repeating-linear-gradient(45deg, transparent, transparent 12px, rgba(0, 245, 212, 0.03) 12px, rgba(0, 245, 212, 0.03) 24px) !important;
-    background-size: 24px 24px, auto !important;
+  .newsprint-app.newsprint-dark [class*='text-black'] {
+    color: var(--news-ink) !important;
   }
 
-  .dopamine-app :is(h1, h2, h3, h4, h5, h6):not(.font-sans) {
-    color: var(--dope-fg);
-    font-family: 'Outfit', 'Helvetica Neue', sans-serif;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    text-shadow: 2px 2px 0 var(--dope-purple), 4px 4px 0 var(--dope-magenta);
+  /* Ausnahme bleibt wie im hellen Newsprint: auf Editorial-Rot ist heller
+     Ink-Text zu kontrastschwach — dunkle Tinte auf Rot bleibt lesbar. */
+  .newsprint-app.newsprint-dark [class*='bg-[--brand-primary]'].text-black {
+    color: #141413 !important;
   }
 
-  .dopamine-app :is(button, [role='button']) {
-    transition-duration: 150ms;
-    transition-timing-function: ease-out;
+  .newsprint-app.newsprint-dark .bg-white,
+  .newsprint-app.newsprint-dark [class*='hover:bg-white']:hover {
+    background-color: var(--news-white) !important;
   }
 
-  .dopamine-app [class~='border'] {
-    border-width: 3px;
-    border-color: var(--dope-magenta);
+  .newsprint-app.newsprint-dark [class*='ring-black'] {
+    --tw-ring-color: var(--news-ink);
   }
 
-  .dopamine-app :is(.ds-card, .ds-panel, .glass) {
-    border: 4px solid var(--dope-magenta);
-    background: var(--dope-card);
-    box-shadow: var(--shadow-card);
-    color: var(--dope-fg);
+  .newsprint-app.newsprint-dark :is(input, select, textarea):focus-visible {
+    background: #262623 !important;
   }
 
-  .dopamine-app :is(.ds-modal, .ds-menu) {
-    border: 4px solid var(--dope-magenta);
-    background: var(--dope-card);
-    box-shadow: var(--shadow-modal);
-    color: var(--dope-fg);
+  /* Theme-Picker-Karten: ihre hellen Vorschau-Flächen (cardBg + text-black)
+     kollidieren mit dem Ink-Repaint (heller Text auf heller Fläche). In Dark
+     werden die Karten einheitlich dunkel; die Swatch-Reihe (Inline-Styles)
+     zeigt weiterhin die echten Palettenfarben. */
+  .newsprint-app.newsprint-dark [data-testid^='theme-option-'] {
+    background-color: var(--news-white) !important;
   }
 
-  .dopamine-app .ds-icon-button {
-    border: 3px solid var(--dope-magenta);
-    background: var(--dope-card);
-    box-shadow: 3px 3px 0 0 var(--dope-cyan);
-    color: var(--dope-fg);
-  }
-
-  .dopamine-app .ds-icon-button:active {
-    transform: translate(3px, 3px);
-    box-shadow: none;
-  }
-
-  .dopamine-app :is(input, select, textarea) {
-    border: 4px solid var(--dope-magenta) !important;
-    background: var(--dope-card) !important;
-    color: var(--dope-fg) !important;
-    font-weight: 600;
-  }
-
-  .dopamine-app :is(input, select, textarea):focus-visible {
-    outline: none;
-    border-color: var(--dope-cyan) !important;
-    background: var(--dope-card-hover) !important;
-    box-shadow: 0 0 20px rgba(0, 245, 212, 0.5);
-  }
-
-  .dopamine-app :is(input, textarea)::placeholder {
-    color: var(--dope-fg) !important;
-    opacity: 0.4;
-  }
-
-  /* Nur die "hell-spezifischen" Buckets brauchen ein Repaint — altes
-     Dark-Mode-Vokabular (text-white, text-zinc-*, Status-Washes) ist auf
-     dunklem Grund schon korrekt und bleibt bewusst unangetastet. */
-  .dopamine-app [class*='border-white/'],
-  .dopamine-app [class*='border-zinc-'],
-  .dopamine-app [class*='border-amber-'],
-  .dopamine-app [class*='border-emerald-'],
-  .dopamine-app [class*='border-red-'],
-  .dopamine-app [class*='border-rose-'],
-  .dopamine-app .border-black {
-    border-color: var(--dope-magenta) !important;
-  }
-
-  .dopamine-app [class*='bg-[#050505]'],
-  .dopamine-app [class*='bg-[#060606]'],
-  .dopamine-app [class*='bg-[#070707]'],
-  .dopamine-app [class*='bg-[#080808]'],
-  .dopamine-app [class*='bg-[#0a0a0a]'],
-  .dopamine-app [class*='bg-[#0c0c0c]'],
-  .dopamine-app [class*='bg-[#0f0f0f]'],
-  .dopamine-app .bg-zinc-950,
-  .dopamine-app .bg-zinc-900,
-  .dopamine-app .bg-\[\#050505\],
-  .dopamine-app .bg-\[\#060606\],
-  .dopamine-app .bg-\[\#070707\],
-  .dopamine-app .bg-\[\#080808\],
-  .dopamine-app .bg-\[\#0a0a0a\],
-  .dopamine-app .bg-\[\#0c0c0c\],
-  .dopamine-app .bg-\[\#0f0f0f\],
-  .dopamine-app .bg-\[\#111\],
-  .dopamine-app .bg-\[\#18181b\],
-  .dopamine-app .bg-\[\#27272a\] {
-    background-color: var(--dope-card) !important;
-  }
-
-  .dopamine-app .bg-zinc-500,
-  .dopamine-app .bg-zinc-300,
-  .dopamine-app .bg-zinc-200 {
-    background-color: var(--dope-card-hover) !important;
-  }
-
-  .dopamine-app .border-\[\#18181b\],
-  .dopamine-app .border-\[\#1f1f22\],
-  .dopamine-app .border-\[\#1f1f23\],
-  .dopamine-app .border-\[\#27272a\],
-  .dopamine-app .border-\[\#3f3f46\] {
-    border-color: var(--dope-magenta) !important;
-  }
-
-  .dopamine-app [class*='hover:bg-[#050505]']:hover,
-  .dopamine-app [class*='hover:bg-[#060606]']:hover,
-  .dopamine-app [class*='hover:bg-[#070707]']:hover,
-  .dopamine-app [class*='hover:bg-[#080808]']:hover,
-  .dopamine-app [class*='hover:bg-[#0a0a0a]']:hover,
-  .dopamine-app [class*='hover:bg-[#0c0c0c]']:hover,
-  .dopamine-app [class*='hover:bg-[#0f0f0f]']:hover,
-  .dopamine-app [class*='hover:bg-[#111]']:hover {
-    background-color: var(--dope-card-hover) !important;
-    color: var(--dope-fg) !important;
-  }
-
-  /* Dark-Theme-spezifische Pflicht-Buckets: bislang nie nötig, weil Neo UND
-     Newsprint beide hell sind — auf #0D0D1A wären unangetastete Weiß-/
-     Schwarz-Flächen entweder blendend hell oder unsichtbar. */
-  .dopamine-app .bg-white,
-  .dopamine-app [class*='bg-[#FFD93D]'],
-  .dopamine-app [class*='bg-[#FF6B6B]'],
-  .dopamine-app [class*='bg-[#C4B5FD]'],
-  .dopamine-app [class*='bg-[#FFFDF5]'],
-  .dopamine-app [class*='bg-[#86EFAC]'],
-  .dopamine-app [class*='bg-[#FDBA74]'],
-  .dopamine-app .bg-\[\#FFD93D\],
-  .dopamine-app .bg-\[\#FF6B6B\],
-  .dopamine-app .bg-\[\#C4B5FD\],
-  .dopamine-app .bg-\[\#FFFDF5\],
-  .dopamine-app .bg-\[\#86EFAC\],
-  .dopamine-app .bg-\[\#FDBA74\] {
-    background-color: var(--dope-card) !important;
-  }
-
-  .dopamine-app .text-black {
-    color: var(--dope-fg) !important;
-  }
-
-  /* text-[#150b08] steht ausnahmslos auf bg-[--brand-primary] (= Magenta
-     unter Dopamine) — Magenta braucht dunkle statt helle Tinte (Kontrast
-     Weiß/Magenta nur 3.03:1, Ink/Magenta 6.9:1). */
-  .dopamine-app [class*='text-[#150b08]'],
-  .dopamine-app .text-\[\#150b08\] {
-    color: var(--dope-ink) !important;
-  }
-
-  /* Gleicher Kontrastfall, andere Klassenkombination (Lernplan-Wizard-
-     Buttons: bg-[--brand-primary] + text-black statt text-[#150b08]) —
-     hier gewinnt die generelle text-black→Weiß-Regel sonst fälschlich. */
-  .dopamine-app [class*='bg-[--brand-primary]'].text-black {
-    color: var(--dope-ink) !important;
-  }
-
-  /* Schwarze Hartschatten aus UI_TOKENS (button/input/modal-Chrome) sind auf
-     #0D0D1A unsichtbar — auf Magenta drehen. */
-  .dopamine-app .shadow-\[3px_3px_0_0_\#000\] { box-shadow: 3px 3px 0 0 var(--dope-magenta) !important; }
-  .dopamine-app .shadow-\[4px_4px_0_0_\#000\] { box-shadow: 4px 4px 0 0 var(--dope-magenta) !important; }
-  .dopamine-app .shadow-\[6px_6px_0_0_\#000\] { box-shadow: 6px 6px 0 0 var(--dope-magenta) !important; }
-  .dopamine-app .shadow-\[7px_7px_0_0_\#000\] { box-shadow: 7px 7px 0 0 var(--dope-magenta) !important; }
-  .dopamine-app .shadow-\[8px_8px_0_0_\#000\] { box-shadow: 8px 8px 0 0 var(--dope-magenta) !important; }
-
-  .dopamine-app .neo-keep-dark,
-  .dopamine-app .neo-keep-dark .bg-black {
-    background: #000 !important;
-    color: #fff !important;
-  }
-
-  .dopamine-app .neo-keep-dark [class*='bg-[#050505]'],
-  .dopamine-app .neo-keep-dark [class*='bg-[#060606]'],
-  .dopamine-app .neo-keep-dark [class*='bg-[#070707]'],
-  .dopamine-app .neo-keep-dark [class*='bg-[#080808]'],
-  .dopamine-app .neo-keep-dark [class*='bg-[#0a0a0a]'],
-  .dopamine-app .neo-keep-dark [class*='bg-[#0c0c0c]'],
-  .dopamine-app .neo-keep-dark [class*='bg-[#0f0f0f]'],
-  .dopamine-app .neo-keep-dark [class*='bg-[#111]'] {
-    background-color: #111 !important;
-  }
-
-  .dopamine-app .neo-keep-dark .text-white,
-  .dopamine-app .neo-keep-dark [class*='text-white/'],
-  .dopamine-app .neo-keep-dark [class*='text-zinc-'] {
-    color: #fff !important;
-  }
-
-  .dopamine-app .neo-keep-dark :is(button, [role='button']) {
-    color: #fff;
-  }
-
-  .dopamine-app .neo-keep-dark .ds-icon-button {
-    border-color: var(--dope-magenta) !important;
-    background: #111 !important;
-    box-shadow: 3px 3px 0 0 var(--dope-magenta);
-    color: #fff !important;
-  }
-
-  .dopamine-app .neo-keep-dark [class*='hover:bg-[#0']:hover,
-  .dopamine-app .neo-keep-dark [class*='hover:bg-[#111]']:hover {
-    background-color: #27272a !important;
-    color: #fff !important;
-  }
-
-  .dopamine-app .neo-keep-dark .neo-video-note-input,
-  .dopamine-app .neo-keep-dark .neo-video-note-input:focus-visible {
-    border: 3px solid var(--dope-magenta) !important;
-    background: #000 !important;
-    box-shadow: none !important;
-    color: #fff !important;
-    caret-color: #fff !important;
-  }
-
-  .dopamine-app .neo-keep-dark .neo-video-note-input::placeholder {
-    color: rgba(255, 255, 255, 0.55) !important;
-    opacity: 1;
-  }
-
-  /* Lernplan-spezifische Wrapper — spiegeln .learning-units-neo/-newsprint. */
-  .learning-units-dopamine,
-  .learning-plan-dopamine {
-    --neo-canvas: #0d0d1a;
-    --neo-ink: #ff3af2;
-    --neo-accent: #ff3af2;
-    --neo-secondary: #ffe600;
-    --neo-muted: #2d1b4e;
-    --neo-white: #2d1b4e;
-    --ds-bg: var(--neo-canvas);
-    --ds-floor: var(--neo-canvas);
-    --ds-card: var(--neo-white);
-    --ds-panel: var(--neo-muted);
-    --ds-panel-hover: #3d2568;
-    --ds-border: var(--neo-ink);
-    --ds-border-strong: var(--neo-ink);
-    --ds-border-hover: #00f5d4;
-    --ds-fg: #ffffff;
-    --ds-text-normal: #ffffff;
-    --ds-muted: #d9d3f0;
-    --ds-subtle: #b8aed9;
-    --brand-primary: var(--neo-accent);
-    --brand-primary-08: var(--neo-white);
-    --brand-primary-12: var(--neo-white);
-    --brand-primary-15: var(--neo-white);
-    --brand-primary-20: var(--neo-white);
-    --brand-primary-25: var(--neo-white);
-    --brand-primary-50: var(--neo-accent);
-    --brand-primary-80: var(--neo-accent);
-    --brand-primary-100: var(--neo-accent);
-    --brand-secondary: #00f5d4;
-    --brand-secondary-08: var(--neo-white);
-    --brand-secondary-12: var(--neo-white);
-    --brand-secondary-25: var(--neo-white);
-    --brand-secondary-50: #00f5d4;
-    --radius-ds-sm: 12px;
-    --radius-ds-md: 20px;
-    --radius-ds-lg: 24px;
-    --radius-ds-xl: 28px;
-    --radius-ds-2xl: 32px;
-    --radius-ds-sheet: 32px;
-    --shadow-card: 0 0 20px rgba(255, 58, 242, 0.35), 6px 6px 0 0 #ffe600, 12px 12px 0 0 #00f5d4;
-    --shadow-menu: 0 0 30px rgba(255, 58, 242, 0.4), 8px 8px 0 0 #00f5d4, 16px 16px 0 0 #7b2fff;
-    --shadow-modal: 0 0 40px rgba(255, 58, 242, 0.45), 10px 10px 0 0 #ff6b35, 20px 20px 0 0 #ffe600;
-    color: #ffffff;
+  .newsprint-dark .learning-units-newsprint,
+  .newsprint-dark .learning-plan-newsprint {
+    --neo-canvas: #141413;
+    --neo-ink: #e8e8e3;
+    --neo-accent: #ff6166;
+    --neo-secondary: #2c2c29;
+    --neo-muted: #2c2c29;
+    --neo-white: #1e1e1c;
+    --neo-shadow-ink: rgba(0, 0, 0, 0.55);
+    --shadow-card: 3px 3px 0 0 rgba(0, 0, 0, 0.5);
+    --shadow-menu: 5px 5px 0 0 rgba(0, 0, 0, 0.55);
+    --shadow-modal: 7px 7px 0 0 rgba(0, 0, 0, 0.6);
     color-scheme: dark;
     background-color: var(--neo-canvas);
-    background-image:
-      radial-gradient(circle, rgba(255, 58, 242, 0.08) 1px, transparent 1px),
-      repeating-linear-gradient(45deg, transparent, transparent 12px, rgba(0, 245, 212, 0.03) 12px, rgba(0, 245, 212, 0.03) 24px);
-    background-size: 24px 24px, auto;
   }
 
-  .learning-units-toolbar-dopamine {
-    --ds-card: #2d1b4e;
-    --ds-panel: #2d1b4e;
-    --ds-panel-hover: #3d2568;
-    --ds-border: #ff3af2;
-    --ds-border-hover: #00f5d4;
+  .newsprint-dark .learning-units-toolbar-newsprint {
+    --ds-card: #1e1e1c;
+    --ds-panel: #2c2c29;
+    --ds-panel-hover: #343431;
+    --ds-border: #e8e8e3;
+    --ds-border-hover: #e8e8e3;
   }
 
-  .learning-units-toolbar-dopamine > div {
-    border: 3px solid #ff3af2;
-    background: #2d1b4e;
-    box-shadow: 4px 4px 0 0 #ffe600;
-    color: #ffffff;
+  .newsprint-dark .learning-units-toolbar-newsprint > div {
+    border-color: var(--news-ink);
+    background: #1a1a18;
   }
 
-  .learning-units-toolbar-dopamine h2,
-  .learning-units-toolbar-dopamine button,
-  .learning-units-toolbar-dopamine span {
-    color: #ffffff;
+  .newsprint-dark .learning-units-toolbar-newsprint h2,
+  .newsprint-dark .learning-units-toolbar-newsprint button,
+  .newsprint-dark .learning-units-toolbar-newsprint span {
+    color: var(--news-ink);
   }
+
 }

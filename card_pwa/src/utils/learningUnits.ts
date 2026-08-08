@@ -6,6 +6,7 @@
  */
 import type { Card } from '../types'
 import type { LocalVideoMeta } from './localVideoManifest'
+import { computeRecallMastery } from './recallMastery'
 
 // ── Statische Typen (Detailplan §5.1, §7, §9) ───────────────────────────────
 
@@ -206,6 +207,9 @@ export interface VideoRecallRun {
   contentManifestVersion: string
   questionIds: string[]
   questionVersionById: Record<string, string>
+  /** Falsch beantwortete Fragen des Laufs (⊆ questionIds). Fehlt bei
+   *  Alt-Läufen — die sind pro Frage nur auswertbar, wenn alles richtig war. */
+  missedQuestionIds?: string[]
   correct: number
   total: number
   verdict: 'understood' | 'almost' | 'review'
@@ -223,17 +227,20 @@ export function computeRecallRunVerdict(correct: number, total: number): VideoRe
 
 type CourseExecution = Extract<LearningUnitExecution, { type: 'course' }>
 
-/** Prüft die unveränderliche Fragenauswahl einer Course-Ausführung. Reihenfolge
- * ist Teil des sichtbaren Checks; Duplikate, Teilmengen und andere Versionen
- * dürfen die Ausführung nicht abschließen. */
-export function matchesFrozenCourseRecallSelection(
+/** Prüft, ob ein Lauf zur eingefrorenen Fragenauswahl einer Course-Ausführung
+ * gehört: Folge-Checks fragen bewusst Teilmengen (offene Fragen + kleine
+ * Auffrischungs-Auswahl), daher zählt jeder nicht-leere Lauf, dessen Fragen
+ * samt Versionen vollständig in der eingefrorenen Auswahl liegen. Der
+ * Schritt-Abschluss selbst hängt am Mastery-Zustand (computeCourseStepState),
+ * nicht an einem einzelnen Lauf. */
+export function belongsToFrozenCourseRecallSelection(
   execution: CourseExecution,
-  input: Pick<VideoRecallRun, 'questionIds' | 'questionVersionById' | 'total'>,
+  input: Pick<VideoRecallRun, 'questionIds' | 'questionVersionById'>,
 ): boolean {
-  if (input.total !== execution.recallQuestionIds.length) return false
-  if (input.questionIds.length !== execution.recallQuestionIds.length) return false
-  return execution.recallQuestionIds.every((questionId, index) => (
-    input.questionIds[index] === questionId
+  if (input.questionIds.length === 0) return false
+  const frozen = new Set(execution.recallQuestionIds)
+  return input.questionIds.every(questionId => (
+    frozen.has(questionId)
     && input.questionVersionById[questionId] === execution.recallQuestionVersions[questionId]
   ))
 }
@@ -539,22 +546,16 @@ export function buildVideoCardIndex(input: {
 
 // ── Recall-/Kartenauswahl (Vertrag §23.2, Regeln §8.2) ──────────────────────
 
-export function normalizeRecallCheckSize(size: unknown): number {
-  const parsed = Number(size)
-  if (!Number.isFinite(parsed)) return 7
-  return Math.max(3, Math.min(15, Math.round(parsed)))
-}
-
-/** Deterministische Recall-Stichprobe. Liefert die Card-IDs NUR der
- *  ausgewählten Recall-Fragen (Transkriptfragen haben keine Card-ID). */
+/** Eingefrorene Recall-Zielmenge einer Ausführung: IMMER alle hinterlegten
+ *  Fragen des Videos (keine Stichprobe, keine Umfangs-Einstellung mehr) in
+ *  deterministischer Seed-Reihenfolge. Liefert die Card-IDs NUR der
+ *  Recall-Fragen mit Karte (Transkriptfragen haben keine Card-ID). */
 export function selectRecallQuestionIds(input: {
   candidateQuestionIds: readonly string[]
   recallCardIdByQuestionId: ReadonlyMap<string, string>
-  recallCheckSize: number
   selectionSeed: string
 }): { selectedQuestionIds: string[]; selectedRecallCardIds: string[] } {
-  const size = Math.min(normalizeRecallCheckSize(input.recallCheckSize), input.candidateQuestionIds.length)
-  const selectedQuestionIds = seededShuffle(input.candidateQuestionIds, input.selectionSeed).slice(0, size)
+  const selectedQuestionIds = seededShuffle(input.candidateQuestionIds, input.selectionSeed)
   const selectedRecallCardIds = selectedQuestionIds
     .map(id => input.recallCardIdByQuestionId.get(id))
     .filter((id): id is string => typeof id === 'string')
@@ -629,14 +630,19 @@ export function createCourseExecution(input: {
 
 // ── Schrittstatus (Vertrag §23.2, Gating §8.2) ──────────────────────────────
 
-/** Recall zählt nur von einem vollständigen Lauf derselben Execution nach
- * deren Start. Frage-IDs und -Versionen müssen exakt der eingefrorenen,
- * tatsächlich gerenderten Auswahl entsprechen. */
+/** Recall ist erst erledigt, wenn JEDE eingefrorene Frage der Ausführung im
+ * Mastery-Modell (recallMastery) bestanden ist: letzte Antwort richtig, Fehler
+ * nur an einem späteren Kalendertag getilgt, modellierte Abrufwahrscheinlichkeit
+ * ≥ 90 %. Bis dahin gilt der Abruf-Check als nicht bestanden und die Unit wird
+ * nicht als erledigt markiert. Läufe zählen profilweit pro Video (auch freie
+ * Checks), denn gemessen wird Wissen, nicht ein einzelner Lauf. */
 export function computeCourseStepState(input: {
   execution: LearningUnitExecution
   videoProgress?: VideoProgressRecord
   recallRuns: VideoRecallRun[]
   reviewedCardIdsSinceStart: ReadonlySet<string>
+  /** Bewertungszeitpunkt (ms) — injiziert, damit die Funktion pur bleibt. */
+  now: number
 }): {
   videoDone: boolean
   recallDone: boolean
@@ -668,12 +674,11 @@ export function computeCourseStepState(input: {
   const recallDone =
     legacyRecallDone ||
     (!hasRecallStep && !isLegacyExecution) ||
-    input.recallRuns.some(run => {
-      if (run.executionId !== execution.executionId) return false
-      if (run.profileId !== execution.profileId) return false
-      if (run.completedAt < execution.createdAt) return false
-      return matchesFrozenCourseRecallSelection(execution, run)
-    })
+    (hasRecallStep && computeRecallMastery({
+      runs: input.recallRuns.filter(run => run.profileId === execution.profileId),
+      questionIds: execution.recallQuestionIds,
+      now: input.now,
+    }).passed)
   const videoDone =
     (
       input.videoProgress?.watchedAt !== undefined

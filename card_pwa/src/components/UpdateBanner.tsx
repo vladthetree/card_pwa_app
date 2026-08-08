@@ -5,11 +5,7 @@ import { motion, useReducedMotion } from '../ui/motion'
 import { CheckCircle2 } from 'lucide-react'
 import { useSettings } from '../contexts/SettingsContext'
 
-interface Props {
-  deferredReload?: boolean
-}
-
-export default function UpdateBanner({ deferredReload = false }: Props) {
+export default function UpdateBanner() {
   const { settings } = useSettings()
   const isGerman = settings.language === 'de'
   const prefersReducedMotion = useReducedMotion()
@@ -28,12 +24,12 @@ export default function UpdateBanner({ deferredReload = false }: Props) {
         <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-emerald-300" strokeWidth={1.8} />
         <div className="min-w-0">
           <p className="text-sm font-medium text-white/92">
-            {isGerman ? 'Update installiert.' : 'Update installed.'}
+            {isGerman ? 'Update bereit.' : 'Update ready.'}
           </p>
           <p className="mt-0.5 text-xs leading-relaxed text-white/60">
-            {deferredReload
-              ? (isGerman ? 'Wird nach der Lernsession automatisch übernommen.' : 'It will apply automatically after this study session.')
-              : (isGerman ? 'Die App übernimmt es automatisch.' : 'The app will apply it automatically.')}
+            {isGerman
+              ? 'Wird beim nächsten App-Start automatisch übernommen.'
+              : 'It will apply automatically the next time the app starts.'}
           </p>
         </div>
       </div>

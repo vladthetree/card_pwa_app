@@ -4,9 +4,10 @@
  * Used by: App.tsx video view.
  * Important: Objective code is the bridge between videos, decks, recall cards, progress, and video notes; preserve that 1:1 mapping.
  */
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowLeft,
+  Check,
   ChevronDown,
   ChevronUp,
   ExternalLink,
@@ -29,7 +30,7 @@ import { profileScopeId } from '../../services/profileService'
 import { useMesserVideoProgress, resolveVideoStatus, type MesserVideoProgress, type VideoConfidence } from '../../hooks/useMesserVideoProgress'
 import { useVideoRecallScores, computeRecallVerdict, videoScoreKey, type VideoRecallVerdict } from '../../hooks/useVideoRecallScores'
 import { useLocalMesserVideos, useVideoSource, type LocalVideoItem, type LocalVideoObjectiveGroup } from '../../hooks/useLocalMesserVideos'
-import { markVideoOpened, markVideoWatched, setVideoConfidence } from '../../db/queries/learningUnits'
+import { listVideoRecallRunsForProfile, markVideoOpened, markVideoWatched, setVideoConfidence } from '../../db/queries/learningUnits'
 import {
   getActiveCourseExecutionForVideo,
   reconcileCourseUnitProgress,
@@ -39,7 +40,8 @@ import { usePersistentBool } from '../../hooks/videos/usePersistentBool'
 import { useVideoTagPanels } from '../../hooks/videos/useVideoTagPanels'
 import { useVideoWritingMode } from '../../hooks/videos/useVideoWritingMode'
 import { useObjectiveDeckSuccessRates } from '../../hooks/videos/useObjectiveDeckSuccessRates'
-import { matchesFrozenCourseRecallSelection } from '../../utils/learningUnits'
+import { belongsToFrozenCourseRecallSelection } from '../../utils/learningUnits'
+import { computeRecallRunTally } from '../../utils/recallMastery'
 import MesserVideoPlayer from './MesserVideoPlayer'
 import VideoNotesPanel from './VideoNotesPanel'
 import VideoRecallCheck from './VideoRecallCheck'
@@ -121,7 +123,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
   const copy = COPY[language]
   const { isHandsetLayout } = useHandsetLayout()
   const isDesktop = !isHandsetLayout
-  const { profile, settings } = useSettings()
+  const { profile } = useSettings()
   const profileId = profileScopeId(profile)
   const { withNotes: objectivesWithNotes, allTags } = useVideoNoteIndex(profileId)
   const { progress, markWatched, setConfidence } = useMesserVideoProgress()
@@ -178,6 +180,28 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
       cancelled = true
     }
   }, [profileId, activeVideoIndex])
+
+  // Kumulierte Richtig/Falsch-Zähler pro Video aus der persistierten
+  // Abruf-Historie (aktuelle Evidence-Epoch) — sichtbar in der Videoliste.
+  const [recallTallyByVideoIndex, setRecallTallyByVideoIndex] = useState<Map<number, { correct: number; wrong: number }>>(new Map())
+  const reloadRecallTallies = useCallback(() => {
+    listVideoRecallRunsForProfile(profileId)
+      .then(runs => {
+        const byIndex = new Map<number, { correct: number; total: number }[]>()
+        for (const run of runs) {
+          const list = byIndex.get(run.videoIndex) ?? []
+          list.push(run)
+          byIndex.set(run.videoIndex, list)
+        }
+        setRecallTallyByVideoIndex(new Map(
+          [...byIndex.entries()].map(([videoIndex, list]) => [videoIndex, computeRecallRunTally(list)]),
+        ))
+      })
+      .catch(() => {})
+  }, [profileId])
+  useEffect(() => {
+    reloadRecallTallies()
+  }, [reloadRecallTallies])
 
   /** Selbsteinschätzung und Gesehen-Status sind getrennte Signale: Confidence
    *  darf eine Course-Unit niemals still als angesehen markieren. */
@@ -347,18 +371,18 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
           labels={{ fullscreen: copy.fullscreen, exitFullscreen: copy.exitFullscreen, speed: copy.speed }}
         />
       ) : resolving ? (
-        <div className="neo-keep-dark flex aspect-video w-full max-w-6xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-[#1f1f23] bg-black text-center">
+        <div className="neo-keep-dark flex aspect-video w-full max-w-6xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-[#1f1f23] bg-black text-center 2xl:max-w-[1300px]">
           <Loader2 size={26} className="animate-spin text-zinc-500" />
           <div className="font-mono text-[12px] text-zinc-500">{copy.resolving}</div>
         </div>
       ) : (
-        <div className="flex aspect-video w-full max-w-6xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-amber-500/30 bg-amber-500/5 text-center">
+        <div className="flex aspect-video w-full max-w-6xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-amber-500/30 bg-amber-500/5 text-center 2xl:max-w-[1300px]">
           <WifiOff size={26} strokeWidth={1.5} className="text-amber-300" />
           <div className="px-6 font-mono text-[12px] text-amber-200">{copy.streamOnly}</div>
         </div>
       )
     ) : (
-      <div className="flex aspect-video w-full max-w-6xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-dashed border-[#1f1f23] bg-[#070707] text-center">
+      <div className="flex aspect-video w-full max-w-6xl flex-col items-center justify-center gap-3 rounded-ds-2xl border border-dashed border-[#1f1f23] bg-[#070707] text-center 2xl:max-w-[1300px]">
         <Play size={28} strokeWidth={1.5} className="text-zinc-600" />
         <div className="px-6 font-mono text-[12px] text-zinc-500">{copy.pickVideo}</div>
       </div>
@@ -401,6 +425,7 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
           {group.videos.map(video => {
             const isActive = activeItem?.file === video.file
             const verdict = computeRecallVerdict(recallScores[videoScoreKey(video.index)])
+            const tally = recallTallyByVideoIndex.get(video.index)
             return (
               <div
                 key={video.file}
@@ -420,6 +445,22 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
                     <Play size={13} strokeWidth={1.5} />
                   </span>
                   <span className="min-w-0 flex-1 truncate font-mono text-[13px] text-zinc-100">{video.title}</span>
+                  {/* Kumulierte Richtig/Falsch-Zähler des Abruf-Checks dieses Videos */}
+                  {tally && (tally.correct > 0 || tally.wrong > 0) && (
+                    <span
+                      data-testid={`video-recall-tally-${video.index}`}
+                      className="flex shrink-0 items-center gap-1 font-mono text-[9px] font-bold text-zinc-500"
+                    >
+                      <span className="flex items-center gap-0.5 text-emerald-400">
+                        <Check size={10} strokeWidth={2.5} />
+                        {tally.correct}
+                      </span>
+                      <span className="flex items-center gap-0.5 text-rose-400">
+                        <X size={10} strokeWidth={2.5} />
+                        {tally.wrong}
+                      </span>
+                    </span>
+                  )}
                   {/* Verstanden-Empfehlung aus dem letzten Abruf-Check dieses Videos */}
                   {verdict !== 'unknown' && (
                     <span
@@ -803,12 +844,12 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
           objective={activeItem.objective}
           videoTitle={activeItem.title}
           videoIndex={activeItem.index}
+          profileId={profileId}
           language={language}
-          maxCards={settings.recallCheckSize}
           previousRuns={recallScores[videoScoreKey(activeItem.index)]}
           frozenQuestionIds={activeCourseExecution?.recallQuestionIds}
           frozenRecallCardIds={activeCourseExecution?.recallCardIds}
-          onResult={async (known, total, questionIds) => {
+          onResult={async (known, total, questionIds, missedQuestionIds) => {
             recordRecallRun(activeItem.index, known, total)
             // Dedizierter Lauf (append-only): die aktive Ausführung beim
             // Abschluss noch einmal frisch lesen. Beim direkten Öffnen des
@@ -819,9 +860,9 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
             const questionVersionById = Object.fromEntries(
               questionIds.map(id => [id, execution?.recallQuestionVersions[id] ?? 'v1']),
             )
-            const matchesExecution = execution !== null && matchesFrozenCourseRecallSelection(
+            const matchesExecution = execution !== null && belongsToFrozenCourseRecallSelection(
               execution,
-              { questionIds, questionVersionById, total },
+              { questionIds, questionVersionById },
             )
             await recordCourseRecallRun({
               profileId,
@@ -830,9 +871,11 @@ export default function VideosView({ language, onExit, onStartObjectiveStudy, in
               executionId: matchesExecution ? execution.executionId : null,
               questionIds,
               questionVersionById,
+              missedQuestionIds,
               correct: known,
               total,
             }).catch(error => console.error('[VideosView] recordCourseRecallRun', error))
+            reloadRecallTallies()
           }}
           onClose={() => setRecallOpen(false)}
           onConfidence={next => {

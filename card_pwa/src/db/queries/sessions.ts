@@ -40,6 +40,27 @@ export async function getResumableStudySession(nowMs = Date.now()): Promise<Resu
   }
 }
 
+/**
+ * Karten-IDs aus tatsaechlich laufenden, noch gueltigen Study-Sessions.
+ * Eine lediglich vorbereitete Auswahl (z. B. der Heute-Paket-Pointer) ist
+ * bewusst keine Reservierung: Erst der persistierte Session-Snapshot zeigt,
+ * dass der Nutzer diese Karten wirklich begonnen hat.
+ */
+export async function listReservedStudySessionCardIds(nowMs = Date.now()): Promise<Set<string>> {
+  try {
+    const records = await db.activeSessions.toArray()
+    const reserved = new Set<string>()
+    for (const record of records) {
+      const snapshot = parsePersistedStudySession(record.payload, record.id, nowMs)
+      if (!snapshot || snapshot.isDone) continue
+      for (const cardId of snapshot.cardIds) reserved.add(cardId)
+    }
+    return reserved
+  } catch {
+    return new Set()
+  }
+}
+
 interface ReadSessionOptions {
   migrateLegacyLocalStorage?: boolean
 }

@@ -1,12 +1,15 @@
 /**
  * AI_CONTEXT:
- * Role: Active-recall quiz after a video; combines the mapped Messer MC deck questions with curated transcript questions and suggests a confidence state.
+ * Role: Active-recall quiz after a video; asks ALL mapped Messer MC deck questions plus all curated transcript questions,
+ *       tracks per-question right/wrong, and gates a "passed" state via the recallMastery model (≥90% per question).
  * Used by: VideosView recall-check modal.
- * Important: It intentionally does not write reviews or alter FSRS/SM2 scheduling; it trains recall and calibrates confidence only.
+ * Important: It intentionally does not write reviews or alter FSRS/SM2 scheduling; mastery state lives solely in the
+ *            append-only recall-run history of the learning-units DB.
  */
 import { useEffect, useState } from 'react'
 import { Brain, Check, Eye, Loader2, RotateCcw, X } from 'lucide-react'
 import { listCardsByIds, listDeckCards } from '../../db/queries'
+import { listVideoRecallRunsForProfile } from '../../db/queries/learningUnits'
 import type { Card } from '../../types'
 import type { TranscriptQuestion } from '../../data/messerTranscriptQuestions'
 import {
@@ -19,6 +22,13 @@ import {
 } from '../../utils/cardTextParser'
 import { suggestConfidence, type VideoConfidence } from '../../hooks/useMesserVideoProgress'
 import { computeRecallVerdict, type RecallRunResult, type VideoRecallVerdict } from '../../hooks/useVideoRecallScores'
+import {
+  computeRecallMastery,
+  computeRecallRunTally,
+  formatLocalDayOf,
+  selectRecallRunQuestionIds,
+  type RecallRunLike,
+} from '../../utils/recallMastery'
 import { MESSER_VIDEO_BY_QUESTION_ID, normalizeMesserVideoTitle } from '../../data/messerVideoQuestionMap'
 
 /**
@@ -26,18 +36,20 @@ import { MESSER_VIDEO_BY_QUESTION_ID, normalizeMesserVideoTitle } from '../../da
  * Objective-Deck (`getSecurityObjectiveDeckId`) und behält davon nur die Fragen, die
  * laut generiertem Mapping (messerVideoQuestionMap) zu GENAU diesem Video
  * gehören — erst erinnern, dann aufdecken, dann ehrlich selbst bewerten.
+ * Kuratierte Transkriptfragen (messerTranscriptQuestions) kommen IMMER dazu:
+ * die Zielmenge ist grundsätzlich der komplette hinterlegte Fragenbestand.
  *
- * Zusätzlich (nie ersetzend): kuratierte Fragen aus dem Videotranskript
- * (messerTranscriptQuestions) füllen den Check auf, wenn zu einem Video weniger
- * Deck-Fragen existieren als der Umfang vorsieht — Deck-Fragen haben Vorrang.
+ * Bestanden ist der Check erst, wenn JEDE Frage der Zielmenge im
+ * Mastery-Modell (recallMastery) über 90 % liegt. Falsch beantwortete Fragen
+ * werden an den kommenden Tagen erneut abgefragt — zusammen mit einer kleinen
+ * Auffrischungs-Auswahl der übrigen Fragen.
  *
  * Bewusst NICHT planungswirksam: der Check schreibt keine Reviews und verändert
  * den FSRS-Zeitplan nicht. Sein Nutzen liegt im Abrufakt selbst (Testing-Effekt)
- * und in der Kalibrierung der Selbsteinschätzung — nicht im Logging. Für echte
- * verteilte Wiederholung startet man eine reguläre Lernsession des Decks.
+ * und in der Kalibrierung der Selbsteinschätzung. Für echte verteilte
+ * Wiederholung startet man eine reguläre Lernsession des Decks.
  */
 
-const DEFAULT_MAX_CARDS = 7
 const MESSER_RECALL_QUESTION_PATTERN = /^(M([1-5])-\d{3}):\s+\S/
 const NON_MESSER_RECALL_TAGS = new Set(['acronyms', 'acronym-bonus', 'pbq', 'drag-drop'])
 
@@ -63,6 +75,11 @@ const COPY = {
     fromTranscript: 'Aus dem Video',
     resultTitle: 'Ergebnis',
     resultScore: '{known} von {total} aus dem Gedächtnis gewusst',
+    passTitle: 'Abruf-Check-Status',
+    passPassed: 'Bestanden — alle {total} Fragen liegen über 90 %.',
+    passPending: 'Noch nicht bestanden — {pending} von {total} Fragen offen.',
+    passPendingHint: 'Falsch beantwortete Fragen zählen erst ab dem nächsten Tag als getilgt. Der nächste Check fragt sie erneut ab — plus eine kleine Auswahl der übrigen Fragen.',
+    tally: 'Bisher insgesamt: {correct} richtig · {wrong} falsch',
     verdictTitle: 'Empfehlung',
     verdictUnderstood: 'Video verstanden — du kannst weiterziehen.',
     verdictAlmost: 'Fast — wiederhole den Check oder wirf noch einen Blick ins Video.',
@@ -97,6 +114,11 @@ const COPY = {
     fromTranscript: 'From the video',
     resultTitle: 'Result',
     resultScore: 'Recalled {known} of {total} from memory',
+    passTitle: 'Recall check status',
+    passPassed: 'Passed — all {total} questions are above 90%.',
+    passPending: 'Not passed yet — {pending} of {total} questions open.',
+    passPendingHint: 'Wrongly answered questions only clear from the next day on. The next check asks them again — plus a small sample of the remaining questions.',
+    tally: 'Overall so far: {correct} right · {wrong} wrong',
     verdictTitle: 'Recommendation',
     verdictUnderstood: 'Video understood — you can move on.',
     verdictAlmost: 'Almost — repeat the check or revisit parts of the video.',
@@ -118,9 +140,9 @@ interface Props {
   videoTitle: string
   /** Playlist-Index des Videos — Schlüssel für die kuratierten Transkript-Fragen. */
   videoIndex?: number | null
+  /** Profil, dessen Abruf-Historie den Mastery-Zustand liefert. */
+  profileId: string
   language: 'de' | 'en'
-  /** Fragenanzahl pro Check (Einstellung „Abruf-Check-Umfang"). */
-  maxCards?: number
   onClose: () => void
   onConfidence: (confidence: VideoConfidence) => void
   /** Handoff: „Nicht gewusst“-Karten als reguläre (planungswirksame) Lernsession
@@ -128,12 +150,19 @@ interface Props {
   onStudyMissed?: (cards: Card[]) => void
   /** Bisherige Läufe dieses Videos (für die Verstanden-Empfehlung); beim Mount eingefroren. */
   previousRuns?: RecallRunResult[]
-  /** Wird bei jedem abgeschlossenen Durchlauf aufgerufen (Score-Historie);
-   *  `questionIds` sind die gestellten Fragen in Abfragereihenfolge. */
-  onResult?: (known: number, total: number, questionIds: string[]) => void | Promise<void>
-  /** Eingefrorene Fragen einer aktiven Kurs-Ausführung (§8.2): exakt diese IDs
-   *  in exakt dieser Reihenfolge stellen (M-IDs → Deck-Karten, T-IDs →
-   *  Transkriptfragen). Ohne Wert: freie Auswahl wie bisher. */
+  /** Wird bei jedem abgeschlossenen Durchlauf aufgerufen: `questionIds` sind die
+   *  gestellten Fragen in Abfragereihenfolge, `missedQuestionIds` die davon
+   *  falsch beantworteten. */
+  onResult?: (
+    known: number,
+    total: number,
+    questionIds: string[],
+    missedQuestionIds: string[],
+  ) => void | Promise<void>
+  /** Eingefrorene Zielmenge einer aktiven Kurs-Ausführung (§8.2): alle
+   *  hinterlegten Fragen des Videos (M-IDs → Deck-Karten, T-IDs →
+   *  Transkriptfragen). Welche davon ein Lauf stellt, entscheidet der
+   *  Mastery-Zustand (offene Fragen + Auffrischungs-Auswahl). */
   frozenQuestionIds?: readonly string[]
   /** Karten-IDs der eingefrorenen M-Fragen — lädt sie deckunabhängig, damit
    *  auch fehlplatzierte Karten (§8.1) auflösbar bleiben. */
@@ -316,7 +345,29 @@ const CONFIDENCE_META: Record<VideoConfidence, { key: 'gaps' | 'ok' | 'solid'; c
   },
 }
 
-export default function VideoRecallCheck({ deckId, objective, videoTitle, videoIndex, language, maxCards = DEFAULT_MAX_CARDS, onClose, onConfidence, onStudyMissed, previousRuns, onResult, frozenQuestionIds, frozenRecallCardIds }: Props) {
+/** Fragenmenge des nächsten Laufs aus Zielmenge und Historie: offene Fragen
+ *  plus kleine Auffrischungs-Auswahl; Erst-Check fragt alles. Seed = Video +
+ *  Kalendertag + Laufzähler — gleiche Zusammenstellung beim Wiederöffnen am
+ *  selben Tag, neue Mischung nach jedem abgeschlossenen Lauf. */
+function buildRunItems(
+  pool: ReadonlyMap<string, RecallQuizItem>,
+  targetIds: readonly string[],
+  runs: readonly RecallRunLike[],
+  seedScope: string,
+): RecallQuizItem[] {
+  const now = Date.now()
+  const mastery = computeRecallMastery({ runs, questionIds: targetIds, now })
+  const ordered = selectRecallRunQuestionIds({
+    questionIds: targetIds,
+    pendingQuestionIds: mastery.pendingQuestionIds,
+    seed: `recall|${seedScope}|${formatLocalDayOf(now)}|${runs.length}`,
+  })
+  return ordered
+    .map(questionId => pool.get(questionId))
+    .filter((item): item is RecallQuizItem => item !== undefined)
+}
+
+export default function VideoRecallCheck({ deckId, objective, videoTitle, videoIndex, profileId, language, onClose, onConfidence, onStudyMissed, previousRuns, onResult, frozenQuestionIds, frozenRecallCardIds }: Props) {
   const copy = COPY[language]
   const [phase, setPhase] = useState<Phase>('loading')
   const [items, setItems] = useState<RecallQuizItem[]>([])
@@ -326,6 +377,14 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
   const [picked, setPicked] = useState<string | null>(null)
   const [knownCount, setKnownCount] = useState(0)
   const [missedCards, setMissedCards] = useState<Card[]>([])
+  // Falsch beantwortete Fragen des laufenden Durchgangs (alle Quellen).
+  const [missedQuestionIds, setMissedQuestionIds] = useState<string[]>([])
+  // Vollständige Zielmenge (alle hinterlegten Fragen) + Item-Pool für Folge-Läufe.
+  const [itemPool, setItemPool] = useState<ReadonlyMap<string, RecallQuizItem>>(new Map())
+  const [allQuestionIds, setAllQuestionIds] = useState<string[]>([])
+  // Persistierte Läufe (beim Öffnen geladen) + die in dieser Sitzung beendeten.
+  const [dbRuns, setDbRuns] = useState<RecallRunLike[]>([])
+  const [sessionRuns, setSessionRuns] = useState<RecallRunLike[]>([])
   // Lauf-Historie für die Empfehlung: beim Mount eingefroren (der Parent hängt
   // via onResult neue Läufe an seine Kopie an — sonst würde doppelt gezählt),
   // lokal wächst sie mit jedem „Nochmal"-Durchlauf weiter.
@@ -352,24 +411,29 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
         : import('../../data/messerTranscriptQuestions')
             .then(mod => mod.MESSER_TRANSCRIPT_QUESTIONS[String(videoIndex).padStart(3, '0')] ?? [])
             .catch(() => [])
-    void Promise.all([deckCardsPromise, transcriptPromise, frozenCardsPromise]).then(([deckCards, transcriptQuestions, frozenCards]) => {
+    // Abruf-Historie dieses Videos (aktuelle Evidence-Epoch) für Mastery/Auswahl.
+    const runsPromise: Promise<RecallRunLike[]> =
+      videoIndex === null || videoIndex === undefined
+        ? Promise.resolve([])
+        : listVideoRecallRunsForProfile(profileId)
+            .then(runs => runs.filter(run => run.videoIndex === videoIndex))
+            .catch(() => [] as RecallRunLike[])
+    void Promise.all([deckCardsPromise, transcriptPromise, frozenCardsPromise, runsPromise]).then(([deckCards, transcriptQuestions, frozenCards, runs]) => {
       if (cancelled) return
       const questionIdOfCard = (card: Card) => MESSER_RECALL_QUESTION_PATTERN.exec(card.front.trim())?.[1]
 
-      let combined: RecallQuizItem[]
+      const pool = new Map<string, RecallQuizItem>()
       if (frozenQuestionIds && frozenQuestionIds.length > 0) {
-        // Ausführungsmodus (§8.2): exakt die eingefrorenen Fragen in ihrer
-        // Reihenfolge — keine freie Stichprobe, kein maxCards-Schnitt.
+        // Ausführungsmodus (§8.2): die eingefrorene Zielmenge der Ausführung.
         const cardByQuestionId = new Map<string, Card>()
         for (const card of [...deckCards, ...frozenCards]) {
           const id = questionIdOfCard(card)
           if (id && !cardByQuestionId.has(id)) cardByQuestionId.set(id, card)
         }
-        combined = []
         for (const questionId of frozenQuestionIds) {
           const card = cardByQuestionId.get(questionId)
           if (card) {
-            combined.push({ source: 'deck', card, questionId, view: buildRecallCardView(card, shuffle([0, 1, 2, 3])) })
+            pool.set(questionId, { source: 'deck', card, questionId, view: buildRecallCardView(card, shuffle([0, 1, 2, 3])) })
             continue
           }
           const match = /^T(\d{3})-(\d{2})$/.exec(questionId)
@@ -377,46 +441,49 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
             ? transcriptQuestions[Number(match[2]) - 1]
             : undefined
           if (question) {
-            combined.push({ source: 'transcript', questionId, view: buildTranscriptQuestionView(question, shuffle([0, 1, 2, 3])) })
+            pool.set(questionId, { source: 'transcript', questionId, view: buildTranscriptQuestionView(question, shuffle([0, 1, 2, 3])) })
           }
         }
       } else {
-        // Freier Modus: Deck-Fragen haben Vorrang; Transkript-Fragen füllen bis maxCards auf.
-        const deckItems: RecallQuizItem[] = shuffle(deckCards)
-          .slice(0, maxCards)
-          .map(card => ({ source: 'deck', card, questionId: questionIdOfCard(card), view: buildRecallCardView(card, shuffle([0, 1, 2, 3])) }))
-        const transcriptWithIds = transcriptQuestions.map((question, position) => ({
-          question,
-          questionId: videoIndex === null || videoIndex === undefined
-            ? undefined
-            : transcriptQuestionId(videoIndex, position),
-        }))
-        const transcriptItems: RecallQuizItem[] = shuffle(transcriptWithIds)
-          .slice(0, Math.max(0, maxCards - deckItems.length))
-          .map(entry => ({
-            source: 'transcript',
-            questionId: entry.questionId,
-            view: buildTranscriptQuestionView(entry.question, shuffle([0, 1, 2, 3])),
-          }))
-        combined = [...deckItems, ...transcriptItems]
+        // Freier Modus: Zielmenge = ALLE Deck-Fragen + ALLE Transkript-Fragen.
+        for (const card of deckCards) {
+          const questionId = questionIdOfCard(card)
+          if (questionId && !pool.has(questionId)) {
+            pool.set(questionId, { source: 'deck', card, questionId, view: buildRecallCardView(card, shuffle([0, 1, 2, 3])) })
+          }
+        }
+        if (videoIndex !== null && videoIndex !== undefined) {
+          transcriptQuestions.forEach((question, position) => {
+            const questionId = transcriptQuestionId(videoIndex, position)
+            if (!pool.has(questionId)) {
+              pool.set(questionId, { source: 'transcript', questionId, view: buildTranscriptQuestionView(question, shuffle([0, 1, 2, 3])) })
+            }
+          })
+        }
       }
-      if (combined.length === 0) {
+      const targetIds = [...pool.keys()]
+      if (targetIds.length === 0) {
         setPhase('empty')
         return
       }
-      setItems(combined)
+      setItemPool(pool)
+      setAllQuestionIds(targetIds)
+      setDbRuns(runs)
+      setSessionRuns([])
+      setItems(buildRunItems(pool, targetIds, runs, `${videoIndex ?? videoTitle}`))
       setIndex(0)
       setRevealed(false)
       setPicked(null)
       setKnownCount(0)
       setMissedCards([])
+      setMissedQuestionIds([])
       setPhase('quiz')
     })
     return () => {
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deckId, objective, videoTitle, videoIndex, maxCards, frozenQuestionKey, frozenCardKey])
+  }, [deckId, objective, videoTitle, videoIndex, profileId, frozenQuestionKey, frozenCardKey])
 
   const current = items[index]
   const view = current?.view ?? null
@@ -430,14 +497,23 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
     if (missedCard) {
       setMissedCards(prev => (prev.some(card => card.id === missedCard.id) ? prev : [...prev, missedCard]))
     }
+    const missedId = !known ? current?.questionId : undefined
+    const nextMissedIds = missedId && !missedQuestionIds.includes(missedId)
+      ? [...missedQuestionIds, missedId]
+      : missedQuestionIds
+    if (nextMissedIds !== missedQuestionIds) setMissedQuestionIds(nextMissedIds)
     if (index + 1 >= total) {
+      const questionIds = items.map(item => item.questionId).filter((id): id is string => typeof id === 'string')
       setKnownCount(nextKnown)
       setRunHistory(prev => [...prev, { known: nextKnown, total, at: Date.now() }])
-      await onResult?.(
-        nextKnown,
+      setSessionRuns(prev => [...prev, {
+        questionIds,
+        missedQuestionIds: nextMissedIds,
+        correct: nextKnown,
         total,
-        items.map(item => item.questionId).filter((id): id is string => typeof id === 'string'),
-      )
+        completedAt: Date.now(),
+      }])
+      await onResult?.(nextKnown, total, questionIds, nextMissedIds)
       setPhase('result')
       return
     }
@@ -448,12 +524,15 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
   }
 
   const restart = () => {
-    setItems(prev => shuffle(prev))
+    // „Nochmal“ nach dem Mastery-Zustand inkl. der gerade beendeten Läufe:
+    // offene Fragen zuerst wieder rein, plus Auffrischungs-Auswahl.
+    setItems(buildRunItems(itemPool, allQuestionIds, [...dbRuns, ...sessionRuns], `${videoIndex ?? videoTitle}`))
     setIndex(0)
     setRevealed(false)
     setPicked(null)
     setKnownCount(0)
     setMissedCards([])
+    setMissedQuestionIds([])
     setPhase('quiz')
   }
 
@@ -470,6 +549,14 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
 
   const suggested = suggestConfidence(knownCount, total)
   const verdict: VideoRecallVerdict = computeRecallVerdict(runHistory)
+
+  // Bestanden-Status über die GESAMTE Zielmenge (nicht nur den letzten Lauf):
+  // jede hinterlegte Frage muss im Mastery-Modell über 90 % liegen.
+  const combinedRuns = [...dbRuns, ...sessionRuns]
+  const mastery = phase === 'result' && allQuestionIds.length > 0
+    ? computeRecallMastery({ runs: combinedRuns, questionIds: allQuestionIds, now: Date.now() })
+    : null
+  const tally = computeRecallRunTally(combinedRuns)
 
   const VERDICT_META: Record<Exclude<VideoRecallVerdict, 'unknown'>, { text: string; cls: string; Icon: typeof Check }> = {
     understood: { text: copy.verdictUnderstood, cls: 'border-emerald-500/30 bg-emerald-500/5 text-emerald-200', Icon: Check },
@@ -625,6 +712,42 @@ export default function VideoRecallCheck({ deckId, objective, videoTitle, videoI
                   {copy.resultScore.replace('{known}', String(knownCount)).replace('{total}', String(total))}
                 </div>
               </div>
+
+              {/* Bestanden-Status: alle hinterlegten Fragen ≥ 90 % im Mastery-Modell?
+                  Solange nicht, gilt der Check als nicht bestanden und die
+                  Lerneinheit bleibt offen. */}
+              {mastery && (
+                <div
+                  data-testid={mastery.passed ? 'recall-check-pass' : 'recall-check-pending'}
+                  className={`flex items-start gap-2.5 rounded-ds-xl border px-3 py-2.5 ${
+                    mastery.passed
+                      ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-200'
+                      : 'border-amber-500/30 bg-amber-500/5 text-amber-200'
+                  }`}
+                >
+                  {mastery.passed
+                    ? <Check size={15} strokeWidth={2} className="mt-0.5 shrink-0" />
+                    : <RotateCcw size={15} strokeWidth={2} className="mt-0.5 shrink-0" />}
+                  <div className="min-w-0 flex-1">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.12em] opacity-80">{copy.passTitle}</div>
+                    <div className="font-mono text-[13px] font-bold leading-relaxed">
+                      {mastery.passed
+                        ? copy.passPassed.replace('{total}', String(allQuestionIds.length))
+                        : copy.passPending
+                            .replace('{pending}', String(mastery.pendingQuestionIds.length))
+                            .replace('{total}', String(allQuestionIds.length))}
+                    </div>
+                    {!mastery.passed && (
+                      <p className="mt-1 font-mono text-[11px] leading-relaxed opacity-80">{copy.passPendingHint}</p>
+                    )}
+                    <p className="mt-1 font-mono text-[11px] leading-relaxed opacity-80" data-testid="recall-check-tally">
+                      {copy.tally
+                        .replace('{correct}', String(tally.correct))
+                        .replace('{wrong}', String(tally.wrong))}
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* Verstanden-Empfehlung: objektives Urteil aus der Lauf-Historie
                   (siehe computeRecallVerdict) — über der subjektiven Selbsteinschätzung. */}

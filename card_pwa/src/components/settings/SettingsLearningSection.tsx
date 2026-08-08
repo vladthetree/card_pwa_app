@@ -85,7 +85,6 @@ export function SettingsLearningSection({
     setShuffleModeEnabled,
     setNextDayStartsAt,
     setDailyGoal,
-    setRecallCheckSize,
     setNewCardsPerDay,
     setExamDateIso,
     setHardPracticeEnabled,
@@ -331,21 +330,6 @@ export function SettingsLearningSection({
             ? 'Bis zu dieser Uhrzeit zählen Reviews noch zum Vortag — verhindert Verschiebungen beim Lernen nach Mitternacht.'
             : 'Reviews before this hour still count toward the previous day — prevents shifts when studying past midnight.'}
           ariaLabel={settings.language === 'de' ? 'Tag-Wechsel-Uhrzeit' : 'Day rollover hour'}
-        />
-
-        <SettingsSliderRow
-          sectionLabel={settings.language === 'de' ? 'Abruf-Check (Lernvideos)' : 'Recall check (videos)'}
-          label={settings.language === 'de' ? 'Fragen pro Check' : 'Questions per check'}
-          valueLabel={settings.recallCheckSize}
-          value={settings.recallCheckSize}
-          min={3}
-          max={15}
-          step={1}
-          onValueChange={setRecallCheckSize}
-          help={settings.language === 'de'
-            ? 'Wie viele Fragen der Abruf-Check nach einem Video höchstens stellt.'
-            : 'How many questions a recall check asks after a video at most.'}
-          ariaLabel={settings.language === 'de' ? 'Fragen pro Abruf-Check' : 'Questions per recall check'}
         />
 
         <SettingsSliderRow

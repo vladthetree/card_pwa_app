@@ -32,17 +32,17 @@ export function HomeQuestsPanel({ t, profile }: Props) {
       aria-label={t.quests_panel_label}
     >
       <div className="flex items-baseline justify-between gap-2">
-        <div className="truncate font-mono text-[9px] uppercase tracking-[0.08em] text-ds-muted">
+        <div className="truncate font-mono text-[9px] uppercase tracking-[0.08em] text-ds-muted 2xl:text-xs">
           {t.level_label} {level} · {rankLabel}
         </div>
-        <div className="shrink-0 font-mono text-[10px] tabular-nums text-emerald-300">
+        <div className="shrink-0 font-mono text-[10px] tabular-nums text-emerald-300 2xl:text-xs">
           {t.quest_xp_today}: +{todayXp} XP
         </div>
       </div>
       <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
         <div className="h-full rounded-full bg-[--brand-primary]" style={{ width: `${levelPct}%` }} />
       </div>
-      <div className="mt-1 flex justify-between font-mono text-[9px] tabular-nums text-ds-muted">
+      <div className="mt-1 flex justify-between font-mono text-[9px] tabular-nums text-ds-muted 2xl:text-[11px]">
         <span>{currentLevelXp}/{nextLevelXp} XP</span>
         <span>{t.quest_xp_total}: {totalXp.toLocaleString()} XP</span>
       </div>
@@ -59,12 +59,12 @@ export function HomeQuestsPanel({ t, profile }: Props) {
             <div key={quest.id} className="flex items-center gap-2">
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="truncate text-xs text-zinc-200">{title}</span>
-                  <span className="shrink-0 font-mono text-[10px] tabular-nums text-ds-muted">
+                  <span className="truncate text-xs text-zinc-200 2xl:text-sm">{title}</span>
+                  <span className="shrink-0 font-mono text-[10px] tabular-nums text-ds-muted 2xl:text-xs">
                     {quest.progress}/{quest.target}
                   </span>
                 </div>
-                {subtitle && <div className="truncate text-[10px] text-ds-muted">{subtitle}</div>}
+                {subtitle && <div className="truncate text-[10px] text-ds-muted 2xl:text-xs">{subtitle}</div>}
                 <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-white/10">
                   <div
                     className={`h-full rounded-full ${quest.isComplete ? 'bg-emerald-400' : 'bg-[--brand-secondary]'}`}
@@ -73,7 +73,7 @@ export function HomeQuestsPanel({ t, profile }: Props) {
                 </div>
               </div>
               <div
-                className={`shrink-0 rounded-full border px-1.5 py-0.5 font-mono text-[9px] tabular-nums ${
+                className={`shrink-0 rounded-full border px-1.5 py-0.5 font-mono text-[9px] tabular-nums 2xl:text-[11px] ${
                   quest.isComplete ? 'border-emerald-400/40 text-emerald-300' : 'border-ds-border text-ds-muted'
                 }`}
               >

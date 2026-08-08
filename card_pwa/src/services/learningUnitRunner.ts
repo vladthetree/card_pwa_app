@@ -61,18 +61,19 @@ import {
   type LabScenarioSnapshot,
   type LabScoreResult,
 } from '../utils/labSnapshot'
-import { clearActiveSession, listCardsByDeckIdsDirect, listCardsByIds, listCardIdsReviewedSince } from '../db/queries'
-import { readTodayPackagePointer } from '../utils/todayPackage'
+import {
+  clearActiveSession,
+  listCardsByDeckIdsDirect,
+  listCardsByIds,
+  listCardIdsReviewedSince,
+  listReservedStudySessionCardIds,
+} from '../db/queries'
 
 type CourseExecution = Extract<LearningUnitExecution, { type: 'course' }>
 type ReviewExecution = Extract<LearningUnitExecution, { type: 'review' }>
 type LabExecution = Extract<LearningUnitExecution, { type: 'lab' }>
 
 const M_ID_PREFIX = /^(M\d-\d{3}):/
-
-export interface CourseUnitStartSettings {
-  recallCheckSize: number
-}
 
 export interface CourseUnitLaunch {
   execution: CourseExecution
@@ -102,6 +103,7 @@ async function computeStepSnapshot(execution: CourseExecution): Promise<{
     // Alte Ausführungen dürfen cardIds noch zur Diagnose tragen; sie sind kein
     // Course-Schritt mehr und werden deshalb hier nicht abgefragt.
     reviewedCardIdsSinceStart: new Set(),
+    now: Date.now(),
   })
   return { step: stepState.currentStep }
 }
@@ -109,14 +111,14 @@ async function computeStepSnapshot(execution: CourseExecution): Promise<{
 /**
  * Startet eine Course-Unit mit frisch eingefrorener Auswahl oder setzt die
  * bereits aktive Ausführung exakt an ihrem Video-/Recall-Schritt fort (§7/§8.2).
+ * Die Recall-Zielmenge sind immer ALLE hinterlegten Fragen des Videos.
  * Kartenwiederholungen sind ausschließlich eigenständige Review-Units.
  */
 export async function startOrResumeCourseUnit(input: {
   profileId: string
   definition: LearningUnitDefinition
-  settings: CourseUnitStartSettings
 }): Promise<CourseUnitLaunch> {
-  const { profileId, definition, settings } = input
+  const { profileId, definition } = input
   if (definition.type !== 'course' || definition.videoIndex === undefined) {
     throw new Error(`startOrResumeCourseUnit: ${definition.unitId} ist keine Course-Definition`)
   }
@@ -149,12 +151,11 @@ export async function startOrResumeCourseUnit(input: {
     questionId => /^T\d{3}-\d{2}$/.test(questionId) || recallCardIdByQuestionId.has(questionId),
   )
   const recall = selectRecallQuestionIds({
-    // Eine eingefrorene, lokal nicht renderbare M-Frage könnte nie als exakt
-    // vollständiger Run zurückkommen und würde die Unit dauerhaft blockieren.
+    // Eine eingefrorene, lokal nicht renderbare M-Frage könnte nie bestanden
+    // werden und würde die Unit dauerhaft blockieren.
     // Transkriptfragen sind gebündelt; M-Fragen benötigen ihre echte Karte.
     candidateQuestionIds: resolvableRecallQuestionIds,
     recallCardIdByQuestionId,
-    recallCheckSize: settings.recallCheckSize,
     selectionSeed: executionId,
   })
 
@@ -292,10 +293,16 @@ export interface ReviewUnitStartSettings {
 }
 
 export interface ReviewUnitLaunch {
+  status: 'ready'
   execution: ReviewExecution
   state: LearningUnitState
   /** Noch nicht bewertete Karten der eingefrorenen Auswahl. */
   remainingCardIds: string[]
+}
+
+export interface ReviewUnitUnavailable {
+  status: 'unavailable'
+  reason: 'no-eligible-cards' | 'reserved-by-active-session'
 }
 
 /**
@@ -308,7 +315,7 @@ export async function startOrResumeReviewUnit(input: {
   profileId: string
   definition: LearningUnitDefinition
   settings: ReviewUnitStartSettings
-}): Promise<ReviewUnitLaunch | null> {
+}): Promise<ReviewUnitLaunch | ReviewUnitUnavailable> {
   const { profileId, definition, settings } = input
   if (definition.type !== 'review') {
     throw new Error(`startOrResumeReviewUnit: ${definition.unitId} ist keine Review-Definition`)
@@ -320,6 +327,7 @@ export async function startOrResumeReviewUnit(input: {
     const state = await getLearningUnitState(profileId, definition.unitId)
     if (!state) throw new Error(`startOrResumeReviewUnit: Unit-State zu ${definition.unitId} fehlt`)
     return {
+      status: 'ready',
       execution: active,
       state,
       remainingCardIds: active.cardIds.filter(cardId => !reviewedIds.has(cardId)),
@@ -338,13 +346,16 @@ export async function startOrResumeReviewUnit(input: {
     learnAheadMinutes: settings.learnAheadMinutes,
     runSeed: executionId,
   })
-  const stats = await listAnswerStats({ groupBy: 'item', itemIds: cards.map(card => card.id) })
+  const [stats, unitReserved, sessionReserved] = await Promise.all([
+    listAnswerStats({ groupBy: 'item', itemIds: cards.map(card => card.id) }),
+    listReservedCardIds(profileId),
+    listReservedStudySessionCardIds(),
+  ])
   const unresolvedErrorCardIds = stats
     .filter(stat => stat.unresolvedErrorItemIds.length > 0)
     .map(stat => stat.scopeId)
 
-  const reserved = await listReservedCardIds(profileId)
-  for (const cardId of readTodayPackagePointer().activeCardIds ?? []) reserved.add(cardId)
+  const reserved = new Set([...unitReserved, ...sessionReserved])
 
   const selection = buildReviewSelection({
     dueCardIds: dueCards.map(card => card.id),
@@ -352,7 +363,13 @@ export async function startOrResumeReviewUnit(input: {
     reservedCardIds: reserved,
     limit: settings.reviewCardLimit,
   })
-  if (selection.cardIds.length === 0) return null
+  if (selection.cardIds.length === 0) {
+    const hasEligibleCards = dueCards.length > 0 || unresolvedErrorCardIds.length > 0
+    return {
+      status: 'unavailable',
+      reason: hasEligibleCards ? 'reserved-by-active-session' : 'no-eligible-cards',
+    }
+  }
 
   const now = Date.now()
   const profileState = await getOrCreateProfileLearningState(profileId, now)
@@ -370,7 +387,7 @@ export async function startOrResumeReviewUnit(input: {
     contentVersions: {},
   }
   const state = await startUnitExecution(execution, now)
-  return { execution, state, remainingCardIds: [...selection.cardIds] }
+  return { status: 'ready', execution, state, remainingCardIds: [...selection.cardIds] }
 }
 
 export interface LabUnitLaunch {
@@ -574,6 +591,7 @@ export async function recordCourseRecallRun(input: {
   executionId: string | null
   questionIds: string[]
   questionVersionById: Record<string, string>
+  missedQuestionIds: string[]
   correct: number
   total: number
 }): Promise<void> {
@@ -589,6 +607,7 @@ export async function recordCourseRecallRun(input: {
     contentManifestVersion: SY0701_CONTENT_MANIFEST_VERSION,
     questionIds: [...input.questionIds],
     questionVersionById: { ...input.questionVersionById },
+    missedQuestionIds: [...input.missedQuestionIds],
     correct: input.correct,
     total: input.total,
     verdict: computeRecallRunVerdict(input.correct, input.total),

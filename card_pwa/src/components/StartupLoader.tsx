@@ -28,6 +28,15 @@ export default function StartupLoader({
       data-testid="startup-loader"
       style={style}
     >
+      <div className="startup-loader__sparks">
+        <span className="startup-loader__spark startup-loader__spark--1" />
+        <span className="startup-loader__spark startup-loader__spark--2" />
+        <span className="startup-loader__spark startup-loader__spark--3" />
+        <span className="startup-loader__spark startup-loader__spark--4" />
+        <span className="startup-loader__spark startup-loader__spark--5" />
+        <span className="startup-loader__spark startup-loader__spark--6" />
+      </div>
+
       <div className="startup-loader__orbit startup-loader__orbit--outer">
         <span className="startup-loader__satellite startup-loader__satellite--primary" />
         <span className="startup-loader__satellite startup-loader__satellite--secondary" />

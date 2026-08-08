@@ -61,8 +61,6 @@ interface Settings {
   nextDayStartsAt: number
   /** Daily review goal used for the progress ring on Home. 0 disables it. */
   dailyGoal: number
-  /** Fragenanzahl pro Video-Abruf-Check (Lernvideos). */
-  recallCheckSize: number
   /** Eigenes Kartenkontingent des aktuellen Lernpakets (0 = unbegrenzt).
    *  Der persistierte Feldname bleibt fuer bestehende Installationen stabil. */
   newCardsPerDay: number
@@ -109,7 +107,6 @@ interface SettingsContextType {
   setShuffleModeEnabled: (enabled: boolean) => void
   setNextDayStartsAt: (hour: number) => void
   setDailyGoal: (goal: number) => void
-  setRecallCheckSize: (size: number) => void
   setNewCardsPerDay: (count: number) => void
   setExamDateIso: (dateIso: string | null, options?: { planAlreadySaved?: boolean }) => Promise<void>
   setFocusMode: (enabled: boolean) => void
@@ -202,7 +199,6 @@ const DEFAULT_SETTINGS: Settings = {
   showReviewDecks: false,
   nextDayStartsAt: 4,
   dailyGoal: 20,
-  recallCheckSize: 7,
   newCardsPerDay: 10,
   examDateIso: null,
   examDateUpdatedAt: null,
@@ -225,12 +221,6 @@ function normalizeDailyGoal(value: unknown): number {
   if (!Number.isFinite(parsed)) return 20
   const rounded = Math.round(parsed)
   return Math.max(0, Math.min(500, rounded))
-}
-
-function normalizeRecallCheckSize(value: unknown): number {
-  const parsed = Number(value)
-  if (!Number.isFinite(parsed)) return 7
-  return Math.max(3, Math.min(15, Math.round(parsed)))
 }
 
 export function normalizeNewCardsPerDay(value: unknown): number {
@@ -273,7 +263,6 @@ export function normalizeSettings(input: Partial<Settings> | undefined): Setting
     showReviewDecks: input?.showReviewDecks === true,
     nextDayStartsAt: Number.isInteger(rawNextDayStartsAt) && rawNextDayStartsAt >= 0 && rawNextDayStartsAt <= 23 ? rawNextDayStartsAt : 4,
     dailyGoal: normalizeDailyGoal(input?.dailyGoal),
-    recallCheckSize: normalizeRecallCheckSize(input?.recallCheckSize),
     newCardsPerDay: normalizeNewCardsPerDay(input?.newCardsPerDay),
     examDateIso: normalizeExamDateIso(input?.examDateIso),
     examDateUpdatedAt: normalizeExamDateUpdatedAt(input?.examDateUpdatedAt),
@@ -478,10 +467,6 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     saveSettings({ ...settings, dailyGoal: normalizeDailyGoal(goal) })
   }
 
-  const setRecallCheckSize = (size: number) => {
-    saveSettings({ ...settings, recallCheckSize: normalizeRecallCheckSize(size) })
-  }
-
   const setNewCardsPerDay = (count: number) => {
     saveSettings({ ...settings, newCardsPerDay: normalizeNewCardsPerDay(count) })
   }
@@ -604,7 +589,6 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setShuffleModeEnabled,
         setNextDayStartsAt,
         setDailyGoal,
-        setRecallCheckSize,
         setNewCardsPerDay,
         setExamDateIso,
         setFocusMode,

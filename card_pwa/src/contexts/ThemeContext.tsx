@@ -54,28 +54,30 @@ export const THEMES = {
     cardBorder: '#111111',
     glow: 'rgba(204,0,0,0.15)',
   },
-  dopamine: {
-    name: 'Dopamine',
-    primary: '#FF3AF2',
-    secondary: '#00F5D4',
-    accent: '#FFE600',
-    background: '#0D0D1A',
-    floor: '#0D0D1A',
-    card: '#2D1B4E',
-    surface: '#2D1B4E',
-    surfaceHover: '#3D2568',
-    panel: '#2D1B4E',
-    panelHover: '#3D2568',
-    border: '#FF3AF2',
-    borderStrong: '#FF3AF2',
-    borderHover: '#FF3AF2',
-    text: '#FFFFFF',
-    textSecondary: '#D9D3F0',
-    textMuted: '#B8AED9',
-    subtle: '#8A7FB0',
-    codeBg: '#241640',
-    cardBorder: '#FF3AF2',
-    glow: 'rgba(255,58,242,0.4)',
+  // Optionaler Dunkelmodus des Newsprint-Looks: gleiche CSS-Verträge
+  // (Body trägt zusätzlich `newsprint-dark`), nur die Palette invertiert.
+  newsprintDark: {
+    name: 'Newsprint Dark',
+    primary: '#FF6166',
+    secondary: '#B3B3AD',
+    accent: '#2C2C29',
+    background: '#141413',
+    floor: '#141413',
+    card: '#1E1E1C',
+    surface: '#1E1E1C',
+    surfaceHover: '#232320',
+    panel: '#2C2C29',
+    panelHover: '#343431',
+    border: '#E8E8E3',
+    borderStrong: '#E8E8E3',
+    borderHover: '#E8E8E3',
+    text: '#E8E8E3',
+    textSecondary: '#C9C9C2',
+    textMuted: '#A3A39C',
+    subtle: '#8A8A83',
+    codeBg: '#232320',
+    cardBorder: '#E8E8E3',
+    glow: 'rgba(255,97,102,0.2)',
   },
 } as const
 
@@ -125,24 +127,34 @@ export function normalizeSavedThemeKey(value: string | null): ThemeKey {
 }
 
 // Lernplan-Views setzen zusätzlich zur Body-Klasse eine lokal gescopte
-// Wrapper-Klasse (z.B. `learning-units-neo`/`-newsprint`/`-dopamine`), deren
+// Wrapper-Klasse (z.B. `learning-units-neo`/`-newsprint`), deren
 // CSS-Block (index.css) dieselben --neo-*-Variablennamen wie .neo-app pro
-// Theme neu belegt. 'default' behält den historischen Suffix 'neo'.
+// Theme neu belegt. 'default' behält den historischen Suffix 'neo';
+// Newsprint Dark teilt den Newsprint-Scope (dunkel wird er über die
+// Body-Modifier-Klasse `newsprint-dark`, nicht über einen eigenen Scope).
 export function themeScopeClass(themeKey: ThemeKey, base: string): string {
-  return `${base}-${themeKey === 'default' ? 'neo' : themeKey}`
+  const suffix = themeKey === 'default'
+    ? 'neo'
+    : themeKey === 'newsprintDark'
+      ? 'newsprint'
+      : themeKey
+  return `${base}-${suffix}`
 }
 
 // Body-Klasse pro Theme — trägt die CSS-Var- und Selektor-Repaint-Verträge
 // aus index.css (`.neo-app` / `.newsprint-app`, jeweils @layer components).
+// Werte können mehrere Klassen tragen (Leerzeichen-getrennt): Newsprint Dark
+// erbt den kompletten .newsprint-app-Vertrag und stimmt ihn per zusätzlicher
+// Modifier-Klasse dunkel.
 const THEME_BODY_CLASS: Record<ThemeKey, string> = {
   default: 'neo-app',
   newsprint: 'newsprint-app',
-  dopamine: 'dopamine-app',
+  newsprintDark: 'newsprint-app newsprint-dark',
 }
 const THEME_DATA_ATTR: Record<ThemeKey, string> = {
   default: 'neo',
   newsprint: 'newsprint',
-  dopamine: 'dopamine',
+  newsprintDark: 'newsprint-dark',
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
@@ -165,8 +177,16 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     // Selektor-Repaints) für das aktive Theme; Portale/Modale erben davon,
     // weil sie im DOM unter body hängen. Die jeweils andere Theme-Klasse wird
     // entfernt, damit nie zwei Verträge gleichzeitig aktiv sind.
-    for (const key of Object.keys(THEME_BODY_CLASS) as ThemeKey[]) {
-      document.body.classList.toggle(THEME_BODY_CLASS[key], key === themeKey)
+    // Erst alle Theme-Klassen entfernen, dann die aktiven setzen — Themes
+    // können sich Klassen teilen (newsprint/newsprintDark → newsprint-app),
+    // ein naives toggle(…, key === themeKey) würde geteilte Klassen der
+    // jeweils anderen Variante wieder wegräumen.
+    const allThemeClasses = new Set(
+      Object.values(THEME_BODY_CLASS).flatMap(value => value.split(' ')),
+    )
+    for (const cls of allThemeClasses) document.body.classList.remove(cls)
+    for (const cls of THEME_BODY_CLASS[themeKey].split(' ')) {
+      document.body.classList.add(cls)
     }
     const themeColor = getThemeChromeColor(themeKey)
     const [primaryR, primaryG, primaryB] = hexToRgbTuple(theme.primary)

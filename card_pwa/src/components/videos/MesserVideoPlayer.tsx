@@ -263,7 +263,7 @@ export default function MesserVideoPlayer({
   const showControls = !(compact && keyboardOpen)
 
   return (
-    <div className={`flex w-full flex-col ${compact ? 'max-w-3xl shrink-0 gap-1.5' : 'max-w-6xl gap-2'}`}>
+    <div className={`flex w-full flex-col ${compact ? 'max-w-3xl shrink-0 gap-1.5' : 'max-w-6xl gap-2 2xl:max-w-[1300px]'}`}>
       <div className={`neo-keep-dark overflow-hidden rounded-ds-2xl border border-[#1f1f23] bg-black ${compact ? '' : 'aspect-video w-full'}`}>
         <video
           ref={videoRef}

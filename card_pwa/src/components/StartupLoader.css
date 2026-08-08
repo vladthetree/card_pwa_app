@@ -1,11 +1,113 @@
 .startup-loader {
   --startup-loader-primary: #e75f3c;
   --startup-loader-secondary: #79b7aa;
+  --startup-loader-cycle: 3.6s;
   position: relative;
   width: min(15rem, 72vw);
   height: 10.5rem;
-  contain: layout paint;
+  /* Die elliptische Bahn wird rotiert und ist dabei zeitweise höher als ihre
+     Layoutbox. `paint` würde genau diese oberen/unteren Bögen abschneiden. */
+  contain: layout;
   isolation: isolate;
+}
+
+.startup-loader::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 50%;
+  width: 5.5rem;
+  height: 5.5rem;
+  border: 1px solid var(--startup-loader-primary);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px var(--startup-loader-secondary);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.65);
+  animation: startup-loader-charge var(--startup-loader-cycle) ease-out infinite;
+}
+
+.startup-splash {
+  box-sizing: border-box;
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+  padding-bottom: calc(var(--app-bottom-safe-area, 0px) + 3.5rem);
+}
+
+.startup-splash__visual {
+  height: 11rem;
+}
+
+.startup-splash__brand {
+  margin-top: 1.5rem;
+}
+
+.startup-splash__divider,
+.startup-splash__motivation {
+  margin-top: 1rem;
+}
+
+.startup-splash__motivation-body {
+  margin-top: 0.625rem;
+}
+
+@media (min-width: 640px) {
+  .startup-splash__visual {
+    height: 13rem;
+  }
+}
+
+/* Kurze Desktopfenster und Landscape-Handsets: Der Splash bleibt vollstaendig
+   sichtbar, ohne dass Orbit, Motivation oder Handlungszeile kollidieren. */
+@media (max-height: 600px) {
+  .startup-splash {
+    padding-top: max(0.35rem, env(safe-area-inset-top, 0px));
+    padding-bottom: calc(var(--app-bottom-safe-area, 0px) + 2.75rem);
+  }
+
+  .startup-splash__visual {
+    height: 9rem;
+  }
+
+  .startup-loader {
+    transform: scale(0.72);
+  }
+
+  .startup-splash__brand {
+    margin-top: 0.5rem;
+  }
+
+  .startup-splash__divider,
+  .startup-splash__motivation {
+    margin-top: 0.5rem;
+  }
+
+  .startup-splash__motivation-title {
+    font-size: 0.875rem;
+  }
+
+  .startup-splash__motivation-body {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1.45;
+  }
+
+  .startup-splash__footer {
+    padding-bottom: 0.35rem;
+  }
+}
+
+@media (max-height: 380px) {
+  .startup-splash__visual {
+    height: 7rem;
+  }
+
+  .startup-loader {
+    transform: scale(0.56);
+  }
+
+  .startup-splash__motivation-body {
+    display: none;
+  }
 }
 
 .startup-loader__orbit {
@@ -13,6 +115,7 @@
   left: 50%;
   top: 50%;
   border-radius: 999px;
+  z-index: 1;
   will-change: transform;
 }
 
@@ -23,7 +126,19 @@
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-top-color: var(--startup-loader-primary);
   border-bottom-color: var(--startup-loader-secondary);
-  animation: startup-loader-orbit 4.8s linear infinite;
+  animation: startup-loader-orbit 3.8s linear infinite;
+}
+
+.startup-loader__orbit--outer::before {
+  content: '';
+  position: absolute;
+  inset: -0.3rem;
+  border: 2px solid transparent;
+  border-left-color: var(--startup-loader-secondary);
+  border-right-color: var(--startup-loader-primary);
+  border-radius: inherit;
+  opacity: 0;
+  animation: startup-loader-orbit-flare var(--startup-loader-cycle) ease-in-out infinite;
 }
 
 .startup-loader__orbit--inner {
@@ -31,8 +146,43 @@
   height: 7.75rem;
   margin: -3.875rem 0 0 -3.875rem;
   border: 1px dashed rgba(255, 255, 255, 0.2);
-  animation: startup-loader-orbit-reverse 7.2s linear infinite;
+  animation: startup-loader-orbit-reverse 5.8s linear infinite;
 }
+
+.startup-loader__sparks {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  pointer-events: none;
+}
+
+.startup-loader__spark {
+  --spark-x: 0rem;
+  --spark-y: 0rem;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.42rem;
+  height: 0.42rem;
+  border: 1px solid currentColor;
+  background: currentColor;
+  box-shadow: 0 0 0 1px #090806;
+  color: var(--startup-loader-primary);
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(45deg) scale(0.2);
+  animation: startup-loader-spark var(--startup-loader-cycle) cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.startup-loader__spark:nth-child(even) {
+  color: var(--startup-loader-secondary);
+}
+
+.startup-loader__spark--1 { --spark-x: -6.2rem; --spark-y: -3.5rem; }
+.startup-loader__spark--2 { --spark-x: 6.35rem; --spark-y: -2.7rem; }
+.startup-loader__spark--3 { --spark-x: -6.8rem; --spark-y: 2.65rem; }
+.startup-loader__spark--4 { --spark-x: 5.9rem; --spark-y: 3.75rem; }
+.startup-loader__spark--5 { --spark-x: -0.7rem; --spark-y: -5.25rem; }
+.startup-loader__spark--6 { --spark-x: 0.85rem; --spark-y: 5.3rem; }
 
 .startup-loader__satellite {
   position: absolute;
@@ -98,7 +248,8 @@
   width: 4.3rem;
   height: 5.4rem;
   margin: -2.7rem 0 0 -2.15rem;
-  animation: startup-loader-breathe 2.4s ease-in-out infinite;
+  z-index: 3;
+  animation: startup-loader-deck-sequence var(--startup-loader-cycle) cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 
 .startup-loader__card {
@@ -113,17 +264,34 @@
   border: 1px solid var(--startup-loader-secondary);
   opacity: 0.58;
   transform: translate3d(0.55rem, -0.28rem, 0) rotate(7deg);
+  animation: startup-loader-card-back var(--startup-loader-cycle) cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 
 .startup-loader__card--middle {
   border: 1px solid var(--startup-loader-primary);
   opacity: 0.72;
   transform: translate3d(-0.48rem, 0.2rem, 0) rotate(-6deg);
+  animation: startup-loader-card-middle var(--startup-loader-cycle) cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 
 .startup-loader__card--front {
+  overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.58);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 18px -14px #000;
+  animation: startup-loader-card-front var(--startup-loader-cycle) cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.startup-loader__card--front::after {
+  content: '';
+  position: absolute;
+  left: 0.45rem;
+  right: 0.45rem;
+  top: 0.35rem;
+  height: 1px;
+  background: var(--startup-loader-primary);
+  box-shadow: 0 2px 0 var(--startup-loader-secondary);
+  opacity: 0;
+  animation: startup-loader-scan var(--startup-loader-cycle) ease-in-out infinite;
 }
 
 .startup-loader__eyebrow,
@@ -139,6 +307,8 @@
   top: 0.82rem;
   width: 1.1rem;
   background: var(--startup-loader-primary);
+  transform-origin: left center;
+  animation: startup-loader-status-line var(--startup-loader-cycle) ease-in-out infinite;
 }
 
 .startup-loader__line {
@@ -165,9 +335,79 @@
   to { transform: rotate(-360deg); }
 }
 
-@keyframes startup-loader-breathe {
-  0%, 100% { transform: translate3d(0, 1px, 0); }
-  50% { transform: translate3d(0, -2px, 0); }
+@keyframes startup-loader-charge {
+  0%, 30%, 100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.65);
+  }
+  39% { opacity: 0.7; }
+  64% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.8);
+  }
+}
+
+@keyframes startup-loader-orbit-flare {
+  0%, 31%, 72%, 100% { opacity: 0; }
+  42%, 57% { opacity: 0.82; }
+}
+
+@keyframes startup-loader-spark {
+  0%, 43%, 100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(45deg) scale(0.2);
+  }
+  49% { opacity: 1; }
+  62% { opacity: 0.95; }
+  72% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--spark-x)), calc(-50% + var(--spark-y))) rotate(225deg) scale(1);
+  }
+}
+
+@keyframes startup-loader-deck-sequence {
+  0%, 20%, 72%, 100% { transform: translate3d(0, 1px, 0) rotate(0) scale(1); }
+  31% { transform: translate3d(0, -4px, 0) rotate(-2deg) scale(0.98); }
+  39% { transform: translate3d(0, 1px, 0) rotate(1.5deg) scale(1.02); }
+  51% { transform: translate3d(0, -2px, 0) rotate(0) scale(1.055); }
+  61% { transform: translate3d(0, 0, 0) rotate(0) scale(0.985); }
+}
+
+@keyframes startup-loader-card-back {
+  0%, 22%, 68%, 100% { transform: translate3d(0.55rem, -0.28rem, 0) rotate(7deg); }
+  37% { transform: translate3d(1.65rem, -0.9rem, 0) rotate(18deg); }
+  52% { transform: translate3d(0.82rem, -0.4rem, 0) rotate(9deg); }
+}
+
+@keyframes startup-loader-card-middle {
+  0%, 22%, 68%, 100% { transform: translate3d(-0.48rem, 0.2rem, 0) rotate(-6deg); }
+  37% { transform: translate3d(-1.55rem, 0.78rem, 0) rotate(-17deg); }
+  52% { transform: translate3d(-0.72rem, 0.3rem, 0) rotate(-8deg); }
+}
+
+@keyframes startup-loader-card-front {
+  0%, 25%, 68%, 100% { transform: scale(1); }
+  36% { transform: scale(0.96); }
+  51% { transform: scale(1.045); }
+  60% { transform: scale(0.99); }
+}
+
+@keyframes startup-loader-scan {
+  0%, 32%, 68%, 100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  40% { opacity: 0.9; }
+  60% {
+    opacity: 0.7;
+    transform: translateY(4.2rem);
+  }
+}
+
+@keyframes startup-loader-status-line {
+  0%, 28%, 72%, 100% { transform: scaleX(1); opacity: 1; }
+  38% { transform: scaleX(0.35); opacity: 0.55; }
+  53% { transform: scaleX(1.35); opacity: 1; }
 }
 
 /* Ein Ladeindikator muss auch bei „Bewegung reduzieren" Fortschritt zeigen.
@@ -177,7 +417,19 @@
   animation-duration: 8s;
 }
 
+.startup-loader--calm::before,
+.startup-loader--calm .startup-loader__orbit--outer::before,
+.startup-loader--calm .startup-loader__spark,
+.startup-loader--calm .startup-loader__card--front::after {
+  animation: none;
+  opacity: 0;
+}
+
 .startup-loader--calm .startup-loader__orbit--inner,
-.startup-loader--calm .startup-loader__deck {
+.startup-loader--calm .startup-loader__deck,
+.startup-loader--calm .startup-loader__card--back,
+.startup-loader--calm .startup-loader__card--middle,
+.startup-loader--calm .startup-loader__card--front,
+.startup-loader--calm .startup-loader__eyebrow {
   animation: none;
 }

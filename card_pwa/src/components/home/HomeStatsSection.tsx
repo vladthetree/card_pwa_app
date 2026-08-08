@@ -73,7 +73,7 @@ function CompactStatTile({
   const content = (
     <>
       <div className={`font-mono text-2xl font-semibold tabular-nums leading-none ${toneClass}`}>{value}</div>
-      <div className="mt-2 truncate font-mono text-[9px] uppercase tracking-[0.08em] text-ds-muted">{label}</div>
+      <div className="mt-2 truncate font-mono text-[9px] uppercase tracking-[0.08em] text-ds-muted 2xl:text-xs">{label}</div>
     </>
   )
 
@@ -223,7 +223,7 @@ export function HomeStatsSection({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.14 }}
-      className="grid w-full min-w-0 grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3"
+      className="grid w-full min-w-0 grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3 2xl:col-span-2"
     >
       <CompactStatTile label={t.stats_now_due} value={stats.nowDue} tone="orange" />
       <CompactStatTile label={t.stats_new} value={stats.new} tone="blue" />
@@ -243,7 +243,7 @@ export function HomeStatsSection({
   // Quest haben eigene Modi bzw. sind bewusst nicht mehr hier (2026-07-19).
   if (layout === 'stack') {
     return (
-      <div className="grid w-full min-w-0 gap-2 pb-2 sm:gap-3" data-testid="dashboard-stack">
+      <div className="grid w-full min-w-0 gap-2 pb-2 sm:gap-3 2xl:grid-cols-2 2xl:items-start" data-testid="dashboard-stack">
         {statGrid}
         <HomeQuestsPanel t={t} profile={gamificationProfile} />
         <ReviewHeatmap />

@@ -9,6 +9,7 @@ const mockedDb = vi.hoisted(() => {
   }
 
   const activeSessions = {
+    toArray: vi.fn(async () => [...state.records.values()]),
     get: vi.fn(async (id: string) => state.records.get(id)),
     put: vi.fn(async (record: { id: string; payload: string; updatedAt: number }) => {
       state.records.set(record.id, record)
@@ -30,15 +31,18 @@ vi.mock('../../db', () => ({
 import {
   clearActiveSession,
   clearShuffleSession,
+  listReservedStudySessionCardIds,
   readActiveSession,
   readShuffleSession,
   writeActiveSession,
   writeShuffleSession,
 } from '../../db/queries'
+import { buildPersistedStudySession } from '../../services/studySessionPersistence'
 
 describe('session queries', () => {
   beforeEach(() => {
     mockedDb.state.records = new Map()
+    mockedDb.activeSessions.toArray.mockClear()
     mockedDb.activeSessions.get.mockClear()
     mockedDb.activeSessions.put.mockClear()
     mockedDb.activeSessions.delete.mockClear()
@@ -122,5 +126,31 @@ describe('session queries', () => {
       }),
     )
     expect(mockedDb.activeSessions.delete).toHaveBeenCalledWith('deck-1')
+  })
+
+  it('reserves cards only from actually running and valid sessions', async () => {
+    const now = Date.now()
+    const active = buildPersistedStudySession({
+      deckId: 'today-package:objective-1',
+      cardIds: ['due-1', 'due-2'],
+      cardLimit: 20,
+      sessionCount: 0,
+      isFlipped: false,
+      isDone: false,
+      lastRating: null,
+      lowRatingCounts: {},
+      relearnSuccessCounts: {},
+      forcedTomorrowCardIds: [],
+      againCounts: {},
+      startTime: now,
+      nowMs: now,
+    })
+    const done = { ...active, deckId: 'done-session', isDone: true }
+    const expired = { ...active, deckId: 'expired-session', expiresAt: now - 1 }
+    mockedDb.state.records.set(active.deckId, { id: active.deckId, payload: JSON.stringify(active), updatedAt: now })
+    mockedDb.state.records.set(done.deckId, { id: done.deckId, payload: JSON.stringify(done), updatedAt: now })
+    mockedDb.state.records.set(expired.deckId, { id: expired.deckId, payload: JSON.stringify(expired), updatedAt: now })
+
+    await expect(listReservedStudySessionCardIds(now)).resolves.toEqual(new Set(['due-1', 'due-2']))
   })
 })

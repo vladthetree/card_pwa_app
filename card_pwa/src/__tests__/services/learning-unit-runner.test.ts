@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Card } from '../../types'
 import { learningUnitsDb } from '../../db/learningUnitsDb'
 import {
@@ -20,6 +20,7 @@ const mocks = vi.hoisted(() => ({
   listCardIdsReviewedSince: vi.fn<(cardIds: readonly string[], sinceMs: number) => Promise<string[]>>(),
   clearActiveSession: vi.fn(async () => {}),
   listCardsByDeckIdsDirect: vi.fn<(deckIds: string[]) => Promise<Card[]>>(),
+  listReservedStudySessionCardIds: vi.fn(async (): Promise<Set<string>> => new Set()),
   listAnswerStats: vi.fn(async (): Promise<Array<{ scopeId: string; unresolvedErrorItemIds: string[] }>> => []),
 }))
 vi.mock('../../db/queries', () => ({
@@ -27,6 +28,7 @@ vi.mock('../../db/queries', () => ({
   listCardIdsReviewedSince: mocks.listCardIdsReviewedSince,
   clearActiveSession: mocks.clearActiveSession,
   listCardsByDeckIdsDirect: mocks.listCardsByDeckIdsDirect,
+  listReservedStudySessionCardIds: mocks.listReservedStudySessionCardIds,
 }))
 vi.mock('../../db/queries/answerStats', () => ({
   listAnswerStats: mocks.listAnswerStats,
@@ -59,14 +61,6 @@ const DEFINITION: LearningUnitDefinition = {
   definitionVersion: 'test',
 }
 
-const SETTINGS = {
-  packageCardLimit: 5,
-  nextDayStartsAt: 0,
-  learnAheadMinutes: 0,
-  recallCheckSize: 3,
-  algorithm: 'fsrs' as const,
-}
-
 function makeCard(id: string, front: string): Card {
   return {
     id,
@@ -96,11 +90,16 @@ beforeEach(async () => {
   )
   mocks.listCardIdsReviewedSince.mockResolvedValue([])
   mocks.listCardsByDeckIdsDirect.mockResolvedValue([])
+  mocks.listReservedStudySessionCardIds.mockResolvedValue(new Set())
   mocks.listAnswerStats.mockResolvedValue([])
 })
 
+afterEach(() => {
+  vi.useRealTimers()
+})
+
 async function startUnit() {
-  return startOrResumeCourseUnit({ profileId: PROFILE, definition: DEFINITION, settings: SETTINGS })
+  return startOrResumeCourseUnit({ profileId: PROFILE, definition: DEFINITION })
 }
 
 describe('startOrResumeCourseUnit', () => {
@@ -111,7 +110,8 @@ describe('startOrResumeCourseUnit', () => {
 
     const execution = launch.execution
     expect(execution.cardIds).toEqual([])
-    // normalizeRecallCheckSize klemmt auf mindestens 3
+    // Zielmenge ist IMMER alles auflösbare — hier sind nur 3 der Kandidaten-
+    // Karten mit gültiger M-ID-Front gemockt.
     expect(execution.recallQuestionIds.length).toBe(3)
     for (const questionId of execution.recallQuestionIds) {
       expect(CONTENT.recallQuestionIds).toContain(questionId)
@@ -144,6 +144,7 @@ describe('startOrResumeCourseUnit', () => {
       executionId: execution.executionId,
       questionIds: [...execution.recallQuestionIds],
       questionVersionById: { ...execution.recallQuestionVersions },
+      missedQuestionIds: [],
       correct: 3,
       total: 3,
     })
@@ -160,19 +161,28 @@ describe('startOrResumeCourseUnit', () => {
 })
 
 describe('reconcileCourseUnitProgress', () => {
-  it('schließt eine Unit nach dem ausführungsgebundenen Recall ohne versteckte Zusatzschritte ab', async () => {
+  it('schließt eine Unit erst ab, wenn JEDE Recall-Frage im Mastery-Modell bestanden ist — ein Fehler hält den Schritt offen, bis er an einem SPÄTEREN Tag getilgt wird', async () => {
+    // Nur Date fälschen: fake-indexeddb löst Transaktionen intern über echte
+    // Timer auf — mit vollständig gefakten Timern hängt jede DB-Operation.
+    vi.useFakeTimers({ toFake: ['Date'] })
+    const dayOneStart = new Date('2026-08-01T09:00:00Z').getTime()
+    vi.setSystemTime(dayOneStart)
+
     const { execution } = await startUnit()
+    const [q0, q1, q2] = execution.recallQuestionIds
 
     await reconcileCourseUnitProgress(PROFILE)
     expect((await getLearningUnitState(PROFILE, DEFINITION.unitId))?.activityStatus).toBe('inProgress')
 
+    // Ein Fehler unter drei Fragen: der Schritt bleibt offen, auch nach Confidence.
     await recordCourseRecallRun({
       profileId: PROFILE,
       videoIndex: VIDEO_INDEX,
       objectiveId: '1.1',
       executionId: execution.executionId,
-      questionIds: [...execution.recallQuestionIds],
+      questionIds: [q0, q1, q2],
       questionVersionById: { ...execution.recallQuestionVersions },
+      missedQuestionIds: [q0],
       correct: 2,
       total: 3,
     })
@@ -183,6 +193,38 @@ describe('reconcileCourseUnitProgress', () => {
       confidence: 'solid',
       now: Date.now(),
     })
+    const afterFirstRun = await reconcileCourseUnitProgress(PROFILE)
+    expect(afterFirstRun.completedUnitIds).toEqual([])
+    expect((await getLearningUnitState(PROFILE, DEFINITION.unitId))?.currentStep).not.toBe('done')
+
+    // Richtig am SELBEN Tag: reine Übung, tilgt den Fehler noch nicht (§ „kommende Tage“).
+    await recordCourseRecallRun({
+      profileId: PROFILE,
+      videoIndex: VIDEO_INDEX,
+      objectiveId: '1.1',
+      executionId: execution.executionId,
+      questionIds: [q0],
+      questionVersionById: { [q0]: execution.recallQuestionVersions[q0] },
+      missedQuestionIds: [],
+      correct: 1,
+      total: 1,
+    })
+    const sameDayReconcile = await reconcileCourseUnitProgress(PROFILE)
+    expect(sameDayReconcile.completedUnitIds).toEqual([])
+
+    // Richtig am FOLGETAG: tilgt den Fehler, alle drei Fragen liegen jetzt über 90 %.
+    vi.setSystemTime(dayOneStart + 26 * 60 * 60 * 1000)
+    await recordCourseRecallRun({
+      profileId: PROFILE,
+      videoIndex: VIDEO_INDEX,
+      objectiveId: '1.1',
+      executionId: execution.executionId,
+      questionIds: [q0],
+      questionVersionById: { [q0]: execution.recallQuestionVersions[q0] },
+      missedQuestionIds: [],
+      correct: 1,
+      total: 1,
+    })
     const { completedUnitIds } = await reconcileCourseUnitProgress(PROFILE)
     expect(completedUnitIds).toEqual([DEFINITION.unitId])
     const done = await getLearningUnitState(PROFILE, DEFINITION.unitId)
@@ -190,7 +232,7 @@ describe('reconcileCourseUnitProgress', () => {
     expect(await getActiveExecution(PROFILE, DEFINITION.unitId)).toBeUndefined()
   })
 
-  it('lässt freie Recall-Läufe (executionId null) den Schritt nicht erfüllen', async () => {
+  it('zählt auch freie Recall-Läufe (executionId null) zur Mastery — gemessen wird Wissen pro Video, nicht ein einzelner Lauf', async () => {
     const { execution } = await startUnit()
     await markVideoWatched({ profileId: PROFILE, videoIndex: VIDEO_INDEX, objectiveId: '1.1', method: 'ended', now: Date.now() })
     await recordCourseRecallRun({
@@ -200,13 +242,20 @@ describe('reconcileCourseUnitProgress', () => {
       executionId: null,
       questionIds: [...execution.recallQuestionIds],
       questionVersionById: { ...execution.recallQuestionVersions },
+      missedQuestionIds: [],
       correct: 3,
       total: 3,
     })
+    await setVideoConfidence({
+      profileId: PROFILE,
+      videoIndex: VIDEO_INDEX,
+      objectiveId: '1.1',
+      confidence: 'solid',
+      now: Date.now(),
+    })
     mocks.listCardIdsReviewedSince.mockResolvedValue([...execution.cardIds])
     const { completedUnitIds } = await reconcileCourseUnitProgress(PROFILE)
-    expect(completedUnitIds).toEqual([])
-    expect((await getLearningUnitState(PROFILE, DEFINITION.unitId))?.currentStep).toBe('recall')
+    expect(completedUnitIds).toEqual([DEFINITION.unitId])
   })
 
   it('schließt eine alte Pointer-Ausführung über die nach dem Check gesetzte Confidence ab', async () => {
@@ -263,6 +312,7 @@ describe('reconcileLegacyPointerCourseProgress', () => {
       executionId: null,
       questionIds: ['M1-001', 'M1-002', 'M1-003'],
       questionVersionById: { 'M1-001': 'v1', 'M1-002': 'v1', 'M1-003': 'v1' },
+      missedQuestionIds: [],
       correct: 3,
       total: 3,
     })
@@ -304,6 +354,13 @@ describe('startOrResumeReviewUnit / Review-Abschluss', () => {
     return startOrResumeReviewUnit({ profileId: PROFILE, definition: REVIEW_DEFINITION, settings: REVIEW_SETTINGS })
   }
 
+  async function startReadyReview() {
+    const result = await startReview()
+    expect(result.status).toBe('ready')
+    if (result.status !== 'ready') throw new Error(`Review konnte nicht gestartet werden: ${result.reason}`)
+    return result
+  }
+
   it('friert fällige Karten und ungelöste Fehler ein; neue Karten bleiben draußen', async () => {
     mocks.listCardsByDeckIdsDirect.mockResolvedValue([
       dueReviewCard('due-1'),
@@ -312,37 +369,47 @@ describe('startOrResumeReviewUnit / Review-Abschluss', () => {
     ])
     mocks.listAnswerStats.mockResolvedValue([{ scopeId: 'err-1', unresolvedErrorItemIds: ['err-1'] }])
 
-    const launch = await startReview()
-    expect(launch).not.toBeNull()
-    expect(launch!.execution.cardIds).toEqual(['due-1', 'err-1'])
-    expect(launch!.execution.reasonByCardId).toEqual({ 'due-1': 'due', 'err-1': 'unresolved-error' })
-    expect(launch!.state.currentStep).toBe('cards')
+    const launch = await startReadyReview()
+    expect(launch.execution.cardIds).toEqual(['due-1', 'err-1'])
+    expect(launch.execution.reasonByCardId).toEqual({ 'due-1': 'due', 'err-1': 'unresolved-error' })
+    expect(launch.state.currentStep).toBe('cards')
   })
 
-  it('liefert null, wenn weder Fälligkeit noch ungelöste Fehler vorliegen', async () => {
+  it('liefert einen eindeutigen Leergrund, wenn weder Fälligkeit noch ungelöste Fehler vorliegen', async () => {
     mocks.listCardsByDeckIdsDirect.mockResolvedValue([makeCard('new-1', 'Neue Karte')])
-    expect(await startReview()).toBeNull()
+    await expect(startReview()).resolves.toEqual({ status: 'unavailable', reason: 'no-eligible-cards' })
+    expect(await getLearningUnitState(PROFILE, REVIEW_DEFINITION.unitId)).toBeUndefined()
+  })
+
+  it('unterscheidet fällige, aber von einer laufenden Study-Session reservierte Karten', async () => {
+    mocks.listCardsByDeckIdsDirect.mockResolvedValue([dueReviewCard('due-1')])
+    mocks.listReservedStudySessionCardIds.mockResolvedValue(new Set(['due-1']))
+
+    await expect(startReview()).resolves.toEqual({
+      status: 'unavailable',
+      reason: 'reserved-by-active-session',
+    })
     expect(await getLearningUnitState(PROFILE, REVIEW_DEFINITION.unitId)).toBeUndefined()
   })
 
   it('setzt die aktive Ausführung fort; Abschluss protokolliert den Versuch am Lerntag', async () => {
     mocks.listCardsByDeckIdsDirect.mockResolvedValue([dueReviewCard('due-1'), dueReviewCard('due-2')])
-    const first = await startReview()
-    const second = await startReview()
-    expect(second!.execution.executionId).toBe(first!.execution.executionId)
+    const first = await startReadyReview()
+    const second = await startReadyReview()
+    expect(second.execution.executionId).toBe(first.execution.executionId)
 
-    mocks.listCardIdsReviewedSince.mockResolvedValue([...first!.execution.cardIds])
+    mocks.listCardIdsReviewedSince.mockResolvedValue([...first.execution.cardIds])
     const { completedUnitIds } = await reconcileCourseUnitProgress(PROFILE, { localLearningDay: '2026-07-18' })
     expect(completedUnitIds).toContain(REVIEW_DEFINITION.unitId)
     expect((await getLearningUnitState(PROFILE, REVIEW_DEFINITION.unitId))?.activityStatus).toBe('completed')
     expect(await countReviewUnitAttemptsForDay(PROFILE, '2026-07-18')).toBe(1)
     expect(await countReviewUnitAttemptsForDay(PROFILE, '2026-07-19')).toBe(0)
-    expect(mocks.clearActiveSession).toHaveBeenCalledWith(`unit-exec:${first!.execution.executionId}`)
+    expect(mocks.clearActiveSession).toHaveBeenCalledWith(`unit-exec:${first.execution.executionId}`)
   })
 
   it('expliziter Abbruch: abandoned zählt nicht zur Tageskappe, Neustart friert frisch ein', async () => {
     mocks.listCardsByDeckIdsDirect.mockResolvedValue([dueReviewCard('due-1')])
-    const launch = await startReview()
+    const launch = await startReadyReview()
     const aborted = await abortReviewUnit({
       profileId: PROFILE,
       unitId: REVIEW_DEFINITION.unitId,
@@ -352,23 +419,23 @@ describe('startOrResumeReviewUnit / Review-Abschluss', () => {
     expect((await getLearningUnitState(PROFILE, REVIEW_DEFINITION.unitId))?.activityStatus).toBe('notStarted')
     // Abgebrochene Versuche zählen nicht als Abschluss (§11 Tageskappe).
     expect(await countReviewUnitAttemptsForDay(PROFILE, '2026-07-19')).toBe(0)
-    expect(mocks.clearActiveSession).toHaveBeenCalledWith(`unit-exec:${launch!.execution.executionId}`)
+    expect(mocks.clearActiveSession).toHaveBeenCalledWith(`unit-exec:${launch.execution.executionId}`)
     // Ausführung bleibt Audit-Historie; ein Neustart erzeugt eine frische Auswahl.
-    expect(await learningUnitsDb.unitExecutions.get(launch!.execution.executionId)).toBeDefined()
-    const restart = await startReview()
-    expect(restart!.execution.executionId).not.toBe(launch!.execution.executionId)
+    expect(await learningUnitsDb.unitExecutions.get(launch.execution.executionId)).toBeDefined()
+    const restart = await startReadyReview()
+    expect(restart.execution.executionId).not.toBe(launch.execution.executionId)
   })
 
   it('unvollständig bewertete Wiederholungen bleiben inProgress und reserviert', async () => {
     mocks.listCardsByDeckIdsDirect.mockResolvedValue([dueReviewCard('due-1'), dueReviewCard('due-2')])
-    const launch = await startReview()
+    const launch = await startReadyReview()
     mocks.listCardIdsReviewedSince.mockResolvedValue(['due-1'])
     const { completedUnitIds } = await reconcileCourseUnitProgress(PROFILE, { localLearningDay: '2026-07-18' })
     expect(completedUnitIds).toEqual([])
     expect((await getLearningUnitState(PROFILE, REVIEW_DEFINITION.unitId))?.activityStatus).toBe('inProgress')
-    const resumed = await startReview()
-    expect(resumed!.execution.executionId).toBe(launch!.execution.executionId)
-    expect(resumed!.remainingCardIds).toEqual(['due-2'])
+    const resumed = await startReadyReview()
+    expect(resumed.execution.executionId).toBe(launch.execution.executionId)
+    expect(resumed.remainingCardIds).toEqual(['due-2'])
   })
 })
 

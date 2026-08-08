@@ -25,6 +25,18 @@ card-sync-server/.env.sync-server
 card-sync-server/*_audit_report.jsonl
 card-sync-server/non_origin_default_schema_gap_report.jsonl
 
+# ─── Projektlokale Daten und Caches ────────────────────────
+/node_modules/
+/youtube-playlists/
+/downloads/
+/messner_lernkarten.backup_*/
+
+# ─── Pi-hole / Unbound Laufzeitdaten ──────────────────────
+/pihole/runtime/
+/pihole/backups/
+/pihole/.env
+/pihole/.admin-password
+
 # ─── Allgemein ────────────────────────────────────────────
 Design_System/
 .DS_Store

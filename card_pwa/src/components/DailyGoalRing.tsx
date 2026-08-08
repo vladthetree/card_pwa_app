@@ -17,27 +17,22 @@ export default function DailyGoalRing({ size = 44, strokeWidth = 4, showLabel = 
   const { reviewedToday } = useStreak()
   const goal = settings.dailyGoal
 
-  const { pct, ringColor, labelColor, reached } = useMemo(() => {
+  const { pct, ringColor, reached } = useMemo(() => {
     const safeGoal = goal > 0 ? goal : 0
     const raw = safeGoal > 0 ? reviewedToday / safeGoal : 0
     const clamped = Math.max(0, Math.min(1, raw))
     const done = safeGoal > 0 && reviewedToday >= safeGoal
+    // Fortschritt signalisiert allein der Ring; die Ziffer bleibt in
+    // Theme-Ink, damit sie auf hellen wie dunklen Flächen lesbar ist.
     let ring = 'var(--brand-primary)'
-    let label = 'text-white/75'
     if (done) {
-      ring = '#10b981'
-      label = 'text-emerald-300'
+      ring = '#059669'
     } else if (clamped >= 0.66) {
-      ring = '#34d399'
-      label = 'text-emerald-200'
+      ring = '#10b981'
     } else if (clamped >= 0.33) {
-      ring = '#fbbf24'
-      label = 'text-amber-200'
-    } else {
-      ring = 'var(--brand-primary)'
-      label = 'text-white/75'
+      ring = '#f59e0b'
     }
-    return { pct: clamped, ringColor: ring, labelColor: label, reached: done }
+    return { pct: clamped, ringColor: ring, reached: done }
   }, [reviewedToday, goal])
 
   if (goal <= 0) return null
@@ -70,7 +65,8 @@ export default function DailyGoalRing({ size = 44, strokeWidth = 4, showLabel = 
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(255,255,255,0.08)"
+          stroke="var(--ds-border)"
+          strokeOpacity={0.15}
           strokeWidth={strokeWidth}
         />
         <circle
@@ -91,7 +87,7 @@ export default function DailyGoalRing({ size = 44, strokeWidth = 4, showLabel = 
           y="50%"
           textAnchor="middle"
           dominantBaseline="central"
-          className={`font-mono font-bold tabular-nums ${labelColor}`}
+          className="font-mono font-bold tabular-nums text-ds-fg"
           fontSize={size * 0.32}
           fill="currentColor"
         >
@@ -100,8 +96,8 @@ export default function DailyGoalRing({ size = 44, strokeWidth = 4, showLabel = 
       </svg>
       {showLabel && (
         <div className="flex flex-col leading-tight">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-white/55">{t.daily_goal_label}</span>
-          <span className={`text-xs font-bold tabular-nums ${labelColor}`}>{progressText}</span>
+          <span className="text-[10px] font-mono uppercase tracking-wider text-ds-muted">{t.daily_goal_label}</span>
+          <span className="text-xs font-bold tabular-nums text-ds-fg">{progressText}</span>
         </div>
       )}
     </div>

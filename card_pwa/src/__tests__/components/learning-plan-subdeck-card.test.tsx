@@ -118,11 +118,34 @@ describe('LearningPlanAcronymReferences', () => {
       language: 'de',
       cards: [card],
       onStudy: () => undefined,
+      defaultOpen: true,
     }))
 
     expect(html).toContain('data-card-id="1779724748974"')
     expect(html).toContain('Acronym-Bonus (ABCD + PBQ)')
     expect(html).toContain('Fortschritt bleibt an der echten Card-ID')
     expect(html).toContain('Bewertet')
+  })
+
+  it('startet eingeklappt und zeigt nur Titel mit Anzahl (Referenzmaterial dominiert den Lernpfad nicht)', () => {
+    const card: LearningPlanAcronymCardMapping = {
+      cardId: '1779724748974',
+      label: 'Detection & Response',
+      objectiveIds: ['4.4'],
+      rationale: 'Mehrfachbezug',
+      installed: true,
+      reviewed: true,
+      physicalDeckId: 'sy0-701-acronyms-bonus',
+    }
+    const html = renderToStaticMarkup(createElement(LearningPlanAcronymReferences, {
+      language: 'de',
+      cards: [card],
+      onStudy: () => undefined,
+    }))
+
+    expect(html).toContain('Acronym-Karten')
+    expect(html).toContain('(1)')
+    expect(html).toContain('aria-expanded="false"')
+    expect(html).not.toContain('data-card-id="1779724748974"')
   })
 })

@@ -59,6 +59,7 @@ export {
   writeActiveSession,
   clearActiveSession,
   getResumableStudySession,
+  listReservedStudySessionCardIds,
   type ResumableStudySession,
   readShuffleSession,
   writeShuffleSession,

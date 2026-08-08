@@ -14,7 +14,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 const DEFAULT_MEDIA_DIR =
-  '/home/_vb/youtube-playlists/CompTIA SY0-701 Security+ Training Course [PLG49S3nxzAnl4QDVqK-hOnoqcSKEIDDuv]'
+  '/home/_vb/card_pwa_app/youtube-playlists/CompTIA SY0-701 Security+ Training Course [PLG49S3nxzAnl4QDVqK-hOnoqcSKEIDDuv]'
 
 export const MEDIA_ROUTE_PREFIX = '/media/messer/'
 

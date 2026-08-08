@@ -1,6 +1,14 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  // Theme-Scope-Klassen entstehen zur Laufzeit aus themeScopeClass()
+  // (`${base}-${themeKey}`) und stehen nirgends wörtlich im Content —
+  // ohne Safelist purgt Tailwind ihre @layer-components-Blöcke aus index.css.
+  safelist: [
+    'learning-units-neo', 'learning-units-newsprint',
+    'learning-plan-neo', 'learning-plan-newsprint',
+    'learning-units-toolbar-neo', 'learning-units-toolbar-newsprint',
+  ],
   theme: {
     extend: {
       colors: {

@@ -49,15 +49,15 @@ const THEME_OPTIONS: ThemeOption[] = [
     ],
   },
   {
-    key: 'dopamine',
-    nameKey: 'theme_dopamine_name',
-    helpKey: 'theme_dopamine_help',
-    cardBg: 'bg-[#E5D9FF]',
+    key: 'newsprintDark',
+    nameKey: 'theme_newsprint_dark_name',
+    helpKey: 'theme_newsprint_dark_help',
+    cardBg: 'bg-[#C9C9C2]',
     swatches: [
-      { color: '#0D0D1A', label: 'Canvas' },
-      { color: '#FF3AF2', label: 'Magenta' },
-      { color: '#00F5D4', label: 'Cyan' },
-      { color: '#FFE600', label: 'Yellow' },
+      { color: '#141413', label: 'Dark Paper' },
+      { color: '#E8E8E3', label: 'Light Ink' },
+      { color: '#FF6166', label: 'Editorial Red' },
+      { color: '#2C2C29', label: 'Divider Dark' },
     ],
   },
 ]
@@ -176,7 +176,7 @@ export function SettingsAppearanceSection({ isOpen, onToggle }: Props) {
                   type="button"
                   onClick={() => setTheme(option.key)}
                   aria-pressed={selected}
-                  data-testid={`theme-option-${option.key === 'default' ? 'neo' : 'newsprint'}`}
+                  data-testid={`theme-option-${option.key === 'default' ? 'neo' : option.key}`}
                   className={`w-full border-4 border-black ${option.cardBg} p-4 text-left shadow-[7px_7px_0_0_#000] transition-all duration-100 active:translate-x-[7px] active:translate-y-[7px] active:shadow-none`}
                 >
                   <div className="flex items-start justify-between gap-4">

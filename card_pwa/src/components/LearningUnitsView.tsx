@@ -22,7 +22,7 @@ import {
 } from '../utils/learningPlanMapping'
 import type { LearningUnitDefinition } from '../utils/learningUnits'
 import type { RankedLearningUnit } from '../utils/learningUnitRanking'
-import { abortReviewUnit, startOrResumeCourseUnit, startOrResumeReviewUnit } from '../services/learningUnitRunner'
+import { startOrResumeCourseUnit, startOrResumeReviewUnit } from '../services/learningUnitRunner'
 import { toast } from '../hooks/useToast'
 import type { Deck } from '../types'
 import {
@@ -43,6 +43,8 @@ const VIEW_COPY = {
     loading: 'Lade Lerneinheiten …',
     unavailable: 'Kurskatalog nicht verfügbar (offline ohne Daten?).',
     allUnits: 'Alle Einheiten',
+    pathSection: 'Lernpfad',
+    materialSection: 'Material & Üben',
     pathHint: 'Video + Abruf-Check + Lernstatus = abgeschlossen',
     domainNav: 'Prüfungsdomain auswählen',
     domain: (id: string) => `Domain ${id}`,
@@ -69,8 +71,8 @@ const VIEW_COPY = {
         total > 0 ? `Alle ausgewählten Karten bewerten (${reviewed}/${total})` : 'Alle ausgewählten Karten bewerten',
       lab: 'Lab vollständig lösen und Ergebnis prüfen',
     },
-    abortReview: 'Wiederholung abbrechen',
     reviewEmpty: 'Nichts zu wiederholen — in diesem Objective sind keine Karten fällig und keine Fehler ungelöst.',
+    reviewReserved: 'Die fälligen Karten gehören bereits zu einer laufenden Lernsitzung. Setze diese zuerst fort oder beende sie.',
     reviewStartFailed: 'Wiederholung konnte nicht gestartet werden.',
     mappedCardsMissing: 'Die gemappten Karten sind auf diesem Gerät nicht verfügbar.',
   },
@@ -81,6 +83,8 @@ const VIEW_COPY = {
     loading: 'Loading learning units …',
     unavailable: 'Course catalog unavailable (offline without data?).',
     allUnits: 'All units',
+    pathSection: 'Learning path',
+    materialSection: 'Material & practice',
     pathHint: 'Video + recall check + learning status = completed',
     domainNav: 'Choose exam domain',
     domain: (id: string) => `Domain ${id}`,
@@ -107,8 +111,8 @@ const VIEW_COPY = {
         total > 0 ? `Rate every selected card (${reviewed}/${total})` : 'Rate every selected card',
       lab: 'Solve the lab completely and check the result',
     },
-    abortReview: 'Abort review',
     reviewEmpty: 'Nothing to review — no cards due and no unresolved errors in this objective.',
+    reviewReserved: 'The due cards already belong to an active study session. Resume or finish that session first.',
     reviewStartFailed: 'Could not start the review.',
     mappedCardsMissing: 'The mapped cards are not available on this device.',
   },
@@ -219,7 +223,14 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
           },
         })
         learningUnits.reload()
-        if (!launch || launch.remainingCardIds.length === 0) {
+        if (launch.status === 'unavailable') {
+          toast.show(
+            launch.reason === 'reserved-by-active-session' ? copy.reviewReserved : copy.reviewEmpty,
+            'info',
+          )
+          return
+        }
+        if (launch.remainingCardIds.length === 0) {
           // Ohne Feedback wirkte der Tap „tot" — ehrlich sagen, dass die
           // eingefrorene Auswahl leer wäre (nichts fällig, keine Fehler offen).
           toast.show(copy.reviewEmpty, 'info')
@@ -254,9 +265,6 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
       const launch = await startOrResumeCourseUnit({
         profileId,
         definition,
-        settings: {
-          recallCheckSize: settings.recallCheckSize,
-        },
       })
       learningUnits.reload()
       onOpenVideoAtIndex(videoIndex, launch.step === 'recall')
@@ -265,16 +273,6 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
       console.error('[LearningUnitsView] Lerneinheit-Start fehlgeschlagen', error)
       onOpenVideoAtIndex(videoIndex, false)
     }
-  }
-
-  const handleAbortReviewUnit = async (definition: LearningUnitDefinition) => {
-    if (profileId === null) return
-    try {
-      await abortReviewUnit({ profileId, unitId: definition.unitId })
-    } catch (error) {
-      console.error('[LearningUnitsView] Review-Abbruch fehlgeschlagen', error)
-    }
-    learningUnits.reload()
   }
 
   const unitsByObjective = new Map<string, RankedLearningUnit[]>()
@@ -369,8 +367,13 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
         </div>
       )}
 
-      <div className={`min-h-0 flex-1 overflow-y-auto ${embedded ? 'px-0 py-1' : 'px-4 py-3'}`} data-study-scroll="allow">
-        <div className="mx-auto flex w-full max-w-2xl flex-col gap-3 pb-safe-2 lg:max-w-5xl xl:max-w-6xl">
+      <div className={`learning-units-scroll min-h-0 flex-1 overflow-y-auto ${embedded ? 'px-0 py-1' : 'px-4 py-3'}`} data-study-scroll="allow">
+        {/* Embedded erbt die Breite vom Home-Container (homeMaxWidth) — eine
+            eigene max-w-Kette würde die Karte schmaler als die Toolbar machen
+            und die linken Kanten verspringen lassen. */}
+        <div className={`flex w-full flex-col gap-3 pb-safe-2 ${
+          embedded ? '' : 'mx-auto max-w-2xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-[1600px]'
+        }`}>
           {embedded && (
             <div className="px-0.5" data-testid="learning-units-embedded-subtitle">
               <h2 className="font-sans text-[26px] font-black uppercase leading-none tracking-tight text-black sm:hidden">
@@ -392,12 +395,12 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
           {learningUnits.available && (
             <section data-testid="learning-units-full-list" className="neo-learning-card p-4 sm:p-5">
               <div className="flex items-center gap-2">
-                <span className="flex h-11 w-11 shrink-0 -rotate-2 items-center justify-center border-[3px] border-black bg-[#FF6B6B] text-black shadow-[3px_3px_0_0_#000]">
+                <span className="flex h-11 w-11 shrink-0 -rotate-2 items-center justify-center border-[3px] border-black bg-[#FF6B6B] text-black shadow-[3px_3px_0_0_var(--neo-ink)]">
                   <Route size={20} strokeWidth={3} />
                 </span>
                 <div className="min-w-0">
-                  <h3 className="font-sans text-[20px] font-black uppercase text-black">{copy.allUnits}</h3>
-                  <p className="mt-0.5 font-sans text-[11px] font-bold uppercase tracking-[0.12em] text-black">{copy.pathHint}</p>
+                  <h3 className="font-sans text-[20px] font-black uppercase text-black 2xl:text-[22px]">{copy.allUnits}</h3>
+                  <p className="mt-0.5 font-sans text-[11px] font-bold uppercase tracking-[0.12em] text-black 2xl:text-xs">{copy.pathHint}</p>
                 </div>
               </div>
 
@@ -412,14 +415,14 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
                       aria-selected={active}
                       aria-controls={`learning-domain-${summary.domainId}`}
                       onClick={() => selectDomain(summary.domainId)}
-                      className={`neo-learning-press flex min-h-14 min-w-[74px] flex-1 flex-col items-center justify-center px-2 font-sans focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 sm:min-w-0 ${
+                      className={`neo-learning-press flex min-h-14 min-w-[74px] flex-1 flex-col items-center justify-center px-2 font-sans focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 sm:min-w-0 2xl:min-h-12 2xl:flex-row 2xl:gap-2 ${
                         active
                           ? 'bg-[#FFD93D] text-black'
                           : 'neo-learning-hover-violet bg-white text-black'
                       }`}
                     >
-                      <span className="text-[13px] font-black">{copy.domainShort(summary.domainId)}</span>
-                      <span className="mt-0.5 text-[10px] font-bold tabular-nums">{summary.done}/{summary.total}</span>
+                      <span className="text-[13px] font-black 2xl:text-[15px]">{copy.domainShort(summary.domainId)}</span>
+                      <span className="mt-0.5 text-[10px] font-bold tabular-nums 2xl:mt-0 2xl:text-xs">{summary.done}/{summary.total}</span>
                     </button>
                   )
                 })}
@@ -431,15 +434,15 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
                 className="mt-3"
               >
                 <div className="mb-2 px-0.5">
-                  <div className="font-sans text-[11px] font-black uppercase tracking-[0.12em] text-black">
+                  <div className="font-sans text-[11px] font-black uppercase tracking-[0.12em] text-black 2xl:text-[13px]">
                     {copy.domain(selectedDomainId)}
                   </div>
-                  <div className="mt-0.5 font-sans text-[18px] font-black leading-tight text-black">
+                  <div className="mt-0.5 font-sans text-[18px] font-black leading-tight text-black 2xl:text-[20px]">
                     {SY0_701_ROOT_DECKS[selectedDomainId].domain}
                   </div>
                 </div>
 
-                <div className="grid gap-2 lg:grid-cols-2 lg:items-start lg:gap-3">
+                <div className="grid gap-2 lg:grid-cols-2 lg:gap-3 2xl:grid-cols-3">
                   {SY0_701_OBJECTIVES
                     .filter(objective => objective.code.startsWith(`${selectedDomainId}.`))
                     .map(objective => {
@@ -453,13 +456,15 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
                       ).length
                       const contentId = `learning-objective-${objective.code.replace('.', '-')}`
                       return (
-                        <section key={objective.code} className={`overflow-hidden border-2 border-black transition ${
-                          expanded ? 'bg-[#C4B5FD]' : 'bg-white'
+                        <section key={objective.code} className={`neo-learning-tile flex flex-col overflow-hidden transition ${
+                          expanded ? 'bg-[#C4B5FD] lg:col-span-2 2xl:col-span-3' : 'bg-white'
                         }`}>
                           <button
                             type="button"
                             onClick={() => setExpandedObjectiveId(expanded ? null : objective.code)}
-                            className="neo-learning-hover-yellow flex min-h-16 w-full items-start gap-3 px-3 py-3 text-left transition duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-black"
+                            className={`neo-learning-hover-yellow flex min-h-16 w-full items-start gap-3 px-3 py-3 text-left transition duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-black ${
+                              expanded ? '' : 'flex-1'
+                            }`}
                             aria-expanded={expanded}
                             aria-controls={contentId}
                             aria-label={expanded ? copy.collapseObjective(objective.code) : copy.expandObjective(objective.code)}
@@ -472,10 +477,10 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
                               {objective.code}
                             </span>
                             <span className="min-w-0 flex-1">
-                              <span className="block font-sans text-[15px] font-black leading-snug text-black">
+                              <span className="block font-sans text-[15px] font-black leading-snug text-black 2xl:text-[17px]">
                                 {objective.title}
                               </span>
-                              <span className="mt-1 flex flex-wrap gap-x-2 gap-y-1 font-sans text-[11px] font-bold leading-relaxed text-black">
+                              <span className="mt-1 flex flex-wrap gap-x-2 gap-y-1 font-sans text-[11px] font-bold leading-relaxed text-black 2xl:text-xs">
                                 <span className="tabular-nums">{copy.unitCount(done, units.length)}</span>
                               </span>
                             </span>
@@ -488,32 +493,19 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
 
                           {expanded && (
                             <div id={contentId} className="border-t-2 border-black bg-[#FFFDF5] px-3 pb-3 pt-3">
-                              {acronymCards.length > 0 && (
-                                <div className="mb-3">
-                                  <LearningPlanAcronymReferences
-                                    language={settings.language}
-                                    cards={acronymCards}
-                                    onStudy={card => handleStudyAcronym(objective.code, card)}
-                                  />
+                              {/* Ordnung im Objective: erst der nummerierte Lernpfad
+                                  (offizielle Kursreihenfolge), darunter ein eigener
+                                  Material-Block (Sub-Deck + Acronym-Referenzen). */}
+                              {units.length > 0 && (
+                                <div className="mb-2 px-0.5 font-sans text-[10px] font-black uppercase tracking-[0.14em] text-black 2xl:text-xs">
+                                  {copy.pathSection}
                                 </div>
                               )}
-
-                              <ul className="ml-2 grid min-w-0 gap-3 border-l-2 border-black pl-3">
-                                {subDeck && (
-                                  <li className="relative flex min-w-0 items-stretch gap-2 before:absolute before:-left-[18px] before:top-5 before:h-2.5 before:w-2.5 before:rounded-full before:border-2 before:border-black before:bg-[#FFD93D]">
-                                    <LearningPlanSubDeckCard
-                                      language={settings.language}
-                                      deck={subDeck}
-                                      onStudy={handleStudySubDeck}
-                                      onOpenInfo={setSubDeckInfo}
-                                    />
-                                  </li>
-                                )}
-                                {units.map(unit => {
+                              <ul className="ml-2 grid min-w-0 gap-3 border-l-2 border-black pl-3 lg:ml-0 lg:grid-cols-2 lg:items-stretch lg:border-l-0 lg:pl-0 2xl:grid-cols-3 min-[1800px]:grid-cols-4">
+                                {units.map((unit, unitIndex) => {
                                   const state = learningUnits.stateByUnitId.get(unit.definition.unitId)
                                   const activity = state?.activityStatus ?? 'notStarted'
                                   const activeCardProgress = learningUnits.activeCardProgressByUnitId.get(unit.definition.unitId)
-                                  const abortable = unit.definition.type === 'review' && activity === 'inProgress'
                                   const unitTone = activity === 'completed'
                                     ? 'bg-[#86EFAC]'
                                     : activity === 'inProgress'
@@ -522,33 +514,35 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
                                         ? 'bg-[#FF6B6B]'
                                         : 'neo-learning-hover-yellow bg-white'
                                   return (
-                                    <li key={unit.definition.unitId} className="relative flex min-w-0 items-stretch gap-2 before:absolute before:-left-[18px] before:top-5 before:h-2.5 before:w-2.5 before:rounded-full before:border-2 before:border-black before:bg-[#FFD93D]">
+                                    <li key={unit.definition.unitId} className="relative flex min-w-0 items-stretch gap-2 before:absolute before:-left-[18px] before:top-5 before:h-2.5 before:w-2.5 before:rounded-full before:border-2 before:border-black before:bg-[#FFD93D] lg:before:hidden">
                                       <div className={`neo-learning-press relative min-w-0 flex-1 ${unitTone}`}>
                                         <button
                                           type="button"
                                           onClick={() => void handleOpenUnit(unit.definition)}
                                           className="grid min-h-14 w-full min-w-0 grid-cols-[auto,minmax(0,1fr)] items-start gap-2.5 px-3 py-3 pr-14 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-black"
                                         >
-                                          <span className={`border-2 border-black px-1.5 py-1 font-sans text-[10px] font-black uppercase tracking-[0.06em] ${
+                                          <span className={`border-2 border-black px-1.5 py-1 font-sans text-[10px] font-black uppercase tracking-[0.06em] 2xl:text-xs ${
                                             unit.recommended
                                               ? 'bg-[#FFD93D] text-black'
                                               : unit.definition.type === 'lab'
                                                 ? 'bg-[#C4B5FD] text-black'
                                                 : 'bg-white text-black'
                                           }`}>
+                                            <span className="tabular-nums">{String(unitIndex + 1).padStart(2, '0')}</span>
+                                            {' · '}
                                             {copy.unitType[unit.definition.type]}
                                           </span>
                                           <span className="min-w-0">
-                                            <span className="block break-words font-sans text-[14px] font-black leading-snug text-black">
+                                            <span className="block break-words font-sans text-[14px] font-black leading-snug text-black 2xl:text-base">
                                               {unit.definition.title}
                                             </span>
                                             <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
                                               {unit.definition.estimatedMinutes !== undefined && (
-                                                <span className="font-sans text-[10px] font-bold text-black">
+                                                <span className="font-sans text-[10px] font-bold text-black 2xl:text-xs">
                                                   {copy.duration(unit.definition.estimatedMinutes)}
                                                 </span>
                                               )}
-                                              <span className={`rounded-full border-2 border-black px-2 py-0.5 font-sans text-[10px] font-bold leading-4 text-black ${
+                                              <span className={`rounded-full border-2 border-black px-2 py-0.5 font-sans text-[10px] font-bold leading-4 text-black 2xl:text-xs ${
                                                 activity === 'completed'
                                                   ? 'bg-[#86EFAC]'
                                                   : activity === 'inProgress'
@@ -558,19 +552,19 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
                                                 {listCopy.activity[activity]}
                                               </span>
                                               {state && activity !== 'notStarted' && (
-                                                <span className="basis-full font-sans text-[10px] font-bold leading-relaxed text-black">
+                                                <span className="basis-full font-sans text-[10px] font-bold leading-relaxed text-black 2xl:text-xs">
                                                   {activity === 'completed'
                                                     ? listCopy.completedDetail[unit.definition.type]
                                                     : listCopy.currentStep[state.currentStep]}
                                                 </span>
                                               )}
                                               {activity === 'inProgress' && activeCardProgress && (
-                                                <span className="basis-full font-sans text-[10px] font-bold leading-relaxed text-black">
+                                                <span className="basis-full font-sans text-[10px] font-bold leading-relaxed text-black 2xl:text-xs">
                                                   {listCopy.activeCardProgress(activeCardProgress.reviewed, activeCardProgress.total)}
                                                 </span>
                                               )}
                                               {unit.recommended && (
-                                                <span className="font-sans text-[10px] font-black text-black">
+                                                <span className="font-sans text-[10px] font-black text-black 2xl:text-xs">
                                                   {listCopy.reason[unit.reason]}
                                                 </span>
                                               )}
@@ -588,22 +582,39 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
                                           <Info size={16} strokeWidth={2.5} />
                                         </button>
                                       </div>
-                                      {abortable && (
-                                        <button
-                                          type="button"
-                                          aria-label={copy.abortReview}
-                                          title={copy.abortReview}
-                                          data-testid={`learning-unit-abort-${unit.definition.unitId}`}
-                                          onClick={() => void handleAbortReviewUnit(unit.definition)}
-                                          className="neo-learning-press flex h-11 w-11 shrink-0 items-center justify-center bg-[#FF6B6B] text-black"
-                                        >
-                                          <X size={16} strokeWidth={3} />
-                                        </button>
-                                      )}
                                     </li>
                                   )
                                 })}
                               </ul>
+
+                              {(subDeck || acronymCards.length > 0) && (
+                                <div className="mt-3 border-t-2 border-dashed border-black pt-3">
+                                  <div className="mb-2 px-0.5 font-sans text-[10px] font-black uppercase tracking-[0.14em] text-black 2xl:text-xs">
+                                    {copy.materialSection}
+                                  </div>
+                                  {subDeck && (
+                                    <ul className="grid min-w-0 gap-3 lg:grid-cols-2 lg:items-stretch 2xl:grid-cols-3 min-[1800px]:grid-cols-4">
+                                      <li className="flex min-w-0 items-stretch">
+                                        <LearningPlanSubDeckCard
+                                          language={settings.language}
+                                          deck={subDeck}
+                                          onStudy={handleStudySubDeck}
+                                          onOpenInfo={setSubDeckInfo}
+                                        />
+                                      </li>
+                                    </ul>
+                                  )}
+                                  {acronymCards.length > 0 && (
+                                    <div className={subDeck ? 'mt-3' : ''}>
+                                      <LearningPlanAcronymReferences
+                                        language={settings.language}
+                                        cards={acronymCards}
+                                        onStudy={card => handleStudyAcronym(objective.code, card)}
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           )}
                         </section>
@@ -625,7 +636,7 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
           onClick={() => setCriteriaUnitId(null)}
         >
           <section
-            className="w-full max-w-md border-[3px] border-black bg-[#FFFDF5] p-4 text-black shadow-[6px_6px_0_0_#000]"
+            className="neo-learning-modal w-full max-w-md bg-[#FFFDF5] p-4 text-black"
             onClick={event => event.stopPropagation()}
           >
             <div className="flex items-start gap-3">

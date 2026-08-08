@@ -15,7 +15,10 @@ export const UI_TOKENS = {
   zIndex: Z_INDEX,
 
   layout: {
-    homeMaxWidth: 'max-w-7xl',
+    // 7xl bleibt bis 2xl der Rahmen (Tablet/kleine Desktops); ab 1536px+
+    // (z. B. 1920x1080) nutzt die Home-Spalte mehr Breite statt an den
+    // Rändern leerzulaufen (Nutzerwunsch 2026-08-06, Desktop-Optimierung).
+    homeMaxWidth: 'max-w-7xl 2xl:max-w-[1680px]',
     contentPadding: 'px-4 py-10',
   },
 

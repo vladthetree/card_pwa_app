@@ -206,6 +206,7 @@ export default function ReviewHeatmap({ year }: Props) {
           gap: GAP,
           width: '100%',
           maxWidth: `${16 + GAP + columnCount * (CELL_MAX + GAP)}px`,
+          margin: '0 auto',
         }}
       >
         {/* Month marks above the strip */}
@@ -216,7 +217,7 @@ export default function ReviewHeatmap({ year }: Props) {
               gridRow: 1,
               gridColumn: mark.weekIndex + 2,
               fontFamily: 'monospace',
-              fontSize: '0.44rem',
+              fontSize: 'clamp(0.55rem, 0.52rem + 0.08vw, 0.625rem)',
               letterSpacing: '0.08em',
               textTransform: 'uppercase',
               color: `rgba(${pr},${pg},${pb},0.55)`,
@@ -240,7 +241,7 @@ export default function ReviewHeatmap({ year }: Props) {
               alignItems: 'center',
               justifyContent: 'flex-end',
               fontFamily: 'monospace',
-              fontSize: '0.40rem',
+              fontSize: 'clamp(0.5rem, 0.48rem + 0.08vw, 0.625rem)',
               letterSpacing: '0.04em',
               color: i >= 5 ? `rgba(${sr},${sg},${sb},0.5)` : `rgba(${pr},${pg},${pb},0.35)`,
               lineHeight: 1,
@@ -292,7 +293,7 @@ export default function ReviewHeatmap({ year }: Props) {
       <div
         style={{
           fontFamily: 'monospace',
-          fontSize: '0.46rem',
+          fontSize: 'clamp(0.55rem, 0.52rem + 0.08vw, 0.625rem)',
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
           marginBottom: '5px',
@@ -374,7 +375,7 @@ export default function ReviewHeatmap({ year }: Props) {
           <span
             style={{
               fontFamily: 'monospace',
-              fontSize: '0.70rem',
+              fontSize: 'clamp(0.75rem, 0.72rem + 0.08vw, 0.8125rem)',
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
               whiteSpace: 'nowrap',
@@ -387,7 +388,7 @@ export default function ReviewHeatmap({ year }: Props) {
           <span
             style={{
               fontFamily: 'monospace',
-              fontSize: '0.50rem',
+              fontSize: 'clamp(0.625rem, 0.6rem + 0.05vw, 0.6875rem)',
               letterSpacing: '0.06em',
               color: theme.textMuted ?? 'var(--theme-text-muted)',
               textTransform: 'uppercase',
@@ -410,7 +411,7 @@ export default function ReviewHeatmap({ year }: Props) {
             style={{
               marginLeft: '6px',
               fontFamily: 'monospace',
-              fontSize: '0.52rem',
+              fontSize: 'clamp(0.625rem, 0.6rem + 0.05vw, 0.6875rem)',
               letterSpacing: '0.06em',
               textTransform: 'uppercase',
               color: streak.atRisk ? `rgba(${ar},${ag},${ab},0.95)` : `rgba(${sr},${sg},${sb},0.9)`,
@@ -426,7 +427,7 @@ export default function ReviewHeatmap({ year }: Props) {
           title={showFullYear ? t.heatmap_focus_view : t.heatmap_year_view}
           style={{
             fontFamily: 'monospace',
-            fontSize: '0.52rem',
+            fontSize: 'clamp(0.625rem, 0.6rem + 0.05vw, 0.6875rem)',
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
             color: theme.primary,
@@ -451,7 +452,7 @@ export default function ReviewHeatmap({ year }: Props) {
           <p
             style={{
               fontFamily: 'monospace',
-              fontSize: '0.62rem',
+              fontSize: '0.75rem',
               color: theme.textMuted ?? 'var(--theme-text-muted)',
               letterSpacing: '0.06em',
               margin: 0,

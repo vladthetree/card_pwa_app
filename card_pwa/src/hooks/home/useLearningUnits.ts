@@ -427,6 +427,7 @@ export function useLearningUnits({
                 videoProgress,
                 recallRuns,
                 reviewedCardIdsSinceStart: new Set(),
+                now: Date.now(),
               })
               return {
                 unitId: state.unitId,

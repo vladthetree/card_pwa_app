@@ -207,56 +207,75 @@ const ShuffleStudyView = lazy(() => import('./components/ShuffleStudyView'))
 const VideosView = lazy(() => import('./components/videos/VideosView'))
 const UpdateBanner = lazy(() => import('./components/UpdateBanner'))
 
-function ViewFallback({ reason = 'startup', continueHint = false }: { reason?: 'startup' | 'update'; continueHint?: boolean }) {
+function ViewFallback({ continueHint = false }: { continueHint?: boolean }) {
   const { settings } = useSettings()
   const { theme } = useTheme()
   const prefersReducedMotion = useReducedMotion()
-  const loadingText = reason === 'update'
-    ? (settings.language === 'de' ? 'Aktualisiere App' : 'Updating app')
-    : (settings.language === 'de' ? 'Pruefe App-Version' : 'Checking app version')
+  const loadingText = settings.language === 'de' ? 'Pruefe App-Version' : 'Checking app version'
   const continueText = settings.language === 'de' ? 'Tippen, um fortzufahren' : 'Tap to continue'
   // Motivationsspruch: pro App-Launch neu gewählt, innerhalb dieses Starts stabil.
   const quote = useMemo(() => pickLaunchMotivationQuote(settings.language === 'de' ? 'de' : 'en'), [settings.language])
 
   return (
     <div
-      className="flex flex-1 items-center justify-center px-4"
+      className="startup-splash relative flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-4"
       role="status"
       aria-busy="true"
       aria-live="polite"
     >
-      <div className="flex min-h-[22rem] w-full max-w-xl flex-col items-center justify-center">
-        <div className="flex h-44 w-72 max-w-[78vw] items-center justify-center overflow-visible sm:h-52 sm:w-80">
+      {/* Ein zentrierter Block: Illustration → Wortmarke → Spruch. Der
+          Tap-Hinweis wandert als klare Handlungszone an den unteren Rand,
+          statt mitten im Textstapel zu stehen. */}
+      <div className="startup-splash__content flex w-full max-w-xl flex-col items-center">
+        <div className="startup-splash__visual flex w-72 max-w-[78vw] shrink-0 items-center justify-center overflow-visible sm:w-80">
           <StartupLoader
             primary={theme.primary}
             secondary={theme.secondary}
             reducedMotion={prefersReducedMotion}
           />
         </div>
-        <div className="mt-5 text-center">
-          <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-ds-muted">
-            {APP_NAME}
-          </div>
-          {continueHint ? (
-            <div className="mt-2 animate-pulse font-mono text-sm text-[--brand-primary]" data-testid="splash-continue-hint">
-              {continueText}
-            </div>
-          ) : (
-            <div className="mt-2 font-mono text-sm text-white/75">
-              {loadingText}
-              <span className="ml-1 inline-block animate-pulse text-[--brand-primary]">...</span>
-            </div>
-          )}
+        <div className="startup-splash__brand text-center font-mono text-[11px] uppercase tracking-[0.3em] text-ds-muted">
+          {APP_NAME}
         </div>
+        <div className="startup-splash__divider h-[3px] w-10 bg-[--brand-primary]" aria-hidden="true" />
         {/* Motivationsspruch — der Grund, warum der Splash bewusst etwas länger steht. */}
-        <div className="mt-7 max-w-sm px-2 text-center" data-testid="splash-motivation">
-          <div className="font-mono text-[15px] font-bold leading-snug text-white">
+        <div className="startup-splash__motivation max-w-md px-2 text-center" data-testid="splash-motivation">
+          <div className="startup-splash__motivation-title font-mono text-[16px] font-bold leading-snug text-white">
             {quote.title}
           </div>
-          <p className="mt-2 font-mono text-[12.5px] leading-relaxed text-zinc-400">
+          <p className="startup-splash__motivation-body mx-auto max-w-[36ch] font-mono text-[13px] leading-relaxed text-zinc-400">
             {quote.body}
           </p>
         </div>
+      </div>
+
+      <div className="startup-splash__footer absolute inset-x-0 bottom-safe-4 flex justify-center pb-3">
+        {continueHint ? (
+          <div
+            className="animate-pulse font-mono text-[13px] font-bold uppercase tracking-[0.18em] text-[--brand-primary]"
+            data-testid="splash-continue-hint"
+          >
+            {continueText}
+          </div>
+        ) : (
+          <div className="font-mono text-[13px] text-white/70">
+            {loadingText}
+            <span className="ml-1 inline-block animate-pulse text-[--brand-primary]">...</span>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function ViewChunkFallback() {
+  const { settings } = useSettings()
+
+  return (
+    <div className="flex flex-1 items-center justify-center px-4" role="status" aria-live="polite">
+      <div className="flex items-center gap-2 font-mono text-xs text-ds-muted">
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[--brand-primary]" aria-hidden="true" />
+        <span>{settings.language === 'de' ? 'Ansicht wird geladen' : 'Loading view'}</span>
       </div>
     </div>
   )
@@ -280,10 +299,7 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
 
   const { showInitialSplash, splashContinueReady, dismissInitialSplash } = useStartupSplash(startupReady)
   const nav = useAppNavigation({ showInitialSplash })
-  const isStudyView = nav.view === 'study' || nav.view === 'shuffle-study'
-  const { updateInstalledNotice, showUpdateSplash } = useServiceWorkerUpdateFlow({ swSupported, isStudyView })
-
-  const activeSplashMode = showInitialSplash ? 'startup' : showUpdateSplash ? 'update' : null
+  const { updateInstalledNotice } = useServiceWorkerUpdateFlow({ swSupported })
 
   return (
     <AppErrorBoundary>
@@ -299,13 +315,11 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
           <ToastContainer />
           <SafeAreaDebugOverlay />
           <Suspense fallback={null}>
-            {swSupported && updateInstalledNotice && !showUpdateSplash && (
-              <UpdateBanner
-                deferredReload={isStudyView}
-              />
+            {swSupported && updateInstalledNotice && (
+              <UpdateBanner />
             )}
           </Suspense>
-          <Suspense fallback={showInitialSplash ? null : <ViewFallback />}>
+          <Suspense fallback={showInitialSplash ? null : <ViewChunkFallback />}>
             {/* View-Wechsel bewusst OHNE exit-gated AnimatePresence (wait-Modus):
                 dessen Exit→Enter-Handover konnte hängen (z. B. Study → Home nach
                 einer Drag-Match-Antwort) und die Zielansicht nie mounten. Die
@@ -403,28 +417,25 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
             )}
           </Suspense>
           <AnimatePresence>
-            {activeSplashMode && (
+            {showInitialSplash && (
               <motion.div
-                key={`${activeSplashMode}-splash`}
+                key="startup-splash"
                 initial={{ opacity: 1 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: prefersReducedMotion ? 0.12 : 0.24, ease: 'easeOut' }}
-                className={`fixed inset-0 z-[2200] flex bg-[--ds-bg] ${activeSplashMode === 'startup' && splashContinueReady ? 'cursor-pointer' : ''}`}
+                className={`fixed inset-0 z-[2200] flex bg-[--ds-bg] ${splashContinueReady ? 'cursor-pointer' : ''}`}
                 style={{ background: 'var(--app-background)' }}
-                data-testid={activeSplashMode === 'startup' ? 'splash-continue' : undefined}
-                role={activeSplashMode === 'startup' ? 'button' : undefined}
-                tabIndex={activeSplashMode === 'startup' ? 0 : undefined}
-                onClick={activeSplashMode === 'startup' ? dismissInitialSplash : undefined}
-                onKeyDown={activeSplashMode === 'startup'
-                  ? event => {
-                      if (event.key === 'Enter' || event.key === ' ') dismissInitialSplash()
-                    }
-                  : undefined}
+                data-testid="splash-continue"
+                role="button"
+                tabIndex={0}
+                onClick={dismissInitialSplash}
+                onKeyDown={event => {
+                  if (event.key === 'Enter' || event.key === ' ') dismissInitialSplash()
+                }}
               >
                 <ViewFallback
-                  reason={activeSplashMode === 'update' ? 'update' : 'startup'}
-                  continueHint={activeSplashMode === 'startup' && splashContinueReady}
+                  continueHint={splashContinueReady}
                 />
               </motion.div>
             )}
