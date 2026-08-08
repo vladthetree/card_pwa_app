@@ -225,6 +225,51 @@ def publish_cards(conn: sqlite3.Connection, user_id: str, dry_run: bool) -> int:
     return published
 
 
+def publish_card_content_refresh(conn: sqlite3.Connection, user_id: str, dry_run: bool) -> int:
+    """Republish canonical authoring fields without touching scheduling state.
+
+    This is intentionally a fresh delta even when the server row itself did not
+    change. It repairs clients that retained an older imported front/back after a
+    review gave their local card a newer scheduling timestamp.
+    """
+    rows = conn.execute(
+        """
+        SELECT id, deck_id, front, back, tags_json, extra_json, metadata_json
+        FROM server_cards
+        WHERE user_id=? AND IFNULL(is_deleted, 0)=0 AND deleted_at IS NULL
+        ORDER BY id
+        """,
+        (user_id,),
+    ).fetchall()
+
+    refresh_ts = now_ms()
+    published = 0
+    for row in rows:
+        payload = {
+            "cardId": row["id"],
+            "updates": {
+                "deckId": row["deck_id"],
+                "front": row["front"] or "",
+                "back": row["back"] or "",
+                "tags": parse_json_list(row["tags_json"]),
+                "extra": parse_json_object(row["extra_json"]),
+                "metadata": parse_json_object(row["metadata_json"]),
+            },
+            "timestamp": refresh_ts,
+        }
+        op_id = f"{SOURCE}:card.content.refresh:{user_id}:{row['id']}:{refresh_ts}"
+        published += int(insert_operation(
+            conn,
+            user_id,
+            "card.update",
+            payload,
+            op_id,
+            refresh_ts,
+            dry_run,
+        ))
+    return published
+
+
 def publish_shuffle_collections(conn: sqlite3.Connection, user_id: str, dry_run: bool) -> int:
     rows = conn.execute(
         """
@@ -262,6 +307,11 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--user-id", default=None)
+    parser.add_argument(
+        "--content-refresh",
+        action="store_true",
+        help="Publish only canonical card authoring fields as fresh deltas.",
+    )
     args = parser.parse_args()
 
     conn = open_db(sqlite3.Row)
@@ -269,11 +319,18 @@ def main() -> None:
     if not user_id:
         raise SystemExit("Kein User/Profile gefunden.")
 
-    deck_create = publish_decks(conn, user_id, args.dry_run)
-    card_update = publish_cards(conn, user_id, args.dry_run)
-    card_create = publish_active_card_creates(conn, user_id, args.dry_run)
-    deck_delete = publish_deleted_decks(conn, user_id, args.dry_run)
-    shuffle_upsert = publish_shuffle_collections(conn, user_id, args.dry_run)
+    if args.content_refresh:
+        deck_create = 0
+        deck_delete = 0
+        card_update = publish_card_content_refresh(conn, user_id, args.dry_run)
+        card_create = 0
+        shuffle_upsert = 0
+    else:
+        deck_create = publish_decks(conn, user_id, args.dry_run)
+        card_update = publish_cards(conn, user_id, args.dry_run)
+        card_create = publish_active_card_creates(conn, user_id, args.dry_run)
+        deck_delete = publish_deleted_decks(conn, user_id, args.dry_run)
+        shuffle_upsert = publish_shuffle_collections(conn, user_id, args.dry_run)
     if not args.dry_run:
         conn.commit()
     conn.close()

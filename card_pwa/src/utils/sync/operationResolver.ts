@@ -9,6 +9,10 @@ import type { SyncOperationType } from '../../services/syncQueue'
 import { normalizeCard, normalizeCardUpdates } from '../normalize/card'
 import { normalizeDeck } from '../normalize/deck'
 import { normalizeShuffleCollection } from '../normalize/shuffleCollection'
+import {
+  isAuthoritativeCardContentOperation,
+  pickAuthoritativeCardContentUpdates,
+} from './cardContentAuthority'
 
 export interface OperationResolverInput {
   operations: ResolverOperation[]
@@ -28,6 +32,7 @@ export interface ResolverOperation {
   type: SyncOperationType
   payload: unknown
   clientTimestamp?: number
+  source?: string
   sourceClient?: string
   createdAt?: number
 }
@@ -140,6 +145,14 @@ export function resolveOperations(input: OperationResolverInput): OperationDiff 
       if (!card) continue
 
       const existingCard = cards.get(card.id)
+      if (existingCard && isAuthoritativeCardContentOperation(op)) {
+        const contentUpdates = pickAuthoritativeCardContentUpdates(card)
+        if (Object.keys(contentUpdates).length > 0) {
+          cards.set(card.id, { ...existingCard, ...contentUpdates })
+          diff.cards.update.push([card.id, contentUpdates])
+        }
+        continue
+      }
       if (existingCard && !shouldApplyIncomingCardState(existingCard, card, card.updatedAt ?? card.createdAt ?? 0)) {
         continue
       }
@@ -160,6 +173,14 @@ export function resolveOperations(input: OperationResolverInput): OperationDiff 
       if (Object.keys(normalizedUpdates).length === 0) continue
 
       const existingCard = cards.get(cardId)
+      if (existingCard && isAuthoritativeCardContentOperation(op)) {
+        const contentUpdates = pickAuthoritativeCardContentUpdates(normalizedUpdates)
+        if (Object.keys(contentUpdates).length > 0) {
+          cards.set(cardId, { ...existingCard, ...contentUpdates })
+          diff.cards.update.push([cardId, contentUpdates])
+        }
+        continue
+      }
       if (existingCard && !shouldApplyIncomingCardState(existingCard, normalizedUpdates, fallbackTs)) {
         continue
       }

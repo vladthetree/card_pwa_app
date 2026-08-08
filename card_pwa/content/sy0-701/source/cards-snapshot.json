@@ -1,6 +1,6 @@
 {
   "schemaVersion": "sy0701-cards-1",
-  "exportedAt": 1786216017739,
+  "exportedAt": 1786219060275,
   "sourceDb": "card-sync-server/sync.db",
   "profiles": [
     {
@@ -1552,7 +1552,7 @@
         {
           "id": "1729174445461",
           "deckId": "sy0-701-objective-2-4",
-          "front": "M2-096: Which attack uses captured password hashes to authenticate without knowing the plaintext password?\nA: DNS poisoning\nB: Pass the hash\nC: Password spraying\nD: Birthday attack",
+          "front": "M2-096: An attacker obtains an account's NTLM password hash and uses it as authentication material without recovering the plaintext password. Which attack is this?\nA: DNS poisoning\nB: Pass the hash\nC: Password spraying\nD: Birthday attack",
           "qaBlocked": false,
           "type": 0
         },
@@ -6294,7 +6294,7 @@
           "deckId": "sy0-701-objective-1-4",
           "front": "M1-084: Which technique is used to ensure that password hashing remains resistant to increasingly powerful attack hardware over time?\nA: Certificate stapling\nB: Key escrow\nC: Key stretching\nD: Salting alone",
           "qaBlocked": false,
-          "type": 1
+          "type": 2
         },
         {
           "id": "1728675213140",
@@ -6546,14 +6546,14 @@
           "deckId": "sy0-701-objective-1-4",
           "front": "M1-120: A client needs the current revocation status of one certificate without downloading an entire revocation list. Which protocol is designed for this request?\nA: Online Certificate Status Protocol (OCSP)\nB: Certificate Signing Request (CSR)\nC: Simple Network Management Protocol (SNMP)\nD: Secure Shell (SSH)",
           "qaBlocked": false,
-          "type": 0
+          "type": 1
         },
         {
           "id": "1728925347209",
           "deckId": "sy0-701-objective-2-1",
           "front": "M2-001: Which term describes an entity that causes an event affecting another party's security?\nA: Attack Surface\nB: Threat Actor\nC: Vulnerability\nD: Security Control",
           "qaBlocked": false,
-          "type": 0
+          "type": 2
         },
         {
           "id": "1728925645774",
@@ -6987,7 +6987,7 @@
           "deckId": "sy0-701-objective-4-1",
           "front": "M2-063: What does MDM stand for in mobile security?\nA: Mobile Device Management\nB: Managed Domain Mapping\nC: Memory Dump Monitor\nD: Mobile Data Masking",
           "qaBlocked": false,
-          "type": 0
+          "type": 2
         },
         {
           "id": "1729096077718",
@@ -7216,7 +7216,7 @@
         {
           "id": "1729174445461",
           "deckId": "sy0-701-objective-2-4",
-          "front": "M2-096: Which attack uses captured password hashes to authenticate without knowing the plaintext password?\nA: DNS poisoning\nB: Pass the hash\nC: Password spraying\nD: Birthday attack",
+          "front": "M2-096: An attacker obtains an account's NTLM password hash and uses it as authentication material without recovering the plaintext password. Which attack is this?\nA: DNS poisoning\nB: Pass the hash\nC: Password spraying\nD: Birthday attack",
           "qaBlocked": false,
           "type": 2
         },
@@ -7435,7 +7435,7 @@
           "deckId": "sy0-701-objective-2-5",
           "front": "M2-127: What does HIPS stand for?\nA: Host-based Intrusion Prevention System\nB: Hardware Identity Protection Service\nC: Hosted Internet Proxy Server\nD: Hash Integrity Processing Standard",
           "qaBlocked": false,
-          "type": 0
+          "type": 2
         },
         {
           "id": "1729186723937",
@@ -8513,7 +8513,7 @@
           "deckId": "1773008953575",
           "front": "137: What happens if a mistake is made and an incorrect transaction is entered into the open public ledger in a blockchain?\nA: The transaction is reversed once it is discovered, and the original transaction is removed from the record.\nB: A new transaction must be processed, and both transactions remain in the record.\nC: The original transaction is updated and becomes the new record.\nD: An error block must be mined and labeled with the transaction number and error details.",
           "qaBlocked": false,
-          "type": 0
+          "type": 2
         },
         {
           "id": "1772578597098",
@@ -8527,7 +8527,7 @@
           "deckId": "1773008953575",
           "front": "140: A facility needs a contactless sensor that detects movement by emitting high-frequency sound and measuring the reflected signal. Which sensor meets this requirement?\nA: Infrared sensor\nB: Pressure sensor\nC: Microwave sensor\nD: Ultrasonic sensor",
           "qaBlocked": false,
-          "type": 1
+          "type": 2
         },
         {
           "id": "1772578644726",
@@ -10746,7 +10746,7 @@
           "deckId": "pbq-test-deck-001",
           "front": "MATCHING:\nMatch each protocol to its Open Systems Interconnection (OSI) layer.\n\nHTTP >> Layer 7 (Application)\nTCP >> Layer 4 (Transport)\nIP >> Layer 3 (Network)\nEthernet >> Layer 2 (Data Link)",
           "qaBlocked": false,
-          "type": 0
+          "type": 2
         },
         {
           "id": "1779007738884",

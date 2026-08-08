@@ -1136,6 +1136,53 @@ describe('syncPull normalization', () => {
     )
   })
 
+  it('repairs stale local card wording without overwriting newer learning progress', async () => {
+    const now = Date.now()
+    ;(mockDb.cards.get as CardGetterMock).mockResolvedValueOnce({
+      id: 'c-maint-content',
+      createdAt: now - 10_000,
+      updatedAt: now,
+      reps: 5,
+      due: 99,
+    } as CardRecord)
+
+    state.responses = [
+      { ok: true, needsSnapshot: false, serverCursor: 0 },
+      {
+        ok: true,
+        operations: [
+          {
+            id: 23,
+            opId: 'op-maint-content',
+            type: 'card.update',
+            source: 'server-maintenance-publish',
+            sourceClient: 'card-qa-audit-v1',
+            payload: {
+              cardId: 'c-maint-content',
+              updates: {
+                front: 'Corrected English question',
+                back: 'Deutsche Erklärung',
+                reps: 0,
+                due: 1,
+                updatedAt: now - 1000,
+              },
+            },
+          },
+        ],
+        nextCursor: 23,
+        hasMore: false,
+      },
+    ]
+
+    const { pullAndApplySyncDeltas } = await import('../../services/syncPull')
+    await pullAndApplySyncDeltas()
+
+    expect(mockDb.cards.update).toHaveBeenCalledWith(
+      'c-maint-content',
+      { front: 'Corrected English question', back: 'Deutsche Erklärung' },
+    )
+  })
+
   it('applies card.schedule.forceTomorrow as a card update payload', async () => {
     const now = Date.now()
     ;(mockDb.cards.get as CardGetterMock).mockResolvedValueOnce({

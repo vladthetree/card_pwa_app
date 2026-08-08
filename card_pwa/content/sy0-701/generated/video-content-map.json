@@ -1,7 +1,7 @@
 {
   "schemaVersion": "sy0701-video-content-map-1",
   "manifestVersion": "2026-07-23.1",
-  "generatedAt": 1786216022722,
+  "generatedAt": 1786219274287,
   "sourceSnapshotId": "sy0701-v7-2026-07-15",
   "note": "Jede Karte aus den 28 Objective-Subdecks ist genau einer Video-Unit zugeordnet: M-Karten über Frage-ID→Messer-Video, übrige Subdeck-Karten über die transkriptbasierte redaktionelle Source. Deckpositionen bleiben unverändert; Fortschritt läuft ausschließlich über Card-ID.",
   "mappingCounts": {

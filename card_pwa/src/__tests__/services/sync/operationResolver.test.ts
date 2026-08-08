@@ -127,6 +127,61 @@ describe('operationResolver', () => {
     expect(result.decks.delete).toEqual(['legacy-deck'])
   })
 
+  it('applies maintenance content without rolling back newer learning state', () => {
+    const result = resolveOperations({
+      operations: [
+        {
+          id: 5,
+          opId: 'op-maint-content',
+          type: 'card.update',
+          source: 'server-maintenance-publish',
+          sourceClient: 'card-qa-audit-v1',
+          payload: {
+            cardId: 'c1',
+            updates: {
+              front: 'Corrected English question',
+              back: 'Deutsche Erklärung',
+              reps: 0,
+              due: 1,
+              updatedAt: 100,
+            },
+          },
+        },
+      ],
+      existing: {
+        cards: [
+          {
+            id: 'c1',
+            noteId: 'n1',
+            deckId: 'd1',
+            front: 'Veraltete deutsche Frage',
+            back: 'Alt',
+            tags: [],
+            extra: { acronym: '', examples: '', port: '', protocol: '' },
+            type: 2,
+            queue: 2,
+            due: 99,
+            dueAt: 99 * 86_400_000,
+            interval: 12,
+            factor: 2500,
+            reps: 5,
+            lapses: 1,
+            createdAt: 1,
+            updatedAt: 200,
+            algorithm: 'fsrs',
+          },
+        ],
+        decks: [],
+      },
+      fallbackTs: 0,
+    })
+
+    expect(result.cards.update).toEqual([[
+      'c1',
+      { front: 'Corrected English question', back: 'Deutsche Erklärung' },
+    ]])
+  })
+
   it('review.undo deletes by id only when the row is confirmed to belong to the card', () => {
     const result = resolveOperations({
       operations: [

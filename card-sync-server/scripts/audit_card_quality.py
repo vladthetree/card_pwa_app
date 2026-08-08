@@ -528,6 +528,8 @@ def clean_explanation(text: str) -> str:
     cleaned = re.sub(r"\bnennt er\b", "gilt", cleaned, flags=re.I)
     cleaned = re.sub(r"\bdie er\b", "die", cleaned, flags=re.I)
     cleaned = re.sub(r"\b(?:beschreibt|betont|erklärt|weist) er\b", "dies zeigt", cleaned, flags=re.I)
+    cleaned = re.sub(r"\ber nennt dies als\b", "dies gilt als", cleaned, flags=re.I)
+    cleaned = re.sub(r"\ber ordnet (.+?) als\b", r"\1 gilt als", cleaned, flags=re.I)
     cleaned = re.sub(
         r"\([^)]*(?:NIST\s+(?:SP|IR)|RFC\s*\d|ISO\s*\d|SY0-701|Obj\.?\s*\d|PDF\s*(?:page|S\.)?)[^)]*\)",
         "",
@@ -550,6 +552,89 @@ def strip_answer_echo(explanation: str, answer: str) -> str:
     return "\n\n".join(paragraphs).strip()
 
 
+def human_incorrect_reason(
+    question: str,
+    option: str,
+    correct_text: str,
+    correct_explanation: str,
+    option_definition: str | None,
+) -> str:
+    """Explain a distractor naturally without the former QA boilerplate."""
+    compact_explanation = re.sub(r"\s+", " ", correct_explanation).strip()
+    compact_definition = re.sub(r"\s+", " ", option_definition or "").strip()
+    question_without_id = re.sub(r"^(?:M[1-5]-\d{3}|\d+)[.:]\s*", "", question).strip()
+    lowered = question_without_id.casefold()
+
+    acronym_match = re.search(
+        r"\b(?:what does|full form of)\s+([A-Z][A-Z0-9/+.-]{1,})\b",
+        question_without_id,
+        flags=re.I,
+    )
+    if acronym_match:
+        acronym = acronym_match.group(1)
+        return (
+            f"„{option}“ ist keine gültige Auflösung von {acronym}. "
+            f"Die etablierte Vollform lautet „{correct_text}“."
+        )
+
+    explicit_negative = bool(
+        re.search(r"\bwhich\s+(?:option|of the following)\s+(?:is|are|would be)\s+not\b", lowered)
+        or re.search(r"\bwhich\b[^?]{0,50}\b(?:is|are|would|does|do|can|will)\s+not\b", lowered)
+        or re.search(r"\bexcept\b", lowered)
+    )
+    if explicit_negative:
+        if compact_definition:
+            return (
+                f"„{option}“ gehört hier zu den regulären Möglichkeiten: {compact_definition} "
+                f"Gesucht ist jedoch die Ausnahme „{correct_text}“."
+            )
+        return (
+            f"„{option}“ ist in diesem Zusammenhang eine gültige beziehungsweise übliche Möglichkeit "
+            f"und daher nicht die gesuchte Ausnahme. Die Ausnahme ist „{correct_text}“: {compact_explanation}"
+        )
+
+    if re.search(r"\b(?:calculate|calculation|how many|percentage|rate|expectancy)\b", lowered):
+        return (
+            f"„{option}“ ergibt sich nicht aus den angegebenen Werten beziehungsweise der benötigten Formel. "
+            f"Das korrekte Ergebnis ist „{correct_text}“: {compact_explanation}"
+        )
+
+    if compact_definition:
+        variants = (
+            f"Bei „{option}“ ginge es um etwas anderes: {compact_definition} Hier ist dagegen „{correct_text}“ gefragt.",
+            f"„{option}“ hat eine andere Funktion: {compact_definition} Zum beschriebenen Fall passt „{correct_text}“.",
+            f"„{option}“ wäre nur in einem anderen Zusammenhang passend: {compact_definition} Das Szenario beschreibt „{correct_text}“.",
+        )
+        digest = hashlib.sha256(f"{question}\0{option}".encode("utf-8")).digest()
+        return variants[digest[0] % len(variants)]
+
+    digest = hashlib.sha256(f"{question}\0{option}".encode("utf-8")).digest()
+
+    if re.search(r"\b(?:protocol|technology|control|method|technique|tool|system|component)\b", lowered):
+        variants = (
+            f"„{option}“ hat nicht die hier benötigte Funktion. „{correct_text}“ schon: {compact_explanation}",
+            f"Die beschriebene Aufgabe wird von „{correct_text}“ übernommen, nicht von „{option}“. {compact_explanation}",
+            f"Für diesen Einsatzzweck ist „{option}“ das falsche Werkzeug. Passend ist „{correct_text}“: {compact_explanation}",
+        )
+        return variants[digest[0] % len(variants)]
+
+    if re.search(r"\b(?:wants|needs|organization|company|user|administrator|analyst|server)\b", lowered):
+        variants = (
+            f"Mit „{option}“ würde das Problem im Szenario nicht gelöst. Hier braucht man „{correct_text}“: {compact_explanation}",
+            f"Das Szenario führt nicht zu „{option}“, sondern zu „{correct_text}“. Der Grund: {compact_explanation}",
+            f"„{option}“ greift am beschriebenen Problem vorbei. „{correct_text}“ passt, weil {compact_explanation}",
+        )
+        return variants[digest[0] % len(variants)]
+
+    variants = (
+        f"Die Beschreibung passt nicht zu „{option}“. Sie definiert „{correct_text}“: {compact_explanation}",
+        f"„{option}“ ist hier nicht gemeint. Der beschriebene Begriff ist „{correct_text}“: {compact_explanation}",
+        f"Für „{option}“ müssten andere Eigenschaften genannt sein. Die vorhandenen Hinweise führen zu „{correct_text}“: {compact_explanation}",
+        f"Der entscheidende Unterschied: „{correct_text}“ {compact_explanation[:1].lower() + compact_explanation[1:]} „{option}“ bezeichnet das nicht.",
+    )
+    return variants[digest[0] % len(variants)]
+
+
 def normalized_back(card_id: str, front: str, back: str, glossary: dict[str, str] | None = None) -> str:
     if card_id in PBQ_OVERRIDES and "back" in PBQ_OVERRIDES[card_id]:
         back = PBQ_OVERRIDES[card_id]["back"]
@@ -565,26 +650,30 @@ def normalized_back(card_id: str, front: str, back: str, glossary: dict[str, str
             "Die richtige Zuordnung folgt aus der beschriebenen Funktion und ihrem Einsatzzweck."
         )
 
-    first_sentence = re.split(r"(?<=[.!?])\s+", explanation, maxsplit=1)[0]
+    first_sentence = re.sub(r"\s+", " ", explanation.split("\n\n", 1)[0]).strip()
+    if len(first_sentence) > 520:
+        first_sentence = first_sentence[:520].rsplit(" ", 1)[0].rstrip(" ,;:") + "."
     reasons: dict[str, str] = {}
     for letter, option in parsed.options.items():
         if letter == parsed.correct:
             continue
         existing = clean_explanation(parsed.incorrect_reasons.get(letter, ""))
-        if "erfüllt das im Fragentext genannte entscheidende Merkmal nicht" in existing:
+        generated_markers = (
+            "erfüllt das im Fragentext genannte entscheidende Merkmal nicht",
+            "bezeichnet einen anderen Sachverhalt:",
+        )
+        if any(marker in existing for marker in generated_markers):
             existing = ""
         option_definition = (glossary or {}).get(re.sub(r"\s+", " ", option).strip().casefold())
         if existing:
             reasons[letter] = existing
-        elif option_definition:
-            reasons[letter] = (
-                f"„{option}“ bezeichnet einen anderen Sachverhalt: {option_definition} "
-                f"Die hier beschriebenen Merkmale gehören dagegen zu „{correct_text}“."
-            )
         else:
-            reasons[letter] = (
-                f"„{option}“ erfüllt das im Fragentext genannte entscheidende Merkmal nicht. "
-                f"Ausschlaggebend ist: {first_sentence}"
+            reasons[letter] = human_incorrect_reason(
+                parsed.question,
+                option,
+                correct_text,
+                first_sentence,
+                option_definition,
             )
 
     rationale_lines = "\n".join(f"{letter} | {reasons[letter]}" for letter in parsed.options if letter in reasons)
@@ -626,6 +715,8 @@ def repaired_overrides() -> dict[str, dict[str, Any]]:
     nist_ics = "https://doi.org/10.6028/NIST.SP.800-82r3"
     rfc_5280 = "https://www.rfc-editor.org/rfc/rfc5280.html"
     shannon = "https://doi.org/10.1002/j.1538-7305.1949.tb00928.x"
+    mitre_pass_the_hash = "https://attack.mitre.org/techniques/T1550/002/"
+    microsoft_pass_the_hash = "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/how-to-configure-protected-accounts"
     return {
         "1728669281455": reviewed_mc(
             "M1-080: A remote employee uses a full-tunnel Virtual Private Network (VPN). Which statement accurately describes the tunnel's protection?",
@@ -677,6 +768,23 @@ def repaired_overrides() -> dict[str, dict[str, Any]]:
                 "D": "VM Sprawl bezeichnet die unkontrollierte Vermehrung virtueller Maschinen und ist kein Isolationsangriff.",
             },
             [COMPTIA_OBJECTIVES, nist_virtualization],
+        ),
+        "1729174445461": reviewed_mc(
+            "M2-096: An attacker obtains an account's NTLM password hash and uses it as authentication material without recovering the plaintext password. Which attack is this?",
+            {
+                "A": "DNS poisoning",
+                "B": "Pass the hash",
+                "C": "Password spraying",
+                "D": "Birthday attack",
+            },
+            "B",
+            "Bei Pass the Hash verwendet der Angreifer einen gestohlenen NTLM-Passwort-Hash als Authentifizierungsmaterial. Das Klartextpasswort muss dafür weder bekannt noch zuvor geknackt werden.",
+            {
+                "A": "DNS Poisoning manipuliert die Namensauflösung, damit ein Domainname auf ein falsches Ziel verweist; dabei wird kein Passwort-Hash zur Anmeldung benutzt.",
+                "C": "Beim Password Spraying werden wenige häufige Klartextpasswörter gegen viele Konten ausprobiert. Ein bereits gestohlener Hash wird dabei nicht als Anmeldeinformation verwendet.",
+                "D": "Ein Birthday Attack nutzt die Wahrscheinlichkeit kryptografischer Hash-Kollisionen. Er beschreibt weder die Wiederverwendung eines NTLM-Hashes noch eine Anmeldung mit gestohlenen Zugangsdaten.",
+            },
+            [COMPTIA_OBJECTIVES, mitre_pass_the_hash, microsoft_pass_the_hash],
         ),
         "1729097907113": reviewed_mc(
             "M2-071: Malware executes mainly through memory and legitimate system tools without relying on a conventional malicious executable stored on disk. What is it called?",
@@ -1396,7 +1504,9 @@ def build_audit(conn: sqlite3.Connection) -> tuple[list[dict[str, Any]], dict[st
         )
         if not answer or not explanation:
             continue
-        definition = re.split(r"(?<=[.!?])\s+", explanation, maxsplit=1)[0]
+        definition = re.sub(r"\s+", " ", explanation.split("\n\n", 1)[0]).strip()
+        if len(definition) > 520:
+            definition = definition[:520].rsplit(" ", 1)[0].rstrip(" ,;:") + "."
         glossary.setdefault(re.sub(r"\s+", " ", answer).strip().casefold(), definition)
     entries: list[dict[str, Any]] = []
 

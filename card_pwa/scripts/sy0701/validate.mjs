@@ -658,6 +658,38 @@ for (const question of questionRecords) {
   idsByStem.set(key, ids)
 }
 const exactDuplicateStemGroups = [...idsByStem.values()].filter(ids => ids.length > 1)
+const forbiddenExplanationPhrases = [
+  'erfüllt das im Fragentext genannte entscheidende Merkmal nicht',
+  'bezeichnet einen anderen Sachverhalt:',
+  'Ausschlaggebend ist:',
+]
+const boilerplateExplanationItems = profile.cards
+  .filter(card => forbiddenExplanationPhrases.some(phrase => String(card.back ?? '').toLocaleLowerCase('de-DE')
+    .includes(phrase.toLocaleLowerCase('de-DE'))))
+  .map(card => `card:${card.id}`)
+const learnerFacingRecords = [
+  ...profile.cards.filter(card => !card.qaBlocked).map(card => ({
+    itemId: `card:${card.id}`,
+    questionText: String(card.front ?? ''),
+    text: `${card.front ?? ''}\n${card.back ?? ''}`,
+  })),
+  ...Object.entries(transcriptQuestions).flatMap(([indexKey, list]) => list.map((question, index) => ({
+    itemId: `tq:T${indexKey}-${String(index + 1).padStart(2, '0')}`,
+    questionText: `${question.q}\n${question.options.join('\n')}`,
+    text: `${question.q}\n${question.options.join('\n')}`,
+  }))),
+]
+const learnerMetaPattern = /\bSY0-701\b|\bObj(?:ective)?\.?\s*\d(?:\.\d+)?|PDF\s*(?:page|S\.)|laut\s+(?:Professor\s+)?Messer|according\s+to\s+(?:Professor\s+)?Messer/i
+const germanQuestionMarkerPattern = /\b(?:was\s+(?:ist|sind|bedeutet)|wie\s+(?:kann|wird|werden|lautet)|welche(?:r|s|n)?|warum|wodurch|wofür|laut|gehört|müssen|nutzt|klartext|angriff|unternehmen|mitarbeitende|erkläre|ordne|bringe|gesucht|vollform|bedeutung)\b|[äöüß]/i
+const germanGrammarTokenPattern = /\b(?:der|die|das|den|dem|des|ein|eine|einer|einem|einen|und|oder|nicht|mit|ohne|von|für|auf|aus|bei|wird|werden|ist|sind|hat|haben|kann|soll)\b/gi
+const looksGermanQuestionText = text => germanQuestionMarkerPattern.test(text)
+  || new Set((text.match(germanGrammarTokenPattern) ?? []).map(token => token.toLocaleLowerCase('de-DE'))).size >= 2
+const learnerMetaItems = learnerFacingRecords
+  .filter(record => learnerMetaPattern.test(record.text))
+  .map(record => record.itemId)
+const germanQuestionItems = learnerFacingRecords
+  .filter(record => looksGermanQuestionText(record.questionText))
+  .map(record => record.itemId)
 const positionCountsByPool = {}
 const stemStyleCounts = { what: 0, which: 0, how: 0, why: 0, when: 0, other: 0 }
 const scenarioPattern = /\b(given|scenario|organization|company|administrator|analyst|engineer|employee|team|manager|discovers?|observes?|reports?|needs?|wants?|most likely|best|first|next)\b/i
@@ -688,6 +720,9 @@ writeArtifact('question-quality-report.json', {
   rawCorrectPositionCountsByPool: positionCountsByPool,
   duplicateOptionItems,
   exactDuplicateStemGroups,
+  boilerplateExplanationItems,
+  learnerMetaItems,
+  germanQuestionItems,
   absolutistDistractorCount,
   criticalVariantCounts,
   deliveryPositionMitigation: 'Reguläre MC-Karten werden in CardFace deterministisch gemischt; sowohl gemappte Deck- als auch Transkriptfragen werden vor dem Video-Recall gemischt. Rohpositionen bleiben trotzdem als Autoren-QA sichtbar.',
@@ -697,6 +732,12 @@ gate('fragen-ohne-doppelte-optionen', duplicateOptionItems.length === 0,
   duplicateOptionItems.length ? duplicateOptionItems.join(',') : `${questionRecords.length} MC-Fragen geprüft`)
 gate('fragen-ohne-exakte-stamm-doubletten', exactDuplicateStemGroups.length === 0,
   exactDuplicateStemGroups.length ? JSON.stringify(exactDuplicateStemGroups) : 'keine exakten Stämme doppelt')
+gate('erklaerungen-ohne-qa-standardfloskeln', boilerplateExplanationItems.length === 0,
+  boilerplateExplanationItems.length ? boilerplateExplanationItems.join(',') : 'keine verbotenen Standardformulierungen')
+gate('lerntexte-ohne-pruefungs-metatext', learnerMetaItems.length === 0,
+  learnerMetaItems.length ? learnerMetaItems.join(',') : 'keine SY0-701-, Objective-, PDF- oder Messer-Referenzen im Lerntext')
+gate('fragen-und-optionen-englisch', germanQuestionItems.length === 0,
+  germanQuestionItems.length ? germanQuestionItems.join(',') : `${learnerFacingRecords.length} Karten- und Transkriptfragen geprüft`)
 gate('kritische-requirements-mit-varianten', criticalVariantCounts.every(entry => entry.assessmentVariantCount >= 2),
   criticalVariantCounts.filter(entry => entry.assessmentVariantCount < 2).map(entry => entry.requirementId).join(',') || 'alle kritischen Requirements mit mindestens zwei Varianten')
 

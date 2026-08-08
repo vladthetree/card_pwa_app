@@ -31,6 +31,10 @@ import { normalizeExamDateIso, normalizeExamDateUpdatedAt } from '../../contexts
 import { getLearnerExamPlan, saveDraftLearnerExamPlan } from '../../db/queries/learningUnits'
 import { hasShuffleCollectionsTable } from './shared'
 import { isSupportedExamLanguage } from '../../utils/learningPlan'
+import {
+  isAuthoritativeCardContentOperation,
+  pickAuthoritativeCardContentUpdates,
+} from '../../utils/sync/cardContentAuthority'
 
 export interface PulledOperation {
   id: number
@@ -119,19 +123,26 @@ async function applyDeckDelete(payload: unknown, fallbackTs = 0, options: { forc
   await db.decks.delete(deckId)
 }
 
-async function applyCardCreate(payload: unknown) {
-  const card = normalizeCard(payload)
+async function applyCardCreate(op: PulledOperation) {
+  const card = normalizeCard(op.payload)
   if (!card) return
 
   const existing = await db.cards.get(card.id)
+  if (existing && isAuthoritativeCardContentOperation(op)) {
+    const contentUpdates = pickAuthoritativeCardContentUpdates(card)
+    if (Object.keys(contentUpdates).length > 0) {
+      await db.cards.update(card.id, contentUpdates)
+    }
+    return
+  }
   if (existing && !shouldApplyIncomingCardState(existing, card, card.updatedAt ?? card.createdAt ?? 0)) return
 
   await db.cards.put(card)
 }
 
-async function applyCardUpdate(payload: unknown) {
-  if (!payload || typeof payload !== 'object') return
-  const value = payload as { cardId?: string; updates?: Partial<CardRecord>; update?: Partial<CardRecord>; timestamp?: number }
+async function applyCardUpdate(op: PulledOperation) {
+  if (!op.payload || typeof op.payload !== 'object') return
+  const value = op.payload as { cardId?: string; updates?: Partial<CardRecord>; update?: Partial<CardRecord>; timestamp?: number }
   const cardId = value.cardId ? String(value.cardId) : ''
   const rawUpdates = value.updates && typeof value.updates === 'object' ? value.updates : value.update
   if (!cardId || !rawUpdates) return
@@ -140,6 +151,13 @@ async function applyCardUpdate(payload: unknown) {
   if (Object.keys(normalizedUpdates).length === 0) return
 
   const existing = await db.cards.get(cardId)
+  if (existing && isAuthoritativeCardContentOperation(op)) {
+    const contentUpdates = pickAuthoritativeCardContentUpdates(normalizedUpdates)
+    if (Object.keys(contentUpdates).length > 0) {
+      await db.cards.update(cardId, contentUpdates)
+    }
+    return
+  }
   if (existing && !shouldApplyIncomingCardState(existing, normalizedUpdates, Number(value.timestamp ?? 0))) return
 
   await db.cards.update(cardId, normalizedUpdates)
@@ -417,13 +435,13 @@ export async function applyOperation(op: PulledOperation) {
       await applyDeckDelete(op.payload, fallbackTs, { force: op.sourceClient === 'server-maintenance-publisher' })
       return
     case 'card.create':
-      await applyCardCreate(op.payload)
+      await applyCardCreate(op)
       return
     case 'card.update':
-      await applyCardUpdate(op.payload)
+      await applyCardUpdate(op)
       return
     case 'card.schedule.forceTomorrow':
-      await applyCardUpdate(op.payload)
+      await applyCardUpdate(op)
       return
     case 'card.delete':
       await applyCardDelete(op.payload, fallbackTs)

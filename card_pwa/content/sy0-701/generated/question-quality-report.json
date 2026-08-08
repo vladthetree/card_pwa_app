@@ -1,7 +1,7 @@
 {
   "schemaVersion": "sy0701-question-quality-report-1",
   "manifestVersion": "2026-07-23.1",
-  "generatedAt": 1786216022856,
+  "generatedAt": 1786219274458,
   "questionCount": 1427,
   "byPool": {
     "mapped-card": 375,
@@ -46,6 +46,9 @@
   },
   "duplicateOptionItems": [],
   "exactDuplicateStemGroups": [],
+  "boilerplateExplanationItems": [],
+  "learnerMetaItems": [],
+  "germanQuestionItems": [],
   "absolutistDistractorCount": 614,
   "criticalVariantCounts": [
     {
