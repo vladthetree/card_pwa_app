@@ -1,0 +1,184 @@
+{
+  "schemaVersion": "messer-cram-mapping-1",
+  "domain": 5,
+  "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+  "videoCount": 17,
+  "counts": {
+    "covered": 17,
+    "partial": 0,
+    "merged": 0,
+    "omitted": 0
+  },
+  "entries": [
+    {
+      "videoIndex": 105,
+      "objective": "5.1",
+      "videoTitle": "Security Policies",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "next we have security policies which provide",
+      "note": null
+    },
+    {
+      "videoIndex": 106,
+      "objective": "5.1",
+      "videoTitle": "Security Standards",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "security standards Define technical specifications",
+      "note": null
+    },
+    {
+      "videoIndex": 107,
+      "objective": "5.1",
+      "videoTitle": "Security Procedures",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "security procedures provide stepbystep instructions",
+      "note": null
+    },
+    {
+      "videoIndex": 108,
+      "objective": "5.1",
+      "videoTitle": "Security Considerations",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "moving on to external considerations",
+      "note": "Enthält im Cram zusätzlich Governance-Strukturen (Board/Committee, zentral vs. dezentral) und Monitoring/Revision; nicht trennscharf einer einzelnen Lektion zuordenbar."
+    },
+    {
+      "videoIndex": 109,
+      "objective": "5.1",
+      "videoTitle": "Data Roles and Responsibilities",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "the data owner which holds legal rights",
+      "note": null
+    },
+    {
+      "videoIndex": 110,
+      "objective": "5.2",
+      "videoTitle": "Risk Management",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "we'll start with risk identification",
+      "note": null
+    },
+    {
+      "videoIndex": 111,
+      "objective": "5.2",
+      "videoTitle": "Risk Analysis",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "there's qualitative risk analysis and quantitative risk analysis",
+      "note": "Cram bringt deutlich mehr Formel-Tiefe (EF/SLE/ARO/ALE mit Rechenbeispiel) als die Einzellektion."
+    },
+    {
+      "videoIndex": 112,
+      "objective": "5.2",
+      "videoTitle": "Risk Management Strategies",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "now let's talk risk management strategies",
+      "note": null
+    },
+    {
+      "videoIndex": 113,
+      "objective": "5.2",
+      "videoTitle": "Business Impact Analysis",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "next we have the business impact analysis",
+      "note": null
+    },
+    {
+      "videoIndex": 114,
+      "objective": "5.3",
+      "videoTitle": "Third-party Risk Assessment",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "we'll start with vendor assessment which focuses",
+      "note": null
+    },
+    {
+      "videoIndex": 115,
+      "objective": "5.3",
+      "videoTitle": "Agreement Types",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "now we're going to step into agreement types",
+      "note": null
+    },
+    {
+      "videoIndex": 116,
+      "objective": "5.4",
+      "videoTitle": "Compliance",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "so let's jump right into compliance reporting",
+      "note": null
+    },
+    {
+      "videoIndex": 117,
+      "objective": "5.4",
+      "videoTitle": "Privacy",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "moving on to privacy I want to start",
+      "note": null
+    },
+    {
+      "videoIndex": 118,
+      "objective": "5.5",
+      "videoTitle": "Audits and Assessments",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "let's dig into the syllabus beginning with attestation",
+      "note": null
+    },
+    {
+      "videoIndex": 119,
+      "objective": "5.5",
+      "videoTitle": "Penetration Tests",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "moving on to penetration testing and we'll start",
+      "note": null
+    },
+    {
+      "videoIndex": 120,
+      "objective": "5.6",
+      "videoTitle": "Security Awareness",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "conduct simulated fishing campaigns to test employee awareness",
+      "note": "Cram stellt vor 5.6 einen Domain-2-Grundlagenblock (Social-Engineering-Prinzipien, physische Angriffe) voran, der keiner der beiden 5.6-Lektionen direkt zuzuordnen ist."
+    },
+    {
+      "videoIndex": 121,
+      "objective": "5.6",
+      "videoTitle": "User Training",
+      "domain": 5,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 5 COMPLETE [Gxsjn7J97Lk].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "next on the syllabus we see user guidance",
+      "note": null
+    }
+  ]
+}

@@ -1,0 +1,394 @@
+{
+  "schemaVersion": "messer-cram-mapping-1",
+  "domain": 2,
+  "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+  "videoCount": 38,
+  "counts": {
+    "covered": 35,
+    "partial": 1,
+    "merged": 2,
+    "omitted": 0
+  },
+  "entries": [
+    {
+      "videoIndex": 20,
+      "objective": "2.1",
+      "videoTitle": "Threat Actors",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "the six type of threat actors called out",
+      "note": null
+    },
+    {
+      "videoIndex": 21,
+      "objective": "2.2",
+      "videoTitle": "Common Threat Vectors",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "begin with the definition of a Threat Vector",
+      "note": null
+    },
+    {
+      "videoIndex": 22,
+      "objective": "2.2",
+      "videoTitle": "Phishing",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "fishing which is commonly used to trick users",
+      "note": null
+    },
+    {
+      "videoIndex": 23,
+      "objective": "2.2",
+      "videoTitle": "Impersonation",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "impersonation and business email compromise",
+      "note": null
+    },
+    {
+      "videoIndex": 24,
+      "objective": "2.2",
+      "videoTitle": "Watering Hole Attacks",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "next we have the watering hole",
+      "note": null
+    },
+    {
+      "videoIndex": 25,
+      "objective": "2.2",
+      "videoTitle": "Other Social Engineering Attacks",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "next we have misinformation and disinformation",
+      "note": null
+    },
+    {
+      "videoIndex": 26,
+      "objective": "2.3",
+      "videoTitle": "Memory Injections",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "merged",
+      "cramAnchor": "is known as memory injection",
+      "note": "Nur als Angriffsziel des Buffer Overflow genannt, keine eigene Behandlung, keine DLL-Injection erwähnt."
+    },
+    {
+      "videoIndex": 27,
+      "objective": "2.3",
+      "videoTitle": "Buffer Overflows",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "beginning with buffer overflows which are attacks attackers",
+      "note": null
+    },
+    {
+      "videoIndex": 28,
+      "objective": "2.3",
+      "videoTitle": "Race Conditions",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "next we have race conditions",
+      "note": null
+    },
+    {
+      "videoIndex": 29,
+      "objective": "2.3",
+      "videoTitle": "Malicious Updates",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "next we have malicious updates",
+      "note": null
+    },
+    {
+      "videoIndex": 30,
+      "objective": "2.3",
+      "videoTitle": "Operating System Vulnerabilities",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "we have several potential os-based vulnerabilities",
+      "note": null
+    },
+    {
+      "videoIndex": 31,
+      "objective": "2.3",
+      "videoTitle": "SQL Injection",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "we have the SQL injection attack",
+      "note": null
+    },
+    {
+      "videoIndex": 32,
+      "objective": "2.3",
+      "videoTitle": "Cross-site Scripting",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "called the cross site scripting attack",
+      "note": null
+    },
+    {
+      "videoIndex": 33,
+      "objective": "2.3",
+      "videoTitle": "Hardware Vulnerabilities",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "we have the hardware category",
+      "note": null
+    },
+    {
+      "videoIndex": 34,
+      "objective": "2.3",
+      "videoTitle": "Virtualization Vulnerabilities",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "next we have the virtualization category",
+      "note": null
+    },
+    {
+      "videoIndex": 35,
+      "objective": "2.3",
+      "videoTitle": "Cloud-specific Vulnerabilities",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "next up is the cloud category",
+      "note": null
+    },
+    {
+      "videoIndex": 36,
+      "objective": "2.3",
+      "videoTitle": "Supply Chain Vulnerabilities",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "let's move on to the supply chain category",
+      "note": null
+    },
+    {
+      "videoIndex": 37,
+      "objective": "2.3",
+      "videoTitle": "Misconfiguration Vulnerabilities",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "our next category is misconfiguration which occurs when",
+      "note": null
+    },
+    {
+      "videoIndex": 38,
+      "objective": "2.3",
+      "videoTitle": "Mobile Device Vulnerabilities",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "moving on to the mobile device category",
+      "note": null
+    },
+    {
+      "videoIndex": 39,
+      "objective": "2.3",
+      "videoTitle": "Zero-day Vulnerabilities",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "last but not least the zero day category",
+      "note": null
+    },
+    {
+      "videoIndex": 40,
+      "objective": "2.4",
+      "videoTitle": "An Overview of Malware",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "merged",
+      "cramAnchor": "now we'll step into attacks beginning with malware",
+      "note": "Kein eigener Überblicksteil; springt direkt zu Ransomware und den Einzeltypen."
+    },
+    {
+      "videoIndex": 41,
+      "objective": "2.4",
+      "videoTitle": "Viruses and Worms",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "a base definition of a computer virus",
+      "note": null
+    },
+    {
+      "videoIndex": 42,
+      "objective": "2.4",
+      "videoTitle": "Spyware and Bloatware",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "next we have bloatware which is unnecessary software",
+      "note": null
+    },
+    {
+      "videoIndex": 43,
+      "objective": "2.4",
+      "videoTitle": "Other Malware Types",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "next up we have the key logger",
+      "note": null
+    },
+    {
+      "videoIndex": 44,
+      "objective": "2.4",
+      "videoTitle": "Physical Attacks",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "we're going to move on to physical attacks",
+      "note": null
+    },
+    {
+      "videoIndex": 45,
+      "objective": "2.4",
+      "videoTitle": "Denial of Service",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "the syllabus sites distributed denial a service",
+      "note": null
+    },
+    {
+      "videoIndex": 46,
+      "objective": "2.4",
+      "videoTitle": "DNS Attacks",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "next we have DNS attacks",
+      "note": null
+    },
+    {
+      "videoIndex": 47,
+      "objective": "2.4",
+      "videoTitle": "Wireless Attacks",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "have a look at Wireless attacks",
+      "note": null
+    },
+    {
+      "videoIndex": 48,
+      "objective": "2.4",
+      "videoTitle": "On-path Attacks",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "next we have the on path attack",
+      "note": null
+    },
+    {
+      "videoIndex": 49,
+      "objective": "2.4",
+      "videoTitle": "Replay Attacks",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "next we have credential replay which involves stealing",
+      "note": null
+    },
+    {
+      "videoIndex": 50,
+      "objective": "2.4",
+      "videoTitle": "Malicious Code",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "partial",
+      "cramAnchor": "we have malicious code and there are several",
+      "note": "Nur als Netzwerk-Sammelbegriff (DoS/On-path/Replay) plus Indikatoren behandelt; keine Skript-/PowerShell-/Makro-Inhalte wie in der Einzellektion."
+    },
+    {
+      "videoIndex": 51,
+      "objective": "2.4",
+      "videoTitle": "Application Attacks",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "we're going to move into the application category",
+      "note": null
+    },
+    {
+      "videoIndex": 52,
+      "objective": "2.4",
+      "videoTitle": "Cryptographic Attacks",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "we're going to move on to cryptographic attacks",
+      "note": null
+    },
+    {
+      "videoIndex": 53,
+      "objective": "2.4",
+      "videoTitle": "Password Attacks",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "is password attacks so we have password spraying",
+      "note": null
+    },
+    {
+      "videoIndex": 54,
+      "objective": "2.4",
+      "videoTitle": "Indicators of Compromise",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "let's move into indicators beginning with account lockout",
+      "note": "Reihenfolge-Abweichung: Cram zieht die Indikatoren nach vorne und verteilt sie danach über den gesamten 2.4-Abschnitt statt sie ans Ende zu stellen."
+    },
+    {
+      "videoIndex": 55,
+      "objective": "2.5",
+      "videoTitle": "Segmentation and Access Control",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "we'll begin with segmentation",
+      "note": null
+    },
+    {
+      "videoIndex": 56,
+      "objective": "2.5",
+      "videoTitle": "Mitigation Techniques",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "another mitigation technique is isolation",
+      "note": null
+    },
+    {
+      "videoIndex": 57,
+      "objective": "2.5",
+      "videoTitle": "Hardening Techniques",
+      "domain": 2,
+      "cramFile": "CompTIA Security+ SY0-701 - DOMAIN 2 COMPLETE [OTWJuA6cudo].txt",
+      "coverageStatus": "covered",
+      "cramAnchor": "moving on to hardening techniques",
+      "note": null
+    }
+  ]
+}
