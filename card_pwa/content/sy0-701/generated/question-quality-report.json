@@ -1,7 +1,7 @@
 {
   "schemaVersion": "sy0701-question-quality-report-1",
   "manifestVersion": "2026-07-23.1",
-  "generatedAt": 1786219274458,
+  "generatedAt": 1786268571597,
   "questionCount": 1427,
   "byPool": {
     "mapped-card": 375,
@@ -9,14 +9,14 @@
     "other-card": 66,
     "transcript": 647
   },
-  "scenarioStemCount": 314,
+  "scenarioStemCount": 331,
   "stemStyleCounts": {
-    "what": 385,
-    "which": 122,
-    "how": 99,
-    "why": 106,
+    "what": 351,
+    "which": 102,
+    "how": 100,
+    "why": 107,
     "when": 10,
-    "other": 705
+    "other": 757
   },
   "rawCorrectPositionCountsByPool": {
     "mapped-card": [
@@ -49,7 +49,7 @@
   "boilerplateExplanationItems": [],
   "learnerMetaItems": [],
   "germanQuestionItems": [],
-  "absolutistDistractorCount": 614,
+  "absolutistDistractorCount": 623,
   "criticalVariantCounts": [
     {
       "requirementId": "req:sy0701:v7:1.2:confidentiality-integrity-and-availability-cia",

@@ -19,7 +19,7 @@ export interface Sy0701CoverageSummary {
 export const SY0701_COVERAGE_SUMMARY: Sy0701CoverageSummary = {
   "sourceSnapshotId": "sy0701-v7-2026-07-15",
   "manifestVersion": "2026-07-23.1",
-  "generatedAt": 1786219274306,
+  "generatedAt": 1786268571460,
   "requirementCount": 655,
   "coveredCount": 655,
   "blockingRequirementIds": [],

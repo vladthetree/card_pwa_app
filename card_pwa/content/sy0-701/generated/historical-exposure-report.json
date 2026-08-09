@@ -1,7 +1,7 @@
 {
   "schemaVersion": "sy0701-historical-exposure-report-1",
   "manifestVersion": "2026-07-23.1",
-  "generatedAt": 1786219274461,
+  "generatedAt": 1786268571601,
   "sourceSnapshotId": "sy0701-v7-2026-07-15",
   "policy": "Für Readiness sind nur Items zulässig, die nachweislich nie an den Kandidaten ausgeliefert wurden.",
   "exposedPools": {
