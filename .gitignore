@@ -31,6 +31,10 @@ card-sync-server/non_origin_default_schema_gap_report.jsonl
 /downloads/
 /messner_lernkarten.backup_*/
 
+# ─── Lokale Transcript- und Auswertungsdaten ──────────────
+/sample_Transcripts/
+/card_pwa/public/messer-transcripts/
+
 # ─── Pi-hole / Unbound Laufzeitdaten ──────────────────────
 /pihole/runtime/
 /pihole/backups/
