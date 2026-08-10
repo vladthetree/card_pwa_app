@@ -178,6 +178,16 @@ def prepare_plan() -> tuple[dict[str, Any], list[dict[str, Any]]]:
         row = cards.get(decision["cardId"])
         if row is None:
             raise RuntimeError(f"Unknown reviewed card: {decision['cardId']}")
+        followup = None
+        if row.get("archiveDisposition") or row.get("qualityCorrection"):
+            followup = {
+                key: row.get(key)
+                for key in (
+                    "auditStatus", "finalRequirementIds", "targetDeckId", "action",
+                    "rationale", "fsrsImpact", "newContent", "unmappedResolution",
+                    "archiveDisposition", "qualityCorrection",
+                )
+            }
         original_status = row.get("originalAuditStatus", row["auditStatus"])
         if original_status != "unmapped":
             raise RuntimeError(f"Card was not originally unmapped: {decision['cardId']}")
@@ -213,15 +223,23 @@ def prepare_plan() -> tuple[dict[str, Any], list[dict[str, Any]]]:
             "newContent": None,
             "unmappedResolution": decision,
         })
+        if followup is not None:
+            row.update(followup)
+    decisions = [cards[row["cardId"]]["unmappedResolution"] for row in decisions]
     status_counts = Counter(row["auditStatus"] for row in plan["cards"])
     action_counts = Counter(row["action"] for row in plan["cards"])
     resolution_counts = Counter(row["decision"] for row in decisions)
     scope_counts = Counter(row["scopeLevel"] for row in decisions)
-    plan["schemaVersion"] = "sy0701-domain-optimization-plan-3"
+    archived_count = sum(bool(row.get("archiveDisposition")) for row in plan["cards"])
+    plan["schemaVersion"] = "sy0701-domain-optimization-plan-4" if archived_count else "sy0701-domain-optimization-plan-3"
     plan["counts"]["status"] = dict(sorted(status_counts.items()))
     plan["counts"]["existingActions"] = dict(sorted(action_counts.items()))
     plan["counts"]["unmappedResolution"] = dict(sorted(resolution_counts.items()))
     plan["counts"]["unmappedScopeLevels"] = dict(sorted(scope_counts.items()))
+    if archived_count:
+        plan["counts"]["archivedNotRelevantCards"] = archived_count
+        plan["counts"]["activeExistingDomainCards"] = len(plan["cards"]) - archived_count
+        plan["counts"]["finalDomainCards"] = len(plan["cards"]) - archived_count + len(plan["addedCards"])
     RESOLUTION_PLAN.write_text(json.dumps({
         "schemaVersion": "sy0701-unmapped-resolution-plan-1",
         "source": "CompTIA Security+ SY0-701 V7 objectives and official acronym list",
@@ -305,8 +323,8 @@ def command_apply(_: argparse.Namespace) -> None:
 
 def command_validate(_: argparse.Namespace) -> None:
     plan = json.loads(PLAN.read_text(encoding="utf-8"))
-    decisions = load_decisions()
     plan_by_id = {row["cardId"]: row for row in plan["cards"]}
+    decisions = [row["unmappedResolution"] for row in plan["cards"] if row.get("unmappedResolution")]
     before = sqlite3.connect(PHASE_BACKUP)
     live = sqlite3.connect(DB)
     before.row_factory = live.row_factory = sqlite3.Row
@@ -327,10 +345,20 @@ def command_validate(_: argparse.Namespace) -> None:
             for profile in profiles:
                 old = dict(before.execute("SELECT * FROM server_cards WHERE user_id=? AND id=?", (profile["user_id"], decision["cardId"])).fetchone())
                 new = dict(live.execute("SELECT * FROM server_cards WHERE user_id=? AND id=?", (profile["user_id"], decision["cardId"])).fetchone())
-                expected_deck = planned["targetDeckId"] if planned["action"] == "move" else old["deck_id"]
+                expected_deck = planned["targetDeckId"] if planned["action"] in {"move", "move_and_clarify"} else old["deck_id"]
                 if new["deck_id"] != expected_deck:
                     errors.append(f"{profile['profile_name']}/{decision['cardId']}: target deck mismatch")
-                allowed = {"deck_id", "updated_at"} if planned["action"] == "move" else set()
+                allowed = {"deck_id", "updated_at"} if planned["action"] in {"move", "move_and_clarify"} else set()
+                if planned.get("newContent"):
+                    allowed.update({"front", "back", "tags_json", "extra_json", "updated_at"})
+                    expected_content = planned["newContent"]
+                    if (
+                        new["front"] != expected_content["front"]
+                        or new["back"] != expected_content["back"]
+                        or json.loads(new["tags_json"] or "[]") != expected_content["tags"]
+                        or json.loads(new["extra_json"] or "{}") != expected_content["extraJson"]
+                    ):
+                        errors.append(f"{profile['profile_name']}/{decision['cardId']}: quality-corrected content mismatch")
                 if (profile["user_id"], decision["cardId"]) in reviewed_during_phase:
                     allowed.update(scheduling | {"updated_at", "last_source_client"})
                 for key in old:
@@ -354,13 +382,24 @@ def command_validate(_: argparse.Namespace) -> None:
         live.close()
     counts = Counter(row["decision"] for row in decisions)
     scopes = Counter(row["scopeLevel"] for row in decisions)
-    moved_ids = [row["cardId"] for row in decisions if plan_by_id[row["cardId"]]["action"] == "move"]
+    moved_ids = [
+        row["cardId"] for row in decisions
+        if row["decision"] == "objective_assigned" and plan_by_id[row["cardId"]]["action"] in {"move", "move_and_clarify"}
+    ]
+    archived_ids = [
+        row["cardId"] for row in decisions
+        if row["decision"] == "not_relevant" and plan_by_id[row["cardId"]].get("archiveDisposition")
+    ]
     quality_flags = [
         {"cardId": row["cardId"], "note": row["qualityFlag"]}
         for row in decisions if row["qualityFlag"]
     ]
+    resolved_quality_flags = [
+        {"cardId": row["cardId"], "disposition": row.get("qualityFlagDisposition")}
+        for row in decisions if row.get("qualityFlagDisposition")
+    ]
     report = {
-        "schemaVersion": "sy0701-unmapped-resolution-report-1",
+        "schemaVersion": "sy0701-unmapped-resolution-report-2",
         "passed": not errors,
         "errors": errors,
         "reviewedPreviouslyUnmappedCards": len(decisions),
@@ -369,12 +408,15 @@ def command_validate(_: argparse.Namespace) -> None:
         "unresolvedCards": 0,
         "cardsMovedToObjectiveDecks": len(moved_ids),
         "movedCardIds": moved_ids,
-        "contentChanged": 0,
+        "archivedNotRelevantCards": len(archived_ids),
+        "archivedCardIds": archived_ids,
+        "contentChanged": sum(bool(plan_by_id[row["cardId"]].get("newContent")) for row in decisions),
         "fsrsSchedulesChanged": 0,
         "reviewHistoryRowsChanged": 0,
         "reviewHistoryRowsPreserved": len(phase_reviews),
         "normalReviewRowsAddedDuringPhase": len(added_reviews),
         "qualityFlags": quality_flags,
+        "resolvedQualityFlags": resolved_quality_flags,
         "cards": decisions,
     }
     RESOLUTION_REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

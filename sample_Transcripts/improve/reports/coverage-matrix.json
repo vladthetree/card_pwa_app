@@ -6639,6 +6639,7 @@
       "covered": true,
       "cardIds": [
         "1729542531766",
+        "1729542555582",
         "1786384200154"
       ],
       "distilledContentSha256": "dc7d416a92845a2635cade50c0f5a84aa88b59180813994928b9ecef7f542d49"
@@ -6655,6 +6656,7 @@
       "covered": true,
       "cardIds": [
         "1729542531766",
+        "1729542555582",
         "1786384200155"
       ],
       "distilledContentSha256": "5183de7009d3d2d9c0b59135c9c68856184ab104b090f9fd9203bf07bf985dc1"
@@ -6670,6 +6672,7 @@
       ],
       "covered": true,
       "cardIds": [
+        "1729542555582",
         "1786384200156"
       ],
       "distilledContentSha256": "9341c359082ae57794d675a072443be8e610e6dcc4d8aba608316a00bf232c5b"
@@ -6685,6 +6688,7 @@
       ],
       "covered": true,
       "cardIds": [
+        "1729542555582",
         "1786384200157"
       ],
       "distilledContentSha256": "865daa3e20b7c4ec7ebb7d8f53b7903526b40f17f5d16047628b6d3ea10086a1"
@@ -9447,6 +9451,7 @@
       ],
       "covered": true,
       "cardIds": [
+        "1772922529731",
         "1772922529757"
       ],
       "distilledContentSha256": "bc6ab558e6453f57da0d091400041d90538d3734c15502f2e3e91f35c7af11ad"

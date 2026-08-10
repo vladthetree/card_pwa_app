@@ -5667,9 +5667,11 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "targetDeckId": "sy0-701-not-relevant-archive"
+      },
+      "implementedAction": "move",
+      "fsrsImpact": "retain_content_schedule_and_review_history",
       "unmappedResolution": {
         "cardId": "1729003938350",
         "decision": "not_relevant",
@@ -7076,9 +7078,11 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "targetDeckId": "sy0-701-not-relevant-archive"
+      },
+      "implementedAction": "move",
+      "fsrsImpact": "retain_content_schedule_and_review_history",
       "unmappedResolution": {
         "cardId": "1729019963492",
         "decision": "not_relevant",
@@ -7086,7 +7090,8 @@
         "objectiveId": null,
         "requirementIds": [],
         "rationale": "Die pauschale Übertragung von Zero Trust auf die Echtheitsprüfung neuer Hardware entspricht keinem veröffentlichten Zero-Trust- oder Supply-Chain-Leaf.",
-        "qualityFlag": "Die Aussage vermischt Zugriffsentscheidungen mit Hardware-Provenienz."
+        "qualityFlag": null,
+        "qualityFlagDisposition": "archived_not_relevant"
       }
     },
     {
@@ -7205,9 +7210,11 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "targetDeckId": "sy0-701-not-relevant-archive"
+      },
+      "implementedAction": "move",
+      "fsrsImpact": "retain_content_schedule_and_review_history",
       "unmappedResolution": {
         "cardId": "1729093945243",
         "decision": "not_relevant",
@@ -7758,9 +7765,11 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "targetDeckId": "sy0-701-not-relevant-archive"
+      },
+      "implementedAction": "move",
+      "fsrsImpact": "retain_content_schedule_and_review_history",
       "unmappedResolution": {
         "cardId": "1729097429318",
         "decision": "not_relevant",
@@ -7800,9 +7809,11 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "targetDeckId": "sy0-701-not-relevant-archive"
+      },
+      "implementedAction": "move",
+      "fsrsImpact": "retain_content_schedule_and_review_history",
       "unmappedResolution": {
         "cardId": "1729097907113",
         "decision": "not_relevant",
@@ -8398,9 +8409,11 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "targetDeckId": "sy0-701-not-relevant-archive"
+      },
+      "implementedAction": "move",
+      "fsrsImpact": "retain_content_schedule_and_review_history",
       "unmappedResolution": {
         "cardId": "1729104741764",
         "decision": "not_relevant",
@@ -8440,9 +8453,11 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "targetDeckId": "sy0-701-not-relevant-archive"
+      },
+      "implementedAction": "move",
+      "fsrsImpact": "retain_content_schedule_and_review_history",
       "unmappedResolution": {
         "cardId": "1729104839747",
         "decision": "not_relevant",
@@ -9094,9 +9109,11 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "targetDeckId": "sy0-701-not-relevant-archive"
+      },
+      "implementedAction": "move",
+      "fsrsImpact": "retain_content_schedule_and_review_history",
       "unmappedResolution": {
         "cardId": "1729176350133",
         "decision": "not_relevant",
@@ -9136,9 +9153,11 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "targetDeckId": "sy0-701-not-relevant-archive"
+      },
+      "implementedAction": "move",
+      "fsrsImpact": "retain_content_schedule_and_review_history",
       "unmappedResolution": {
         "cardId": "1729176391515",
         "decision": "not_relevant",
@@ -10067,9 +10086,11 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "targetDeckId": "sy0-701-not-relevant-archive"
+      },
+      "implementedAction": "move",
+      "fsrsImpact": "retain_content_schedule_and_review_history",
       "unmappedResolution": {
         "cardId": "1729186250125",
         "decision": "not_relevant",
@@ -10385,9 +10406,11 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "targetDeckId": "sy0-701-not-relevant-archive"
+      },
+      "implementedAction": "move",
+      "fsrsImpact": "retain_content_schedule_and_review_history",
       "unmappedResolution": {
         "cardId": "1729192907745",
         "decision": "not_relevant",
@@ -12099,9 +12122,11 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "targetDeckId": "sy0-701-not-relevant-archive"
+      },
+      "implementedAction": "move",
+      "fsrsImpact": "retain_content_schedule_and_review_history",
       "unmappedResolution": {
         "cardId": "1729282747703",
         "decision": "not_relevant",
@@ -12109,7 +12134,8 @@
         "objectiveId": null,
         "requirementIds": [],
         "rationale": "Die Karte meint parallele Rechenarbeit; der V7-Leaf Parallel Processing meint dagegen einen parallel laufenden Recovery-Test.",
-        "qualityFlag": "Semantischer Konflikt mit dem offiziellen Objective 3.4."
+        "qualityFlag": null,
+        "qualityFlagDisposition": "archived_not_relevant"
       }
     },
     {
@@ -12932,9 +12958,11 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "targetDeckId": "sy0-701-not-relevant-archive"
+      },
+      "implementedAction": "move",
+      "fsrsImpact": "retain_content_schedule_and_review_history",
       "unmappedResolution": {
         "cardId": "1729540036900",
         "decision": "not_relevant",
@@ -13004,12 +13032,17 @@
         "name": "4.5 Enterprise Security"
       },
       "cardType": "mc",
-      "status": "keep",
-      "requirementIds": [],
+      "status": "improve",
+      "requirementIds": [
+        "req:sy0701:v7:4.5:web-filter:universal-resource-locator-url-scanning",
+        "req:sy0701:v7:4.5:web-filter:content-categorization",
+        "req:sy0701:v7:4.5:web-filter:block-rules",
+        "req:sy0701:v7:4.5:web-filter:reputation"
+      ],
       "officialObjectives": [
         "4.5"
       ],
-      "distilledComparison": "Content Filtering ist Kontext des veröffentlichten Web-Filter-Oberpunkts in 4.5; die Formulierung legt keinen Leaf eindeutig fest.",
+      "distilledComparison": "Die bisherige Formulierung 'inbound and outbound data' war zu breit; die neue Karte prüft konkrete Web-Filter-Funktionen.",
       "sourceIdentifiers": [
         "M4-017"
       ],
@@ -13027,9 +13060,21 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "front": "M4-017: A company wants to block web access based on URL categories and reputation and to enforce rules on requested or downloaded web content. Which capability best meets this requirement?\nA: Discretionary Access Control\nB: Active Directory\nC: Content Filtering\nD: DomainKeys Identified Mail",
+        "back": ">> CORRECT: C |\n\nContent Filtering bewertet Webzugriffe und Webinhalte anhand von URLs, Kategorien, Reputation und festgelegten Blockregeln. Damit kann die Organisation unerwünschte Requests oder Downloads gezielt verhindern.\n\nNicht:\nA | Discretionary Access Control regelt, welche Benutzer auf Objekte wie Dateien zugreifen dürfen; es kategorisiert oder filtert keine Webinhalte.\nB | Active Directory verwaltet Identitäten, Gruppen, Geräte und Richtlinien, ist aber kein Web- oder URL-Filter.\nD | DKIM bestätigt über eine digitale Signatur die Herkunft und Integrität einer E-Mail; es kontrolliert keine aufgerufenen Websites oder heruntergeladenen Webinhalte.",
+        "tags": [
+          "Enterprise Security"
+        ],
+        "extraJson": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "implementedAction": "clarify",
+      "fsrsImpact": "retain_same_objective_clarity_fix",
       "unmappedResolution": {
         "cardId": "1729542555582",
         "decision": "objective_assigned",
@@ -13037,7 +13082,8 @@
         "objectiveId": "4.5",
         "requirementIds": [],
         "rationale": "Content Filtering ist Kontext des veröffentlichten Web-Filter-Oberpunkts in 4.5; die Formulierung legt keinen Leaf eindeutig fest.",
-        "qualityFlag": "Die Formulierung 'inbound and outbound data' ist sehr breit."
+        "qualityFlag": null,
+        "qualityFlagDisposition": "corrected"
       }
     },
     {
@@ -14371,12 +14417,12 @@
         "name": "5.2 Risk Management"
       },
       "cardType": "mc",
-      "status": "keep",
+      "status": "improve",
       "requirementIds": [],
       "officialObjectives": [
         "5.2"
       ],
-      "distilledComparison": "Die Karte gehört zum Risk-Appetite-/Acceptance-Kontext von Objective 5.2.",
+      "distilledComparison": "Die Wendung 'without acting' vermischte Risk Appetite mit Risk Acceptance; die neue Definition entspricht dem veröffentlichten Appetite-Oberbegriff.",
       "sourceIdentifiers": [
         "M5-008"
       ],
@@ -14394,9 +14440,21 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "front": "M5-008: Which term describes the amount and type of risk an organization is willing to pursue or retain while working toward its objectives?\nA: Recovery Point Objective\nB: Risk Appetite\nC: Risk Tolerance\nD: Annualized Loss Expectancy",
+        "back": ">> CORRECT: B |\n\nRisk Appetite beschreibt auf übergeordneter Ebene, welche Arten und welches Ausmaß an Risiko eine Organisation beim Verfolgen ihrer Ziele eingehen oder beibehalten will. Daraus können konkretere Toleranzgrenzen und Entscheidungen abgeleitet werden.\n\nNicht:\nA | Das Recovery Point Objective legt fest, wie viel Datenverlust gemessen als Zeitspanne bei einer Wiederherstellung höchstens akzeptabel ist.\nC | Risk Tolerance beschreibt die zulässige Abweichung um ein konkretes Risiko- oder Leistungsziel; sie operationalisiert den breiteren Risk Appetite.\nD | Annualized Loss Expectancy ist der erwartete jährliche Verlust eines Risikos und wird typischerweise als Single Loss Expectancy multipliziert mit der Annualized Rate of Occurrence berechnet.",
+        "tags": [
+          "Risk Management"
+        ],
+        "extraJson": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "implementedAction": "clarify",
+      "fsrsImpact": "retain_same_objective_clarity_fix",
       "unmappedResolution": {
         "cardId": "1729706866215",
         "decision": "objective_assigned",
@@ -14404,7 +14462,8 @@
         "objectiveId": "5.2",
         "requirementIds": [],
         "rationale": "Die Karte gehört zum Risk-Appetite-/Acceptance-Kontext von Objective 5.2.",
-        "qualityFlag": "Die Wendung 'without acting' ist zwischen Appetite und Acceptance missverständlich."
+        "qualityFlag": null,
+        "qualityFlagDisposition": "corrected"
       }
     },
     {
@@ -14851,9 +14910,11 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "targetDeckId": "sy0-701-not-relevant-archive"
+      },
+      "implementedAction": "move",
+      "fsrsImpact": "retain_content_schedule_and_review_history",
       "unmappedResolution": {
         "cardId": "1729783723324",
         "decision": "not_relevant",
@@ -15475,9 +15536,11 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "targetDeckId": "sy0-701-not-relevant-archive"
+      },
+      "implementedAction": "move",
+      "fsrsImpact": "retain_content_schedule_and_review_history",
       "unmappedResolution": {
         "cardId": "1772576382622",
         "decision": "not_relevant",
@@ -18858,12 +18921,14 @@
         "name": "05_Security_Program_Management_Oversight"
       },
       "cardType": "mc",
-      "status": "keep",
-      "requirementIds": [],
+      "status": "improve",
+      "requirementIds": [
+        "req:sy0701:v7:5.4:consequences-of-non-compliance:reputational-damage"
+      ],
       "officialObjectives": [
         "5.4"
       ],
-      "distilledComparison": "Das Breach-Szenario prüft Folgen für Reputation und Finanzen im Compliance-/Privacy-Kontext von 5.4.",
+      "distilledComparison": "Die frühere Negativfrage setzte unbegründet voraus, dass ein Breach keine Availability-Auswirkung haben kann; das neue Szenario prüft eine eindeutige Compliance-Folge.",
       "sourceIdentifiers": [],
       "currentContent": {
         "front": "The company that Scott works for has experienced a data breach, and the personal information of thousands of customers has been exposed. Which of the following impact categories is not a concern?\nA: Reputation\nB: Financial\nC: Availability loss\nD: Data loss",
@@ -18879,10 +18944,23 @@
         }
       },
       "proposedChange": {
+        "content": {
+          "front": "A company exposes the personal records of thousands of customers. The incident causes loss of customer trust, sustained negative media coverage, and customers leaving for competitors. Which consequence of non-compliance is most directly illustrated?\nA: Contractual impacts\nB: Sanctions\nC: Reputational damage\nD: Loss of license",
+          "back": ">> CORRECT: C |\n\nReputational damage ist der Vertrauens- und Imageschaden, der durch negative Berichterstattung und die Abwanderung von Kunden nach einem Datenschutz- oder Compliance-Verstoß entsteht.\n\nNicht:\nA | Contractual impacts wären Folgen aus verletzten Vertragsklauseln, etwa Schadenersatz, Kündigungsrechte oder neu verhandelte Bedingungen; solche Folgen nennt das Szenario nicht.\nB | Sanctions sind formelle Straf- oder Zwangsmaßnahmen einer zuständigen Stelle. Das Szenario beschreibt stattdessen den Verlust von Vertrauen und Ansehen.\nD | Loss of license bedeutet den Entzug einer für den Geschäftsbetrieb notwendigen Zulassung. Ein solcher Entzug wird im Szenario nicht genannt.",
+          "tags": [
+            "Security Compliance"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
         "targetDeckId": "sy0-701-objective-5-4"
       },
-      "implementedAction": "move",
-      "fsrsImpact": "retain_content_and_schedule",
+      "implementedAction": "move_and_clarify",
+      "fsrsImpact": "retain_same_objective_clarity_fix",
       "unmappedResolution": {
         "cardId": "1772922529731",
         "decision": "objective_assigned",
@@ -18890,7 +18968,8 @@
         "objectiveId": "5.4",
         "requirementIds": [],
         "rationale": "Das Breach-Szenario prüft Folgen für Reputation und Finanzen im Compliance-/Privacy-Kontext von 5.4.",
-        "qualityFlag": "Die Negativoption setzt voraus, dass der geschilderte Breach nur Vertraulichkeit betrifft."
+        "qualityFlag": null,
+        "qualityFlagDisposition": "corrected"
       }
     },
     {
@@ -22822,9 +22901,11 @@
           "protocol": ""
         }
       },
-      "proposedChange": null,
-      "implementedAction": "keep",
-      "fsrsImpact": "retain_content_and_schedule",
+      "proposedChange": {
+        "targetDeckId": "sy0-701-not-relevant-archive"
+      },
+      "implementedAction": "move",
+      "fsrsImpact": "retain_content_schedule_and_review_history",
       "unmappedResolution": {
         "cardId": "1773101490323",
         "decision": "not_relevant",

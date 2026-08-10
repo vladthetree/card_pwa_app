@@ -48,13 +48,14 @@ interface Settings {
   algorithmParams: AlgorithmParams
   studyCardLimit: number
   shuffleModeEnabled: boolean
+  /** Show and record the per-card answer timer in every desktop deck. */
+  answerTimerEnabled: boolean
   fontFamily: FontFamily
   questionTextSize: QuestionTextSize
   notificationsEnabled: boolean
   notificationChannels: NotificationChannels
   dailyReminderEnabled: boolean
   dailyReminderTime: string
-  showBuildVersion: boolean
   showReviewDecks: boolean
   /** Hour (0–23) at which a new study day begins. Default 4 = 04:00 AM.
    *  Prevents schedule shifts when studying past midnight (Issue #8). */
@@ -101,10 +102,10 @@ interface SettingsContextType {
   setNotificationChannelTemplate: (channel: NotificationChannelKey, title: string, body: string) => void
   setDailyReminderEnabled: (enabled: boolean) => void
   setDailyReminderTime: (time: string) => void
-  setShowBuildVersion: (enabled: boolean) => void
   setShowReviewDecks: (enabled: boolean) => void
   setStudyCardLimit: (limit: number) => void
   setShuffleModeEnabled: (enabled: boolean) => void
+  setAnswerTimerEnabled: (enabled: boolean) => void
   setNextDayStartsAt: (hour: number) => void
   setDailyGoal: (goal: number) => void
   setNewCardsPerDay: (count: number) => void
@@ -189,13 +190,13 @@ const DEFAULT_SETTINGS: Settings = {
   algorithmParams: DEFAULT_ALGORITHM_PARAMS,
   studyCardLimit: 50,
   shuffleModeEnabled: true,
+  answerTimerEnabled: false,
   fontFamily: 'industrial',
   questionTextSize: 'default',
   notificationsEnabled: true,
   notificationChannels: DEFAULT_NOTIFICATION_CHANNELS,
   dailyReminderEnabled: false,
   dailyReminderTime: '20:00',
-  showBuildVersion: true,
   showReviewDecks: false,
   nextDayStartsAt: 4,
   dailyGoal: 20,
@@ -235,6 +236,7 @@ export function normalizeExamDateUpdatedAt(value: unknown): number | null {
 }
 
 export function normalizeSettings(input: Partial<Settings> | undefined): Settings {
+  const legacy = input as (Partial<Settings> & { answerTimerDeckIds?: unknown }) | undefined
   const rawNextDayStartsAt = Number(input?.nextDayStartsAt)
   const normalizedChannels = normalizeNotificationChannels(input?.notificationChannels)
   const normalizedDailyReminderEnabled = typeof input?.dailyReminderEnabled === 'boolean'
@@ -247,6 +249,9 @@ export function normalizeSettings(input: Partial<Settings> | undefined): Setting
     algorithmParams: normalizeAlgorithmParams(input?.algorithmParams),
     studyCardLimit: normalizeStudyCardLimit(input?.studyCardLimit),
     shuffleModeEnabled: input?.shuffleModeEnabled !== false,
+    answerTimerEnabled: typeof input?.answerTimerEnabled === 'boolean'
+      ? input.answerTimerEnabled
+      : Array.isArray(legacy?.answerTimerDeckIds) && legacy.answerTimerDeckIds.length > 0,
     fontFamily: input?.fontFamily === 'modern' ? input.fontFamily : 'industrial',
     questionTextSize:
       input?.questionTextSize === 'large'
@@ -259,7 +264,6 @@ export function normalizeSettings(input: Partial<Settings> | undefined): Setting
       notificationChannels: normalizedChannels,
       dailyReminderEnabled: normalizedDailyReminderEnabled,
     dailyReminderTime: normalizeDailyReminderTime(input?.dailyReminderTime),
-    showBuildVersion: input?.showBuildVersion !== false,
     showReviewDecks: input?.showReviewDecks === true,
     nextDayStartsAt: Number.isInteger(rawNextDayStartsAt) && rawNextDayStartsAt >= 0 && rawNextDayStartsAt <= 23 ? rawNextDayStartsAt : 4,
     dailyGoal: normalizeDailyGoal(input?.dailyGoal),
@@ -289,6 +293,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       const existing = raw ? JSON.parse(raw) as Record<string, unknown> : {}
       delete existing.gameOfLifeViewMode
       delete existing.gameOfLifeAnimationSpeed
+      delete existing.answerTimerDeckIds
+      delete existing.showBuildVersion
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...existing, ...next }))
     } catch {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
@@ -442,10 +448,6 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     saveSettings({ ...settings, dailyReminderTime: normalizeDailyReminderTime(dailyReminderTime) })
   }
 
-  const setShowBuildVersion = (showBuildVersion: boolean) => {
-    saveSettings({ ...settings, showBuildVersion })
-  }
-
   const setShowReviewDecks = (showReviewDecks: boolean) => {
     saveSettings({ ...settings, showReviewDecks })
   }
@@ -456,6 +458,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   const setShuffleModeEnabled = (shuffleModeEnabled: boolean) => {
     saveSettings({ ...settings, shuffleModeEnabled })
+  }
+
+  const setAnswerTimerEnabled = (answerTimerEnabled: boolean) => {
+    saveSettings({ ...settings, answerTimerEnabled })
   }
 
   const setNextDayStartsAt = (hour: number) => {
@@ -583,10 +589,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setNotificationChannelTemplate,
         setDailyReminderEnabled,
         setDailyReminderTime,
-        setShowBuildVersion,
         setShowReviewDecks,
         setStudyCardLimit,
         setShuffleModeEnabled,
+        setAnswerTimerEnabled,
         setNextDayStartsAt,
         setDailyGoal,
         setNewCardsPerDay,

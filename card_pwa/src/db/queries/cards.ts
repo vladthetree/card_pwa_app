@@ -4,10 +4,11 @@
  * Used by: CardFormModal, import pipeline, study repair actions, and home/card management flows.
  * Important: Do not bypass this module for user-facing card writes, or sync and review-updated events can fall out of date.
  */
-import { db, type CardRecord, type DeckRecord } from '../../db'
+import { db, type CardAnswerTimingStats, type CardRecord, type DeckRecord } from '../../db'
 import { SM2 } from '../../utils/sm2'
 import { enqueueSyncOperation } from '../../services/syncQueue'
 import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
+import { buildCardSessionAppearance, buildFirstCardAnswerTiming } from '../../utils/cardAnswerTiming'
 
 /**
  * Caps all overdue cards' due date to today so a long absence doesn't create
@@ -126,6 +127,73 @@ export async function updateCard(
     console.error('[updateCard]', message)
     return { ok: false, error: message }
   }
+}
+
+async function persistCardAnswerTiming(
+  cardId: string,
+  buildNext: (current: CardAnswerTimingStats | undefined) => { changed: boolean; stats: CardAnswerTimingStats },
+): Promise<{ ok: boolean; changed: boolean; stats?: CardAnswerTimingStats; error?: string }> {
+  try {
+    let nextMetadata: CardRecord['metadata'] | undefined
+    let nextStats: CardAnswerTimingStats | undefined
+    let updatedAt = 0
+
+    await db.transaction('rw', db.cards, async () => {
+      const card = await db.cards.get(cardId)
+      if (!card || card.isDeleted) return
+
+      const next = buildNext(card.metadata?.answerTiming)
+      nextStats = next.stats
+      if (!next.changed) return
+
+      updatedAt = Date.now()
+      nextMetadata = {
+        ...(card.metadata ?? {}),
+        answerTiming: next.stats,
+      }
+      await db.cards.update(cardId, { metadata: nextMetadata, updatedAt })
+    })
+
+    if (!nextStats) {
+      return { ok: false, changed: false, error: 'Card not found.' }
+    }
+    if (!nextMetadata) {
+      return { ok: true, changed: false, stats: nextStats }
+    }
+
+    await enqueueSyncOperation('card.update', {
+      cardId,
+      updates: { metadata: nextMetadata, updatedAt },
+      timestamp: updatedAt,
+    })
+    return { ok: true, changed: true, stats: nextStats }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    console.error('[persistCardAnswerTiming]', message)
+    return { ok: false, changed: false, error: message }
+  }
+}
+
+/** Count a card once when it appears in a study-session run, regardless of how
+ * often it is requeued in that same run. */
+export function recordCardStudySessionAppearance(
+  cardId: string,
+  sessionRunId: string,
+): Promise<{ ok: boolean; changed: boolean; stats?: CardAnswerTimingStats; error?: string }> {
+  return persistCardAnswerTiming(cardId, current => buildCardSessionAppearance(current, sessionRunId))
+}
+
+/** Persist the first answer duration for this card/session pair. A repeated
+ * attempt in the same run is a no-op, including after an incorrect answer. */
+export function recordFirstCardAnswerTime(
+  cardId: string,
+  sessionRunId: string,
+  elapsedSeconds: number,
+): Promise<{ ok: boolean; changed: boolean; stats?: CardAnswerTimingStats; error?: string }> {
+  return persistCardAnswerTiming(
+    cardId,
+    current => buildFirstCardAnswerTiming(current, sessionRunId, elapsedSeconds),
+  )
 }
 
 export async function deleteCard(cardId: string): Promise<{ ok: boolean; error?: string }> {

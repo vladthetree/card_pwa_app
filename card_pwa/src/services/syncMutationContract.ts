@@ -88,6 +88,7 @@ export const SYNC_MUTATION_CONTRACT = {
     queueSource: 'direct-queue',
     queueProducer: [
       'db/queries/cards.ts:updateCard',
+      'db/queries/cards.ts:recordCardStudySessionAppearance/recordFirstCardAnswerTime',
       'services/algorithmMigration.ts:migrateCardsForAlgorithm',
       'utils/import/importPipeline.ts:executeImport',
     ],

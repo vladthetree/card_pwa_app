@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "sy0701-domain-card-snapshot-manifest-2",
+  "schemaVersion": "sy0701-domain-card-snapshot-manifest-3",
   "database": {
     "source": "card-sync-server/sync.db",
     "sourceSha256": "a0f687d4f4524fa246f9158310b962cfbd9d7be1141f1203fd7328340a911965",
@@ -27,5 +27,9 @@
     "sample_Transcripts/Mapping_Knowledge/domain-5-requirement-mapping.json": "38f959418ea52ee88b7623758bcd3e277c5ed4cdf3a3d23882cddb33ae4ebfe7"
   },
   "distilledContentAggregateSha256": "91e28e75206f5ad4ade636d9389ec9319a4706c42425da086c0e5d567f85a9d6",
-  "excludedSource": "The independent quality report is intentionally not read or hashed."
+  "excludedSource": "The independent quality report is intentionally not read or hashed.",
+  "archiveAndQualityFixesPhase": {
+    "backup": "sample_Transcripts/improve/snapshots/sync-before-archive-and-quality-fixes.db",
+    "backupSha256": "fdebd3dd0953e5e7691bc6f7d3d453298f45eb2ff9895d976c79aaed6c88df0c"
+  }
 }

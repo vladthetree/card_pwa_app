@@ -23,6 +23,21 @@ export interface CardMigrationMetadata {
   migratedAt: number                 // epoch ms
 }
 
+/** Per-card answer-time aggregate. One sample and one appearance are accepted
+ *  at most once for a given study-session run. Durations are whole seconds. */
+export interface CardAnswerTimingStats {
+  averageAnswerTimeSeconds: number
+  totalAnswerTimeSeconds: number
+  answerTimeSampleCount: number
+  studySessionCount: number
+  lastAnsweredSessionRunId?: string
+  lastSeenSessionRunId?: string
+}
+
+export interface CardMetadata extends Partial<CardMigrationMetadata> {
+  answerTiming?: CardAnswerTimingStats
+}
+
 export interface DeckRecord {
   id: string
   name: string
@@ -71,8 +86,8 @@ export interface CardRecord {
   /** Tombstone: set to true on soft-delete; filters the card from all active queries. */
   isDeleted?: boolean
   deletedAt?: number
-  /** Pre-migration snapshot for non-destructive algorithm switching (Issue #7). */
-  metadata?: CardMigrationMetadata
+  /** Migration snapshot plus optional per-card learning aggregates. */
+  metadata?: CardMetadata
 }
 
 export interface ReviewRecord {

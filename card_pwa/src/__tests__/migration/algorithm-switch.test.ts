@@ -75,6 +75,7 @@ function createCard(partial: Partial<CardRecord>): CardRecord {
     lapses: partial.lapses ?? 1,
     createdAt: partial.createdAt ?? Date.now(),
     algorithm: partial.algorithm,
+    metadata: partial.metadata,
   }
 }
 
@@ -194,6 +195,34 @@ describe('Algorithm migration service', () => {
     const updatedAt = mockedDb.state.cards[0].updatedAt
     expect(typeof updatedAt).toBe('number')
     expect(updatedAt).toBeGreaterThanOrEqual(before)
+  })
+
+  it('preserves answer timing metadata during an algorithm migration', async () => {
+    mockedDb.state.cards = [
+      createCard({
+        id: 'timed-card',
+        algorithm: 'sm2',
+        factor: 2500,
+        interval: 5,
+        metadata: {
+          answerTiming: {
+            averageAnswerTimeSeconds: 14,
+            totalAnswerTimeSeconds: 28,
+            answerTimeSampleCount: 2,
+            studySessionCount: 3,
+          },
+        },
+      }),
+    ]
+
+    await migrateCardsForAlgorithm('fsrs')
+
+    expect(mockedDb.state.cards[0].metadata?.answerTiming).toMatchObject({
+      averageAnswerTimeSeconds: 14,
+      answerTimeSampleCount: 2,
+      studySessionCount: 3,
+    })
+    expect(mockedDb.state.cards[0].metadata?.preMigrationAlgorithm).toBe('sm2')
   })
 
   it('enqueues card.update sync ops for each migrated card', async () => {

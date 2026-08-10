@@ -11,6 +11,7 @@ const mockedRuntime = vi.hoisted(() => {
   }
 
   const cards = {
+    get: vi.fn(async (cardId: string) => state.cards.find(card => card.id === cardId)),
     update: vi.fn(async (cardId: string, updates: Partial<CardRecord>) => {
       const index = state.cards.findIndex(card => card.id === cardId)
       if (index === -1) return 0
@@ -25,10 +26,11 @@ const mockedRuntime = vi.hoisted(() => {
   }
 
   const enqueueSyncOperation = vi.fn(async () => undefined)
+  const transaction = vi.fn(async (_mode: string, _table: unknown, callback: () => Promise<void>) => callback())
 
   return {
     state,
-    db: { cards },
+    db: { cards, transaction },
     enqueueSyncOperation,
   }
 })
@@ -41,7 +43,12 @@ vi.mock('../../services/syncQueue', () => ({
   enqueueSyncOperation: mockedRuntime.enqueueSyncOperation,
 }))
 
-import { listDeckCards, updateCard } from '../../db/queries'
+import {
+  listDeckCards,
+  recordCardStudySessionAppearance,
+  recordFirstCardAnswerTime,
+  updateCard,
+} from '../../db/queries'
 
 function makeRecord(partial: Partial<CardRecord>): CardRecord {
   const now = Date.now()
@@ -75,7 +82,9 @@ describe('local card save and edit regression', () => {
   beforeEach(() => {
     mockedRuntime.state.cards = []
     mockedRuntime.db.cards.update.mockClear()
+    mockedRuntime.db.cards.get.mockClear()
     mockedRuntime.db.cards.where.mockClear()
+    mockedRuntime.db.transaction.mockClear()
     mockedRuntime.enqueueSyncOperation.mockClear()
   })
 
@@ -132,5 +141,36 @@ describe('local card save and edit regression', () => {
     expect(result.ok).toBe(false)
     expect(result.error).toBe('Card not found or no rows updated.')
     expect(mockedRuntime.enqueueSyncOperation).not.toHaveBeenCalled()
+  })
+
+  it('persists one appearance and one answer sample per card/session pair', async () => {
+    mockedRuntime.state.cards = [makeRecord({ id: 'timed-card' })]
+
+    await recordCardStudySessionAppearance('timed-card', 'session-a')
+    await recordCardStudySessionAppearance('timed-card', 'session-a')
+    await recordFirstCardAnswerTime('timed-card', 'session-a', 12)
+    await recordFirstCardAnswerTime('timed-card', 'session-a', 90)
+    await recordFirstCardAnswerTime('timed-card', 'session-b', 18)
+
+    expect(mockedRuntime.state.cards[0].metadata?.answerTiming).toEqual({
+      averageAnswerTimeSeconds: 15,
+      totalAnswerTimeSeconds: 30,
+      answerTimeSampleCount: 2,
+      studySessionCount: 2,
+      lastAnsweredSessionRunId: 'session-b',
+      lastSeenSessionRunId: 'session-b',
+    })
+    expect(mockedRuntime.enqueueSyncOperation).toHaveBeenCalledTimes(3)
+    expect(mockedRuntime.enqueueSyncOperation).toHaveBeenLastCalledWith(
+      'card.update',
+      expect.objectContaining({
+        cardId: 'timed-card',
+        updates: expect.objectContaining({
+          metadata: expect.objectContaining({
+            answerTiming: expect.objectContaining({ averageAnswerTimeSeconds: 15 }),
+          }),
+        }),
+      }),
+    )
   })
 })

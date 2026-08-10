@@ -14,6 +14,7 @@ import { enqueueSyncOperation } from '../../services/syncQueue'
 import { buildDailyQuestSelection } from '../../utils/studyCardOrdering'
 import { normalizeTagId } from '../../utils/tagIdentity'
 import type { Deck, Card, DeckScheduleOverview } from '../../types'
+import { normalizeCardAnswerTimingStats } from '../../utils/cardAnswerTiming'
 
 function mapCard(r: CardRecord): Card {
   const algorithm = r.algorithm ?? 'sm2'
@@ -42,6 +43,9 @@ function mapCard(r: CardRecord): Card {
     stability: r.stability,
     difficulty: r.difficulty,
     algorithm,
+    answerTiming: r.metadata?.answerTiming
+      ? normalizeCardAnswerTimingStats(r.metadata.answerTiming)
+      : undefined,
   }
 }
 

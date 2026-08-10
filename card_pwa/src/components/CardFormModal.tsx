@@ -6,7 +6,7 @@
  */
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
-import { X, Plus, Loader2, CheckCircle, Trash2, Info } from 'lucide-react'
+import { X, Plus, Loader2, CheckCircle, Trash2, Info, Copy } from 'lucide-react'
 import { createCard, updateCard, deleteCard, createDeck, listDeckOptions } from '../db/queries'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import {
@@ -85,6 +85,18 @@ export default function CardFormModal(props: Props) {
   const [error, setError] = useState<string | null>(null)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [showTagsInfo, setShowTagsInfo] = useState(false)
+  const [cardIdCopied, setCardIdCopied] = useState(false)
+
+  const handleCopyCardId = useCallback(async () => {
+    if (props.mode !== 'edit') return
+    try {
+      await navigator.clipboard.writeText(props.card.id)
+      setCardIdCopied(true)
+    } catch {
+      // Die ID bleibt sichtbar und markierbar, falls die Clipboard-API etwa
+      // wegen eines unsicheren Browser-Kontexts nicht verfügbar ist.
+    }
+  }, [props])
 
   useEffect(() => {
     if (props.mode === 'create') {
@@ -419,6 +431,34 @@ export default function CardFormModal(props: Props) {
               <X size={18} strokeWidth={1.5} />
             </button>
           </div>
+
+          {props.mode === 'edit' && (
+            <div
+              className="flex items-center gap-3 border-b border-ds-border bg-ds-floor/70 px-6 py-2.5"
+              data-testid="edit-card-id"
+            >
+              <span className="shrink-0 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-white/35">
+                Card ID
+              </span>
+              <code
+                className="min-w-0 flex-1 select-all break-all font-mono text-[11px] text-white/65"
+                title={props.card.id}
+              >
+                {props.card.id}
+              </code>
+              <button
+                type="button"
+                onClick={() => { void handleCopyCardId() }}
+                className="ds-icon-button inline-flex h-8 w-8 shrink-0"
+                aria-label={settings.language === 'de' ? 'Card ID kopieren' : 'Copy card ID'}
+                title={settings.language === 'de' ? 'Card ID kopieren' : 'Copy card ID'}
+              >
+                {cardIdCopied
+                  ? <CheckCircle size={13} className="text-emerald-300" />
+                  : <Copy size={13} strokeWidth={1.5} />}
+              </button>
+            </div>
+          )}
 
           <div className="p-6 space-y-4 overflow-y-auto max-h-[calc(100dvh-env(safe-area-inset-top,0px)-12rem)]">
             {/* Deck selection — create mode only */}

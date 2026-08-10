@@ -89,8 +89,15 @@ function toMigrationUpdate(card: CardRecord, algorithm: 'sm2' | 'fsrs', nowMs: n
   // losing the original scheduling data (non-destructive migration, Issue #7).
   // Only write a new snapshot if none exists yet; subsequent toggles must not
   // overwrite the original values (SM2→FSRS→SM2 would lose the true SM2 state).
-  const metadata: CardMigrationMetadata = card.metadata?.migratedAt
-    ? card.metadata
+  const migrationMetadata: CardMigrationMetadata = card.metadata?.migratedAt && card.metadata.preMigrationAlgorithm
+    ? {
+        preMigrationAlgorithm: card.metadata.preMigrationAlgorithm,
+        preMigrationFactor: card.metadata.preMigrationFactor,
+        preMigrationInterval: card.metadata.preMigrationInterval,
+        preMigrationStability: card.metadata.preMigrationStability,
+        preMigrationDifficulty: card.metadata.preMigrationDifficulty,
+        migratedAt: card.metadata.migratedAt,
+      }
     : {
         preMigrationAlgorithm: card.algorithm ?? 'sm2',
         preMigrationFactor: card.factor,
@@ -99,6 +106,7 @@ function toMigrationUpdate(card: CardRecord, algorithm: 'sm2' | 'fsrs', nowMs: n
         preMigrationDifficulty: card.difficulty,
         migratedAt: nowMs,
       }
+  const metadata = { ...card.metadata, ...migrationMetadata }
 
   return {
     ...converted,
@@ -118,7 +126,7 @@ async function yieldToMainThread(): Promise<void> {
 
 export async function migrateCardsForAlgorithm(algorithm: 'sm2' | 'fsrs'): Promise<MigrationLog> {
   const migrationTs = Date.now()
-  const rollbackSnapshots = new Map<string, Pick<CardRecord, 'factor' | 'interval' | 'due' | 'dueAt' | 'stability' | 'difficulty' | 'algorithm' | 'updatedAt'>>()
+  const rollbackSnapshots = new Map<string, Pick<CardRecord, 'factor' | 'interval' | 'due' | 'dueAt' | 'stability' | 'difficulty' | 'algorithm' | 'metadata' | 'updatedAt'>>()
   const syncUpdates: Array<{ cardId: string; update: Partial<CardRecord> }> = []
 
   async function rollbackMigration(): Promise<void> {
@@ -155,6 +163,7 @@ export async function migrateCardsForAlgorithm(algorithm: 'sm2' | 'fsrs'): Promi
               stability: card.stability,
               difficulty: card.difficulty,
               algorithm: card.algorithm,
+              metadata: card.metadata,
               updatedAt: card.updatedAt,
             })
           }
@@ -239,4 +248,3 @@ export async function initializeAlgorithmMigration(currentAlgorithm: 'sm2' | 'fs
     await migrateCardsForAlgorithm(currentAlgorithm)
   }
 }
-

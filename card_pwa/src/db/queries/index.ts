@@ -28,7 +28,14 @@ export {
   deleteDeck,
 } from './decks'
 
-export { normalizeDueDates, createCard, updateCard, deleteCard } from './cards'
+export {
+  normalizeDueDates,
+  createCard,
+  updateCard,
+  deleteCard,
+  recordCardStudySessionAppearance,
+  recordFirstCardAnswerTime,
+} from './cards'
 
 export {
   getGlobalStats,

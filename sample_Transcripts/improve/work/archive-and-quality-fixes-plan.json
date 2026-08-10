@@ -1,0 +1,142 @@
+{
+  "schemaVersion": "sy0701-archive-and-quality-fixes-plan-1",
+  "archiveDeck": {
+    "id": "sy0-701-not-relevant-archive",
+    "name": "99_SY0-701_Not_Relevant_Archiv",
+    "parentDeckId": null
+  },
+  "archivedCards": [
+    "1729003938350",
+    "1729019963492",
+    "1729093945243",
+    "1729097429318",
+    "1729097907113",
+    "1729104741764",
+    "1729104839747",
+    "1729176350133",
+    "1729176391515",
+    "1729186250125",
+    "1729192907745",
+    "1729282747703",
+    "1729540036900",
+    "1729783723324",
+    "1772576382622",
+    "1773101490323"
+  ],
+  "qualityFixes": [
+    {
+      "cardId": "1729542555582",
+      "targetDeckId": "sy0-701-objective-4-5",
+      "requirementIds": [
+        "req:sy0701:v7:4.5:web-filter:universal-resource-locator-url-scanning",
+        "req:sy0701:v7:4.5:web-filter:content-categorization",
+        "req:sy0701:v7:4.5:web-filter:block-rules",
+        "req:sy0701:v7:4.5:web-filter:reputation"
+      ],
+      "reason": "Die bisherige Formulierung 'inbound and outbound data' war zu breit; die neue Karte prüft konkrete Web-Filter-Funktionen.",
+      "previousContent": {
+        "front": "M4-017: Which term provides control of inbound and outbound data?\nA: Discretionary Access Control\nB: Active Directory\nC: Content Filtering\nD: DomainKeys Identified Mail",
+        "back": ">> CORRECT: C |\n\nContent Filtering steuert, welche Daten ein- und ausgehend über die reine Firewall-Funktion hinaus zugelassen werden — besonders relevant für Organisationen, die mit vielen sensiblen Daten arbeiten.\n\nNicht:\nA | Linux arbeitet standardmäßig mit Discretionary Access Control: Der Benutzer entscheidet selbst, wem er welche Rechte auf seine Ressourcen einräumt — in hochsicheren Umgebungen wird dafür stattdessen oft Mandatory Access Control (z. B. via SELinux) eingesetzt. Für die genannte Anforderung ist daher „Content Filtering“ passend.\nB | Active Directory ist Microsofts Verzeichnisdienst für Identitäten, Geräte, Gruppen und Richtlinien in einer Windows-Domäne. Die Frage zielt nicht auf diesen Einsatz, sondern auf „Content Filtering“.\nD | DKIM signiert die E-Mail beim Versand digital mit einem privaten Schlüssel; der empfangende Mailserver prüft den zugehörigen öffentlichen Schlüssel über einen DNS-TXT-Record und bestätigt so, dass die Nachricht wirklich vom angegebenen Server stammt. Die Frage zielt nicht auf diesen Einsatz, sondern auf „Content Filtering“.",
+        "tags": [
+          "Enterprise Security",
+          "Identity and Access Management"
+        ],
+        "extraJson": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "newContent": {
+        "front": "M4-017: A company wants to block web access based on URL categories and reputation and to enforce rules on requested or downloaded web content. Which capability best meets this requirement?\nA: Discretionary Access Control\nB: Active Directory\nC: Content Filtering\nD: DomainKeys Identified Mail",
+        "back": ">> CORRECT: C |\n\nContent Filtering bewertet Webzugriffe und Webinhalte anhand von URLs, Kategorien, Reputation und festgelegten Blockregeln. Damit kann die Organisation unerwünschte Requests oder Downloads gezielt verhindern.\n\nNicht:\nA | Discretionary Access Control regelt, welche Benutzer auf Objekte wie Dateien zugreifen dürfen; es kategorisiert oder filtert keine Webinhalte.\nB | Active Directory verwaltet Identitäten, Gruppen, Geräte und Richtlinien, ist aber kein Web- oder URL-Filter.\nD | DKIM bestätigt über eine digitale Signatur die Herkunft und Integrität einer E-Mail; es kontrolliert keine aufgerufenen Websites oder heruntergeladenen Webinhalte.",
+        "tags": [
+          "Enterprise Security"
+        ],
+        "extraJson": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "fsrsImpact": "retain_same_objective_clarity_fix"
+    },
+    {
+      "cardId": "1729706866215",
+      "targetDeckId": "sy0-701-objective-5-2",
+      "requirementIds": [],
+      "reason": "Die Wendung 'without acting' vermischte Risk Appetite mit Risk Acceptance; die neue Definition entspricht dem veröffentlichten Appetite-Oberbegriff.",
+      "previousContent": {
+        "front": "M5-008: Which term matches this description: Risk that an organization is willing to take on without acting?\nA: Recovery Point Objective\nB: Risk Appetite\nC: Risk Tolerance\nD: Annualized Loss Expectency",
+        "back": ">> CORRECT: B |\n\nRisk Appetite ist das Risikoniveau, das eine Organisation akzeptiert, ohne aktiv gegenzusteuern. vergleicht das mit einem Tempolimit von 55 mph: Das ist der offiziell festgelegte, akzeptierte Wert - unabhängig davon, wie tolerant die Praxis tatsächlich ist.\n\nNicht:\nA | Das Recovery Point Objective begrenzt den tolerierbaren Datenverlust als Zeitspanne zum letzten wiederherstellbaren Datenstand. Dreißig Minuten RPO bedeuten, dass höchstens die jüngsten dreißig Minuten an Daten fehlen dürfen. Damit gehört „Recovery Point Objective“ fachlich in einen anderen Bereich als „Risk Appetite“.\nC | Risk Tolerance: Das Tempolimit von 55 mph entspricht der Risk Appetite, doch real wird oft erst deutlich darüber geblitzt - dieser größere Spielraum bis zur tatsächlichen Reaktion ist die Risk Tolerance, die typischerweise über der Risk Appetite liegt. Damit gehört „Risk Tolerance“ fachlich in einen anderen Bereich als „Risk Appetite“.\nD | Rechenbeispiel: Werden im Schnitt 7 Laptops pro Jahr gestohlen (ARO = 7) und hat jeder gestohlene Laptop bei einem Exposure Factor von 1.0 eine Single-Loss Expectancy von 1.000 $, ergibt ARO x SLE eine Annualized Loss Expectancy von 7.000 $. Hier wird jedoch die Funktion von „Risk Appetite“ beschrieben.",
+        "tags": [
+          "Risk Management",
+          "Resilience and Recovery"
+        ],
+        "extraJson": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "newContent": {
+        "front": "M5-008: Which term describes the amount and type of risk an organization is willing to pursue or retain while working toward its objectives?\nA: Recovery Point Objective\nB: Risk Appetite\nC: Risk Tolerance\nD: Annualized Loss Expectancy",
+        "back": ">> CORRECT: B |\n\nRisk Appetite beschreibt auf übergeordneter Ebene, welche Arten und welches Ausmaß an Risiko eine Organisation beim Verfolgen ihrer Ziele eingehen oder beibehalten will. Daraus können konkretere Toleranzgrenzen und Entscheidungen abgeleitet werden.\n\nNicht:\nA | Das Recovery Point Objective legt fest, wie viel Datenverlust gemessen als Zeitspanne bei einer Wiederherstellung höchstens akzeptabel ist.\nC | Risk Tolerance beschreibt die zulässige Abweichung um ein konkretes Risiko- oder Leistungsziel; sie operationalisiert den breiteren Risk Appetite.\nD | Annualized Loss Expectancy ist der erwartete jährliche Verlust eines Risikos und wird typischerweise als Single Loss Expectancy multipliziert mit der Annualized Rate of Occurrence berechnet.",
+        "tags": [
+          "Risk Management"
+        ],
+        "extraJson": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "fsrsImpact": "retain_same_objective_clarity_fix"
+    },
+    {
+      "cardId": "1772922529731",
+      "targetDeckId": "sy0-701-objective-5-4",
+      "requirementIds": [
+        "req:sy0701:v7:5.4:consequences-of-non-compliance:reputational-damage"
+      ],
+      "reason": "Die frühere Negativfrage setzte unbegründet voraus, dass ein Breach keine Availability-Auswirkung haben kann; das neue Szenario prüft eine eindeutige Compliance-Folge.",
+      "previousContent": {
+        "front": "The company that Scott works for has experienced a data breach, and the personal information of thousands of customers has been exposed. Which of the following impact categories is not a concern?\nA: Reputation\nB: Financial\nC: Availability loss\nD: Data loss",
+        "back": ">> CORRECT: C |\n\nVerfügbarkeitsverlust ist bei einem Datenbreach KEINE typische Sorge – das Problem ist Vertraulichkeit (Daten wurden exponiert), nicht Verfügbarkeit (Systeme laufen weiter).\n\nNicht:\nA | Die Frage sucht den abweichenden Eintrag. Das ist „Availability loss“ und nicht „Reputation“.\nB | Nicht „Financial“, sondern „Availability loss“ weicht von den übrigen Antworten ab.\nD | Die Ausnahme lässt sich nicht mit „Data loss“ begründen. Gemeint ist „Availability loss“.",
+        "tags": [
+          "Resilience and Recovery"
+        ],
+        "extraJson": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "newContent": {
+        "front": "A company exposes the personal records of thousands of customers. The incident causes loss of customer trust, sustained negative media coverage, and customers leaving for competitors. Which consequence of non-compliance is most directly illustrated?\nA: Contractual impacts\nB: Sanctions\nC: Reputational damage\nD: Loss of license",
+        "back": ">> CORRECT: C |\n\nReputational damage ist der Vertrauens- und Imageschaden, der durch negative Berichterstattung und die Abwanderung von Kunden nach einem Datenschutz- oder Compliance-Verstoß entsteht.\n\nNicht:\nA | Contractual impacts wären Folgen aus verletzten Vertragsklauseln, etwa Schadenersatz, Kündigungsrechte oder neu verhandelte Bedingungen; solche Folgen nennt das Szenario nicht.\nB | Sanctions sind formelle Straf- oder Zwangsmaßnahmen einer zuständigen Stelle. Das Szenario beschreibt stattdessen den Verlust von Vertrauen und Ansehen.\nD | Loss of license bedeutet den Entzug einer für den Geschäftsbetrieb notwendigen Zulassung. Ein solcher Entzug wird im Szenario nicht genannt.",
+        "tags": [
+          "Security Compliance"
+        ],
+        "extraJson": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "fsrsImpact": "retain_same_objective_clarity_fix"
+    }
+  ],
+  "policy": {
+    "deleteCards": false,
+    "preserveCardIds": true,
+    "preserveReviewHistory": true,
+    "preserveFsrsSchedules": true
+  }
+}

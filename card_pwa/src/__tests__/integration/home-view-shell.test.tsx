@@ -71,7 +71,7 @@ vi.mock('../../contexts/SettingsContext', () => ({
     settings: {
       language: 'de',
       shuffleModeEnabled: true,
-      showBuildVersion: false,
+      answerTimerEnabled: false,
       studyCardLimit: 50,
       nextDayStartsAt: 4,
       dailyReminderEnabled: false,

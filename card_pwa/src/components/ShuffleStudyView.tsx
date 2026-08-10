@@ -29,7 +29,9 @@ import { formatDeckName } from '../utils/cardTextParser'
 import { flattenDeckTree } from '../utils/securityDeckHierarchy'
 import { useSessionRewards } from '../hooks/useSessionRewards'
 import { useStudyAnswerState } from '../hooks/study/useStudyAnswerState'
+import { useCardAnswerTimer } from '../hooks/study/useCardAnswerTimer'
 import CardFace from './CardFace'
+import { CardAnswerTimer } from './CardAnswerTimer'
 import EditCardModal from './EditCardModal'
 import RatingBar from './RatingBar'
 import SessionCoachPanel from './SessionCoachPanel'
@@ -130,7 +132,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     peekFlipped,
     setPeekFlipped,
     pendingAnswerRef,
-    handleAnswerEvaluated,
+    handleAnswerEvaluated: updateAnswerState,
     resetAnswerState,
   } = useStudyAnswerState({
     currentCard,
@@ -154,6 +156,17 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
   ), [deckNameById, sessionDeckCounts])
   const maxSelectableRating: Rating = answerWasIncorrect ? 3 : 4
+  const answerTimerEnabled = !isHandsetLayout && settings.answerTimerEnabled === true
+  const answerTimer = useCardAnswerTimer({
+    enabled: answerTimerEnabled,
+    cardId: currentCard?.id ?? null,
+    sessionRunId: session.sessionRunId,
+    presentationKey: `${currentCard?.id ?? 'none'}:${session.sessionCount}`,
+  })
+  const handleAnswerEvaluated = useCallback<NonNullable<React.ComponentProps<typeof CardFace>['onAnswerEvaluated']>>((score, answer) => {
+    answerTimer.stop()
+    updateAnswerState(score, answer)
+  }, [answerTimer.stop, updateAnswerState])
 
   const clearPersistedSession = useCallback(() => {
     void clearShuffleSession(collection.id)
@@ -265,8 +278,9 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       setPeekFlipped(prev => !prev)
       return
     }
+    if (!session.isFlipped) answerTimer.stop()
     dispatch({ type: 'FLIP' })
-  }, [peeking])
+  }, [answerTimer.stop, peeking, session.isFlipped])
 
   const handleRate = useCallback(async (rating: Rating) => {
     if (!currentCard || peeking || session.isSubmitting || session.isDone || isAlgorithmMigrating) return
@@ -614,8 +628,21 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       </div>
 
       <div
-        className={`flex-1 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-2' : 'overflow-y-auto px-3 py-4 sm:px-4 sm:py-6'}`}
+        className={`relative flex-1 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-2' : 'overflow-y-auto px-3 py-4 sm:px-4 sm:py-6'}`}
       >
+        {answerTimerEnabled && currentCard && !peeking && (
+          <div className="pointer-events-none absolute right-8 top-6 z-30 flex w-48 justify-end">
+            <div className="pointer-events-auto">
+              <CardAnswerTimer
+                elapsedSeconds={answerTimer.elapsedSeconds}
+                isPaused={answerTimer.isPaused}
+                isStopped={answerTimer.isStopped}
+                language={settings.language}
+                onTogglePaused={answerTimer.togglePaused}
+              />
+            </div>
+          </div>
+        )}
         <AnimatePresence>
           {session.error && <ErrorAlert message={session.error} onRetry={handleRetry} />}
         </AnimatePresence>

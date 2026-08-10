@@ -34,6 +34,8 @@ export interface Card {
   stability?: number
   difficulty?: number
   algorithm?: 'sm2' | 'fsrs'
+  /** Persisted aggregate keyed by this card ID. Durations are whole seconds. */
+  answerTiming?: import('../db').CardAnswerTimingStats
 }
 
 export interface DeckStats {

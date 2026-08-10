@@ -5,6 +5,21 @@
 import { describe, it, expect } from 'vitest'
 import { normalizeSettings } from '../../contexts/SettingsContext'
 
+describe('normalizeSettings — globaler Karten-Timer', () => {
+  it('ist standardmäßig deaktiviert', () => {
+    expect(normalizeSettings(undefined).answerTimerEnabled).toBe(false)
+  })
+
+  it('übernimmt die globale Einstellung', () => {
+    expect(normalizeSettings({ answerTimerEnabled: true }).answerTimerEnabled).toBe(true)
+  })
+
+  it('migriert eine alte Deck-Auswahl auf global aktiv', () => {
+    const legacy = { answerTimerDeckIds: ['deck-a'] } as unknown as Parameters<typeof normalizeSettings>[0]
+    expect(normalizeSettings(legacy).answerTimerEnabled).toBe(true)
+  })
+})
+
 describe('normalizeSettings — newCardsPerDay', () => {
   it('Default ist 10', () => {
     expect(normalizeSettings(undefined).newCardsPerDay).toBe(10)

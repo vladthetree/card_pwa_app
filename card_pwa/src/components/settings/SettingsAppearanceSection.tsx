@@ -1,14 +1,12 @@
 /**
- * AI_CONTEXT: Settings domain subcomponent — Appearance accordion (language, font, theme, build-version visibility, focus mode).
+ * AI_CONTEXT: Settings domain subcomponent — Appearance accordion (language, font, theme, focus mode, desktop answer timer).
  */
 import { Palette } from 'lucide-react'
 import { useSettings, STRINGS, type FontFamily, FONT_FAMILY_OPTIONS } from '../../contexts/SettingsContext'
 import { useTheme, type ThemeKey } from '../../contexts/ThemeContext'
 import { UI_TOKENS } from '../../constants/ui'
-import { formatBuildVersionTitle, formatServiceWorkerVersionLabel } from '../../utils/buildInfo'
 import { SettingsSection } from '../SettingsSection'
 import { SettingsSwitchRow } from '../SettingsSwitchRow'
-import { useMemo } from 'react'
 
 interface Props {
   isOpen: boolean
@@ -63,11 +61,9 @@ const THEME_OPTIONS: ThemeOption[] = [
 ]
 
 export function SettingsAppearanceSection({ isOpen, onToggle }: Props) {
-  const { settings, setLanguage, setFontFamily, setShowBuildVersion, setFocusMode } = useSettings()
+  const { settings, setLanguage, setFontFamily, setFocusMode, setAnswerTimerEnabled } = useSettings()
   const { themeKey, setTheme } = useTheme()
   const t = STRINGS[settings.language]
-  const buildVersionLabel = useMemo(() => formatServiceWorkerVersionLabel(), [])
-  const buildVersionTitle = useMemo(() => formatBuildVersionTitle(), [])
 
   const fontOptions: Array<{ key: FontFamily; label: string; description: string; preview: string }> = [
     {
@@ -201,22 +197,11 @@ export function SettingsAppearanceSection({ isOpen, onToggle }: Props) {
           </div>
         </div>
 
-        <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
-          <p className="text-xs text-white/50 font-medium uppercase tracking-wide">{t.build_version_visibility_title}</p>
-          <SettingsSwitchRow
-            label={t.build_version_visibility_toggle}
-            description={buildVersionLabel}
-            title={buildVersionTitle}
-            checked={settings.showBuildVersion}
-            onCheckedChange={setShowBuildVersion}
-          />
-        </div>
-
         <div>
           <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
             {settings.language === 'de' ? 'Fokus-Modus' : 'Focus mode'}
           </label>
-          <div className={`${UI_TOKENS.surface.panelSoft} p-4`}>
+          <div className={`${UI_TOKENS.surface.panelSoft} space-y-4 p-4`}>
             <SettingsSwitchRow
               label={settings.language === 'de' ? 'Session-Header beim Lernen ausblenden' : 'Hide session header while studying'}
               labelClassName="text-sm font-medium text-white"
@@ -227,6 +212,18 @@ export function SettingsAppearanceSection({ isOpen, onToggle }: Props) {
               checked={settings.focusMode}
               onCheckedChange={setFocusMode}
             />
+            <div className="border-t border-ds-border pt-4">
+              <SettingsSwitchRow
+                label={settings.language === 'de' ? 'Beantwortungszeit anzeigen' : 'Show answer timer'}
+                labelClassName="text-sm font-medium text-white"
+                description={settings.language === 'de'
+                  ? 'Zeigt den Sekundentimer in jeder Desktop-Deck-Session an und speichert pro Karte die erste Antwortzeit der Session.'
+                  : 'Shows the seconds timer in every desktop deck session and stores the first answer time per card and session.'}
+                descriptionClassName="mt-1 text-xs leading-relaxed text-white/45"
+                checked={settings.answerTimerEnabled}
+                onCheckedChange={setAnswerTimerEnabled}
+              />
+            </div>
           </div>
         </div>
       </div>

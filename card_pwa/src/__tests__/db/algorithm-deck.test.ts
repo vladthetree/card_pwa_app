@@ -54,6 +54,7 @@ function makeRecord(partial: Partial<CardRecord>): CardRecord {
     createdAt: partial.createdAt ?? now,
     updatedAt: partial.updatedAt,
     algorithm: partial.algorithm,
+    metadata: partial.metadata,
   }
 }
 
@@ -178,6 +179,30 @@ describe('Algorithm per deck — listDeckCards mapping', () => {
   })
 
   describe('scheduling fields are correctly passed through', () => {
+    it('maps persisted answer timing from the card-ID metadata', async () => {
+      mockedDb.state.cards = [makeRecord({
+        deckId: 'deck-1',
+        metadata: {
+          answerTiming: {
+            averageAnswerTimeSeconds: 15,
+            totalAnswerTimeSeconds: 30,
+            answerTimeSampleCount: 2,
+            studySessionCount: 3,
+            lastAnsweredSessionRunId: 'session-b',
+            lastSeenSessionRunId: 'session-c',
+          },
+        },
+      })]
+
+      const result = await listDeckCards('deck-1')
+
+      expect(result[0].answerTiming).toMatchObject({
+        averageAnswerTimeSeconds: 15,
+        answerTimeSampleCount: 2,
+        studySessionCount: 3,
+      })
+    })
+
     it('interval, reps, lapses are preserved', async () => {
       mockedDb.state.cards = [makeRecord({ deckId: 'deck-1', interval: 21, reps: 8, lapses: 2 })]
       const result = await listDeckCards('deck-1')

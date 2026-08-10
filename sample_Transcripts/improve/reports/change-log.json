@@ -1,9 +1,9 @@
 {
   "schemaVersion": "sy0701-domain-change-log-3",
   "examinedExistingCards": 751,
-  "unchangedExistingCards": 603,
+  "unchangedExistingCards": 585,
   "changedExistingCards": {
-    "count": 148,
+    "count": 166,
     "cards": [
       {
         "cardId": "1728580721902",
@@ -778,6 +778,51 @@
         "fsrs": "retained"
       },
       {
+        "cardId": "1729003938350",
+        "domain": 2,
+        "status": "unmapped",
+        "requirementIds": [],
+        "changeType": "move",
+        "reason": "Defense in depth erscheint weder als V7-Objective-Bullet noch im offiziellen Akronymverzeichnis.",
+        "previousContent": {
+          "front": "M2-022: Which security strategy uses multiple overlapping controls so one failure does not expose the whole environment?\nA: Open authorization\nB: Password spraying\nC: Defense in depth\nD: Single sign-on",
+          "back": ">> CORRECT: C |\n\nDefense in Depth bedeutet mehrere übereinanderliegende Sicherheitsschichten (z. B. Antivirus, Firewall, Intrusion Prevention System) zu kombinieren, damit ein Angriff, den eine Schicht übersieht, von einer anderen erkannt wird.\n\nNicht:\nA | Das genannte Merkmal führt zu „Defense in depth“. Bei „Open authorization“ wäre ein anderer Hinweis zu erwarten.\nB | Bei Password Spraying probiert der Angreifer nur wenige, sehr verbreitete Passwörter (z. B. Die häufigsten 3) über viele Konten hinweg aus, um Lockouts zu vermeiden — anders als Brute Force, das viele Kombinationen gegen ein einzelnes Konto testet. Dieser Zweck weicht vom Szenario ab; dort ist „Defense in depth“ gemeint.\nD | Single Sign-on ermöglicht nach einer Anmeldung den Zugriff auf mehrere verbundene Dienste. Für die genannte Anforderung ist daher „Defense in depth“ passend.",
+          "tags": [
+            "Mitigation Techniques",
+            "Identity and Access Management"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "M2-022: Which security strategy uses multiple overlapping controls so one failure does not expose the whole environment?\nA: Open authorization\nB: Password spraying\nC: Defense in depth\nD: Single sign-on",
+          "back": ">> CORRECT: C |\n\nDefense in Depth bedeutet mehrere übereinanderliegende Sicherheitsschichten (z. B. Antivirus, Firewall, Intrusion Prevention System) zu kombinieren, damit ein Angriff, den eine Schicht übersieht, von einer anderen erkannt wird.\n\nNicht:\nA | Das genannte Merkmal führt zu „Defense in depth“. Bei „Open authorization“ wäre ein anderer Hinweis zu erwarten.\nB | Bei Password Spraying probiert der Angreifer nur wenige, sehr verbreitete Passwörter (z. B. Die häufigsten 3) über viele Konten hinweg aus, um Lockouts zu vermeiden — anders als Brute Force, das viele Kombinationen gegen ein einzelnes Konto testet. Dieser Zweck weicht vom Szenario ab; dort ist „Defense in depth“ gemeint.\nD | Single Sign-on ermöglicht nach einer Anmeldung den Zugriff auf mehrere verbundene Dienste. Für die genannte Anforderung ist daher „Defense in depth“ passend.",
+          "tags": [
+            "Mitigation Techniques",
+            "Identity and Access Management"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "sy0-701-objective-2-5",
+          "name": "2.5 Mitigation Techniques"
+        },
+        "newDeck": {
+          "id": "sy0-701-not-relevant-archive",
+          "name": "99_SY0-701_Not_Relevant_Archiv"
+        },
+        "fsrs": "retained"
+      },
+      {
         "cardId": "1729004574263",
         "domain": 2,
         "status": "improve",
@@ -1277,6 +1322,49 @@
         "fsrs": "retained"
       },
       {
+        "cardId": "1729019963492",
+        "domain": 2,
+        "status": "unmapped",
+        "requirementIds": [],
+        "changeType": "move",
+        "reason": "Die pauschale Übertragung von Zero Trust auf die Echtheitsprüfung neuer Hardware entspricht keinem veröffentlichten Zero-Trust- oder Supply-Chain-Leaf.",
+        "previousContent": {
+          "front": "M2-054: Which security model treats new supply-chain hardware as untrusted until verified?\nA: Open access\nB: Single sign-on\nC: Zero Trust\nD: Implicit trust",
+          "back": ">> CORRECT: C |\n\nNeue Hardware aus der Lieferkette sollte zunächst als „untrusted out of the box“ behandelt werden und erst nach eigener Prüfung ins Netzwerk zu lassen — genau dieses Prinzip 'nichts automatisch vertrauen' beschreibt Zero Trust.\n\nNicht:\nA | Offener Zugriff erlaubt die Nutzung ohne die im Szenario verlangte restriktive Zugriffsentscheidung. Die Frage zielt nicht auf diesen Einsatz, sondern auf „Zero Trust“.\nB | Single Sign-on ermöglicht nach einer Anmeldung den Zugriff auf mehrere verbundene Dienste. Hier wird jedoch die Funktion von „Zero Trust“ beschrieben.\nD | Implizites Vertrauen gewährt Zugriff aufgrund einer angenommenen Vertrauensstellung, ohne jede Anfrage neu zu prüfen. Für die genannte Anforderung ist daher „Zero Trust“ passend.",
+          "tags": [
+            "Vulnerabilities"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "M2-054: Which security model treats new supply-chain hardware as untrusted until verified?\nA: Open access\nB: Single sign-on\nC: Zero Trust\nD: Implicit trust",
+          "back": ">> CORRECT: C |\n\nNeue Hardware aus der Lieferkette sollte zunächst als „untrusted out of the box“ behandelt werden und erst nach eigener Prüfung ins Netzwerk zu lassen — genau dieses Prinzip 'nichts automatisch vertrauen' beschreibt Zero Trust.\n\nNicht:\nA | Offener Zugriff erlaubt die Nutzung ohne die im Szenario verlangte restriktive Zugriffsentscheidung. Die Frage zielt nicht auf diesen Einsatz, sondern auf „Zero Trust“.\nB | Single Sign-on ermöglicht nach einer Anmeldung den Zugriff auf mehrere verbundene Dienste. Hier wird jedoch die Funktion von „Zero Trust“ beschrieben.\nD | Implizites Vertrauen gewährt Zugriff aufgrund einer angenommenen Vertrauensstellung, ohne jede Anfrage neu zu prüfen. Für die genannte Anforderung ist daher „Zero Trust“ passend.",
+          "tags": [
+            "Vulnerabilities"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "sy0-701-objective-2-3",
+          "name": "2.3 Types of Vulnerabilities"
+        },
+        "newDeck": {
+          "id": "sy0-701-not-relevant-archive",
+          "name": "99_SY0-701_Not_Relevant_Archiv"
+        },
+        "fsrs": "retained"
+      },
+      {
         "cardId": "1729020064785",
         "domain": 2,
         "status": "objective_mismatch",
@@ -1363,6 +1451,49 @@
         "newDeck": {
           "id": "sy0-701-objective-2-2",
           "name": "2.2 Threat Vectors and Attack Surfaces"
+        },
+        "fsrs": "retained"
+      },
+      {
+        "cardId": "1729093945243",
+        "domain": 2,
+        "status": "unmapped",
+        "requirementIds": [],
+        "changeType": "move",
+        "reason": "Der Name des Linux-Administratorkontos ist weder Objective-Bullet noch offizielles Akronymwissen.",
+        "previousContent": {
+          "front": "M2-057: What is the Linux administrator account called?\nA: Guest\nB: Service\nC: root\nD: Administrator",
+          "back": ">> CORRECT: C |\n\nUnter Linux heißt das Administratorkonto root, unter Windows administrator — beide werden gemeinsam auch als Superuser-Konto bezeichnet.\n\nNicht:\nA | Die Definition beschreibt „root“. „Guest“ hat eine andere Bedeutung.\nB | Bei „Service“ fehlt die beschriebene Eigenschaft. Sie kennzeichnet „root“.\nD | Das ausschlaggebende Merkmal gehört zu „root“ und nicht zu „Administrator“.",
+          "tags": [
+            "Vulnerabilities"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "M2-057: What is the Linux administrator account called?\nA: Guest\nB: Service\nC: root\nD: Administrator",
+          "back": ">> CORRECT: C |\n\nUnter Linux heißt das Administratorkonto root, unter Windows administrator — beide werden gemeinsam auch als Superuser-Konto bezeichnet.\n\nNicht:\nA | Die Definition beschreibt „root“. „Guest“ hat eine andere Bedeutung.\nB | Bei „Service“ fehlt die beschriebene Eigenschaft. Sie kennzeichnet „root“.\nD | Das ausschlaggebende Merkmal gehört zu „root“ und nicht zu „Administrator“.",
+          "tags": [
+            "Vulnerabilities"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "sy0-701-objective-2-3",
+          "name": "2.3 Types of Vulnerabilities"
+        },
+        "newDeck": {
+          "id": "sy0-701-not-relevant-archive",
+          "name": "99_SY0-701_Not_Relevant_Archiv"
         },
         "fsrs": "retained"
       },
@@ -1551,6 +1682,94 @@
         "fsrs": "retained"
       },
       {
+        "cardId": "1729097429318",
+        "domain": 2,
+        "status": "unmapped",
+        "requirementIds": [],
+        "changeType": "move",
+        "reason": "Drive-by Download ist im V7-Scope weder als Bullet noch als Akronym aufgeführt.",
+        "previousContent": {
+          "front": "M2-070: Which attack installs malware simply by visiting a malicious or compromised link or page?\nA: Birthday attack\nB: Password spraying\nC: Drive-by download\nD: War dialing",
+          "back": ">> CORRECT: C |\n\nEin Drive-by Download passiert, wenn beim bloßen Besuch einer bösartigen Website automatisch Schadsoftware heruntergeladen wird, ganz ohne dass der Nutzer etwas anklickt.\n\nNicht:\nA | Der Birthday Attack basiert auf dem Geburtstagsparadoxon (bei 23 Personen ca. 50% Wahrscheinlichkeit einer Übereinstimmung) und überträgt dieses Prinzip auf die Suche nach zwei unterschiedlichen Klartexten mit identischem Hash — genau das gelang Forschern 2008 mit MD5. Dieser Zweck weicht vom Szenario ab; dort ist „Drive-by download“ gemeint.\nB | Bei Password Spraying probiert der Angreifer nur wenige, sehr verbreitete Passwörter (z. B. Die häufigsten 3) über viele Konten hinweg aus, um Lockouts zu vermeiden — anders als Brute Force, das viele Kombinationen gegen ein einzelnes Konto testet. Im Szenario geht es stattdessen um „Drive-by download“.\nD | War Dialing bezeichnet das systematische Anrufen vieler, teils unveröffentlichter Telefonnummern, um Systeme oder Modems zu finden, über die sich Zugang verschaffen lässt — eine Technik, die es bis heute noch gibt. Im Szenario geht es stattdessen um „Drive-by download“.",
+          "tags": [
+            "Malicious Activity Indicators",
+            "Identity and Access Management"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "M2-070: Which attack installs malware simply by visiting a malicious or compromised link or page?\nA: Birthday attack\nB: Password spraying\nC: Drive-by download\nD: War dialing",
+          "back": ">> CORRECT: C |\n\nEin Drive-by Download passiert, wenn beim bloßen Besuch einer bösartigen Website automatisch Schadsoftware heruntergeladen wird, ganz ohne dass der Nutzer etwas anklickt.\n\nNicht:\nA | Der Birthday Attack basiert auf dem Geburtstagsparadoxon (bei 23 Personen ca. 50% Wahrscheinlichkeit einer Übereinstimmung) und überträgt dieses Prinzip auf die Suche nach zwei unterschiedlichen Klartexten mit identischem Hash — genau das gelang Forschern 2008 mit MD5. Dieser Zweck weicht vom Szenario ab; dort ist „Drive-by download“ gemeint.\nB | Bei Password Spraying probiert der Angreifer nur wenige, sehr verbreitete Passwörter (z. B. Die häufigsten 3) über viele Konten hinweg aus, um Lockouts zu vermeiden — anders als Brute Force, das viele Kombinationen gegen ein einzelnes Konto testet. Im Szenario geht es stattdessen um „Drive-by download“.\nD | War Dialing bezeichnet das systematische Anrufen vieler, teils unveröffentlichter Telefonnummern, um Systeme oder Modems zu finden, über die sich Zugang verschaffen lässt — eine Technik, die es bis heute noch gibt. Im Szenario geht es stattdessen um „Drive-by download“.",
+          "tags": [
+            "Malicious Activity Indicators",
+            "Identity and Access Management"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "sy0-701-objective-2-4",
+          "name": "2.4 Indicators of Malicious Activity"
+        },
+        "newDeck": {
+          "id": "sy0-701-not-relevant-archive",
+          "name": "99_SY0-701_Not_Relevant_Archiv"
+        },
+        "fsrs": "retained"
+      },
+      {
+        "cardId": "1729097907113",
+        "domain": 2,
+        "status": "unmapped",
+        "requirementIds": [],
+        "changeType": "move",
+        "reason": "Fileless Malware gehört nicht zu den veröffentlichten Malware-Typen von Objective 2.4.",
+        "previousContent": {
+          "front": "M2-071: Malware executes mainly through memory and legitimate system tools without relying on a conventional malicious executable stored on disk. What is it called?\nA: Fileless malware\nB: Boot sector virus\nC: Macro virus\nD: Logic bomb",
+          "back": ">> CORRECT: A |\n\nFileless Malware nutzt häufig Speicher, Skriptinterpreter oder legitime Systemwerkzeuge. Der Begriff beschreibt die Ausführungstechnik; er bedeutet nicht zwingend, dass während des gesamten Angriffs keinerlei Datei beteiligt ist.\n\nNicht:\nB | Ein Bootsektorvirus infiziert startrelevante Bereiche eines Datenträgers und ist damit gerade datenträgerbasiert.\nC | Ein Makrovirus steckt in Makrocode eines Dokuments und ist nicht durch die beschriebene dateilose Ausführung definiert.\nD | Eine Logic Bomb wird durch eine Bedingung ausgelöst; ihr Speicher- oder Dateiverhalten ist dadurch nicht festgelegt.",
+          "tags": [
+            "Malicious Activity Indicators"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "M2-071: Malware executes mainly through memory and legitimate system tools without relying on a conventional malicious executable stored on disk. What is it called?\nA: Fileless malware\nB: Boot sector virus\nC: Macro virus\nD: Logic bomb",
+          "back": ">> CORRECT: A |\n\nFileless Malware nutzt häufig Speicher, Skriptinterpreter oder legitime Systemwerkzeuge. Der Begriff beschreibt die Ausführungstechnik; er bedeutet nicht zwingend, dass während des gesamten Angriffs keinerlei Datei beteiligt ist.\n\nNicht:\nB | Ein Bootsektorvirus infiziert startrelevante Bereiche eines Datenträgers und ist damit gerade datenträgerbasiert.\nC | Ein Makrovirus steckt in Makrocode eines Dokuments und ist nicht durch die beschriebene dateilose Ausführung definiert.\nD | Eine Logic Bomb wird durch eine Bedingung ausgelöst; ihr Speicher- oder Dateiverhalten ist dadurch nicht festgelegt.",
+          "tags": [
+            "Malicious Activity Indicators"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "sy0-701-objective-2-4",
+          "name": "2.4 Indicators of Malicious Activity"
+        },
+        "newDeck": {
+          "id": "sy0-701-not-relevant-archive",
+          "name": "99_SY0-701_Not_Relevant_Archiv"
+        },
+        "fsrs": "retained"
+      },
+      {
         "cardId": "1729098302259",
         "domain": 2,
         "status": "improve",
@@ -1680,6 +1899,94 @@
         "newDeck": {
           "id": "sy0-701-objective-4-1",
           "name": "4.1 Security Techniques"
+        },
+        "fsrs": "retained"
+      },
+      {
+        "cardId": "1729104741764",
+        "domain": 2,
+        "status": "unmapped",
+        "requirementIds": [],
+        "changeType": "move",
+        "reason": "Botnet ist weder eigener V7-Bullet noch offizielles Akronym.",
+        "previousContent": {
+          "front": "M2-085: What is a collection of infected devices controlled by an attacker called?\nA: VLAN\nB: ACL\nC: SIEM\nD: Botnet",
+          "back": ">> CORRECT: D |\n\nEin Botnet ist eine Ansammlung von mit Malware infizierten Geräten (robot network), die der Angreifer über ein einziges Kommando gleichzeitig gegen ein Ziel losschicken kann.\n\nNicht:\nA | Die beschriebene Funktion ist die von „Botnet“. „VLAN“ erfüllt sie nicht.\nB | Eine Access Control List erlaubt oder verweigert Datenverkehr anhand von Kriterien wie Quell-/Ziel-IP, Portnummer oder Tageszeit — ein Beispiel zeigt eine sehr granulare Regel, die James nur Zugriff auf 192.168.1.0/24 über die Ports 80, 443 und 8088 erlaubt. Für die genannte Anforderung ist daher „Botnet“ passend.\nC | Ein SIEM (Security Information and Event Manager) konsolidiert Logdaten aus vielen verschiedenen Systemen an einer zentralen Stelle, um Berichte zu erstellen und Ereignisse zu überwachen. Für die genannte Anforderung ist daher „Botnet“ passend.",
+          "tags": [
+            "Malicious Activity Indicators",
+            "Architecture Models"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "M2-085: What is a collection of infected devices controlled by an attacker called?\nA: VLAN\nB: ACL\nC: SIEM\nD: Botnet",
+          "back": ">> CORRECT: D |\n\nEin Botnet ist eine Ansammlung von mit Malware infizierten Geräten (robot network), die der Angreifer über ein einziges Kommando gleichzeitig gegen ein Ziel losschicken kann.\n\nNicht:\nA | Die beschriebene Funktion ist die von „Botnet“. „VLAN“ erfüllt sie nicht.\nB | Eine Access Control List erlaubt oder verweigert Datenverkehr anhand von Kriterien wie Quell-/Ziel-IP, Portnummer oder Tageszeit — ein Beispiel zeigt eine sehr granulare Regel, die James nur Zugriff auf 192.168.1.0/24 über die Ports 80, 443 und 8088 erlaubt. Für die genannte Anforderung ist daher „Botnet“ passend.\nC | Ein SIEM (Security Information and Event Manager) konsolidiert Logdaten aus vielen verschiedenen Systemen an einer zentralen Stelle, um Berichte zu erstellen und Ereignisse zu überwachen. Für die genannte Anforderung ist daher „Botnet“ passend.",
+          "tags": [
+            "Malicious Activity Indicators",
+            "Architecture Models"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "sy0-701-objective-2-4",
+          "name": "2.4 Indicators of Malicious Activity"
+        },
+        "newDeck": {
+          "id": "sy0-701-not-relevant-archive",
+          "name": "99_SY0-701_Not_Relevant_Archiv"
+        },
+        "fsrs": "retained"
+      },
+      {
+        "cardId": "1729104839747",
+        "domain": 2,
+        "status": "unmapped",
+        "requirementIds": [],
+        "changeType": "move",
+        "reason": "Command and Control ist in den veröffentlichten V7-Bullets und Akronymen nicht enthalten.",
+        "previousContent": {
+          "front": "M2-086: Which infrastructure is used to manage compromised systems in a botnet?\nA: Data Execution Prevention\nB: Protected Management Frames\nC: Command and Control\nD: Common Vulnerability Scoring System",
+          "back": ">> CORRECT: C |\n\nDas Command and Control ist die zentrale Steuerungsinfrastruktur, über die der Angreifer seinem Botnet die Befehle für einen DDoS-Angriff erteilt.\n\nNicht:\nA | Data Execution Prevention schränkt ein, in welchen Speicherbereichen Code überhaupt ausgeführt werden darf, und erschwert damit Exploits wie Buffer Overflows, die Code in eigentlich nicht dafür vorgesehene Speicherbereiche schreiben. Für die genannte Anforderung ist daher „Command and Control“ passend.\nB | Für „Command and Control“ spricht: Das Command and Control ist die zentrale Steuerungsinfrastruktur, über die der Angreifer seinem Botnet die Befehle für einen DDoS-Angriff erteilt. Das trifft auf „Protected Management Frames“ nicht zu.\nD | Das Common Vulnerability Scoring System bewertet technische Merkmale einer Schwachstelle und bildet sie auf einen Score von 0,0 bis 10,0 ab. Der Wert unterstützt die Priorisierung, ersetzt aber keine Bewertung des konkreten Geschäftsrisikos. Für die genannte Anforderung ist daher „Command and Control“ passend.",
+          "tags": [
+            "Malicious Activity Indicators"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "M2-086: Which infrastructure is used to manage compromised systems in a botnet?\nA: Data Execution Prevention\nB: Protected Management Frames\nC: Command and Control\nD: Common Vulnerability Scoring System",
+          "back": ">> CORRECT: C |\n\nDas Command and Control ist die zentrale Steuerungsinfrastruktur, über die der Angreifer seinem Botnet die Befehle für einen DDoS-Angriff erteilt.\n\nNicht:\nA | Data Execution Prevention schränkt ein, in welchen Speicherbereichen Code überhaupt ausgeführt werden darf, und erschwert damit Exploits wie Buffer Overflows, die Code in eigentlich nicht dafür vorgesehene Speicherbereiche schreiben. Für die genannte Anforderung ist daher „Command and Control“ passend.\nB | Für „Command and Control“ spricht: Das Command and Control ist die zentrale Steuerungsinfrastruktur, über die der Angreifer seinem Botnet die Befehle für einen DDoS-Angriff erteilt. Das trifft auf „Protected Management Frames“ nicht zu.\nD | Das Common Vulnerability Scoring System bewertet technische Merkmale einer Schwachstelle und bildet sie auf einen Score von 0,0 bis 10,0 ab. Der Wert unterstützt die Priorisierung, ersetzt aber keine Bewertung des konkreten Geschäftsrisikos. Für die genannte Anforderung ist daher „Command and Control“ passend.",
+          "tags": [
+            "Malicious Activity Indicators"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "sy0-701-objective-2-4",
+          "name": "2.4 Indicators of Malicious Activity"
+        },
+        "newDeck": {
+          "id": "sy0-701-not-relevant-archive",
+          "name": "99_SY0-701_Not_Relevant_Archiv"
         },
         "fsrs": "retained"
       },
@@ -1815,6 +2122,92 @@
         "newDeck": {
           "id": "sy0-701-objective-3-2",
           "name": "3.2 Applying Security Principles"
+        },
+        "fsrs": "retained"
+      },
+      {
+        "cardId": "1729176350133",
+        "domain": 2,
+        "status": "unmapped",
+        "requirementIds": [],
+        "changeType": "move",
+        "reason": "Die reine Definition von clientseitigem Code prüft keinen veröffentlichten Security+-V7-Leaf.",
+        "previousContent": {
+          "front": "M2-102: Which code runs on the user's device, usually in the browser?\nA: Client-side code\nB: Server-side code\nC: Firmware\nD: Kernel module",
+          "back": ">> CORRECT: A |\n\nClient-seitiger Code läuft im Browser des Nutzers, typischerweise als HTML oder JavaScript, das die vom Website-Betreiber gestaltete Seite darstellt.\n\nNicht:\nB | Server-seitiger Code läuft auf dem Webserver selbst, etwa um Anfragen zu verarbeiten oder eine Überweisung im Hintergrund auszuführen — der Browser des Nutzers bekommt davon nichts mit. Die Frage zielt nicht auf diesen Einsatz, sondern auf „Client-side code“.\nC | Firmware ist das Betriebssystem, das direkt in Hardware wie Thermostaten oder Routern läuft und meist nur vom Hersteller selbst aktualisiert werden kann. Die Frage zielt nicht auf diesen Einsatz, sondern auf „Client-side code“.\nD | Die Organisation braucht hier „Client-side code“. Mit „Kernel module“ bliebe die genannte Anforderung offen.",
+          "tags": [
+            "Malicious Activity Indicators"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "M2-102: Which code runs on the user's device, usually in the browser?\nA: Client-side code\nB: Server-side code\nC: Firmware\nD: Kernel module",
+          "back": ">> CORRECT: A |\n\nClient-seitiger Code läuft im Browser des Nutzers, typischerweise als HTML oder JavaScript, das die vom Website-Betreiber gestaltete Seite darstellt.\n\nNicht:\nB | Server-seitiger Code läuft auf dem Webserver selbst, etwa um Anfragen zu verarbeiten oder eine Überweisung im Hintergrund auszuführen — der Browser des Nutzers bekommt davon nichts mit. Die Frage zielt nicht auf diesen Einsatz, sondern auf „Client-side code“.\nC | Firmware ist das Betriebssystem, das direkt in Hardware wie Thermostaten oder Routern läuft und meist nur vom Hersteller selbst aktualisiert werden kann. Die Frage zielt nicht auf diesen Einsatz, sondern auf „Client-side code“.\nD | Die Organisation braucht hier „Client-side code“. Mit „Kernel module“ bliebe die genannte Anforderung offen.",
+          "tags": [
+            "Malicious Activity Indicators"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "sy0-701-objective-2-4",
+          "name": "2.4 Indicators of Malicious Activity"
+        },
+        "newDeck": {
+          "id": "sy0-701-not-relevant-archive",
+          "name": "99_SY0-701_Not_Relevant_Archiv"
+        },
+        "fsrs": "retained"
+      },
+      {
+        "cardId": "1729176391515",
+        "domain": 2,
+        "status": "unmapped",
+        "requirementIds": [],
+        "changeType": "move",
+        "reason": "Die reine Definition von serverseitigem Code prüft keinen veröffentlichten Security+-V7-Leaf.",
+        "previousContent": {
+          "front": "M2-103: Which code runs on the server to provide a web service?\nA: Client-side code\nB: Management frame\nC: Host file\nD: Server-side code",
+          "back": ">> CORRECT: D |\n\nServer-seitiger Code läuft auf dem Webserver selbst, etwa um Anfragen zu verarbeiten oder eine Überweisung im Hintergrund auszuführen — der Browser des Nutzers bekommt davon nichts mit.\n\nNicht:\nA | Client-seitiger Code läuft im Browser des Nutzers, typischerweise als HTML oder JavaScript, das die vom Website-Betreiber gestaltete Seite darstellt. Für den vorliegenden Fall bleibt „Server-side code“ die passende Antwort.\nB | WLAN-Management-Frames steuern unter anderem Aufbau, Pflege und Abbau einer Funkverbindung. Hier wird jedoch die Funktion von „Server-side code“ beschrieben.\nC | „Host file“ passt nicht zum beschriebenen Einsatz. Die geforderte Wirkung liefert „Server-side code“.",
+          "tags": [
+            "Malicious Activity Indicators"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "M2-103: Which code runs on the server to provide a web service?\nA: Client-side code\nB: Management frame\nC: Host file\nD: Server-side code",
+          "back": ">> CORRECT: D |\n\nServer-seitiger Code läuft auf dem Webserver selbst, etwa um Anfragen zu verarbeiten oder eine Überweisung im Hintergrund auszuführen — der Browser des Nutzers bekommt davon nichts mit.\n\nNicht:\nA | Client-seitiger Code läuft im Browser des Nutzers, typischerweise als HTML oder JavaScript, das die vom Website-Betreiber gestaltete Seite darstellt. Für den vorliegenden Fall bleibt „Server-side code“ die passende Antwort.\nB | WLAN-Management-Frames steuern unter anderem Aufbau, Pflege und Abbau einer Funkverbindung. Hier wird jedoch die Funktion von „Server-side code“ beschrieben.\nC | „Host file“ passt nicht zum beschriebenen Einsatz. Die geforderte Wirkung liefert „Server-side code“.",
+          "tags": [
+            "Malicious Activity Indicators"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "sy0-701-objective-2-4",
+          "name": "2.4 Indicators of Malicious Activity"
+        },
+        "newDeck": {
+          "id": "sy0-701-not-relevant-archive",
+          "name": "99_SY0-701_Not_Relevant_Archiv"
         },
         "fsrs": "retained"
       },
@@ -2003,6 +2396,51 @@
         "fsrs": "retained"
       },
       {
+        "cardId": "1729186250125",
+        "domain": 2,
+        "status": "unmapped",
+        "requirementIds": [],
+        "changeType": "move",
+        "reason": "Defense in depth erscheint weder als V7-Objective-Bullet noch im offiziellen Akronymverzeichnis.",
+        "previousContent": {
+          "front": "M2-125: Which approach combines multiple tools and policies to secure a system?\nA: Single point of failure\nB: Open trust\nC: Password reuse\nD: Defense in depth",
+          "back": ">> CORRECT: D |\n\nDefense in Depth bedeutet, dass beim Hardening viele verschiedene Werkzeuge und Richtlinien zusammenwirken, weil es niemals nur einen einzigen Knopf gibt, um ein System vollständig abzusichern.\n\nNicht:\nA | Der Unterschied liegt in der beschriebenen Funktion. Sie gehört zu „Defense in depth“, nicht zu „Single point of failure“.\nB | Hier geht es um „Defense in depth“: Defense in Depth bedeutet, dass beim Hardening viele verschiedene Werkzeuge und Richtlinien zusammenwirken, weil es niemals nur einen einzigen Knopf gibt, um ein System vollständig abzusichern. „Open trust“ beschreibt etwas anderes.\nC | Aus der Beschreibung folgt „Defense in depth“. „Password reuse“ lässt sich daraus nicht ableiten.",
+          "tags": [
+            "Mitigation Techniques",
+            "Identity and Access Management"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "M2-125: Which approach combines multiple tools and policies to secure a system?\nA: Single point of failure\nB: Open trust\nC: Password reuse\nD: Defense in depth",
+          "back": ">> CORRECT: D |\n\nDefense in Depth bedeutet, dass beim Hardening viele verschiedene Werkzeuge und Richtlinien zusammenwirken, weil es niemals nur einen einzigen Knopf gibt, um ein System vollständig abzusichern.\n\nNicht:\nA | Der Unterschied liegt in der beschriebenen Funktion. Sie gehört zu „Defense in depth“, nicht zu „Single point of failure“.\nB | Hier geht es um „Defense in depth“: Defense in Depth bedeutet, dass beim Hardening viele verschiedene Werkzeuge und Richtlinien zusammenwirken, weil es niemals nur einen einzigen Knopf gibt, um ein System vollständig abzusichern. „Open trust“ beschreibt etwas anderes.\nC | Aus der Beschreibung folgt „Defense in depth“. „Password reuse“ lässt sich daraus nicht ableiten.",
+          "tags": [
+            "Mitigation Techniques",
+            "Identity and Access Management"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "sy0-701-objective-2-5",
+          "name": "2.5 Mitigation Techniques"
+        },
+        "newDeck": {
+          "id": "sy0-701-not-relevant-archive",
+          "name": "99_SY0-701_Not_Relevant_Archiv"
+        },
+        "fsrs": "retained"
+      },
+      {
         "cardId": "1729186709321",
         "domain": 2,
         "status": "improve",
@@ -2140,6 +2578,49 @@
         "newDeck": {
           "id": "sy0-701-objective-3-1",
           "name": "3.1 Architecture Models"
+        },
+        "fsrs": "retained"
+      },
+      {
+        "cardId": "1729192907745",
+        "domain": 3,
+        "status": "unmapped",
+        "requirementIds": [],
+        "changeType": "move",
+        "reason": "Monolithic Architecture ist kein V7-Bullet; die Karte vergleicht es auch nicht mit dem veröffentlichten Microservices-Leaf.",
+        "previousContent": {
+          "front": "M3-003: Which term is one where the entire application is run at once via a single executable?\nA: Hybrid Cloud\nB: Monolithic Architecture\nC: Compute Engine\nD: Data Plane",
+          "back": ">> CORRECT: B |\n\nBei einer Monolithic Architecture läuft die gesamte Anwendung — Benutzeroberfläche, Login und Geschäftslogik — als eine einzige ausführbare Datei auf dem Client; jede Änderung erfordert deshalb ein komplettes Update dieser einen Datei.\n\nNicht:\nA | Eine Hybrid Cloud verbindet zwei oder mehr eigenständige Cloud-Infrastrukturen so, dass Daten und Anwendungen zwischen ihnen portierbar sind. Hier werden private und öffentliche Cloud gekoppelt. Dieser Zweck weicht vom Szenario ab; dort ist „Monolithic Architecture“ gemeint.\nC | Was allgemein als Compute Component bezeichnet wird, heißt in der Cloud meist Compute Engine — das kann ein einzelner Prozessor oder eine beliebige Anzahl über die Cloud verteilter Prozessoren sein, die je nach Bedarf skaliert werden. Die Frage zielt nicht auf diesen Einsatz, sondern auf „Monolithic Architecture“.\nD | Die Data Plane transportiert den tatsächlichen Datenverkehr und setzt die von der Control Plane getroffene Zugriffsentscheidung am Policy Enforcement Point durch. Die Frage trennt damit die Verkehrsverarbeitung von der Entscheidungslogik. Damit gehört „Data Plane“ fachlich in einen anderen Bereich als „Monolithic Architecture“.",
+          "tags": [
+            "Architecture Models"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "M3-003: Which term is one where the entire application is run at once via a single executable?\nA: Hybrid Cloud\nB: Monolithic Architecture\nC: Compute Engine\nD: Data Plane",
+          "back": ">> CORRECT: B |\n\nBei einer Monolithic Architecture läuft die gesamte Anwendung — Benutzeroberfläche, Login und Geschäftslogik — als eine einzige ausführbare Datei auf dem Client; jede Änderung erfordert deshalb ein komplettes Update dieser einen Datei.\n\nNicht:\nA | Eine Hybrid Cloud verbindet zwei oder mehr eigenständige Cloud-Infrastrukturen so, dass Daten und Anwendungen zwischen ihnen portierbar sind. Hier werden private und öffentliche Cloud gekoppelt. Dieser Zweck weicht vom Szenario ab; dort ist „Monolithic Architecture“ gemeint.\nC | Was allgemein als Compute Component bezeichnet wird, heißt in der Cloud meist Compute Engine — das kann ein einzelner Prozessor oder eine beliebige Anzahl über die Cloud verteilter Prozessoren sein, die je nach Bedarf skaliert werden. Die Frage zielt nicht auf diesen Einsatz, sondern auf „Monolithic Architecture“.\nD | Die Data Plane transportiert den tatsächlichen Datenverkehr und setzt die von der Control Plane getroffene Zugriffsentscheidung am Policy Enforcement Point durch. Die Frage trennt damit die Verkehrsverarbeitung von der Entscheidungslogik. Damit gehört „Data Plane“ fachlich in einen anderen Bereich als „Monolithic Architecture“.",
+          "tags": [
+            "Architecture Models"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "sy0-701-objective-3-1",
+          "name": "3.1 Architecture Models"
+        },
+        "newDeck": {
+          "id": "sy0-701-not-relevant-archive",
+          "name": "99_SY0-701_Not_Relevant_Archiv"
         },
         "fsrs": "retained"
       },
@@ -2510,6 +2991,49 @@
         "fsrs": "retained"
       },
       {
+        "cardId": "1729282747703",
+        "domain": 3,
+        "status": "unmapped",
+        "requirementIds": [],
+        "changeType": "move",
+        "reason": "Die Karte meint parallele Rechenarbeit; der V7-Leaf Parallel Processing meint dagegen einen parallel laufenden Recovery-Test.",
+        "previousContent": {
+          "front": "M3-047: Which approach executes parts of a computing workload at the same time across multiple processors or systems?\nA: Parallel processing\nB: Hot site\nC: Standby generator\nD: Cold site",
+          "back": ">> CORRECT: A |\n\nParallel Processing teilt eine berechenbare Aufgabe in Teile, die gleichzeitig auf mehreren Prozessorkernen oder Systemen laufen. Das kann die Verarbeitung beschleunigen; Ausfallsicherheit entsteht jedoch nur, wenn die Architektur zusätzlich Redundanz und Fehlerbehandlung vorsieht.\n\nNicht:\nB | Ein Hot Site ist ein vorbereitetes Ausweichrechenzentrum für die Wiederaufnahme des Betriebs und keine Methode zur gleichzeitigen Verarbeitung einer Rechenaufgabe.\nC | Ein Standby-Generator liefert bei einem Stromausfall längerfristig Energie, verteilt aber keine Rechenoperationen.\nD | Ein Cold Site stellt grundlegende Räumlichkeiten für eine spätere Wiederherstellung bereit und führt keine parallelen Aufgaben aus.",
+          "tags": [
+            "Resilience and Recovery"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "M3-047: Which approach executes parts of a computing workload at the same time across multiple processors or systems?\nA: Parallel processing\nB: Hot site\nC: Standby generator\nD: Cold site",
+          "back": ">> CORRECT: A |\n\nParallel Processing teilt eine berechenbare Aufgabe in Teile, die gleichzeitig auf mehreren Prozessorkernen oder Systemen laufen. Das kann die Verarbeitung beschleunigen; Ausfallsicherheit entsteht jedoch nur, wenn die Architektur zusätzlich Redundanz und Fehlerbehandlung vorsieht.\n\nNicht:\nB | Ein Hot Site ist ein vorbereitetes Ausweichrechenzentrum für die Wiederaufnahme des Betriebs und keine Methode zur gleichzeitigen Verarbeitung einer Rechenaufgabe.\nC | Ein Standby-Generator liefert bei einem Stromausfall längerfristig Energie, verteilt aber keine Rechenoperationen.\nD | Ein Cold Site stellt grundlegende Räumlichkeiten für eine spätere Wiederherstellung bereit und führt keine parallelen Aufgaben aus.",
+          "tags": [
+            "Resilience and Recovery"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "sy0-701-objective-3-4",
+          "name": "3.4 Resiliency and Recovery"
+        },
+        "newDeck": {
+          "id": "sy0-701-not-relevant-archive",
+          "name": "99_SY0-701_Not_Relevant_Archiv"
+        },
+        "fsrs": "retained"
+      },
+      {
         "cardId": "1729435542513",
         "domain": 3,
         "status": "improve",
@@ -2596,6 +3120,98 @@
         "newDeck": {
           "id": "sy0-701-objective-4-3",
           "name": "4.3 Vulnerability Management"
+        },
+        "fsrs": "retained"
+      },
+      {
+        "cardId": "1729540036900",
+        "domain": 4,
+        "status": "unmapped",
+        "requirementIds": [],
+        "changeType": "move",
+        "reason": "Actionable Data ist weder veröffentlichter V7-Bullet noch offizielles Akronym.",
+        "previousContent": {
+          "front": "M4-016: Which term is information that can be acted upon once it is known?\nA: Hardening\nB: Legal Hold\nC: Single Sign On\nD: Actionable Data",
+          "back": ">> CORRECT: D |\n\nActionable Data sind Informationen, aus denen sich direkt eine Handlung ableiten lässt — als Beispiel einen plötzlichen Anstieg fehlgeschlagener Anmeldungen oder eine ungewöhnlich große Datenübertragung nach außen, die sofort einen Alarm auslösen sollten.\n\nNicht:\nA | Hardening beschreibt die Maßnahmen, mit denen ein System weniger anfällig für Angriffe gemacht wird — etwa Patches einspielen, Passwortrichtlinien setzen und Zugriff einschränken. Dieser Zweck weicht vom Szenario ab; dort ist „Actionable Data“ gemeint.\nB | Ein Legal Hold wird meist von einem Anwalt oder einer anderen juristischen Stelle initiiert und legt schriftlich fest, welche Art und Menge an Daten aufbewahrt werden muss — zuständig für die Umsetzung ist der Data Custodian. Für die genannte Anforderung ist daher „Actionable Data“ passend.\nC | Mit Single Sign-On meldet man sich einmal im Netzwerk an und erhält danach für einen bestimmten Zeitraum (häufig 24 Stunden) Zugriff auf alle benötigten Ressourcen, ohne sich für jede einzelne Freigabe oder jeden Drucker erneut anmelden zu müssen. Für die genannte Anforderung ist daher „Actionable Data“ passend.",
+          "tags": [
+            "Security Monitoring"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "M4-016: Which term is information that can be acted upon once it is known?\nA: Hardening\nB: Legal Hold\nC: Single Sign On\nD: Actionable Data",
+          "back": ">> CORRECT: D |\n\nActionable Data sind Informationen, aus denen sich direkt eine Handlung ableiten lässt — als Beispiel einen plötzlichen Anstieg fehlgeschlagener Anmeldungen oder eine ungewöhnlich große Datenübertragung nach außen, die sofort einen Alarm auslösen sollten.\n\nNicht:\nA | Hardening beschreibt die Maßnahmen, mit denen ein System weniger anfällig für Angriffe gemacht wird — etwa Patches einspielen, Passwortrichtlinien setzen und Zugriff einschränken. Dieser Zweck weicht vom Szenario ab; dort ist „Actionable Data“ gemeint.\nB | Ein Legal Hold wird meist von einem Anwalt oder einer anderen juristischen Stelle initiiert und legt schriftlich fest, welche Art und Menge an Daten aufbewahrt werden muss — zuständig für die Umsetzung ist der Data Custodian. Für die genannte Anforderung ist daher „Actionable Data“ passend.\nC | Mit Single Sign-On meldet man sich einmal im Netzwerk an und erhält danach für einen bestimmten Zeitraum (häufig 24 Stunden) Zugriff auf alle benötigten Ressourcen, ohne sich für jede einzelne Freigabe oder jeden Drucker erneut anmelden zu müssen. Für die genannte Anforderung ist daher „Actionable Data“ passend.",
+          "tags": [
+            "Security Monitoring"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "sy0-701-objective-4-4",
+          "name": "4.4 Security Monitoring"
+        },
+        "newDeck": {
+          "id": "sy0-701-not-relevant-archive",
+          "name": "99_SY0-701_Not_Relevant_Archiv"
+        },
+        "fsrs": "retained"
+      },
+      {
+        "cardId": "1729542555582",
+        "domain": 4,
+        "status": "improve",
+        "requirementIds": [
+          "req:sy0701:v7:4.5:web-filter:universal-resource-locator-url-scanning",
+          "req:sy0701:v7:4.5:web-filter:content-categorization",
+          "req:sy0701:v7:4.5:web-filter:block-rules",
+          "req:sy0701:v7:4.5:web-filter:reputation"
+        ],
+        "changeType": "clarify",
+        "reason": "Die bisherige Formulierung 'inbound and outbound data' war zu breit; die neue Karte prüft konkrete Web-Filter-Funktionen.",
+        "previousContent": {
+          "front": "M4-017: Which term provides control of inbound and outbound data?\nA: Discretionary Access Control\nB: Active Directory\nC: Content Filtering\nD: DomainKeys Identified Mail",
+          "back": ">> CORRECT: C |\n\nContent Filtering steuert, welche Daten ein- und ausgehend über die reine Firewall-Funktion hinaus zugelassen werden — besonders relevant für Organisationen, die mit vielen sensiblen Daten arbeiten.\n\nNicht:\nA | Linux arbeitet standardmäßig mit Discretionary Access Control: Der Benutzer entscheidet selbst, wem er welche Rechte auf seine Ressourcen einräumt — in hochsicheren Umgebungen wird dafür stattdessen oft Mandatory Access Control (z. B. via SELinux) eingesetzt. Für die genannte Anforderung ist daher „Content Filtering“ passend.\nB | Active Directory ist Microsofts Verzeichnisdienst für Identitäten, Geräte, Gruppen und Richtlinien in einer Windows-Domäne. Die Frage zielt nicht auf diesen Einsatz, sondern auf „Content Filtering“.\nD | DKIM signiert die E-Mail beim Versand digital mit einem privaten Schlüssel; der empfangende Mailserver prüft den zugehörigen öffentlichen Schlüssel über einen DNS-TXT-Record und bestätigt so, dass die Nachricht wirklich vom angegebenen Server stammt. Die Frage zielt nicht auf diesen Einsatz, sondern auf „Content Filtering“.",
+          "tags": [
+            "Enterprise Security",
+            "Identity and Access Management"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "M4-017: A company wants to block web access based on URL categories and reputation and to enforce rules on requested or downloaded web content. Which capability best meets this requirement?\nA: Discretionary Access Control\nB: Active Directory\nC: Content Filtering\nD: DomainKeys Identified Mail",
+          "back": ">> CORRECT: C |\n\nContent Filtering bewertet Webzugriffe und Webinhalte anhand von URLs, Kategorien, Reputation und festgelegten Blockregeln. Damit kann die Organisation unerwünschte Requests oder Downloads gezielt verhindern.\n\nNicht:\nA | Discretionary Access Control regelt, welche Benutzer auf Objekte wie Dateien zugreifen dürfen; es kategorisiert oder filtert keine Webinhalte.\nB | Active Directory verwaltet Identitäten, Gruppen, Geräte und Richtlinien, ist aber kein Web- oder URL-Filter.\nD | DKIM bestätigt über eine digitale Signatur die Herkunft und Integrität einer E-Mail; es kontrolliert keine aufgerufenen Websites oder heruntergeladenen Webinhalte.",
+          "tags": [
+            "Enterprise Security"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "sy0-701-objective-4-5",
+          "name": "4.5 Enterprise Security"
+        },
+        "newDeck": {
+          "id": "sy0-701-objective-4-5",
+          "name": "4.5 Enterprise Security"
         },
         "fsrs": "retained"
       },
@@ -2784,6 +3400,50 @@
         "fsrs": "retained"
       },
       {
+        "cardId": "1729706866215",
+        "domain": 5,
+        "status": "improve",
+        "requirementIds": [],
+        "changeType": "clarify",
+        "reason": "Die Wendung 'without acting' vermischte Risk Appetite mit Risk Acceptance; die neue Definition entspricht dem veröffentlichten Appetite-Oberbegriff.",
+        "previousContent": {
+          "front": "M5-008: Which term matches this description: Risk that an organization is willing to take on without acting?\nA: Recovery Point Objective\nB: Risk Appetite\nC: Risk Tolerance\nD: Annualized Loss Expectency",
+          "back": ">> CORRECT: B |\n\nRisk Appetite ist das Risikoniveau, das eine Organisation akzeptiert, ohne aktiv gegenzusteuern. vergleicht das mit einem Tempolimit von 55 mph: Das ist der offiziell festgelegte, akzeptierte Wert - unabhängig davon, wie tolerant die Praxis tatsächlich ist.\n\nNicht:\nA | Das Recovery Point Objective begrenzt den tolerierbaren Datenverlust als Zeitspanne zum letzten wiederherstellbaren Datenstand. Dreißig Minuten RPO bedeuten, dass höchstens die jüngsten dreißig Minuten an Daten fehlen dürfen. Damit gehört „Recovery Point Objective“ fachlich in einen anderen Bereich als „Risk Appetite“.\nC | Risk Tolerance: Das Tempolimit von 55 mph entspricht der Risk Appetite, doch real wird oft erst deutlich darüber geblitzt - dieser größere Spielraum bis zur tatsächlichen Reaktion ist die Risk Tolerance, die typischerweise über der Risk Appetite liegt. Damit gehört „Risk Tolerance“ fachlich in einen anderen Bereich als „Risk Appetite“.\nD | Rechenbeispiel: Werden im Schnitt 7 Laptops pro Jahr gestohlen (ARO = 7) und hat jeder gestohlene Laptop bei einem Exposure Factor von 1.0 eine Single-Loss Expectancy von 1.000 $, ergibt ARO x SLE eine Annualized Loss Expectancy von 7.000 $. Hier wird jedoch die Funktion von „Risk Appetite“ beschrieben.",
+          "tags": [
+            "Risk Management",
+            "Resilience and Recovery"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "M5-008: Which term describes the amount and type of risk an organization is willing to pursue or retain while working toward its objectives?\nA: Recovery Point Objective\nB: Risk Appetite\nC: Risk Tolerance\nD: Annualized Loss Expectancy",
+          "back": ">> CORRECT: B |\n\nRisk Appetite beschreibt auf übergeordneter Ebene, welche Arten und welches Ausmaß an Risiko eine Organisation beim Verfolgen ihrer Ziele eingehen oder beibehalten will. Daraus können konkretere Toleranzgrenzen und Entscheidungen abgeleitet werden.\n\nNicht:\nA | Das Recovery Point Objective legt fest, wie viel Datenverlust gemessen als Zeitspanne bei einer Wiederherstellung höchstens akzeptabel ist.\nC | Risk Tolerance beschreibt die zulässige Abweichung um ein konkretes Risiko- oder Leistungsziel; sie operationalisiert den breiteren Risk Appetite.\nD | Annualized Loss Expectancy ist der erwartete jährliche Verlust eines Risikos und wird typischerweise als Single Loss Expectancy multipliziert mit der Annualized Rate of Occurrence berechnet.",
+          "tags": [
+            "Risk Management"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "sy0-701-objective-5-2",
+          "name": "5.2 Risk Management"
+        },
+        "newDeck": {
+          "id": "sy0-701-objective-5-2",
+          "name": "5.2 Risk Management"
+        },
+        "fsrs": "retained"
+      },
+      {
         "cardId": "1729706988234",
         "domain": 5,
         "status": "improve",
@@ -2829,6 +3489,49 @@
         "fsrs": "retained"
       },
       {
+        "cardId": "1729783723324",
+        "domain": 5,
+        "status": "unmapped",
+        "requirementIds": [],
+        "changeType": "move",
+        "reason": "CCO ist weder in den V7-Bullets noch im offiziellen Akronymverzeichnis aufgeführt.",
+        "previousContent": {
+          "front": "M5-020: What does the abbreviation CCO commonly stand for in organizational compliance leadership?\nA: Chief Compliance Officer\nB: Central Controls Operator\nC: Certified Cryptography Owner\nD: Corporate Continuity Organizer",
+          "back": ">> CORRECT: A |\n\nCCO steht in diesem Kontext für Chief Compliance Officer. Diese Führungsrolle überwacht das Compliance-Programm und berichtet über die Einhaltung relevanter Anforderungen.\n\nNicht:\nB | Central Controls Operator ist keine übliche Auflösung der Compliance-Führungsrolle CCO.\nC | Certified Cryptography Owner ist keine etablierte CCO-Rollenbezeichnung.\nD | Corporate Continuity Organizer beschreibt keine übliche Compliance-Leitungsfunktion.",
+          "tags": [
+            "Security Compliance"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "M5-020: What does the abbreviation CCO commonly stand for in organizational compliance leadership?\nA: Chief Compliance Officer\nB: Central Controls Operator\nC: Certified Cryptography Owner\nD: Corporate Continuity Organizer",
+          "back": ">> CORRECT: A |\n\nCCO steht in diesem Kontext für Chief Compliance Officer. Diese Führungsrolle überwacht das Compliance-Programm und berichtet über die Einhaltung relevanter Anforderungen.\n\nNicht:\nB | Central Controls Operator ist keine übliche Auflösung der Compliance-Führungsrolle CCO.\nC | Certified Cryptography Owner ist keine etablierte CCO-Rollenbezeichnung.\nD | Corporate Continuity Organizer beschreibt keine übliche Compliance-Leitungsfunktion.",
+          "tags": [
+            "Security Compliance"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "sy0-701-objective-5-4",
+          "name": "5.4 Security Compliance"
+        },
+        "newDeck": {
+          "id": "sy0-701-not-relevant-archive",
+          "name": "99_SY0-701_Not_Relevant_Archiv"
+        },
+        "fsrs": "retained"
+      },
+      {
         "cardId": "1729785486403",
         "domain": 5,
         "status": "improve",
@@ -2870,6 +3573,51 @@
         "newDeck": {
           "id": "sy0-701-objective-5-5",
           "name": "5.5 Audits and Assessments"
+        },
+        "fsrs": "retained"
+      },
+      {
+        "cardId": "1772576382622",
+        "domain": 1,
+        "status": "unmapped",
+        "requirementIds": [],
+        "changeType": "move",
+        "reason": "OpenID Connect ist weder als V7-Bullet noch im offiziellen Akronymverzeichnis enthalten; OAuth ist ein anderes Protokoll.",
+        "previousContent": {
+          "front": "A cloud application delegates user authentication to an external identity provider and receives an ID token about the signed-in user. Which protocol is designed for this?\nA: OpenID Connect\nB: Lightweight Directory Access Protocol (LDAP)\nC: Terminal Access Controller Access-Control System Plus (TACACS+)\nD: Simple Network Management Protocol (SNMP)",
+          "back": ">> CORRECT: A |\n\nOpenID Connect ist eine Identitätsschicht auf OAuth 2.0. Eine Anwendung kann damit die Anmeldung über einen Identity Provider durchführen und Informationen über den authentifizierten Benutzer in einem ID Token erhalten.\n\nNicht:\nB | LDAP greift auf Verzeichnisinformationen zu, definiert aber nicht den beschriebenen webbasierten ID-Token-Flow.\nC | TACACS+ wird vor allem für die zentrale Administration von Netzwerkgeräten eingesetzt.\nD | SNMP dient der Überwachung und Verwaltung von Netzwerkkomponenten, nicht der Benutzeranmeldung an Cloud-Anwendungen.",
+          "tags": [
+            "Identity and Access Management",
+            "Architecture Models"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "A cloud application delegates user authentication to an external identity provider and receives an ID token about the signed-in user. Which protocol is designed for this?\nA: OpenID Connect\nB: Lightweight Directory Access Protocol (LDAP)\nC: Terminal Access Controller Access-Control System Plus (TACACS+)\nD: Simple Network Management Protocol (SNMP)",
+          "back": ">> CORRECT: A |\n\nOpenID Connect ist eine Identitätsschicht auf OAuth 2.0. Eine Anwendung kann damit die Anmeldung über einen Identity Provider durchführen und Informationen über den authentifizierten Benutzer in einem ID Token erhalten.\n\nNicht:\nB | LDAP greift auf Verzeichnisinformationen zu, definiert aber nicht den beschriebenen webbasierten ID-Token-Flow.\nC | TACACS+ wird vor allem für die zentrale Administration von Netzwerkgeräten eingesetzt.\nD | SNMP dient der Überwachung und Verwaltung von Netzwerkkomponenten, nicht der Benutzeranmeldung an Cloud-Anwendungen.",
+          "tags": [
+            "Identity and Access Management",
+            "Architecture Models"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "1773008953575",
+          "name": "01_General_Security_Concepts"
+        },
+        "newDeck": {
+          "id": "sy0-701-not-relevant-archive",
+          "name": "99_SY0-701_Not_Relevant_Archiv"
         },
         "fsrs": "retained"
       },
@@ -4189,10 +4937,12 @@
       {
         "cardId": "1772922529731",
         "domain": 5,
-        "status": "keep",
-        "requirementIds": [],
-        "changeType": "move",
-        "reason": "Das Breach-Szenario prüft Folgen für Reputation und Finanzen im Compliance-/Privacy-Kontext von 5.4.",
+        "status": "improve",
+        "requirementIds": [
+          "req:sy0701:v7:5.4:consequences-of-non-compliance:reputational-damage"
+        ],
+        "changeType": "move_and_clarify",
+        "reason": "Die frühere Negativfrage setzte unbegründet voraus, dass ein Breach keine Availability-Auswirkung haben kann; das neue Szenario prüft eine eindeutige Compliance-Folge.",
         "previousContent": {
           "front": "The company that Scott works for has experienced a data breach, and the personal information of thousands of customers has been exposed. Which of the following impact categories is not a concern?\nA: Reputation\nB: Financial\nC: Availability loss\nD: Data loss",
           "back": ">> CORRECT: C |\n\nVerfügbarkeitsverlust ist bei einem Datenbreach KEINE typische Sorge – das Problem ist Vertraulichkeit (Daten wurden exponiert), nicht Verfügbarkeit (Systeme laufen weiter).\n\nNicht:\nA | Die Frage sucht den abweichenden Eintrag. Das ist „Availability loss“ und nicht „Reputation“.\nB | Nicht „Financial“, sondern „Availability loss“ weicht von den übrigen Antworten ab.\nD | Die Ausnahme lässt sich nicht mit „Data loss“ begründen. Gemeint ist „Availability loss“.",
@@ -4207,10 +4957,10 @@
           }
         },
         "newContent": {
-          "front": "The company that Scott works for has experienced a data breach, and the personal information of thousands of customers has been exposed. Which of the following impact categories is not a concern?\nA: Reputation\nB: Financial\nC: Availability loss\nD: Data loss",
-          "back": ">> CORRECT: C |\n\nVerfügbarkeitsverlust ist bei einem Datenbreach KEINE typische Sorge – das Problem ist Vertraulichkeit (Daten wurden exponiert), nicht Verfügbarkeit (Systeme laufen weiter).\n\nNicht:\nA | Die Frage sucht den abweichenden Eintrag. Das ist „Availability loss“ und nicht „Reputation“.\nB | Nicht „Financial“, sondern „Availability loss“ weicht von den übrigen Antworten ab.\nD | Die Ausnahme lässt sich nicht mit „Data loss“ begründen. Gemeint ist „Availability loss“.",
+          "front": "A company exposes the personal records of thousands of customers. The incident causes loss of customer trust, sustained negative media coverage, and customers leaving for competitors. Which consequence of non-compliance is most directly illustrated?\nA: Contractual impacts\nB: Sanctions\nC: Reputational damage\nD: Loss of license",
+          "back": ">> CORRECT: C |\n\nReputational damage ist der Vertrauens- und Imageschaden, der durch negative Berichterstattung und die Abwanderung von Kunden nach einem Datenschutz- oder Compliance-Verstoß entsteht.\n\nNicht:\nA | Contractual impacts wären Folgen aus verletzten Vertragsklauseln, etwa Schadenersatz, Kündigungsrechte oder neu verhandelte Bedingungen; solche Folgen nennt das Szenario nicht.\nB | Sanctions sind formelle Straf- oder Zwangsmaßnahmen einer zuständigen Stelle. Das Szenario beschreibt stattdessen den Verlust von Vertrauen und Ansehen.\nD | Loss of license bedeutet den Entzug einer für den Geschäftsbetrieb notwendigen Zulassung. Ein solcher Entzug wird im Szenario nicht genannt.",
           "tags": [
-            "Resilience and Recovery"
+            "Security Compliance"
           ],
           "extraJson": {
             "acronym": "",
@@ -4995,6 +5745,49 @@
         "newDeck": {
           "id": "sy0-701-objective-4-7",
           "name": "4.7 Automation and Orchestration"
+        },
+        "fsrs": "retained"
+      },
+      {
+        "cardId": "1773101490323",
+        "domain": 4,
+        "status": "unmapped",
+        "requirementIds": [],
+        "changeType": "move",
+        "reason": "Die konkrete grep-Befehlsoption ist weder Objective-Bullet noch offizielles Akronymwissen.",
+        "previousContent": {
+          "front": "Each matching line in logfile.txt represents one occurrence of event101. Which command returns only the number of matching lines?\nA: grep -n 'event101' logfile.txt\nB: grep -c 'event101' logfile.txt\nC: grep 'event101' logfile.txt\nD: grep -l 'event101' logfile.txt",
+          "back": ">> CORRECT: B |\n\nDie grep-Option -c zählt die Zeilen, die zum Suchmuster passen, und gibt die Anzahl aus. Weil laut Szenario jede Zeile genau ein Ereignis enthält, entspricht diese Zeilenzahl der Zahl der Vorkommnisse.\n\nNicht:\nA | n ergänzt die Zeilennummern zu den Treffern, zählt sie aber nicht als einzelne Zahl zusammen.\nC | Ohne Option gibt grep die passenden Zeilen selbst aus und nicht nur deren Anzahl.\nD | l gibt den Namen einer Datei aus, sobald sie mindestens einen Treffer enthält; es zählt keine Trefferzeilen.",
+          "tags": [
+            "Security Monitoring"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "newContent": {
+          "front": "Each matching line in logfile.txt represents one occurrence of event101. Which command returns only the number of matching lines?\nA: grep -n 'event101' logfile.txt\nB: grep -c 'event101' logfile.txt\nC: grep 'event101' logfile.txt\nD: grep -l 'event101' logfile.txt",
+          "back": ">> CORRECT: B |\n\nDie grep-Option -c zählt die Zeilen, die zum Suchmuster passen, und gibt die Anzahl aus. Weil laut Szenario jede Zeile genau ein Ereignis enthält, entspricht diese Zeilenzahl der Zahl der Vorkommnisse.\n\nNicht:\nA | n ergänzt die Zeilennummern zu den Treffern, zählt sie aber nicht als einzelne Zahl zusammen.\nC | Ohne Option gibt grep die passenden Zeilen selbst aus und nicht nur deren Anzahl.\nD | l gibt den Namen einer Datei aus, sobald sie mindestens einen Treffer enthält; es zählt keine Trefferzeilen.",
+          "tags": [
+            "Security Monitoring"
+          ],
+          "extraJson": {
+            "acronym": "",
+            "examples": "",
+            "port": "",
+            "protocol": ""
+          }
+        },
+        "previousDeck": {
+          "id": "1773275633285",
+          "name": "04_Security_Operations"
+        },
+        "newDeck": {
+          "id": "sy0-701-not-relevant-archive",
+          "name": "99_SY0-701_Not_Relevant_Archiv"
         },
         "fsrs": "retained"
       },
@@ -23895,8 +24688,8 @@
     ]
   },
   "statusCounts": {
-    "improve": 70,
-    "keep": 611,
+    "improve": 73,
+    "keep": 608,
     "objective_mismatch": 54,
     "unmapped": 16
   },
@@ -23914,9 +24707,9 @@
     "unresolved": 0
   },
   "equations": {
-    "auditStatuses": "611 keep + 70 improve + 54 objective_mismatch + 16 unmapped = 751 audited cards",
-    "existingCards": "603 unchangedExistingCards + 148 changedExistingCards = 751 examinedExistingCards",
-    "finalCards": "751 existing + 272 added = 1023 final domain cards",
+    "auditStatuses": "608 keep + 73 improve + 54 objective_mismatch + 16 unmapped = 751 audited cards",
+    "existingCards": "585 unchangedExistingCards + 166 changedExistingCards = 751 examinedExistingCards",
+    "finalCards": "735 active existing + 272 added = 1007 active domain cards; 16 existing cards archived separately",
     "coverage": "655 covered + 0 uncovered = 655 requirements",
     "fsrs": "751 existing schedules retained + 272 new FSRS schedules initialized"
   }

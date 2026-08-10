@@ -34,6 +34,7 @@ import { getCardVariant } from '../utils/cardVariant'
 import { useSessionRewards } from '../hooks/useSessionRewards'
 import { useSessionPersistence } from '../hooks/useSessionPersistence'
 import { useStudyAnswerState } from '../hooks/study/useStudyAnswerState'
+import { useCardAnswerTimer } from '../hooks/study/useCardAnswerTimer'
 import { useHandsetLayout } from '../hooks/useHandsetLayout'
 import { useWakeLock } from '../hooks/useWakeLock'
 import CardFace from './CardFace.tsx'
@@ -43,6 +44,7 @@ import StreakBadge from './StreakBadge.tsx'
 import DailyGoalRing from './DailyGoalRing.tsx'
 import SessionCoachPanel from './SessionCoachPanel'
 import StudyHeaderProgress from './StudyHeaderProgress'
+import { CardAnswerTimer } from './CardAnswerTimer'
 
 interface Props {
   /** Deck to study */
@@ -383,7 +385,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
     peekFlipped,
     setPeekFlipped,
     pendingAnswerRef,
-    handleAnswerEvaluated,
+    handleAnswerEvaluated: updateAnswerState,
     resetAnswerState,
   } = useStudyAnswerState({
     currentCard,
@@ -399,39 +401,19 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
     : false
 
   const sessionPendingCount = session.cards.length
-  const sessionRequeueCount = useMemo(
-    () => session.cards.reduce((count, card) => count + ((session.lowRatingCounts[card.id] ?? 0) > 0 ? 1 : 0), 0),
-    [session.cards, session.lowRatingCounts]
-  )
-  const globalReviewDueCount = useMemo(() => {
-    const nowMs = Date.now()
-    return cards.filter(card => {
-      if (card.type === 'learning' || card.type === 'relearning') {
-        const dueAt = Number.isFinite(card.dueAt) ? Math.round(card.dueAt as number) : Math.max(0, Math.floor(card.due)) * 86_400_000
-        return dueAt <= nowMs
-      }
-      if (card.type !== 'review') return false
-      const dueAt = Number.isFinite(card.dueAt) ? Math.round(card.dueAt as number) : Math.max(0, Math.floor(card.due)) * 86_400_000
-      return dueAt <= nowMs
-    }).length
-  }, [cards])
-  const globalNewCount = useMemo(() => cards.filter(card => card.type === 'new').length, [cards])
-  const headerStats = useMemo(() => ([
-    { key: 'due', label: t.stats_due, value: sessionPendingCount, cls: 'text-amber-200 border-amber-500/35' },
-    { key: 'relearning', label: t.type_relearning, value: sessionRequeueCount, cls: 'text-[--brand-secondary] border-[--brand-secondary-25]' },
-    { key: 'nowDue', label: t.stats_now_due, value: globalReviewDueCount, cls: 'text-rose-200 border-rose-500/35' },
-    { key: 'new', label: t.stats_new, value: globalNewCount, cls: 'text-emerald-200 border-emerald-500/35' },
-  ]), [
-    t.stats_due,
-    t.type_relearning,
-    t.stats_now_due,
-    t.stats_new,
-    sessionPendingCount,
-    sessionRequeueCount,
-    globalReviewDueCount,
-    globalNewCount,
-  ])
   const maxSelectableRating: Rating = answerWasIncorrect ? 3 : 4
+  const answerTimerEnabled = !isHandsetLayout && settings.answerTimerEnabled === true
+  const answerTimer = useCardAnswerTimer({
+    enabled: answerTimerEnabled,
+    cardId: currentCard?.id ?? null,
+    sessionRunId: session.sessionRunId,
+    presentationKey: `${currentCard?.id ?? 'none'}:${session.sessionCount}`,
+  })
+
+  const handleAnswerEvaluated = useCallback<NonNullable<React.ComponentProps<typeof CardFace>['onAnswerEvaluated']>>((score, answer) => {
+    answerTimer.stop()
+    updateAnswerState(score, answer)
+  }, [answerTimer.stop, updateAnswerState])
 
   const handleFlip = useCallback(() => {
     if (typeof navigator.vibrate === 'function') {
@@ -441,8 +423,11 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
       setPeekFlipped(prev => !prev)
       return
     }
+    if (!session.isFlipped) {
+      answerTimer.stop()
+    }
     dispatch({ type: 'FLIP' })
-  }, [peeking])
+  }, [answerTimer.stop, peeking, session.isFlipped])
 
   const cycleQuestionTextSize = useCallback(() => {
     const nextByCurrent: Record<QuestionTextSize, QuestionTextSize> = {
@@ -977,38 +962,18 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
                 </div>
               </div>
 
-              {/* Center: Stats */}
-              <div className={`flex items-center gap-2 flex-1 justify-center ${focusHidden}`}>
-                {headerStats.map(stat => (
-                  <div
-                    key={stat.key}
-                    title={`${stat.label}: ${stat.value}`}
-                    aria-label={`${stat.label}: ${stat.value}`}
-                  className={`flex items-center justify-center rounded-[6px] border bg-ds-card px-3 py-2 font-mono text-sm font-bold ${stat.cls}`}
-                  >
-                    {stat.value}
-                  </div>
-                ))}
-              </div>
+              <div className="flex-1" aria-hidden="true" />
 
-              {/* Right: Settings */}
-              <div className={`flex items-center gap-2 flex-shrink-0 ${focusHidden}`}>
-                <span className="text-[11px] px-2.5 py-1 rounded-[6px] border border-[#18181b] text-white/40 font-mono uppercase tracking-wide">
-                  {settings.algorithm === 'sm2' ? 'SM2' : 'FSRS'}
-                </span>
-                <span className="text-[11px] px-2.5 py-1 rounded-[6px] border border-[#18181b] text-white/40 font-mono uppercase tracking-wide">
-                  {t.language_code}
-                </span>
-                <button
-                  type="button"
-                  onClick={cycleQuestionTextSize}
-                  className="ds-icon-button inline-flex h-10 w-10"
-                  title={`${t.question_text_size}: ${questionTextSizeLabel}`}
-                  aria-label={`${t.question_text_size}: ${questionTextSizeLabel}`}
-                >
-                  <Type size={16} />
-                </button>
-              </div>
+              {/* Right: only the card-text control remains in the header. */}
+              <button
+                type="button"
+                onClick={cycleQuestionTextSize}
+                className={`ds-icon-button inline-flex h-10 w-10 flex-shrink-0 ${focusHidden}`}
+                title={`${t.question_text_size}: ${questionTextSizeLabel}`}
+                aria-label={`${t.question_text_size}: ${questionTextSizeLabel}`}
+              >
+                <Type size={16} />
+              </button>
             </div>
             <div className={focusHidden}>
               <StudyHeaderProgress
@@ -1036,6 +1001,19 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
 
       {/* Main card area */}
       <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-ds-bg/90">
+        {answerTimerEnabled && currentCard && !peeking && (
+          <div className="pointer-events-none absolute right-8 top-6 z-30 flex w-48 justify-end">
+            <div className="pointer-events-auto">
+              <CardAnswerTimer
+                elapsedSeconds={answerTimer.elapsedSeconds}
+                isPaused={answerTimer.isPaused}
+                isStopped={answerTimer.isStopped}
+                language={settings.language}
+                onTogglePaused={answerTimer.togglePaused}
+              />
+            </div>
+          </div>
+        )}
         <div
           className={`flex-1 min-h-0 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-2' : 'flex flex-col overflow-y-auto px-3 sm:px-4 py-4 sm:py-6'}`}
         >

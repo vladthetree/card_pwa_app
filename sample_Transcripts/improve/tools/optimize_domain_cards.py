@@ -762,7 +762,13 @@ def command_validate(_: argparse.Namespace) -> None:
             if any(req_by_id[rid]["objectiveId"] != resolution["objectiveId"] for rid in row["finalRequirementIds"]):
                 errors.append(f"{row['cardId']}: exact requirement belongs to another objective")
         elif resolution["decision"] == "not_relevant":
-            if row["auditStatus"] != "unmapped" or row["finalRequirementIds"] or row["action"] != "keep":
+            archived = row.get("archiveDisposition")
+            valid_archive = (
+                archived
+                and archived.get("deckId") == row["targetDeckId"]
+                and row["action"] == "move"
+            )
+            if row["auditStatus"] != "unmapped" or row["finalRequirementIds"] or (row["action"] != "keep" and not valid_archive):
                 errors.append(f"{row['cardId']}: not-relevant resolution mutated mapping or card")
         else:
             errors.append(f"{row['cardId']}: unknown unmapped resolution decision")
@@ -829,9 +835,9 @@ def command_validate(_: argparse.Namespace) -> None:
                     errors.append(f"{profile['profile_name']}/{card_id}: unexpected deck change")
                 if row["action"] == "keep" and unexpected_phase_changes(all_phase[card_id], new, user_id, card_id):
                     errors.append(f"{profile['profile_name']}/{card_id}: unchanged card row is not byte-for-byte logical match")
-                if row["action"] == "move" and new["deck_id"] != row["targetDeckId"]:
+                if row["action"] in {"move", "move_and_clarify"} and new["deck_id"] != row["targetDeckId"]:
                     errors.append(f"{profile['profile_name']}/{card_id}: objective move mismatch")
-                if row["action"] == "clarify":
+                if row["action"] in {"clarify", "move_and_clarify"}:
                     if not content_diff:
                         errors.append(f"{profile['profile_name']}/{card_id}: planned improvement did not change content")
                     try:
@@ -1035,7 +1041,7 @@ def command_validate(_: argparse.Namespace) -> None:
             "distilledComparison": row["rationale"] if resolution else review["reviewNote"],
             "sourceIdentifiers": baseline_card["sourceIdentifiers"],
             "currentContent": baseline_card["currentContent"],
-            "proposedChange": row["newContent"] if row["action"] == "clarify" else ({"targetDeckId": row["targetDeckId"]} if row["action"] == "move" else None),
+            "proposedChange": ({"content": row["newContent"], "targetDeckId": row["targetDeckId"]} if row["action"] == "move_and_clarify" else (row["newContent"] if row["action"] == "clarify" else ({"targetDeckId": row["targetDeckId"]} if row["action"] == "move" else None))),
             "implementedAction": row["action"],
             "fsrsImpact": row["fsrsImpact"],
             "unmappedResolution": resolution,
@@ -1043,6 +1049,12 @@ def command_validate(_: argparse.Namespace) -> None:
     action_counts = Counter(r["action"] for r in plan["cards"])
     status_counts = Counter(r["auditStatus"] for r in plan["cards"])
     changed_existing_ids = sorted(set(changed_content) | set(changed_decks), key=int)
+    archived_existing = [
+        row for row in plan["cards"]
+        if row.get("archiveDisposition") and row["targetDeckId"] == row["archiveDisposition"].get("deckId")
+    ]
+    active_existing_cards = len(plan["cards"]) - len(archived_existing)
+    active_final_cards = active_existing_cards + len(plan["addedCards"])
     report = {
         "schemaVersion": "sy0701-domain-validation-3",
         "passed": not errors,
@@ -1050,7 +1062,7 @@ def command_validate(_: argparse.Namespace) -> None:
         "equations": {
             "auditStatuses": f"{status_counts['keep']} keep + {status_counts['improve']} improve + {status_counts['objective_mismatch']} objective_mismatch + {status_counts['unmapped']} unmapped = {sum(status_counts.values())} audited cards",
             "existingCards": f"{action_counts['keep']} unchangedExistingCards + {len(changed_existing_ids)} changedExistingCards = {len(plan['cards'])} examinedExistingCards",
-            "finalCards": f"{len(plan['cards'])} existing + {len(plan['addedCards'])} added = {len(plan['cards']) + len(plan['addedCards'])} final domain cards",
+            "finalCards": f"{active_existing_cards} active existing + {len(plan['addedCards'])} added = {active_final_cards} active domain cards; {len(archived_existing)} existing cards archived separately",
             "coverage": f"{len(coverage)} covered + {len(requirements)-len(coverage)} uncovered = {len(requirements)} requirements",
             "fsrs": f"{len(plan['cards'])} existing schedules retained + {len(plan['addedCards'])} new FSRS schedules initialized",
         },
@@ -1059,7 +1071,9 @@ def command_validate(_: argparse.Namespace) -> None:
             "unchangedExistingCards": action_counts["keep"],
             "changedExistingCards": len(changed_existing_ids),
             "addedCards": len(plan["addedCards"]),
-            "finalDomainCards": len(plan["cards"]) + len(plan["addedCards"]),
+            "finalDomainCards": active_final_cards,
+            "totalAuditedAndAddedCardRecords": len(plan["cards"]) + len(plan["addedCards"]),
+            "archivedNotRelevantCards": len(archived_existing),
             "contentChanged": len(changed_content),
             "contentUnchanged": len(plan["cards"]) - len(changed_content),
             "deckChanged": len(changed_decks),
@@ -1121,9 +1135,9 @@ def command_validate(_: argparse.Namespace) -> None:
 
 - Geprüfte Bestandskarten: {len(plan['cards'])}
 - Unveränderte Bestandskarten: {action_counts['keep']}
-- Geänderte Bestandskarten: {len(changed_existing_ids)} ({action_counts['clarify']} inhaltlich verbessert, {action_counts['move']} nur verschoben)
+- Geänderte Bestandskarten: {len(changed_existing_ids)} ({len(changed_content)} inhaltlich verbessert, {len(changed_decks)} verschoben; Überschneidungen werden nur einmal gezählt)
 - Neue Karten: {len(plan['addedCards'])}
-- Finale Domain-Karten: {len(plan['cards']) + len(plan['addedCards'])}
+- Finale aktive Domain-Karten: {active_final_cards}; zusätzlich {len(archived_existing)} bewusst nicht relevante Bestandskarten im separaten Archiv
 - Coverage: {len(coverage)}/{len(requirements)} Requirements
 - Auditstatus: {status_counts['keep']} keep, {status_counts['improve']} improve, {status_counts['objective_mismatch']} objective_mismatch, {status_counts['unmapped']} unmapped (alle bewusst `not_relevant`; 0 ungeklärt)
 - Unmapped-Nachprüfung: {len(resolution_rows)}/104 geprüft; {resolution_counts['objective_assigned']} einem Objective zugeordnet, {resolution_counts['not_relevant']} bewusst als nicht relevant markiert, 0 ungeklärt
