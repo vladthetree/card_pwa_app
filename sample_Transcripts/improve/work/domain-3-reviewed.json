@@ -1,0 +1,2989 @@
+{
+  "schemaVersion": "sy0701-domain-card-review-1",
+  "domain": 3,
+  "reviewer": "Codex (manual semantic review)",
+  "reviewMethod": "Alle 105 offiziellen Domain-3-Requirements und ihr unverändertes distilledContent wurden vollständig gelesen. Danach wurden alle 153 Karten einschließlich vier Optionen und vollständiger Rückseite einzeln geprüft. Beim Konflikt zu Parallel Processing wurde der offizielle Objective-Pfad 'Testing' gegenüber der abweichenden Compute-Deutung priorisiert.",
+  "cardCount": 153,
+  "statusCounts": {
+    "improve": 11,
+    "keep": 123,
+    "objective_mismatch": 9,
+    "unmapped": 10
+  },
+  "cards": [
+    {
+      "cardId": "1728934726218",
+      "contentHash": "66d0e0cf434c485d1858e7063c5bddacebb5b1192839eba1157347379b496206",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M2-010"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:physical-isolation:air-gapped"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729192290034",
+      "contentHash": "f3df7ae4ed13228f977fd3f4d818899e42496870f0110f10f3a5ebea6f5aed5b",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-002"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:hybrid-considerations"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729192837629",
+      "contentHash": "c3a15b40a5161d31298cf125b0d047d3bdf98301e828f68fe8b1b3a31ca8667f",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-001"
+      ],
+      "status": "improve",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:serverless"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Serverless ist nicht mit bloßer Funktionszerlegung gleichzusetzen; Provider-Abstraktion, ereignisgesteuerte kurzlebige Ausführung und Skalierung sollen eindeutig werden.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729192907745",
+      "contentHash": "8c56ea2281c1f9031e87277f7ecf5c435c30c2307d6026057687b8b35482c654",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-003"
+      ],
+      "status": "unmapped",
+      "requirementIds": [],
+      "officialObjective": [],
+      "reviewNote": "Monolithic Architecture ist nur ein Kontrastbegriff im Microservices-Destillat und kein atomarer offizieller Leaf; Microservices ist nicht die richtige Antwort.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729193133878",
+      "contentHash": "148771a5cc569867b59cb6bb931ec0403872da26100226af9de57632348035f1",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-004"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:microservices"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729193807209",
+      "contentHash": "e77816e64c57d7e7b1cc6c89c5f303c310597a464789ebfa787921aeb066d6b4",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-010"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:physical-isolation:air-gapped"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729193932999",
+      "contentHash": "340b2a68355cd979f29e25fed35857772a8ea652a82d4f4d3d4cee82dfe530f3",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-006"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:logical-segmentation"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729194266296",
+      "contentHash": "8501388fa308331947bd042e3051916cfc115792a40b5bff8350bfc0a701bb46",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-007"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:software-defined-networking-sdn"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Management Plane wird als eine der expliziten SDN-Ebenen und ihr Verhältnis zur Control Plane direkt geprüft.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729195941442",
+      "contentHash": "5f572960ddb5744ac83714e598c37e86c4aea822dec1ba6f543cd33c9de50018",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-015"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:virtualization"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729196035330",
+      "contentHash": "18c8228fa7c506c408ceaf0f83ad75b03a517d50248bb41ac30bbee8212a0fde",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-014"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:virtualization"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729196140243",
+      "contentHash": "b5980ade30b706d19c08f7d6c751c6c9eae037ffb4c347b18c5a541bb2335212",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-016"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:containerization"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729196325940",
+      "contentHash": "bc9751cc4a998d39e5556b357f9230183153f587dcd027eb77763a9eb4cafc74",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-013"
+      ],
+      "status": "improve",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:containerization"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Docker ist nur ein Produktbeispiel; die Karte soll Kernel-Sharing und den Unterschied zur VM direkt prüfen.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729196548024",
+      "contentHash": "c34636ae31586691f3d311d2abbf035c4c6451d3340b716bd4c6d1ba1e047cd5",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-012"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:industrial-control-systems-ics-supervisory-contr"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729198761986",
+      "contentHash": "6988c8b2b4d2a19e64ad286babf98889fd70d44a6e3f291e126dac2600bb676d",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-020"
+      ],
+      "status": "improve",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:considerations:scalability"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Die beschriebene Elastizität ist ein Skalierbarkeitsmechanismus; die Überarbeitung soll elastische Rückskalierung von allgemeiner Kapazitätserweiterung abgrenzen.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729199602908",
+      "contentHash": "4032191aa36fd35de216fab01c8b185ae2509faa98abd9eb8c9399cd4f6ef15a",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-018"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:considerations:compute"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729199710866",
+      "contentHash": "4176b5ecd84b9e1519ebbd141a59e58d99e294daf9b42945ae3631437a7e3cb8",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-017"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:considerations:compute"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729262665983",
+      "contentHash": "fad62dedaa6a894ccf64cb8a2473d46710db16f37d1a5b1b8a5a3dfc7f9b6eb7",
+      "domain": 3,
+      "deck": "3.2 Applying Security Principles",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-023"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:intrusion-prevention-system-ips-intrusion-detect"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729263331128",
+      "contentHash": "ca03f3ae8213045148c436844e4dbb89ee95d5115222f2c5105e58cfdc30cb8c",
+      "domain": 3,
+      "deck": "3.2 Applying Security Principles",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-021"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:active-vs-passive"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729263374388",
+      "contentHash": "354d9efbaef1115c79d93980e3db026664c21cbbd8a2aeaeea08d2188a947fd0",
+      "domain": 3,
+      "deck": "3.2 Applying Security Principles",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-022"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:active-vs-passive"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729264182198",
+      "contentHash": "f0739e719303eaaca1db23a95833c0a28633f208c3891372a47fd10ac532afb0",
+      "domain": 3,
+      "deck": "3.2 Applying Security Principles",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-028"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:jump-server"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729264760996",
+      "contentHash": "0b76f525b58049788cb6d9fd46353fe7bc83d8e52f1beab3f3c948e628747413",
+      "domain": 3,
+      "deck": "3.2 Applying Security Principles",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-027"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:proxy-server"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729265068837",
+      "contentHash": "0bda4d69e51f0c71b0d15b8e59d1c5282dc57cf17a8003a7814c73f57dfd7345",
+      "domain": 3,
+      "deck": "3.2 Applying Security Principles",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-025"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:proxy-server"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729265371258",
+      "contentHash": "bc454fb471df2a0da2eb90243ca746bd62902994b08bf6b3f81685084d90a214",
+      "domain": 3,
+      "deck": "3.2 Applying Security Principles",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-030"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:proxy-server"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729265508608",
+      "contentHash": "7eccb29a7faf98154880cb93794f49d228c4638ef2677e7eb1f37d37788a0b67",
+      "domain": 3,
+      "deck": "3.2 Applying Security Principles",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-026"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:load-balancer"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729265956352",
+      "contentHash": "251dfd831431ced9c56e095536fa508c8f944048d6dbdaa2eb592e8e264b167d",
+      "domain": 3,
+      "deck": "3.2 Applying Security Principles",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-029"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:load-balancer"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729266155183",
+      "contentHash": "42add78b11da0cd441fe66a2caa7de2b3c04aba7012108ed440b8dbc2862d7d9",
+      "domain": 3,
+      "deck": "3.2 Applying Security Principles",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-024"
+      ],
+      "status": "unmapped",
+      "requirementIds": [],
+      "officialObjective": [],
+      "reviewNote": "Collector ist kein atomarer Leaf; Sensoren sind nur die Datenlieferanten im Stem und nicht die richtige Antwort.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729267472724",
+      "contentHash": "4dd62c917141bf3eab34bec3b9319a3525c234429d6b270f84c1fe089d940ee7",
+      "domain": 3,
+      "deck": "3.2 Applying Security Principles",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-032"
+      ],
+      "status": "unmapped",
+      "requirementIds": [],
+      "officialObjective": [],
+      "reviewNote": "Port Security ist nur der Parent; weder 802.1X noch Extensible Authentication ist die richtige Antwort.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729267569310",
+      "contentHash": "c29ba49c7f896d017f05a3c2af991787085ac2233358984acf04a36eca52bd5b",
+      "domain": 3,
+      "deck": "3.2 Applying Security Principles",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-033"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:port-security:extensible-authentication"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729267646397",
+      "contentHash": "191014b2f223fe70c6358368e54940f8203e559b24ebacbffad63b99c473a5d0",
+      "domain": 3,
+      "deck": "3.2 Applying Security Principles",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-031"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:port-security:802-1x"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729268983360",
+      "contentHash": "de35999023ca763766d9f579ecc6b604fc0cea0dde2d9710cfa87b1b44d5114a",
+      "domain": 3,
+      "deck": "3.2 Applying Security Principles",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-035"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:unified-threat-management-utm"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729269602613",
+      "contentHash": "959c6cc4d74005c44bf774f32fe38d64224340d40780debcde5d5fe573046729",
+      "domain": 3,
+      "deck": "3.2 Applying Security Principles",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-034"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:web-application-firewall-waf"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729276559590",
+      "contentHash": "52f5b42083e480951923fc0a8d07cf92c3eee2746e05cd79cc222b1e44b40c47",
+      "domain": 3,
+      "deck": "3.3 Protecting Data",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-037"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-transit"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729276746898",
+      "contentHash": "330f909289e01d2e1044a4745e3186ca465eda0fc0c6c2f932d3c007ca9fd231",
+      "domain": 3,
+      "deck": "3.3 Protecting Data",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-038"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:general-data-considerations:data-sovereignty"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729277620814",
+      "contentHash": "15f3ecdadd6c6742b1178d64daf4bb9715300fbdb2813e939c25b169d736855c",
+      "domain": 3,
+      "deck": "3.3 Protecting Data",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-039"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:methods-to-secure-data:geographic-restrictions"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729277680140",
+      "contentHash": "39138643c66924f9cf6b641a5e23cafb64c45996abbd7d69bf312a4bdf3f638a",
+      "domain": 3,
+      "deck": "3.3 Protecting Data",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-041"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:methods-to-secure-data:geographic-restrictions"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Das unveränderte Destillat führt Geofencing ausdrücklich als ortsabhängige Geographic Restriction.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729277707224",
+      "contentHash": "a2382323a08182f8e5588adf48b0c4f0ac9783d93f623e2dd8f4e2838cb11e14",
+      "domain": 3,
+      "deck": "3.3 Protecting Data",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-040"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:general-data-considerations:data-states:data-at-rest"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729280373313",
+      "contentHash": "400afdc9e2ffdf96c8be4c6c33f59cabe462bdf53f9f623526770129d160a2fb",
+      "domain": 3,
+      "deck": "3.4 Resiliency and Recovery",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-045"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:site-considerations:hot"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729280425752",
+      "contentHash": "11babfc46c0e2dec2c4c8654c12b67911e20ff4b51c60ab10ff569eecfb63432",
+      "domain": 3,
+      "deck": "3.4 Resiliency and Recovery",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-043"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:site-considerations:cold"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729280698248",
+      "contentHash": "a499cc6aa4ad82d04910ff744ab56f58450b346b2f76ec59de60f383001d2054",
+      "domain": 3,
+      "deck": "3.4 Resiliency and Recovery",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-044"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:platform-diversity"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729282747703",
+      "contentHash": "85f3a420d329a9c83e8b4c1c2adc2d7d51e762cb5d165d5ca8602eaf870c41ea",
+      "domain": 3,
+      "deck": "3.4 Resiliency and Recovery",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-047"
+      ],
+      "status": "unmapped",
+      "requirementIds": [],
+      "officialObjective": [],
+      "reviewNote": "Der offizielle Leaf steht unter Testing und meint die parallele Aktivierung des Recovery-Standorts. Die aktuelle Compute-Parallelisierung folgt der abweichenden Quelle und deckt keinen anderen atomaren Domain-3-Leaf direkt ab.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729283435461",
+      "contentHash": "e54cc47ed252bdc945d9bef2f488bc2485393c3b61f49f01861bda1e38ccdb18",
+      "domain": 3,
+      "deck": "3.4 Resiliency and Recovery",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-050"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:backups:onsite-offsite"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729283880472",
+      "contentHash": "625346407eb23fddea1dcbce4fa99c740365f6f48847013c1c8f32be5330f088",
+      "domain": 3,
+      "deck": "3.4 Resiliency and Recovery",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-049"
+      ],
+      "status": "unmapped",
+      "requirementIds": [],
+      "officialObjective": [],
+      "reviewNote": "Incremental Backup ist kein atomarer Requirement-Leaf; Frequenz, Recovery und Snapshot sind nicht die richtige Antwort.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729284162703",
+      "contentHash": "21e2067481217cbd33b082f3b0164a86d2d836d59e9016f59e8876893b70756f",
+      "domain": 3,
+      "deck": "3.4 Resiliency and Recovery",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-048"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:backups:replication"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729285411849",
+      "contentHash": "015f553ac9abc80131221bf3d37f145ae2a1f2fa72bcf28c6f533a38a9c4c802",
+      "domain": 3,
+      "deck": "3.4 Resiliency and Recovery",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-051"
+      ],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:power:generators"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1729435542513",
+      "contentHash": "32e48ba4fef0a4d21aef6047237675aafa13370d76f0fa129c8a21b5589f60b1",
+      "domain": 3,
+      "deck": "3.4 Resiliency and Recovery",
+      "cardType": "mc",
+      "sourceIdentifiers": [
+        "M3-046"
+      ],
+      "status": "improve",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:testing:tabletop-exercises"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Die reine Synonymabfrage Structured Walkthrough soll in ein entscheidungsorientiertes Tabletop-Szenario überführt werden.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588614",
+      "contentHash": "76a4c726dc874c395b7f4406ac63b4b3320e5c023898392d8f244e3b05b1184e",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:industrial-control-systems-ics-supervisory-contr"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588615",
+      "contentHash": "9bae9c5103c54bc8f6e8850af04cbd56c5bb9c67690e3c78b57ab111c1d8a116",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:site-considerations:warm"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588616",
+      "contentHash": "b37547511c782e961928ed05f6f21afd33f07990b89814585370e1426b259a0a",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:backups:snapshots"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588617",
+      "contentHash": "2bf2034cc139933b967ce9e93ca2b3773dd8e0def18165eefda58786da3e9aed",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "improve",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:serverless"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "'Complex applications' ist ohne Workload-Eigenschaften zu pauschal; Cold Starts, Zustandslosigkeit oder Laufzeitgrenzen sollen das ungeeignete Szenario definieren.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588618",
+      "contentHash": "293a3ca475901030373229a2ff775e423ffaffcbefbf141f78a80340e4d5929f",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "improve",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:software-defined-networking-sdn",
+        "req:sy0701:v7:3.1:considerations:scalability"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "SDN und Skalierbarkeit werden verbunden, aber 'most important' ist kontextabhängig; zentrale Programmierbarkeit und konsistente Policy sollen die Antwort eindeutig machen.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588619",
+      "contentHash": "551847dfc0a86facbf1a415e99356f191f10913c68c0f5cdaaa805074ab7896b",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:microservices"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588620",
+      "contentHash": "034acf14c1ab22bf2b2c38d9829fadc5b4bf5ea4930d84e58e8c28d3f7a1f1bb",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:software-defined-networking-sdn"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588621",
+      "contentHash": "1879bb6f60b7c456c66b178532e851bbe2ab59a0652d29477dca417f7b6b13cf",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:real-time-operating-system-rtos"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588622",
+      "contentHash": "65b4b16f438f4ae03feac48f8ca65b1bba8d1237cccd3d8e2fe67939f77824e7",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:industrial-control-systems-ics-supervisory-contr",
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:logical-segmentation"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Das SCADA-Szenario verlangt ausdrücklich die logische VLAN-Segmentierung und prüft beide Konzepte in ihrem direkten Verhältnis.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588623",
+      "contentHash": "e5aca058ed23882b86cb1a55a7a9d35c1c7b8d68e3f7181e5a16e199d64d7918",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:physical-isolation:air-gapped"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588624",
+      "contentHash": "21f83caa774aa6c622928c67ac56e4d9ae6e32dcc6cb37be0b57d36601aee822",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:load-balancer"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588625",
+      "contentHash": "5ce9f79f2ce1c896524ce1041eedac1f5bc23ce6ec2e9862ebeeb3cf5431bf50",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:secure-communication-access:tunneling:transport-layer-security-tls"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588626",
+      "contentHash": "4bd3b46f9a090e75d9a9960bd61ce6c5f2b8e7b01c39b6f346c0e38b1aeb04de",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:secure-communication-access:tunneling:internet-protocol-security-ipsec"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588627",
+      "contentHash": "afbea2fea0fae555ff13e6f7db9d9e086d8cd574d981edfc5cb2aa6d75342bac",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:general-data-considerations:geolocation"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588628",
+      "contentHash": "31a6706b7e69a757bed924c6fa5ea6ab78eede1eb3a961cdfaff98ec7caa7461",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:load-balancer"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588629",
+      "contentHash": "416e7be2ba3b8effeb05ab17160274b0cfe9c2e30e41a2d059c46150f535f8b7",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:secure-communication-access:tunneling:internet-protocol-security-ipsec"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588630",
+      "contentHash": "092ac1bef7060eeeb7fae1830044a8f0e6a1e659c1d7f50ebf4148fa11ce0547",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:inline-vs-tap-monitor"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Die richtige Antwort wählt die passive TAP-Anbindung; NIPS ist nur das empfangende Gerät.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588631",
+      "contentHash": "b4a285024204211533c8fe050c3bbd17442758a1b0e35057e9bfab3bd3a6fc25",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:secure-communication-access:tunneling:transport-layer-security-tls"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588632",
+      "contentHash": "fe9c8dddbc320ce257c6d53712956a2e89aa82ccf2400b6b72d9eb20ee6c8466",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:next-generation-firewall-ngfw"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588633",
+      "contentHash": "6f98aba91137f69d073bd75660cd97394f978c3d8616cddcd3b17f4190a4736a",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:intrusion-prevention-system-ips-intrusion-detect",
+        "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:active-vs-passive"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588634",
+      "contentHash": "521df6eb7734b0b15718df2e6cb52b2e7c40c7570dd2761afd5eb97c90daf051",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:intrusion-prevention-system-ips-intrusion-detect"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588635",
+      "contentHash": "9c41b9778499f460d37d6794c6ec990f304c053e2536715540e37beabde546f5",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "improve",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:methods-to-secure-data:hashing"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Kryptografische Hashes sind nicht mathematisch eindeutig. Die Karte soll Kollisionsresistenz und manipulationssensitive Fingerprints statt garantierter Einzigartigkeit prüfen.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588636",
+      "contentHash": "f6b836d95a59818111ba9fe77f88c54153d9f938b24cc13d60eee6d612ab982a",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:considerations:availability",
+        "req:sy0701:v7:3.4:site-considerations:geographic-dispersion"
+      ],
+      "officialObjective": [
+        "3.1",
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588637",
+      "contentHash": "3c46cf3e42a05dd78c7e91ac60ac68590f2884b04fc8ad77ca3c955e7032641d",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:testing:fail-over"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588638",
+      "contentHash": "5e6cf568f30020f6d0bce822785bd32b93972912dc174afc26d8f9b7d2513e70",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:data-types:trade-secret"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773526588639",
+      "contentHash": "40a84ee94ff1fdcc9b640868f7f25b4b87986babe5c736ff8c48022d810bf440",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:secure-communication-access:tunneling:transport-layer-security-tls"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533010",
+      "contentHash": "6326b7abe61832c20913565904abc3526cd88c5523902a4b14df589f6092cdbe",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:data-types:trade-secret"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533011",
+      "contentHash": "3def2dd0d2a723fed3396b194526a725f09e2f390077ef9213f249755e7780cc",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:unified-threat-management-utm"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533012",
+      "contentHash": "abee24a66bffdb6c1e7817cafae0c30c13e595dbc948591e533eadf26cf18b59",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:next-generation-firewall-ngfw"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533013",
+      "contentHash": "c44230a248675026799e06b1549f581b0a958cf880ba7f3799e4d712b5c4da40",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-open"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533014",
+      "contentHash": "d317d87e29f43e53cdd776a37cf82625f0c009cb87ef45ad66fdd74412af52d2",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:secure-communication-access:secure-access-service-edge-sase",
+        "req:sy0701:v7:3.2:secure-communication-access:software-defined-wide-area-network-sd-wan"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Die Frage prüft SD-WAN ausdrücklich als SASE-Netzwerkkern; beide Begriffe sind in Frage und richtiger Antwort direkt verknüpft.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533015",
+      "contentHash": "2be07436526e5ca4e7e7af038ebfcec22ccd8b9a34593c2a7902a9cc5725f88c",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "unmapped",
+      "requirementIds": [],
+      "officialObjective": [],
+      "reviewNote": "NAC ist breiter als der offizielle 802.1X-Leaf; weder 802.1X noch EAP wird als richtige Antwort verlangt.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533016",
+      "contentHash": "dce1fd6865e611cca868c6e8a0bbe9f2ce9dbb589cb9f1ee0981ea45da5123a4",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:backups:replication"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533017",
+      "contentHash": "9f76aac724429cfc26cdfb2d1b0c33ae3634fd3c3505f02296108cd7bd86f20b",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:general-data-considerations:data-sovereignty"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533018",
+      "contentHash": "817dc631cdfa45da0c53102b0c9e3452660071daa3a4342050c6a204148fb1ee",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-closed",
+        "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:inline-vs-tap-monitor"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533019",
+      "contentHash": "03ea2751f7622442e104caaeace7b21f48067e3ffe143e9d3a9c36acbdf55192",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:capacity-planning:people"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533020",
+      "contentHash": "2268b909083cf83062a01120099737340fb2724a7c61e35486d0b8618d57c2e3",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:testing:tabletop-exercises"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533021",
+      "contentHash": "a26fafc257c81bd034f7ad02e4a242bae3c41ddf10918a76c8d3fa44cdf2ca11",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:backups:onsite-offsite"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533022",
+      "contentHash": "4eb5d7016618b9b78fefe4e75439ee1e2cf3c8903a1836d4b8e1036f10890f0a",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:capacity-planning:technology"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533023",
+      "contentHash": "ad77143d9e5854ac852dd3fd019c4fd5923fd8c34805f285802d92d3ba046ac7",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:backups:journaling"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533024",
+      "contentHash": "f7371b4e5dcd583e9b81de8d22bfc99e4d0305fd40ae24f229e3f26009cc89ea",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "unmapped",
+      "requirementIds": [],
+      "officialObjective": [],
+      "reviewNote": "Die Negativfrage nach 'Top Secret' prüft keinen der sechs konkreten Business-Classification-Leaves als richtige Antwort.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533025",
+      "contentHash": "21cb9f197353c9b2650118e4f86a89305a80d2afc77a5b44ad15b51b8a3b26bc",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "improve",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:layer-4-layer-7"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Die OSI-Layer-Bezeichnung allein ist zu oberflächlich; Port-/Transportfilterung soll gegen anwendungsbewusste Layer-7-Prüfung entschieden werden.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533026",
+      "contentHash": "4ee7f498264ce5937e5ba543ef2ff16a1f1345adf1d84fc610e79ed77bab5b4e",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:microservices"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533027",
+      "contentHash": "4e6cd7ed38749c77b1140ec68679ba3f1241f4916491f60f89820f37f1b9275a",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "unmapped",
+      "requirementIds": [],
+      "officialObjective": [],
+      "reviewNote": "Incremental Backup ist kein atomarer Leaf und die Frage prüft weder Backup-Frequenz noch Recovery direkt.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533028",
+      "contentHash": "cd391175f2f921340c909a33b4e7764c7da5f2c77179447917bf58da01e154cc",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:power:generators"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533029",
+      "contentHash": "ae334cf9a829c05b31f1f55c9995bc08e1311607d0dbfbe481f50b90ea353a7f",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:physical-isolation:air-gapped"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533030",
+      "contentHash": "b924a421d6bbd68680b9890dac565102764c665a394286b60987d2544a54bf92",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "improve",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-use"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Die Negativfrage ist fachlich lösbar, soll aber den RAM/CPU-Zustand und einen geeigneten Secure-Enclave-Mechanismus direkt prüfen.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533031",
+      "contentHash": "6bd8d6f5009f96188d7fb3666e368690d4c1427004ac919bffa4cf0b8b8dedbd",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:power:uninterruptible-power-supply-ups"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533032",
+      "contentHash": "a7a30f1739ebeb21aa184faa4ca781871d206eaa5830ee606f2e950bf8696464",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:containerization"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533033",
+      "contentHash": "34a1bceed82f5e07b95ae0404e5cc5fbc55b73971de1bcb7af8df49bf1e7448f",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:secure-communication-access:software-defined-wide-area-network-sd-wan"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533034",
+      "contentHash": "fbc7bd0dded944cc4ce386a7bfae450af96afc8908147be52c07880f6b5291dc",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:data-types:legal-information"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533035",
+      "contentHash": "d65c9e03c698ac5116c65c056f1b43fd734f4d3b64ea7e4db8cd69c534a74c58",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:next-generation-firewall-ngfw"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533036",
+      "contentHash": "ff64171dd0fd2b51ec99fe05f659b92af05503f34cd49983a71181e84bd1cf64",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:general-data-considerations:geolocation",
+        "req:sy0701:v7:3.3:methods-to-secure-data:geographic-restrictions"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533037",
+      "contentHash": "d529ce526fd4b034332959ec4a0834f9046e31c38c8abd6c37df16fba1ebc679",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:responsibility-matrix"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773536533038",
+      "contentHash": "d18854800403fe91945110112dfaf5c280f5ae7857095ff75484fdd5a25b6bf0",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:third-party-vendors"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773618881052",
+      "contentHash": "16384dd8fb2fd25dca0a4148545fcd8969fbb5fc1129f511e4e7ad1666b4eee4",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:backups:replication"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773618881053",
+      "contentHash": "b26bbfa2d645569a0ad5250ed2e959ac49c4978734604d5cbdaaa05a60a04216",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:next-generation-firewall-ngfw"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773618881054",
+      "contentHash": "a549b402bf955188de58738ab1c6b0806e7c381b0c780de992d96d99f023f7a4",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:continuity-of-operations"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773618881055",
+      "contentHash": "4bf43c5e0e71d178fff6127500b28fc1cc45acd85f9461ad49817f440ffa2f27",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:port-security:802-1x"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773618881056",
+      "contentHash": "272138088c9065513b27defcf37a100504d8110a2d529691336bb953d8c9c095",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:web-application-firewall-waf"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773618881057",
+      "contentHash": "575ad7d0e88833d5d0df1798a42905533031bb36063430aeed5d8e625beea21d",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:web-application-firewall-waf"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773618881058",
+      "contentHash": "56f5c6d07090d308cf1b20e59b8deabc3018aaf5e36b7beb25b7e0e9bce5536b",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:device-placement"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773618881059",
+      "contentHash": "10512b311db1d7af9a0ee31234121237c0a91a8bf1c54c05468f2de9d02a7c61",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "objective_mismatch",
+      "requirementIds": [
+        "req:sy0701:v7:2.3:hardware:legacy"
+      ],
+      "officialObjective": [
+        "2.3"
+      ],
+      "reviewNote": "Fehlende Updates und Ersatzteile eines Legacy Controllers sind ein Hardware-Legacy-Problem aus 2.3.",
+      "targetDeckId": "sy0-701-objective-2-3",
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773618881060",
+      "contentHash": "e36d8441ff5db437679f41997246d1de12f14f2efd3a217d08622deacb61092e",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:iot",
+        "req:sy0701:v7:3.2:infrastructure-considerations:security-zones"
+      ],
+      "officialObjective": [
+        "3.1",
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773618881061",
+      "contentHash": "08b0d465924f65c0bed02a8d0f557449874259adead98950907852f492697e55",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:responsibility-matrix"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773618881062",
+      "contentHash": "b47dadd2ea2cf068715097071849b4da7c9a524b78fce51003f2ecbe2f18f251",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:high-availability:load-balancing-vs-clustering"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773618881063",
+      "contentHash": "84bfee82147c18640fc7d1422ee6f1aea76722dc7a9304b570a53acbb0b8f8b9",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:testing:fail-over"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773618881064",
+      "contentHash": "383c7c7183ff0a05a6b6b245a6c1acb13519f7febc1283de96410b218d4fbd5e",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:hybrid-considerations"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773618881065",
+      "contentHash": "dede6abbaaece08139148e2fdd9e766453f8a26523f07ea5ec6d8e05dacde4d3",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:site-considerations:hot"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773618881066",
+      "contentHash": "1f1f970bc8d851fa7134955212b2962ee3dc514caefa5b43cdd4c13b38dcc167",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:site-considerations:geographic-dispersion"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773618881067",
+      "contentHash": "b0ca1790534bf7aff004f9860d3268a9a6e09ae2af08df639591a670f694fad8",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "objective_mismatch",
+      "requirementIds": [
+        "req:sy0701:v7:2.3:virtualization:virtual-machine-vm-escape"
+      ],
+      "officialObjective": [
+        "2.3"
+      ],
+      "reviewNote": "Ein Angriff aus der VM gegen Hypervisor/Host ist der explizite VM-Escape-Vulnerability-Leaf in 2.3.",
+      "targetDeckId": "sy0-701-objective-2-3",
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837297",
+      "contentHash": "7e1faa8e2f8f89be8e9567f6a8037df01ef45d2cc27304b8cd0e8cc4b833fd4f",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:active-vs-passive"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837298",
+      "contentHash": "9cf5d8adad23762b42396bcfedc2c5941e0797bcbcce90929e90cbfc9e21eb48",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:considerations:inability-to-patch"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837299",
+      "contentHash": "3c7d35910d933c36a6efe1f48e88029ef83a79bc74cf96cecd4bbd4fd563fcb9",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:software-defined-networking-sdn"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837300",
+      "contentHash": "e8a99262898bbdbf3ab3ef72e740104a2fa99e8019adad03dfb17d46883c8440",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:considerations:risk-transference"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837301",
+      "contentHash": "f6220e601bee594f1a7b72e47097a6d82112fbf8b2a658555e52ba996f6c8a49",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:logical-segmentation",
+        "req:sy0701:v7:3.2:infrastructure-considerations:port-security:802-1x"
+      ],
+      "officialObjective": [
+        "3.1",
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837302",
+      "contentHash": "07ba157b7a5a568633b2943f6edb1e51b7b9d0c335d5d68eeb4a6521a8d5f7f7",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:site-considerations:hot"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837303",
+      "contentHash": "d2e5c30e74e674887febc604b9adfdf6e6372cb41ee8abbb076ef9dfc79ff729",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:industrial-control-systems-ics-supervisory-contr"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837304",
+      "contentHash": "4293713c913ad4ebb42ff0b0183306555376a0b486c3a9b7571dcda18a15e73b",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "unmapped",
+      "requirementIds": [],
+      "officialObjective": [],
+      "reviewNote": "Differential Backup ist kein atomarer Leaf; die arithmetische Restore-Anzahl prüft weder Frequency noch Recovery als offizielles Konzept direkt.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837305",
+      "contentHash": "feabea19ba5fa438600d96e4b1231813696f2264208f1f5dd1f28327692faeeb",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:secure-communication-access:software-defined-wide-area-network-sd-wan"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837306",
+      "contentHash": "72884e97b147e1e0fef3befb08e97bc0d503b44bef8763e98fa86eaeeea8b3be",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:embedded-systems"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837307",
+      "contentHash": "87bedbfd35632512984245b3d8e128999b6ca6772e75d387145fd60b65323278",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:methods-to-secure-data:geographic-restrictions"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837308",
+      "contentHash": "c5b1c1649b9dbe38d412bffa97298096e41d30f9d531b9d42a52913e7333e917",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:sensors"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837309",
+      "contentHash": "71dda869fae3296eacb205d327759a6793b2361d768857cd0762b66717824a11",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "objective_mismatch",
+      "requirementIds": [
+        "req:sy0701:v7:4.3:identification-methods:penetration-testing"
+      ],
+      "officialObjective": [
+        "4.3"
+      ],
+      "reviewNote": "Die kontrollierte Ausnutzbarkeitsprüfung identifizierter Schwächen gehört zur Vulnerability Identification in 4.3.",
+      "targetDeckId": "sy0-701-objective-4-3",
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837310",
+      "contentHash": "089c31d9154c8cd7a7c41301c093c67508af10124445b0ee267dd21d5c156ca7",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-use"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837311",
+      "contentHash": "587e20cc87216ab40bf98595e184516aabb6d8182cebd3302e0d8717c9eff11a",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:port-security:802-1x"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837312",
+      "contentHash": "4358f6c0623f569c16f797d7c44087e43ebe5a91965869e7589de677bfcc30d8",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:secure-communication-access:software-defined-wide-area-network-sd-wan"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837313",
+      "contentHash": "fb3bb7ff5f5897b17542e8d1d982d5a2fb54dd44ce3d00bf49e23e959a54a693",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:high-availability"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837314",
+      "contentHash": "27e1475ae7d78c8d65c8438fb3094606af9f91802cf402a78ff7d7360a67c76c",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:iot"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837315",
+      "contentHash": "3efb60159a4281ad1eb6c58e10a1a24ac64b18f8ce6e408bd7e5cf615760f799",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:third-party-vendors"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837316",
+      "contentHash": "2560ec174c6e837686e2f9cb01b0b1b82df748c06d9e64778061dff5379d8558",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:methods-to-secure-data:segmentation"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837317",
+      "contentHash": "7c494c8e790e67f85018f12a446a31d6c0238849902dd389acb2e78630adbb09",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "objective_mismatch",
+      "requirementIds": [
+        "req:sy0701:v7:4.6:access-controls:mandatory"
+      ],
+      "officialObjective": [
+        "4.6"
+      ],
+      "reviewNote": "Mandatory Access Control ist ein IAM-Access-Control-Modell in 4.6, keine Data-Segmentation-Methode aus 3.3.",
+      "targetDeckId": "sy0-701-objective-4-6",
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837318",
+      "contentHash": "45b1611d4613f878ecc25eb5023fec4d4315213537564537f6f94250eca0a862",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:proxy-server"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837319",
+      "contentHash": "a5bf256759455c9380a5be1d0091d44b93b10bc2dc9910e1197440f4b926a1e4",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:responsibility-matrix"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837320",
+      "contentHash": "278d303fb1dff8ff05503f3977b0452d361f776adf37c16ffcb4796f17359cac",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:physical-isolation:air-gapped"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1773794837321",
+      "contentHash": "073476d6ebe260bf5389bcd3c48ea9684eaf9643393640fbf552a21e3c427a9e",
+      "domain": 3,
+      "deck": "03_Security_Architecture",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "objective_mismatch",
+      "requirementIds": [
+        "req:sy0701:v7:2.3:web-based:structured-query-language-injection-sqli"
+      ],
+      "officialObjective": [
+        "2.3"
+      ],
+      "reviewNote": "Parameterized Queries verhindern SQL Injection; die richtige Antwort prüft diesen Web-Vulnerability-Zusammenhang aus 2.3.",
+      "targetDeckId": "sy0-701-objective-2-3",
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1779095116174",
+      "contentHash": "7f095def7c6ed2d5c31d8d07ab760515fd2b5921fedf8d844dfe7273569722e3",
+      "domain": 3,
+      "deck": "3.4 Resiliency and Recovery",
+      "cardType": "matching",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.4:site-considerations:hot",
+        "req:sy0701:v7:3.4:site-considerations:warm",
+        "req:sy0701:v7:3.4:site-considerations:cold",
+        "req:sy0701:v7:3.4:site-considerations:geographic-dispersion"
+      ],
+      "officialObjective": [
+        "3.4"
+      ],
+      "reviewNote": "Vier offizielle Recovery-Site-/Dispersion-Leaves werden in eigenen Paaren direkt gelöst; Cloud DR ist ein zusätzlicher, nicht separat angerechneter Begriff.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1779095116175",
+      "contentHash": "6471af21c5f1c3a5f90bfbf48cd36f825a9cabe690622c6f21954f1afffca7bf",
+      "domain": 3,
+      "deck": "3.3 Protecting Data",
+      "cardType": "matching",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.3:general-data-considerations:data-states:data-at-rest",
+        "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-transit",
+        "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-use"
+      ],
+      "officialObjective": [
+        "3.3"
+      ],
+      "reviewNote": "Die Mechanismen werden mehrfach und eindeutig allen drei offiziellen Data States zugeordnet.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1779669260165",
+      "contentHash": "2faa102953833e58659d753c39740970ec50b63ba1cfdfc6f10604e81479a425",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "unmapped",
+      "requirementIds": [],
+      "officialObjective": [],
+      "reviewNote": "CASB ist kein atomarer Domain-3-Leaf; SASE wird nur in der Erklärung erwähnt und nicht als richtige Antwort geprüft.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1779669260166",
+      "contentHash": "cf1338cf35178da20f3d615155b588de6ee051eef340035aaf46c9282c73a145",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "improve",
+      "requirementIds": [
+        "req:sy0701:v7:3.2:secure-communication-access:secure-access-service-edge-sase"
+      ],
+      "officialObjective": [
+        "3.2"
+      ],
+      "reviewNote": "Die Vollform ist korrekt, soll aber Cloud-Security und SD-WAN am Edge anwendungsorientiert prüfen.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1779669260175",
+      "contentHash": "e4e48169043892adcfb6b1de56d0f626877e351db6e33c4aa255ef00529e569b",
+      "domain": 3,
+      "deck": "3.4 Resiliency and Recovery",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "objective_mismatch",
+      "requirementIds": [
+        "req:sy0701:v7:5.2:business-impact-analysis:mean-time-between-failures-mtbf"
+      ],
+      "officialObjective": [
+        "5.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": "sy0-701-objective-5-2",
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1779669260176",
+      "contentHash": "6e6bd9d97a62477b35277d38b8ed92236620d2e8129eb8af1c7299c694c50d6b",
+      "domain": 3,
+      "deck": "3.4 Resiliency and Recovery",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "objective_mismatch",
+      "requirementIds": [
+        "req:sy0701:v7:5.2:business-impact-analysis:mean-time-to-repair-mttr"
+      ],
+      "officialObjective": [
+        "5.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": "sy0-701-objective-5-2",
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1779669260177",
+      "contentHash": "05645cd0c4213a78416e9981d2fcb99e27fa24bd6d8bd2e75d3b7706a4cf1e56",
+      "domain": 3,
+      "deck": "3.4 Resiliency and Recovery",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "objective_mismatch",
+      "requirementIds": [
+        "req:sy0701:v7:5.2:business-impact-analysis:recovery-time-objective-rto"
+      ],
+      "officialObjective": [
+        "5.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": "sy0-701-objective-5-2",
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1779669260178",
+      "contentHash": "99f8fd4d424e787c89787c10f5c5f6bf70707bf0f443f1ffe9da829e01553651",
+      "domain": 3,
+      "deck": "3.4 Resiliency and Recovery",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "objective_mismatch",
+      "requirementIds": [
+        "req:sy0701:v7:5.2:business-impact-analysis:recovery-point-objective-rpo"
+      ],
+      "officialObjective": [
+        "5.2"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": "sy0-701-objective-5-2",
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1779669260187",
+      "contentHash": "07565d462af98867b94a02ad72d65abb0226b2e3c55a7836ed562a2df1bf2d0e",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:responsibility-matrix"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1779669260188",
+      "contentHash": "6bad91d0cc17523545810381d6509b7dc1c34e7679af4b013446c73bd3a7325a",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:responsibility-matrix"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1779669260189",
+      "contentHash": "8255e08fd9d4a253c5e0a4397405be44f441d43711ade76df4c68942b9b09ca7",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "keep",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:responsibility-matrix"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Frage und richtige Antwort prüfen das ausgewählte Destillat direkt; Optionen und Rückseitenerklärungen wurden einzeln fachlich kontrolliert.",
+      "targetDeckId": null,
+      "fsrsImpact": "retain",
+      "manuallyReviewed": true
+    },
+    {
+      "cardId": "1779669260193",
+      "contentHash": "2d763f9f95e8066fa88e755b5b1424307fba2645f365b48ad3d18b2cb83abb2c",
+      "domain": 3,
+      "deck": "3.1 Architecture Models",
+      "cardType": "mc",
+      "sourceIdentifiers": [],
+      "status": "improve",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:real-time-operating-system-rtos"
+      ],
+      "officialObjective": [
+        "3.1"
+      ],
+      "reviewNote": "Der deterministische Timing-Kontext ist schon vorhanden, die reine Vollformabfrage soll aber eine Deadline-/Safety-Entscheidung verlangen.",
+      "targetDeckId": null,
+      "fsrsImpact": "pending_change_design",
+      "manuallyReviewed": true
+    }
+  ]
+}

@@ -1,0 +1,299 @@
+{
+  "schemaVersion": "sy0701-domain-approval-1",
+  "domain": 3,
+  "reviewer": "Codex (manual semantic review)",
+  "reviewMethod": "Alle 105 offiziellen Domain-3-Requirements und ihr unverändertes distilledContent wurden vollständig gelesen. Danach wurden alle 153 Karten einschließlich vier Optionen und vollständiger Rückseite einzeln geprüft. Beim Konflikt zu Parallel Processing wurde der offizielle Objective-Pfad 'Testing' gegenüber der abweichenden Compute-Deutung priorisiert.",
+  "overrides": {
+    "1729192837629": {
+      "status": "improve",
+      "requirementIds": ["req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:serverless"],
+      "reviewNote": "Serverless ist nicht mit bloßer Funktionszerlegung gleichzusetzen; Provider-Abstraktion, ereignisgesteuerte kurzlebige Ausführung und Skalierung sollen eindeutig werden."
+    },
+    "1729192907745": {
+      "status": "unmapped",
+      "requirementIds": [],
+      "reviewNote": "Monolithic Architecture ist nur ein Kontrastbegriff im Microservices-Destillat und kein atomarer offizieller Leaf; Microservices ist nicht die richtige Antwort."
+    },
+    "1729193807209": {
+      "requirementIds": ["req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:physical-isolation:air-gapped"]
+    },
+    "1729193932999": {
+      "requirementIds": ["req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:logical-segmentation"]
+    },
+    "1729194266296": {
+      "requirementIds": ["req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:software-defined-networking-sdn"],
+      "reviewNote": "Management Plane wird als eine der expliziten SDN-Ebenen und ihr Verhältnis zur Control Plane direkt geprüft."
+    },
+    "1729196325940": {
+      "status": "improve",
+      "requirementIds": ["req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:containerization"],
+      "reviewNote": "Docker ist nur ein Produktbeispiel; die Karte soll Kernel-Sharing und den Unterschied zur VM direkt prüfen."
+    },
+    "1729198761986": {
+      "status": "improve",
+      "requirementIds": ["req:sy0701:v7:3.1:considerations:scalability"],
+      "reviewNote": "Die beschriebene Elastizität ist ein Skalierbarkeitsmechanismus; die Überarbeitung soll elastische Rückskalierung von allgemeiner Kapazitätserweiterung abgrenzen."
+    },
+    "1729264760996": {
+      "requirementIds": ["req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:proxy-server"]
+    },
+    "1729266155183": {
+      "status": "unmapped",
+      "requirementIds": [],
+      "reviewNote": "Collector ist kein atomarer Leaf; Sensoren sind nur die Datenlieferanten im Stem und nicht die richtige Antwort."
+    },
+    "1729267472724": {
+      "status": "unmapped",
+      "requirementIds": [],
+      "reviewNote": "Port Security ist nur der Parent; weder 802.1X noch Extensible Authentication ist die richtige Antwort."
+    },
+    "1729277680140": {
+      "requirementIds": ["req:sy0701:v7:3.3:methods-to-secure-data:geographic-restrictions"],
+      "reviewNote": "Das unveränderte Destillat führt Geofencing ausdrücklich als ortsabhängige Geographic Restriction."
+    },
+    "1729282747703": {
+      "status": "unmapped",
+      "requirementIds": [],
+      "reviewNote": "Der offizielle Leaf steht unter Testing und meint die parallele Aktivierung des Recovery-Standorts. Die aktuelle Compute-Parallelisierung folgt der abweichenden Quelle und deckt keinen anderen atomaren Domain-3-Leaf direkt ab."
+    },
+    "1729283435461": {
+      "requirementIds": ["req:sy0701:v7:3.4:backups:onsite-offsite"]
+    },
+    "1729283880472": {
+      "status": "unmapped",
+      "requirementIds": [],
+      "reviewNote": "Incremental Backup ist kein atomarer Requirement-Leaf; Frequenz, Recovery und Snapshot sind nicht die richtige Antwort."
+    },
+    "1729435542513": {
+      "status": "improve",
+      "requirementIds": ["req:sy0701:v7:3.4:testing:tabletop-exercises"],
+      "reviewNote": "Die reine Synonymabfrage Structured Walkthrough soll in ein entscheidungsorientiertes Tabletop-Szenario überführt werden."
+    },
+    "1773526588617": {
+      "status": "improve",
+      "requirementIds": ["req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:serverless"],
+      "reviewNote": "'Complex applications' ist ohne Workload-Eigenschaften zu pauschal; Cold Starts, Zustandslosigkeit oder Laufzeitgrenzen sollen das ungeeignete Szenario definieren."
+    },
+    "1773526588618": {
+      "status": "improve",
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:software-defined-networking-sdn",
+        "req:sy0701:v7:3.1:considerations:scalability"
+      ],
+      "reviewNote": "SDN und Skalierbarkeit werden verbunden, aber 'most important' ist kontextabhängig; zentrale Programmierbarkeit und konsistente Policy sollen die Antwort eindeutig machen."
+    },
+    "1773526588619": {
+      "requirementIds": ["req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:microservices"]
+    },
+    "1773526588622": {
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:industrial-control-systems-ics-supervisory-contr",
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:logical-segmentation"
+      ],
+      "reviewNote": "Das SCADA-Szenario verlangt ausdrücklich die logische VLAN-Segmentierung und prüft beide Konzepte in ihrem direkten Verhältnis."
+    },
+    "1773526588623": {
+      "requirementIds": ["req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:physical-isolation:air-gapped"]
+    },
+    "1773526588627": {
+      "requirementIds": ["req:sy0701:v7:3.3:general-data-considerations:geolocation"]
+    },
+    "1773526588630": {
+      "requirementIds": ["req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:inline-vs-tap-monitor"],
+      "reviewNote": "Die richtige Antwort wählt die passive TAP-Anbindung; NIPS ist nur das empfangende Gerät."
+    },
+    "1773526588633": {
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:network-appliances:intrusion-prevention-system-ips-intrusion-detect",
+        "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:active-vs-passive"
+      ]
+    },
+    "1773526588635": {
+      "status": "improve",
+      "requirementIds": ["req:sy0701:v7:3.3:methods-to-secure-data:hashing"],
+      "reviewNote": "Kryptografische Hashes sind nicht mathematisch eindeutig. Die Karte soll Kollisionsresistenz und manipulationssensitive Fingerprints statt garantierter Einzigartigkeit prüfen."
+    },
+    "1773526588636": {
+      "requirementIds": [
+        "req:sy0701:v7:3.1:considerations:availability",
+        "req:sy0701:v7:3.4:site-considerations:geographic-dispersion"
+      ]
+    },
+    "1773536533014": {
+      "requirementIds": [
+        "req:sy0701:v7:3.2:secure-communication-access:secure-access-service-edge-sase",
+        "req:sy0701:v7:3.2:secure-communication-access:software-defined-wide-area-network-sd-wan"
+      ],
+      "reviewNote": "Die Frage prüft SD-WAN ausdrücklich als SASE-Netzwerkkern; beide Begriffe sind in Frage und richtiger Antwort direkt verknüpft."
+    },
+    "1773536533015": {
+      "status": "unmapped",
+      "requirementIds": [],
+      "reviewNote": "NAC ist breiter als der offizielle 802.1X-Leaf; weder 802.1X noch EAP wird als richtige Antwort verlangt."
+    },
+    "1773536533018": {
+      "requirementIds": [
+        "req:sy0701:v7:3.2:infrastructure-considerations:failure-modes:fail-closed",
+        "req:sy0701:v7:3.2:infrastructure-considerations:device-attribute:inline-vs-tap-monitor"
+      ]
+    },
+    "1773536533019": {
+      "requirementIds": ["req:sy0701:v7:3.4:capacity-planning:people"]
+    },
+    "1773536533021": {
+      "requirementIds": ["req:sy0701:v7:3.4:backups:onsite-offsite"]
+    },
+    "1773536533024": {
+      "status": "unmapped",
+      "requirementIds": [],
+      "reviewNote": "Die Negativfrage nach 'Top Secret' prüft keinen der sechs konkreten Business-Classification-Leaves als richtige Antwort."
+    },
+    "1773536533025": {
+      "status": "improve",
+      "requirementIds": ["req:sy0701:v7:3.2:infrastructure-considerations:firewall-types:layer-4-layer-7"],
+      "reviewNote": "Die OSI-Layer-Bezeichnung allein ist zu oberflächlich; Port-/Transportfilterung soll gegen anwendungsbewusste Layer-7-Prüfung entschieden werden."
+    },
+    "1773536533027": {
+      "status": "unmapped",
+      "requirementIds": [],
+      "reviewNote": "Incremental Backup ist kein atomarer Leaf und die Frage prüft weder Backup-Frequenz noch Recovery direkt."
+    },
+    "1773536533030": {
+      "status": "improve",
+      "requirementIds": ["req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-use"],
+      "reviewNote": "Die Negativfrage ist fachlich lösbar, soll aber den RAM/CPU-Zustand und einen geeigneten Secure-Enclave-Mechanismus direkt prüfen."
+    },
+    "1773536533032": {
+      "requirementIds": ["req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:containerization"]
+    },
+    "1773536533036": {
+      "requirementIds": [
+        "req:sy0701:v7:3.3:general-data-considerations:geolocation",
+        "req:sy0701:v7:3.3:methods-to-secure-data:geographic-restrictions"
+      ]
+    },
+    "1773618881052": {
+      "requirementIds": ["req:sy0701:v7:3.4:backups:replication"]
+    },
+    "1773618881059": {
+      "status": "objective_mismatch",
+      "requirementIds": ["req:sy0701:v7:2.3:hardware:legacy"],
+      "targetDeckId": "sy0-701-objective-2-3",
+      "reviewNote": "Fehlende Updates und Ersatzteile eines Legacy Controllers sind ein Hardware-Legacy-Problem aus 2.3."
+    },
+    "1773618881060": {
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:iot",
+        "req:sy0701:v7:3.2:infrastructure-considerations:security-zones"
+      ]
+    },
+    "1773618881067": {
+      "status": "objective_mismatch",
+      "requirementIds": ["req:sy0701:v7:2.3:virtualization:virtual-machine-vm-escape"],
+      "targetDeckId": "sy0-701-objective-2-3",
+      "reviewNote": "Ein Angriff aus der VM gegen Hypervisor/Host ist der explizite VM-Escape-Vulnerability-Leaf in 2.3."
+    },
+    "1773794837301": {
+      "requirementIds": [
+        "req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:logical-segmentation",
+        "req:sy0701:v7:3.2:infrastructure-considerations:port-security:802-1x"
+      ]
+    },
+    "1773794837304": {
+      "status": "unmapped",
+      "requirementIds": [],
+      "reviewNote": "Differential Backup ist kein atomarer Leaf; die arithmetische Restore-Anzahl prüft weder Frequency noch Recovery als offizielles Konzept direkt."
+    },
+    "1773794837306": {
+      "requirementIds": ["req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:embedded-systems"]
+    },
+    "1773794837307": {
+      "requirementIds": ["req:sy0701:v7:3.3:methods-to-secure-data:geographic-restrictions"]
+    },
+    "1773794837309": {
+      "status": "objective_mismatch",
+      "requirementIds": ["req:sy0701:v7:4.3:identification-methods:penetration-testing"],
+      "targetDeckId": "sy0-701-objective-4-3",
+      "reviewNote": "Die kontrollierte Ausnutzbarkeitsprüfung identifizierter Schwächen gehört zur Vulnerability Identification in 4.3."
+    },
+    "1773794837312": {
+      "requirementIds": ["req:sy0701:v7:3.2:secure-communication-access:software-defined-wide-area-network-sd-wan"]
+    },
+    "1773794837317": {
+      "status": "objective_mismatch",
+      "requirementIds": ["req:sy0701:v7:4.6:access-controls:mandatory"],
+      "targetDeckId": "sy0-701-objective-4-6",
+      "reviewNote": "Mandatory Access Control ist ein IAM-Access-Control-Modell in 4.6, keine Data-Segmentation-Methode aus 3.3."
+    },
+    "1773794837320": {
+      "requirementIds": ["req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:network-infrastructure:physical-isolation:air-gapped"]
+    },
+    "1773794837321": {
+      "status": "objective_mismatch",
+      "requirementIds": ["req:sy0701:v7:2.3:web-based:structured-query-language-injection-sqli"],
+      "targetDeckId": "sy0-701-objective-2-3",
+      "reviewNote": "Parameterized Queries verhindern SQL Injection; die richtige Antwort prüft diesen Web-Vulnerability-Zusammenhang aus 2.3."
+    },
+    "1779095116174": {
+      "requirementIds": [
+        "req:sy0701:v7:3.4:site-considerations:hot",
+        "req:sy0701:v7:3.4:site-considerations:warm",
+        "req:sy0701:v7:3.4:site-considerations:cold",
+        "req:sy0701:v7:3.4:site-considerations:geographic-dispersion"
+      ],
+      "reviewNote": "Vier offizielle Recovery-Site-/Dispersion-Leaves werden in eigenen Paaren direkt gelöst; Cloud DR ist ein zusätzlicher, nicht separat angerechneter Begriff."
+    },
+    "1779095116175": {
+      "requirementIds": [
+        "req:sy0701:v7:3.3:general-data-considerations:data-states:data-at-rest",
+        "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-transit",
+        "req:sy0701:v7:3.3:general-data-considerations:data-states:data-in-use"
+      ],
+      "reviewNote": "Die Mechanismen werden mehrfach und eindeutig allen drei offiziellen Data States zugeordnet."
+    },
+    "1779669260165": {
+      "status": "unmapped",
+      "requirementIds": [],
+      "reviewNote": "CASB ist kein atomarer Domain-3-Leaf; SASE wird nur in der Erklärung erwähnt und nicht als richtige Antwort geprüft."
+    },
+    "1779669260166": {
+      "status": "improve",
+      "requirementIds": ["req:sy0701:v7:3.2:secure-communication-access:secure-access-service-edge-sase"],
+      "reviewNote": "Die Vollform ist korrekt, soll aber Cloud-Security und SD-WAN am Edge anwendungsorientiert prüfen."
+    },
+    "1779669260175": {
+      "status": "objective_mismatch",
+      "requirementIds": ["req:sy0701:v7:5.2:business-impact-analysis:mean-time-between-failures-mtbf"],
+      "targetDeckId": "sy0-701-objective-5-2"
+    },
+    "1779669260176": {
+      "status": "objective_mismatch",
+      "requirementIds": ["req:sy0701:v7:5.2:business-impact-analysis:mean-time-to-repair-mttr"],
+      "targetDeckId": "sy0-701-objective-5-2"
+    },
+    "1779669260177": {
+      "status": "objective_mismatch",
+      "requirementIds": ["req:sy0701:v7:5.2:business-impact-analysis:recovery-time-objective-rto"],
+      "targetDeckId": "sy0-701-objective-5-2"
+    },
+    "1779669260178": {
+      "status": "objective_mismatch",
+      "requirementIds": ["req:sy0701:v7:5.2:business-impact-analysis:recovery-point-objective-rpo"],
+      "targetDeckId": "sy0-701-objective-5-2"
+    },
+    "1779669260187": {
+      "requirementIds": ["req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:responsibility-matrix"]
+    },
+    "1779669260188": {
+      "requirementIds": ["req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:responsibility-matrix"]
+    },
+    "1779669260189": {
+      "requirementIds": ["req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:cloud:responsibility-matrix"]
+    },
+    "1779669260193": {
+      "status": "improve",
+      "requirementIds": ["req:sy0701:v7:3.1:architecture-and-infrastructure-concepts:real-time-operating-system-rtos"],
+      "reviewNote": "Der deterministische Timing-Kontext ist schon vorhanden, die reine Vollformabfrage soll aber eine Deadline-/Safety-Entscheidung verlangen."
+    }
+  }
+}

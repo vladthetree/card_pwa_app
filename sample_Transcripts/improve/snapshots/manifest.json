@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "sy0701-domain-card-snapshot-manifest-2",
+  "database": {
+    "source": "card-sync-server/sync.db",
+    "sourceSha256": "a0f687d4f4524fa246f9158310b962cfbd9d7be1141f1203fd7328340a911965",
+    "backup": "sample_Transcripts/improve/snapshots/sync-before-domain-card-audit.db",
+    "backupSha256": "7477c4e2f8cf8984f08152ac3648b260127b4b14a55ee415a182920f8a9d56d4"
+  },
+  "baseline": {
+    "path": "sample_Transcripts/improve/snapshots/domain-cards-baseline.json",
+    "sha256": "7bf9862bb8882123a4bf38a1a913d5bcc3d70d2e46655aff89196c3168038a9f"
+  },
+  "unmappedResolutionPhase": {
+    "backup": "sample_Transcripts/improve/snapshots/sync-before-unmapped-resolution.db",
+    "backupSha256": "cf3da96315b722217368354ef6240ca0ffe09fb801f8c60a95e0bcd67dd922e7"
+  },
+  "requirements": {
+    "path": "card_pwa/content/sy0-701/generated/sy0-701-requirements.json",
+    "sha256": "6c9af6104d374216c8f5a59c558d341668789c88ede4311f53cb3211f17eb5cf",
+    "count": 655
+  },
+  "distilledSources": {
+    "sample_Transcripts/Mapping_Knowledge/domain-1-requirement-mapping.json": "d41eff130de96627f2f83ea7e1041919fac14c85e6cdc610b3358457d596e930",
+    "sample_Transcripts/Mapping_Knowledge/domain-2-requirement-mapping.json": "259dce0189618b3fd3e2fe9d814ee19a1303dec746df0a62adb540bb650ab69b",
+    "sample_Transcripts/Mapping_Knowledge/domain-3-requirement-mapping.json": "8e582076ad351b7d0459b569b550fbb57bdb80e2fc81f79bee39fe3100dd8007",
+    "sample_Transcripts/Mapping_Knowledge/domain-4-requirement-mapping.json": "215c891eb1acabf96e2cd60f27d5d2bd23802c4246a6150508047b4825169358",
+    "sample_Transcripts/Mapping_Knowledge/domain-5-requirement-mapping.json": "38f959418ea52ee88b7623758bcd3e277c5ed4cdf3a3d23882cddb33ae4ebfe7"
+  },
+  "distilledContentAggregateSha256": "91e28e75206f5ad4ade636d9389ec9319a4706c42425da086c0e5d567f85a9d6",
+  "excludedSource": "The independent quality report is intentionally not read or hashed."
+}

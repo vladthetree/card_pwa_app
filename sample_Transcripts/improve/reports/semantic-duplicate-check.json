@@ -1,0 +1,1912 @@
+{
+  "schemaVersion": "sy0701-semantic-duplicate-check-1",
+  "newCardsChecked": 272,
+  "perNewCard": [
+    {
+      "cardId": "1786384200000",
+      "comparedAgainstExistingAndPlannedCards": 744,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200001",
+      "comparedAgainstExistingAndPlannedCards": 745,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200002",
+      "comparedAgainstExistingAndPlannedCards": 746,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200003",
+      "comparedAgainstExistingAndPlannedCards": 747,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200004",
+      "comparedAgainstExistingAndPlannedCards": 748,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200005",
+      "comparedAgainstExistingAndPlannedCards": 749,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200006",
+      "comparedAgainstExistingAndPlannedCards": 750,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200007",
+      "comparedAgainstExistingAndPlannedCards": 751,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200008",
+      "comparedAgainstExistingAndPlannedCards": 752,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200009",
+      "comparedAgainstExistingAndPlannedCards": 753,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200010",
+      "comparedAgainstExistingAndPlannedCards": 754,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200011",
+      "comparedAgainstExistingAndPlannedCards": 755,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200012",
+      "comparedAgainstExistingAndPlannedCards": 756,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200013",
+      "comparedAgainstExistingAndPlannedCards": 757,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200014",
+      "comparedAgainstExistingAndPlannedCards": 758,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200015",
+      "comparedAgainstExistingAndPlannedCards": 759,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200016",
+      "comparedAgainstExistingAndPlannedCards": 760,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200017",
+      "comparedAgainstExistingAndPlannedCards": 761,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200018",
+      "comparedAgainstExistingAndPlannedCards": 762,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200019",
+      "comparedAgainstExistingAndPlannedCards": 763,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200020",
+      "comparedAgainstExistingAndPlannedCards": 764,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200021",
+      "comparedAgainstExistingAndPlannedCards": 765,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200022",
+      "comparedAgainstExistingAndPlannedCards": 766,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200023",
+      "comparedAgainstExistingAndPlannedCards": 767,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200024",
+      "comparedAgainstExistingAndPlannedCards": 768,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200025",
+      "comparedAgainstExistingAndPlannedCards": 769,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200026",
+      "comparedAgainstExistingAndPlannedCards": 770,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200027",
+      "comparedAgainstExistingAndPlannedCards": 771,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200028",
+      "comparedAgainstExistingAndPlannedCards": 772,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200029",
+      "comparedAgainstExistingAndPlannedCards": 773,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200030",
+      "comparedAgainstExistingAndPlannedCards": 774,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200031",
+      "comparedAgainstExistingAndPlannedCards": 775,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200032",
+      "comparedAgainstExistingAndPlannedCards": 776,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200033",
+      "comparedAgainstExistingAndPlannedCards": 777,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200034",
+      "comparedAgainstExistingAndPlannedCards": 778,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200035",
+      "comparedAgainstExistingAndPlannedCards": 779,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200036",
+      "comparedAgainstExistingAndPlannedCards": 780,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200037",
+      "comparedAgainstExistingAndPlannedCards": 781,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200038",
+      "comparedAgainstExistingAndPlannedCards": 782,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200039",
+      "comparedAgainstExistingAndPlannedCards": 783,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200040",
+      "comparedAgainstExistingAndPlannedCards": 784,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200041",
+      "comparedAgainstExistingAndPlannedCards": 785,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200042",
+      "comparedAgainstExistingAndPlannedCards": 786,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200043",
+      "comparedAgainstExistingAndPlannedCards": 787,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200044",
+      "comparedAgainstExistingAndPlannedCards": 788,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200045",
+      "comparedAgainstExistingAndPlannedCards": 789,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200046",
+      "comparedAgainstExistingAndPlannedCards": 790,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200047",
+      "comparedAgainstExistingAndPlannedCards": 791,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200048",
+      "comparedAgainstExistingAndPlannedCards": 792,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200049",
+      "comparedAgainstExistingAndPlannedCards": 793,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200050",
+      "comparedAgainstExistingAndPlannedCards": 794,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200051",
+      "comparedAgainstExistingAndPlannedCards": 795,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200052",
+      "comparedAgainstExistingAndPlannedCards": 796,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200053",
+      "comparedAgainstExistingAndPlannedCards": 797,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200054",
+      "comparedAgainstExistingAndPlannedCards": 798,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200055",
+      "comparedAgainstExistingAndPlannedCards": 799,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200056",
+      "comparedAgainstExistingAndPlannedCards": 800,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200057",
+      "comparedAgainstExistingAndPlannedCards": 801,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200058",
+      "comparedAgainstExistingAndPlannedCards": 802,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200059",
+      "comparedAgainstExistingAndPlannedCards": 803,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200060",
+      "comparedAgainstExistingAndPlannedCards": 804,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200061",
+      "comparedAgainstExistingAndPlannedCards": 805,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200062",
+      "comparedAgainstExistingAndPlannedCards": 806,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200063",
+      "comparedAgainstExistingAndPlannedCards": 807,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200064",
+      "comparedAgainstExistingAndPlannedCards": 808,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200065",
+      "comparedAgainstExistingAndPlannedCards": 809,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200066",
+      "comparedAgainstExistingAndPlannedCards": 810,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200067",
+      "comparedAgainstExistingAndPlannedCards": 811,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200068",
+      "comparedAgainstExistingAndPlannedCards": 812,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200069",
+      "comparedAgainstExistingAndPlannedCards": 813,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200070",
+      "comparedAgainstExistingAndPlannedCards": 814,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200071",
+      "comparedAgainstExistingAndPlannedCards": 815,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200072",
+      "comparedAgainstExistingAndPlannedCards": 816,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200073",
+      "comparedAgainstExistingAndPlannedCards": 817,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200074",
+      "comparedAgainstExistingAndPlannedCards": 818,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200075",
+      "comparedAgainstExistingAndPlannedCards": 819,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200076",
+      "comparedAgainstExistingAndPlannedCards": 820,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200077",
+      "comparedAgainstExistingAndPlannedCards": 821,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200078",
+      "comparedAgainstExistingAndPlannedCards": 822,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200079",
+      "comparedAgainstExistingAndPlannedCards": 823,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200080",
+      "comparedAgainstExistingAndPlannedCards": 824,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200081",
+      "comparedAgainstExistingAndPlannedCards": 825,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200082",
+      "comparedAgainstExistingAndPlannedCards": 826,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200083",
+      "comparedAgainstExistingAndPlannedCards": 827,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200084",
+      "comparedAgainstExistingAndPlannedCards": 828,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200085",
+      "comparedAgainstExistingAndPlannedCards": 829,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200086",
+      "comparedAgainstExistingAndPlannedCards": 830,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200087",
+      "comparedAgainstExistingAndPlannedCards": 831,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200088",
+      "comparedAgainstExistingAndPlannedCards": 832,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200089",
+      "comparedAgainstExistingAndPlannedCards": 833,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200090",
+      "comparedAgainstExistingAndPlannedCards": 834,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200091",
+      "comparedAgainstExistingAndPlannedCards": 835,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200092",
+      "comparedAgainstExistingAndPlannedCards": 836,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200093",
+      "comparedAgainstExistingAndPlannedCards": 837,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200094",
+      "comparedAgainstExistingAndPlannedCards": 838,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200095",
+      "comparedAgainstExistingAndPlannedCards": 839,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200096",
+      "comparedAgainstExistingAndPlannedCards": 840,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200097",
+      "comparedAgainstExistingAndPlannedCards": 841,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200098",
+      "comparedAgainstExistingAndPlannedCards": 842,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200099",
+      "comparedAgainstExistingAndPlannedCards": 843,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200100",
+      "comparedAgainstExistingAndPlannedCards": 844,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200101",
+      "comparedAgainstExistingAndPlannedCards": 845,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200102",
+      "comparedAgainstExistingAndPlannedCards": 846,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200103",
+      "comparedAgainstExistingAndPlannedCards": 847,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200104",
+      "comparedAgainstExistingAndPlannedCards": 848,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200105",
+      "comparedAgainstExistingAndPlannedCards": 849,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200106",
+      "comparedAgainstExistingAndPlannedCards": 850,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200107",
+      "comparedAgainstExistingAndPlannedCards": 851,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200108",
+      "comparedAgainstExistingAndPlannedCards": 852,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200109",
+      "comparedAgainstExistingAndPlannedCards": 853,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200110",
+      "comparedAgainstExistingAndPlannedCards": 854,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200111",
+      "comparedAgainstExistingAndPlannedCards": 855,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200112",
+      "comparedAgainstExistingAndPlannedCards": 856,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200113",
+      "comparedAgainstExistingAndPlannedCards": 857,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200114",
+      "comparedAgainstExistingAndPlannedCards": 858,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200115",
+      "comparedAgainstExistingAndPlannedCards": 859,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200116",
+      "comparedAgainstExistingAndPlannedCards": 860,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200117",
+      "comparedAgainstExistingAndPlannedCards": 861,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200118",
+      "comparedAgainstExistingAndPlannedCards": 862,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200119",
+      "comparedAgainstExistingAndPlannedCards": 863,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200120",
+      "comparedAgainstExistingAndPlannedCards": 864,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200121",
+      "comparedAgainstExistingAndPlannedCards": 865,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200122",
+      "comparedAgainstExistingAndPlannedCards": 866,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200123",
+      "comparedAgainstExistingAndPlannedCards": 867,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200124",
+      "comparedAgainstExistingAndPlannedCards": 868,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200125",
+      "comparedAgainstExistingAndPlannedCards": 869,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200126",
+      "comparedAgainstExistingAndPlannedCards": 870,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200127",
+      "comparedAgainstExistingAndPlannedCards": 871,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200128",
+      "comparedAgainstExistingAndPlannedCards": 872,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200129",
+      "comparedAgainstExistingAndPlannedCards": 873,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200130",
+      "comparedAgainstExistingAndPlannedCards": 874,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200131",
+      "comparedAgainstExistingAndPlannedCards": 875,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200132",
+      "comparedAgainstExistingAndPlannedCards": 876,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200133",
+      "comparedAgainstExistingAndPlannedCards": 877,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200134",
+      "comparedAgainstExistingAndPlannedCards": 878,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200135",
+      "comparedAgainstExistingAndPlannedCards": 879,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200136",
+      "comparedAgainstExistingAndPlannedCards": 880,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200137",
+      "comparedAgainstExistingAndPlannedCards": 881,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200138",
+      "comparedAgainstExistingAndPlannedCards": 882,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200139",
+      "comparedAgainstExistingAndPlannedCards": 883,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200140",
+      "comparedAgainstExistingAndPlannedCards": 884,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200141",
+      "comparedAgainstExistingAndPlannedCards": 885,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200142",
+      "comparedAgainstExistingAndPlannedCards": 886,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200143",
+      "comparedAgainstExistingAndPlannedCards": 887,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200144",
+      "comparedAgainstExistingAndPlannedCards": 888,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200145",
+      "comparedAgainstExistingAndPlannedCards": 889,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200146",
+      "comparedAgainstExistingAndPlannedCards": 890,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200147",
+      "comparedAgainstExistingAndPlannedCards": 891,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200148",
+      "comparedAgainstExistingAndPlannedCards": 892,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200149",
+      "comparedAgainstExistingAndPlannedCards": 893,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200150",
+      "comparedAgainstExistingAndPlannedCards": 894,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200151",
+      "comparedAgainstExistingAndPlannedCards": 895,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200152",
+      "comparedAgainstExistingAndPlannedCards": 896,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200153",
+      "comparedAgainstExistingAndPlannedCards": 897,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200154",
+      "comparedAgainstExistingAndPlannedCards": 898,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200155",
+      "comparedAgainstExistingAndPlannedCards": 899,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200156",
+      "comparedAgainstExistingAndPlannedCards": 900,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200157",
+      "comparedAgainstExistingAndPlannedCards": 901,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200158",
+      "comparedAgainstExistingAndPlannedCards": 902,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200159",
+      "comparedAgainstExistingAndPlannedCards": 903,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200160",
+      "comparedAgainstExistingAndPlannedCards": 904,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200161",
+      "comparedAgainstExistingAndPlannedCards": 905,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200162",
+      "comparedAgainstExistingAndPlannedCards": 906,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200163",
+      "comparedAgainstExistingAndPlannedCards": 907,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200164",
+      "comparedAgainstExistingAndPlannedCards": 908,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200165",
+      "comparedAgainstExistingAndPlannedCards": 909,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200166",
+      "comparedAgainstExistingAndPlannedCards": 910,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200167",
+      "comparedAgainstExistingAndPlannedCards": 911,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200168",
+      "comparedAgainstExistingAndPlannedCards": 912,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200169",
+      "comparedAgainstExistingAndPlannedCards": 913,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200170",
+      "comparedAgainstExistingAndPlannedCards": 914,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200171",
+      "comparedAgainstExistingAndPlannedCards": 915,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200172",
+      "comparedAgainstExistingAndPlannedCards": 916,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200173",
+      "comparedAgainstExistingAndPlannedCards": 917,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200174",
+      "comparedAgainstExistingAndPlannedCards": 918,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200175",
+      "comparedAgainstExistingAndPlannedCards": 919,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200176",
+      "comparedAgainstExistingAndPlannedCards": 920,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200177",
+      "comparedAgainstExistingAndPlannedCards": 921,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200178",
+      "comparedAgainstExistingAndPlannedCards": 922,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200179",
+      "comparedAgainstExistingAndPlannedCards": 923,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200180",
+      "comparedAgainstExistingAndPlannedCards": 924,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200181",
+      "comparedAgainstExistingAndPlannedCards": 925,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200182",
+      "comparedAgainstExistingAndPlannedCards": 926,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200183",
+      "comparedAgainstExistingAndPlannedCards": 927,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200184",
+      "comparedAgainstExistingAndPlannedCards": 928,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200185",
+      "comparedAgainstExistingAndPlannedCards": 929,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200186",
+      "comparedAgainstExistingAndPlannedCards": 930,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200187",
+      "comparedAgainstExistingAndPlannedCards": 931,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200188",
+      "comparedAgainstExistingAndPlannedCards": 932,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200189",
+      "comparedAgainstExistingAndPlannedCards": 933,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200190",
+      "comparedAgainstExistingAndPlannedCards": 934,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200191",
+      "comparedAgainstExistingAndPlannedCards": 935,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200192",
+      "comparedAgainstExistingAndPlannedCards": 936,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200193",
+      "comparedAgainstExistingAndPlannedCards": 937,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200194",
+      "comparedAgainstExistingAndPlannedCards": 938,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200195",
+      "comparedAgainstExistingAndPlannedCards": 939,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200196",
+      "comparedAgainstExistingAndPlannedCards": 940,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200197",
+      "comparedAgainstExistingAndPlannedCards": 941,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200198",
+      "comparedAgainstExistingAndPlannedCards": 942,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200199",
+      "comparedAgainstExistingAndPlannedCards": 943,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200200",
+      "comparedAgainstExistingAndPlannedCards": 944,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200201",
+      "comparedAgainstExistingAndPlannedCards": 945,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200202",
+      "comparedAgainstExistingAndPlannedCards": 946,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200203",
+      "comparedAgainstExistingAndPlannedCards": 947,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200204",
+      "comparedAgainstExistingAndPlannedCards": 948,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200205",
+      "comparedAgainstExistingAndPlannedCards": 949,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200206",
+      "comparedAgainstExistingAndPlannedCards": 950,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200207",
+      "comparedAgainstExistingAndPlannedCards": 951,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200208",
+      "comparedAgainstExistingAndPlannedCards": 952,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200209",
+      "comparedAgainstExistingAndPlannedCards": 953,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200210",
+      "comparedAgainstExistingAndPlannedCards": 954,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200211",
+      "comparedAgainstExistingAndPlannedCards": 955,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200212",
+      "comparedAgainstExistingAndPlannedCards": 956,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200213",
+      "comparedAgainstExistingAndPlannedCards": 957,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200214",
+      "comparedAgainstExistingAndPlannedCards": 958,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200215",
+      "comparedAgainstExistingAndPlannedCards": 959,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200216",
+      "comparedAgainstExistingAndPlannedCards": 960,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200217",
+      "comparedAgainstExistingAndPlannedCards": 961,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200218",
+      "comparedAgainstExistingAndPlannedCards": 962,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200219",
+      "comparedAgainstExistingAndPlannedCards": 963,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200220",
+      "comparedAgainstExistingAndPlannedCards": 964,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200221",
+      "comparedAgainstExistingAndPlannedCards": 965,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200222",
+      "comparedAgainstExistingAndPlannedCards": 966,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200223",
+      "comparedAgainstExistingAndPlannedCards": 967,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200224",
+      "comparedAgainstExistingAndPlannedCards": 968,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200225",
+      "comparedAgainstExistingAndPlannedCards": 969,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200226",
+      "comparedAgainstExistingAndPlannedCards": 970,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200227",
+      "comparedAgainstExistingAndPlannedCards": 971,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200228",
+      "comparedAgainstExistingAndPlannedCards": 972,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200229",
+      "comparedAgainstExistingAndPlannedCards": 973,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200230",
+      "comparedAgainstExistingAndPlannedCards": 974,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200231",
+      "comparedAgainstExistingAndPlannedCards": 975,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200232",
+      "comparedAgainstExistingAndPlannedCards": 976,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200233",
+      "comparedAgainstExistingAndPlannedCards": 977,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200234",
+      "comparedAgainstExistingAndPlannedCards": 978,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200235",
+      "comparedAgainstExistingAndPlannedCards": 979,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200236",
+      "comparedAgainstExistingAndPlannedCards": 980,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200237",
+      "comparedAgainstExistingAndPlannedCards": 981,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200238",
+      "comparedAgainstExistingAndPlannedCards": 982,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200239",
+      "comparedAgainstExistingAndPlannedCards": 983,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200240",
+      "comparedAgainstExistingAndPlannedCards": 984,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200241",
+      "comparedAgainstExistingAndPlannedCards": 985,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200242",
+      "comparedAgainstExistingAndPlannedCards": 986,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200243",
+      "comparedAgainstExistingAndPlannedCards": 987,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200244",
+      "comparedAgainstExistingAndPlannedCards": 988,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200245",
+      "comparedAgainstExistingAndPlannedCards": 989,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200246",
+      "comparedAgainstExistingAndPlannedCards": 990,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200247",
+      "comparedAgainstExistingAndPlannedCards": 991,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200248",
+      "comparedAgainstExistingAndPlannedCards": 992,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200249",
+      "comparedAgainstExistingAndPlannedCards": 993,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200250",
+      "comparedAgainstExistingAndPlannedCards": 994,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200251",
+      "comparedAgainstExistingAndPlannedCards": 995,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200252",
+      "comparedAgainstExistingAndPlannedCards": 996,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200253",
+      "comparedAgainstExistingAndPlannedCards": 997,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200254",
+      "comparedAgainstExistingAndPlannedCards": 998,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200255",
+      "comparedAgainstExistingAndPlannedCards": 999,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200256",
+      "comparedAgainstExistingAndPlannedCards": 1000,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200257",
+      "comparedAgainstExistingAndPlannedCards": 1001,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200258",
+      "comparedAgainstExistingAndPlannedCards": 1002,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200259",
+      "comparedAgainstExistingAndPlannedCards": 1003,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200260",
+      "comparedAgainstExistingAndPlannedCards": 1004,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200261",
+      "comparedAgainstExistingAndPlannedCards": 1005,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200262",
+      "comparedAgainstExistingAndPlannedCards": 1006,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200263",
+      "comparedAgainstExistingAndPlannedCards": 1007,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200264",
+      "comparedAgainstExistingAndPlannedCards": 1008,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200265",
+      "comparedAgainstExistingAndPlannedCards": 1009,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200266",
+      "comparedAgainstExistingAndPlannedCards": 1010,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200267",
+      "comparedAgainstExistingAndPlannedCards": 1011,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200268",
+      "comparedAgainstExistingAndPlannedCards": 1012,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200269",
+      "comparedAgainstExistingAndPlannedCards": 1013,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200270",
+      "comparedAgainstExistingAndPlannedCards": 1014,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    },
+    {
+      "cardId": "1786384200271",
+      "comparedAgainstExistingAndPlannedCards": 1015,
+      "normalizedExactMatches": [],
+      "highSimilarityCandidates": [],
+      "decision": "new_card_required_for_uncovered_atomic_requirement"
+    }
+  ],
+  "finalExactRetrievalDuplicateGroups": {},
+  "finalNearDuplicatePairsWithSameAnswer": []
+}

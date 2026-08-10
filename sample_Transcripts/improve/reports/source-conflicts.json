@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "sy0701-source-conflicts-1",
+  "conflicts": [
+    {
+      "requirementId": "req:sy0701:v7:2.3:virtualization:resource-reuse",
+      "distilledContent": "Messer versteht Resource Reuse als Überbuchung durch den Hypervisor, bei der sich Speicherbereiche mehrerer VMs zeitweise überschneiden können. Das Cram-Video legt den Begriff anders aus: Cloud-Provider geben Hardware-Ressourcen an den nächsten Kunden weiter, wodurch bei unvollständiger Löschung Datenreste zurückbleiben können – Verschlüsselung als Schutz.",
+      "resolution": "Der offizielle V7-Leaf begrenzt die Coverage. Die Karte verwendet nur eine mit dem Objective vereinbare, konfliktarme Aussage; distilledContent blieb bytegenau unverändert."
+    },
+    {
+      "requirementId": "req:sy0701:v7:2.4:network-attacks:malicious-code",
+      "distilledContent": "Messer grenzt Malicious Code von technisch anspruchslosen Wegen ab und zählt Executables, Skripte, Makroviren, Trojaner dazu; Beispiele WannaCry, British Airways JavaScript-Skimming, Estland SQL-Injection. Das Cram-Video ordnet Malicious Code dagegen der Netzwerkkategorie zu (Angriffe auf Kommunikationskanäle) und nennt DoS/DDoS, On-Path und Credential Replay als Beispiele.",
+      "resolution": "Der offizielle V7-Leaf begrenzt die Coverage. Die Karte verwendet nur eine mit dem Objective vereinbare, konfliktarme Aussage; distilledContent blieb bytegenau unverändert."
+    },
+    {
+      "requirementId": "req:sy0701:v7:2.4:indicators:out-of-cycle-logging",
+      "distilledContent": "Messer definiert es als Logeinträge, die außerhalb bekannter Patchfenster/Change-Control-Termine auftreten, besonders sichtbar in Firewall-Logs zu ungewöhnlichen Tageszeiten. Das Cram-Video ergänzt, dass Sicherheitssysteme normalerweise nach festem Zeitplan protokollieren, sodass Abweichungen auf Manipulation hindeuten.",
+      "resolution": "Der offizielle V7-Leaf begrenzt die Coverage. Die Karte verwendet nur eine mit dem Objective vereinbare, konfliktarme Aussage; distilledContent blieb bytegenau unverändert."
+    },
+    {
+      "requirementId": "req:sy0701:v7:2.4:indicators:published-documented",
+      "distilledContent": "Die Quellen widersprechen sich hier: Messer versteht darunter, dass eigene vertrauliche Daten öffentlich im Internet auftauchen (oft bei Ransomware-Exfiltration vor Verschlüsselung). Das Cram-Video meint dagegen einen öffentlich bekannten und dokumentierten Exploit, den Sicherheitsforscher verfolgen und für den es fertige SIEM/XDR-Abfragen gibt.",
+      "resolution": "Der offizielle V7-Leaf begrenzt die Coverage. Die Karte verwendet nur eine mit dem Objective vereinbare, konfliktarme Aussage; distilledContent blieb bytegenau unverändert."
+    },
+    {
+      "requirementId": "req:sy0701:v7:3.4:testing:parallel-processing",
+      "distilledContent": "Die Quellen weichen ab: Messer erklärt es technisch als gleichzeitige Nutzung mehrerer CPUs/Kerne. Das Cram-Video versteht darunter eine Testform, bei der der Wiederherstellungsstandort während des Tests parallel zum Hauptstandort aktiviert wird.",
+      "resolution": "Der offizielle V7-Leaf begrenzt die Coverage. Die Karte verwendet nur eine mit dem Objective vereinbare, konfliktarme Aussage; distilledContent blieb bytegenau unverändert."
+    },
+    {
+      "requirementId": "req:sy0701:v7:4.1:wireless-devices:installation-considerations:heat-maps",
+      "distilledContent": "Messer zeigt eine Heat Map als visuelle Signalstärke-Darstellung (bei ihm Gelb/Rot = stark). Das Cram-Video nutzt die umgekehrte Farbkonvention (Grün/Blau = stark) und nennt AP-Platzierung, Troubleshooting und Kapazitätsplanung als Anwendungen — die Farbzuordnung widerspricht sich zwischen den Quellen.",
+      "resolution": "Der offizielle V7-Leaf begrenzt die Coverage. Die Karte verwendet nur eine mit dem Objective vereinbare, konfliktarme Aussage; distilledContent blieb bytegenau unverändert."
+    },
+    {
+      "requirementId": "req:sy0701:v7:4.1:mobile-solutions:deployment-models:choose-your-own-device-cyod",
+      "distilledContent": "Messer beschreibt CYOD als firmeneigenes Gerät mit Auswahlrecht des Nutzers. Das Cram-Video beschreibt es als Auswahl aus freigegebener Liste, aber mit Mitarbeiter als Käufer — die Quellen widersprechen sich beim Eigentum.",
+      "resolution": "Der offizielle V7-Leaf begrenzt die Coverage. Die Karte verwendet nur eine mit dem Objective vereinbare, konfliktarme Aussage; distilledContent blieb bytegenau unverändert."
+    },
+    {
+      "requirementId": "req:sy0701:v7:4.2:monitoring-asset-tracking:enumeration",
+      "distilledContent": "Messer versteht Enumeration als Aufschlüsselung eines Assets in Bestandteile (CPU, Speicher, Peripherie). Das Cram-Video legt es anders aus: regelmäßiges Identifizieren aller Netzgeräte per Scans, um blinde Flecken zu vermeiden.",
+      "resolution": "Der offizielle V7-Leaf begrenzt die Coverage. Die Karte verwendet nur eine mit dem Objective vereinbare, konfliktarme Aussage; distilledContent blieb bytegenau unverändert."
+    },
+    {
+      "requirementId": "req:sy0701:v7:4.3:identification-methods:application-security:package-monitoring",
+      "distilledContent": "Messer versteht darunter Vertrauensprüfung von Installationspaketen (Herkunft, Testlauf im Labor). Das Cram-Video legt den Schwerpunkt anders: Nachverfolgen genutzter Drittanbieter-/Open-Source-Bibliotheken auf bekannte Schwachstellen.",
+      "resolution": "Der offizielle V7-Leaf begrenzt die Coverage. Die Karte verwendet nur eine mit dem Objective vereinbare, konfliktarme Aussage; distilledContent blieb bytegenau unverändert."
+    },
+    {
+      "requirementId": "req:sy0701:v7:4.6:attestation",
+      "distilledContent": "Die Quellen meinen Unterschiedliches: Messer versteht Attestation als Identitätsnachweis (Reisepass, Bonitätsdaten). Das Cram-Video meint Device Attestation via Hardware Root of Trust/TPM als Zero-Trust-Baustein.",
+      "resolution": "Der offizielle V7-Leaf begrenzt die Coverage. Die Karte verwendet nur eine mit dem Objective vereinbare, konfliktarme Aussage; distilledContent blieb bytegenau unverändert."
+    },
+    {
+      "requirementId": "req:sy0701:v7:5.2:risk-tolerance",
+      "distilledContent": "Messer illustriert Toleranz als breitere Bandbreite als der Appetit mit dem Tempolimit-Beispiel. Das Cram-Video legt den Akzent auf die Fähigkeit der Organisation, Risiko zu tragen.",
+      "resolution": "Der offizielle V7-Leaf begrenzt die Coverage. Die Karte verwendet nur eine mit dem Objective vereinbare, konfliktarme Aussage; distilledContent blieb bytegenau unverändert."
+    },
+    {
+      "requirementId": "req:sy0701:v7:5.3:agreement-types:memorandum-of-agreement-moa",
+      "distilledContent": "Messer beschreibt das MOA als detaillierter als das MOU, aber in der Regel nicht rechtlich durchsetzbar. Das Cram-Video widerspricht: MOA ist ausdrücklich ein rechtsverbindlicher Vertrag — ein direkter Quellenkonflikt.",
+      "resolution": "Der offizielle V7-Leaf begrenzt die Coverage. Die Karte verwendet nur eine mit dem Objective vereinbare, konfliktarme Aussage; distilledContent blieb bytegenau unverändert."
+    },
+    {
+      "requirementId": "req:sy0701:v7:5.4:compliance-monitoring:due-diligence-care",
+      "distilledContent": "Messer ordnet zu: interne Aktivitäten sind Due Care, Aktivitäten gegenüber Dritten Due Diligence. Das Cram-Video zieht die Grenze anders: Bewertung (Due Diligence) vs. daraus folgende Maßnahme (Due Care) — ein Quellenkonflikt.",
+      "resolution": "Der offizielle V7-Leaf begrenzt die Coverage. Die Karte verwendet nur eine mit dem Objective vereinbare, konfliktarme Aussage; distilledContent blieb bytegenau unverändert."
+    },
+    {
+      "requirementId": "req:sy0701:v7:5.4:compliance-monitoring:attestation-and-acknowledgement",
+      "distilledContent": "Bei Messer unterschreibt die zuständige Führungskraft und bestätigt die Compliance. Das Cram-Video legt den Schwerpunkt auf Mitarbeitende, die per Unterschrift Richtlinienverständnis bestätigen.",
+      "resolution": "Der offizielle V7-Leaf begrenzt die Coverage. Die Karte verwendet nur eine mit dem Objective vereinbare, konfliktarme Aussage; distilledContent blieb bytegenau unverändert."
+    },
+    {
+      "requirementId": "req:sy0701:v7:5.5:penetration-testing:reconnaissance:passive",
+      "distilledContent": "Messer erklärt passive Aufklärung als Informationssammlung ohne direkten Netzbezug (Social Media, Dumpster Diving). Das Cram-Video betont fehlende direkte Interaktion — Abweichung: Cram zählt DNS-Auswertung zu passiv, Messer zu aktiv.",
+      "resolution": "Der offizielle V7-Leaf begrenzt die Coverage. Die Karte verwendet nur eine mit dem Objective vereinbare, konfliktarme Aussage; distilledContent blieb bytegenau unverändert."
+    }
+  ]
+}
