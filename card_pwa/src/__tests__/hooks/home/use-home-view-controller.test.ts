@@ -4,9 +4,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   persistDashboardMode,
-  persistShuffleOnlyMode,
   readInitialDashboardMode,
-  readInitialShuffleOnlyMode,
   submitHomeDeckCreation,
 } from '../../../hooks/home/homeControllerHelpers'
 
@@ -31,14 +29,11 @@ describe('useHomeViewController helpers', () => {
 
   it('reads and persists dashboard mode preferences', () => {
     expect(readInitialDashboardMode()).toBe('today')
-    expect(readInitialShuffleOnlyMode()).toBe(false)
 
     persistDashboardMode('pilot')
-    persistShuffleOnlyMode(true)
 
     expect(window.localStorage.getItem('card-pwa-home-dashboard-mode')).toBe('pilot')
     expect(window.localStorage.getItem('card-pwa-home-heatmap')).toBe('0')
-    expect(window.localStorage.getItem('card-pwa-home-shuffle-only-mode')).toBe('1')
   })
 
   it('round-trips the clean dashboard mode', () => {

@@ -12,6 +12,7 @@ import { isDragMatchShape, isFreeRecallCard } from '../utils/cardVariant'
 import { seededShuffle } from '../utils/hash'
 import type { AnswerEvaluatedHandler, Card } from '../types'
 import IncorrectReasonsSection from './IncorrectReasonsSection'
+import { TYPE_BADGE, OriginBadge, getCardShellClass, getCardBodyClass } from './cardRendererShared'
 
 const OrderingCard   = lazy(() => import('./OrderingCard'))
 const MatchingCard   = lazy(() => import('./MatchingCard'))
@@ -33,18 +34,6 @@ interface Props {
   /** Read-only-Ansicht (Zurückblättern auf die letzte bewertete Karte):
    *  sämtliche Antwort-Eingaben gesperrt, inkl. Free-Recall-Selbstbewertung. */
   readOnly?: boolean
-}
-
-/**
- * Card type display configuration
- */
-// Nur Lern-Warnzustände tragen Signalfarbe (amber/rose, wie die Rating-Buttons);
-// "neu" folgt dem Theme-Akzent, "review" bleibt neutral im Schwarz-Weiß-Grundton.
-const TYPE_BADGE: Record<Card['type'], { labelKey: 'type_new' | 'type_learning' | 'type_review' | 'type_relearning'; cls: string }> = {
-  new:        { labelKey: 'type_new',        cls: 'border-[--brand-secondary-25] bg-[--brand-secondary-08] text-[--brand-secondary]' },
-  learning:   { labelKey: 'type_learning',   cls: 'border-amber-500/30 bg-amber-500/10 text-amber-300' },
-  review:     { labelKey: 'type_review',     cls: 'border-ds-border-strong bg-ds-panel text-ds-muted' },
-  relearning: { labelKey: 'type_relearning', cls: 'border-rose-500/30 bg-rose-500/10 text-rose-300' },
 }
 
 function getQuestionTextClass(compact: boolean, density: number, size: 'default' | 'large' | 'xlarge' | 'xxlarge' | 'xxxlarge'): string {
@@ -178,13 +167,13 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   // M2 Drag-Match: docs/M2-drag-match.md ist die Source of Truth:
   // genau 4 Optionen (A-D) und genau 1 korrekte Antwort. Andere MC-Formen
   // fallen auf die bestehende Inline-Darstellung unten zurück.
-  const mcQuestion = parseMcQuestion(card.front)
-  const mcAnswer = parseMcAnswer(card.back)
-  if (useDragMatchMode && isDragMatchShape(mcQuestion, mcAnswer)) {
+  const question = useMemo(() => parseMcQuestion(card.front), [card.front])
+  const answered = useMemo(() => parseMcAnswer(card.back), [card.back])
+  if (useDragMatchMode && isDragMatchShape(question, answered)) {
     return (
       <Suspense fallback={null}>
         <DragMatchCard
-          card={card} question={mcQuestion} answer={mcAnswer}
+          card={card} question={question} answer={answered}
           flipped={flipped} onFlip={onFlip} onEdit={onEdit}
           onAnswerEvaluated={onAnswerEvaluated ?? (() => {})}
           compact={compact} originDeckName={originDeckName}
@@ -206,8 +195,6 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   const prevFlippedRef = useRef(false)
   const badge = TYPE_BADGE[card.type]
   const hasExtra = card.extra.acronym || card.extra.examples || card.extra.port || card.extra.protocol
-  const answered = useMemo(() => parseMcAnswer(card.back), [card.back])
-  const question = useMemo(() => parseMcQuestion(card.front), [card.front])
 
   const hasAnswered = selectedAnswer !== null
   const correctKeys = answered.correctOptions.length > 0
@@ -246,14 +233,6 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   const optionTextClass = getOptionTextClass(compact, frontContentDensity, settings.questionTextSize)
   const correctAnswerTextClass = getCorrectAnswerTextClass(settings.questionTextSize)
   const revealPendingLabel = settings.language === 'de' ? 'Antwort wird angezeigt...' : 'Showing answer...'
-
-  const renderOriginDeckBadge = () => (
-    originDeckName ? (
-      <span className="max-w-[160px] truncate rounded-[3px] border border-[--brand-secondary-25] bg-[--brand-secondary-12] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[--brand-secondary]">
-        {originDeckName}
-      </span>
-    ) : null
-  )
 
   /**
    * Reset answer state and animation flags when card changes
@@ -349,12 +328,13 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   const answerTone = hasAnswered
     ? (isAnswerCorrect ? 'border-emerald-500/45' : 'border-rose-500/45')
     : neutralCardBorder
-  const cardShellClass = `border ${flipped ? answerTone : neutralCardBorder} flex flex-col overflow-hidden rounded-ds bg-ds-card shadow-card transition-all duration-150 ease-out ${
-    compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[380px] md:min-h-[440px]'
-  }${flipped && correctGlowActive ? ' study-glow-success' : ''}`
-  const bodyClass = compact
-    ? 'min-h-0 flex-1 overflow-y-auto px-[14px] py-[16px] no-scrollbar'
-    : 'flex-1 overflow-y-auto no-scrollbar px-6 py-6 md:px-8 md:py-8'
+  const cardShellClass = getCardShellClass(
+    compact,
+    flipped ? answerTone : neutralCardBorder,
+    'transition-all duration-150 ease-out',
+    flipped && correctGlowActive ? ' study-glow-success' : ''
+  )
+  const bodyClass = getCardBodyClass(compact)
   const optionBaseClass = compact
     ? 'grid min-h-[3.25rem] w-full grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-2 rounded-ds border px-3 py-2.5 text-left font-medium leading-snug transition-all duration-200'
     : 'grid w-full grid-cols-[1.5rem_minmax(0,1fr)] items-center gap-4 rounded-ds border px-5 py-4 text-left font-medium transition-all duration-200'
@@ -385,7 +365,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                       <span className={`rounded-[3px] border px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.14em] ${badge.cls}`}>
                         {t[badge.labelKey]}
                       </span>
-                      {renderOriginDeckBadge()}
+                      <OriginBadge deckName={originDeckName} />
                       {card.tags.length > 0 && !compact && (
                         <span className="hidden truncate font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted md:block">
                           {card.tags.slice(0, 2).join(' · ')}
@@ -500,7 +480,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                       <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted">
                         {hasAnswered ? (isAnswerCorrect ? t.answer : t.wrong_answer) : t.answer}
                       </span>
-                      {renderOriginDeckBadge()}
+                      <OriginBadge deckName={originDeckName} />
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
                       <span className="rounded-[3px] border border-[--brand-primary] px-[5px] py-px font-mono text-[9px] font-bold text-[--brand-primary]">

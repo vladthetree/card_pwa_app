@@ -32,10 +32,11 @@ export async function getSyncedDeckIds(userId?: string): Promise<string[]> {
     }
     if (serverSelected.length === 0) return []
 
+    const localDecksById = new Map(localDecks.map(deck => [deck.id, deck]))
     const selected = showReviewDecks
       ? serverSelected
       : serverSelected.filter(id => {
-          const deck = localDecks.find(item => item.id === id)
+          const deck = localDecksById.get(id)
           return deck ? !isReviewDeck(deck) : !isReviewDeckId(id)
         })
     const serverSet = expandDeckIdsWithDescendants(localDecks, new Set(selected))
@@ -62,10 +63,11 @@ export async function getSelectedDeckFilter(): Promise<Set<string> | null> {
     if (selected === null) return null
     if (selected.length === 0) return new Set()
 
+    const decksById = new Map(decks.map(deck => [deck.id, deck]))
     const visibleSelected = showReviewDecks
       ? selected
       : selected.filter(id => {
-          const deck = decks.find(item => item.id === id)
+          const deck = decksById.get(id)
           return deck ? !isReviewDeck(deck) : !isReviewDeckId(id)
         })
     return expandDeckIdsWithDescendants(decks, new Set(visibleSelected))
@@ -74,7 +76,7 @@ export async function getSelectedDeckFilter(): Promise<Set<string> | null> {
   }
 }
 
-function expandDeckIdsWithDescendants(
+export function expandDeckIdsWithDescendants(
   decks: Array<{ id: string; parentDeckId?: string | null }>,
   selectedDeckIds: Set<string>,
 ): Set<string> {

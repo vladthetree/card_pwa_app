@@ -113,6 +113,12 @@ export function isSyncActive(): boolean {
   return enabled && mode === 'local' && !!endpoint && !!authToken
 }
 
+/** Streift eine `/sync`-Endpoint-URL auf die reine API-Basis zurück (für
+ *  `/auth/*`-, `/push/*`- u.ä. Routen, die nicht unter `/sync` hängen). */
+export function getAuthApiBase(endpoint: string): string {
+  return endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+}
+
 export function getSyncBaseEndpoint(): string | null {
   const endpoint = getActiveEndpoint().trim()
   if (!endpoint) {

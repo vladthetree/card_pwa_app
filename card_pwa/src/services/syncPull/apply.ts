@@ -27,7 +27,7 @@ import {
   type ResolverOperation,
 } from '../../utils/sync/operationResolver'
 import { EXAM_DATE_SYNCED_EVENT, STORAGE_KEYS } from '../../constants/appIdentity'
-import { normalizeExamDateIso, normalizeExamDateUpdatedAt } from '../../contexts/SettingsContext'
+import { normalizeExamDateIso, normalizeExamDateUpdatedAt } from '../../utils/examDate'
 import { getLearnerExamPlan, saveDraftLearnerExamPlan } from '../../db/queries/learningUnits'
 import { hasShuffleCollectionsTable } from './shared'
 import { isSupportedExamLanguage } from '../../utils/learningPlan'

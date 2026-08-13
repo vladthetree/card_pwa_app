@@ -21,7 +21,7 @@ import { STORAGE_KEYS } from '../../constants/appIdentity'
 import { useSettings } from '../../contexts/SettingsContext'
 import { readTodayPackagePointer } from '../../utils/todayPackage'
 import { getAppStoreState, useAppStore } from '../../state/appStore'
-import { resolveStudyReturnTarget } from '../../services/studySessionPersistence'
+import { resolveStudyReturnTarget } from '../../utils/studySessionPersistence'
 import { getSecurityObjectiveDeckName } from '../../utils/securityDeckHierarchy'
 
 /** Import-Anforderung an Home: token erzwingt den Effekt auch bei erneutem
@@ -220,36 +220,32 @@ export function useAppNavigation(input: { showInitialSplash: boolean }): {
     setView('study')
   }
 
-  const startTagStudy = (tag: string, cards: Card[]) => {
+  // Gemeinsamer Einstieg für Sessions über ein synthetisches Deck (Tag-Session,
+  // Daily Quest, Abruf-Check-Handoff): kein Resume, kein Lerneinheiten-Rückweg.
+  const startSyntheticStudy = (id: string, name: string, cards: Card[]) => {
     setStudyReturnToUnits(false)
     setAllowSessionResume(false)
-    setActiveDeck(buildSyntheticDeck(`tag:${tag}`, `#${tag}`, cards))
+    setActiveDeck(buildSyntheticDeck(id, name, cards))
     setActiveTagCards(cards)
     setActiveShuffleCollection(null)
     setView('study')
+  }
+
+  const startTagStudy = (tag: string, cards: Card[]) => {
+    startSyntheticStudy(`tag:${tag}`, `#${tag}`, cards)
   }
 
   // Daily Quest (Pilot-Kachel): gemischte Session über mehrere Decks. Nutzt wie
   // die Tag-Session ein synthetisches Deck mit vorab geladenen Karten; Reviews
   // fließen über die deckId der Karten weiter in die Ursprungsdecks.
   const startDailyQuest = (cards: Card[]) => {
-    setStudyReturnToUnits(false)
-    setAllowSessionResume(false)
-    setActiveDeck(buildSyntheticDeck('daily-quest', 'Daily Quest', cards))
-    setActiveTagCards(cards)
-    setActiveShuffleCollection(null)
-    setView('study')
+    startSyntheticStudy('daily-quest', 'Daily Quest', cards)
   }
 
   // Abruf-Check-Handoff: „Nicht gewusst“-Fragen des Videos als reguläre,
   // planungswirksame Mini-Session des Objective-Decks lernen.
   const startObjectiveStudy = (objective: { deckId: string; deckName: string; cards: Card[] }) => {
-    setStudyReturnToUnits(false)
-    setAllowSessionResume(false)
-    setActiveDeck(buildSyntheticDeck(objective.deckId, objective.deckName, objective.cards))
-    setActiveTagCards(objective.cards)
-    setActiveShuffleCollection(null)
-    setView('study')
+    startSyntheticStudy(objective.deckId, objective.deckName, objective.cards)
   }
 
   /** Nimmt die jüngste unterbrochene Session wieder auf (Queue + Zähler). */
@@ -328,18 +324,23 @@ export function useAppNavigation(input: { showInitialSplash: boolean }): {
   // genutzt von der Rücknavigation aus Video-/Karten-Session einer Unit.
   // Labs sind seitdem ebenfalls ein Home-Modus und laufen komplett in HomeView.
   const [homeTabRequest, setHomeTabRequest] = useState<{ tab: 'learning-units'; token: number } | null>(null)
-  const openLearningUnits = () => {
+
+  // Verlässt eine laufende Session/Auswahl, bevor eine der Ziel-Views unten
+  // (Lerneinheiten, Videos, Home) übernimmt.
+  const resetActiveSelection = () => {
     setActiveDeck(null)
     setActiveTagCards(null)
     setActiveShuffleCollection(null)
+  }
+
+  const openLearningUnits = () => {
+    resetActiveSelection()
     setHomeTabRequest(prev => ({ tab: 'learning-units', token: (prev?.token ?? 0) + 1 }))
     setView('home')
   }
 
   const openVideos = () => {
-    setActiveDeck(null)
-    setActiveTagCards(null)
-    setActiveShuffleCollection(null)
+    resetActiveSelection()
     setVideosInitialTarget(null)
     setVideosReturnToUnits(false)
     setView('videos')
@@ -352,9 +353,7 @@ export function useAppNavigation(input: { showInitialSplash: boolean }): {
     openRecall: boolean,
     options?: { fromLearningUnits?: boolean },
   ) => {
-    setActiveDeck(null)
-    setActiveTagCards(null)
-    setActiveShuffleCollection(null)
+    resetActiveSelection()
     setVideosInitialTarget({ videoIndex, openRecall })
     setVideosReturnToUnits(options?.fromLearningUnits ?? false)
     setView('videos')
@@ -362,9 +361,7 @@ export function useAppNavigation(input: { showInitialSplash: boolean }): {
 
   const goHome = () => {
     setView('home')
-    setActiveDeck(null)
-    setActiveTagCards(null)
-    setActiveShuffleCollection(null)
+    resetActiveSelection()
   }
 
   const exitVideos = () => {

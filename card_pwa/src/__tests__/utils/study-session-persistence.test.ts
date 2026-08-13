@@ -12,7 +12,7 @@ import {
   matchesPersistedStudyCardLimit,
   normalizeStudyCardLimit,
   resolveStudyReturnTarget,
-} from '../../services/studySessionPersistence'
+} from '../../utils/studySessionPersistence'
 import type { Card, Rating } from '../../types'
 
 function createCard(id: string): Card {

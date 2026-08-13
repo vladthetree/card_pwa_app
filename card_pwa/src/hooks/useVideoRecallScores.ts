@@ -6,6 +6,9 @@
  *            per-objective confidence with an objective per-video measurement.
  */
 import { useCallback, useState } from 'react'
+import { computeRecallVerdict, type RecallRunResult, type VideoRecallVerdict } from '../utils/videoRecallVerdict'
+
+export { computeRecallVerdict, type RecallRunResult, type VideoRecallVerdict }
 
 /**
  * Bewertungssystem für den Abruf-Check: Jedes abgeschlossene Quiz wird pro
@@ -26,24 +29,11 @@ import { useCallback, useState } from 'react'
  * objektive Messung pro Video.
  */
 
-export interface RecallRunResult {
-  /** Aus dem Gedächtnis gewusste Fragen. */
-  known: number
-  /** Fragen im Durchlauf. */
-  total: number
-  /** Zeitstempel (Date.now()). */
-  at: number
-}
-
-export type VideoRecallVerdict = 'understood' | 'almost' | 'review' | 'unknown'
-
 export type RecallScoreMap = Record<string, RecallRunResult[]>
 
 const RECALL_SCORES_STORAGE_KEY = 'card-pwa-messer-recall-scores'
 /** Pro Video nur die letzten Läufe behalten — Historie, kein Log. */
 const MAX_RUNS_PER_VIDEO = 5
-/** Ab so vielen Fragen gilt ein Lauf als aussagekräftig für „verstanden". */
-const MIN_MEANINGFUL_TOTAL = 4
 
 export function videoScoreKey(videoIndex: number): string {
   return String(videoIndex).padStart(3, '0')
@@ -98,23 +88,6 @@ function persistRecallScores(map: RecallScoreMap): void {
   } catch {
     // Speicher voll / privater Modus — Verlauf lebt dann nur im Speicher.
   }
-}
-
-/**
- * Empfehlung aus der Lauf-Historie (letzter Lauf zählt, der davor dämpft):
- * „verstanden" verlangt einen belastbaren letzten Lauf UND keinen klaren
- * Einbruch direkt davor — gegen die Illusion eines einzelnen Glückslaufs.
- */
-export function computeRecallVerdict(runs: RecallRunResult[] | undefined): VideoRecallVerdict {
-  if (!runs || runs.length === 0) return 'unknown'
-  const last = runs[runs.length - 1]
-  const ratio = last.known / last.total
-  if (ratio < 0.5) return 'review'
-  if (ratio < 0.8) return 'almost'
-  if (last.total < MIN_MEANINGFUL_TOTAL) return 'almost'
-  const previous = runs.length > 1 ? runs[runs.length - 2] : null
-  if (previous && previous.known / previous.total < 0.5) return 'almost'
-  return 'understood'
 }
 
 export function useVideoRecallScores() {

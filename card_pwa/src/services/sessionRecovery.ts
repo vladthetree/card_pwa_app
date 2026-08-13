@@ -1,6 +1,8 @@
 /**
  * AI_CONTEXT: Application service for session Recovery; owns business logic outside React components for learning, sync, profile, update, or session flows.
  */
+import { clamp } from '../utils/numeric'
+
 export interface RecoveryState {
   lowRatingCounts: Record<string, number>
   relearnSuccessCounts: Record<string, number>
@@ -46,8 +48,8 @@ export function applyRating(
   const againCounts = { ...state.againCounts }
   let hardPracticeCardIds = [...state.hardPracticeCardIds]
   const hardPracticePassCounts = { ...state.hardPracticePassCounts }
-  const goodStreakRequired = Math.max(1, Math.min(5, Math.round(options.hardPracticeGoodStreak ?? 2)))
-  const maxPasses = Math.max(0, Math.min(20, Math.round(options.hardPracticeMaxPasses ?? 0)))
+  const goodStreakRequired = clamp(Math.round(options.hardPracticeGoodStreak ?? 2), 1, 5)
+  const maxPasses = clamp(Math.round(options.hardPracticeMaxPasses ?? 0), 0, 20)
 
   if (options.hardPracticeEnabled === false) {
     hardPracticeCardIds = withoutCardId(hardPracticeCardIds, cardId)

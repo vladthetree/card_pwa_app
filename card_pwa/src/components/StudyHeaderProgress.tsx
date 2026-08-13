@@ -3,14 +3,7 @@
  */
 import { AnimatePresence, motion } from '../ui/motion'
 import ProgressBar from './ProgressBar'
-
-export interface RewardHint {
-  id: string
-  xp: number
-  combo: number
-  label: string
-  tone: 'success' | 'practice'
-}
+import type { RewardHint } from '../hooks/useSessionRewards'
 
 interface Props {
   current: number

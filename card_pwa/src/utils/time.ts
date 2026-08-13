@@ -4,6 +4,11 @@
 /** One calendar day in milliseconds. */
 export const DAY_MS = 86_400_000
 
+/** BCP-47 locale for the app's two supported UI languages. */
+export function resolveDateLocale(language: 'de' | 'en'): string {
+  return language === 'de' ? 'de-DE' : 'en-US'
+}
+
 /**
  * Resolves a card's due moment to epoch ms.
  * Prefers the precise `dueAt` timestamp; falls back to the legacy day-index

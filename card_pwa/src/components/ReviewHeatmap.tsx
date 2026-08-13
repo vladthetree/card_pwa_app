@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { useHeatmap } from '../hooks/useHeatmap'
+import { resolveDateLocale } from '../utils/time'
 
 // Hex colour → [r, g, b]
 function hexToRgb(hex: string): [number, number, number] {
@@ -40,7 +41,7 @@ function startOfDayMs(date: Date): number {
 }
 
 function formatTooltip(language: 'de' | 'en', day: HeatmapDay): string {
-  const formatted = new Intl.DateTimeFormat(language === 'de' ? 'de-DE' : 'en-US', {
+  const formatted = new Intl.DateTimeFormat(resolveDateLocale(language), {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -77,7 +78,7 @@ export default function ReviewHeatmap({ year }: Props) {
 
   const monthLabelFormatter = useMemo(
     () =>
-      new Intl.DateTimeFormat(settings.language === 'de' ? 'de-DE' : 'en-US', {
+      new Intl.DateTimeFormat(resolveDateLocale(settings.language), {
         month: 'long',
       }),
     [settings.language]
@@ -136,7 +137,7 @@ export default function ReviewHeatmap({ year }: Props) {
     startMonday.setDate(currentMonday.getDate() - (STRIP_WEEKS - 1) * 7)
 
     const monthFormatter = new Intl.DateTimeFormat(
-      settings.language === 'de' ? 'de-DE' : 'en-US',
+      resolveDateLocale(settings.language),
       { month: 'short' },
     )
     const weeks: HeatmapDay[][] = []

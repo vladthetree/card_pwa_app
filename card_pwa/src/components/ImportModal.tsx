@@ -2,7 +2,7 @@
  * AI_CONTEXT:
  * Role: Modal workflow for importing APKG/COLPKG/TXT/CSV files: validation, parsing, duplicate review, execution, and progress feedback.
  * Used by: HomeView import action.
- * Important: Heavy parsing is lazy-loaded through utils/import/importPipeline; keep this component focused on user flow and status states.
+ * Important: Heavy parsing is lazy-loaded through services/importPipeline; keep this component focused on user flow and status states.
  */
 import { useState, useRef, useCallback, useEffect, useId } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
@@ -23,7 +23,7 @@ function getFileExt(name: string): string {
 }
 
 function loadImportPipeline() {
-  return import('../utils/import/importPipeline')
+  return import('../services/importPipeline')
 }
 
 type ImportStatus =
@@ -64,7 +64,7 @@ export default function ImportModal({ isOpen, onClose, initialFile = null }: Pro
   const inputRef = useRef<HTMLInputElement>(null)
   // JSON-Backup: Reviews/VideoNotes werden nach erfolgreichem Karten-Import
   // wiederhergestellt (dedupe-basiert, keine Sync-Ops).
-  const backupExtrasRef = useRef<import('../utils/dbBackup').DbBackupPayload | null>(null)
+  const backupExtrasRef = useRef<import('../services/dbBackup').DbBackupPayload | null>(null)
 
   const applyBackupExtras = useCallback(async () => {
     const payload = backupExtrasRef.current
@@ -74,10 +74,14 @@ export default function ImportModal({ isOpen, onClose, initialFile = null }: Pro
       restoreReviewsFromBackupPayload,
       restoreVideoNotesFromBackupPayload,
       restoreLearningUnitsFromBackupPayload,
-    } = await import('../utils/dbBackup')
-    await restoreReviewsFromBackupPayload(payload)
-    await restoreVideoNotesFromBackupPayload(payload)
-    await restoreLearningUnitsFromBackupPayload(payload)
+    } = await import('../services/dbBackup')
+    // Getrennte Dexie-Tabellen (reviews / videoNotes2 / learningUnitState & Co.),
+    // keine Abhängigkeit untereinander → parallel statt sequenziell.
+    await Promise.all([
+      restoreReviewsFromBackupPayload(payload),
+      restoreVideoNotesFromBackupPayload(payload),
+      restoreLearningUnitsFromBackupPayload(payload),
+    ])
   }, [])
 
   // Reset state while closed so a previous success/error screen does not flash

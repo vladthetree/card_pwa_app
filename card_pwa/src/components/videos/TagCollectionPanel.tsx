@@ -13,7 +13,7 @@ import { useNotesByTag, useRelatedVideoNoteTags } from '../../hooks/useVideoNote
 import { useVideoTag } from '../../hooks/useVideoTags'
 import { useMesserVideoProgress, resolveVideoStatus, type VideoStatus } from '../../hooks/useMesserVideoProgress'
 import { buildTagPageSections } from '../../utils/videoTagPageData'
-import { buildRecallCardView } from './VideoRecallCheck'
+import { buildRecallCardView } from '../../utils/videoRecallCardView'
 
 /**
  * Tag-Seite (Obsidian-artig): zeigt ALLES zu einem `#tag` mit Verweis auf die

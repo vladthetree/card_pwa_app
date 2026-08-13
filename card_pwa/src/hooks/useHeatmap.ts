@@ -3,8 +3,10 @@
  */
 import { useEffect, useState } from 'react'
 import { db } from '../db'
+import { listReviewsSince } from '../db/queries'
 import { REVIEW_UPDATED_EVENT } from '../constants/appIdentity'
 import { runStatsHeatmap, runStatsStreak } from '../utils/workers/statsWorkerClient'
+import { getDayStartMs } from '../utils/time'
 
 export interface HeatmapEntry {
   date: Date
@@ -16,10 +18,6 @@ interface HeatmapState {
   entries: HeatmapEntry[]
   streak: { days: number; atRisk: boolean }
   loading: boolean
-}
-
-function startOfDayMs(date: Date): number {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
 }
 
 function dateKey(date: Date): string {
@@ -50,7 +48,7 @@ export function useHeatmap(profileId: string, year: number): HeatmapState {
       try {
         const start = new Date(year, 0, 1)
         const end = new Date(year, 11, 31)
-        const fromMs = startOfDayMs(start)
+        const fromMs = getDayStartMs(start.getTime())
 
         const baseDays: HeatmapEntry[] = []
         const cursor = new Date(start)
@@ -60,7 +58,7 @@ export function useHeatmap(profileId: string, year: number): HeatmapState {
           cursor.setDate(cursor.getDate() + 1)
         }
 
-        const rows = await db.reviews.where('timestamp').aboveOrEqual(fromMs).toArray()
+        const rows = await listReviewsSince(fromMs)
         lastLoadedSignature = `${rows.length}:${rows.reduce((max, row) => Math.max(max, row.timestamp), 0)}`
         const [heatmapBuckets, streakStats] = await Promise.all([
           runStatsHeatmap({
@@ -107,7 +105,7 @@ export function useHeatmap(profileId: string, year: number): HeatmapState {
       // (z. B. via Sync im Hintergrund) — sonst ist der Reload reine Doppelarbeit.
       void (async () => {
         try {
-          const fromMs = startOfDayMs(new Date(year, 0, 1))
+          const fromMs = getDayStartMs(new Date(year, 0, 1).getTime())
           const signature = await computeSignature(fromMs)
           if (!cancelled && signature !== lastLoadedSignature) {
             void load()

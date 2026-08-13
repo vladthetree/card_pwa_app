@@ -5,9 +5,10 @@
  * Important: Increment STUDY_SESSION_VERSION when persisted shape changes and keep parse tolerant of older optional fields where possible.
  */
 import type { Card, Rating, SessionReviewEvent } from '../types'
-import { DAY_MS, getDayStartMs } from '../utils/time'
-import { generateUuidV7 } from '../utils/id'
-import { isStudyableCard } from '../utils/sm2'
+import { DAY_MS, getDayStartMs } from './time'
+import { generateUuidV7 } from './id'
+import { isStudyableCard } from './sm2'
+import { clamp } from './numeric'
 
 export type StudySessionKind = 'deck' | 'shuffle'
 export type StudyReturnTarget = 'learning-units'
@@ -60,7 +61,7 @@ export function normalizeStudyCardLimit(value: unknown): number {
   const parsed = Number(value)
   if (!Number.isFinite(parsed)) return DEFAULT_STUDY_CARD_LIMIT
   const rounded = Math.round(parsed / STUDY_CARD_LIMIT_STEP) * STUDY_CARD_LIMIT_STEP
-  return Math.max(MIN_STUDY_CARD_LIMIT, Math.min(MAX_STUDY_CARD_LIMIT, rounded))
+  return clamp(rounded, MIN_STUDY_CARD_LIMIT, MAX_STUDY_CARD_LIMIT)
 }
 
 /** Eine unterbrochene normale Deck-Session darf nur wiederaufgenommen werden,
@@ -97,8 +98,9 @@ export function parsePersistedStudySession(raw: string | null, sessionId: string
 }
 
 export function restoreCardsByOrder(cards: Card[], cardIds: string[]): Card[] {
+  const cardsById = new Map(cards.map(card => [card.id, card]))
   return cardIds
-    .map(id => cards.find(card => card.id === id) ?? null)
+    .map(id => cardsById.get(id) ?? null)
     .filter((card): card is Card => card !== null && isStudyableCard(card))
 }
 

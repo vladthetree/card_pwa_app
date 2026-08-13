@@ -16,7 +16,7 @@ vi.mock('../../../db/queries', () => ({
   getFutureDueForecast: runtime.getFutureDueForecast,
 }))
 
-vi.mock('../../../utils/dbBackup', () => ({
+vi.mock('../../../services/dbBackup', () => ({
   listDecksForBackup: runtime.listDecksForBackup,
 }))
 

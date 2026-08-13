@@ -317,6 +317,16 @@ export class OrderingParser {
   }
 }
 
+/** Trennt einen optionalen `Merkhilfe:`-Abschnitt vom Haupttext ab. */
+function splitMerkhilfe(text: string): { body: string; merkhilfe: string | null } {
+  const idx = text.indexOf('Merkhilfe:')
+  if (idx === -1) return { body: text, merkhilfe: null }
+  return {
+    body: text.slice(0, idx).trim(),
+    merkhilfe: text.slice(idx + 10).trim(),
+  }
+}
+
 export class OrderingAnswerParser {
   private static readonly ORDER_LINE = /^CORRECT_ORDER:\s*([\d,\s]+)/i
 
@@ -338,10 +348,7 @@ export class OrderingAnswerParser {
       }
     }
 
-    const joined = rest.join('\n').trim()
-    const merkhilfeIdx = joined.indexOf('Merkhilfe:')
-    const explanation = merkhilfeIdx !== -1 ? joined.slice(0, merkhilfeIdx).trim() : joined
-    const merkhilfe  = merkhilfeIdx !== -1 ? joined.slice(merkhilfeIdx + 10).trim() : null
+    const { body: explanation, merkhilfe } = splitMerkhilfe(rest.join('\n').trim())
 
     return { type: 'ordering', correctOrder, explanation, merkhilfe }
   }
@@ -398,10 +405,7 @@ export class MatchingAnswerParser {
       }
     }
 
-    const joined = rest.join('\n').trim()
-    const idx = joined.indexOf('Merkhilfe:')
-    const explanation = idx !== -1 ? joined.slice(0, idx).trim() : joined
-    const merkhilfe = idx !== -1 ? joined.slice(idx + 10).trim() : null
+    const { body: explanation, merkhilfe } = splitMerkhilfe(rest.join('\n').trim())
 
     return { type: 'matching', pairs, explanation, merkhilfe }
   }

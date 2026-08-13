@@ -8,8 +8,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getTodayTrailingCombo } from '../db/queries'
 import { getComboBonusXp, getReviewXp, isFluentRating } from '../utils/gamification'
-import type { RewardHint } from '../components/StudyHeaderProgress'
 import type { Rating } from '../types'
+
+export interface RewardHint {
+  id: string
+  xp: number
+  combo: number
+  label: string
+  tone: 'success' | 'practice'
+}
 
 export function useSessionRewards({ language, nextDayStartsAt, resetKey }: {
   language: 'de' | 'en'

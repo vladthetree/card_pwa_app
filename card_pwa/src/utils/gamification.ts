@@ -256,8 +256,12 @@ export function buildGamificationProfile({
   const successfulReviews = reviews.filter(review => isRecalledRating(review.rating)).length
   const successToday = uniqueTodayReviews.filter(review => isRecalledRating(review.rating)).length
   let totalXp = 0
-  for (const dayReviews of dayBuckets.values()) totalXp += computeDayXp(dayReviews)
-  const todayXp = computeDayXp(todayReviews)
+  let todayXp = 0
+  for (const [dayStart, dayReviews] of dayBuckets.entries()) {
+    const dayXp = computeDayXp(dayReviews)
+    totalXp += dayXp
+    if (dayStart === todayStart) todayXp = dayXp
+  }
   const successRate = totalReviews === 0 ? 0 : Math.round((successfulReviews / totalReviews) * 100)
   const streakStats = getStreakStats(dayBuckets, nowMs, nextDayStartsAt)
   const levelProgress = getLevelProgress(totalXp)

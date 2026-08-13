@@ -2,6 +2,8 @@
  * AI_CONTEXT: Application service for error Log; owns business logic outside React components for learning, sync, profile, update, or session flows.
  */
 import { STORAGE_KEYS } from '../constants/appIdentity'
+import { triggerDownload } from './downloadFile'
+import { generateUuidV7 } from '../utils/id'
 
 export interface ErrorLogEntry {
   id: string
@@ -72,13 +74,54 @@ export function logError(
 ): void {
   const entries = readLogs()
   entries.push({
-    id: `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+    id: generateUuidV7(),
     timestamp: Date.now(),
     source,
     message,
     details,
   })
   writeLogs(entries)
+}
+
+/** Reduziert eine API-Ziel-URL auf Pfad+Query fürs Logging (kein Host/Query-Secret-Leak). */
+export function describeApiTarget(target: string): string {
+  try {
+    const base = typeof window === 'undefined' ? 'http://card-pwa.local' : window.location.origin
+    const url = new URL(target, base)
+    return `${url.pathname}${url.search}`
+  } catch {
+    return target.replace(/^https?:\/\/[^/]+/i, '')
+  }
+}
+
+export function stringifyApiException(error: unknown): string {
+  if (error instanceof Error) return `${error.name}: ${error.message}`
+  if (typeof error === 'string') return error
+  try {
+    return JSON.stringify(error)
+  } catch {
+    return String(error)
+  }
+}
+
+/** Gemeinsames Log-Format für fehlgeschlagene API-Aufrufe (Sync/Profile). */
+export function logApiFailure(
+  source: Extract<ErrorLogEntry['source'], 'sync-api' | 'profile-api'>,
+  actionLabel: string,
+  action: string,
+  target: string,
+  reason: string,
+  details?: string,
+): void {
+  logError(
+    source,
+    `${actionLabel}: ${action}`,
+    [
+      `target: ${describeApiTarget(target)}`,
+      `reason: ${reason}`,
+      details,
+    ].filter(Boolean).join('\n'),
+  )
 }
 
 export function getErrorLogs(): ErrorLogEntry[] {
@@ -115,12 +158,7 @@ export function downloadErrorLogsAsTxt(): void {
   }
 
   const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' })
-  const url = URL.createObjectURL(blob)
-  const anchor = document.createElement('a')
-  anchor.href = url
-  anchor.download = filename
-  anchor.click()
-  URL.revokeObjectURL(url)
+  triggerDownload(blob, filename)
 }
 
 export function installGlobalErrorLogging(): () => void {

@@ -1,31 +1,11 @@
 /**
- * AI_CONTEXT: "Kapitel offline laden" — aggregierter Download-Status/-Trigger für
- * alle Videos einer Domain (Kapitel), plus domainDownloadStats-Berechnung.
+ * AI_CONTEXT: "Kapitel offline laden" — Anzeige/Trigger für den aggregierten
+ * Download-Status aller Videos einer Domain (Kapitel).
  * Used by: VideosView.
  */
 import { Check, HardDriveDownload, Loader2, X } from 'lucide-react'
-import type { LocalVideoItem, LocalVideoObjectiveGroup } from '../../hooks/useLocalMesserVideos'
-import { summarizeDownloads } from '../../utils/videoDownloadQueue'
+import type { DomainDownloadStats } from '../../hooks/useLocalMesserVideos'
 import type { Copy } from './videosCopy'
-
-export interface DomainDownloadStats {
-  total: number
-  done: number
-  pending: LocalVideoItem[]
-  active: boolean
-}
-
-/** Aggregierter Offline-Status eines Kapitels (Domain). */
-export function domainDownloadStats(groups: LocalVideoObjectiveGroup[]): DomainDownloadStats {
-  const videos = groups.flatMap(group => group.videos)
-  const summary = summarizeDownloads(videos)
-  return {
-    total: summary.total,
-    done: summary.done,
-    active: summary.active,
-    pending: videos.filter(video => !video.downloaded && video.progress === undefined && !video.queued),
-  }
-}
 
 export function ChapterDownloadButton({
   stats,

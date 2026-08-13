@@ -158,7 +158,7 @@ import {
   buildPersistedStudySession,
   buildShuffleSessionId,
   parsePersistedStudySession,
-} from '../../services/studySessionPersistence'
+} from '../../utils/studySessionPersistence'
 
 function makeDeck(partial: Partial<DeckRecord>): DeckRecord {
   const now = Date.now()

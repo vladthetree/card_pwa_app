@@ -4,11 +4,10 @@
  * Used by: the tag sidebar, the tag page, and tag edit/merge UI.
  * Important: These mirror db/queries/videoTagMeta without owning rules; every query path stays scoped to profileId and re-emits when notes, cards, or tag meta change.
  */
-import { useEffect, useState } from 'react'
-import { liveQuery } from 'dexie'
 import { type VideoTagMetaRecord } from '../db'
 import { getVideoTagMeta, listVideoTagStats } from '../db/queries/videoTagMeta'
 import type { VideoTagStat } from '../utils/videoTagStats'
+import { useLiveQueryValue } from './useLiveQueryValue'
 
 /**
  * Live-aktualisierte Tag-Metadaten und -Kennzahlen für den Videomodus. Alle Hooks
@@ -17,34 +16,10 @@ import type { VideoTagStat } from '../utils/videoTagStats'
 
 /** Kennzahlen pro Tag (Notizen/Karten/Zeitmarken/Fragen/Kartenideen/verwandt). */
 export function useVideoTagStats(profileId: string): VideoTagStat[] {
-  const [stats, setStats] = useState<VideoTagStat[]>([])
-
-  useEffect(() => {
-    const subscription = liveQuery(() => listVideoTagStats(profileId)).subscribe({
-      next: rows => setStats(rows),
-      error: () => setStats([]),
-    })
-    return () => subscription.unsubscribe()
-  }, [profileId])
-
-  return stats
+  return useLiveQueryValue(() => listVideoTagStats(profileId), [profileId], [] as VideoTagStat[])
 }
 
 /** Meta eines einzelnen Tags (per ID oder Alias), reaktiv. */
 export function useVideoTag(profileId: string, tag: string | null): VideoTagMetaRecord | null {
-  const [meta, setMeta] = useState<VideoTagMetaRecord | null>(null)
-
-  useEffect(() => {
-    if (!tag) {
-      setMeta(null)
-      return
-    }
-    const subscription = liveQuery(() => getVideoTagMeta(profileId, tag)).subscribe({
-      next: record => setMeta(record),
-      error: () => setMeta(null),
-    })
-    return () => subscription.unsubscribe()
-  }, [profileId, tag])
-
-  return meta
+  return useLiveQueryValue(() => getVideoTagMeta(profileId, tag as string), [profileId, tag], null as VideoTagMetaRecord | null, { skip: !tag })
 }

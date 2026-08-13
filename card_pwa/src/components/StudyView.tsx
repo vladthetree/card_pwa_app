@@ -12,7 +12,7 @@ import { useDeckCards } from '../hooks/useCardDb'
 import { recordReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession, readActiveSession } from '../db/queries'
 import { STRINGS, useSettings, type QuestionTextSize } from '../contexts/SettingsContext'
 import { buildStudySessionSelection, enforceDailyDeckCardLimit } from '../utils/studyCardOrdering'
-import { buildDragMatchModePlan } from '../services/studyModeSelector'
+import { buildDragMatchModePlan } from '../utils/studyModeSelector'
 import {
   buildPersistedStudySession,
   matchesPersistedStudyCardLimit,
@@ -22,12 +22,12 @@ import {
   normalizeStudyCardLimit,
   type PersistedStudySession,
   type StudyReturnTarget,
-} from '../services/studySessionPersistence'
+} from '../utils/studySessionPersistence'
 import {
   sessionReducer,
   initialSessionState,
 } from '../services/studySessionReducer'
-import { buildLearningCoachSummary } from '../services/learningCoach'
+import { buildLearningCoachSummary } from '../utils/learningCoach'
 import type { Deck, Card, Rating } from '../types'
 import { formatDeckName } from '../utils/cardTextParser'
 import { getCardVariant } from '../utils/cardVariant'

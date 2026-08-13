@@ -694,7 +694,7 @@ export function computeCourseStepState(input: {
   const hasCardsStep = execution.cardIds.length > 0
   const cardsDone = !hasCardsStep || execution.cardIds.every(id => input.reviewedCardIdsSinceStart.has(id))
 
-  const currentStep = !videoDone ? 'video' : !recallDone || !confidenceDone ? 'recall' : 'done'
+  const currentStep = videoDone ? (recallDone && confidenceDone ? 'done' : 'recall') : 'video'
   return { videoDone, recallDone, confidenceDone, cardsDone, currentStep }
 }
 

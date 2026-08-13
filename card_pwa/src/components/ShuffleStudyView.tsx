@@ -20,10 +20,10 @@ import {
   createSessionRunId,
   DEFAULT_STUDY_CARD_LIMIT,
   normalizeStudyCardLimit,
-} from '../services/studySessionPersistence'
+} from '../utils/studySessionPersistence'
 import { initialSessionState, sessionReducer } from '../services/studySessionReducer'
-import { buildDragMatchModePlan } from '../services/studyModeSelector'
-import { buildLearningCoachSummary } from '../services/learningCoach'
+import { buildDragMatchModePlan } from '../utils/studyModeSelector'
+import { buildLearningCoachSummary } from '../utils/learningCoach'
 import type { Card, Rating, ShuffleCollection } from '../types'
 import { formatDeckName } from '../utils/cardTextParser'
 import { flattenDeckTree } from '../utils/securityDeckHierarchy'

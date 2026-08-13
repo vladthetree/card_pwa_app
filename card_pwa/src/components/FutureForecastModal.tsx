@@ -2,6 +2,7 @@
  * AI_CONTEXT: Reusable React component for future Forecast Modal; contributes to the card-learning UI and shared app interactions.
  */
 import { Dialog } from '../ui/overlays/Dialog'
+import { resolveDateLocale } from '../utils/time'
 
 interface FutureForecastItem {
   dayStartMs: number
@@ -85,7 +86,7 @@ export default function FutureForecastModal({
                           const cappedCount = Math.min(item.count, axisMax)
                           const heightPercent = Math.round((cappedCount / axisMax) * 100)
                           const date = new Date(item.dayStartMs)
-                          const label = date.toLocaleDateString(language === 'de' ? 'de-DE' : 'en-US', {
+                          const label = date.toLocaleDateString(resolveDateLocale(language), {
                             month: '2-digit',
                             day: '2-digit',
                           })

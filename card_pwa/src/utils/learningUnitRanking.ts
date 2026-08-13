@@ -12,6 +12,7 @@ import type {
   ReadinessStatus,
 } from './learningUnits'
 import { parseLocalExamDate } from './examDate'
+import { getDayStartMs } from './time'
 
 export interface ExamTimeline {
   daysLeft: number | null
@@ -190,8 +191,7 @@ export function computeExamTimeline(input: { examDateIso: string | null; now: nu
   const examDate = parseLocalExamDate(input.examDateIso)
   if (!examDate) return { daysLeft: null, examDateIso: null }
   const examLocalMidnight = examDate.getTime()
-  const nowDate = new Date(input.now)
-  const todayLocalMidnight = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate()).getTime()
+  const todayLocalMidnight = getDayStartMs(input.now)
   const dayMs = 86_400_000
   return {
     daysLeft: Math.round((examLocalMidnight - todayLocalMidnight) / dayMs),

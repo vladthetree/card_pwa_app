@@ -10,6 +10,7 @@ import type { Question, Answer } from '../utils/cardTextParser'
 import { correctDragMatchKey, scoreDragMatchChoice } from '../utils/dragMatchScoring'
 import { seededShuffle } from '../utils/hash'
 import IncorrectReasonsSection from './IncorrectReasonsSection'
+import { OriginBadge, getCardShellClass, getCardBodyClass } from './cardRendererShared'
 
 /**
  * DragMatchCard — Studien-Renderer "M2 Drag-Match" (rekonstruiert aus den
@@ -159,21 +160,12 @@ const DragMatchCard = memo(function DragMatchCard({
     }
   }, [handleSelect])
 
-  const renderOriginBadge = () => originDeckName ? (
-    <span className="max-w-[160px] truncate rounded-[3px] border border-[--brand-secondary-25] bg-[--brand-secondary-12] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[--brand-secondary]">
-      {originDeckName}
-    </span>
-  ) : null
-
-  const cardShellCls = `border ${
+  const cardShellCls = getCardShellClass(
+    compact,
     submitted ? (isCorrect ? 'border-emerald-500/45' : 'border-rose-500/45') : 'border-transparent card-gradient-border'
-  } flex flex-col overflow-hidden rounded-ds bg-ds-card shadow-card ${
-    compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[380px] md:min-h-[440px]'
-  }`
+  )
 
-  const bodyClass = compact
-    ? 'min-h-0 flex-1 overflow-y-auto px-[14px] py-[16px] no-scrollbar'
-    : 'flex-1 overflow-y-auto no-scrollbar px-6 py-6 md:px-8 md:py-8'
+  const bodyClass = getCardBodyClass(compact)
 
   // ── BACK (Erklärung + Merkhilfe) ─────────────────────────────────────────
   if (flipped) {
@@ -186,7 +178,7 @@ const DragMatchCard = memo(function DragMatchCard({
                 <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted">
                   {submitted && !isCorrect ? t.wrong_answer : t.answer}
                 </span>
-                {renderOriginBadge()}
+                <OriginBadge deckName={originDeckName} />
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 <span className="rounded-[3px] border border-[--brand-primary] px-[5px] py-px font-mono text-[9px] font-bold text-[--brand-primary]">B</span>
@@ -256,7 +248,7 @@ const DragMatchCard = memo(function DragMatchCard({
               <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted">
                 {t.question}
               </span>
-              {renderOriginBadge()}
+              <OriginBadge deckName={originDeckName} />
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <span className="rounded-[3px] border border-amber-500/50 bg-amber-500/10 px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-amber-400">

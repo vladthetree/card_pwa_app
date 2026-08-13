@@ -1,10 +1,11 @@
 /**
  * AI_CONTEXT: Home-screen React component for home Tag Browse Section; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { motion, useReducedMotion } from '../../ui/motion'
 import { BookOpen, ChevronDown, ChevronRight, Loader2, Tag } from 'lucide-react'
 import { cardEnter } from '../../constants/animations'
+import { SY0701_TAG_LABELS } from '../../data/sy0701TagLabels'
 import type { Card } from '../../types'
 
 interface Props {
@@ -13,40 +14,6 @@ interface Props {
   allTags: string[]
   loading: boolean
   onStartTagStudy: (tag: string, cards: Card[]) => void
-}
-
-const TAG_LABELS: Record<string, { de: string; en: string }> = {
-  application_security: { de: 'Anwendungssicherheit', en: 'Application security' },
-  asset_management: { de: 'Asset Management', en: 'Asset management' },
-  authentication: { de: 'Authentifizierung', en: 'Authentication' },
-  authorization: { de: 'Autorisierung', en: 'Authorization' },
-  automation_orchestration: { de: 'Automation & Orchestrierung', en: 'Automation & orchestration' },
-  business_continuity_disaster_recovery: { de: 'Business Continuity & Recovery', en: 'Business continuity & recovery' },
-  change_management: { de: 'Change Management', en: 'Change management' },
-  cloud_security: { de: 'Cloud Security', en: 'Cloud security' },
-  cryptography: { de: 'Kryptografie', en: 'Cryptography' },
-  data_security: { de: 'Datensicherheit', en: 'Data security' },
-  detection_response: { de: 'Erkennung & Response', en: 'Detection & response' },
-  digital_forensics: { de: 'Digitale Forensik', en: 'Digital forensics' },
-  email_security: { de: 'E-Mail-Sicherheit', en: 'Email security' },
-  endpoint_security: { de: 'Endpoint Security', en: 'Endpoint security' },
-  governance_risk_compliance: { de: 'Governance, Risiko & Compliance', en: 'Governance, risk & compliance' },
-  hardening: { de: 'Hardening', en: 'Hardening' },
-  identity_access_management: { de: 'Identity & Access Management', en: 'Identity & access management' },
-  incident_response: { de: 'Incident Response', en: 'Incident response' },
-  logging_monitoring: { de: 'Logging & Monitoring', en: 'Logging & monitoring' },
-  malware_analysis: { de: 'Malware Analysis', en: 'Malware analysis' },
-  mobile_security: { de: 'Mobile Security', en: 'Mobile security' },
-  network_security: { de: 'Netzwerksicherheit', en: 'Network security' },
-  operational_technology: { de: 'Operational Technology', en: 'Operational technology' },
-  physical_security: { de: 'Physische Sicherheit', en: 'Physical security' },
-  security_architecture: { de: 'Security Architecture', en: 'Security architecture' },
-  security_awareness: { de: 'Security Awareness', en: 'Security awareness' },
-  security_operations: { de: 'Security Operations', en: 'Security operations' },
-  threat_intelligence: { de: 'Threat Intelligence', en: 'Threat intelligence' },
-  threats_attacks: { de: 'Threats & Attacks', en: 'Threats & attacks' },
-  vulnerability_management: { de: 'Vulnerability Management', en: 'Vulnerability management' },
-  wireless_security: { de: 'Wireless Security', en: 'Wireless security' },
 }
 
 function formatFallbackTag(tag: string): string {
@@ -59,7 +26,7 @@ function formatFallbackTag(tag: string): string {
 
 function tagDisplayName(tag: string, language: 'de' | 'en'): string {
   if (tag === '(untagged)') return language === 'de' ? 'Ohne Tag' : 'Untagged'
-  return TAG_LABELS[tag]?.[language] ?? formatFallbackTag(tag)
+  return SY0701_TAG_LABELS[tag]?.[language] ?? formatFallbackTag(tag)
 }
 
 function cardStateCounts(cards: Card[]) {
@@ -149,8 +116,8 @@ function TagSection({
   const prefersReducedMotion = useReducedMotion()
   const [expanded, setExpanded] = useState(false)
   const displayTag = tagDisplayName(tag, language)
-  const studyableCards = cards.filter(card => card.queue !== -1)
-  const pills = statePills(cards, language)
+  const studyableCards = useMemo(() => cards.filter(card => card.queue !== -1), [cards])
+  const pills = useMemo(() => statePills(cards, language), [cards, language])
   const previewCards = cards.slice(0, 8)
   const hiddenPreviewCount = Math.max(0, cards.length - previewCards.length)
   const cardCountLabel = language === 'de' ? 'Karten' : 'Cards'

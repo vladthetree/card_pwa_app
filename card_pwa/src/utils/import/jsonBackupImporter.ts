@@ -7,7 +7,7 @@
  * Important: Karten behalten IDs und Scheduling; Reviews/VideoNotes werden erst
  *            NACH erfolgreichem Karten-Import wiederhergestellt (dedupe-basiert).
  */
-import type { DbBackupPayload } from '../dbBackup'
+import type { DbBackupPayload } from '../dbBackupPayload'
 import type { ImportedCard, ImportedDeck, ParsedImport } from './types'
 
 export interface ParsedJsonBackup {

@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Home-screen React component for home Deck Cards Modal; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { motion, AnimatePresence } from '../../ui/motion'
 import { X, Plus } from 'lucide-react'
 import { useDeckCards } from '../../hooks/useCardDb'
@@ -34,6 +34,29 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
     setEditingCard(null)
     await reload()
   }
+
+  // Parsing jeder Karte (Regex-lastig, bei SY0-701-Decks 800+ Karten) ist zu teuer,
+  // um bei jedem Render neu zu laufen — z. B. beim Öffnen des Edit-Modals für eine
+  // einzelne Karte (setEditingCard löst sonst ein Re-Parse aller Karten aus).
+  const cardRows = useMemo(() => cards.map(card => {
+    const variant = getCardVariant(card.front)
+    const anyQuestion = parseQuestion(card.front)
+    const parsedAnswer = parseMcAnswer(card.back)
+
+    const frontPreview = (() => {
+      if (anyQuestion.type === 'ordering') {
+        return `[${language === 'de' ? 'Reihenfolge' : 'Ordering'}] ${anyQuestion.question || anyQuestion.items.join(' → ')}`
+      }
+      if (anyQuestion.type === 'matching') {
+        return `[${language === 'de' ? 'Zuordnung' : 'Matching'}] ${anyQuestion.question || anyQuestion.pairs.map(p => `${p.left} → ${p.right}`).join(', ')}`
+      }
+      return anyQuestion.question || card.front.replace(/\n+/g, ' ')
+    })()
+
+    const optionEntries = anyQuestion.type === 'standard' ? Object.entries(anyQuestion.options) : []
+
+    return { card, variant, frontPreview, optionEntries, parsedAnswer }
+  }), [cards, language])
 
   return (
     <motion.div
@@ -82,23 +105,7 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
             <div className="rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-4 text-zinc-400 text-sm shadow-card">{t.no_cards_in_deck}</div>
           ) : (
             <div className="space-y-2">
-              {cards.map(card => {
-                const variant = getCardVariant(card.front)
-                const anyQuestion = parseQuestion(card.front)
-                const parsedAnswer = parseMcAnswer(card.back)
-
-                const frontPreview = (() => {
-                  if (anyQuestion.type === 'ordering') {
-                    return `[${language === 'de' ? 'Reihenfolge' : 'Ordering'}] ${anyQuestion.question || anyQuestion.items.join(' → ')}`
-                  }
-                  if (anyQuestion.type === 'matching') {
-                    return `[${language === 'de' ? 'Zuordnung' : 'Matching'}] ${anyQuestion.question || anyQuestion.pairs.map(p => `${p.left} → ${p.right}`).join(', ')}`
-                  }
-                  return anyQuestion.question || card.front.replace(/\n+/g, ' ')
-                })()
-
-                const optionEntries = anyQuestion.type === 'standard' ? Object.entries(anyQuestion.options) : []
-
+              {cardRows.map(({ card, variant, frontPreview, optionEntries, parsedAnswer }) => {
                 const variantBadge = variant === 'ordering'
                   ? <span className="rounded-[3px] border border-violet-500/30 bg-violet-500/10 px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-violet-400">{language === 'de' ? 'Reihenfolge' : 'Ordering'}</span>
                   : variant === 'matching'

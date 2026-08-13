@@ -43,6 +43,7 @@ export {
   listDeckCardIdsReviewedToday,
   listDeckCardIdsReviewedSince,
   listCardIdsReviewedSince,
+  listReviewsSince,
   getFutureDueForecast,
   getDeckSuccessRates,
   getCardSetSuccessRates,

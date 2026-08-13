@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Application service for web Push; owns business logic outside React components for learning, sync, profile, update, or session flows.
  */
-import { buildAuthHeaders, fetchWithTimeout, getActiveSyncTransportConfig, getOrCreateSyncClientId } from './syncConfig'
+import { buildAuthHeaders, fetchWithTimeout, getActiveSyncTransportConfig, getOrCreateSyncClientId, getAuthApiBase } from './syncConfig'
 
 type Language = 'de' | 'en'
 
@@ -19,7 +19,7 @@ function getPushSubscribeEndpoint() {
   const syncEndpoint = getActiveSyncTransportConfig().endpoint.trim()
   if (!syncEndpoint) return ''
 
-  return syncEndpoint.replace(/\/$/, '').replace(/\/sync$/, '') + '/push/subscribe'
+  return getAuthApiBase(syncEndpoint) + '/push/subscribe'
 }
 
 function getLocalTimeZone() {

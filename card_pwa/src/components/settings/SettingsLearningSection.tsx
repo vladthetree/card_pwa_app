@@ -18,7 +18,7 @@ import {
   MIN_STUDY_CARD_LIMIT,
   MAX_STUDY_CARD_LIMIT,
   STUDY_CARD_LIMIT_STEP,
-} from '../../services/studySessionPersistence'
+} from '../../utils/studySessionPersistence'
 import { InfoHint } from '../InfoHint'
 import { SettingsSection } from '../SettingsSection'
 import { SettingsSliderRow } from '../SettingsSliderRow'

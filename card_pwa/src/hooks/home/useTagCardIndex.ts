@@ -24,7 +24,6 @@ export function useTagCardIndex(): TagCardIndex {
   const [tagIndex, setTagIndex] = useState<Record<string, Card[]>>({})
   const [allTags, setAllTags] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
-  const hasLoadedRef = useRef(false)
   const loadVersionRef = useRef(0)
   const callbackRef = useRef<() => void>(() => {})
 
@@ -56,7 +55,6 @@ export function useTagCardIndex(): TagCardIndex {
     } finally {
       if (loadVersionRef.current === v) {
         setLoading(false)
-        hasLoadedRef.current = true
       }
     }
   }, [])

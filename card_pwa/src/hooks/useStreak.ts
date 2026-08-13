@@ -2,7 +2,7 @@
  * AI_CONTEXT: React hook for use Streak; encapsulates browser, persistence, sync, layout, or learning state for UI components.
  */
 import { useEffect, useState } from 'react'
-import { db } from '../db'
+import { listReviewsSince } from '../db/queries'
 import { REVIEW_UPDATED_EVENT } from '../constants/appIdentity'
 import { runStatsStreak } from '../utils/workers/statsWorkerClient'
 import { getDayStartMs } from '../utils/time'
@@ -25,7 +25,7 @@ export function useStreak(nextDayStartsAt = 0): StreakState {
       const lookbackMs = todayStart - 400 * 86_400_000
 
       try {
-        const rows = await db.reviews.where('timestamp').aboveOrEqual(lookbackMs).toArray()
+        const rows = await listReviewsSince(lookbackMs)
         const streak = await runStatsStreak({
           type: 'streak',
           profileId: 'default',

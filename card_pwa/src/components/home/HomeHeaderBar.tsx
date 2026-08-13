@@ -5,6 +5,7 @@ import { Bell, Download, HardDrive, HelpCircle, Settings as SettingsIcon } from 
 import PWA_Logo from '../../assets/Logo.svg'
 import { APP_NAME } from '../../constants/appIdentity'
 import { UI_TOKENS } from '../../constants/ui'
+import { formatBytes } from '../../utils/formatBytes'
 import StreakBadge from '../StreakBadge'
 import DailyGoalRing from '../DailyGoalRing'
 
@@ -112,7 +113,7 @@ export function HomeHeaderBar({
           <div
             className="hidden items-center gap-1.5 px-1 min-[380px]:flex"
             title={storageUsedBytes !== null && storageQuotaBytes !== null
-              ? `${t.stats_storage_used}: ${(storageUsedBytes / 1024 / 1024).toFixed(1)} MB / ${(storageQuotaBytes / 1024 / 1024).toFixed(1)} MB`
+              ? `${t.stats_storage_used}: ${formatBytes(storageUsedBytes)} / ${formatBytes(storageQuotaBytes)}`
               : t.stats_storage_unavailable}
           >
             <HardDrive size={13} strokeWidth={1.5} className="text-white/50" />

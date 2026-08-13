@@ -6,6 +6,7 @@ import { useSettings } from '../contexts/SettingsContext'
 import { supportsServiceWorker } from '../env'
 import { countTodayDueFromDecks, getGlobalStats } from '../db/queries'
 import { REVIEW_UPDATED_EVENT } from '../constants/appIdentity'
+import { clamp } from '../utils/numeric'
 
 export function useAppBadge() {
   const { settings } = useSettings()
@@ -52,7 +53,7 @@ export function useAppBadge() {
         if (settings.dailyGoal > 0) {
           const stats = await getGlobalStats(settings.nextDayStartsAt)
           if (cancelled) return
-          badgeCount = Math.max(0, Math.min(dueToday, settings.dailyGoal - stats.reviewedToday))
+          badgeCount = clamp(settings.dailyGoal - stats.reviewedToday, 0, dueToday)
         }
 
         if (badgeCount > 0 && badgeApi.setAppBadge) {

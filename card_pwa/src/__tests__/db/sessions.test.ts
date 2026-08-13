@@ -37,7 +37,7 @@ import {
   writeActiveSession,
   writeShuffleSession,
 } from '../../db/queries'
-import { buildPersistedStudySession } from '../../services/studySessionPersistence'
+import { buildPersistedStudySession } from '../../utils/studySessionPersistence'
 
 describe('session queries', () => {
   beforeEach(() => {

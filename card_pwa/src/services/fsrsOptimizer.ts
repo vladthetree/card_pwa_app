@@ -1,7 +1,7 @@
 /** Browser-side FSRS parameter optimization from this profile's local revlog. */
 import { db, type ReviewRecord } from '../db'
+import { DAY_MS } from '../utils/time'
 
-const DAY_MS = 86_400_000
 export const MIN_OPTIMIZER_REVIEWS = 20
 
 export interface FsrsTrainingReview {

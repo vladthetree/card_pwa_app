@@ -7,11 +7,7 @@ import ReviewHeatmap from '../ReviewHeatmap.tsx'
 import { HomeDailyQuestTile } from './HomeDailyQuestTile'
 import { HomeQuestsPanel } from './HomeQuestsPanel'
 import type { GamificationProfile } from '../../types'
-
-// 'clean' (Beleg `…23.40.53.jpeg`): Dashboard-Kachel fast komplett ausgeblendet,
-// bleibt aber als Swipe-Slide erreichbar, damit mobile Nutzer wieder herauskommen.
-// 'today': geführtes Heute-Paket (Video → Abruf-Check → Karten) — erster Slide.
-export type HomeDashboardMode = 'today' | 'kpi' | 'heatmap' | 'pilot' | 'quests' | 'clean'
+import type { HomeDashboardMode } from '../../hooks/home/homeControllerHelpers'
 
 interface Props {
   t: Record<string, string>

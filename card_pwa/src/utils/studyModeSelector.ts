@@ -1,8 +1,10 @@
 /**
- * AI_CONTEXT: Application service for study Mode Selector; owns business logic outside React components for learning, sync, profile, update, or session flows.
+ * AI_CONTEXT: Utility module for studyModeSelector; picks which cards in a
+ * session get the drag-match presentation. Pure — no I/O.
  */
-import { isDragMatchCard } from '../utils/cardVariant'
-import { fnv1aUnit } from '../utils/hash'
+import { isDragMatchCard } from './cardVariant'
+import { fnv1aUnit } from './hash'
+import { clamp } from './numeric'
 import type { Card } from '../types'
 
 export const DRAG_MATCH_STIMULUS_RATIO = 0.2
@@ -22,7 +24,7 @@ export function buildDragMatchModePlan(
   }
 
   const normalizedRatio = Number.isFinite(ratio)
-    ? Math.max(0, Math.min(0.4, ratio))
+    ? clamp(ratio, 0, 0.4)
     : DRAG_MATCH_STIMULUS_RATIO
   const targetCount = Math.min(
     eligible.length,

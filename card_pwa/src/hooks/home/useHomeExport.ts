@@ -4,7 +4,7 @@
  * HomeView controller while preserving its public return shape.
  */
 import { useCallback, useMemo, useState } from 'react'
-import { exportDbBackupAsCsv, exportDbBackupAsJson, exportDbBackupAsTxt } from '../../utils/dbBackup'
+import { exportDbBackupAsCsv, exportDbBackupAsJson, exportDbBackupAsTxt } from '../../services/dbBackup'
 
 export function useHomeExport(selectedDeckId: 'all' | string) {
   const [isExporting, setIsExporting] = useState(false)

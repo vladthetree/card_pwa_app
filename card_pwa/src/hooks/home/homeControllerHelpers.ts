@@ -1,5 +1,9 @@
-import type { HomeDashboardMode } from '../../components/home/HomeStatsSection'
 import { STORAGE_KEYS } from '../../constants/appIdentity'
+
+// 'clean' (Beleg `…23.40.53.jpeg`): Dashboard-Kachel fast komplett ausgeblendet,
+// bleibt aber als Swipe-Slide erreichbar, damit mobile Nutzer wieder herauskommen.
+// 'today': geführtes Heute-Paket (Video → Abruf-Check → Karten) — erster Slide.
+export type HomeDashboardMode = 'today' | 'kpi' | 'heatmap' | 'pilot' | 'quests' | 'clean'
 
 export interface HomeDeckCreateStrings {
   deck_name_empty: string
@@ -34,16 +38,6 @@ export function persistDashboardMode(mode: HomeDashboardMode): void {
   if (typeof window === 'undefined') return
   window.localStorage.setItem(STORAGE_KEYS.homeDashboardMode, mode)
   window.localStorage.setItem(STORAGE_KEYS.homeShowHeatmap, mode === 'heatmap' ? '1' : '0')
-}
-
-export function readInitialShuffleOnlyMode(): boolean {
-  if (typeof window === 'undefined') return false
-  return window.localStorage.getItem(STORAGE_KEYS.homeShuffleOnlyMode) === '1'
-}
-
-export function persistShuffleOnlyMode(value: boolean): void {
-  if (typeof window === 'undefined') return
-  window.localStorage.setItem(STORAGE_KEYS.homeShuffleOnlyMode, value ? '1' : '0')
 }
 
 export async function submitHomeDeckCreation(

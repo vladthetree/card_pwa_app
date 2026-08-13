@@ -93,10 +93,6 @@ export const SY0_701_OBJECTIVE_BY_SUBDECK_ID: Readonly<Record<string, string>> =
     SY0_701_OBJECTIVES.map(objective => [getSecurityObjectiveDeckId(objective.code), objective.code]),
   ))
 
-export function getSecurityObjectiveIdForSubDeckId(deckId: string): string | null {
-  return SY0_701_OBJECTIVE_BY_SUBDECK_ID[deckId] ?? null
-}
-
 export function getSecurityObjectiveDeckName(code: string): string {
   const objective = objectiveByCode.get(code)
   return objective ? `${objective.code} ${objective.title}` : code

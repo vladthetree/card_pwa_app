@@ -41,3 +41,8 @@ export function normalizeExamDateIso(value: unknown): string | null {
   const trimmed = value.trim()
   return isValidExamDateIso(trimmed) ? trimmed : null
 }
+
+export function normalizeExamDateUpdatedAt(value: unknown): number | null {
+  const parsed = Number(value)
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null
+}

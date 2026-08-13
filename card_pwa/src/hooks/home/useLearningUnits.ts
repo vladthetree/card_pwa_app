@@ -13,6 +13,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { LocalVideoMeta } from '../../utils/localVideoManifest'
+import { formatLocalDayOf } from '../../utils/recallMastery'
 import {
   buildCourseUnits,
   buildLabUnits,
@@ -176,13 +177,6 @@ const LAB_DEFINITIONS = buildLabUnits({
   definitionVersion: SY0701_CONTENT_MANIFEST_VERSION,
 }).units
 
-/** Lokales Lerntagsdatum (YYYY-MM-DD) des Tagesanfangs — nie UTC. */
-function formatLocalLearningDay(dayStartMs: number): string {
-  const date = new Date(dayStartMs)
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${date.getFullYear()}-${month}-${day}`
-}
 
 /** Der profilgescopte Plan ist autoritativ. Settings dient ausschließlich als
  * Legacy-Fallback, solange für das Profil noch kein Plan-Datensatz existiert. */
@@ -276,7 +270,7 @@ export function useLearningUnits({
         console.error('[useLearningUnits] Legacy-Import fehlgeschlagen', error)
       }
 
-      const localLearningDay = formatLocalLearningDay(todayStartMs)
+      const localLearningDay = formatLocalDayOf(todayStartMs)
 
       // Der alte Heute-Paket-Pointer konnte nur im Read-Model ein synthetisches
       // inProgress erzeugen. Vor dem normalen Reconcile daraus bei vorhandenen

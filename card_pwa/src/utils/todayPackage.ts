@@ -8,7 +8,7 @@
  *            normal StudyView/recordReview flow; recall checks stay self-assessment.
  */
 import type { LocalVideoMeta } from './localVideoManifest'
-import type { RecallRunResult } from '../hooks/useVideoRecallScores'
+import type { RecallRunResult } from './videoRecallVerdict'
 import { STORAGE_KEYS } from '../constants/appIdentity'
 import { parseLocalExamDate } from './examDate'
 

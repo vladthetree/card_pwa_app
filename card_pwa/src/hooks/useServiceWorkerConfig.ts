@@ -10,25 +10,29 @@ import {
   SYNC_RUNTIME_CONFIG_CHANGED_EVENT,
 } from '../services/syncConfig'
 
+async function postToServiceWorker(message: object): Promise<void> {
+  try {
+    const reg = await navigator.serviceWorker.ready
+    reg.active?.postMessage(message)
+  } catch {
+    // best effort
+  }
+}
+
 export function useServiceWorkerConfig() {
   const { settings, isSettingsHydrated, profile } = useSettings()
 
   useEffect(() => {
     if (!supportsServiceWorker() || !isSettingsHydrated) return
 
-    const sendConfig = async () => {
-      try {
-        const reg = await navigator.serviceWorker.ready
-        const config = getActiveSyncTransportConfig()
-        reg.active?.postMessage({
-          type: 'SYNC_CONFIG',
-          endpoint: config.endpoint,
-          clientId: getOrCreateSyncClientId(),
-          authToken: config.authToken,
-        })
-      } catch {
-        // best effort
-      }
+    const sendConfig = () => {
+      const config = getActiveSyncTransportConfig()
+      return postToServiceWorker({
+        type: 'SYNC_CONFIG',
+        endpoint: config.endpoint,
+        clientId: getOrCreateSyncClientId(),
+        authToken: config.authToken,
+      })
     }
 
     void sendConfig()
@@ -51,20 +55,13 @@ export function useServiceWorkerConfig() {
   useEffect(() => {
     if (!supportsServiceWorker() || !isSettingsHydrated) return
 
-    const sendReminderConfig = async () => {
-      try {
-        const reg = await navigator.serviceWorker.ready
-        reg.active?.postMessage({
-          type: 'DAILY_REMINDER_CONFIG',
-          enabled: settings.dailyReminderEnabled,
-          time: settings.dailyReminderTime,
-          language: settings.language,
-          nextDayStartsAt: settings.nextDayStartsAt,
-        })
-      } catch {
-        // best effort
-      }
-    }
+    const sendReminderConfig = () => postToServiceWorker({
+      type: 'DAILY_REMINDER_CONFIG',
+      enabled: settings.dailyReminderEnabled,
+      time: settings.dailyReminderTime,
+      language: settings.language,
+      nextDayStartsAt: settings.nextDayStartsAt,
+    })
 
     void sendReminderConfig()
   }, [
@@ -78,18 +75,11 @@ export function useServiceWorkerConfig() {
   useEffect(() => {
     if (!supportsServiceWorker() || !isSettingsHydrated) return
 
-    const sendNotificationsConfig = async () => {
-      try {
-        const reg = await navigator.serviceWorker.ready
-        reg.active?.postMessage({
-          type: 'SW_NOTIFICATIONS_CONFIG',
-          enabled: settings.notificationsEnabled,
-          channels: settings.notificationChannels,
-        })
-      } catch {
-        // best effort
-      }
-    }
+    const sendNotificationsConfig = () => postToServiceWorker({
+      type: 'SW_NOTIFICATIONS_CONFIG',
+      enabled: settings.notificationsEnabled,
+      channels: settings.notificationChannels,
+    })
 
     void sendNotificationsConfig()
   }, [isSettingsHydrated, settings.notificationChannels, settings.notificationsEnabled])

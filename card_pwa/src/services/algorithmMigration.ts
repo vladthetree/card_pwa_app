@@ -12,6 +12,7 @@ import { SM2 } from '../utils/sm2'
 import { difficultyToFactor, factorToDifficulty } from '../utils/algorithmParams'
 import { STORAGE_KEYS } from '../constants/appIdentity'
 import { enqueueSyncOperation } from './syncQueue'
+import { chunkArray } from '../utils/array'
 
 const MIGRATION_KEY = STORAGE_KEYS.algorithmMigration
 const CURRENT_MIGRATION_VERSION = 1
@@ -144,9 +145,7 @@ export async function migrateCardsForAlgorithm(algorithm: 'sm2' | 'fsrs'): Promi
 
     let processed = 0
 
-    for (let i = 0; i < cards.length; i += MIGRATION_BATCH_SIZE) {
-      const batch = cards.slice(i, i + MIGRATION_BATCH_SIZE)
-
+    for (const batch of chunkArray(cards, MIGRATION_BATCH_SIZE)) {
       await db.transaction('rw', db.cards, async () => {
         for (const card of batch) {
           if (shouldSkipMigration(card, algorithm)) continue
@@ -220,7 +219,7 @@ export async function migrateCardsForAlgorithm(algorithm: 'sm2' | 'fsrs'): Promi
 /**
  * Prüfe ob Migration nötig ist (beim App-Start)
  */
-export function getMigrationLog(): MigrationLog | null {
+function getMigrationLog(): MigrationLog | null {
   const stored = localStorage.getItem(MIGRATION_KEY)
   if (!stored) return null
 

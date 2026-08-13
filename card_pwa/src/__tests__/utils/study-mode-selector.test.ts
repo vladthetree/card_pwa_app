@@ -2,7 +2,7 @@
  * AI_CONTEXT: Vitest coverage for study mode selector; protects services behavior from regressions in the learning PWA.
  */
 import { describe, expect, it } from 'vitest'
-import { buildDragMatchModePlan } from '../../services/studyModeSelector'
+import { buildDragMatchModePlan } from '../../utils/studyModeSelector'
 import type { Card } from '../../types'
 
 function createMcCard(id: string): Pick<Card, 'id' | 'front' | 'back'> {

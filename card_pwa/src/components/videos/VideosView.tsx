@@ -29,7 +29,7 @@ import type { Card } from '../../types'
 import { profileScopeId } from '../../services/profileService'
 import { useMesserVideoProgress, resolveVideoStatus, type MesserVideoProgress, type VideoConfidence } from '../../hooks/useMesserVideoProgress'
 import { useVideoRecallScores, computeRecallVerdict, videoScoreKey, type VideoRecallVerdict } from '../../hooks/useVideoRecallScores'
-import { useLocalMesserVideos, useVideoSource, type LocalVideoItem, type LocalVideoObjectiveGroup } from '../../hooks/useLocalMesserVideos'
+import { useLocalMesserVideos, useVideoSource, domainDownloadStats, type LocalVideoItem, type LocalVideoObjectiveGroup } from '../../hooks/useLocalMesserVideos'
 import { listVideoRecallRunsForProfile, markVideoOpened, markVideoWatched, setVideoConfidence } from '../../db/queries/learningUnits'
 import {
   getActiveCourseExecutionForVideo,
@@ -42,6 +42,7 @@ import { useVideoWritingMode } from '../../hooks/videos/useVideoWritingMode'
 import { useObjectiveDeckSuccessRates } from '../../hooks/videos/useObjectiveDeckSuccessRates'
 import { belongsToFrozenCourseRecallSelection } from '../../utils/learningUnits'
 import { computeRecallRunTally } from '../../utils/recallMastery'
+import { formatBytes } from '../../utils/formatBytes'
 import MesserVideoPlayer from './MesserVideoPlayer'
 import VideoNotesPanel from './VideoNotesPanel'
 import VideoRecallCheck from './VideoRecallCheck'
@@ -51,7 +52,7 @@ import VideoTagSidebar from './VideoTagSidebar'
 import { COPY, type Copy } from './videosCopy'
 import { VideoStudyBar } from './VideoStudyBar'
 import { VideoDownloadControl } from './VideoDownloadControl'
-import { ChapterDownloadButton, domainDownloadStats } from './ChapterDownloadButton'
+import { ChapterDownloadButton } from './ChapterDownloadButton'
 
 /**
  * Lernvideos — selbst gehostete Professor-Messer-Videos (kein YouTube-iframe).
@@ -79,18 +80,6 @@ interface Props {
   /** Lerneinheiten-Deep-Link: Schließen des direkt geöffneten Videos kehrt zum
    *  Aufrufer (Lerneinheiten-Screen) zurück statt in die Videoliste. */
   onCloseInitialVideo?: () => void
-}
-
-function formatBytes(n: number): string {
-  if (n <= 0) return '0 MB'
-  const units = ['B', 'KB', 'MB', 'GB']
-  let value = n
-  let unit = 0
-  while (value >= 1024 && unit < units.length - 1) {
-    value /= 1024
-    unit += 1
-  }
-  return `${value.toFixed(value < 10 && unit > 1 ? 1 : 0)} ${units[unit]}`
 }
 
 /**

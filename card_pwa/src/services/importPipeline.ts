@@ -4,9 +4,11 @@
  * Used by: ImportModal after APKG/CSV/TXT parsing.
  * Important: noteId is the stable conflict key; skip/update/add decisions must preserve scheduling history unless the user chooses an overwrite path.
  */
-import { db } from '../../db'
-import { enqueueSyncOperation } from '../../services/syncQueue'
-import type { ParsedImport, ImportPlan, ImportConflict, ImportedCard } from './types'
+import { db } from '../db'
+import { enqueueSyncOperation } from './syncQueue'
+import type { ParsedImport, ImportPlan, ImportConflict, ImportedCard } from '../utils/import/types'
+import { DAY_MS } from '../utils/time'
+import { chunkArray } from '../utils/array'
 
 interface BuildPlanProgress {
   done: number
@@ -20,7 +22,6 @@ interface ExecuteImportProgress {
 }
 
 const CHUNK_SIZE = 200
-const DAY_MS = 86_400_000
 
 function normalizeImportedCard(card: ImportedCard, fallbackUpdatedAt: number): ImportedCard {
   const normalizedDue = Number.isFinite(Number(card.due))
@@ -77,6 +78,7 @@ export async function buildImportPlan(
     (await db.decks.toArray()).map(d => d.id)
   )
   const newDecks = parsed.decks.filter(d => !existingDeckIds.has(d.id))
+  const deckNameById = new Map(parsed.decks.map(d => [d.id, d.name]))
 
   const toAdd: ImportedCard[]       = []
   const conflicts: ImportConflict[] = []
@@ -97,7 +99,7 @@ export async function buildImportPlan(
       if (!frontChanged && !backChanged && !tagsChanged && !algorithmChanged) {
         toSkip.push(card)
       } else {
-        const deckName = parsed.decks.find(d => d.id === card.deckId)?.name ?? card.deckId
+        const deckName = deckNameById.get(card.deckId) ?? card.deckId
         conflicts.push({
           noteId:   card.noteId,
           cardId:   card.id,
@@ -153,36 +155,17 @@ function buildContentOnlyCardUpdate(card: ImportedCard, importedAt: number) {
 }
 
 /**
- * Schreibt den bestätigten ImportPlan in IndexedDB.
- * Neue Decks werden angelegt, Karten werden bulk-inserted / updated.
+ * Sync-Ops für einen ausgeführten ImportPlan einqueuen (außerhalb der Dexie-
+ * Transaktion – eigene syncQueue-DB). Fehler beim Enqueue dürfen den Import
+ * nicht rückgängig machen – Karten sind bereits in IndexedDB. Der Sync wird
+ * beim nächsten Flush-Zyklus nachgeholt.
  */
-export async function executeImport(plan: ImportPlan): Promise<ImportResult> {
-  const importedAt = Date.now()
-  const normalizedToAdd = plan.toAdd.map(card => normalizeImportedCard(card, importedAt))
-  const normalizedToUpdate = plan.toUpdate.map(card => normalizeImportedCard(card, importedAt))
-
-  await db.transaction('rw', db.decks, db.cards, async () => {
-    // Neue Decks anlegen
-    if (plan.newDecks.length) {
-      await db.decks.bulkPut(plan.newDecks)
-    }
-
-    // Neue Karten hinzufügen
-    if (normalizedToAdd.length) {
-      await db.cards.bulkAdd(normalizedToAdd)
-    }
-
-    // Aktualisierungen (vom User bestätigt) — content-only, Lernzustand bleibt
-    for (const card of normalizedToUpdate) {
-      await db.cards.where('noteId').equals(card.noteId).modify(
-        buildContentOnlyCardUpdate(card, importedAt)
-      )
-    }
-  })
-
-  // Sync-Ops einqueueen (außerhalb der Dexie-Transaktion – eigene syncQueue-DB).
-  // Fehler beim Enqueue dürfen den Import nicht rückgängig machen – Karten sind
-  // bereits in IndexedDB. Der Sync wird beim nächsten Flush-Zyklus nachgeholt.
+async function enqueueImportSyncOps(
+  plan: ImportPlan,
+  importedAt: number,
+  normalizedToAdd: ImportedCard[],
+  normalizedToUpdate: ImportedCard[],
+): Promise<void> {
   try {
     await Promise.all([
       ...plan.newDecks.map(deck =>
@@ -206,12 +189,6 @@ export async function executeImport(plan: ImportPlan): Promise<ImportResult> {
     ])
   } catch (e) {
     console.warn('[ImportPipeline] Sync-Enqueue fehlgeschlagen, wird beim nächsten Flush wiederholt:', e)
-  }
-
-  return {
-    added:   plan.toAdd.length,
-    updated: plan.toUpdate.length,
-    skipped: plan.toSkip.length,
   }
 }
 
@@ -232,22 +209,19 @@ export async function executeImportWithProgress(
     }
 
     if (normalizedToAdd.length) {
-      for (let i = 0; i < normalizedToAdd.length; i += CHUNK_SIZE) {
-        const chunk = normalizedToAdd.slice(i, i + CHUNK_SIZE)
+      let done = 0
+      for (const chunk of chunkArray(normalizedToAdd, CHUNK_SIZE)) {
         await db.cards.bulkAdd(chunk)
-        onProgress?.({
-          stage: 'add',
-          done: Math.min(i + chunk.length, normalizedToAdd.length),
-          total: normalizedToAdd.length,
-        })
+        done += chunk.length
+        onProgress?.({ stage: 'add', done, total: normalizedToAdd.length })
       }
     } else {
       onProgress?.({ stage: 'add', done: 0, total: 0 })
     }
 
     if (normalizedToUpdate.length) {
-      for (let i = 0; i < normalizedToUpdate.length; i += CHUNK_SIZE) {
-        const chunk = normalizedToUpdate.slice(i, i + CHUNK_SIZE)
+      let done = 0
+      for (const chunk of chunkArray(normalizedToUpdate, CHUNK_SIZE)) {
         await Promise.all(
           chunk.map(card =>
             db.cards.where('noteId').equals(card.noteId).modify(
@@ -255,44 +229,15 @@ export async function executeImportWithProgress(
             )
           )
         )
-        onProgress?.({
-          stage: 'update',
-          done: Math.min(i + chunk.length, normalizedToUpdate.length),
-          total: normalizedToUpdate.length,
-        })
+        done += chunk.length
+        onProgress?.({ stage: 'update', done, total: normalizedToUpdate.length })
       }
     } else {
       onProgress?.({ stage: 'update', done: 0, total: 0 })
     }
   })
 
-  // Sync-Ops einqueueen (außerhalb der Dexie-Transaktion – eigene syncQueue-DB).
-  // Fehler beim Enqueue dürfen den Import nicht rückgängig machen – Karten sind
-  // bereits in IndexedDB. Der Sync wird beim nächsten Flush-Zyklus nachgeholt.
-  try {
-    await Promise.all([
-      ...plan.newDecks.map(deck =>
-        enqueueSyncOperation('deck.create', {
-          id: deck.id,
-          name: deck.name,
-          parentDeckId: deck.parentDeckId ?? null,
-          createdAt: deck.createdAt,
-          updatedAt: deck.updatedAt ?? importedAt,
-          source: deck.source ?? 'import',
-        })
-      ),
-      ...normalizedToAdd.map(card => enqueueSyncOperation('card.create', { ...card })),
-      ...normalizedToUpdate.map(card =>
-        enqueueSyncOperation('card.update', {
-          cardId: card.id,
-          updates: buildContentOnlyCardUpdate(card, importedAt),
-          timestamp: importedAt,
-        })
-      ),
-    ])
-  } catch (e) {
-    console.warn('[ImportPipeline] Sync-Enqueue fehlgeschlagen, wird beim nächsten Flush wiederholt:', e)
-  }
+  await enqueueImportSyncOps(plan, importedAt, normalizedToAdd, normalizedToUpdate)
 
   return {
     added: plan.toAdd.length,

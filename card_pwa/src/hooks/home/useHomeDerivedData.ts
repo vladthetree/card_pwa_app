@@ -12,8 +12,25 @@ import {
 import type { Deck, DeckScheduleOverview, ShuffleCollection } from '../../types'
 import { buildSelectedShuffleCards } from '../../services/shuffleSession'
 import { getSyncedDeckIds } from '../../services/syncedDeckScope'
-import { listDecksForBackup } from '../../utils/dbBackup'
+import { listDecksForBackup } from '../../services/dbBackup'
 import { flattenDeckTree } from '../../utils/securityDeckHierarchy'
+
+/** Läuft `loader` bei jeder Dep-Änderung, ruft `onResult` nur, wenn der Effect
+ *  seither nicht durch eine neuere Dep-Änderung verworfen wurde (verhindert
+ *  veraltete Ergebnisse überholender Requests). */
+function useCancellableLoad<T>(loader: () => Promise<T>, onResult: (value: T) => void, deps: unknown[]): void {
+  useEffect(() => {
+    let cancelled = false
+    void (async () => {
+      const next = await loader()
+      if (!cancelled) onResult(next)
+    })()
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps)
+}
 
 export interface HomeShuffleSummary {
   selectedCount: number
@@ -162,21 +179,7 @@ export function useHomeDerivedData(input: {
   const [syncedDeckIds, setSyncedDeckIds] = useState<string[]>([])
   const [shuffleSummaries, setShuffleSummaries] = useState<Record<string, HomeShuffleSummary>>({})
 
-  useEffect(() => {
-    let cancelled = false
-
-    const loadDeckOptions = async () => {
-      const next = await listHomeDeckOptions(showExportModal)
-      if (!cancelled) {
-        setDeckOptions(next)
-      }
-    }
-
-    void loadDeckOptions()
-    return () => {
-      cancelled = true
-    }
-  }, [showExportModal])
+  useCancellableLoad(() => listHomeDeckOptions(showExportModal), setDeckOptions, [showExportModal])
 
   useEffect(() => {
     if (!showFutureForecast) {
@@ -207,60 +210,26 @@ export function useHomeDerivedData(input: {
     }
   }, [showFutureForecast, nextDayStartsAt])
 
-  useEffect(() => {
-    let cancelled = false
+  useCancellableLoad(
+    () => listHomeSyncedDeckIds(profileMode, profileUserId),
+    setSyncedDeckIds,
+    [decks, profileMode, profileUserId],
+  )
 
-    const loadSyncedScope = async () => {
-      const next = await listHomeSyncedDeckIds(profileMode, profileUserId)
-      if (!cancelled) {
-        setSyncedDeckIds(next)
-      }
-    }
+  useCancellableLoad(
+    () => listHomeShuffleSummaries({ shuffleCollections, profileMode, profileUserId, studyCardLimit, nextDayStartsAt }),
+    setShuffleSummaries,
+    [profileMode, profileUserId, studyCardLimit, nextDayStartsAt, shuffleCollections],
+  )
 
-    void loadSyncedScope()
-    return () => {
-      cancelled = true
-    }
-  }, [decks, profileMode, profileUserId])
-
-  useEffect(() => {
-    let cancelled = false
-
-    const loadSummaries = async () => {
-      const next = await listHomeShuffleSummaries({
-        shuffleCollections,
-        profileMode,
-        profileUserId,
-        studyCardLimit,
-        nextDayStartsAt,
-      })
-      if (!cancelled) {
-        setShuffleSummaries(next)
-      }
-    }
-
-    void loadSummaries()
-    return () => {
-      cancelled = true
-    }
-  }, [profileMode, profileUserId, studyCardLimit, nextDayStartsAt, shuffleCollections])
-
-  useEffect(() => {
-    let cancelled = false
-
-    const loadDeckMetadata = async () => {
-      const next = await getHomeDeckScheduleAndTagIndex(decks, studyCardLimit, nextDayStartsAt)
-      if (!cancelled) {
-        setDeckScheduleOverview(next.deckScheduleOverview)
-        setDeckTagIndex(next.deckTagIndex)
-      }
-    }
-
-    void loadDeckMetadata()
-    return () => {
-      cancelled = true
-    }
-  }, [decks, studyCardLimit, nextDayStartsAt])
+  useCancellableLoad(
+    () => getHomeDeckScheduleAndTagIndex(decks, studyCardLimit, nextDayStartsAt),
+    next => {
+      setDeckScheduleOverview(next.deckScheduleOverview)
+      setDeckTagIndex(next.deckTagIndex)
+    },
+    [decks, studyCardLimit, nextDayStartsAt],
+  )
 
   return {
     deckOptions,

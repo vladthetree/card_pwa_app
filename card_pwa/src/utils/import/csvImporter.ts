@@ -8,10 +8,11 @@ import Papa from 'papaparse'
 import type { Algorithm, Language } from '../../contexts/SettingsContext'
 import type { ParsedImport, ImportedCard, ImportedDeck } from './types'
 import { SM2 } from '../sm2'
-import { decodeTxtMetadata } from '../dbBackup'
+import { decodeTxtMetadata } from '../backupTxtMetadata'
 import { BACKUP_METADATA } from '../../constants/appIdentity'
-import { normalizeImportedMcCard } from './mcNormalizer'
+import { normalizeImportedMcCard, indexToLabel } from './mcNormalizer'
 import { generateUuidV7 } from '../id'
+import { stripHtml } from '../cardTextParser'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -143,11 +144,6 @@ function parseBackupCsvRows(fileName: string, rows: string[][], now: number): Pa
   }
 }
 
-function stripHtml(str: string): string {
-  if (!str) return ''
-  return str.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()
-}
-
 // ─── Anki Text/CSV Export Format ─────────────────────────────────────────────
 //
 // Anki exportiert TXT als Tab-separiert, mit optionalem Header:
@@ -168,16 +164,6 @@ interface AnkiTxtMeta {
 interface ParsedMcBlock {
   front: string
   back: string
-}
-
-function indexToLabel(index: number): string {
-  let n = index
-  let result = ''
-  do {
-    result = String.fromCharCode(65 + (n % 26)) + result
-    n = Math.floor(n / 26) - 1
-  } while (n >= 0)
-  return result
 }
 
 function splitTxtIntoBlocks(lines: string[]): string[] {

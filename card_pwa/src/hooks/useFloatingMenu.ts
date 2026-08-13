@@ -2,6 +2,7 @@
  * AI_CONTEXT: React hook for use Floating Menu; encapsulates browser, persistence, sync, layout, or learning state for UI components.
  */
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
+import { finiteOr } from '../utils/numeric'
 
 interface UseFloatingMenuOptions {
   isOpen: boolean
@@ -22,8 +23,7 @@ interface FloatingMenuPosition {
 function readSafeInset(variableName: '--safe-top' | '--safe-bottom' | '--safe-left' | '--safe-right'): number {
   if (typeof window === 'undefined') return 0
   const raw = window.getComputedStyle(document.documentElement).getPropertyValue(variableName).trim()
-  const parsed = Number.parseFloat(raw)
-  return Number.isFinite(parsed) ? parsed : 0
+  return finiteOr(Number.parseFloat(raw), 0)
 }
 
 export function useFloatingMenu<TAnchor extends HTMLElement, TMenu extends HTMLElement>({

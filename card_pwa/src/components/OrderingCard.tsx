@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Reusable React component for ordering Card; contributes to the card-learning UI and shared app interactions.
  */
-import { memo, useMemo, useState, useCallback, useEffect, useRef } from 'react'
+import { memo, useMemo, useState, useCallback } from 'react'
 import {
   DndContext,
   DragEndEvent,
@@ -23,10 +23,12 @@ import { Edit } from 'lucide-react'
 import { useReducedMotion } from '../ui/motion'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
 import { useHandsetLayout } from '../hooks/useHandsetLayout'
+import { useAutoFlipTimer } from '../hooks/useAutoFlipTimer'
 import type { AnswerEvaluatedHandler, Card } from '../types'
 import type { OrderingQuestion, OrderingAnswer } from '../utils/cardTextParser'
 import { computeOrderingScore } from '../utils/pbqScoring'
 import { seededShuffle } from '../utils/hash'
+import { TYPE_BADGE, OriginBadge, getCardShellClass, getCardBodyClass } from './cardRendererShared'
 
 interface Props {
   card: Card
@@ -133,13 +135,6 @@ function ItemRow({ id, label, position, feedback, correctPosition, submitted, is
   )
 }
 
-const TYPE_BADGE: Record<Card['type'], { labelKey: 'type_new' | 'type_learning' | 'type_review' | 'type_relearning'; cls: string }> = {
-  new:        { labelKey: 'type_new',        cls: 'border-[--brand-secondary-25] bg-[--brand-secondary-08] text-[--brand-secondary]' },
-  learning:   { labelKey: 'type_learning',   cls: 'border-amber-500/30 bg-amber-500/10 text-amber-300' },
-  review:     { labelKey: 'type_review',     cls: 'border-ds-border-strong bg-ds-panel text-ds-muted' },
-  relearning: { labelKey: 'type_relearning', cls: 'border-rose-500/30 bg-rose-500/10 text-rose-300' },
-}
-
 const OrderingCard = memo(function OrderingCard({
   card, question, answer, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName, inputLocked = false,
 }: Props) {
@@ -157,31 +152,7 @@ const OrderingCard = memo(function OrderingCard({
   const [activeId, setActiveId]   = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [score, setScore]         = useState<number | null>(null)
-  const submittedRef = useRef(false)
-  const flipTimerRef = useRef<number | null>(null)
-  const prevFlippedRef = useRef(false)
-
-  useEffect(() => {
-    submittedRef.current = false
-
-    return () => {
-      if (flipTimerRef.current !== null) {
-        window.clearTimeout(flipTimerRef.current)
-        flipTimerRef.current = null
-      }
-    }
-  }, [card.id])
-
-  // Manueller Flip auf die Rückseite verwirft den pending Auto-Flip —
-  // sonst togglet der Timer die Karte zurück auf die Vorderseite.
-  useEffect(() => {
-    const was = prevFlippedRef.current
-    prevFlippedRef.current = flipped
-    if (flipped && !was && flipTimerRef.current !== null) {
-      window.clearTimeout(flipTimerRef.current)
-      flipTimerRef.current = null
-    }
-  }, [flipped])
+  const { submittedRef, flipTimerRef } = useAutoFlipTimer(card.id, flipped)
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -245,15 +216,7 @@ const OrderingCard = memo(function OrderingCard({
   // Compact landscape: slightly smaller items
   void isHandsetLandscape
 
-  const cardShellCls = `flex flex-col overflow-hidden rounded-ds border border-transparent bg-ds-card shadow-card card-gradient-border ${
-    compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[380px] md:min-h-[440px]'
-  }`
-
-  const renderOriginBadge = () => originDeckName ? (
-    <span className="max-w-[160px] truncate rounded-[3px] border border-[--brand-secondary-25] bg-[--brand-secondary-12] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[--brand-secondary]">
-      {originDeckName}
-    </span>
-  ) : null
+  const cardShellCls = getCardShellClass(compact, 'border-transparent card-gradient-border')
 
   // ── FRONT ──────────────────────────────────────────────────────────────────
   if (!flipped) {
@@ -273,7 +236,7 @@ const OrderingCard = memo(function OrderingCard({
                 <span className="rounded-[3px] border border-[--brand-secondary-25] bg-[--brand-secondary-08] px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.12em] text-[--brand-secondary]">
                   {t.ordering_type_badge}
                 </span>
-                {renderOriginBadge()}
+                <OriginBadge deckName={originDeckName} />
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 <span className="rounded-[3px] border border-ds-border px-[5px] py-px font-mono text-[9px] font-bold text-zinc-400">A</span>
@@ -353,9 +316,7 @@ const OrderingCard = memo(function OrderingCard({
   }
 
   // ── BACK ───────────────────────────────────────────────────────────────────
-  const bodyClass = compact
-    ? 'min-h-0 flex-1 overflow-y-auto px-[14px] py-[16px] no-scrollbar'
-    : 'flex-1 overflow-y-auto no-scrollbar px-6 py-6 md:px-8 md:py-8'
+  const bodyClass = getCardBodyClass(compact)
 
   return (
     <div className={`w-full ${compact ? 'h-full' : ''}`}>
@@ -364,7 +325,7 @@ const OrderingCard = memo(function OrderingCard({
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2">
               <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-ds-muted">{t.answer}</span>
-              {renderOriginBadge()}
+              <OriginBadge deckName={originDeckName} />
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <span className="rounded-[3px] border border-[--brand-primary] px-[5px] py-px font-mono text-[9px] font-bold text-[--brand-primary]">B</span>

@@ -1,9 +1,9 @@
 /**
- * AI_CONTEXT: Vitest coverage for db backup; protects utils behavior from regressions in the learning PWA.
+ * AI_CONTEXT: Vitest coverage for db backup; protects services behavior from regressions in the learning PWA.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { CardRecord, DeckRecord, ReviewRecord, VideoNoteRecord } from '../../db'
-import { buildDbBackupPayload, listDecksForBackup, restoreVideoNotesFromBackupPayload } from '../../utils/dbBackup'
+import { buildDbBackupPayload, listDecksForBackup, restoreVideoNotesFromBackupPayload } from '../../services/dbBackup'
 
 const mockedDb = vi.hoisted(() => {
   const state = {

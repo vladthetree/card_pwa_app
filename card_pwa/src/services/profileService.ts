@@ -25,8 +25,8 @@ import {
   type ShuffleCollectionRecord,
 } from '../db'
 import { generateUuidV7 } from '../utils/id'
-import { fetchWithTimeout, SYNC_FETCH_TIMEOUT_MS } from './syncConfig'
-import { logError } from './errorLog'
+import { fetchWithTimeout, SYNC_FETCH_TIMEOUT_MS, getAuthApiBase } from './syncConfig'
+import { logApiFailure, stringifyApiException } from './errorLog'
 
 const DEVICE_ID_KEY = 'card-pwa-device-id'
 const LEGACY_CLIENT_ID_KEY = 'card-pwa-sync-client-id'
@@ -237,36 +237,8 @@ function httpError(res: Response, json: { error?: string } | null): string {
   return json?.error ?? `http_${res.status}`
 }
 
-function describeApiTarget(target: string): string {
-  try {
-    const base = typeof window === 'undefined' ? 'http://card-pwa.local' : window.location.origin
-    const url = new URL(target, base)
-    return `${url.pathname}${url.search}`
-  } catch {
-    return target.replace(/^https?:\/\/[^/]+/i, '')
-  }
-}
-
-function stringifyApiException(error: unknown): string {
-  if (error instanceof Error) return `${error.name}: ${error.message}`
-  if (typeof error === 'string') return error
-  try {
-    return JSON.stringify(error)
-  } catch {
-    return String(error)
-  }
-}
-
 function logProfileApiFailure(action: string, target: string, reason: string, details?: string): void {
-  logError(
-    'profile-api',
-    `Profile API failed: ${action}`,
-    [
-      `target: ${describeApiTarget(target)}`,
-      `reason: ${reason}`,
-      details,
-    ].filter(Boolean).join('\n'),
-  )
+  logApiFailure('profile-api', 'Profile API failed', action, target, reason, details)
 }
 
 async function resolveProfileApiResponse<T extends { ok?: boolean; error?: string }>(
@@ -308,7 +280,7 @@ export async function createServerProfile(
   deviceLabel?: string,
   profileName?: string,
 ): Promise<CreateProfileResponse> {
-  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const base = getAuthApiBase(endpoint)
   const target = `${base}/auth/profile`
   try {
     const body: Record<string, string> = { deviceId, deviceLabel: deviceLabel ?? 'Browser' }
@@ -338,7 +310,7 @@ export async function issuePairingCode(
   endpoint: string,
   profileToken: string,
 ): Promise<PairIssueResponse> {
-  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const base = getAuthApiBase(endpoint)
   const target = `${base}/auth/pair/issue`
   try {
     const res = await fetchWithTimeout(
@@ -369,7 +341,7 @@ export async function redeemPairingCode(
   deviceId: string,
   deviceLabel?: string,
 ): Promise<PairRedeemResponse> {
-  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const base = getAuthApiBase(endpoint)
   const target = `${base}/auth/pair/redeem`
   try {
     const res = await fetchWithTimeout(
@@ -397,7 +369,7 @@ export async function recoverWithCode(
   deviceId: string,
   deviceLabel?: string,
 ): Promise<RecoverResponse> {
-  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const base = getAuthApiBase(endpoint)
   const target = `${base}/auth/recover`
   try {
     const res = await fetchWithTimeout(
@@ -423,7 +395,7 @@ export async function revokeDeviceToken(
   endpoint: string,
   profileToken: string,
 ): Promise<boolean> {
-  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const base = getAuthApiBase(endpoint)
   const target = `${base}/auth/revoke`
   try {
     const res = await fetchWithTimeout(
@@ -460,7 +432,7 @@ export async function removeDeviceFromServer(
   endpoint: string,
   profileToken: string,
 ): Promise<boolean> {
-  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const base = getAuthApiBase(endpoint)
   const target = `${base}/auth/device/remove`
   try {
     const res = await fetchWithTimeout(
@@ -498,7 +470,7 @@ export async function listServerProfiles(
   profileToken?: string,
   limit = 20,
 ): Promise<ListProfilesResponse> {
-  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const base = getAuthApiBase(endpoint)
   try {
     const query = `${base}/auth/profiles?limit=${encodeURIComponent(String(limit))}`
     const headers: Record<string, string> = { 'Content-Type': 'application/json' }
@@ -534,7 +506,7 @@ export async function switchServerProfile(
   deviceLabel?: string,
   profileToken?: string,
 ): Promise<SwitchProfileResponse> {
-  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const base = getAuthApiBase(endpoint)
   const target = `${base}/auth/profile/switch`
   try {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' }
@@ -564,7 +536,7 @@ export async function listServerDecks(
   endpoint: string,
   profileToken?: string,
 ): Promise<ListDecksResponse> {
-  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const base = getAuthApiBase(endpoint)
   const target = `${base}/sync/decks`
   try {
     const headers: Record<string, string> = {
@@ -698,7 +670,7 @@ export async function restoreLocalStudyDataFromRollback(snapshot: LocalStudyData
 
 /** GET /auth/public-profiles — list all public profiles with deck counts (requires device token). */
 export async function listPublicProfiles(endpoint: string, profileToken?: string): Promise<PublicProfilesResponse> {
-  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const base = getAuthApiBase(endpoint)
   const target = `${base}/auth/public-profiles`
   try {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' }
@@ -724,7 +696,7 @@ export async function joinPublicProfile(
   deviceId: string,
   deviceLabel?: string,
 ): Promise<JoinProfileResponse> {
-  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const base = getAuthApiBase(endpoint)
   const target = `${base}/auth/profile/join`
   try {
     const res = await fetchWithTimeout(
@@ -753,7 +725,7 @@ export async function joinPublicProfile(
 export async function fetchDefaultProfileInfo(
   endpoint: string,
 ): Promise<{ userId: string; profileName: string } | null> {
-  const base = endpoint.replace(/\/$/, '').replace(/\/sync$/, '')
+  const base = getAuthApiBase(endpoint)
   const target = `${base}/auth/default-profile`
   try {
     const res = await fetchWithTimeout(

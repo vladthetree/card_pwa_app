@@ -6,7 +6,7 @@ interface ParsedOptions {
   options: Array<{ label: string; text: string }>
 }
 
-function indexToLabel(index: number): string {
+export function indexToLabel(index: number): string {
   let n = index
   let result = ''
   do {

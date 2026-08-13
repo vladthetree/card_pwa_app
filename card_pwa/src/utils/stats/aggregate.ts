@@ -17,11 +17,6 @@ export interface StreakStats {
   reviewedToday: number
 }
 
-function startOfDayMs(ts: number): number {
-  const d = new Date(ts)
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
-}
-
 export function buildHeatmap(reviews: ReviewRecord[], year: number): HeatmapBucket[] {
   const start = new Date(year, 0, 1).getTime()
   const end = new Date(year + 1, 0, 1).getTime()
@@ -31,7 +26,7 @@ export function buildHeatmap(reviews: ReviewRecord[], year: number): HeatmapBuck
     if (!Number.isFinite(review.timestamp)) continue
     const timestamp = Number(review.timestamp)
     if (timestamp < start || timestamp >= end) continue
-    const key = startOfDayMs(timestamp)
+    const key = getDayStartMs(timestamp)
     counts.set(key, (counts.get(key) ?? 0) + 1)
   }
 
@@ -86,7 +81,7 @@ export function calculateStreak(reviews: ReviewRecord[], nowMs = Date.now(), nex
 export function forecastDue(cards: CardRecord[], days: number, nowMs = Date.now()): number[] {
   const normalizedDays = Number.isFinite(days) ? Math.max(1, Math.floor(days)) : 15
   const dayMs = 86_400_000
-  const todayStart = startOfDayMs(nowMs)
+  const todayStart = getDayStartMs(nowMs)
   const tomorrowStart = todayStart + dayMs
   const horizonEnd = tomorrowStart + normalizedDays * dayMs
   const result = Array.from({ length: normalizedDays }, () => 0)

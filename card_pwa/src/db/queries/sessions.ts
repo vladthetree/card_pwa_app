@@ -10,7 +10,7 @@ import {
   buildShuffleSessionId,
   parsePersistedStudySession,
   type PersistedStudySession,
-} from '../../services/studySessionPersistence'
+} from '../../utils/studySessionPersistence'
 
 export interface ResumableStudySession {
   sessionId: string

@@ -5,26 +5,25 @@
  * Important: Keep business side effects here when they are home-specific; shared data loading belongs in useHomeDerivedData or db/queries.
  */
 import { useCallback, useEffect, useState } from 'react'
-import type { HomeDashboardMode } from '../../components/home/HomeStatsSection'
 import type { Deck, ShuffleCollection } from '../../types'
 import { useHomeExport } from './useHomeExport'
 import { useHomeDialogs, type HomeConfirmModalState } from './useHomeDialogs'
 import { useDeckCommands } from './useDeckCommands'
 import { useShuffleCollectionCommands } from './useShuffleCollectionCommands'
 import { usePwaInstallActions } from './usePwaInstallActions'
+import { usePersistentBool } from '../videos/usePersistentBool'
+import { STORAGE_KEYS } from '../../constants/appIdentity'
 import {
   persistDashboardMode,
-  persistShuffleOnlyMode,
   readInitialDashboardMode,
-  readInitialShuffleOnlyMode,
+  type HomeDashboardMode,
 } from './homeControllerHelpers'
 
 export {
   persistDashboardMode,
-  persistShuffleOnlyMode,
   readInitialDashboardMode,
-  readInitialShuffleOnlyMode,
   submitHomeDeckCreation,
+  type HomeDashboardMode,
 } from './homeControllerHelpers'
 
 export type { HomeConfirmModalState } from './useHomeDialogs'
@@ -131,15 +130,11 @@ export function useHomeViewController(input: {
     openInstallHintModal: () => dialogs.setShowInstallHintModal(true),
   })
   const [dashboardMode, setDashboardMode] = useState<HomeDashboardMode>(readInitialDashboardMode)
-  const [showShuffleOnly, setShowShuffleOnly] = useState<boolean>(readInitialShuffleOnlyMode)
+  const [showShuffleOnly, setShowShuffleOnly] = usePersistentBool(STORAGE_KEYS.homeShuffleOnlyMode, false)
 
   useEffect(() => {
     persistDashboardMode(dashboardMode)
   }, [dashboardMode])
-
-  useEffect(() => {
-    persistShuffleOnlyMode(showShuffleOnly)
-  }, [showShuffleOnly])
 
   useEffect(() => {
     if (!navigator.serviceWorker?.controller) return

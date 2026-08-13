@@ -1,6 +1,8 @@
 /**
  * AI_CONTEXT: Utility module for algorithm Params; provides pure helpers for scheduling, parsing, scoring, tags, video notes, backup, or app data transformations.
  */
+import { clamp, finiteOr } from './numeric'
+
 export interface SM2Params {
   minEase: number
   defaultEase: number
@@ -55,14 +57,6 @@ export const DEFAULT_FSRS_PARAMS: FSRSParams = {
 export const DEFAULT_ALGORITHM_PARAMS: AlgorithmParams = {
   sm2: DEFAULT_SM2_PARAMS,
   fsrs: DEFAULT_FSRS_PARAMS,
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, value))
-}
-
-function finiteOr(value: unknown, fallback: number): number {
-  return typeof value === 'number' && Number.isFinite(value) ? value : fallback
 }
 
 export function normalizeSM2Params(input?: Partial<SM2Params>): SM2Params {

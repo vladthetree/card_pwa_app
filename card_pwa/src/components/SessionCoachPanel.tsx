@@ -2,7 +2,7 @@
  * AI_CONTEXT: Reusable React component for session Coach Panel; contributes to the card-learning UI and shared app interactions.
  */
 import type { Card } from '../types'
-import type { LearningCoachSummary } from '../services/learningCoach'
+import type { LearningCoachSummary } from '../utils/learningCoach'
 
 interface Props {
   language: 'de' | 'en'

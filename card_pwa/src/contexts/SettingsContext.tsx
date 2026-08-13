@@ -14,14 +14,14 @@ import {
   type SM2Params,
 } from '../utils/algorithmParams'
 import { clearProfile, loadProfile, saveProfile, buildLocalProfile, getOrCreateDeviceId, profileScopeId } from '../services/profileService'
-import { normalizeStudyCardLimit } from '../services/studySessionPersistence'
+import { normalizeStudyCardLimit } from '../utils/studySessionPersistence'
 import { setCachedProfile } from '../services/syncConfig'
 import { enqueueSyncOperation } from '../services/syncQueue'
 import type { ProfileRecord } from '../db'
 import { saveDraftLearnerExamPlan } from '../db/queries/learningUnits'
-import { normalizeExamDateIso } from '../utils/examDate'
+import { normalizeExamDateIso, normalizeExamDateUpdatedAt } from '../utils/examDate'
 
-export { normalizeExamDateIso } from '../utils/examDate'
+export { normalizeExamDateIso, normalizeExamDateUpdatedAt } from '../utils/examDate'
 
 export type Language = 'de' | 'en'
 export type Algorithm = 'sm2' | 'fsrs'
@@ -228,11 +228,6 @@ export function normalizeNewCardsPerDay(value: unknown): number {
   const parsed = Number(value)
   if (!Number.isFinite(parsed)) return 10
   return Math.max(0, Math.min(100, Math.round(parsed)))
-}
-
-export function normalizeExamDateUpdatedAt(value: unknown): number | null {
-  const parsed = Number(value)
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null
 }
 
 export function normalizeSettings(input: Partial<Settings> | undefined): Settings {

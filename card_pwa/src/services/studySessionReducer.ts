@@ -7,9 +7,10 @@
  * Karte wird nur als read-only Snapshot (lastRatedCard) fürs Nochmal-Ansehen gehalten.
  */
 import { applyRating } from './sessionRecovery'
-import { createSessionRunId, type PersistedStudySession } from './studySessionPersistence'
+import { createSessionRunId, type PersistedStudySession } from '../utils/studySessionPersistence'
 import type { Card, CardSchedulingState, Rating, SessionReviewEvent } from '../types'
 import { isStudyableCard } from '../utils/sm2'
+import { clamp } from '../utils/numeric'
 
 export interface SessionState {
   cards: Card[]
@@ -177,7 +178,7 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
       const scheduledDueAt = Number.isFinite(scheduledCard.dueAt)
         ? Number(scheduledCard.dueAt)
         : scheduledCard.due * 86_400_000
-      const learnAheadMs = Math.max(0, Math.min(60, action.learnAheadMinutes ?? 20)) * 60_000
+      const learnAheadMs = clamp(action.learnAheadMinutes ?? 20, 0, 60) * 60_000
       const schedulerStepIsAvailable = schedulerNeedsAnotherStep && scheduledDueAt <= Date.now() + learnAheadMs
       const practiceNeedsAnotherPass = nextHardPracticeCardIds.includes(action.cardId)
       if (practiceNeedsAnotherPass || schedulerStepIsAvailable) {

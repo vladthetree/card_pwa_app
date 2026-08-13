@@ -19,6 +19,7 @@ const fetchWithTimeoutMock = vi.fn(async () => {
 vi.mock('../../services/syncConfig', () => ({
   fetchWithTimeout: fetchWithTimeoutMock,
   SYNC_FETCH_TIMEOUT_MS: 15_000,
+  getAuthApiBase: (endpoint: string) => endpoint.replace(/\/$/, '').replace(/\/sync$/, ''),
 }))
 
 function htmlResponse(): Response {

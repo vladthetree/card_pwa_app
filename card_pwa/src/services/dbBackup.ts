@@ -1,51 +1,31 @@
 /**
  * AI_CONTEXT:
- * Role: Local export/backup and restore helpers for decks, cards, reviews, settings, and video notes.
+ * Role: Local export/backup and restore I/O for decks, cards, reviews, settings, and video notes (Dexie reads/writes, localStorage, download trigger).
  * Used by: Home export modal/controller and tests for backup compatibility.
  * Important: Backup payload version 2 includes videoNotes; restore must tolerate old payloads and preserve inline-tag identity across display variants.
+ *            The pure encode/decode counterpart for TXT metadata (decodeTxtMetadata) lives in utils/backupTxtMetadata.ts,
+ *            since utils/import/csvImporter.ts (a pure utils module) must not depend on this I/O-heavy services module.
  */
 import { db } from '../db'
 import type { CardRecord, DeckRecord, ReviewRecord, VideoNoteRecord } from '../db'
 import {
   listLearningUnitsBackup,
   restoreLearningUnitsBackup,
-  type LearningUnitsBackupData,
   type RestoreLearningUnitsResult,
 } from '../db/queries/learningUnits'
 import { BACKUP_METADATA, STORAGE_KEYS } from '../constants/appIdentity'
-import { extractTags } from './videoTags'
-import { normalizeTagId } from './tagIdentity'
+import { extractTags } from '../utils/videoTags'
+import { normalizeTagId } from '../utils/tagIdentity'
 import { normalizeTags } from '../db/queries/videoNotes'
+import type { DbBackupPayload } from '../utils/dbBackupPayload'
+import { triggerDownload } from './downloadFile'
+import { expandDeckIdsWithDescendants } from './syncedDeckScope'
+import { finiteOr } from '../utils/numeric'
+
+export type { DbBackupPayload }
 
 const SETTINGS_STORAGE_KEY = STORAGE_KEYS.settings
 const META_PREFIX = BACKUP_METADATA.prefix
-
-interface BackupMeta {
-  app: 'card-pwa'
-  version: 1 | 2 | 3
-  exportedAt: number
-  tableCounts: {
-    decks: number
-    cards: number
-    reviews: number
-    videoNotes?: number
-    /** Summe aller Zeilen des dedizierten Lerneinheiten-Systems (ab Version 3). */
-    learningUnits?: number
-  }
-}
-
-export interface DbBackupPayload {
-  meta: BackupMeta
-  settings: unknown
-  data: {
-    decks: DeckRecord[]
-    cards: CardRecord[]
-    reviews: ReviewRecord[]
-    videoNotes: VideoNoteRecord[]
-    /** Dediziertes Lerneinheiten-System (§16.3); fehlt in Backups vor Version 3. */
-    learningUnits?: LearningUnitsBackupData
-  }
-}
 
 interface ExportOptions {
   deckIds?: string[]
@@ -68,19 +48,24 @@ function toCsvValue(value: unknown): string {
   return `"${escaped}"`
 }
 
-function triggerDownload(blob: Blob, filename: string): void {
-  const url = URL.createObjectURL(blob)
-  const anchor = document.createElement('a')
-  anchor.href = url
-  anchor.download = filename
-  anchor.click()
-  URL.revokeObjectURL(url)
+function backupFilename(payload: DbBackupPayload, ext: string): string {
+  const stamp = new Date(payload.meta.exportedAt).toISOString().replace(/[:.]/g, '-')
+  return `card-pwa-backup-${stamp}.${ext}`
 }
 
 export async function buildDbBackupPayload(options: ExportOptions = {}): Promise<DbBackupPayload> {
   const selectedDeckIds = options.deckIds?.length ? new Set(options.deckIds) : null
 
-  const decksAll = await db.decks.toArray()
+  // Vier unabhängige Volltabellen-Reads — parallel statt sequenziell, die
+  // Filterung unten braucht ohnehin alle vier Rohdaten gleichzeitig.
+  const [decksAll, cardsAll, reviewsAll, videoNotes, learningUnits] = await Promise.all([
+    db.decks.toArray(),
+    db.cards.toArray(),
+    db.reviews.toArray(),
+    db.videoNotes2.toArray(),
+    listLearningUnitsBackup(),
+  ])
+
   const activeDecks = decksAll.filter(deck => !deck.isDeleted)
   const selectedDecksWithDescendants = selectedDeckIds
     ? expandDeckIdsWithDescendants(activeDecks, selectedDeckIds)
@@ -90,14 +75,10 @@ export async function buildDbBackupPayload(options: ExportOptions = {}): Promise
     : activeDecks
 
   const deckIdSet = new Set(decks.map(deck => deck.id))
-  const cardsAll = await db.cards.toArray()
   const cards = cardsAll.filter(card => !card.isDeleted && deckIdSet.has(card.deckId))
 
   const cardIdSet = new Set(cards.map(card => card.id))
-  const reviewsAll = await db.reviews.toArray()
   const reviews = reviewsAll.filter(review => cardIdSet.has(review.cardId))
-  const videoNotes = await db.videoNotes2.toArray()
-  const learningUnits = await listLearningUnitsBackup()
   const learningUnitsCount = Object.values(learningUnits).reduce((sum, rows) => sum + rows.length, 0)
 
   const settingsRaw = localStorage.getItem(SETTINGS_STORAGE_KEY)
@@ -146,10 +127,6 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object'
 }
 
-function numericOr(value: unknown, fallback: number): number {
-  return typeof value === 'number' && Number.isFinite(value) ? value : fallback
-}
-
 function inlineTag(tag: string): string {
   return tag.trim().replace(/^#+/, '').replace(/\s+/g, '-')
 }
@@ -179,14 +156,14 @@ function normalizeVideoNoteForRestore(value: unknown, now = Date.now()): VideoNo
   const tags = extractTags(content)
   if (!content.trim() && tags.length === 0) return null
 
-  const updatedAt = numericOr(value.updatedAt, now)
+  const updatedAt = finiteOr(value.updatedAt, now)
   return {
     profileId,
     objective,
     videoId,
     content,
     tags,
-    createdAt: numericOr(value.createdAt, updatedAt),
+    createdAt: finiteOr(value.createdAt, updatedAt),
     updatedAt,
   }
 }
@@ -235,9 +212,8 @@ export async function restoreVideoNotesFromBackupPayload(
 /** Verlustfreies JSON-Vollbackup: Decks, Karten (inkl. Scheduling), Reviews,
  *  Video Notes und Settings — Roundtrip-Format für restore via ImportModal. */
 export function downloadDbBackupAsJson(payload: DbBackupPayload) {
-  const stamp = new Date(payload.meta.exportedAt).toISOString().replace(/[:.]/g, '-')
   const blob = new Blob([JSON.stringify(payload)], { type: 'application/json;charset=utf-8' })
-  triggerDownload(blob, `card-pwa-backup-${stamp}.json`)
+  triggerDownload(blob, backupFilename(payload, 'json'))
 }
 
 export async function exportDbBackupAsJson(options: ExportOptions = {}) {
@@ -290,8 +266,7 @@ export async function restoreReviewsFromBackupPayload(
 }
 
 export function downloadDbBackupAsTxt(payload: DbBackupPayload) {
-  const stamp = new Date(payload.meta.exportedAt).toISOString().replace(/[:.]/g, '-')
-  const filename = `card-pwa-backup-${stamp}.txt`
+  const filename = backupFilename(payload, 'txt')
   const deckNameById = buildDeckNameById(payload.data.decks)
 
   const lines = [
@@ -317,8 +292,7 @@ export function downloadDbBackupAsTxt(payload: DbBackupPayload) {
 }
 
 export function downloadDbBackupAsCsv(payload: DbBackupPayload) {
-  const stamp = new Date(payload.meta.exportedAt).toISOString().replace(/[:.]/g, '-')
-  const filename = `card-pwa-backup-${stamp}.csv`
+  const filename = backupFilename(payload, 'csv')
   const deckNameById = buildDeckNameById(payload.data.decks)
   const lines = [
     'card_id,note_id,deck_id,deck_name,front,back,tags,acronym,examples,port,protocol,type,queue,due,interval,factor,reps,lapses,created_at',
@@ -369,29 +343,6 @@ export async function listDecksForBackup(): Promise<Array<Pick<DeckRecord, 'id' 
     .map(deck => ({ id: deck.id, name: deck.name }))
 }
 
-function expandDeckIdsWithDescendants(decks: DeckRecord[], selectedDeckIds: Set<string>): Set<string> {
-  const childrenByParent = new Map<string, DeckRecord[]>()
-  const activeIds = new Set(decks.map(deck => deck.id))
-  for (const deck of decks) {
-    if (!deck.parentDeckId || !activeIds.has(deck.parentDeckId)) continue
-    const bucket = childrenByParent.get(deck.parentDeckId) ?? []
-    bucket.push(deck)
-    childrenByParent.set(deck.parentDeckId, bucket)
-  }
-
-  const expanded = new Set<string>()
-  const stack = Array.from(selectedDeckIds)
-  while (stack.length > 0) {
-    const deckId = stack.pop()
-    if (!deckId || expanded.has(deckId)) continue
-    expanded.add(deckId)
-    for (const child of childrenByParent.get(deckId) ?? []) {
-      stack.push(child.id)
-    }
-  }
-  return expanded
-}
-
 function buildDeckNameById(decks: DeckRecord[]): Map<string, string> {
   return new Map(decks.map(deck => [deck.id, deck.name]))
 }
@@ -404,23 +355,4 @@ function encodeTxtMetadata(card: CardRecord, deckName: string) {
   const json = JSON.stringify(metadata)
   const encoded = btoa(unescape(encodeURIComponent(json)))
   return `${META_PREFIX}${encoded}`
-}
-
-export function decodeTxtMetadata(raw: string): { card: CardRecord; deckName: string } | null {
-  if (!raw) return null
-
-  try {
-    let encoded = ''
-    if (raw.startsWith(META_PREFIX)) {
-      encoded = raw.slice(META_PREFIX.length)
-    } else if (raw.startsWith(BACKUP_METADATA.legacyPrefix)) {
-      encoded = raw.slice(BACKUP_METADATA.legacyPrefix.length)
-    } else {
-      return null
-    }
-    const json = decodeURIComponent(escape(atob(encoded)))
-    return JSON.parse(json) as { card: CardRecord; deckName: string }
-  } catch {
-    return null
-  }
 }

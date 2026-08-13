@@ -6,6 +6,7 @@
  *            when localStorage is available; offline reminders stay day/slot-based in the SW.
  */
 import { MOTIVATION_QUOTES, type MotivationQuote } from '../data/motivationQuotes'
+import { formatLocalDayOf } from './recallMastery'
 
 type MotivationLanguage = 'de' | 'en'
 
@@ -91,7 +92,7 @@ function randomIndex(length: number, random: () => number): number {
 export function pickMotivationQuote(language: 'de' | 'en', now: Date = new Date()): MotivationQuote {
   const lang = normalizeLanguage(language)
   const quotes = MOTIVATION_QUOTES[lang]
-  const dateKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+  const dateKey = formatLocalDayOf(now.getTime())
   const slot = daypartSlot(now.getHours())
   let index = hashSeed(`${dateKey}:splash`) % quotes.length
   for (let step = 1; step <= slot; step += 1) {

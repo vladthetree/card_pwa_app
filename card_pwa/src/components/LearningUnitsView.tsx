@@ -6,7 +6,7 @@
  * Startet Units exakt:
  * Course → Video/Recall/Selbsteinschätzung, Review → eingefrorene Karten-Session.
  */
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, CheckCircle2, ChevronDown, Circle, Info, Route, X } from 'lucide-react'
 import { useSettings } from '../contexts/SettingsContext'
 import { useTheme, themeScopeClass } from '../contexts/ThemeContext'
@@ -275,17 +275,20 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
     }
   }
 
-  const unitsByObjective = new Map<string, RankedLearningUnit[]>()
-  for (const row of learningUnits.ranked) {
-    const objectiveId = row.definition.objectiveIds[0]
-    const list = unitsByObjective.get(objectiveId) ?? []
-    list.push(row)
-    unitsByObjective.set(objectiveId, list)
-  }
-  // Listenreihenfolge ist die offizielle Kursreihenfolge, nicht der Rang.
-  for (const list of unitsByObjective.values()) {
-    list.sort((a, b) => a.definition.order - b.definition.order)
-  }
+  const unitsByObjective = useMemo(() => {
+    const map = new Map<string, RankedLearningUnit[]>()
+    for (const row of learningUnits.ranked) {
+      const objectiveId = row.definition.objectiveIds[0]
+      const list = map.get(objectiveId) ?? []
+      list.push(row)
+      map.set(objectiveId, list)
+    }
+    // Listenreihenfolge ist die offizielle Kursreihenfolge, nicht der Rang.
+    for (const list of map.values()) {
+      list.sort((a, b) => a.definition.order - b.definition.order)
+    }
+    return map
+  }, [learningUnits.ranked])
   const domains = Object.keys(SY0_701_ROOT_DECKS)
   const preferredObjectiveId = (
     learningUnits.ranked.find(row => row.recommended) ?? learningUnits.ranked[0]
@@ -303,7 +306,7 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
     setPathInitialized(true)
   }, [pathInitialized, preferredObjectiveId])
 
-  const domainSummaries = domains.map(domainId => {
+  const domainSummaries = useMemo(() => domains.map(domainId => {
     const objectiveIds = SY0_701_OBJECTIVES
       .filter(objective => objective.code.startsWith(`${domainId}.`))
       .map(objective => objective.code)
@@ -312,7 +315,8 @@ export default function LearningUnitsView({ onExit, onStartStudy, onOpenVideoAtI
       unit => learningUnits.stateByUnitId.get(unit.definition.unitId)?.activityStatus === 'completed',
     ).length
     return { domainId, done, total: units.length }
-  })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [unitsByObjective, learningUnits.stateByUnitId])
 
   const selectDomain = (domainId: string) => {
     setSelectedDomainId(domainId)

@@ -4,7 +4,7 @@
  * Used by: StudyView, home stats, metrics modals, heatmaps, and gamification.
  * Important: This is the scheduling source of truth; every review mutation must update card state, reviews, sync queue, diagnostics, and REVIEW_UPDATED_EVENT consistently.
  */
-import { db, type CardRecord } from '../../db'
+import { db, type CardRecord, type ReviewRecord } from '../../db'
 import { readAllCardsShared, readAllDecksShared } from './sharedReads'
 import { calculateCardStateAfterReview, SM2, isStudyableCard } from '../../utils/sm2'
 import { calculateCardStateAfterReviewFSRS } from '../../utils/fsrs'
@@ -14,6 +14,7 @@ import { drainTransactionalOutbox, enqueueSyncOperation } from '../../services/s
 import { buildOpId } from '../../services/syncConfig'
 import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
 import { getDayStartMs, resolveDueAtMs } from '../../utils/time'
+import { clamp, finiteOr } from '../../utils/numeric'
 import { buildLatestSessionCardReviews } from '../../utils/reviewIdentity'
 import {
   shouldSmoothBacklog,
@@ -45,14 +46,6 @@ function emitReviewUpdatedEvent(): void {
   } catch {
     // Event dispatch is a best-effort UI refresh signal and must not break review writes.
   }
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, value))
-}
-
-function finiteOr(value: unknown, fallback: number): number {
-  return typeof value === 'number' && Number.isFinite(value) ? value : fallback
 }
 
 function normalizeSchedulingInput(
@@ -282,6 +275,10 @@ export async function listDeckCardIdsReviewedToday(deckId: string, nextDayStarts
  * Lerneinheiten-Ausführung, deren `cardIds` auch außerhalb des
  * Objective-Decks liegen können (Fehlmappings, §8.1).
  */
+export async function listReviewsSince(fromMs: number): Promise<ReviewRecord[]> {
+  return db.reviews.where('timestamp').aboveOrEqual(fromMs).toArray()
+}
+
 export async function listCardIdsReviewedSince(cardIds: readonly string[], sinceMs: number): Promise<string[]> {
   if (cardIds.length === 0) return []
   const wanted = new Set(cardIds)

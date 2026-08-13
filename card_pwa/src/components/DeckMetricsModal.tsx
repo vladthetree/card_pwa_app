@@ -8,6 +8,7 @@ import { getDeckMetricsSnapshot } from '../db/queries'
 import { STRINGS } from '../contexts/SettingsContext'
 import { UI_TOKENS } from '../constants/ui'
 import { formatDeckName } from '../utils/cardTextParser'
+import { resolveDateLocale } from '../utils/time'
 import type { Deck, MetricsPeriod, DeckMetricsSnapshot } from '../types'
 
 export function DeckMetricsModal({ deck, language, onClose }: { deck: Deck; language: 'de' | 'en'; onClose: () => void }) {
@@ -18,7 +19,7 @@ export function DeckMetricsModal({ deck, language, onClose }: { deck: Deck; lang
 
   const formatMetricTimestamp = (timestamp: number | null) => {
     if (!timestamp) return t.metrics_never_pressed
-    return new Intl.DateTimeFormat(language === 'de' ? 'de-DE' : 'en-US', {
+    return new Intl.DateTimeFormat(resolveDateLocale(language), {
       day: '2-digit',
       month: '2-digit',
       year: '2-digit',

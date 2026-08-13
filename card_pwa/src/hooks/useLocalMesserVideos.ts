@@ -14,7 +14,7 @@ import {
   localVideoUrl,
   type LocalVideoMeta,
 } from '../utils/localVideoManifest'
-import { selectDownloadsToEnqueue } from '../utils/videoDownloadQueue'
+import { selectDownloadsToEnqueue, summarizeDownloads } from '../utils/videoDownloadQueue'
 
 /**
  * Selbst gehostete Lernvideos (Pi) statt YouTube-Embed. Das Manifest (welche
@@ -41,6 +41,25 @@ export interface LocalVideoObjectiveGroup {
   objective: string
   domain: number
   videos: LocalVideoItem[]
+}
+
+export interface DomainDownloadStats {
+  total: number
+  done: number
+  pending: LocalVideoItem[]
+  active: boolean
+}
+
+/** Aggregierter Offline-Status eines Kapitels (Domain). */
+export function domainDownloadStats(groups: LocalVideoObjectiveGroup[]): DomainDownloadStats {
+  const videos = groups.flatMap(group => group.videos)
+  const summary = summarizeDownloads(videos)
+  return {
+    total: summary.total,
+    done: summary.done,
+    active: summary.active,
+    pending: videos.filter(video => !video.downloaded && video.progress === undefined && !video.queued),
+  }
 }
 
 interface DownloadsState {

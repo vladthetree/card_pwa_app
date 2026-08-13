@@ -80,7 +80,16 @@ function mapFsrsStateToQueue(state: FsrsState): number {
   }
 }
 
+// Scheduler-Aufbau (Gewichte mergen + FSRS-Instanz) ist auf dem Antwort-Hot-Path
+// zu teuer, um bei jedem Review neu zu laufen — cfg ändert sich innerhalb einer
+// Session praktisch nie (kommt aus den Settings), ein Ein-Platz-Cache reicht.
+let cachedSchedulerKey: string | null = null
+let cachedScheduler: ReturnType<typeof fsrs> | null = null
+
 function buildScheduler(cfg: FSRSParams) {
+  const key = JSON.stringify(cfg)
+  if (cachedScheduler && cachedSchedulerKey === key) return cachedScheduler
+
   const base = generatorParameters({
     request_retention: cfg.requestRetention,
     // Anki streut Tagesintervalle leicht, damit gleichzeitig gelernte Karten
@@ -98,10 +107,13 @@ function buildScheduler(cfg: FSRSParams) {
     }
   })
 
-  return fsrs({
+  const scheduler = fsrs({
     ...base,
     w: mergedWeights,
   })
+  cachedSchedulerKey = key
+  cachedScheduler = scheduler
+  return scheduler
 }
 
 function toFsrsCard(

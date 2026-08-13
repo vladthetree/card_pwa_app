@@ -40,6 +40,7 @@ import {
 import { clearSyncQueue, wakeDeferredSyncQueue } from '../services/syncQueue'
 import { runSyncCycleNow } from '../services/syncCoordinator'
 import { getDefaultProfileSyncEndpoint } from '../services/syncConfig'
+import { offlineStatusService } from '../services/offlineStatus'
 import { isReviewDeck } from '../utils/reviewDecks'
 import ConfirmModal from './ConfirmModal'
 
@@ -218,24 +219,16 @@ export default function ProfileSyncSection({ language }: Props) {
   const [showProfileList, setShowProfileList] = useState(false)
   const [showDeckList, setShowDeckList] = useState(false)
   const [showCreateProfile, setShowCreateProfile] = useState(false)
-  const [isOnline, setIsOnline] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine))
+  const [isOnline, setIsOnline] = useState(() => offlineStatusService.isOnline())
   const [serverReachable, setServerReachable] = useState(() => getSyncReachabilityState() === 'connected')
   const [createdRecoveryCode, setCreatedRecoveryCode] = useState<string | null>(null)
 
   const effectiveEndpoint = profile?.endpoint?.trim() || getDefaultProfileSyncEndpoint()
 
   useEffect(() => {
-    const updateOnlineState = () => {
-      setIsOnline(navigator.onLine)
-    }
-
-    window.addEventListener('online', updateOnlineState)
-    window.addEventListener('offline', updateOnlineState)
-
-    return () => {
-      window.removeEventListener('online', updateOnlineState)
-      window.removeEventListener('offline', updateOnlineState)
-    }
+    return offlineStatusService.subscribe(status => {
+      setIsOnline(status !== 'offline')
+    })
   }, [])
 
   useEffect(() => {
@@ -315,8 +308,7 @@ export default function ProfileSyncSection({ language }: Props) {
       return
     }
 
-    await loadProfiles()
-    await loadDecks(nextProfile)
+    await Promise.all([loadProfiles(), loadDecks(nextProfile)])
     setNotice(input.successNotice)
     setBusy(false)
   }
@@ -471,8 +463,7 @@ export default function ProfileSyncSection({ language }: Props) {
     }
     setProfile(linked)
     writeProfileHintCookie(linked.userId ?? '')
-    await loadProfiles()
-    await loadDecks(linked)
+    await Promise.all([loadProfiles(), loadDecks(linked)])
     setProfileNameInput('')
     setCreatedRecoveryCode(res.recoveryCode ?? null)
     setNotice(t.profile_created)
@@ -655,8 +646,7 @@ export default function ProfileSyncSection({ language }: Props) {
       return
     }
 
-    await loadProfiles()
-    await loadDecks(nextProfile)
+    await Promise.all([loadProfiles(), loadDecks(nextProfile)])
     setBusy(false)
     setSwitchingUserId(null)
   }

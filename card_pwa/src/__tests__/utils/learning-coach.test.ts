@@ -1,8 +1,8 @@
 /**
- * AI_CONTEXT: Vitest coverage for learning coach; protects services behavior from regressions in the learning PWA.
+ * AI_CONTEXT: Vitest coverage for learning coach; protects utils behavior from regressions in the learning PWA.
  */
 import { describe, expect, it } from 'vitest'
-import { buildLearningCoachSummary } from '../../services/learningCoach'
+import { buildLearningCoachSummary } from '../../utils/learningCoach'
 import type { Card, Rating, SessionReviewEvent } from '../../types'
 
 function createCard(id: string, front = `front-${id}`, lapses = 0): Card {

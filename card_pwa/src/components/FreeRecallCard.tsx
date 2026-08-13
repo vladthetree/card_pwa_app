@@ -8,6 +8,7 @@ import { parseMcAnswer } from '../utils/cardTextParser'
 import { stripFreeRecallPrefix } from '../utils/cardVariant'
 import { scoreFreeRecallSelfCheck } from '../utils/freeRecallScoring'
 import type { Card } from '../types'
+import { OriginBadge, getCardShellClass, getCardBodyClass } from './cardRendererShared'
 
 /**
  * FreeRecallCard — Studien-Renderer "M3 Free Recall".
@@ -56,21 +57,12 @@ const FreeRecallCard = memo(function FreeRecallCard({
     onAnswerEvaluated(scoreFreeRecallSelfCheck(known))
   }, [selfCheck, inputLocked, onAnswerEvaluated])
 
-  const renderOriginBadge = () => originDeckName ? (
-    <span className="max-w-[160px] truncate rounded-[3px] border border-[--brand-secondary-25] bg-[--brand-secondary-12] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[--brand-secondary]">
-      {originDeckName}
-    </span>
-  ) : null
-
-  const cardShellCls = `border ${
+  const cardShellCls = getCardShellClass(
+    compact,
     selfCheck === null ? 'border-transparent card-gradient-border' : selfCheck ? 'border-emerald-500/45' : 'border-rose-500/45'
-  } flex flex-col overflow-hidden rounded-ds bg-ds-card shadow-card ${
-    compact ? 'h-full min-h-0' : 'min-h-[280px] sm:min-h-[380px] md:min-h-[440px]'
-  }`
+  )
 
-  const bodyClass = compact
-    ? 'min-h-0 flex-1 overflow-y-auto px-[14px] py-[16px] no-scrollbar'
-    : 'flex-1 overflow-y-auto no-scrollbar px-6 py-6 md:px-8 md:py-8'
+  const bodyClass = getCardBodyClass(compact)
 
   const typeBadge = (
     <span className="rounded-[3px] border border-[--brand-secondary-50] bg-[--brand-secondary-12] px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-[--brand-secondary]">
@@ -90,7 +82,7 @@ const FreeRecallCard = memo(function FreeRecallCard({
                   {t.answer}
                 </span>
                 {typeBadge}
-                {renderOriginBadge()}
+                <OriginBadge deckName={originDeckName} />
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 <span className="rounded-[3px] border border-[--brand-primary] px-[5px] py-px font-mono text-[9px] font-bold text-[--brand-primary]">B</span>
@@ -174,7 +166,7 @@ const FreeRecallCard = memo(function FreeRecallCard({
                 {t.question}
               </span>
               {typeBadge}
-              {renderOriginBadge()}
+              <OriginBadge deckName={originDeckName} />
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <span className="rounded-[3px] border border-ds-border px-[5px] py-px font-mono text-[9px] font-bold text-zinc-400">A</span>

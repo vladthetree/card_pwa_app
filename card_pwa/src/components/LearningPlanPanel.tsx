@@ -13,77 +13,21 @@ import { UI_TOKENS } from '../constants/ui'
 import { useVisualViewport } from '../hooks/useVisualViewport'
 import type { LearningPacingResult } from '../utils/learningUnitRanking'
 import type { LearningPlanMappingSummary } from '../utils/learningPlanMapping'
-import { isValidExamDateIso } from '../utils/examDate'
+import { resolveDateLocale } from '../utils/time'
 import { useTheme, themeScopeClass } from '../contexts/ThemeContext'
 import {
   SUPPORTED_EXAM_LANGUAGES,
-  isSupportedExamLanguage,
+  buildLearningPlanFormValues,
+  learningPlanFormValuesEqual,
+  normalizeLearningPlanFormValues,
   type ExamLanguage,
+  type LearningPlanField,
+  type LearningPlanFormValues,
 } from '../utils/learningPlan'
 
 export const EXAM_LANGUAGES = SUPPORTED_EXAM_LANGUAGES
-export type { ExamLanguage }
-
-export interface LearningPlanFormValues {
-  examDateIso: string
-  examLanguage: string
-  weeklyHours: string
-  learningDays: string
-  bufferDays: string
-}
-
-export interface NormalizedLearningPlanValues {
-  examDateIso: string | null
-  examLanguage: ExamLanguage
-  weeklyMinutesAvailable: number
-  learningDaysPerWeek: number
-  bufferDays: number
-}
-
-export type LearningPlanField = keyof LearningPlanFormValues
-
-export function buildLearningPlanFormValues(input: {
-  examDateIso?: string | null
-  examLanguage?: string | null
-  weeklyMinutesAvailable?: number | null
-  learningDaysPerWeek?: number | null
-  bufferDays?: number | null
-}): LearningPlanFormValues {
-  return {
-    examDateIso: input.examDateIso ?? '',
-    examLanguage: isSupportedExamLanguage(input.examLanguage) ? input.examLanguage : 'en',
-    weeklyHours: String((input.weeklyMinutesAvailable ?? 300) / 60),
-    learningDays: String(input.learningDaysPerWeek ?? 6),
-    bufferDays: String(input.bufferDays ?? 7),
-  }
-}
-
-export function learningPlanFormValuesEqual(a: LearningPlanFormValues, b: LearningPlanFormValues): boolean {
-  return (Object.keys(a) as LearningPlanField[]).every(key => a[key] === b[key])
-}
-
-export function normalizeLearningPlanFormValues(values: LearningPlanFormValues): NormalizedLearningPlanValues | null {
-  const weeklyHours = Number(values.weeklyHours)
-  const learningDays = Number(values.learningDays)
-  const bufferDays = Number(values.bufferDays)
-  const dateValid = values.examDateIso === '' || isValidExamDateIso(values.examDateIso)
-  const languageValid = isSupportedExamLanguage(values.examLanguage)
-  if (
-    !dateValid || !languageValid ||
-    !Number.isFinite(weeklyHours) || weeklyHours < 0.5 || weeklyHours > 80 ||
-    !Number.isInteger(learningDays) || learningDays < 1 || learningDays > 7 ||
-    values.bufferDays.trim() === '' ||
-    !Number.isInteger(bufferDays) || bufferDays < 0 || bufferDays > 60
-  ) return null
-
-  return {
-    examDateIso: values.examDateIso || null,
-    examLanguage: values.examLanguage as ExamLanguage,
-    weeklyMinutesAvailable: Math.round(weeklyHours * 60),
-    learningDaysPerWeek: learningDays,
-    bufferDays,
-  }
-}
+export type { ExamLanguage, LearningPlanField, LearningPlanFormValues }
+export { buildLearningPlanFormValues, learningPlanFormValuesEqual, normalizeLearningPlanFormValues }
 
 const COPY = {
   de: {
@@ -259,7 +203,7 @@ function formatExamDate(iso: string, language: 'de' | 'en'): string {
   const [year, month, day] = iso.split('-').map(Number)
   const date = new Date(year, month - 1, day)
   if (!Number.isFinite(date.getTime())) return iso
-  return new Intl.DateTimeFormat(language === 'de' ? 'de-DE' : 'en-US', {
+  return new Intl.DateTimeFormat(resolveDateLocale(language), {
     day: '2-digit', month: 'short', year: 'numeric',
   }).format(date)
 }
