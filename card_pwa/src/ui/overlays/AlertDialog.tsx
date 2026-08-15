@@ -2,11 +2,12 @@
  * AI_CONTEXT:
  * Role: Confirm/destructive dialog primitive with explicit CloseReason output.
  */
-import { useEffect, useId, useRef, type ReactNode } from 'react'
+import { useId, useRef, type ReactNode } from 'react'
 import { AlertTriangle, X } from 'lucide-react'
 import { motion, useReducedMotion } from '../motion'
 import { UI_TOKENS } from '../../constants/ui'
 import { useCloseGuard } from './useCloseGuard'
+import { useOverlayFocusAndEscape } from './useOverlayFocusAndEscape'
 import type { CloseReason } from './overlayTypes'
 
 interface AlertDialogProps {
@@ -37,20 +38,7 @@ export function AlertDialog({
   const panelRef = useRef<HTMLDivElement>(null)
   const prefersReducedMotion = useReducedMotion()
   const requestClose = useCloseGuard({ dismissible, onClose })
-
-  useEffect(() => {
-    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null
-    cancelRef.current?.focus()
-    return () => previous?.focus()
-  }, [])
-
-  useEffect(() => {
-    const handler = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') requestClose('escape')
-    }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [requestClose])
+  useOverlayFocusAndEscape(cancelRef, requestClose)
 
   const confirmClass = variant === 'danger'
     ? 'flex-1 py-2.5 rounded-ds-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold transition-all duration-200 active:scale-[0.98]'

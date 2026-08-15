@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: React context for theme Context; provides global settings/theme state to the application tree.
  */
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from 'react'
 import { STORAGE_KEYS } from '../constants/appIdentity'
 
 /**
@@ -165,10 +165,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   const theme = THEMES[themeKey]
 
-  const setTheme = (key: ThemeKey) => {
+  const setTheme = useCallback((key: ThemeKey) => {
     setThemeKey(key)
     localStorage.setItem(STORAGE_KEYS.theme, key)
-  }
+  }, [])
 
   // Apply theme to CSS custom properties
   useEffect(() => {
@@ -261,8 +261,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     document.body.style.backgroundColor = themeColor
   }, [theme, themeKey])
 
+  const value = useMemo(() => ({ theme, themeKey, setTheme }), [theme, themeKey, setTheme])
+
   return (
-    <ThemeContext.Provider value={{ theme, themeKey, setTheme }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   )

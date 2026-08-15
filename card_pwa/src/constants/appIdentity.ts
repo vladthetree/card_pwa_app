@@ -25,10 +25,8 @@ export const STORAGE_KEYS = {
   /** Zuletzt erfolgreich geladene Videokatalog-Dateiliste — Offline-Quelle des Heute-Pakets. */
   videoCatalog: 'card-pwa-video-catalog',
   homeDeckSortMode: 'card-pwa-home-deck-sort-mode',
-  homeShuffleDecksTop: 'card-pwa-home-shuffle-decks-top',
   homeShuffleOnlyMode: 'card-pwa-home-shuffle-only-mode',
   expandedSubdeckIds: 'card-pwa:expanded-subdeck-ids',
-  homeActiveTab: 'card-pwa-home-active-tab',
   labsCompleted: 'card-pwa-labs-completed',
   labsTrainingSolved: 'card-pwa-labs-training-solved',
   /** sessionStorage: ?view=import überlebt den SW-Install-/Update-Reload. */

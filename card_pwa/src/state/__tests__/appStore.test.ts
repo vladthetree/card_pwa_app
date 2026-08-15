@@ -21,7 +21,7 @@ describe('appStore action reference stability', () => {
     expect(second.closeOverlay).toBe(first.closeOverlay)
     expect(second.topOverlayId).toBe(first.topOverlayId)
     expect(second.setActiveView).toBe(first.setActiveView)
-    expect(second.setHomeActiveTab).toBe(first.setHomeActiveTab)
+    expect(second.setSyncStatus).toBe(first.setSyncStatus)
   })
 
   it('keeps action identity stable across a state change, while state itself updates', () => {

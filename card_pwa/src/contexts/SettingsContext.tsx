@@ -20,8 +20,7 @@ import { enqueueSyncOperation } from '../services/syncQueue'
 import type { ProfileRecord } from '../db'
 import { saveDraftLearnerExamPlan } from '../db/queries/learningUnits'
 import { normalizeExamDateIso, normalizeExamDateUpdatedAt } from '../utils/examDate'
-
-export { normalizeExamDateIso, normalizeExamDateUpdatedAt } from '../utils/examDate'
+import { clamp, finiteOr } from '../utils/numeric'
 
 export type Language = 'de' | 'en'
 export type Algorithm = 'sm2' | 'fsrs'
@@ -212,22 +211,15 @@ const DEFAULT_SETTINGS: Settings = {
 }
 
 function normalizeInteger(value: unknown, fallback: number, min: number, max: number): number {
-  const parsed = Number(value)
-  if (!Number.isFinite(parsed)) return fallback
-  return Math.max(min, Math.min(max, Math.round(parsed)))
+  return clamp(Math.round(finiteOr(Number(value), fallback)), min, max)
 }
 
 function normalizeDailyGoal(value: unknown): number {
-  const parsed = Number(value)
-  if (!Number.isFinite(parsed)) return 20
-  const rounded = Math.round(parsed)
-  return Math.max(0, Math.min(500, rounded))
+  return normalizeInteger(value, 20, 0, 500)
 }
 
 export function normalizeNewCardsPerDay(value: unknown): number {
-  const parsed = Number(value)
-  if (!Number.isFinite(parsed)) return 10
-  return Math.max(0, Math.min(100, Math.round(parsed)))
+  return normalizeInteger(value, 10, 0, 100)
 }
 
 export function normalizeSettings(input: Partial<Settings> | undefined): Settings {

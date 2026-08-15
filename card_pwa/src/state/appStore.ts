@@ -5,12 +5,6 @@
  */
 import { useSyncExternalStore } from 'react'
 import {
-  initialHomeUiState,
-  type HomeActiveTab,
-  type HomeUiSlice,
-  type HomeUiSliceState,
-} from './slices/homeUiSlice'
-import {
   initialNavigationState,
   type NavigationSlice,
   type NavigationSliceState,
@@ -24,11 +18,6 @@ import {
   type OverlaySliceState,
 } from './slices/overlaySlice'
 import {
-  initialPwaRuntimeState,
-  type PwaRuntimeSlice,
-  type PwaRuntimeSliceState,
-} from './slices/pwaRuntimeSlice'
-import {
   initialSyncRuntimeState,
   type SyncRuntimeSlice,
   type SyncRuntimeSliceState,
@@ -39,15 +28,11 @@ export type AppStoreState =
   & OverlaySliceState
   & SyncRuntimeSliceState
   & NavigationSliceState
-  & HomeUiSliceState
-  & PwaRuntimeSliceState
 
 export type AppStore = AppStoreState
   & OverlaySlice
   & SyncRuntimeSlice
   & NavigationSlice
-  & HomeUiSlice
-  & PwaRuntimeSlice
 
 type Listener = () => void
 
@@ -55,8 +40,6 @@ const initialState: AppStoreState = {
   ...initialOverlayState,
   ...initialSyncRuntimeState,
   ...initialNavigationState,
-  ...initialHomeUiState,
-  ...initialPwaRuntimeState,
 }
 
 let state: AppStoreState = { ...initialState }
@@ -137,20 +120,6 @@ const actions: Omit<AppStore, keyof AppStoreState> = {
     activeView,
     previousView: current.activeView === activeView ? current.previousView : current.activeView,
   })),
-  setHomeActiveTab: (homeActiveTab: HomeActiveTab) => setState({ homeActiveTab }),
-  setDashboardMode: (dashboardMode: boolean) => setState({ dashboardMode }),
-  setShuffleOnlyMode: (shuffleOnlyMode: boolean) => setState({ shuffleOnlyMode }),
-  toggleExpandedSubdeck: (deckId: string) => {
-    setState(current => ({
-      ...current,
-      expandedSubdeckIds: current.expandedSubdeckIds.includes(deckId)
-        ? current.expandedSubdeckIds.filter(id => id !== deckId)
-        : [...current.expandedSubdeckIds, deckId],
-    }))
-  },
-  setInstallPromptAvailable: (installPromptAvailable: boolean) => setState({ installPromptAvailable }),
-  setServiceWorkerUpdateAvailable: (serviceWorkerUpdateAvailable: boolean) => setState({ serviceWorkerUpdateAvailable }),
-  setNotificationsEnabled: (notificationsEnabled: boolean) => setState({ notificationsEnabled }),
 }
 
 export function getAppStoreState(): AppStore {
@@ -166,7 +135,7 @@ export function useAppStore<T>(selector: (store: AppStore) => T): T {
 }
 
 export function resetAppStoreForTests(): void {
-  state = { ...initialState, expandedSubdeckIds: [] }
+  state = { ...initialState }
   emit()
 }
 

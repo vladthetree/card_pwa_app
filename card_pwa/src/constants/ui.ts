@@ -22,15 +22,6 @@ export const UI_TOKENS = {
     contentPadding: 'px-4 py-10',
   },
 
-  // ─── Radius scale ──────────────────────────────────────────────────────────
-  radius: {
-    sm: 'rounded-ds-sm',
-    md: 'rounded-ds',
-    lg: 'rounded-ds-lg',
-    xl: 'rounded-ds-lg',
-    modal: 'rounded-ds-lg sm:rounded-ds-xl',
-  },
-
   // ─── Icon size scale ───────────────────────────────────────────────────────
   icon: {
     xs:  10,
@@ -39,16 +30,6 @@ export const UI_TOKENS = {
     lg:  16,
     xl:  18,
     xxl: 24,
-  },
-
-  // ─── Text size scale ───────────────────────────────────────────────────────
-  text: {
-    caption: 'text-[10px]',                  // timestamp, micro-labels
-    micro:   'text-[11px]',                   // stat sub-labels (transition to xs)
-    body:    'text-xs',                       // 12px – most secondary text
-    base:    'text-sm',                       // 14px – primary body
-    title:   'text-lg',                       // 18px – modal titles, section headings
-    display: 'text-2xl',                      // 24px – page titles, numbers
   },
 
   // ─── Rating button colors (replaces inline hex strings in RatingBar) ───────
@@ -65,14 +46,6 @@ export const UI_TOKENS = {
     brand: 'flex min-w-0 items-center gap-2 sm:gap-3',
     title: 'text-2xl font-bold text-theme-text tracking-tight',
     subtitle: 'text-theme-text-secondary text-sm',
-  },
-
-  stats: {
-    grid: 'mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3',
-  },
-
-  storage: {
-    minFillPercent: 1,
   },
 
   surface: {

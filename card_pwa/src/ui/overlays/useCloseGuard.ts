@@ -7,7 +7,7 @@
  * Important: Explicit close reasons (close-button/cancel/submit/programmatic)
  * are never stack-gated — only escape/backdrop are, per the ADR wording.
  */
-import { useEffect, useId } from 'react'
+import { useCallback, useEffect, useId } from 'react'
 import { getAppStoreState, useAppStore } from '../../state/appStore'
 import type { CloseReason } from './overlayTypes'
 
@@ -37,9 +37,10 @@ export function useCloseGuard(input: {
   }, [overlayId])
 
   const isTopmost = useAppStore(store => store.topOverlayId() === overlayId)
+  const { onClose } = input
 
-  return (reason: CloseReason) => {
+  return useCallback((reason: CloseReason) => {
     if (!computeShouldHandleOverlayClose(reason, dismissible, isTopmost)) return
-    input.onClose(reason)
-  }
+    onClose(reason)
+  }, [dismissible, isTopmost, onClose])
 }
