@@ -282,3 +282,28 @@ export function calculateCardStateAfterReview(
     lastReviewedAt: nowMs,
   }
 }
+
+/** Baut den Reset-Zustand einer Karte („neu“, heute fällig, Historie genullt).
+ *  Pure Konstruktion — auch der Pull-Applier (progress.reset) nutzt sie. */
+export function buildResetCardRecord(
+  card: CardRecord,
+  input: { timestamp: number; dueDay: number; dueAt: number },
+): CardRecord {
+  const record: CardRecord = {
+    ...card,
+    type: SM2.CARD_TYPE_NEW,
+    queue: SM2.QUEUE_NEW,
+    due: input.dueDay,
+    dueAt: input.dueAt,
+    learningStep: 0,
+    interval: 0,
+    factor: 2500,
+    reps: 0,
+    lapses: 0,
+    updatedAt: input.timestamp,
+  }
+  delete record.stability
+  delete record.difficulty
+  delete record.lastReviewedAt
+  return record
+}

@@ -14,7 +14,7 @@
  * — that exact divergence was a real bug, caught by operationResolver.test.ts.
  */
 import { db, type CardRecord, type DeckRecord, type ReviewRecord, type ShuffleCollectionRecord } from '../../db'
-import { buildResetCardRecord } from '../../db/queries/reviews'
+import { buildResetCardRecord } from '../../utils/sm2'
 import type { SyncOperationType } from '../syncQueue'
 import { createWorker } from '../../utils/workers/workerPool'
 import { normalizeDeck } from '../../utils/normalize/deck'

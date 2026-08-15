@@ -50,3 +50,23 @@ export function toInlineTag(value: string): string {
     .replace(SEPARATOR_PATTERN, '-')
     .replace(/^-+|-+$/g, '')
 }
+
+function normalizeTagWhitespace(tag: string): string {
+  return tag.trim().replace(/\s+/g, ' ')
+}
+
+/** Dedupliziert Video-Notiz-Tags über die kanonische ID; behält die
+ *  Anzeigeform (nur getrimmt/whitespace-normalisiert) des ersten Treffers. */
+export function normalizeTags(tags: string[]): string[] {
+  const seen = new Set<string>()
+  const result: string[] = []
+  for (const raw of tags) {
+    const tag = normalizeTagWhitespace(raw)
+    if (!tag) continue
+    const key = normalizeTagId(tag)
+    if (seen.has(key)) continue
+    seen.add(key)
+    result.push(tag)
+  }
+  return result
+}

@@ -6,14 +6,14 @@
  */
 import { db, type CardRecord, type ReviewRecord } from '../../db'
 import { readAllCardsShared, readAllDecksShared } from './sharedReads'
-import { calculateCardStateAfterReview, SM2, isStudyableCard } from '../../utils/sm2'
+import { calculateCardStateAfterReview, SM2, isStudyableCard, buildResetCardRecord } from '../../utils/sm2'
 import { calculateCardStateAfterReviewFSRS } from '../../utils/fsrs'
 import { isRecalledRating } from '../../utils/gamification'
 import { type AlgorithmParams } from '../../utils/algorithmParams'
 import { drainTransactionalOutbox, enqueueSyncOperation } from '../../services/syncQueue'
 import { buildOpId } from '../../services/syncConfig'
 import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
-import { getDayStartMs, resolveDueAtMs } from '../../utils/time'
+import { getDayStartMs, resolveDueAtMs, DAY_MS } from '../../utils/time'
 import { clamp, finiteOr } from '../../utils/numeric'
 import { buildLatestSessionCardReviews } from '../../utils/reviewIdentity'
 import {
@@ -55,8 +55,8 @@ function normalizeSchedulingInput(
   const nowMs = Date.now()
   const type = Number.isInteger(card.type) ? clamp(card.type, 0, 3) : 0
   const queue = Number.isInteger(card.queue) ? clamp(card.queue, -1, 2) : type
-  const due = Math.round(finiteOr(card.due, Math.floor(Date.now() / 86_400_000)))
-  const dueAt = Math.round(finiteOr(card.dueAt, due * 86_400_000))
+  const due = Math.round(finiteOr(card.due, Math.floor(Date.now() / DAY_MS)))
+  const dueAt = Math.round(finiteOr(card.dueAt, due * DAY_MS))
   const interval = Math.max(0, Math.round(finiteOr(card.interval, 0)))
   const reps = Math.max(0, Math.round(finiteOr(card.reps, 0)))
   const lapses = Math.max(0, Math.round(finiteOr(card.lapses, 0)))
@@ -210,7 +210,7 @@ export interface YoungCardLapseStats {
  * drehen — eine hohe Quote hier spricht für Intraday-Lernschritte.
  */
 export async function getYoungCardLapseRate(days = 30, maxReps = 3): Promise<YoungCardLapseStats> {
-  const cutoff = Date.now() - days * 86_400_000
+  const cutoff = Date.now() - days * DAY_MS
   const reviews = await db.reviews.toArray()
   reviews.sort((a, b) => a.timestamp - b.timestamp)
 
@@ -237,7 +237,7 @@ export async function getYoungCardLapseRate(days = 30, maxReps = 3): Promise<You
  */
 export async function countNewCardsIntroducedToday(nextDayStartsAt = 0): Promise<number> {
   const todayStartMs = getDayStartMs(Date.now(), nextDayStartsAt)
-  const todayReviews = await db.reviews.where('timestamp').aboveOrEqual(todayStartMs).toArray()
+  const todayReviews = await listReviewsSince(todayStartMs)
   const cardIds = Array.from(new Set(todayReviews.map(review => review.cardId)))
   if (cardIds.length === 0) return 0
 
@@ -282,7 +282,7 @@ export async function listReviewsSince(fromMs: number): Promise<ReviewRecord[]> 
 export async function listCardIdsReviewedSince(cardIds: readonly string[], sinceMs: number): Promise<string[]> {
   if (cardIds.length === 0) return []
   const wanted = new Set(cardIds)
-  const reviews = await db.reviews.where('timestamp').aboveOrEqual(sinceMs).toArray()
+  const reviews = await listReviewsSince(sinceMs)
   const reviewed = new Set<string>()
   for (const review of reviews) {
     if (wanted.has(review.cardId)) reviewed.add(review.cardId)
@@ -292,7 +292,7 @@ export async function listCardIdsReviewedSince(cardIds: readonly string[], since
 
 export async function listDeckCardIdsReviewedSince(deckId: string, sinceMs: number): Promise<string[]> {
   const [todayReviews, deckCards] = await Promise.all([
-    db.reviews.where('timestamp').aboveOrEqual(sinceMs).toArray(),
+    listReviewsSince(sinceMs),
     db.cards.where('deckId').equals(deckId).toArray(),
   ])
   const deckCardIds = new Set(deckCards.filter(card => !card.isDeleted).map(card => card.id))
@@ -305,7 +305,7 @@ export async function listDeckCardIdsReviewedSince(deckId: string, sinceMs: numb
 
 export async function getGlobalStats(nextDayStartsAt = 0): Promise<GlobalStats> {
   const nowMs = Date.now()
-  const dayMs = 86_400_000
+  const dayMs = DAY_MS
   const daysSinceEpoch = Math.floor(nowMs / dayMs)
   const todayStartMs = getDayStartMs(nowMs, nextDayStartsAt)
 
@@ -318,7 +318,7 @@ export async function getGlobalStats(nextDayStartsAt = 0): Promise<GlobalStats> 
   const [cards, decks, reviewsToday] = await Promise.all([
     readAllCardsShared(),
     readAllDecksShared(),
-    db.reviews.where('timestamp').aboveOrEqual(todayStartMs).toArray(),
+    listReviewsSince(todayStartMs),
   ])
 
   let total = 0
@@ -377,7 +377,7 @@ export async function getGlobalStats(nextDayStartsAt = 0): Promise<GlobalStats> 
 
 export async function getFutureDueForecast(days = 15, nextDayStartsAt = 0): Promise<Array<{ dayStartMs: number; count: number }>> {
   const normalizedDays = Number.isFinite(days) ? Math.max(1, Math.floor(days)) : 15
-  const dayMs = 86_400_000
+  const dayMs = DAY_MS
   const nowMs = Date.now()
   const todayStartMs = getDayStartMs(nowMs, nextDayStartsAt)
   const tomorrowStartMs = todayStartMs + dayMs
@@ -429,7 +429,7 @@ export async function getDeckMetricsSnapshot(deckId: string, period: MetricsPeri
   const allReviews = await db.reviews.where('cardId').anyOf(cardIds).toArray()
 
   const now = Date.now()
-  const periodMs = period === '7d' ? 7 * 86_400_000 : Number.POSITIVE_INFINITY
+  const periodMs = period === '7d' ? 7 * DAY_MS : Number.POSITIVE_INFINITY
   const periodStart = Number.isFinite(periodMs) ? now - periodMs : 0
   const periodReviews = allReviews.filter(review => review.timestamp >= periodStart)
   const reviewedCardCount = new Set(periodReviews.map(review => review.cardId)).size
@@ -441,7 +441,7 @@ export async function getDeckMetricsSnapshot(deckId: string, period: MetricsPeri
 
   const successRate = computeSuccessRate(periodReviews)
 
-  const trendWindowMs = 7 * 86_400_000
+  const trendWindowMs = 7 * DAY_MS
   const currentWindowStart = now - trendWindowMs
   const previousWindowStart = currentWindowStart - trendWindowMs
   const currentWindow = allReviews.filter(review => review.timestamp >= currentWindowStart)
@@ -495,14 +495,10 @@ export async function getShuffleCollectionMetricsSnapshot(
   const trendWeighted = snapshots.reduce((sum, snapshot) => sum + snapshot.trendDelta * Math.max(1, snapshot.totalReviews), 0)
 
   for (const snapshot of snapshots) {
-    ratingCounts[1] += snapshot.ratingCounts[1]
-    ratingCounts[2] += snapshot.ratingCounts[2]
-    ratingCounts[3] += snapshot.ratingCounts[3]
-    ratingCounts[4] += snapshot.ratingCounts[4]
-    lastRatingAt[1] = Math.max(lastRatingAt[1] ?? 0, snapshot.lastRatingAt[1] ?? 0) || null
-    lastRatingAt[2] = Math.max(lastRatingAt[2] ?? 0, snapshot.lastRatingAt[2] ?? 0) || null
-    lastRatingAt[3] = Math.max(lastRatingAt[3] ?? 0, snapshot.lastRatingAt[3] ?? 0) || null
-    lastRatingAt[4] = Math.max(lastRatingAt[4] ?? 0, snapshot.lastRatingAt[4] ?? 0) || null
+    for (const rating of [1, 2, 3, 4] as const) {
+      ratingCounts[rating] += snapshot.ratingCounts[rating]
+      lastRatingAt[rating] = Math.max(lastRatingAt[rating] ?? 0, snapshot.lastRatingAt[rating] ?? 0) || null
+    }
   }
 
   return {
@@ -710,31 +706,6 @@ export async function undoReview(token: ReviewUndoToken): Promise<{ ok: boolean;
   }
 }
 
-/** Baut den Reset-Zustand einer Karte („neu“, heute fällig, Historie genullt).
- *  Pure Konstruktion — auch der Pull-Applier (progress.reset) nutzt sie. */
-export function buildResetCardRecord(
-  card: CardRecord,
-  input: { timestamp: number; dueDay: number; dueAt: number },
-): CardRecord {
-  const record: CardRecord = {
-    ...card,
-    type: SM2.CARD_TYPE_NEW,
-    queue: SM2.QUEUE_NEW,
-    due: input.dueDay,
-    dueAt: input.dueAt,
-    learningStep: 0,
-    interval: 0,
-    factor: 2500,
-    reps: 0,
-    lapses: 0,
-    updatedAt: input.timestamp,
-  }
-  delete record.stability
-  delete record.difficulty
-  delete record.lastReviewedAt
-  return record
-}
-
 /**
  * Setzt den kompletten Lernfortschritt zurück: alle Karten auf „neu“ (heute
  * fällig), Review-Historie und abgeleitete Metriken (Heatmap, Streak, Stats)
@@ -748,8 +719,8 @@ export function buildResetCardRecord(
 export async function resetLearningProgress(): Promise<{ ok: boolean; cards: number; error?: string }> {
   try {
     const timestamp = Date.now()
-    const dueDay = Math.floor(timestamp / 86_400_000)
-    const dueAt = dueDay * 86_400_000
+    const dueDay = Math.floor(timestamp / DAY_MS)
+    const dueAt = dueDay * DAY_MS
 
     let resetCount = 0
     await db.transaction('rw', [db.cards, db.reviews, db.cardStats, db.deckProgress, db.activeSessions], async () => {
@@ -795,7 +766,7 @@ export async function forceCardReviewTomorrow(
     // Use UTC-epoch-day arithmetic (consistent with how SM2/FSRS set `due`) so
     // the `due` field is never behind today's UTC day in UTC+ timezones, which
     // would cause the card to appear prematurely in today's workload KPI.
-    const tomorrowDays = Math.floor(Date.now() / 86_400_000) + 1
+    const tomorrowDays = Math.floor(Date.now() / DAY_MS) + 1
     const interval = Math.max(1, card.interval || 1)
 
     const update: Partial<CardRecord> = {
@@ -859,7 +830,7 @@ export async function smoothBacklog(
 ): Promise<{ triggered: boolean; distributed: number }> {
   try {
     const nowMs = Date.now()
-    const daysSinceEpoch = Math.floor(nowMs / 86_400_000)
+    const daysSinceEpoch = Math.floor(nowMs / DAY_MS)
     // Use local midnight so that cards become "overdue" at the start of the
     // user's calendar day rather than at UTC midnight (fixes UTC+ timezone drift).
     const todayLocalMs = getDayStartMs(nowMs, nextDayStartsAt)
@@ -905,7 +876,7 @@ export async function smoothBacklog(
         )
         const update: Partial<CardRecord> = {
           due: newDueDays,
-          dueAt: newDueDays * 86_400_000,
+          dueAt: newDueDays * DAY_MS,
           updatedAt: nowMs,
         }
         await db.cards.update(card.id, update)
@@ -913,13 +884,11 @@ export async function smoothBacklog(
       }
     })
 
-    for (const item of syncUpdates) {
-      await enqueueSyncOperation('card.update', {
-        cardId: item.cardId,
-        updates: item.update,
-        timestamp: nowMs,
-      })
-    }
+    await Promise.all(syncUpdates.map(item => enqueueSyncOperation('card.update', {
+      cardId: item.cardId,
+      updates: item.update,
+      timestamp: nowMs,
+    })))
 
     emitReviewUpdatedEvent()
     return { triggered: true, distributed: toDistribute.length }

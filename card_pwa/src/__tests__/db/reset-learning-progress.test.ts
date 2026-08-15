@@ -65,7 +65,8 @@ vi.mock('../../utils/workers/statsWorkerClient', () => ({
   runStatsForecast: vi.fn(async () => ({})),
 }))
 
-import { resetLearningProgress, buildResetCardRecord } from '../../db/queries/reviews'
+import { resetLearningProgress } from '../../db/queries/reviews'
+import { buildResetCardRecord } from '../../utils/sm2'
 
 function buildCard(overrides: Partial<CardRecord> = {}): CardRecord {
   return {

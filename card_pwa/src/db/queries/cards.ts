@@ -9,6 +9,8 @@ import { SM2 } from '../../utils/sm2'
 import { enqueueSyncOperation } from '../../services/syncQueue'
 import { REVIEW_UPDATED_EVENT } from '../../constants/appIdentity'
 import { buildCardSessionAppearance, buildFirstCardAnswerTiming } from '../../utils/cardAnswerTiming'
+import { DAY_MS } from '../../utils/time'
+import { clamp } from '../../utils/numeric'
 
 /**
  * Caps all overdue cards' due date to today so a long absence doesn't create
@@ -17,7 +19,7 @@ import { buildCardSessionAppearance, buildFirstCardAnswerTiming } from '../../ut
  */
 export async function normalizeDueDates(): Promise<{ updated: number }> {
   const nowMs = Date.now()
-  const daysSinceEpoch = Math.floor(nowMs / 86_400_000)
+  const daysSinceEpoch = Math.floor(nowMs / DAY_MS)
 
   const overdue = await db.cards
     .filter(c => {
@@ -63,9 +65,9 @@ export async function createCard(card: Omit<CardRecord, 'createdAt'>): Promise<{
       createdAt,
       updatedAt,
       algorithm: derivedAlgorithm,
-      dueAt: card.dueAt ?? (Math.max(0, Math.floor(card.due ?? Math.floor(Date.now() / 86_400_000))) * 86_400_000),
+      dueAt: card.dueAt ?? (Math.max(0, Math.floor(card.due ?? Math.floor(Date.now() / DAY_MS))) * DAY_MS),
       stability: derivedAlgorithm === 'fsrs' ? Math.max(0.5, card.stability ?? card.interval ?? 1) : card.stability,
-      difficulty: derivedAlgorithm === 'fsrs' ? Math.max(1, Math.min(10, card.difficulty ?? (card.factor ?? 2500) / 500)) : card.difficulty,
+      difficulty: derivedAlgorithm === 'fsrs' ? clamp(card.difficulty ?? (card.factor ?? 2500) / 500, 1, 10) : card.difficulty,
     })
     await enqueueDeckCreateChain(card.deckId)
     await enqueueSyncOperation('card.create', {

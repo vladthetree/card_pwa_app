@@ -8,8 +8,10 @@ import { db, type VideoNoteRecord } from '../../db'
 import { enqueueSyncOperation } from '../../services/syncQueue'
 import { collectRelatedTags, extractTags, type RelatedTagStats } from '../../utils/videoTags'
 import { extractLinks, normalizeLinkTarget } from '../../utils/videoLinks'
-import { normalizeTagId } from '../../utils/tagIdentity'
+import { normalizeTagId, normalizeTags } from '../../utils/tagIdentity'
 import { ensureVideoTagMetaForNote } from './videoTagMeta'
+
+export { normalizeTags }
 
 /**
  * Notizzettel zu Lernvideos. Tags werden direkt im Notiztext als `#tag` gesetzt
@@ -19,24 +21,6 @@ import { ensureVideoTagMetaForNote } from './videoTagMeta'
  * (Compound-Primary-Key `[profileId+objective]`), damit z. B. „Vlad" eigene
  * Notizen führt, ohne dass andere Profile sie sehen.
  */
-
-function normalizeTag(tag: string): string {
-  return tag.trim().replace(/\s+/g, ' ')
-}
-
-export function normalizeTags(tags: string[]): string[] {
-  const seen = new Set<string>()
-  const result: string[] = []
-  for (const raw of tags) {
-    const tag = normalizeTag(raw)
-    if (!tag) continue
-    const key = normalizeTagId(tag)
-    if (seen.has(key)) continue
-    seen.add(key)
-    result.push(tag)
-  }
-  return result
-}
 
 export async function getVideoNote(profileId: string, objective: string): Promise<VideoNoteRecord | null> {
   const record = await db.videoNotes2.get([profileId, objective])

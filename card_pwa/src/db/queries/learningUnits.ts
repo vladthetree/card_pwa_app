@@ -559,10 +559,6 @@ export async function getActiveLabAttempt(
   return attempts.find(attempt => attempt.status === 'inProgress')
 }
 
-export async function listLabAttempts(profileId: string, db: Db = defaultDb): Promise<LabAttemptRecord[]> {
-  return db.labAttempts.where('profileId').equals(profileId).toArray()
-}
-
 /** Startet einen Labversuch mit vollständig eingefrorenem Szenario oder liefert
  *  den laufenden Versuch zurück (höchstens einer je Profil+Szenario). */
 export async function startLabAttempt(

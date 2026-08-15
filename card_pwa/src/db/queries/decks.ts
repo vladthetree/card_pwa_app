@@ -8,7 +8,7 @@ import { db, type CardRecord, type DeckRecord } from '../../db'
 import { readAllCardsShared, readAllDecksShared } from './sharedReads'
 import { SM2, isStudyableCard } from '../../utils/sm2'
 import { factorToDifficulty } from '../../utils/algorithmParams'
-import { getDayStartMs } from '../../utils/time'
+import { getDayStartMs, resolveDueAtMs, DAY_MS } from '../../utils/time'
 import { generateUuidV7 } from '../../utils/id'
 import { enqueueSyncOperation } from '../../services/syncQueue'
 import { buildDailyQuestSelection } from '../../utils/studyCardOrdering'
@@ -146,11 +146,6 @@ function buildDeckTree(
     .map(deck => build(deck))
 }
 
-function resolveDueAtMs(row: Pick<CardRecord, 'due' | 'dueAt'>): number {
-  if (Number.isFinite(row.dueAt)) return Math.round(row.dueAt as number)
-  return Math.max(0, Math.floor(row.due)) * 86_400_000
-}
-
 async function computeAllDeckStats(
   deckIds: string[],
   nowMs: number,
@@ -184,9 +179,7 @@ async function computeAllDeckStats(
     }
 
     if (row.type === SM2.CARD_TYPE_REVIEW) {
-      const dueAtMs = Number.isFinite(row.dueAt)
-        ? Number(row.dueAt)
-        : Math.max(0, Math.floor(row.due)) * 86_400_000
+      const dueAtMs = resolveDueAtMs(row)
       if (dueAtMs <= nowMs) {
         stats.due += 1
       }
@@ -309,7 +302,7 @@ export async function getDeckHomeMetadata(
     }
   }
 
-  const dayMs = 86_400_000
+  const dayMs = DAY_MS
   const todayStartMs = getDayStartMs(Date.now(), nextDayStartsAt)
   const tomorrowStartMs = todayStartMs + dayMs
   const dayAfterTomorrowStartMs = tomorrowStartMs + dayMs
@@ -375,9 +368,7 @@ export async function getDeckHomeMetadata(
         continue
       }
 
-      const dueAtMs = Number.isFinite(row.dueAt)
-        ? Math.round(row.dueAt as number)
-        : Math.max(0, Math.floor(row.due)) * dayMs
+      const dueAtMs = resolveDueAtMs(row)
       const isLearningQueue = row.type === SM2.CARD_TYPE_LEARNING || row.type === SM2.CARD_TYPE_RELEARNING
 
       if (isLearningQueue) {
@@ -432,7 +423,7 @@ export async function getDeckHomeMetadata(
 
 export async function listDeckStudyCandidates(deckId: string, nextDayStartsAt = 0): Promise<Card[]> {
   const todayStartMs = getDayStartMs(Date.now(), nextDayStartsAt)
-  const tomorrowStartMs = todayStartMs + 86_400_000
+  const tomorrowStartMs = todayStartMs + DAY_MS
   const deckIds = await resolveDeckScopeIds(deckId)
 
   const rows = deckIds.length === 1
