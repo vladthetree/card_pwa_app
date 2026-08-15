@@ -2595,6 +2595,67 @@ class TestExamDateSync:
         rows = db_helper.query("SELECT exam_date_iso FROM server_profile_settings")
         assert rows == [(None,)]
 
+    def test_exam_date_upsert_rejected_for_shared_default_profile(self, api, db_helper):
+        # Default is the shared auto-join fallback account (client's
+        # useAutoJoinDefaultProfile) — a personal exam date there would leak
+        # between whichever family member's device last landed on it. Its
+        # name is reserved (can't create a second "Default" via api.create_profile),
+        # so join the one bootstrapped at schema init instead.
+        default_user_id = db_helper.query(
+            "SELECT user_id FROM users WHERE TRIM(profile_name)='Default' LIMIT 1"
+        )[0][0]
+        joined = api.join_public_profile(user_id=default_user_id, device_id="default-dev")
+        token = joined["profileToken"]
+
+        result = api.push(
+            op_id="exam-date-default-blocked",
+            op_type="examDate.upsert",
+            payload={"profileId": default_user_id, "examDateIso": "2026-09-24", "updatedAt": 1000},
+            client_id="client-default",
+            client_timestamp=1000,
+            auth_token=token,
+        )
+
+        assert result["ok"] is True
+        rows = db_helper.query(
+            f"SELECT exam_date_iso FROM server_profile_settings WHERE user_id='{default_user_id}'"
+        )
+        assert rows == []
+
+    def test_exam_date_clear_still_allowed_for_shared_default_profile(self, api, db_helper, server):
+        default_user_id = db_helper.query(
+            "SELECT user_id FROM users WHERE TRIM(profile_name)='Default' LIMIT 1"
+        )[0][0]
+        joined = api.join_public_profile(user_id=default_user_id, device_id="default-dev-2")
+        token = joined["profileToken"]
+
+        # Seed a stray value directly (as if set before the guard existed),
+        # then verify clearing it still works even on the Default profile.
+        conn = sqlite3.connect(server["db"])
+        try:
+            conn.execute(
+                "INSERT INTO server_profile_settings (user_id, exam_date_iso, updated_at) VALUES (?, ?, ?)",
+                (default_user_id, "2026-09-23", 500),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+        result = api.push(
+            op_id="exam-date-default-clear",
+            op_type="examDate.upsert",
+            payload={"profileId": default_user_id, "examDateIso": None, "updatedAt": 2000},
+            client_id="client-default",
+            client_timestamp=2000,
+            auth_token=token,
+        )
+
+        assert result["ok"] is True
+        rows = db_helper.query(
+            f"SELECT exam_date_iso FROM server_profile_settings WHERE user_id='{default_user_id}'"
+        )
+        assert rows == [(None,)]
+
 
 # ═════════════════════════════════════════════════════════════════════════════
 # Tests: Offline Merge End-to-End

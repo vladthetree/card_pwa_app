@@ -652,6 +652,20 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
     raw_exam_date = payload.get("examDateIso")
     exam_date_iso = raw_exam_date.strip() if isinstance(raw_exam_date, str) and raw_exam_date.strip() else None
 
+    # Default ist das geteilte Auto-Join-Fallback-Profil (useAutoJoinDefaultProfile
+    # im Client) für jedes Gerät ohne dediziertes Profil — ein persönlicher
+    # Prüfungstermin dort würde zwischen den Geräten verschiedener
+    # Familienmitglieder durchsickern, die zufällig darauf landen. Clearing
+    # (exam_date_iso is None) bleibt erlaubt, nur das Setzen wird abgelehnt.
+    if exam_date_iso is not None:
+      owner_profile_name = conn.execute(
+        "SELECT profile_name FROM users WHERE user_id=?",
+        (state_user_id,)
+      ).fetchone()
+      if owner_profile_name and (owner_profile_name[0] or "").strip() == "Default":
+        LOGGER.warning("EXAM_DATE_UPSERT_BLOCKED user_id=%s reason=shared_default_profile", state_user_id)
+        return
+
     conn.execute("""
       INSERT OR REPLACE INTO server_profile_settings
       (user_id, exam_date_iso, updated_at, last_source_client)

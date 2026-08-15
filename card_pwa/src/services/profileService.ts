@@ -107,6 +107,18 @@ export function profileScopeId(profile: ProfileRecord | null): string {
   return LOCAL_PROFILE_SCOPE
 }
 
+/**
+ * The shared fallback account auto-joined by useAutoJoinDefaultProfile for
+ * any device without a dedicated profile. Personal pacing data (currently:
+ * exam date) must not live there — it would leak between whichever family
+ * member's device last landed on it. Named-profile check by display name
+ * (server's profile_name column), the only signal the client has without an
+ * extra round trip.
+ */
+export function isDefaultProfile(profile: ProfileRecord | null): boolean {
+  return profile?.mode === 'linked' && profile.displayName === 'Default'
+}
+
 /** Return a local-only profile record (no server link). */
 export function buildLocalProfile(): ProfileRecord {
   const now = Date.now()
@@ -754,5 +766,24 @@ export function writeProfileHintCookie(userId: string): void {
     document.cookie = `${PROFILE_HINT_COOKIE_KEY}=${safe}; Max-Age=${maxAge}; Path=/; SameSite=Lax`
   } catch {
     // best effort
+  }
+}
+
+/**
+ * Reads the profile-hint cookie written by writeProfileHintCookie. Cookies
+ * survive a PWA storage wipe (uninstall/reinstall) that clears IndexedDB and
+ * localStorage, so this is what lets useAutoJoinDefaultProfile restore the
+ * device's actual last profile instead of always falling back to Default.
+ */
+export function readProfileHintCookie(): string | null {
+  try {
+    const match = document.cookie
+      .split('; ')
+      .find(entry => entry.startsWith(`${PROFILE_HINT_COOKIE_KEY}=`))
+    if (!match) return null
+    const value = decodeURIComponent(match.slice(PROFILE_HINT_COOKIE_KEY.length + 1))
+    return value.trim() || null
+  } catch {
+    return null
   }
 }

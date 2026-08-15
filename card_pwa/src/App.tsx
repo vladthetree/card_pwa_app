@@ -20,6 +20,7 @@ import { pickLaunchMotivationQuote } from './utils/motivationQuote'
 import { useFullscreenPreference } from './hooks/useFullscreen'
 import { useStartupSplash } from './hooks/app/useStartupSplash'
 import { useServiceWorkerUpdateFlow } from './hooks/app/useServiceWorkerUpdateFlow'
+import { useSecondaryViewPreload } from './hooks/app/useSecondaryViewPreload'
 import { useAppNavigation } from './hooks/app/useAppNavigation'
 import type { ServiceWorkerStartupReadiness } from './runtime/swRegistration'
 import { UI_TOKENS } from './constants/ui'
@@ -202,10 +203,18 @@ function SafeAreaDebugOverlay() {
 }
 
 const HomeView = lazy(() => import('./components/HomeView'))
-const StudyView = lazy(() => import('./components/StudyView'))
-const ShuffleStudyView = lazy(() => import('./components/ShuffleStudyView'))
-const VideosView = lazy(() => import('./components/videos/VideosView'))
+// Als benannte Funktionen statt inline in lazy(): so lassen sie sich auch
+// manuell anstoßen (useSecondaryViewPreload), ohne die Komponente zu rendern.
+const importStudyView = () => import('./components/StudyView')
+const importVideosView = () => import('./components/videos/VideosView')
+const importShuffleStudyView = () => import('./components/ShuffleStudyView')
+const StudyView = lazy(importStudyView)
+const VideosView = lazy(importVideosView)
+const ShuffleStudyView = lazy(importShuffleStudyView)
 const UpdateBanner = lazy(() => import('./components/UpdateBanner'))
+
+// Reihenfolge nach Wahrscheinlichkeit des nächsten Schritts aus Home heraus.
+const SECONDARY_VIEW_PRELOADERS = [importStudyView, importVideosView, importShuffleStudyView]
 
 function ViewFallback({ continueHint = false }: { continueHint?: boolean }) {
   const { settings } = useSettings()
@@ -300,6 +309,7 @@ function AppShell({ startupReady }: { startupReady: Promise<ServiceWorkerStartup
   const { showInitialSplash, splashContinueReady, dismissInitialSplash } = useStartupSplash(startupReady)
   const nav = useAppNavigation({ showInitialSplash })
   const { updateInstalledNotice } = useServiceWorkerUpdateFlow({ swSupported })
+  useSecondaryViewPreload(startupReady, SECONDARY_VIEW_PRELOADERS)
 
   return (
     <AppErrorBoundary>

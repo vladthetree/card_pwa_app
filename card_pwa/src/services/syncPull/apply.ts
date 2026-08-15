@@ -356,19 +356,29 @@ async function applyVideoNoteDelete(payload: unknown, fallbackTs = 0) {
   await db.videoNotes2.delete([profileId, objective])
 }
 
+interface ExamDateFieldsInput {
+  profileId: string
+  examDateIso: string | null
+  updatedAt: number
+  examLanguage?: unknown
+  weeklyMinutesAvailable?: unknown
+  learningDaysPerWeek?: unknown
+  bufferDays?: unknown
+  uiLanguage?: unknown
+}
+
 /**
  * Der profilgescopte Lernplan ist die autoritative Terminquelle. Settings
  * bleibt eine abgeleitete localStorage-Kompatibilitätsansicht für Countdown
- * und bestehende UI-Verbraucher.
+ * und bestehende UI-Verbraucher. Gemeinsamer Kern für den Op-Pfad
+ * (applyExamDateUpsert) und den Snapshot-Pfad (applySnapshotProfileSettings)
+ * — ein frischer Client bootstrapt per Snapshot statt per Op-Replay und würde
+ * einen historischen examDate.upsert sonst nie mehr sehen (Cursor springt
+ * direkt auf den aktuellen Serverstand).
  */
-async function applyExamDateUpsert(payload: unknown) {
-  if (!payload || typeof payload !== 'object') return
-  const value = payload as Record<string, unknown>
-  const examDateIso = normalizeExamDateIso(value.examDateIso)
-  if (value.examDateIso !== null && examDateIso === null) return
-  const updatedAt = normalizeExamDateUpdatedAt(value.updatedAt)
-  const profileId = typeof value.profileId === 'string' ? value.profileId.trim() : ''
-  if (updatedAt === null || !profileId) return
+async function applyExamDateFields(input: ExamDateFieldsInput) {
+  const { profileId, examDateIso, updatedAt } = input
+  if (!profileId) return
 
   let stored: Record<string, unknown> = {}
   try {
@@ -385,14 +395,14 @@ async function applyExamDateUpsert(payload: unknown) {
     || (existingPlan && existingPlan.updatedAt > updatedAt)
   ) return
 
-  const incomingExamLanguage = isSupportedExamLanguage(value.examLanguage)
-    ? value.examLanguage
+  const incomingExamLanguage = isSupportedExamLanguage(input.examLanguage)
+    ? input.examLanguage
     : undefined
-  const incomingWeeklyMinutes = Number(value.weeklyMinutesAvailable)
-  const incomingLearningDays = Number(value.learningDaysPerWeek)
-  const incomingBufferDays = Number(value.bufferDays)
-  const incomingUiLanguage = value.uiLanguage === 'en' || value.uiLanguage === 'de'
-    ? value.uiLanguage
+  const incomingWeeklyMinutes = Number(input.weeklyMinutesAvailable)
+  const incomingLearningDays = Number(input.learningDaysPerWeek)
+  const incomingBufferDays = Number(input.bufferDays)
+  const incomingUiLanguage = input.uiLanguage === 'en' || input.uiLanguage === 'de'
+    ? input.uiLanguage
     : undefined
 
   await saveDraftLearnerExamPlan({
@@ -422,6 +432,43 @@ async function applyExamDateUpsert(payload: unknown) {
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent(EXAM_DATE_SYNCED_EVENT))
   }
+}
+
+async function applyExamDateUpsert(payload: unknown) {
+  if (!payload || typeof payload !== 'object') return
+  const value = payload as Record<string, unknown>
+  const examDateIso = normalizeExamDateIso(value.examDateIso)
+  if (value.examDateIso !== null && examDateIso === null) return
+  const updatedAt = normalizeExamDateUpdatedAt(value.updatedAt)
+  const profileId = typeof value.profileId === 'string' ? value.profileId.trim() : ''
+  if (updatedAt === null || !profileId) return
+
+  await applyExamDateFields({
+    profileId,
+    examDateIso,
+    updatedAt,
+    examLanguage: value.examLanguage,
+    weeklyMinutesAvailable: value.weeklyMinutesAvailable,
+    learningDaysPerWeek: value.learningDaysPerWeek,
+    bufferDays: value.bufferDays,
+    uiLanguage: value.uiLanguage,
+  })
+}
+
+/**
+ * Snapshot liefert nur examDateIso/updatedAt aus server_profile_settings
+ * (kein Ops-Payload) — die restlichen Lernplan-Felder bleiben unangetastet,
+ * applyExamDateFields fällt für sie auf den bestehenden lokalen Plan zurück.
+ */
+export async function applySnapshotProfileSettings(profileSettings: unknown, profileId: string): Promise<void> {
+  if (!profileSettings || typeof profileSettings !== 'object' || !profileId) return
+  const value = profileSettings as Record<string, unknown>
+  const examDateIso = normalizeExamDateIso(value.examDateIso)
+  if (value.examDateIso !== null && examDateIso === null) return
+  const updatedAt = normalizeExamDateUpdatedAt(value.examDateUpdatedAt)
+  if (updatedAt === null) return
+
+  await applyExamDateFields({ profileId, examDateIso, updatedAt })
 }
 
 export async function applyOperation(op: PulledOperation) {

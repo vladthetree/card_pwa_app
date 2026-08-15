@@ -1,6 +1,6 @@
 /**
  * AI_CONTEXT:
- * Role: Desktop per-card answer timer with pause/resume and first-per-session
+ * Role: Per-card answer timer with pause/resume and first-per-session
  * persistence. A new presentation always gets a fresh visible clock, while the
  * DB aggregation deduplicates repeated presentations by sessionRunId/cardId.
  */

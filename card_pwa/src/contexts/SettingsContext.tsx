@@ -13,7 +13,7 @@ import {
   type FSRSParams,
   type SM2Params,
 } from '../utils/algorithmParams'
-import { clearProfile, loadProfile, saveProfile, buildLocalProfile, getOrCreateDeviceId, profileScopeId } from '../services/profileService'
+import { clearProfile, loadProfile, saveProfile, buildLocalProfile, getOrCreateDeviceId, profileScopeId, isDefaultProfile } from '../services/profileService'
 import { normalizeStudyCardLimit } from '../utils/studySessionPersistence'
 import { setCachedProfile } from '../services/syncConfig'
 import { enqueueSyncOperation } from '../services/syncQueue'
@@ -468,6 +468,12 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     dateIso: string | null,
     options: { planAlreadySaved?: boolean } = {},
   ) => {
+    // Default ist das geteilte Auto-Join-Fallback-Profil (useAutoJoinDefaultProfile)
+    // — ein persönlicher Prüfungstermin dort würde zwischen den Geräten
+    // verschiedener Familienmitglieder durchsickern, die zufällig darauf landen.
+    if (isDefaultProfile(profile)) {
+      throw new Error('Exam date cannot be set on the shared Default profile')
+    }
     const examDateIso = normalizeExamDateIso(dateIso)
     if (dateIso !== null && examDateIso === null) {
       throw new Error(`Invalid exam date: ${dateIso}`)

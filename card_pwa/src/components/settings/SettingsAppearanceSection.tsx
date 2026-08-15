@@ -217,8 +217,8 @@ export function SettingsAppearanceSection({ isOpen, onToggle }: Props) {
                 label={settings.language === 'de' ? 'Beantwortungszeit anzeigen' : 'Show answer timer'}
                 labelClassName="text-sm font-medium text-white"
                 description={settings.language === 'de'
-                  ? 'Zeigt den Sekundentimer in jeder Desktop-Deck-Session an und speichert pro Karte die erste Antwortzeit der Session.'
-                  : 'Shows the seconds timer in every desktop deck session and stores the first answer time per card and session.'}
+                  ? 'Zeigt den Sekundentimer in jeder Deck-Session an (mobil dezent im Header) und speichert pro Karte die erste Antwortzeit der Session.'
+                  : 'Shows the seconds timer in every deck session (a subtle header timer on mobile) and stores the first answer time per card and session.'}
                 descriptionClassName="mt-1 text-xs leading-relaxed text-white/45"
                 checked={settings.answerTimerEnabled}
                 onCheckedChange={setAnswerTimerEnabled}

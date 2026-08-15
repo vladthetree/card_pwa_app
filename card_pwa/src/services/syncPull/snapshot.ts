@@ -18,6 +18,7 @@ import {
 import { getSyncBaseEndpoint, fetchWithTimeout } from '../syncConfig'
 import { profileScopeId } from '../profileService'
 import { getSelectedDeckFilter } from '../syncedDeckScope'
+import { applySnapshotProfileSettings } from './apply'
 import {
   getSyncAuthHeaders,
   logSyncApiFailure,
@@ -37,6 +38,7 @@ interface SnapshotResponse {
   reviews?: unknown[]
   shuffleCollections?: unknown[]
   videoNotes?: unknown[]
+  profileSettings?: unknown
 }
 
 function getSnapshotEndpoint() {
@@ -151,6 +153,11 @@ export async function fetchAndApplySnapshot(clientId: string): Promise<boolean> 
         await db.videoNotes2.bulkPut(videoNotes)
       }
     })
+
+    // Läuft bewusst außerhalb der obigen Dexie-Transaktion: examDateIso landet
+    // in localStorage + der separaten learnerExamPlan-Tabelle, nicht in den
+    // hier geclearten Stores.
+    await applySnapshotProfileSettings(data.profileSettings, activeProfileId)
 
     if (typeof data.cursor === 'number' && Number.isFinite(data.cursor)) {
       await writeCursor(data.cursor)

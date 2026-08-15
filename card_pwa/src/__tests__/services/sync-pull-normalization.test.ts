@@ -1,6 +1,11 @@
 /**
  * AI_CONTEXT: Vitest coverage for sync pull normalization; protects services behavior from regressions in the learning PWA.
  */
+// applySnapshotProfileSettings writes through to the real (separate,
+// unmocked) learningUnitsDb — polyfill IndexedDB so that call succeeds
+// instead of throwing inside the try/catch that would otherwise silently
+// swallow the whole snapshot apply.
+import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { STORAGE_KEYS } from '../../constants/appIdentity'
 import type { CardRecord, DeckRecord, ProfileRecord, ReviewRecord, VideoNoteRecord } from '../../db'
@@ -87,6 +92,11 @@ const mockDb = vi.hoisted(() => ({
     add: vi.fn(async () => 1),
     clear: vi.fn(async () => {}),
   },
+  // Absichtlich standardmäßig undefined: hasShuffleCollectionsTable() (shared.ts)
+  // erkennt daran ein Schema ohne diese Tabelle — mehrere Bootstrap-Upload-Tests
+  // verlassen sich genau darauf. Nur der Snapshot-Profile-Settings-Test unten
+  // setzt sie lokal (siehe try/finally dort).
+  shuffleCollections: undefined as { clear: ReturnType<typeof vi.fn>; bulkPut: ReturnType<typeof vi.fn> } | undefined,
   videoNotes2: {
     where: vi.fn(() => ({
       equals: vi.fn(() => ({
@@ -390,6 +400,42 @@ describe('syncPull normalization', () => {
         timestamp: now,
       }),
     ])
+  })
+
+  // Regression: ein frischer Client bootstrapt per Snapshot statt per
+  // Op-Replay. Ohne profileSettings im Snapshot springt der Cursor direkt auf
+  // den Serverstand und ein historischer examDate.upsert wird nie mehr per
+  // Delta-Pull nachgeholt — der Prüfungstermin bliebe nach einer
+  // Neuinstallation dauerhaft leer, obwohl er serverseitig gesetzt ist.
+  it('applies examDateIso from the snapshot profileSettings on a fresh-install bootstrap', async () => {
+    const updatedAt = Date.now() - 1_000
+    state.responses = [
+      { ok: true, needsSnapshot: true },
+      {
+        ok: true,
+        cursor: 6,
+        decks: [],
+        cards: [],
+        profileSettings: { examDateIso: '2026-09-24', examDateUpdatedAt: updatedAt },
+      },
+      { ok: true, operations: [], nextCursor: 6, hasMore: false },
+    ]
+
+    // Snapshot-Apply clear()t/bulkPut't shuffleCollections unconditional
+    // (snapshot.ts) — nur für diesen Test real mocken, damit die Transaktion
+    // bis zur examDateIso-Anwendung durchläuft, ohne hasShuffleCollectionsTable()
+    // für die anderen (Bootstrap-Upload-)Tests zu verändern.
+    mockDb.shuffleCollections = { clear: vi.fn(async () => {}), bulkPut: vi.fn(async () => {}) }
+    try {
+      const { pullAndApplySyncDeltas } = await import('../../services/syncPull')
+      await pullAndApplySyncDeltas()
+
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEYS.settings) ?? '{}')
+      expect(stored.examDateIso).toBe('2026-09-24')
+      expect(stored.examDateUpdatedAt).toBe(updatedAt)
+    } finally {
+      mockDb.shuffleCollections = undefined
+    }
   })
 
   it('clears existing reviews during full snapshot even when the snapshot contains none', async () => {

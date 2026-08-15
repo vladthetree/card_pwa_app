@@ -859,7 +859,21 @@ class SyncRoutesMixin:
         f"SELECT MAX(id) FROM sync_operations WHERE 1=1 {user_filter}",
         user_params
       ).fetchone()[0] or 0
-      
+
+      # Profil-Settings (bisher nur examDateIso): leben in ihrer eigenen
+      # Tabelle statt im Ops-Log-Replay, weil ein frischer Client per Snapshot
+      # bootstrapt und dabei den Cursor direkt auf den aktuellen Serverstand
+      # setzt — ein historischer examDate.upsert-Op würde danach nie mehr per
+      # Delta-Pull nachgeholt. Deshalb muss der Snapshot den Stand mitliefern.
+      profile_settings_row = conn.execute(
+        "SELECT exam_date_iso, updated_at FROM server_profile_settings WHERE user_id=?",
+        (scope_user_id(self._current_user_id),)
+      ).fetchone()
+      profile_settings = {
+        "examDateIso": profile_settings_row["exam_date_iso"] if profile_settings_row else None,
+        "examDateUpdatedAt": profile_settings_row["updated_at"] if profile_settings_row else None,
+      }
+
       # Fetch decks
       if include_deleted:
         where_deck = f"WHERE 1=1 {user_filter}"
@@ -1080,11 +1094,12 @@ class SyncRoutesMixin:
         "cards": cards,
         "shuffleCollections": shuffle_collections,
         "videoNotes": video_notes,
-        "reviews": reviews
+        "reviews": reviews,
+        "profileSettings": profile_settings
       })
       log(
         f"SNAPSHOT  ip={client_ip}  client={_client_short(client_id)}  "
-        f"includeDeleted={include_deleted}  decks={len(decks)}  cards={len(cards)}  shuffle={len(shuffle_collections)}  videoNotes={len(video_notes)}  reviews={len(reviews)}  cursor={cursor}"
+        f"includeDeleted={include_deleted}  decks={len(decks)}  cards={len(cards)}  shuffle={len(shuffle_collections)}  videoNotes={len(video_notes)}  reviews={len(reviews)}  examDateIso={profile_settings['examDateIso']}  cursor={cursor}"
       )
     finally:
       conn.close()

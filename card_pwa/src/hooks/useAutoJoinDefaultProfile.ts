@@ -8,6 +8,7 @@ import {
   joinPublicProfile,
   getOrCreateDeviceId,
   writeProfileHintCookie,
+  readProfileHintCookie,
 } from '../services/profileService'
 import { getDefaultProfileSyncEndpoint } from '../services/syncConfig'
 import { runSyncCycleNow } from '../services/syncCoordinator'
@@ -15,8 +16,14 @@ import type { ProfileRecord } from '../db'
 
 /**
  * On first load, if the device has no linked profile and a sync endpoint is
- * configured, silently join the Default profile so the user immediately has
- * access to the shared deck library.
+ * configured, silently rejoin the device's last-known profile via its cookie
+ * hint (cookies survive a PWA storage wipe that clears IndexedDB/localStorage
+ * on uninstall/reinstall, unlike the hint's DB-backed source of truth) — or,
+ * if there is no hint or it no longer resolves, join the shared Default
+ * profile so the user immediately has access to the shared deck library.
+ * Without the hint check, every reinstall would silently re-land a named
+ * user (e.g. a family member with their own exam-date pacing) back on the
+ * shared Default profile until they noticed and manually switched back.
  */
 export function useAutoJoinDefaultProfile(): void {
   const { profile, isProfileHydrated, setProfile } = useSettings()
@@ -31,6 +38,30 @@ export function useAutoJoinDefaultProfile(): void {
 
     let cancelled = false
 
+    const applyJoinedProfile = (
+      joined: { userId?: string; profileName?: string; profileToken?: string },
+      deviceId: string,
+    ) => {
+      if (!joined.userId || !joined.profileToken) return
+      const now = Date.now()
+      const nextProfile: ProfileRecord = {
+        id: 'current',
+        mode: 'linked',
+        deviceId,
+        userId: joined.userId,
+        displayName: joined.profileName,
+        profileToken: joined.profileToken,
+        endpoint,
+        linkedAt: now,
+        recoveryCodeShown: true,
+        createdAt: now,
+        updatedAt: now,
+      }
+      setProfile(nextProfile)
+      writeProfileHintCookie(joined.userId)
+      void runSyncCycleNow({ force: true })
+    }
+
     const attemptJoin = () => {
       if (cancelled) return
       if (!navigator.onLine) return
@@ -38,6 +69,21 @@ export function useAutoJoinDefaultProfile(): void {
       attemptedEndpointRef.current = endpoint
 
       void (async () => {
+        const deviceId = getOrCreateDeviceId()
+        const deviceLabel = navigator.userAgent.slice(0, 60)
+
+        const hintedUserId = readProfileHintCookie()
+        if (hintedUserId) {
+          const rejoined = await joinPublicProfile(endpoint, hintedUserId, deviceId, deviceLabel)
+          if (cancelled) return
+          if (rejoined.ok && rejoined.userId && rejoined.profileToken) {
+            applyJoinedProfile(rejoined, deviceId)
+            return
+          }
+          // Hint no longer resolves (profile removed, different server, …) —
+          // fall through to the shared Default profile below.
+        }
+
         const info = await fetchDefaultProfileInfo(endpoint)
         if (cancelled) return
         if (!info?.userId) {
@@ -45,36 +91,14 @@ export function useAutoJoinDefaultProfile(): void {
           return
         }
 
-        const deviceId = getOrCreateDeviceId()
-        const joined = await joinPublicProfile(
-          endpoint,
-          info.userId,
-          deviceId,
-          navigator.userAgent.slice(0, 60),
-        )
+        const joined = await joinPublicProfile(endpoint, info.userId, deviceId, deviceLabel)
         if (cancelled) return
         if (!joined.ok || !joined.userId || !joined.profileToken) {
           attemptedEndpointRef.current = null
           return
         }
 
-        const now = Date.now()
-        const nextProfile: ProfileRecord = {
-          id: 'current',
-          mode: 'linked',
-          deviceId,
-          userId: joined.userId,
-          displayName: joined.profileName,
-          profileToken: joined.profileToken,
-          endpoint,
-          linkedAt: now,
-          recoveryCodeShown: true,
-          createdAt: now,
-          updatedAt: now,
-        }
-        setProfile(nextProfile)
-        writeProfileHintCookie(joined.userId)
-        void runSyncCycleNow({ force: true })
+        applyJoinedProfile(joined, deviceId)
       })()
     }
 

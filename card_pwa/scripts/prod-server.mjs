@@ -165,7 +165,9 @@ function serveStatic(req, res) {
   }
 
   const ext = path.extname(filePath).toLowerCase()
-  const mime = MIME[ext] ?? 'application/octet-stream'
+  // Web-App-Manifest laut Spec mit eigenem Typ ausliefern, nicht dem generischen
+  // application/json der restlichen .json-Dateien (Content-Daten, Source-Maps).
+  const mime = urlPath === '/manifest.json' ? 'application/manifest+json' : (MIME[ext] ?? 'application/octet-stream')
   const content = fs.readFileSync(filePath)
 
   const headers = { 'Content-Type': mime }

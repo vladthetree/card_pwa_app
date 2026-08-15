@@ -402,7 +402,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
 
   const sessionPendingCount = session.cards.length
   const maxSelectableRating: Rating = answerWasIncorrect ? 3 : 4
-  const answerTimerEnabled = !isHandsetLayout && settings.answerTimerEnabled === true
+  const answerTimerEnabled = settings.answerTimerEnabled === true
   const answerTimer = useCardAnswerTimer({
     enabled: answerTimerEnabled,
     cardId: currentCard?.id ?? null,
@@ -926,6 +926,16 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
             {/* Right: Action buttons */}
             <div className={`flex items-center gap-1 flex-shrink-0 ${focusHidden}`}>
               <StreakBadge compact />
+              {answerTimerEnabled && currentCard && !peeking && (
+                <CardAnswerTimer
+                  compact
+                  elapsedSeconds={answerTimer.elapsedSeconds}
+                  isPaused={answerTimer.isPaused}
+                  isStopped={answerTimer.isStopped}
+                  language={settings.language}
+                  onTogglePaused={answerTimer.togglePaused}
+                />
+              )}
               <button
                 type="button"
                 onClick={cycleQuestionTextSize}
@@ -1001,7 +1011,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
 
       {/* Main card area */}
       <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-ds-bg/90">
-        {answerTimerEnabled && currentCard && !peeking && (
+        {!isHandsetLayout && answerTimerEnabled && currentCard && !peeking && (
           <div className="pointer-events-none absolute right-8 top-6 z-30 flex w-48 justify-end">
             <div className="pointer-events-auto">
               <CardAnswerTimer

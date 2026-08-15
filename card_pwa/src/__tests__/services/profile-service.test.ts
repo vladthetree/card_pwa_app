@@ -215,4 +215,44 @@ describe('profileService', () => {
       15_000,
     )
   })
+
+  describe('isDefaultProfile', () => {
+    it('is true only for a linked profile named exactly "Default"', async () => {
+      const { isDefaultProfile } = await import('../../services/profileService')
+      expect(isDefaultProfile(null)).toBe(false)
+      expect(isDefaultProfile({ id: 'current', mode: 'local' } as never)).toBe(false)
+      expect(isDefaultProfile({ id: 'current', mode: 'linked', userId: 'u1', displayName: 'Vlad' } as never)).toBe(false)
+      expect(isDefaultProfile({ id: 'current', mode: 'linked', userId: 'u2', displayName: 'Default' } as never)).toBe(true)
+    })
+  })
+
+  describe('profile hint cookie', () => {
+    beforeEach(() => {
+      let cookieJar = ''
+      Object.defineProperty(globalThis, 'document', {
+        value: {
+          get cookie() {
+            return cookieJar
+          },
+          set cookie(entry: string) {
+            const [pair] = entry.split(';')
+            const separatorIndex = pair.indexOf('=')
+            const key = pair.slice(0, separatorIndex)
+            const value = pair.slice(separatorIndex + 1)
+            const remaining = cookieJar.split('; ').filter(existing => existing && !existing.startsWith(`${key}=`))
+            cookieJar = [...remaining, `${key}=${value}`].join('; ')
+          },
+        },
+        configurable: true,
+      })
+    })
+
+    it('round-trips the last-joined userId, surviving a fresh module import like an app reinstall would', async () => {
+      const { writeProfileHintCookie, readProfileHintCookie } = await import('../../services/profileService')
+      expect(readProfileHintCookie()).toBeNull()
+
+      writeProfileHintCookie('fbe23414-9399-4a3b-9d89-19867a3b71da')
+      expect(readProfileHintCookie()).toBe('fbe23414-9399-4a3b-9d89-19867a3b71da')
+    })
+  })
 })

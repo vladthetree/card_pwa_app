@@ -23,7 +23,7 @@ import { InfoHint } from '../InfoHint'
 import { SettingsSection } from '../SettingsSection'
 import { SettingsSliderRow } from '../SettingsSliderRow'
 import { SettingsSwitchRow } from '../SettingsSwitchRow'
-import { profileScopeId } from '../../services/profileService'
+import { profileScopeId, isDefaultProfile } from '../../services/profileService'
 import { useTodayPackage } from '../../hooks/home/useTodayPackage'
 import { useLearningUnits } from '../../hooks/home/useLearningUnits'
 import {
@@ -97,6 +97,7 @@ export function SettingsLearningSection({
   } = useSettings()
   const t = STRINGS[settings.language]
   const profileId = isProfileHydrated ? profileScopeId(profile) : null
+  const onDefaultProfile = isDefaultProfile(profile)
   const todayPackage = useTodayPackage({
     nextDayStartsAt: settings.nextDayStartsAt,
     packageCardLimit: settings.newCardsPerDay,
@@ -179,6 +180,12 @@ export function SettingsLearningSection({
 
   const handleSavePlan = async () => {
     if (profileId === null || planSaving) return
+    if (onDefaultProfile) {
+      toast.error(settings.language === 'de'
+        ? 'Lernplan mit Prüfungstermin nicht für das geteilte Default-Profil verfügbar.'
+        : 'Study plan with exam date is not available on the shared Default profile.')
+      return
+    }
     const normalized = normalizeLearningPlanFormValues(planDraft)
     if (!normalized) return
     setPlanSaving(true)
@@ -394,29 +401,39 @@ export function SettingsLearningSection({
             {settings.language === 'de' ? 'Prüfungstermin' : 'Exam date'}
           </label>
           <div className={`${UI_TOKENS.surface.panelSoft} p-4`}>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-              <input
-                type="date"
-                value={settings.examDateIso ?? ''}
-                onChange={event => { void setExamDateIso(event.target.value || null) }}
-                aria-label={settings.language === 'de' ? 'Prüfungstermin' : 'Exam date'}
-                className="min-h-11 flex-1 rounded-ds border border-[#18181b] bg-[#0c0c0c] px-3 font-mono text-base text-white [color-scheme:dark] focus:border-[--brand-primary-50] focus:outline-none sm:text-sm"
-              />
-              {settings.examDateIso && (
-                <button
-                  type="button"
-                  onClick={() => { void setExamDateIso(null) }}
-                  className="min-h-11 rounded-ds border border-[#18181b] bg-[#0c0c0c] px-3 text-sm font-semibold text-white/70 transition hover:border-[#3f3f46] hover:text-white sm:text-xs"
-                >
-                  {settings.language === 'de' ? 'Entfernen' : 'Clear'}
-                </button>
-              )}
-            </div>
-            <p className="mt-2 text-xs leading-relaxed text-white/45">
-              {settings.language === 'de'
-                ? 'Zieldatum für Countdown und Lerneinheiten. Änderungen werden mit dem Lernplan und dem aktiven Profil abgeglichen.'
-                : 'Target date for the countdown and learning units. Changes are reconciled with the study plan and active profile.'}
-            </p>
+            {onDefaultProfile ? (
+              <p className="text-xs leading-relaxed text-white/45">
+                {settings.language === 'de'
+                  ? 'Das geteilte Default-Profil hat keinen eigenen Prüfungstermin. Für eine persönliche Zieldatums-Planung zu einem dedizierten Profil wechseln (Profil & Sync).'
+                  : 'The shared Default profile has no exam date of its own. Switch to a dedicated profile (Profile & Sync) for personal target-date planning.'}
+              </p>
+            ) : (
+              <>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                  <input
+                    type="date"
+                    value={settings.examDateIso ?? ''}
+                    onChange={event => { void setExamDateIso(event.target.value || null) }}
+                    aria-label={settings.language === 'de' ? 'Prüfungstermin' : 'Exam date'}
+                    className="min-h-11 flex-1 rounded-ds border border-[#18181b] bg-[#0c0c0c] px-3 font-mono text-base text-white [color-scheme:dark] focus:border-[--brand-primary-50] focus:outline-none sm:text-sm"
+                  />
+                  {settings.examDateIso && (
+                    <button
+                      type="button"
+                      onClick={() => { void setExamDateIso(null) }}
+                      className="min-h-11 rounded-ds border border-[#18181b] bg-[#0c0c0c] px-3 text-sm font-semibold text-white/70 transition hover:border-[#3f3f46] hover:text-white sm:text-xs"
+                    >
+                      {settings.language === 'de' ? 'Entfernen' : 'Clear'}
+                    </button>
+                  )}
+                </div>
+                <p className="mt-2 text-xs leading-relaxed text-white/45">
+                  {settings.language === 'de'
+                    ? 'Zieldatum für Countdown und Lerneinheiten. Änderungen werden mit dem Lernplan und dem aktiven Profil abgeglichen.'
+                    : 'Target date for the countdown and learning units. Changes are reconciled with the study plan and active profile.'}
+                </p>
+              </>
+            )}
           </div>
         </div>
 
