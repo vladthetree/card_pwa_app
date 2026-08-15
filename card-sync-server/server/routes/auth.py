@@ -19,6 +19,7 @@ from server.domain.decks import (
   active_deck_ids_with_cards_or_descendants,
   get_default_profile_id,
 )
+from server.domain.card_catalog import catalog_enabled, ensure_user_card_references
 
 
 class AuthRoutesMixin:
@@ -198,6 +199,8 @@ class AuthRoutesMixin:
           VALUES (?, ?, ?, ?, ?)""",
         (user_id, profile_name, recovery_hash, now, now)
       )
+      if catalog_enabled(conn):
+        ensure_user_card_references(conn, user_id)
       profile_token = issue_device_token(conn, user_id, device_id, device_label, now)
       conn.commit()
       log(f"AUTH_CREATE_PROFILE  ip={client_ip}  user={_client_short(user_id)}  device={_client_short(device_id)}")

@@ -16,6 +16,21 @@ from server.common.helpers import (
 from server.logging_setup import log, _LAST_HEALTH_LOG_BY_IP
 from server.db.connection import open_db
 from server.db.profile_scope import scope_user_id
+from server.content_review import (
+  GATEWAY_SOURCE,
+  GATEWAY_SOURCE_CLIENT,
+  gate_bootstrap_card,
+  gate_sync_card_operation,
+)
+from server.domain.card_catalog import (
+  active_reference_count,
+  catalog_content_from_row,
+  catalog_enabled,
+  catalog_row,
+  canonical_owner_id,
+  ensure_user_card_references,
+  is_canonical_owner,
+)
 from server.domain.decks import (
   active_deck_ids_from_bootstrap_payload,
   active_deck_ids_with_cards_or_descendants,
@@ -64,7 +79,19 @@ class SyncRoutesMixin:
         update_client_cursor(conn, client_id, since)
         conn.commit()
 
-      user_filter, user_params = self._user_filter_sql()
+      if self._current_user_id and catalog_enabled(conn):
+        # Per-user state operations plus globally authoritative Vlad content
+        # publications. Learners never receive Vlad's scheduling/review ops.
+        user_filter = (
+          "AND (user_id=? OR (source=? AND source_client=?))"
+        )
+        user_params = (
+          self._current_user_id,
+          GATEWAY_SOURCE,
+          GATEWAY_SOURCE_CLIENT,
+        )
+      else:
+        user_filter, user_params = self._user_filter_sql()
 
       if client_id:
         rows = conn.execute(
@@ -141,7 +168,9 @@ class SyncRoutesMixin:
 
     op_id         = str(data.get("opId")            or idem).strip()
     op_type       = str(data.get("type")            or "").strip()
+    requested_op_type = op_type
     payload       = data.get("payload")
+    requested_payload = payload if isinstance(payload, dict) else {}
     client_ts     = data.get("clientTimestamp")
     source        = str(data.get("source")          or "").strip() or None
     source_client = str(data.get("clientId")        or "").strip() or None
@@ -165,8 +194,16 @@ class SyncRoutesMixin:
       op_id = f"server-maintenance-publish:blocked-legacy-deck:{op_id}"
       client_ts = payload["timestamp"]
 
-    conn = open_db()
+    conn = open_db(sqlite3.Row)
     try:
+      op_type, payload, content_review_queued = gate_sync_card_operation(
+        conn,
+        user_id=self._current_user_id,
+        op_type=op_type,
+        payload=payload,
+        op_id=op_id,
+        source_client=source_client,
+      )
       conn.execute(
         """INSERT INTO sync_operations
            (op_id, op_type, payload_json, client_timestamp, source, source_client, created_at, user_id)
@@ -188,15 +225,64 @@ class SyncRoutesMixin:
         f"PUSH   ip={client_ip}  client={_client_short(source_client)}  "
         f"op={op_type}  stored=1  {detail}"
       )
-      self._send_json(200, {"ok": True, "stored": True, "duplicate": False})
+      self._send_json(200, {
+        "ok": True,
+        "stored": True,
+        "duplicate": False,
+        "contentReviewQueued": content_review_queued,
+        **self._canonical_card_push_result(
+          conn,
+          requested_op_type,
+          requested_payload,
+          self._current_user_id,
+        ),
+      })
     except sqlite3.IntegrityError:
       log(
         f"PUSH   ip={client_ip}  client={_client_short(source_client)}  "
         f"op={op_type}  stored=0  duplicate=1  op_id={op_id}"
       )
-      self._send_json(200, {"ok": True, "stored": False, "duplicate": True})
+      self._send_json(200, {
+        "ok": True,
+        "stored": False,
+        "duplicate": True,
+        **self._canonical_card_push_result(
+          conn,
+          requested_op_type,
+          requested_payload,
+          self._current_user_id,
+        ),
+      })
     finally:
       conn.close()
+
+  @staticmethod
+  def _canonical_card_push_result(conn, op_type, payload, user_id):
+    """Return canonical content so a writer immediately repairs its local copy."""
+    if (
+      not catalog_enabled(conn)
+      or is_canonical_owner(conn, user_id)
+      or op_type not in ("card.create", "card.update", "card.delete")
+    ):
+      return {}
+    card_id = str(payload.get("id") or payload.get("cardId") or "").strip()
+    if not card_id:
+      return {}
+    row = catalog_row(conn, card_id)
+    if not row or row["deleted_at"] is not None:
+      return {
+        "canonicalContentProtected": True,
+        "referenceRejected": True,
+        "cardId": card_id,
+      }
+    return {
+      "canonicalContentProtected": True,
+      "referenceRejected": False,
+      "canonicalCard": {
+        "id": card_id,
+        **(catalog_content_from_row(row) or {}),
+      },
+    }
 
   # ---------------------------------------------------------------------------
   # POST /sync/bootstrap/upload
@@ -235,6 +321,10 @@ class SyncRoutesMixin:
     conn = open_db(sqlite3.Row)
     try:
       state_user_id = scope_user_id(self._current_user_id)
+      shared_catalog = catalog_enabled(conn)
+      catalog_owner = canonical_owner_id(conn) if shared_catalog else None
+      if shared_catalog:
+        ensure_user_card_references(conn, state_user_id)
       existing_batch = conn.execute(
         "SELECT summary_json, server_cursor FROM sync_bootstrap_batches WHERE batch_id=?",
         (batch_id,)
@@ -250,6 +340,7 @@ class SyncRoutesMixin:
             "cardsInserted": 0,
             "cardsUpdated": 0,
             "cardsSkippedOlder": 0,
+            "contentReviewQueued": 0,
             "reviewsInserted": 0,
             "reviewsSkipped": 0,
             "shuffleCollectionsInserted": 0,
@@ -280,6 +371,7 @@ class SyncRoutesMixin:
         "cardsInserted": 0,
         "cardsUpdated": 0,
         "cardsSkippedOlder": 0,
+        "contentReviewQueued": 0,
         "reviewsInserted": 0,
         "reviewsSkipped": 0,
         "shuffleCollectionsInserted": 0,
@@ -297,6 +389,10 @@ class SyncRoutesMixin:
       # Upsert decks with LWW + tombstone support.
       for deck in decks:
         if not isinstance(deck, dict):
+          continue
+        if shared_catalog and state_user_id != catalog_owner:
+          # Deck definitions come from Vlad's canonical hierarchy. Other
+          # profiles select card references; they do not create deck copies.
           continue
         deck_id = str(deck.get("id") or "").strip()
         if not deck_id:
@@ -350,8 +446,23 @@ class SyncRoutesMixin:
       for card in cards:
         if not isinstance(card, dict):
           continue
+        card, content_review_queued = gate_bootstrap_card(
+          conn,
+          user_id=self._current_user_id,
+          card=card,
+          batch_id=batch_id,
+          source_client=client_id,
+        )
+        if content_review_queued:
+          summary["contentReviewQueued"] += 1
+        if card is None:
+          continue
         card_id = str(card.get("id") or "").strip()
         if not card_id:
+          continue
+
+        canonical = catalog_row(conn, card_id) if shared_catalog else None
+        if shared_catalog and (not canonical or canonical["deleted_at"] is not None):
           continue
 
         candidate_ts = parse_int(card.get("updatedAt") or card.get("createdAt") or sent_at, sent_at, min_value=0)
@@ -364,8 +475,8 @@ class SyncRoutesMixin:
           continue
 
         created_at = parse_int(card.get("createdAt") or candidate_ts, candidate_ts, min_value=0)
-        tags_json = json.dumps(card.get("tags", []), ensure_ascii=False) if card.get("tags") is not None else None
-        extra_json = json.dumps(card.get("extra", {}), ensure_ascii=False) if card.get("extra") is not None else None
+        tags_json = None if shared_catalog else (json.dumps(card.get("tags", []), ensure_ascii=False) if card.get("tags") is not None else None)
+        extra_json = None if shared_catalog else (json.dumps(card.get("extra", {}), ensure_ascii=False) if card.get("extra") is not None else None)
         metadata_json = json.dumps(card.get("metadata"), ensure_ascii=False) if card.get("metadata") is not None else None
         deleted_at = card.get("deletedAt")
         is_deleted = 1 if card.get("isDeleted") or deleted_at is not None else 0
@@ -378,10 +489,10 @@ class SyncRoutesMixin:
           """,
           (
             card_id,
-            card.get("noteId"),
-            card.get("deckId"),
-            card.get("front"),
-            card.get("back"),
+            None if shared_catalog else card.get("noteId"),
+            canonical["deck_id"] if shared_catalog else card.get("deckId"),
+            None if shared_catalog else card.get("front"),
+            None if shared_catalog else card.get("back"),
             tags_json,
             extra_json,
             card.get("type"),
@@ -706,15 +817,27 @@ class SyncRoutesMixin:
 
     conn = open_db()
     try:
+      shared_catalog = catalog_enabled(conn)
+      if shared_catalog and self._current_user_id:
+        ensure_user_card_references(conn, self._current_user_id)
+        conn.commit()
       user_filter, user_params = self._user_filter_sql()
-      server_cursor = conn.execute(
-        f"SELECT MAX(id) FROM sync_operations WHERE 1=1 {user_filter}",
-        user_params
-      ).fetchone()[0] or 0
-      active_cards = conn.execute(
-        f"SELECT COUNT(*) FROM server_cards WHERE deleted_at IS NULL AND IFNULL(is_deleted, 0) = 0 {user_filter}",
-        user_params
-      ).fetchone()[0] or 0
+      if shared_catalog and self._current_user_id:
+        server_cursor = conn.execute(
+          """SELECT MAX(id) FROM sync_operations
+             WHERE user_id=? OR (source=? AND source_client=?)""",
+          (self._current_user_id, GATEWAY_SOURCE, GATEWAY_SOURCE_CLIENT),
+        ).fetchone()[0] or 0
+        active_cards = active_reference_count(conn, self._current_user_id)
+      else:
+        server_cursor = conn.execute(
+          f"SELECT MAX(id) FROM sync_operations WHERE 1=1 {user_filter}",
+          user_params
+        ).fetchone()[0] or 0
+        active_cards = conn.execute(
+          f"SELECT COUNT(*) FROM server_cards WHERE deleted_at IS NULL AND IFNULL(is_deleted, 0) = 0 {user_filter}",
+          user_params
+        ).fetchone()[0] or 0
       active_decks = len(active_deck_ids_with_cards_or_descendants(conn, self._current_user_id))
       active_reviews = conn.execute(
         f"""SELECT COUNT(*) FROM server_reviews
@@ -800,7 +923,11 @@ class SyncRoutesMixin:
     conn = open_db(sqlite3.Row)
     try:
       syncable_deck_ids = None if include_deleted else active_deck_ids_with_cards_or_descendants(conn, self._current_user_id)
-      user_filter, user_params = self._user_filter_sql("d")
+      if self._current_user_id and catalog_enabled(conn):
+        deck_owner = canonical_owner_id(conn)
+        user_filter, user_params = ("AND d.user_id = ?", (deck_owner,))
+      else:
+        user_filter, user_params = self._user_filter_sql("d")
       if include_deleted:
         where_clause = f"WHERE 1=1 {user_filter}"
       else:
@@ -854,11 +981,22 @@ class SyncRoutesMixin:
 
     conn = open_db(sqlite3.Row)
     try:
+      shared_catalog = catalog_enabled(conn)
+      if shared_catalog and self._current_user_id:
+        ensure_user_card_references(conn, self._current_user_id)
+        conn.commit()
       user_filter, user_params = self._user_filter_sql()
-      cursor = conn.execute(
-        f"SELECT MAX(id) FROM sync_operations WHERE 1=1 {user_filter}",
-        user_params
-      ).fetchone()[0] or 0
+      if shared_catalog and self._current_user_id:
+        cursor = conn.execute(
+          """SELECT MAX(id) FROM sync_operations
+             WHERE user_id=? OR (source=? AND source_client=?)""",
+          (self._current_user_id, GATEWAY_SOURCE, GATEWAY_SOURCE_CLIENT),
+        ).fetchone()[0] or 0
+      else:
+        cursor = conn.execute(
+          f"SELECT MAX(id) FROM sync_operations WHERE 1=1 {user_filter}",
+          user_params
+        ).fetchone()[0] or 0
 
       # Profil-Settings (bisher nur examDateIso): leben in ihrer eigenen
       # Tabelle statt im Ops-Log-Replay, weil ein frischer Client per Snapshot
@@ -875,14 +1013,20 @@ class SyncRoutesMixin:
       }
 
       # Fetch decks
-      if include_deleted:
-        where_deck = f"WHERE 1=1 {user_filter}"
+      if shared_catalog and self._current_user_id:
+        deck_filter = "AND user_id=?"
+        deck_params = (canonical_owner_id(conn),)
       else:
-        where_deck = f"WHERE deleted_at IS NULL {user_filter}"
+        deck_filter = user_filter
+        deck_params = user_params
+      if include_deleted:
+        where_deck = f"WHERE 1=1 {deck_filter}"
+      else:
+        where_deck = f"WHERE deleted_at IS NULL {deck_filter}"
       decks_rows = conn.execute(
         f"""SELECT id, name, parent_deck_id, created_at, source, updated_at, deleted_at, last_source_client
             FROM server_decks {where_deck} ORDER BY id ASC""",
-        user_params
+        deck_params
       ).fetchall()
       
       decks = []
@@ -903,15 +1047,39 @@ class SyncRoutesMixin:
         })
       
       # Fetch cards
-      if include_deleted:
-        where_card = f"WHERE 1=1 {user_filter}"
+      if shared_catalog and self._current_user_id:
+        active_clause = "" if include_deleted else (
+          "AND r.deleted_at IS NULL AND IFNULL(r.is_deleted, 0)=0 "
+          "AND c.deleted_at IS NULL"
+        )
+        cards_rows = conn.execute(
+          f"""SELECT c.id, c.note_id, c.deck_id, c.front, c.back,
+                     c.tags_json, c.extra_json,
+                     r.type, r.queue, r.due, r.due_at, r.learning_step,
+                     r.last_reviewed_at, r.interval, r.factor, r.stability,
+                     r.difficulty, r.retrievability, r.reps, r.lapses,
+                     r.algorithm, r.metadata_json,
+                     CASE WHEN c.deleted_at IS NOT NULL OR r.deleted_at IS NOT NULL
+                               OR IFNULL(r.is_deleted, 0)=1 THEN 1 ELSE 0 END AS is_deleted,
+                     c.created_at, r.updated_at,
+                     COALESCE(c.deleted_at, r.deleted_at) AS deleted_at,
+                     COALESCE(c.last_source_client, r.last_source_client) AS last_source_client
+              FROM server_cards r
+              JOIN shared_card_catalog c ON c.id=r.id
+              WHERE r.user_id=? {active_clause}
+              ORDER BY c.id ASC""",
+          (self._current_user_id,),
+        ).fetchall()
       else:
-        where_card = f"WHERE deleted_at IS NULL AND IFNULL(is_deleted, 0) = 0 {user_filter}"
-      cards_rows = conn.execute(
-        f"""SELECT id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due, due_at, learning_step, last_reviewed_at, interval, factor, stability, difficulty, retrievability, reps, lapses, algorithm, metadata_json, is_deleted, created_at, updated_at, deleted_at, last_source_client
-            FROM server_cards {where_card} ORDER BY id ASC""",
-        user_params
-      ).fetchall()
+        if include_deleted:
+          where_card = f"WHERE 1=1 {user_filter}"
+        else:
+          where_card = f"WHERE deleted_at IS NULL AND IFNULL(is_deleted, 0) = 0 {user_filter}"
+        cards_rows = conn.execute(
+          f"""SELECT id, note_id, deck_id, front, back, tags_json, extra_json, type, queue, due, due_at, learning_step, last_reviewed_at, interval, factor, stability, difficulty, retrievability, reps, lapses, algorithm, metadata_json, is_deleted, created_at, updated_at, deleted_at, last_source_client
+              FROM server_cards {where_card} ORDER BY id ASC""",
+          user_params
+        ).fetchall()
       
       cards = []
       for r in cards_rows:

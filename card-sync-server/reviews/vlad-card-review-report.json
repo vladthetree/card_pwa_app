@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "profile": "Vlad",
+  "activeCards": 1075,
+  "currentReviews": 1075,
+  "missingReviews": 0,
+  "duplicateReviews": 0,
+  "staleOrInvalidReviews": 0,
+  "pendingProposals": 0,
+  "verdicts": {
+    "approved": 882,
+    "corrected": 177,
+    "not_relevant": 16
+  },
+  "errors": []
+}

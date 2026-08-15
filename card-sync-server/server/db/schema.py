@@ -16,6 +16,11 @@ from server.domain.decks import (
   ensure_security_deck_hierarchy,
   get_default_profile_id,
 )
+from server.domain.card_catalog import (
+  catalog_enabled,
+  ensure_user_card_references,
+  normalize_reference_rows,
+)
 from server.sync.operations import apply_operation
 
 
@@ -106,6 +111,64 @@ def init_db():
     conn.commit()
   conn.execute("CREATE INDEX IF NOT EXISTS idx_sync_source_client ON sync_operations(source_client)")
   conn.execute("CREATE INDEX IF NOT EXISTS idx_sync_user_id ON sync_operations(user_id)")
+  conn.commit()
+
+  # Content changes for the shared learning profile are proposals until a
+  # reviewer publishes them.  Keeping the proposal outside server_cards means
+  # learners continue to see the last reviewed content while the review runs.
+  conn.execute("""
+    CREATE TABLE IF NOT EXISTS content_review_queue (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id TEXT NOT NULL,
+      card_id TEXT NOT NULL,
+      op_id TEXT,
+      operation_type TEXT NOT NULL,
+      content_hash TEXT NOT NULL,
+      proposal_json TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending',
+      created_at INTEGER NOT NULL,
+      reviewed_at INTEGER,
+      decision_json TEXT,
+      UNIQUE(user_id, card_id, content_hash)
+    )
+  """)
+  conn.execute(
+    "CREATE INDEX IF NOT EXISTS idx_content_review_queue_status "
+    "ON content_review_queue(user_id, status, created_at)"
+  )
+  conn.execute(
+    "CREATE INDEX IF NOT EXISTS idx_content_review_queue_card "
+    "ON content_review_queue(user_id, card_id)"
+  )
+  conn.commit()
+
+  # One canonical learner-visible card body per card ID. Vlad is the content
+  # authority; server_cards holds only per-user reference/scheduling state once
+  # this catalog has been populated by the explicit migration gateway.
+  conn.execute("""
+    CREATE TABLE IF NOT EXISTS shared_card_catalog (
+      id TEXT PRIMARY KEY,
+      canonical_user_id TEXT NOT NULL REFERENCES users(user_id),
+      note_id TEXT,
+      deck_id TEXT,
+      front TEXT NOT NULL,
+      back TEXT NOT NULL,
+      tags_json TEXT,
+      extra_json TEXT,
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      deleted_at INTEGER NULL,
+      last_source_client TEXT
+    )
+  """)
+  conn.execute(
+    "CREATE INDEX IF NOT EXISTS idx_shared_card_catalog_deck "
+    "ON shared_card_catalog(deck_id)"
+  )
+  conn.execute(
+    "CREATE INDEX IF NOT EXISTS idx_shared_card_catalog_active "
+    "ON shared_card_catalog(id) WHERE deleted_at IS NULL"
+  )
   conn.commit()
 
   # Track acknowledged pull cursors per client for conservative event GC.
@@ -483,6 +546,11 @@ def rebuild_server_state(conn):
       apply_operation(conn, op_type, payload, client_ts, src_client, op_id=op_id, user_id=user_id)
     except Exception:
       LOGGER.exception("REBUILD_APPLY_FAILED op_id=%s op_type=%s", op_id, op_type)
+
+  if catalog_enabled(conn):
+    for row in conn.execute("SELECT user_id FROM users").fetchall():
+      ensure_user_card_references(conn, str(row[0]))
+    normalize_reference_rows(conn)
 
   conn.commit()
 

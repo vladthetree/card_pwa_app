@@ -15,6 +15,7 @@ from server.config import (
 from server.common.helpers import now_ms, parse_int
 from server.auth.tokens import generate_recovery_code, hash_token
 from server.db.profile_scope import scope_user_id
+from server.domain.card_catalog import catalog_enabled, canonical_owner_id
 
 
 def security_objective_deck_id(code: str) -> str:
@@ -190,6 +191,36 @@ def ensure_security_deck_hierarchy(conn, user_id=None) -> None:
 
 def active_deck_ids_with_cards_or_descendants(conn, user_id=None):
   """Active decks that either contain active cards or are ancestors of such decks."""
+  if user_id and catalog_enabled(conn):
+    owner_id = canonical_owner_id(conn)
+    if not owner_id:
+      return set()
+    deck_rows = conn.execute(
+      """SELECT id, parent_deck_id FROM server_decks
+         WHERE deleted_at IS NULL AND user_id=?""",
+      (owner_id,),
+    ).fetchall()
+    card_rows = conn.execute(
+      """SELECT DISTINCT c.deck_id
+         FROM server_cards r
+         JOIN shared_card_catalog c ON c.id=r.id AND c.deleted_at IS NULL
+         WHERE r.user_id=? AND r.deleted_at IS NULL
+           AND IFNULL(r.is_deleted, 0)=0 AND c.deck_id IS NOT NULL""",
+      (user_id,),
+    ).fetchall()
+    active_ids = {row[0] for row in deck_rows}
+    parent_by_id = {
+      row[0]: row[1] if row[1] in active_ids else None
+      for row in deck_rows
+    }
+    keep = set()
+    for row in card_rows:
+      current = row[0]
+      while current and current in active_ids and current not in keep:
+        keep.add(current)
+        current = parent_by_id.get(current)
+    return keep
+
   params = (user_id,) if user_id else ()
   user_clause = "AND user_id=?" if user_id else ""
   deck_rows = conn.execute(

@@ -14,8 +14,7 @@ interface OperationSource {
 }
 
 const AUTHORITATIVE_CONTENT_CLIENTS = new Set([
-  'server-maintenance-publisher',
-  'card-qa-audit-v1',
+  'security-card-review-gateway-v1',
 ])
 
 const AUTHORING_FIELDS = [

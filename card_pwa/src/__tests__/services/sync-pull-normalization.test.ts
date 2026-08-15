@@ -1202,7 +1202,7 @@ describe('syncPull normalization', () => {
             opId: 'op-maint-content',
             type: 'card.update',
             source: 'server-maintenance-publish',
-            sourceClient: 'card-qa-audit-v1',
+            sourceClient: 'security-card-review-gateway-v1',
             payload: {
               cardId: 'c-maint-content',
               updates: {

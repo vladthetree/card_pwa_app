@@ -12,6 +12,7 @@ const state = vi.hoisted(() => ({
 }))
 
 const mockedDb = vi.hoisted(() => ({
+  transaction: vi.fn(async (_mode: string, _tables: unknown[], callback: () => Promise<void>) => callback()),
   syncOutbox: {
     orderBy: vi.fn(() => ({
       limit: vi.fn(() => ({
@@ -25,6 +26,18 @@ const mockedDb = vi.hoisted(() => ({
   cards: {
     get: vi.fn(async () => undefined),
     toArray: vi.fn(async () => []),
+    update: vi.fn(async () => 1),
+    delete: vi.fn(async () => undefined),
+  },
+  reviews: {
+    where: vi.fn(() => ({
+      equals: vi.fn(() => ({
+        delete: vi.fn(async () => undefined),
+      })),
+    })),
+  },
+  cardStats: {
+    delete: vi.fn(async () => undefined),
   },
   decks: {
     filter: vi.fn(() => ({
@@ -67,6 +80,8 @@ describe('syncQueue dead-letter pending count', () => {
     vi.restoreAllMocks()
     state.online = true
     state.fetchWithTimeout.mockClear()
+    mockedDb.cards.update.mockClear()
+    mockedDb.cards.delete.mockClear()
     state.opCounter = 0
     Object.defineProperty(globalThis, 'navigator', {
       value: { onLine: state.online },
@@ -136,5 +151,40 @@ describe('syncQueue dead-letter pending count', () => {
       pendingCount: 1,
       deadLetterCount: 0,
     })
+  })
+
+  it('immediately restores canonical Vlad content returned by the server', async () => {
+    state.fetchWithTimeout.mockResolvedValueOnce(new Response(JSON.stringify({
+      ok: true,
+      stored: true,
+      canonicalContentProtected: true,
+      referenceRejected: false,
+      canonicalCard: {
+        id: 'card-1',
+        noteId: 'note-1',
+        deckId: 'deck-1',
+        front: 'Which concept?\nA: Salt\nB: Blockchain',
+        back: '>> CORRECT: B |\n\nCanonical blockchain explanation.',
+        tags: ['Cryptographic Solutions'],
+        extra: {},
+      },
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    }))
+
+    const { enqueueSyncOperation, flushSyncQueue } = await import('../../services/syncQueue')
+    await enqueueSyncOperation('card.update', {
+      cardId: 'card-1',
+      updates: { back: '>> CORRECT: A |\n\nWrong salt explanation.' },
+    })
+    await flushSyncQueue({ limit: 10 })
+
+    expect(mockedDb.cards.update).toHaveBeenCalledWith('card-1', expect.objectContaining({
+      noteId: 'note-1',
+      deckId: 'deck-1',
+      front: expect.stringContaining('B: Blockchain'),
+      back: expect.stringContaining('CORRECT: B'),
+    }))
   })
 })

@@ -1,0 +1,411 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": "vlad-security-card-contradictions-1",
+  "reportId": "vlad-full-deck-contradiction-review-2026-08-16",
+  "generatedAt": "2026-08-15T22:05:04Z",
+  "profile": "Vlad",
+  "databaseMutated": false,
+  "reviewPolicy": {
+    "skill": "/home/_vb/.codex/skills/review-security-cards/SKILL.md",
+    "correctAnswersProtected": true,
+    "rule": "Eine belegte richtige Kartenantwort wird nicht verändert. Abweichungen zwischen offiziellen Dokumenten werden separat als source_conflict dokumentiert und sind allein kein Kartenfehler.",
+    "sourcePriority": [
+      "zuständiger Primärstandard oder maßgebliche Behördenpublikation",
+      "offizielle CompTIA-SY0-701-Prüfungsziele für Scope und Exam-Terminologie",
+      "NIST, CISA, RFC Editor, OASIS und ISO für fachliche Definitionen",
+      "sample_Transcripts/Mapping_Knowledge nur als Sekundärquelle"
+    ]
+  },
+  "coverage": {
+    "activeCardsReviewed": 1075,
+    "physicalDecksReviewed": 36,
+    "cardTypes": {
+      "multipleChoice": 1052,
+      "matching": 16,
+      "ordering": 7
+    },
+    "checks": [
+      "aktueller Live-Inhalt und Content-Hash jeder aktiven Vlad-Karte",
+      "Antwortschlüssel gegen vorhandene Optionen",
+      "Frontseite gegen Rückseite und Erklärung",
+      "deckübergreifende gleiche oder ähnliche Fragen mit abweichenden Antworten",
+      "Akronymkarten gegen CompTIA-Anhang und zuständige Primärstandards",
+      "historisch bekannte Fehlerkarten einschließlich 1772578430967",
+      "Matching- und Ordering-Zuordnungen"
+    ],
+    "gatewayBeforeReport": {
+      "ok": true,
+      "activeCards": 1075,
+      "currentReviews": 1075,
+      "missingReviews": 0,
+      "duplicateReviews": 0,
+      "staleOrInvalidReviews": 0,
+      "pendingProposals": 0
+    },
+    "importantLimitationFound": "Der bestehende Hash-/Schema-Gateway meldet alle Review-Datensätze als aktuell, obwohl einige Evidenztexte den Inhalt der zitierten Quelle falsch wiedergeben. Dieser Bericht ist deshalb die semantische Eskalation und darf nicht durch gatewayBeforeReport.ok überstimmt werden."
+  },
+  "summary": {
+    "cardsWithActionableContradictions": 3,
+    "cardsWithUnsupportedAnswerAsWritten": 2,
+    "cardsWithInternalExplanationContradiction": 1,
+    "officialSourceConflictTopics": 4,
+    "verifiedCorrectCardsExplicitlyProtected": 6,
+    "actionableCardIds": [
+      "1779007738884",
+      "1780262916264",
+      "1781206500023"
+    ]
+  },
+  "cardsWithContradictions": [
+    {
+      "cardId": "1780262916264",
+      "contentHash": "29f8098e55ca6c5b2fea8e522c17f09f61432d171ff780d0dba0c35d89f19319",
+      "deck": "Acronym-Bonus (ABCD + PBQ)",
+      "cardType": "multiple_choice",
+      "severity": "high",
+      "findingType": "unsupported_blended_expansion",
+      "currentQuestion": "A team measures the average time required to repair or restore a failed service. What does MTTR stand for?",
+      "currentCorrectAnswer": {
+        "letter": "B",
+        "text": "Mean Time To Repair / Restore"
+      },
+      "contradiction": "Die Karte behauptet eine kombinierte offizielle Vollform 'Mean Time To Repair / Restore'. CompTIA nennt im Lernziel 5.2 'Mean time to repair', im eigenen Akronymanhang dagegen 'Mean Time to Recover'. NIST und ISO trennen Repair, Recovery und Restoration; ISO verwendet für 'mean time to restoration' ausdrücklich MTTRes. Keine maßgebliche Quelle belegt die Slash-Mischform als Expansion von MTTR.",
+      "answerStatus": "not_supported_as_written",
+      "cardRequiresChange": true,
+      "allowedChangeScope": "Antwortoption, Antwortschlüssel und Erklärung dürfen nach Freigabe gemeinsam auf eine exakt belegte Vollform gebracht werden; Lernfortschritt bleibt unverändert.",
+      "recommendedResolution": {
+        "answer": "Mean Time To Repair",
+        "reason": "Das konkrete CompTIA-Lernziel 5.2 sowie NIST und ISO stimmen bei dieser Expansion überein. Der widersprüchliche CompTIA-Akronymanhang muss in der Erklärung transparent erwähnt werden."
+      },
+      "evidenceSourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-MTTR",
+        "SRC-NIST-RECOVERY",
+        "SRC-ISO-MTTR"
+      ]
+    },
+    {
+      "cardId": "1781206500023",
+      "contentHash": "16bd36064a7ae452e7ef3b39093a3ce1ca6539d5a24f058dac66c341be9d76ce",
+      "deck": "Acronym-Bonus (ABCD + PBQ)",
+      "cardType": "multiple_choice",
+      "severity": "high",
+      "findingType": "unsupported_blended_expansion",
+      "currentQuestion": "A dashboard tracks how quickly the team returns a component to service after each failure. What does MTTR stand for?",
+      "currentCorrectAnswer": {
+        "letter": "A",
+        "text": "Mean Time To Repair / Restore"
+      },
+      "contradiction": "Die Karte verwendet dieselbe unbelegte Slash-Mischform wie Karte 1780262916264. Die Primärquellen definieren getrennte Kennzahlen und keine gemeinsame Expansion 'Repair / Restore'.",
+      "answerStatus": "not_supported_as_written",
+      "cardRequiresChange": true,
+      "allowedChangeScope": "Antwortoption, Antwortschlüssel und Erklärung dürfen nach Freigabe gemeinsam auf eine exakt belegte Vollform gebracht werden; Lernfortschritt bleibt unverändert.",
+      "recommendedResolution": {
+        "answer": "Mean Time To Repair",
+        "reason": "Das konkrete CompTIA-Lernziel 5.2 sowie NIST und ISO stimmen bei dieser Expansion überein. Der widersprüchliche CompTIA-Akronymanhang muss in der Erklärung transparent erwähnt werden."
+      },
+      "evidenceSourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-MTTR",
+        "SRC-NIST-RECOVERY",
+        "SRC-ISO-MTTR"
+      ]
+    },
+    {
+      "cardId": "1779007738884",
+      "contentHash": "73f34f06a711cb517c37b66383969829db6a091343d1446103a89ce5e6859901",
+      "deck": "1.1 Security Controls",
+      "cardType": "matching",
+      "severity": "medium",
+      "findingType": "front_back_scope_contradiction",
+      "currentFrontClaim": "Guard shack limiting physical access >> Physical",
+      "currentBackClaim": "Ein Wachposten zählt deshalb hier als operativ; der Schalter oder das Gebäude um die Person ändert nicht, wer die Kontrolle ausführt.",
+      "contradiction": "Die Front ordnet ausdrücklich das Wachhäuschen als physisch zu. Die Rückseite spricht anschließend vom mehrdeutigen 'Wachposten' und erklärt ihn pauschal als operativ, ohne klarzustellen, dass nun die Tätigkeit der Person statt des in der Front genannten Gebäudes gemeint ist. NIST führt Guards zudem innerhalb von Physical Access Control. Die Zuordnung der Front ist dadurch nicht widerlegt, die Erklärung ist aber widersprüchlich beziehungsweise missverständlich.",
+      "answerStatus": "front_mapping_not_proven_wrong",
+      "cardRequiresChange": true,
+      "allowedChangeScope": "Nur die Rückseitenerklärung präzisieren; die belegte Front-Zuordnung 'Guard shack >> Physical' nicht verändern.",
+      "recommendedResolution": {
+        "answerMappings": "unchanged",
+        "backWording": "Klar zwischen dem Wachhäuschen als baulicher physischer Kontrolle und einer menschlich ausgeführten Wach- oder Prüfhandlung unterscheiden; keine pauschale Kategoriebehauptung ohne Szenariobezug."
+      },
+      "relatedCard": {
+        "cardId": "1728575980498",
+        "distinction": "Diese Karte fragt ausdrücklich nach der Tätigkeit eines Guards und nicht nach dem Wachhäuschen. Sie ist deshalb kein Beweis dafür, die Zuordnung der Matching-Karte zu ändern."
+      },
+      "evidenceSourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-SP800-53R5",
+        "SRC-MAPPING-DOMAIN-1"
+      ]
+    }
+  ],
+  "verifiedCorrectCardsDoNotChange": [
+    {
+      "cardId": "1772578430967",
+      "contentHash": "2284a8a5aab329ae6e6d4dbdbaac63772be5856717920961552623a4be8c4fbb",
+      "deck": "01_General_Security_Concepts",
+      "correctAnswer": {
+        "letter": "B",
+        "text": "Blockchain"
+      },
+      "status": "verified_correct_protected",
+      "reason": "NIST beschreibt Blockchain als verteiltes, manipulationsanzeigendes Ledger mit kryptografisch verketteten Blöcken und Konsens. Salting erfüllt die beschriebene Funktion nicht.",
+      "cardRequiresChange": false,
+      "evidenceSourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-BLOCKCHAIN"
+      ]
+    },
+    {
+      "cardId": "1779669260176",
+      "contentHash": "984cef8972cba736325385bb5dd72bd25aed92d8576421d158c784ce487c34bc",
+      "deck": "5.2 Risk Management",
+      "correctAnswer": {
+        "letter": "D",
+        "text": "Mean Time To Repair"
+      },
+      "status": "verified_correct_protected",
+      "reason": "CompTIA-Lernziel 5.2, NIST und ISO belegen 'Mean Time To Repair'. Der abweichende CompTIA-Akronymanhang wird als Quellenkonflikt dokumentiert und ist kein Grund, die richtige Karte zu ändern.",
+      "cardRequiresChange": false,
+      "evidenceSourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-MTTR",
+        "SRC-ISO-MTTR"
+      ]
+    },
+    {
+      "cardId": "1780262916265",
+      "contentHash": "666966bc834c0925349730f3245b1a981304e707fa2d4dfe16ecaf0ad40b7980",
+      "deck": "Acronym-Bonus (ABCD + PBQ)",
+      "correctAnswer": {
+        "letter": "C",
+        "text": "Domain-based Message Authentication, Reporting and Conformance"
+      },
+      "status": "verified_correct_protected",
+      "reason": "Der aktuelle RFC 9989 und der CompTIA-Lernzieltext 4.5 belegen 'Domain-based'. Nur der CompTIA-Akronymanhang lässt '-based' weg.",
+      "cardRequiresChange": false,
+      "evidenceSourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-RFC-9989"
+      ]
+    },
+    {
+      "cardId": "1781206500008",
+      "contentHash": "c9ad680ee53919644aa92f21eff4f43df09c76cad52d4e070b60161ef2ac9c8d",
+      "deck": "Acronym-Bonus (ABCD + PBQ)",
+      "correctAnswer": {
+        "letter": "A",
+        "text": "Domain-based Message Authentication, Reporting and Conformance"
+      },
+      "status": "verified_correct_protected",
+      "reason": "Der aktuelle RFC 9989 und der CompTIA-Lernzieltext 4.5 belegen 'Domain-based'. Nur der CompTIA-Akronymanhang lässt '-based' weg.",
+      "cardRequiresChange": false,
+      "evidenceSourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-RFC-9989"
+      ]
+    },
+    {
+      "cardId": "1781206500009",
+      "contentHash": "07fa234f8a0f1881c7d66dbfbca351283ebd461587072a4769bab84c05cb4992",
+      "deck": "Acronym-Bonus (ABCD + PBQ)",
+      "correctAnswer": {
+        "letter": "A",
+        "text": "Structured Threat Information eXpression"
+      },
+      "status": "verified_correct_protected",
+      "reason": "OASIS als zuständiger Standardgeber definiert STIX 2.1 als Structured Threat Information Expression. Der CompTIA-Anhang nennt abweichend eXchange.",
+      "cardRequiresChange": false,
+      "evidenceSourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-OASIS-STIX-2.1"
+      ]
+    },
+    {
+      "cardId": "1781206500010",
+      "contentHash": "73e86b1f3d55a179da9bdc84e211fb1003d7604ec666c7523ea18b61c741e7bc",
+      "deck": "Acronym-Bonus (ABCD + PBQ)",
+      "correctAnswer": {
+        "letter": "D",
+        "text": "Trusted Automated eXchange of Intelligence Information"
+      },
+      "status": "verified_correct_protected",
+      "reason": "Die Frage nennt Collections und APIs und verweist damit auf TAXII 2.1; OASIS definiert diese Version als Trusted Automated Exchange of Intelligence Information. CompTIA und TAXII 1.1 verwenden die ältere Expansion mit Indicator.",
+      "cardRequiresChange": false,
+      "evidenceSourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-OASIS-TAXII-2.1",
+        "SRC-OASIS-TAXII-1.1.1"
+      ]
+    }
+  ],
+  "officialSourceConflicts": [
+    {
+      "topic": "MTTR",
+      "conflict": "CompTIA Lernziel 5.2: Mean time to repair; CompTIA Akronymanhang: Mean Time to Recover. NIST und ISO behandeln Repair, Recovery und Restoration als unterschiedliche Begriffe.",
+      "affectedCardIds": [
+        "1779669260176",
+        "1780262916264",
+        "1781206500023"
+      ],
+      "adjudication": "Für diese SY0-701-Karten gilt Mean Time To Repair. Die belegte Karte 1779669260176 bleibt unverändert; die beiden Slash-Mischformen sind nicht belegt.",
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-MTTR",
+        "SRC-NIST-RECOVERY",
+        "SRC-ISO-MTTR"
+      ]
+    },
+    {
+      "topic": "DMARC",
+      "conflict": "CompTIA Lernziel 4.5 und RFC 9989: Domain-based Message Authentication, Reporting and Conformance; CompTIA Akronymanhang: Domain Message Authentication Reporting and Conformance.",
+      "affectedCardIds": [
+        "1780262916265",
+        "1781206500008"
+      ],
+      "adjudication": "Beide Karten sind richtig und dürfen nicht verändert werden.",
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-RFC-9989"
+      ]
+    },
+    {
+      "topic": "STIX",
+      "conflict": "OASIS STIX 2.1: Structured Threat Information Expression; CompTIA Akronymanhang: Structured Threat Information eXchange.",
+      "affectedCardIds": [
+        "1781206500009"
+      ],
+      "adjudication": "Die OASIS-Expansion ist maßgeblich. Die Karte ist richtig und darf nicht verändert werden.",
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-OASIS-STIX-2.1"
+      ]
+    },
+    {
+      "topic": "TAXII",
+      "conflict": "OASIS TAXII 2.1: Trusted Automated Exchange of Intelligence Information; CompTIA-Akronymanhang und OASIS TAXII 1.1.1: Trusted Automated Exchange of Indicator Information.",
+      "affectedCardIds": [
+        "1781206500010"
+      ],
+      "adjudication": "Die Karte beschreibt Collections und APIs der Version 2.1 und ist mit der aktuellen OASIS-Expansion richtig; nicht verändern.",
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-OASIS-TAXII-2.1",
+        "SRC-OASIS-TAXII-1.1.1"
+      ]
+    }
+  ],
+  "reviewRegistryContradictions": [
+    {
+      "cardIds": [
+        "1780262916264",
+        "1781206500023"
+      ],
+      "registryClaim": "Das offizielle CompTIA-SY0-701-Akronymverzeichnis bestätigt 'Mean Time To Repair / Restore'.",
+      "finding": "Falsch. Der Anhang nennt 'Mean Time to Recover'; der Lernzieltext nennt 'Mean time to repair'. Keine Stelle nennt die Slash-Mischform.",
+      "cardContentRequiresChange": true,
+      "reviewRegistryRequiresChange": true
+    },
+    {
+      "cardIds": [
+        "1780262916265",
+        "1781206500008"
+      ],
+      "registryClaim": "Das offizielle CompTIA-SY0-701-Akronymverzeichnis bestätigt die aktuelle DMARC-Expansion.",
+      "finding": "Unzutreffend für den Akronymanhang. Der CompTIA-Lernzieltext und RFC 9989 bestätigen die Kartenantwort, der Anhang nicht.",
+      "cardContentRequiresChange": false,
+      "reviewRegistryRequiresChange": true
+    },
+    {
+      "cardIds": [
+        "1781206500009",
+        "1781206500010"
+      ],
+      "registryClaim": "Das offizielle CompTIA-SY0-701-Akronymverzeichnis bestätigt die aktuelle STIX- beziehungsweise TAXII-Expansion.",
+      "finding": "Falsch. Die Karten sind durch die aktuellen OASIS-Standards richtig, widersprechen aber den im CompTIA-Anhang gedruckten Expansionen.",
+      "cardContentRequiresChange": false,
+      "reviewRegistryRequiresChange": true
+    }
+  ],
+  "sources": [
+    {
+      "id": "SRC-COMPTIA-SY0-701-V7",
+      "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+      "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+      "locators": [
+        "p. 4: Hashing, Salting und Blockchain als getrennte Punkte",
+        "p. 11: Domain-based Message Authentication Reporting and Conformance (DMARC)",
+        "p. 13: Mean time to repair (MTTR)",
+        "p. 17: DMARC Domain Message Authentication Reporting and Conformance",
+        "p. 19: MTTR Mean Time to Recover",
+        "p. 21: STIX ... eXchange; TAXII ... Indicator Information"
+      ]
+    },
+    {
+      "id": "SRC-NIST-BLOCKCHAIN",
+      "title": "NIST IR 8202: Blockchain Technology Overview",
+      "url": "https://csrc.nist.gov/pubs/ir/8202/final",
+      "locator": "Abstract: distributed tamper-evident and tamper-resistant ledger; transactions cannot be changed once published"
+    },
+    {
+      "id": "SRC-NIST-MTTR",
+      "title": "NIST: A Hierarchical Structure of Key Performance Indicators",
+      "url": "https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=919754",
+      "locator": "p. 10: Mean time to repair (MTTR) is the average time to repair"
+    },
+    {
+      "id": "SRC-NIST-RECOVERY",
+      "title": "NIST CSRC Glossary: mean time to recovery",
+      "url": "https://csrc.nist.gov/glossary/term/mean_time_to_recovery",
+      "locator": "Definition: average amount of time to recover from a product or system failure"
+    },
+    {
+      "id": "SRC-ISO-MTTR",
+      "title": "ISO/TC 67 terminology update",
+      "url": "https://committee.iso.org/files/live/sites/tc67/files/N2123_Update%20on%20ISOTC67WG%204%20document_Definitions%20and%20Translations_2023.pdf",
+      "locator": "p. 5: mean time to repair (MTTR); mean time to restoration (MTTRes)"
+    },
+    {
+      "id": "SRC-RFC-9989",
+      "title": "RFC 9989: Domain-Based Message Authentication, Reporting, and Conformance (DMARC)",
+      "url": "https://www.rfc-editor.org/info/rfc9989/",
+      "locator": "Title and abstract; published May 2026 and obsoletes RFC 7489 and RFC 9091"
+    },
+    {
+      "id": "SRC-OASIS-STIX-2.1",
+      "title": "OASIS STIX Version 2.1",
+      "url": "https://docs.oasis-open.org/cti/stix/v2.1/stix-v2.1.pdf",
+      "locator": "p. 1: Structured Threat Information Expression (STIX)"
+    },
+    {
+      "id": "SRC-OASIS-TAXII-2.1",
+      "title": "OASIS TAXII Version 2.1",
+      "url": "https://docs.oasis-open.org/cti/taxii/v2.1/taxii-v2.1.html",
+      "locator": "section 1.6: Trusted Automated Exchange of Intelligence Information; Collections and APIs"
+    },
+    {
+      "id": "SRC-OASIS-TAXII-1.1.1",
+      "title": "OASIS TAXII Version 1.1.1 Overview",
+      "url": "https://docs.oasis-open.org/cti/taxii/v1.1.1/taxii-v1.1.1-part1-overview.html",
+      "locator": "Overview: Trusted Automated Exchange of Indicator Information"
+    },
+    {
+      "id": "SRC-NIST-SP800-53R5",
+      "title": "NIST SP 800-53 Rev. 5.1",
+      "url": "https://csrc.nist.gov/CSRC/media/Projects/risk-management/800-53%20Downloads/800-53r5/SP_800-53_v5_1-derived-OSCAL.pdf",
+      "locator": "PE-3, pp. 186-187: guards within Physical Access Control"
+    },
+    {
+      "id": "SRC-MAPPING-DOMAIN-1",
+      "title": "Lokale SY0-701-Domain-1-Zuordnung",
+      "path": "/home/_vb/card_pwa_app/sample_Transcripts/Mapping_Knowledge/domain-1-requirement-mapping.md",
+      "locator": "1.1 Categories: operational guard activity versus physical guard shack/barrier",
+      "authority": "secondary"
+    }
+  ],
+  "finalDisposition": {
+    "databaseChangesApplied": 0,
+    "correctVerifiedCardsChanged": 0,
+    "nextSafeAction": "Nur die drei Einträge in cardsWithContradictions als Review-Vorschläge behandeln. Vor einer Veröffentlichung sind exakte Korrektur-Payloads erneut durch das Review-Gateway zu prüfen; die Einträge in verifiedCorrectCardsDoNotChange sind gegen Inhaltsänderungen zu schützen."
+  }
+}

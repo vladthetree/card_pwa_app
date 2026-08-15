@@ -11,6 +11,15 @@ import time
 from server.config import LOGGER
 from server.common.helpers import now_ms, to_int_or_default as _to_int_or_default
 from server.db.profile_scope import scope_user_id
+from server.domain.card_catalog import (
+  CATALOG_GATEWAY_CLIENT,
+  catalog_content_from_row,
+  catalog_enabled,
+  catalog_row,
+  canonical_owner_id,
+  is_canonical_owner,
+  upsert_catalog_content,
+)
 from server.domain.decks import ensure_security_deck_hierarchy
 
 
@@ -99,6 +108,13 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
   now = now_ms()
   day_ms = 86_400_000
   state_user_id = scope_user_id(user_id)
+  shared_catalog = catalog_enabled(conn)
+  catalog_owner_id = canonical_owner_id(conn) if shared_catalog else None
+  canonical_writer = bool(
+    shared_catalog
+    and is_canonical_owner(conn, state_user_id)
+    and source_client == CATALOG_GATEWAY_CLIENT
+  )
 
   def _to_int_or_none(value):
     try:
@@ -236,6 +252,8 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
     return result
 
   if op_type == "deck.create":
+    if shared_catalog and state_user_id != catalog_owner_id:
+      return
     deck_id = payload.get("id")
     name = payload.get("name")
     if not deck_id or not name:
@@ -262,6 +280,8 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
     ensure_security_deck_hierarchy(conn, state_user_id)
 
   elif op_type == "deck.delete":
+    if shared_catalog and state_user_id != catalog_owner_id:
+      return
     raw_deck_ids = payload.get("deckIds")
     if isinstance(raw_deck_ids, list):
       initial_deck_ids = [str(deck_id).strip() for deck_id in raw_deck_ids if str(deck_id or "").strip()]
@@ -302,6 +322,29 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
     if not card_id:
       return
     candidate_ts = _card_candidate_ts()
+    canonical = catalog_row(conn, card_id) if shared_catalog else None
+    if shared_catalog and not canonical:
+      return
+
+    if canonical_writer:
+      upsert_catalog_content(
+        conn,
+        card_id=card_id,
+        canonical_user_id=state_user_id,
+        content={
+          "noteId": payload.get("noteId"),
+          "deckId": payload.get("deckId"),
+          "front": payload.get("front"),
+          "back": payload.get("back"),
+          "tags": payload.get("tags", []),
+          "extra": payload.get("extra", {}),
+        },
+        created_at=payload.get("createdAt") or candidate_ts,
+        updated_at=candidate_ts,
+        deleted_at=payload.get("deletedAt"),
+        source_client=source_client,
+      )
+      canonical = catalog_row(conn, card_id)
 
     existing = conn.execute(
       "SELECT updated_at, last_source_client, reps FROM server_cards WHERE id=? AND user_id=?",
@@ -310,8 +353,8 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
     if existing and not card_should_apply(existing[0], existing[1], existing[2], candidate_ts, source_client, payload.get("reps")):
       return
 
-    tags_json  = json.dumps(payload.get("tags", []), ensure_ascii=False) if payload.get("tags") is not None else None
-    extra_json = json.dumps(payload.get("extra", {}), ensure_ascii=False) if payload.get("extra") is not None else None
+    tags_json  = None if shared_catalog else (json.dumps(payload.get("tags", []), ensure_ascii=False) if payload.get("tags") is not None else None)
+    extra_json = None if shared_catalog else (json.dumps(payload.get("extra", {}), ensure_ascii=False) if payload.get("extra") is not None else None)
     metadata_json = json.dumps(payload.get("metadata"), ensure_ascii=False) if payload.get("metadata") is not None else None
     deleted_at = payload.get("deletedAt")
     is_deleted = 1 if payload.get("isDeleted") or deleted_at is not None else 0
@@ -323,7 +366,11 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
        stability, difficulty, retrievability, reps, lapses, algorithm, metadata_json, is_deleted, created_at, updated_at, deleted_at, last_source_client, user_id)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
-      card_id, payload.get("noteId"), payload.get("deckId"), payload.get("front"), payload.get("back"),
+      card_id,
+      None if shared_catalog else payload.get("noteId"),
+      canonical["deck_id"] if shared_catalog else payload.get("deckId"),
+      None if shared_catalog else payload.get("front"),
+      None if shared_catalog else payload.get("back"),
       tags_json, extra_json,
       payload.get("type"), payload.get("queue"), payload.get("due"), normalized_due_at,
       payload.get("learningStep"), payload.get("lastReviewedAt"),
@@ -341,6 +388,27 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
     if not card_id or not updates:
       return
     candidate_ts = _update_candidate_ts(updates)
+    canonical = catalog_row(conn, card_id) if shared_catalog else None
+    if shared_catalog and not canonical:
+      return
+
+    if canonical_writer:
+      current_content = catalog_content_from_row(canonical) or {}
+      next_content = dict(current_content)
+      for key in ("noteId", "deckId", "front", "back", "tags", "extra"):
+        if key in updates:
+          next_content[key] = updates[key]
+      upsert_catalog_content(
+        conn,
+        card_id=card_id,
+        canonical_user_id=state_user_id,
+        content=next_content,
+        created_at=canonical["created_at"],
+        updated_at=candidate_ts,
+        deleted_at=canonical["deleted_at"],
+        source_client=source_client,
+      )
+      canonical = catalog_row(conn, card_id)
 
     existing = conn.execute(
       "SELECT updated_at, last_source_client, reps FROM server_cards WHERE id=? AND user_id=?",
@@ -358,13 +426,15 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       "difficulty": "difficulty", "retrievability": "retrievability", "reps": "reps", "lapses": "lapses", "algorithm": "algorithm",
     }
     for key, col in _MAP.items():
+      if shared_catalog and key in ("noteId", "deckId", "front", "back"):
+        continue
       if key in updates:
         fields.append(f"{col}=?")
         params.append(updates[key])
-    if "tags" in updates:
+    if "tags" in updates and not shared_catalog:
       fields.append("tags_json=?")
       params.append(json.dumps(updates["tags"], ensure_ascii=False) if updates["tags"] is not None else None)
-    if "extra" in updates:
+    if "extra" in updates and not shared_catalog:
       fields.append("extra_json=?")
       params.append(json.dumps(updates["extra"], ensure_ascii=False) if updates["extra"] is not None else None)
     if "metadata" in updates:
@@ -417,6 +487,20 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       return
 
     deleted_at = payload.get("deletedAt") or candidate_ts
+
+    if canonical_writer:
+      conn.execute(
+        """UPDATE shared_card_catalog
+           SET deleted_at=?, updated_at=?, last_source_client=? WHERE id=?""",
+        (deleted_at, candidate_ts, source_client, card_id),
+      )
+      conn.execute(
+        """UPDATE server_cards
+           SET deleted_at=?, is_deleted=1, updated_at=?, last_source_client=?
+           WHERE id=?""",
+        (deleted_at, candidate_ts, source_client, card_id),
+      )
+      return
 
     conn.execute("UPDATE server_cards SET deleted_at=?, is_deleted=1, updated_at=?, last_source_client=? WHERE id=? AND user_id=?",
            (deleted_at, candidate_ts, source_client, card_id, state_user_id))

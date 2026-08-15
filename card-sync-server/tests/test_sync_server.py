@@ -2126,6 +2126,97 @@ class TestStartupFlags:
 
 
 # ═════════════════════════════════════════════════════════════════════════════
+# Tests: Shared Vlad card catalog
+# ═════════════════════════════════════════════════════════════════════════════
+
+class TestSharedVladCardCatalog:
+
+    def test_learner_snapshot_and_push_use_single_vlad_content_row(self, api, db_helper):
+        db_helper.query(
+            """
+            INSERT INTO users
+            (user_id, profile_name, recovery_code_hash, created_at)
+            VALUES ('catalog-vlad', 'Vlad', 'hash', 1)
+            """
+        )
+        db_helper.query(
+            """
+            INSERT INTO server_decks
+            (id, name, parent_deck_id, created_at, source, updated_at,
+             deleted_at, last_source_client, user_id)
+            VALUES ('catalog-deck', 'Canonical Deck', NULL, 1, 'reviewed', 1,
+                    NULL, 'security-card-review-gateway-v1', 'catalog-vlad')
+            """
+        )
+        db_helper.query(
+            """
+            INSERT INTO shared_card_catalog
+            (id, canonical_user_id, note_id, deck_id, front, back, tags_json,
+             extra_json, created_at, updated_at, deleted_at, last_source_client)
+            VALUES ('catalog-card', 'catalog-vlad', 'catalog-note', 'catalog-deck',
+                    'Which concept?\nA: Salt\nB: Blockchain',
+                    '>> CORRECT: B |\n\nCanonical blockchain explanation.',
+                    '[]', '{}', 1, 1, NULL,
+                    'security-card-review-gateway-v1')
+            """
+        )
+        db_helper.query(
+            """
+            INSERT INTO server_cards
+            (id, deck_id, type, queue, due, due_at, interval, factor, reps,
+             lapses, algorithm, is_deleted, created_at, updated_at,
+             last_source_client, user_id)
+            VALUES ('catalog-card', 'catalog-deck', 0, 0, 0, 0, 0, 2500, 0,
+                    0, 'sm2', 0, 1, 1,
+                    'shared-card-catalog-default', 'catalog-vlad')
+            """
+        )
+
+        learner = api.create_profile(
+            device_id="catalog-learner-device",
+            profile_name="Catalog Learner",
+        )
+        token = learner["profileToken"]
+        snapshot = api.snapshot("catalog-reader", auth_token=token)
+        assert snapshot["ok"] is True
+        assert len(snapshot["cards"]) == 1
+        assert snapshot["cards"][0]["id"] == "catalog-card"
+        assert "CORRECT: B" in snapshot["cards"][0]["back"]
+        assert snapshot["decks"][0]["name"] == "Canonical Deck"
+
+        result = api.push(
+            op_id="catalog-conflicting-update",
+            op_type="card.update",
+            payload={
+                "cardId": "catalog-card",
+                "updates": {
+                    "back": ">> CORRECT: A |\n\nConflicting salt explanation.",
+                    "reps": 4,
+                    "due": 9,
+                    "updatedAt": 100,
+                },
+            },
+            client_id="catalog-learner-client",
+            client_timestamp=100,
+            auth_token=token,
+        )
+
+        assert result["ok"] is True
+        assert result["canonicalContentProtected"] is True
+        assert result["referenceRejected"] is False
+        assert "CORRECT: B" in result["canonicalCard"]["back"]
+        catalog = db_helper.query(
+            "SELECT back FROM shared_card_catalog WHERE id='catalog-card'"
+        )
+        learner_ref = db_helper.query(
+            f"""SELECT front, back, reps, due FROM server_cards
+                WHERE user_id='{learner['userId']}' AND id='catalog-card'"""
+        )
+        assert "CORRECT: B" in catalog[0][0]
+        assert learner_ref == [(None, None, 4, 9)]
+
+
+# ═════════════════════════════════════════════════════════════════════════════
 # Tests: Bootstrap Upload
 # ═════════════════════════════════════════════════════════════════════════════
 

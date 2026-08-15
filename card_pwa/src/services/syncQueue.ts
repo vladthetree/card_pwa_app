@@ -15,6 +15,7 @@ import {
 } from '../utils/reviewDecks'
 import { collectDeckIdsWithActiveCardsOrDescendants } from '../utils/deckContentScope'
 import { getSelectedDeckFilter } from './syncedDeckScope'
+import { pickAuthoritativeCardContentUpdates } from '../utils/sync/cardContentAuthority'
 import {
   isSyncActive,
   getSyncConfig,
@@ -288,7 +289,7 @@ async function sendOperation(record: SyncQueueRecord): Promise<SendResult> {
     }),
   })
 
-  const apiError = await readSyncApiResponseError(response)
+  const apiError = await readSyncApiResponseError(response.clone())
 
   if (!response.ok) {
     logError(
@@ -318,6 +319,37 @@ async function sendOperation(record: SyncQueueRecord): Promise<SendResult> {
       ].join('\n'),
     )
     return 'failed'
+  }
+
+  try {
+    const result = (await response.json()) as {
+      canonicalContentProtected?: boolean
+      referenceRejected?: boolean
+      cardId?: string
+      canonicalCard?: Record<string, unknown>
+    }
+    if (result.canonicalContentProtected && result.referenceRejected && result.cardId) {
+      await db.transaction('rw', [db.cards, db.reviews, db.cardStats], async () => {
+        await db.reviews.where('cardId').equals(result.cardId as string).delete()
+        await db.cardStats.delete(result.cardId as string)
+        await db.cards.delete(result.cardId as string)
+      })
+    } else if (result.canonicalContentProtected && result.canonicalCard) {
+      const cardId = typeof result.canonicalCard.id === 'string'
+        ? result.canonicalCard.id
+        : ''
+      if (cardId) {
+        const content = pickAuthoritativeCardContentUpdates(
+          result.canonicalCard as Parameters<typeof pickAuthoritativeCardContentUpdates>[0],
+        )
+        if (Object.keys(content).length > 0) {
+          await db.cards.update(cardId, content)
+        }
+      }
+    }
+  } catch {
+    // Older servers may return an empty/non-JSON success body. Delivery still
+    // succeeded; canonical repair is simply unavailable for that response.
   }
 
   return 'sent'

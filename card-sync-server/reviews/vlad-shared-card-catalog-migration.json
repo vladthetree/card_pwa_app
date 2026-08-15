@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "schemaVersion": "vlad-shared-card-catalog-migration-1",
+  "migratedAt": "2026-08-15T23:04:57+00:00",
+  "canonicalProfile": "Vlad",
+  "canonicalUserId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+  "backup": "/home/_vb/card_pwa_app/card-sync-server/backups/shared-card-catalog/sync.db.before-shared-card-catalog-20260815T230454Z.sqlite",
+  "before": {
+    "serverCardRows": 2150,
+    "distinctCardIds": 1075,
+    "rowsContainingAuthoringContent": 2150,
+    "catalogRows": 0
+  },
+  "after": {
+    "canonicalCatalogRows": 1075,
+    "activeCanonicalCards": 1075,
+    "referenceRowsContainingAuthoringContent": 0,
+    "referenceCountsByUserId": {
+      "637bea47-d987-413d-aeb4-e5b8f68aa59e": 1075,
+      "fbe23414-9399-4a3b-9d89-19867a3b71da": 1075
+    }
+  },
+  "operations": {
+    "catalogRowsSeededOrRefreshed": 1075,
+    "defaultReferencesAdded": 0,
+    "referencesNormalized": 2150,
+    "unknownReferencesDisabled": 0
+  },
+  "policy": {
+    "contentAuthority": "Vlad",
+    "oneContentRowPerCardId": true,
+    "userRowsContainOnlyReferenceAndStudyState": true,
+    "unknownUserCardIdsDisabled": true
+  }
+}
