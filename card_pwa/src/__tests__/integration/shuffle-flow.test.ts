@@ -313,7 +313,7 @@ describe('shuffle flow integration', () => {
     expect(mockedRuntime.state.activeSessions.has('shuffle:collection-1')).toBe(true)
   })
 
-  it('applies the shared study card limit across decks while keeping learning cards exempt', async () => {
+  it('applies the shared session target as a hard cap across decks', async () => {
     const now = Date.now()
     mockedRuntime.state.selectedDeckIds = ['deck-a', 'deck-b', 'deck-c', 'deck-d']
     mockedRuntime.state.decks = [
@@ -341,6 +341,6 @@ describe('shuffle flow integration', () => {
       { userId: 'profile-1', maxCards: 1 },
     )
 
-    expect(selected.map(card => card.id)).toEqual(['review-b', 'learning-a'])
+    expect(selected.map(card => card.id)).toEqual(['review-b'])
   })
 })

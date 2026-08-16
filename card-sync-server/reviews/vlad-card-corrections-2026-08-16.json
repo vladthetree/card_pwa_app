@@ -1,0 +1,2149 @@
+{
+  "$schema": "vlad-security-card-correction-decisions-1",
+  "generatedAt": "2026-08-16T13:33:53+00:00",
+  "profile": "Vlad",
+  "canonicalUserId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+  "identityKey": [
+    "userId",
+    "cardId"
+  ],
+  "policy": "Only proven content defects are corrected; unresolved and protected cards are excluded.",
+  "decisions": [
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1778313864610",
+      "verdict": "corrected",
+      "cardType": "ordering",
+      "requirements": [
+        "supplemental:interactive-exercise",
+        "req:sy0701:v7:4.8:incident-response-process"
+      ],
+      "evidence": "CompTIA SY0-701 objective 4.8 explicitly lists all seven steps in this exact order; NIST revision metadata proves why the former six-step NIST attribution was stale.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 12, objective 4.8, Incident response process",
+          "supports": "The exam objective lists Preparation, Detection, Analysis, Containment, Eradication, Recovery, and Lessons Learned."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-61R3",
+          "title": "NIST SP 800-61 Rev. 3: Incident Response Recommendations",
+          "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+          "roles": [
+            "fact",
+            "revision"
+          ],
+          "locator": "Publication metadata and section 2.1; final April 2025; supersedes Rev. 2",
+          "supports": "Rev. 3 is the current NIST incident-response publication and aligns incident response with CSF 2.0."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-61R2",
+          "title": "NIST SP 800-61 Rev. 2: Computer Security Incident Handling Guide",
+          "url": "https://csrc.nist.gov/pubs/sp/800/61/r2/final",
+          "roles": [
+            "fact",
+            "revision"
+          ],
+          "locator": "Figure 3-1 and publication status",
+          "supports": "The superseded Rev. 2 grouped containment, eradication, and recovery as one lifecycle phase."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (7 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "allPairsOrStepsVerified": true
+      },
+      "sourceConflicts": [
+        {
+          "sources": [
+            "CompTIA SY0-701 objective 4.8",
+            "NIST SP 800-61 Rev. 2",
+            "NIST SP 800-61 Rev. 3"
+          ],
+          "resolution": "Teach the CompTIA seven-item exam sequence and label it as CompTIA; do not misattribute it to current NIST."
+        }
+      ],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared the card with the incident-response cards and mappings; only this ordering card carried the stale six-step attribution."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Replaced the stale six-step NIST attribution with CompTIA's exact seven-step objective and an explicit NIST revision note.",
+      "content": {
+        "noteId": "6fd0546a-f4fa-4459-be60-f8cab2a5babf",
+        "deckId": "pbq-test-deck-001",
+        "front": "ORDERING:\nPut CompTIA Security+ SY0-701 objective 4.8's incident response process in the correct order.\n\n1) Preparation\n2) Detection\n3) Analysis\n4) Containment\n5) Eradication\n6) Recovery\n7) Lessons Learned",
+        "back": "CORRECT_ORDER: 1,2,3,4,5,6,7\n\nCompTIA SY0-701 objective 4.8 lists Preparation, Detection, Analysis, Containment, Eradication, Recovery, and Lessons Learned in that order.\n\nQuellenhinweis: Dies ist die CompTIA-Prüfungsreihenfolge. Sie darf nicht pauschal als aktuelles NIST-Phasenmodell bezeichnet werden: NIST SP 800-61 Rev. 3 ersetzte Rev. 2 im April 2025 und richtet Incident Response am CSF 2.0 aus. Die zurückgezogene Rev. 2 fasste Containment, Eradication and Recovery als eine gemeinsame Phase zusammen.",
+        "tags": [
+          "Incident Response",
+          "PBQ"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "itemAssessments": [
+        {
+          "item": "1) Preparation",
+          "reason": "CompTIA places preparation first, before an incident is detected or analyzed."
+        },
+        {
+          "item": "2) Detection",
+          "reason": "CompTIA separates detection from analysis and lists detection as the second item."
+        },
+        {
+          "item": "3) Analysis",
+          "reason": "CompTIA lists analysis immediately after detection to determine incident facts and scope."
+        },
+        {
+          "item": "4) Containment",
+          "reason": "CompTIA places containment after analysis to limit further incident impact."
+        },
+        {
+          "item": "5) Eradication",
+          "reason": "CompTIA places eradication after containment to remove the incident's cause and artifacts."
+        },
+        {
+          "item": "6) Recovery",
+          "reason": "CompTIA places recovery after eradication to restore affected services safely."
+        },
+        {
+          "item": "7) Lessons Learned",
+          "reason": "CompTIA lists lessons learned last so results improve future preparation and response."
+        }
+      ]
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1779007738884",
+      "verdict": "corrected",
+      "cardType": "matching",
+      "requirements": [
+        "req:sy0701:v7:1.1:categories:technical",
+        "req:sy0701:v7:1.1:categories:managerial",
+        "req:sy0701:v7:1.1:categories:operational",
+        "req:sy0701:v7:1.1:categories:physical"
+      ],
+      "evidence": "Every front-side mapping is supported by CompTIA's control categories. NIST PE-3 confirms that guards and physical access devices belong within physical access control, so the former blanket operational claim was wrong.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 1, objective 1.1, categories of security controls",
+          "supports": "CompTIA distinguishes technical, managerial, operational, and physical control categories."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-53R5",
+          "title": "NIST SP 800-53 Rev. 5: Security and Privacy Controls",
+          "url": "https://doi.org/10.6028/NIST.SP.800-53r5",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Control PE-3, Physical Access Control",
+          "supports": "PE-3 places guards and physical access devices within the physical-access-control family."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (11 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "allPairsOrStepsVerified": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Checked other control-category cards for guard and barrier examples; none requires changing these eight mappings."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Removed the front/back contradiction while preserving all eight proven mappings.",
+      "content": {
+        "noteId": "pbq-control-category-9f380fe6",
+        "deckId": "sy0-701-objective-1-1",
+        "front": "MATCHING:\nMatch each example to its security control category.\n\nGuard shack limiting physical access >> Physical\nFences and locked doors >> Physical\nAntivirus software >> Technical\nFirewall access control list blocking specific addresses >> Technical\nPeriodic risk assessment >> Managerial\nOfficial written security policy >> Managerial\nSecurity awareness workshop >> Operational\nDaily review of system logs by analysts >> Operational",
+        "back": "Die Zuordnung richtet sich nach der in der Front beschriebenen Kontrolle: Guard shack, fences und locked doors begrenzen physischen Zutritt; Antivirus und Firewall-ACL setzen Kontrollen technisch durch; Risk Assessment und Security Policy steuern Risiken; Workshops und tägliche Logprüfungen sind von Menschen ausgeführte operative Prozesse.\n\nWichtig: Die frühere Rückseite widersprach der Front, indem sie aus dem „guard shack“ ohne Kennzeichnung die Tätigkeit eines Wachpostens machte. NIST SP 800-53 PE-3 behandelt auch Guards im Rahmen von Physical Access Control. Für diese Karte bleiben daher alle Front-Zuordnungen unverändert.",
+        "tags": [
+          "Security Controls",
+          "PBQ"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "itemAssessments": [
+        {
+          "item": "Guard shack limiting physical access >> Physical",
+          "reason": "The described guard shack is a facility-based physical access barrier, and NIST PE-3 covers guards under physical access control."
+        },
+        {
+          "item": "Fences and locked doors >> Physical",
+          "reason": "Fences and locked doors directly restrict physical entry to facilities and protected areas."
+        },
+        {
+          "item": "Antivirus software >> Technical",
+          "reason": "Antivirus is software that enforces malware prevention and detection through technical mechanisms."
+        },
+        {
+          "item": "Firewall access control list blocking specific addresses >> Technical",
+          "reason": "A firewall ACL is a technology-enforced rule that allows or blocks network traffic."
+        },
+        {
+          "item": "Periodic risk assessment >> Managerial",
+          "reason": "Risk assessment is a management and governance activity used to direct security decisions."
+        },
+        {
+          "item": "Official written security policy >> Managerial",
+          "reason": "A formal security policy expresses management direction and organizational requirements."
+        },
+        {
+          "item": "Security awareness workshop >> Operational",
+          "reason": "Personnel execute the recurring awareness and training process as an operational control."
+        },
+        {
+          "item": "Daily review of system logs by analysts >> Operational",
+          "reason": "Analysts perform the recurring log-review procedure, making it an operational process."
+        }
+      ]
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1779724748973",
+      "verdict": "corrected",
+      "cardType": "matching",
+      "requirements": [
+        "supplemental:sy0-701-acronym",
+        "req:sy0701:v7:3.1:zero-trust"
+      ],
+      "evidence": "All six mappings match the CompTIA acronym and architecture scope. NIST SP 800-207 directly supports the resource-focused, identity- and context-based ZTNA mapping and disproves the former Cloud-VPN mnemonic.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "pp. 6-7 and acronym list, objectives 3.1 and cloud service models",
+          "supports": "CompTIA includes CASB, SASE, ZTNA, IaaS, PaaS, and SaaS in the architecture and acronym scope."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-207",
+          "title": "NIST SP 800-207: Zero Trust Architecture",
+          "url": "https://csrc.nist.gov/pubs/sp/800/207/final",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Abstract and section 2, especially tenets 3 and 4",
+          "supports": "Zero trust protects individual resources and evaluates access before a session instead of trusting network location."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (10 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "allPairsOrStepsVerified": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Checked Zero Trust and cloud-model cards for conflicting scope; the revised wording now matches the resource-focused definitions used elsewhere."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Preserved all six mappings and replaced the misleading Cloud-VPN mnemonic with resource-focused per-session access.",
+      "content": {
+        "noteId": "46fc19dd-fa9d-456b-a995-21f8b65bdf4c",
+        "deckId": "sy0-701-acronyms-bonus",
+        "front": "MATCHING:\nMatch each cloud or Zero Trust acronym to its function.\n\nCASB >> Policy, visibility, and data controls between users and cloud applications\nSASE >> Cloud-delivered networking and security services at the edge\nZTNA >> Identity- and context-based access to individual applications\nIaaS >> Customer manages the guest operating system, applications, and data\nPaaS >> Customer deploys code while the provider manages the runtime and operating system\nSaaS >> Customer configures and uses a complete provider-managed application",
+        "back": "CASB = Cloud Access Security Broker\nSASE = Secure Access Service Edge\nZTNA = Zero Trust Network Access\nIaaS = Infrastructure as a Service\nPaaS = Platform as a Service\nSaaS = Software as a Service\n\nMerkhilfe:\n- CASB = Richtlinien-, Sichtbarkeits- und Datenkontrolle für Cloud-Anwendungen\n- SASE = Netzwerk- und Sicherheitsfunktionen als Cloud-Service am Edge\n- ZTNA = identitäts- und kontextgeprüfter Zugriff auf einzelne Ressourcen pro Sitzung\n- IaaS = Infrastruktur; der Kunde verwaltet Gast-OS, Anwendungen und Daten\n- PaaS = Plattform; der Kunde deployt Code\n- SaaS = fertige, vom Provider verwaltete Anwendung\n\nZTNA ist kein „Cloud-VPN“: NIST SP 800-207 betont Ressourcen statt Netzwerksegmente und prüft Authentisierung und Autorisierung vor der Sitzung.",
+        "tags": [
+          "Acronyms",
+          "Acronym-Bonus",
+          "Cloud",
+          "Drag-Drop",
+          "PBQ"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "itemAssessments": [
+        {
+          "item": "CASB >> Policy, visibility, and data controls between users and cloud applications",
+          "reason": "CASB supplies security policy enforcement, visibility, and data protection for cloud application use."
+        },
+        {
+          "item": "SASE >> Cloud-delivered networking and security services at the edge",
+          "reason": "SASE combines wide-area networking and security capabilities delivered as cloud services near users and resources."
+        },
+        {
+          "item": "ZTNA >> Identity- and context-based access to individual applications",
+          "reason": "NIST zero trust evaluates subject and device before resource sessions and does not grant broad trust by network location."
+        },
+        {
+          "item": "IaaS >> Customer manages the guest operating system, applications, and data",
+          "reason": "In IaaS the provider supplies infrastructure while the customer controls the guest software stack and data."
+        },
+        {
+          "item": "PaaS >> Customer deploys code while the provider manages the runtime and operating system",
+          "reason": "In PaaS the provider manages platform and runtime layers while the customer deploys application code."
+        },
+        {
+          "item": "SaaS >> Customer configures and uses a complete provider-managed application",
+          "reason": "In SaaS the provider manages the application stack while the customer configures and uses the service."
+        }
+      ]
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1780262916264",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "supplemental:sy0-701-acronym",
+        "req:sy0701:v7:5.2:business-impact-analysis:mttr"
+      ],
+      "evidence": "The uniquely keyed answer is 'Mean Time To Repair'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 13, objective 5.2 business impact analysis; acronym appendix entry for MTTR",
+          "supports": "Objective 5.2 uses Mean time to repair; the appendix separately uses Mean Time to Recover, which is recorded as a source conflict."
+        },
+        {
+          "sourceId": "SRC-NIST-MTTR",
+          "title": "NIST: A Hierarchical Structure of Key Performance Indicators",
+          "url": "https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=919754",
+          "roles": [
+            "fact"
+          ],
+          "locator": "p. 10, maintenance KPI Mean time to repair (MTTR)",
+          "supports": "NIST expands MTTR as Mean time to repair and treats it as a maintenance performance indicator."
+        },
+        {
+          "sourceId": "SRC-ISO-MTTR",
+          "title": "ISO/TC 67 terminology update",
+          "url": "https://committee.iso.org/files/live/sites/tc67/files/N2123_Update%20on%20ISOTC67WG%204%20document_Definitions%20and%20Translations_2023.pdf",
+          "roles": [
+            "fact",
+            "conflict"
+          ],
+          "locator": "p. 5, MTTR and MTTRes terminology",
+          "supports": "ISO terminology distinguishes mean time to repair, MTTR, from mean time to restoration, MTTRes."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (11 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [
+        {
+          "sources": [
+            "CompTIA objective 5.2",
+            "CompTIA acronym appendix"
+          ],
+          "resolution": "Use Mean Time To Repair because the question explicitly scopes objective 5.2; disclose that the appendix says Recover."
+        }
+      ],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared both duplicate MTTR cards and every MTTR occurrence; both corrected cards now use the same scoped answer and conflict note."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Replaced the unsupported blended answer Mean Time To Repair / Restore with Mean Time To Repair and disclosed CompTIA's internal terminology conflict.",
+      "content": {
+        "noteId": "acr-mtbf-mttr-e4811ef4",
+        "deckId": "sy0-701-acronyms-bonus",
+        "front": "According to CompTIA SY0-701 objective 5.2's business impact analysis terminology, what does MTTR stand for?\nA: Mean Time To Respond\nB: Mean Time To Repair\nC: Maximum Time To Recover\nD: Mean Transaction Time Reliability",
+        "back": ">> CORRECT: B |\n\nMTTR = Mean Time To Repair. CompTIA objective 5.2 and NIST use this expansion. CompTIA's acronym appendix separately prints “Mean Time to Recover”; ISO distinguishes repair from restoration. The unsupported slash form “Repair / Restore” is therefore removed.\n\nNicht:\nA | Mean Time To Respond is not the expansion used by CompTIA objective 5.2 or the cited NIST maintenance KPI.\nC | Maximum Time To Recover changes both the statistic and wording and is not an official MTTR expansion in the cited sources.\nD | Mean Transaction Time Reliability is not a recognized MTTR expansion in CompTIA, NIST, or ISO terminology.",
+        "tags": [
+          "Acronyms",
+          "Acronym-Bonus",
+          "Resilience",
+          "ABCD",
+          "Hard-Distractors"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Mean Time To Respond is not the expansion used by CompTIA objective 5.2 or the cited NIST maintenance KPI."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "MTTR = Mean Time To Repair. CompTIA objective 5.2 and NIST use this expansion. CompTIA's acronym appendix separately prints “Mean Time to Recover”; ISO distinguishes repair from restoration. The unsupported slash form “Repair / Restore” is therefore removed."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Maximum Time To Recover changes both the statistic and wording and is not an official MTTR expansion in the cited sources."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Mean Transaction Time Reliability is not a recognized MTTR expansion in CompTIA, NIST, or ISO terminology."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1781206500023",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "supplemental:sy0-701-acronym",
+        "req:sy0701:v7:5.2:business-impact-analysis:mttr"
+      ],
+      "evidence": "The uniquely keyed answer is 'Mean Time To Repair'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 13, objective 5.2 business impact analysis; acronym appendix entry for MTTR",
+          "supports": "Objective 5.2 uses Mean time to repair; the appendix separately uses Mean Time to Recover, which is recorded as a source conflict."
+        },
+        {
+          "sourceId": "SRC-NIST-MTTR",
+          "title": "NIST: A Hierarchical Structure of Key Performance Indicators",
+          "url": "https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=919754",
+          "roles": [
+            "fact"
+          ],
+          "locator": "p. 10, maintenance KPI Mean time to repair (MTTR)",
+          "supports": "NIST expands MTTR as Mean time to repair and treats it as a maintenance performance indicator."
+        },
+        {
+          "sourceId": "SRC-ISO-MTTR",
+          "title": "ISO/TC 67 terminology update",
+          "url": "https://committee.iso.org/files/live/sites/tc67/files/N2123_Update%20on%20ISOTC67WG%204%20document_Definitions%20and%20Translations_2023.pdf",
+          "roles": [
+            "fact",
+            "conflict"
+          ],
+          "locator": "p. 5, MTTR and MTTRes terminology",
+          "supports": "ISO terminology distinguishes mean time to repair, MTTR, from mean time to restoration, MTTRes."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (11 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [
+        {
+          "sources": [
+            "CompTIA objective 5.2",
+            "CompTIA acronym appendix"
+          ],
+          "resolution": "Use Mean Time To Repair because the question explicitly scopes objective 5.2; disclose that the appendix says Recover."
+        }
+      ],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared both duplicate MTTR cards and every MTTR occurrence; both corrected cards now use the same scoped answer and conflict note."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Replaced the unsupported blended answer Mean Time To Repair / Restore with Mean Time To Repair and disclosed CompTIA's internal terminology conflict.",
+      "content": {
+        "noteId": "note-1781206500023",
+        "deckId": "sy0-701-acronyms-bonus",
+        "front": "According to CompTIA SY0-701 objective 5.2's business impact analysis terminology, what does MTTR stand for?\nA: Mean Time To Repair\nB: Mean Time To Respond\nC: Maximum Time To Recover\nD: Mean Transaction Time Reliability",
+        "back": ">> CORRECT: A |\n\nMTTR = Mean Time To Repair. CompTIA objective 5.2 and NIST use this expansion. CompTIA's acronym appendix separately prints “Mean Time to Recover”; ISO distinguishes repair from restoration. The unsupported slash form “Repair / Restore” is therefore removed.\n\nNicht:\nB | Mean Time To Respond is not the expansion used by CompTIA objective 5.2 or the cited NIST maintenance KPI.\nC | Maximum Time To Recover changes both the statistic and wording and is not an official MTTR expansion in the cited sources.\nD | Mean Transaction Time Reliability is not a recognized MTTR expansion in CompTIA, NIST, or ISO terminology.",
+        "tags": [
+          "Acronyms",
+          "Acronym-Bonus",
+          "Resilience",
+          "ABCD",
+          "Hard-Distractors"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "correct",
+          "reason": "MTTR = Mean Time To Repair. CompTIA objective 5.2 and NIST use this expansion. CompTIA's acronym appendix separately prints “Mean Time to Recover”; ISO distinguishes repair from restoration. The unsupported slash form “Repair / Restore” is therefore removed."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Mean Time To Respond is not the expansion used by CompTIA objective 5.2 or the cited NIST maintenance KPI."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Maximum Time To Recover changes both the statistic and wording and is not an official MTTR expansion in the cited sources."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Mean Transaction Time Reliability is not a recognized MTTR expansion in CompTIA, NIST, or ISO terminology."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200046",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.2:unsecure-networks:wireless"
+      ],
+      "evidence": "The uniquely keyed answer is 'Unsecure networks — Wireless'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 5, objective 2.2, unsecure networks: wireless, wired, and Bluetooth",
+          "supports": "CompTIA separately lists wireless, wired, and Bluetooth attack surfaces, so the stem must identify the relevant medium."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-153",
+          "title": "NIST SP 800-153: Guidelines for Securing Wireless Local Area Networks",
+          "url": "https://csrc.nist.gov/pubs/sp/800/153/final",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Abstract and sections 2-3, WLAN radio communications and threats",
+          "supports": "WLAN security must address radio-range access, eavesdropping, rogue access points, and insecure wireless configurations."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared the wired and Bluetooth vector cards; their physical-medium facts no longer overlap the revised Wi-Fi scenario."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Added public Wi-Fi, radio-range, rogue-AP, and eavesdropping facts so Wireless is uniquely entailed.",
+      "content": {
+        "noteId": "note-1786384200046",
+        "deckId": "sy0-701-objective-2-2",
+        "front": "A user connects to public Wi-Fi outside the organization's controlled premises. Because the radio signal is reachable by nearby devices, an attacker can operate a rogue access point or capture unprotected traffic. Which attack-surface category is most specific?\nA: Unsecure networks — Bluetooth\nB: Human vectors/social engineering — Impersonation\nC: Unsecure networks — Wireless\nD: Unsecure networks — Wired",
+        "back": ">> CORRECT: C |\n\nUnsecure networks — Wireless is uniquely supported because the scenario identifies public Wi-Fi, radio reach, rogue access points, and wireless eavesdropping. NIST SP 800-153 treats those as WLAN threats.\n\nNicht:\nA | Bluetooth is a separate short-range wireless technology, but the scenario explicitly identifies a Wi-Fi WLAN and rogue access point.\nB | Impersonation depends on a person or system pretending to be a trusted identity, which the scenario does not describe.\nD | A wired attack surface depends on physical cable or switch-port access, not a reachable Wi-Fi radio signal.",
+        "tags": [
+          "Threat Vectors and Attack Surfaces"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Bluetooth is a separate short-range wireless technology, but the scenario explicitly identifies a Wi-Fi WLAN and rogue access point."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Impersonation depends on a person or system pretending to be a trusted identity, which the scenario does not describe."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "Unsecure networks — Wireless is uniquely supported because the scenario identifies public Wi-Fi, radio reach, rogue access points, and wireless eavesdropping. NIST SP 800-153 treats those as WLAN threats."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "A wired attack surface depends on physical cable or switch-port access, not a reachable Wi-Fi radio signal."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200049",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.2:supply-chain:vendors"
+      ],
+      "evidence": "The uniquely keyed answer is 'Supply chain — Vendors'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 5, objective 2.2, supply chain: managed service providers, vendors, and suppliers",
+          "supports": "CompTIA explicitly includes vendors as a supply-chain threat vector distinct from unrelated delivery and human vectors."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-161R1-UPD1",
+          "title": "NIST SP 800-161 Rev. 1 Update 1: Cybersecurity Supply Chain Risk Management",
+          "url": "https://csrc.nist.gov/pubs/sp/800/161/r1/upd1/final",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Abstract and executive summary; products, services, suppliers, counterfeit and malicious functionality",
+          "supports": "C-SCRM covers malicious, counterfeit, and vulnerable products and services introduced through supply-chain parties."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared supplier and MSP cards; the revised scenario identifies the finished-product vendor relationship rather than component supply or managed operation."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Replaced keyword repetition and overlapping supply-chain distractors with a vendor update-channel scenario and non-overlapping alternatives.",
+      "content": {
+        "noteId": "note-1786384200049",
+        "deckId": "sy0-701-objective-2-2",
+        "front": "An organization buys a finished application from a third-party software producer. That producer's trusted update channel is compromised and distributes a malicious update to customers. Under SY0-701 objective 2.2, which vector is being described?\nA: Human vectors/social engineering — Phishing\nB: Unsecure networks — Wireless\nC: File-based\nD: Supply chain — Vendors",
+        "back": ">> CORRECT: D |\n\nSupply chain — Vendors is the intended CompTIA vector: a trusted vendor's delivered product and update channel introduce malicious functionality into customer environments. NIST SP 800-161 treats malicious acquired products and services as C-SCRM risk.\n\nNicht:\nA | Phishing requires a deceptive message that induces user action; the scenario instead compromises the producer's trusted delivery channel.\nB | Wireless describes exposure through a radio network and does not explain a malicious update distributed by a software producer.\nC | The payload is a file, but the distinguishing attack path is compromise of a trusted vendor and its product-distribution channel.",
+        "tags": [
+          "Threat Vectors and Attack Surfaces"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Phishing requires a deceptive message that induces user action; the scenario instead compromises the producer's trusted delivery channel."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Wireless describes exposure through a radio network and does not explain a malicious update distributed by a software producer."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "The payload is a file, but the distinguishing attack path is compromise of a trusted vendor and its product-distribution channel."
+        },
+        "D": {
+          "verdict": "correct",
+          "reason": "Supply chain — Vendors is the intended CompTIA vector: a trusted vendor's delivered product and update channel introduce malicious functionality into customer environments. NIST SP 800-161 treats malicious acquired products and services as C-SCRM risk."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200050",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.2:supply-chain:suppliers"
+      ],
+      "evidence": "The uniquely keyed answer is 'Supply chain — Suppliers'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 5, objective 2.2, supply chain: managed service providers, vendors, and suppliers",
+          "supports": "CompTIA includes suppliers as a named supply-chain vector; the revised stem supplies upstream component-manufacturing facts."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-161R1-UPD1",
+          "title": "NIST SP 800-161 Rev. 1 Update 1: Cybersecurity Supply Chain Risk Management",
+          "url": "https://csrc.nist.gov/pubs/sp/800/161/r1/upd1/final",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Abstract and executive summary; products, services, suppliers, counterfeit and malicious functionality",
+          "supports": "C-SCRM covers malicious, counterfeit, and vulnerable products and services introduced through supply-chain parties."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared vendor and MSP cards; only this card now describes an upstream component supplier and counterfeit hardware."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Replaced an unanswerable generic question with a counterfeit upstream-component scenario and removed the overlapping vendor distractor.",
+      "content": {
+        "noteId": "note-1786384200050",
+        "deckId": "sy0-701-objective-2-2",
+        "front": "An upstream component manufacturer ships counterfeit network hardware that an integrator incorporates into finished systems. Under SY0-701 objective 2.2, which vector is most specific?\nA: Supply chain — Managed service providers (MSPs)\nB: Human vectors/social engineering — Misinformation/disinformation\nC: Supply chain — Suppliers\nD: File-based",
+        "back": ">> CORRECT: C |\n\nSupply chain — Suppliers is uniquely supported: the upstream party supplies counterfeit hardware components that another organization integrates. NIST SP 800-161 explicitly identifies counterfeit products and supplier risk.\n\nNicht:\nA | An MSP remotely operates or manages customer services; the upstream component manufacturer in this scenario provides no managed service.\nB | Misinformation or disinformation manipulates beliefs through false information and does not describe counterfeit component delivery.\nD | A file-based vector uses a malicious document or archive; this scenario concerns counterfeit physical hardware from an upstream supplier.",
+        "tags": [
+          "Threat Vectors and Attack Surfaces"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "An MSP remotely operates or manages customer services; the upstream component manufacturer in this scenario provides no managed service."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Misinformation or disinformation manipulates beliefs through false information and does not describe counterfeit component delivery."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "Supply chain — Suppliers is uniquely supported: the upstream party supplies counterfeit hardware components that another organization integrates. NIST SP 800-161 explicitly identifies counterfeit products and supplier risk."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "A file-based vector uses a malicious document or archive; this scenario concerns counterfeit physical hardware from an upstream supplier."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200074",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:3.1:considerations:responsiveness"
+      ],
+      "evidence": "The uniquely keyed answer is 'Considerations — Responsiveness'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 7, objective 3.1, architecture considerations: availability, resilience, cost, responsiveness, scalability, ease of deployment and recovery",
+          "supports": "CompTIA lists responsiveness as a distinct architecture consideration from availability, scalability, and recovery."
+        },
+        {
+          "sourceId": "SRC-NIST-TN908",
+          "title": "NIST Technical Note 908: Computer Performance Measurement",
+          "url": "https://nvlpubs.nist.gov/nistpubs/Legacy/TN/nbstechnicalnote908.pdf",
+          "roles": [
+            "fact"
+          ],
+          "locator": "section 2.1.1 and Appendix B, system responsiveness and response time",
+          "supports": "System responsiveness is measured through the time a system takes to answer a user's service-request stimulus."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared the monitoring, availability, scalability, and recovery cards; the revised stem no longer duplicates threat detection or mitigation."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Replaced the unrelated threat-detection stem with a service-response-time scenario that uniquely entails Responsiveness.",
+      "content": {
+        "noteId": "note-1786384200074",
+        "deckId": "sy0-701-objective-3-1",
+        "front": "A service remains online under expected load, but users complain that it takes too long to answer application requests. Which architecture consideration directly measures the promptness of those responses?\nA: Considerations — Scalability\nB: Considerations — Availability\nC: Considerations — Responsiveness\nD: Considerations — Ease of recovery",
+        "back": ">> CORRECT: C |\n\nConsiderations — Responsiveness addresses how promptly a running system answers a user's or application's service request. Availability, scalability, and recovery answer different architecture questions.\n\nNicht:\nA | Scalability concerns adapting capacity as demand grows; it does not directly name the latency of each user request.\nB | Availability concerns whether authorized users can access the service when needed; the scenario states that the service remains online.\nD | Ease of recovery concerns restoring service after disruption, but this scenario describes slow responses during normal operation.",
+        "tags": [
+          "Architecture Models"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Scalability concerns adapting capacity as demand grows; it does not directly name the latency of each user request."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Availability concerns whether authorized users can access the service when needed; the scenario states that the service remains online."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "Considerations — Responsiveness addresses how promptly a running system answers a user's or application's service request. Availability, scalability, and recovery answer different architecture questions."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Ease of recovery concerns restoring service after disruption, but this scenario describes slow responses during normal operation."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200078",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:3.1:considerations:power"
+      ],
+      "evidence": "The uniquely keyed answer is 'Considerations — Power'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 7, objective 3.1, infrastructure considerations including power",
+          "supports": "CompTIA explicitly lists power as an architecture consideration affecting infrastructure operation and continuity."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-34R1",
+          "title": "NIST SP 800-34 Rev. 1: Contingency Planning Guide",
+          "url": "https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final",
+          "roles": [
+            "fact"
+          ],
+          "locator": "section 5 and Appendix D, power failure and uninterruptible power supplies",
+          "supports": "Contingency planning treats power failure as a disruption and identifies UPS and alternate power as continuity measures."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared power, recovery, and availability cards; the revised stem tests the power mechanism without borrowing another card's definition."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Replaced the tautological wording with an operational utility-outage scenario involving UPS and standby generation.",
+      "content": {
+        "noteId": "note-1786384200078",
+        "deckId": "sy0-701-objective-3-1",
+        "front": "A data center must keep critical servers running during a utility outage. Which architecture consideration is addressed by installing UPS units and standby generators?\nA: Considerations — Responsiveness\nB: Considerations — Patch availability\nC: Considerations — Power\nD: Considerations — Ease of recovery",
+        "back": ">> CORRECT: C |\n\nConsiderations — Power is the direct concern because UPS units and standby generators maintain electrical service during a utility failure. NIST contingency guidance treats loss of power and alternate power as continuity concerns.\n\nNicht:\nA | Responsiveness measures how quickly a running service answers requests; it does not supply electricity during a utility outage.\nB | Patch availability concerns whether security updates exist and can be obtained, not continuity of electrical service.\nD | Ease of recovery concerns restoration after a failure, while UPS and generators are intended to sustain operation through the outage.",
+        "tags": [
+          "Architecture Models"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Responsiveness measures how quickly a running service answers requests; it does not supply electricity during a utility outage."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Patch availability concerns whether security updates exist and can be obtained, not continuity of electrical service."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "Considerations — Power is the direct concern because UPS units and standby generators maintain electrical service during a utility failure. NIST contingency guidance treats loss of power and alternate power as continuity concerns."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Ease of recovery concerns restoration after a failure, while UPS and generators are intended to sustain operation through the outage."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200112",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.1:hardening-targets:ics-scada"
+      ],
+      "evidence": "The uniquely keyed answer is 'Hardening targets — ICS/SCADA'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 9, objective 4.1, hardening targets: ICS/SCADA, embedded systems, RTOS, IoT, and network infrastructure",
+          "supports": "CompTIA names ICS/SCADA as a hardening target distinct from devices, operating systems, and routers."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-82R3",
+          "title": "NIST SP 800-82 Rev. 3: Guide to Operational Technology Security",
+          "url": "https://csrc.nist.gov/pubs/sp/800/82/r3/final",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Abstract and section 2; OT, ICS, SCADA, PLC and embedded/real-time components",
+          "supports": "OT and ICS monitor or control physical processes and include SCADA, PLC, embedded, and real-time components."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared the embedded, RTOS, IoT, and network-infrastructure cards; only ICS/SCADA spans all listed supervisory and control components."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Converted the malformed risk question into an industrial-architecture identification scenario that A actually answers.",
+      "content": {
+        "noteId": "note-1786384200112",
+        "deckId": "sy0-701-objective-4-1",
+        "front": "A manufacturing plant uses PLCs, HMIs, and supervisory servers to monitor and control physical production processes. Which hardening target encompasses this industrial control environment?\nA: Hardening targets — ICS/SCADA\nB: Hardening targets — IoT devices\nC: Hardening targets — RTOS\nD: Hardening targets — Routers",
+        "back": ">> CORRECT: A |\n\nHardening targets — ICS/SCADA encompasses supervisory servers, HMIs, PLCs, and networks that monitor or control industrial physical processes. NIST SP 800-82 uses these components to characterize ICS and SCADA environments.\n\nNicht:\nB | IoT devices may sense or actuate, but the coordinated plant-wide supervisory architecture with PLCs and HMIs is specifically ICS/SCADA.\nC | An RTOS is a timing-focused operating system that may run on one component; it is not the entire supervisory control environment.\nD | Routers forward network traffic and may exist in the plant, but they do not encompass PLCs, HMIs, and supervisory control servers.",
+        "tags": [
+          "Security Techniques"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "correct",
+          "reason": "Hardening targets — ICS/SCADA encompasses supervisory servers, HMIs, PLCs, and networks that monitor or control industrial physical processes. NIST SP 800-82 uses these components to characterize ICS and SCADA environments."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "IoT devices may sense or actuate, but the coordinated plant-wide supervisory architecture with PLCs and HMIs is specifically ICS/SCADA."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "An RTOS is a timing-focused operating system that may run on one component; it is not the entire supervisory control environment."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Routers forward network traffic and may exist in the plant, but they do not encompass PLCs, HMIs, and supervisory control servers."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200113",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.1:hardening-targets:embedded-systems"
+      ],
+      "evidence": "The uniquely keyed answer is 'Hardening targets — Embedded systems'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 9, objective 4.1, hardening targets: mobile, embedded, RTOS, and IoT",
+          "supports": "CompTIA lists embedded systems separately from mobile, RTOS, and IoT hardening targets."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-82R3",
+          "title": "NIST SP 800-82 Rev. 3: Guide to Operational Technology Security",
+          "url": "https://csrc.nist.gov/pubs/sp/800/82/r3/final",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Abstract and section 2; OT, ICS, SCADA, PLC and embedded/real-time components",
+          "supports": "OT and ICS monitor or control physical processes and include SCADA, PLC, embedded, and real-time components."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared adjacent mobile, RTOS, and IoT cards; the revised stem contains only embedded-system discriminators."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Added dedicated-function, limited-OS, and appliance-firmware facts and explicitly avoided RTOS and IoT discriminators.",
+      "content": {
+        "noteId": "note-1786384200113",
+        "deckId": "sy0-701-objective-4-1",
+        "front": "A purpose-built controller performs one dedicated function, offers limited general-purpose operating-system access, and receives appliance-specific firmware. Which hardening target is most specific?\nA: Hardening targets — Mobile devices\nB: Hardening targets — RTOS\nC: Hardening targets — IoT devices\nD: Hardening targets — Embedded systems",
+        "back": ">> CORRECT: D |\n\nHardening targets — Embedded systems is most specific because the scenario describes a purpose-built, dedicated-function controller with restricted general-purpose OS access and appliance firmware. Network connectivity and deterministic deadlines are not asserted.\n\nNicht:\nA | Mobile devices are general user-computing platforms with mobile operating systems and applications, unlike the dedicated controller described here.\nB | RTOS requires deterministic timing or deadline behavior; the scenario deliberately describes no real-time scheduling requirement.\nC | IoT emphasizes network-connected sensing or control; the scenario does not state Internet or network connectivity and instead stresses purpose-built operation.",
+        "tags": [
+          "Security Techniques"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Mobile devices are general user-computing platforms with mobile operating systems and applications, unlike the dedicated controller described here."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "RTOS requires deterministic timing or deadline behavior; the scenario deliberately describes no real-time scheduling requirement."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "IoT emphasizes network-connected sensing or control; the scenario does not state Internet or network connectivity and instead stresses purpose-built operation."
+        },
+        "D": {
+          "verdict": "correct",
+          "reason": "Hardening targets — Embedded systems is most specific because the scenario describes a purpose-built, dedicated-function controller with restricted general-purpose OS access and appliance firmware. Network connectivity and deterministic deadlines are not asserted."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200114",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.1:hardening-targets:rtos"
+      ],
+      "evidence": "The uniquely keyed answer is 'Hardening targets — RTOS'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 9, objective 4.1, hardening targets including real-time operating system",
+          "supports": "CompTIA explicitly identifies RTOS as a distinct hardening target within specialized computing environments."
+        },
+        {
+          "sourceId": "SRC-NIST-RTOS-TIMING",
+          "title": "NIST: Timing Studies of Real-Time Linux for Control",
+          "url": "https://www.nist.gov/publications/timing-studies-real-time-linux-control",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Abstract; deterministic task execution for industrial control",
+          "supports": "Real-time operating systems support deterministic task execution for time-sensitive industrial control workloads."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-82R3",
+          "title": "NIST SP 800-82 Rev. 3: Guide to Operational Technology Security",
+          "url": "https://csrc.nist.gov/pubs/sp/800/82/r3/final",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Abstract and section 2; OT, ICS, SCADA, PLC and embedded/real-time components",
+          "supports": "OT and ICS monitor or control physical processes and include SCADA, PLC, embedded, and real-time components."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared the embedded and IoT cards; only the RTOS card now depends on predictable task scheduling and fixed deadlines."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Converted the malformed challenge question into a deterministic, deadline-bound RTOS identification scenario.",
+      "content": {
+        "noteId": "note-1786384200114",
+        "deckId": "sy0-701-objective-4-1",
+        "front": "A vehicle control unit must schedule tasks predictably and meet fixed timing deadlines. Which hardening target is defined by that deterministic execution requirement?\nA: Hardening targets — Cloud infrastructure\nB: Hardening targets — Routers\nC: Hardening targets — RTOS\nD: Hardening targets — IoT devices",
+        "back": ">> CORRECT: C |\n\nHardening targets — RTOS is uniquely supported because real-time operating systems schedule time-critical tasks predictably and are selected when deadlines must be met. NIST describes deterministic execution for industrial control workloads.\n\nNicht:\nA | Cloud infrastructure provides virtualized compute and services but is not defined by deterministic deadline-bound task scheduling.\nB | Routers forward packets between networks and are not operating systems selected for deterministic control-loop deadlines.\nD | IoT devices are network-connected devices; connectivity alone does not imply deterministic real-time scheduling or fixed deadlines.",
+        "tags": [
+          "Security Techniques"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Cloud infrastructure provides virtualized compute and services but is not defined by deterministic deadline-bound task scheduling."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Routers forward packets between networks and are not operating systems selected for deterministic control-loop deadlines."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "Hardening targets — RTOS is uniquely supported because real-time operating systems schedule time-critical tasks predictably and are selected when deadlines must be met. NIST describes deterministic execution for industrial control workloads."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "IoT devices are network-connected devices; connectivity alone does not imply deterministic real-time scheduling or fixed deadlines."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200157",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:web-filter:reputation"
+      ],
+      "evidence": "The uniquely keyed answer is 'Web filter — Reputation'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 11, objective 4.5, web filter: agent-based, centralized proxy, URL scanning, content categorization, block rules, and reputation",
+          "supports": "CompTIA lists reputation as a separate web-filter mechanism from URL scanning, categories, and explicit block rules."
+        },
+        {
+          "sourceId": "SRC-MICROSOFT-SMARTSCREEN",
+          "title": "Microsoft Defender SmartScreen overview",
+          "url": "https://learn.microsoft.com/en-us/deployedge/microsoft-edge-security-smartscreen",
+          "roles": [
+            "fact"
+          ],
+          "locator": "URL and application reputation checks; download history and prior results",
+          "supports": "Reputation protection evaluates URLs and downloads using reputation data, history, prevalence, and prior security results."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared URL-scanning, category, and block-rule cards; the revised inputs uniquely identify reputation evaluation."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Replaced the tautological question with a historical trust-score and prevalence scenario.",
+      "content": {
+        "noteId": "note-1786384200157",
+        "deckId": "sy0-701-objective-4-5",
+        "front": "A web filter evaluates a URL and downloaded application using historical behavior, trust scores, download prevalence, and previous security results. Which filtering mechanism is it using?\nA: Web filter — Content categorization\nB: Web filter — Universal Resource Locator (URL) scanning\nC: Web filter — Block rules\nD: Web filter — Reputation",
+        "back": ">> CORRECT: D |\n\nWeb filter — Reputation is uniquely supported because historical behavior, trust, prevalence, and prior security results are reputation signals. Microsoft's official SmartScreen documentation describes this type of URL and application reputation evaluation.\n\nNicht:\nA | Content categorization groups sites by subject such as business or gambling; the scenario instead scores trust from historical signals.\nB | URL scanning inspects or checks the address, but the distinguishing facts are the historical and prevalence-based reputation inputs.\nC | Block rules enforce an administrator's allow or deny decision; they are not the historical trust-scoring mechanism described.",
+        "tags": [
+          "Enterprise Security"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Content categorization groups sites by subject such as business or gambling; the scenario instead scores trust from historical signals."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "URL scanning inspects or checks the address, but the distinguishing facts are the historical and prevalence-based reputation inputs."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Block rules enforce an administrator's allow or deny decision; they are not the historical trust-scoring mechanism described."
+        },
+        "D": {
+          "verdict": "correct",
+          "reason": "Web filter — Reputation is uniquely supported because historical behavior, trust, prevalence, and prior security results are reputation signals. Microsoft's official SmartScreen documentation describes this type of URL and application reputation evaluation."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200178",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.6:privileged-access-management-tools:ephemeral-credentials"
+      ],
+      "evidence": "The uniquely keyed answer is 'Privileged access management tools — Ephemeral credentials'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 11, objective 4.6, privileged access management tools: just-in-time permissions, password vaulting, temporal accounts, and ephemeral credentials",
+          "supports": "CompTIA separately lists JIT permissions and ephemeral credentials, so the stem must distinguish authorization from the credential artifact."
+        },
+        {
+          "sourceId": "SRC-MICROSOFT-PAM-JIT",
+          "title": "Microsoft Service Assurance: Identity and access management",
+          "url": "https://learn.microsoft.com/en-us/compliance/assurance/assurance-identity-and-access-management",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Just-in-time and just-enough-administration section",
+          "supports": "JIT grants temporary privileged access for an approved period and automatically revokes it when that period ends."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared the JIT, temporal-account, and password-vaulting cards; the revised stem uniquely asks about the short-lived credential itself."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Added newly created, session-bound, invalidated, and deleted credential facts so C no longer overlaps JIT permissions.",
+      "content": {
+        "noteId": "note-1786384200178",
+        "deckId": "sy0-701-objective-4-6",
+        "front": "A privileged access system creates a new short-lived credential for one approved session. The credential becomes invalid and is deleted when the session ends. Which PAM concept is most specific?\nA: Privileged access management tools — Just-in-time permissions\nB: Password concepts — Passwordless\nC: Privileged access management tools — Ephemeral credentials\nD: Privileged access management tools — Password vaulting",
+        "back": ">> CORRECT: C |\n\nPrivileged access management tools — Ephemeral credentials is most specific because the scenario asks about a newly created, short-lived credential that is invalidated and deleted after one session. JIT instead describes when temporary permission is granted.\n\nNicht:\nA | Just-in-time permissions describes temporary authorization during an approved period, but the stem specifically asks about the credential artifact's creation and deletion.\nB | Passwordless authentication replaces passwords with another authenticator and does not require a per-session credential that is deleted afterward.\nD | Password vaulting stores and brokers standing secrets; the stem instead describes a newly issued credential that does not persist in a vault.",
+        "tags": [
+          "Identity and Access Management"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Just-in-time permissions describes temporary authorization during an approved period, but the stem specifically asks about the credential artifact's creation and deletion."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Passwordless authentication replaces passwords with another authenticator and does not require a per-session credential that is deleted afterward."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "Privileged access management tools — Ephemeral credentials is most specific because the scenario asks about a newly created, short-lived credential that is invalidated and deleted after one session. JIT instead describes when temporary permission is granted."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Password vaulting stores and brokers standing secrets; the stem instead describes a newly issued credential that does not persist in a vault."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200187",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.7:benefits:enforcing-baselines"
+      ],
+      "evidence": "The uniquely keyed answer is 'Benefits — Enforcing baselines'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 12, objective 4.7, automation benefits: enforcing baselines and standard infrastructure configurations",
+          "supports": "CompTIA lists enforcing baselines separately from standard configurations, scaling, and workforce multiplication."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-128",
+          "title": "NIST SP 800-128: Security-Focused Configuration Management",
+          "url": "https://csrc.nist.gov/pubs/sp/800/128/upd1/final",
+          "roles": [
+            "fact"
+          ],
+          "locator": "sections 2.1 and 3.2, baseline configurations and configuration monitoring",
+          "supports": "Approved baseline configurations establish the secure build state; monitoring detects and addresses unauthorized drift."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared the standard-configuration card and all automation-benefit cards; only this stem tests continuous drift enforcement."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Added continuous comparison and drift remediation so Enforcing baselines is uniquely distinguishable from standard builds.",
+      "content": {
+        "noteId": "note-1786384200187",
+        "deckId": "sy0-701-objective-4-7",
+        "front": "Automation continuously compares running system and network configurations with an approved secure baseline and remediates unauthorized drift. Which automation benefit is most specific?\nA: Benefits — Standard infrastructure configurations\nB: Benefits — Enforcing baselines\nC: Benefits — Workforce multiplier\nD: Benefits — Scaling in a secure manner",
+        "back": ">> CORRECT: B |\n\nBenefits — Enforcing baselines is uniquely supported because the process continuously checks the approved security baseline and corrects drift. NIST SP 800-128 distinguishes establishing a baseline from monitoring and controlling later changes.\n\nNicht:\nA | Standard infrastructure configurations concern building systems from common approved templates, not continuously detecting and remediating drift on running systems.\nC | A workforce multiplier increases the amount of work existing staff can handle; it does not specifically require baseline comparison or drift correction.\nD | Scaling securely concerns preserving controls as capacity grows; the scenario instead focuses on continuous conformance of existing configurations.",
+        "tags": [
+          "Automation and Orchestration"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Standard infrastructure configurations concern building systems from common approved templates, not continuously detecting and remediating drift on running systems."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "Benefits — Enforcing baselines is uniquely supported because the process continuously checks the approved security baseline and corrects drift. NIST SP 800-128 distinguishes establishing a baseline from monitoring and controlling later changes."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "A workforce multiplier increases the amount of work existing staff can handle; it does not specifically require baseline comparison or drift correction."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Scaling securely concerns preserving controls as capacity grows; the scenario instead focuses on continuous conformance of existing configurations."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200188",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.7:benefits:standard-infrastructure-configurations"
+      ],
+      "evidence": "The uniquely keyed answer is 'Benefits — Standard infrastructure configurations'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 12, objective 4.7, automation benefits: standard infrastructure configurations and enforcing baselines",
+          "supports": "CompTIA lists standard infrastructure configurations as a specific automation benefit distinct from ongoing enforcement."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-128",
+          "title": "NIST SP 800-128: Security-Focused Configuration Management",
+          "url": "https://csrc.nist.gov/pubs/sp/800/128/upd1/final",
+          "roles": [
+            "fact"
+          ],
+          "locator": "sections 2.1 and 3.2, baseline configurations and configuration monitoring",
+          "supports": "Approved baseline configurations establish the secure build state; monitoring detects and addresses unauthorized drift."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared the baseline-enforcement card; initial provisioning and post-deployment drift are now tested by separate stems."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Added new-system provisioning and a shared approved template so A no longer overlaps continuous baseline enforcement.",
+      "content": {
+        "noteId": "note-1786384200188",
+        "deckId": "sy0-701-objective-4-7",
+        "front": "Deployment automation provisions new routers and virtual machines from the same approved template so each starts with an identical infrastructure configuration. Which benefit is most specific?\nA: Benefits — Standard infrastructure configurations\nB: Benefits — Reaction time\nC: Benefits — Enforcing baselines\nD: Benefits — Scaling in a secure manner",
+        "back": ">> CORRECT: A |\n\nBenefits — Standard infrastructure configurations is uniquely supported because new systems are provisioned from one approved template with the same initial configuration. This is distinct from monitoring deployed systems for later drift.\n\nNicht:\nB | Reaction time concerns how quickly automation detects or responds to events; no incident or response timing is described.\nC | Enforcing baselines continuously detects and corrects drift after deployment, while this scenario describes the initial template-based build.\nD | Scaling securely concerns adding capacity without losing controls; the key fact here is identical initial configuration rather than growth.",
+        "tags": [
+          "Automation and Orchestration"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "correct",
+          "reason": "Benefits — Standard infrastructure configurations is uniquely supported because new systems are provisioned from one approved template with the same initial configuration. This is distinct from monitoring deployed systems for later drift."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Reaction time concerns how quickly automation detects or responds to events; no incident or response timing is described."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Enforcing baselines continuously detects and corrects drift after deployment, while this scenario describes the initial template-based build."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Scaling securely concerns adding capacity without losing controls; the key fact here is identical initial configuration rather than growth."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200192",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.7:other-considerations:complexity"
+      ],
+      "evidence": "The uniquely keyed answer is 'Other considerations — Complexity'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 12, objective 4.7, automation considerations: complexity, cost, single point of failure, technical debt, and ongoing supportability",
+          "supports": "CompTIA lists complexity as its own automation consideration separate from cost, failure concentration, and supportability."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-160V1R1",
+          "title": "NIST SP 800-160 Vol. 1 Rev. 1: Engineering Trustworthy Secure Systems",
+          "url": "https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final",
+          "roles": [
+            "fact"
+          ],
+          "locator": "sections 2.3 and 2.4, complexity, interactions, dependencies, and emergent behavior",
+          "supports": "System complexity grows through interacting components and dependencies and makes assurance and testing more difficult."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared cost, single-point-of-failure, and supportability cards; the revised stem contains no facts that entail those distractors."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Replaced the tautological why-complexity question with a multi-system dependency and interaction-testing scenario.",
+      "content": {
+        "noteId": "note-1786384200192",
+        "deckId": "sy0-701-objective-4-7",
+        "front": "An orchestration workflow spans identity, endpoint, network, and cloud systems. As integrations and dependencies increase, testing all interactions becomes substantially harder. Which consideration is most directly illustrated?\nA: Other considerations — Complexity\nB: Other considerations — Cost\nC: Other considerations — Single point of failure\nD: Other considerations — Ongoing supportability",
+        "back": ">> CORRECT: A |\n\nOther considerations — Complexity is uniquely supported because the scenario emphasizes many interacting systems, integrations, dependencies, and the resulting test burden. NIST systems engineering guidance treats those interactions as sources of complexity and emergent behavior.\n\nNicht:\nB | Complex designs may cost more, but the scenario provides no price, staffing, licensing, or budget fact; it describes interaction burden.\nC | A single point of failure is one component whose failure disables the workflow; the scenario identifies no such component.\nD | Ongoing supportability concerns long-term maintenance, training, and compatibility; the scenario specifically concerns integration and test complexity.",
+        "tags": [
+          "Automation and Orchestration"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "correct",
+          "reason": "Other considerations — Complexity is uniquely supported because the scenario emphasizes many interacting systems, integrations, dependencies, and the resulting test burden. NIST systems engineering guidance treats those interactions as sources of complexity and emergent behavior."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Complex designs may cost more, but the scenario provides no price, staffing, licensing, or budget fact; it describes interaction burden."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "A single point of failure is one component whose failure disables the workflow; the scenario identifies no such component."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Ongoing supportability concerns long-term maintenance, training, and compatibility; the scenario specifically concerns integration and test complexity."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200222",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:5.1:external-considerations:industry"
+      ],
+      "evidence": "The uniquely keyed answer is 'External considerations — Industry'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 13, objective 5.1, external considerations: regulatory, legal, industry, local/regional, national, global",
+          "supports": "CompTIA explicitly lists industry as an external governance consideration separate from legal, regulatory, and national concerns."
+        },
+        {
+          "sourceId": "SRC-NIST-CSF20",
+          "title": "NIST Cybersecurity Framework 2.0",
+          "url": "https://doi.org/10.6028/NIST.CSWP.29",
+          "roles": [
+            "fact"
+          ],
+          "locator": "sections 2.4 and 3.2, Organizational Profiles and sector-specific implementation",
+          "supports": "CSF profiles let organizations tailor cybersecurity outcomes to sector, legal, regulatory, and business requirements."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared legal, regulatory, national, and industry governance cards; only this stem is driven by sector-specific context."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Replaced the malformed result question with a healthcare-versus-finance sector-context scenario.",
+      "content": {
+        "noteId": "note-1786384200222",
+        "deckId": "sy0-701-objective-5-1",
+        "front": "A hospital tailors its governance program to healthcare-sector practices, while a bank tailors its program to financial-sector expectations. Which external consideration accounts for this sector-specific context?\nA: External considerations — Regulatory\nB: External considerations — Legal\nC: External considerations — Industry\nD: External considerations — National",
+        "back": ">> CORRECT: C |\n\nExternal considerations — Industry is uniquely supported because the distinguishing fact is the sector: healthcare versus financial services. NIST CSF Organizational Profiles can be tailored to sector and organizational context.\n\nNicht:\nA | Regulatory refers to binding rules from an authority; the stem mentions sector practices and expectations without identifying a regulation.\nB | Legal refers to applicable law and legal duties; no statute, court, contract, or legal process is stated in the scenario.\nD | National refers to country-level priorities or requirements; the scenario compares economic sectors, not nations.",
+        "tags": [
+          "Security Governance"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Regulatory refers to binding rules from an authority; the stem mentions sector practices and expectations without identifying a regulation."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Legal refers to applicable law and legal duties; no statute, court, contract, or legal process is stated in the scenario."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "External considerations — Industry is uniquely supported because the distinguishing fact is the sector: healthcare versus financial services. NIST CSF Organizational Profiles can be tailored to sector and organizational context."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "National refers to country-level priorities or requirements; the scenario compares economic sectors, not nations."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200245",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:5.4:compliance-reporting:external"
+      ],
+      "evidence": "The uniquely keyed answer is 'Compliance reporting — External'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 14, objective 5.4, compliance reporting: internal and external",
+          "supports": "CompTIA explicitly distinguishes internal and external compliance reporting and separately lists monitoring and consequences."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-53AR5",
+          "title": "NIST SP 800-53A Rev. 5: Assessing Security and Privacy Controls",
+          "url": "https://csrc.nist.gov/pubs/sp/800/53/a/r5/final",
+          "roles": [
+            "fact"
+          ],
+          "locator": "chapter 3 and assessment procedures; assessor, method, object, and evidence",
+          "supports": "Control assessments use defined procedures and evidence to determine whether requirements are implemented and effective."
+        },
+        {
+          "sourceId": "SRC-NIST-CONFORMITY",
+          "title": "NIST: Conformity Assessment Basics",
+          "url": "https://www.nist.gov/standardsgov/conformity-assessment-basics",
+          "roles": [
+            "fact"
+          ],
+          "locator": "First-, second-, third-party and government conformity-assessment roles",
+          "supports": "NIST distinguishes internal or first-party assessment, independent third-party assessment, and government's regulatory role."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared internal reporting, monitoring, and non-compliance consequence cards; outside recipients uniquely distinguish this card."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Replaced the circular purpose question with an explicit outside-recipient reporting scenario.",
+      "content": {
+        "noteId": "note-1786384200245",
+        "deckId": "sy0-701-objective-5-4",
+        "front": "Compliance results must be delivered periodically to regulators and contractual third parties outside the organization. Which compliance-reporting category is being used?\nA: Compliance reporting — Internal\nB: Compliance monitoring — Internal and external\nC: Consequences of non-compliance — Reputational damage\nD: Compliance reporting — External",
+        "back": ">> CORRECT: D |\n\nCompliance reporting — External is uniquely supported because the recipients are regulators and contractual third parties outside the organization. Reporting recipients distinguish external reporting from internal reporting and ongoing monitoring.\n\nNicht:\nA | Internal compliance reporting is delivered to management or governance bodies inside the organization, not to outside regulators and third parties.\nB | Compliance monitoring is the ongoing collection and evaluation of compliance status; the stem asks about delivering completed results externally.\nC | Reputational damage is a possible consequence of non-compliance, not a category for periodically transmitting compliance results.",
+        "tags": [
+          "Security Compliance"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Internal compliance reporting is delivered to management or governance bodies inside the organization, not to outside regulators and third parties."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Compliance monitoring is the ongoing collection and evaluation of compliance status; the stem asks about delivering completed results externally."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Reputational damage is a possible consequence of non-compliance, not a category for periodically transmitting compliance results."
+        },
+        "D": {
+          "verdict": "correct",
+          "reason": "Compliance reporting — External is uniquely supported because the recipients are regulators and contractual third parties outside the organization. Reporting recipients distinguish external reporting from internal reporting and ongoing monitoring."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200254",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:5.5:internal:compliance"
+      ],
+      "evidence": "The uniquely keyed answer is 'Internal — Compliance'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 14, objective 5.5, internal audits and assessments: compliance, audit committee, and self-assessments",
+          "supports": "CompTIA separately lists internal compliance, audit committee, and self-assessment concepts within internal audits."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-53AR5",
+          "title": "NIST SP 800-53A Rev. 5: Assessing Security and Privacy Controls",
+          "url": "https://csrc.nist.gov/pubs/sp/800/53/a/r5/final",
+          "roles": [
+            "fact"
+          ],
+          "locator": "chapter 3 and assessment procedures; assessor, method, object, and evidence",
+          "supports": "Control assessments use defined procedures and evidence to determine whether requirements are implemented and effective."
+        },
+        {
+          "sourceId": "SRC-NIST-CONFORMITY",
+          "title": "NIST: Conformity Assessment Basics",
+          "url": "https://www.nist.gov/standardsgov/conformity-assessment-basics",
+          "roles": [
+            "fact"
+          ],
+          "locator": "First-, second-, third-party and government conformity-assessment roles",
+          "supports": "NIST distinguishes internal or first-party assessment, independent third-party assessment, and government's regulatory role."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared self-assessment, audit-committee, and regulatory-audit cards; actor and mandate now distinguish all four options."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Added an internal audit actor, formal obligations, evidence framework, and no-external-assessor boundary to distinguish C from self-assessment.",
+      "content": {
+        "noteId": "note-1786384200254",
+        "deckId": "sy0-701-objective-5-5",
+        "front": "Internal auditors examine whether the organization fulfills required compliance obligations against approved policies and applicable frameworks, without using an external assessor. Which internal-audit focus is most specific?\nA: Internal — Self-assessments\nB: External — Regulatory\nC: Internal — Compliance\nD: Internal — Audit committee",
+        "back": ">> CORRECT: C |\n\nInternal — Compliance is uniquely supported because internal auditors are evaluating fulfillment of compliance obligations against required policies and frameworks. NIST assessment guidance requires defined procedures and evidence to determine whether requirements are met.\n\nNicht:\nA | A self-assessment is performed by the responsible unit evaluating itself; the stem instead identifies an internal audit function examining compliance obligations.\nB | External regulatory review is conducted under an outside regulatory mandate; the stem expressly states that no external assessor is used.\nD | An audit committee oversees audit and risk activities but is not the subject-matter focus of the compliance examination described.",
+        "tags": [
+          "Audits and Assessments"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "A self-assessment is performed by the responsible unit evaluating itself; the stem instead identifies an internal audit function examining compliance obligations."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "External regulatory review is conducted under an outside regulatory mandate; the stem expressly states that no external assessor is used."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "Internal — Compliance is uniquely supported because internal auditors are evaluating fulfillment of compliance obligations against required policies and frameworks. NIST assessment guidance requires defined procedures and evidence to determine whether requirements are met."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "An audit committee oversees audit and risk activities but is not the subject-matter focus of the compliance examination described."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1786384200256",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:5.5:external:regulatory"
+      ],
+      "evidence": "The uniquely keyed answer is 'External — Regulatory'. The revised stem supplies the distinguishing facts, and the cited CompTIA objective plus primary fact source entail that option while excluding every distractor.",
+      "sources": [
+        {
+          "sourceId": "SRC-COMPTIA-SY0-701-V7",
+          "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "roles": [
+            "scope",
+            "fact"
+          ],
+          "locator": "p. 14, objective 5.5, external audits: regulatory, examinations, assessment, and independent third-party audit",
+          "supports": "CompTIA lists regulatory as a specific external-audit category alongside examinations, assessments, and independent audits."
+        },
+        {
+          "sourceId": "SRC-NIST-SP800-53AR5",
+          "title": "NIST SP 800-53A Rev. 5: Assessing Security and Privacy Controls",
+          "url": "https://csrc.nist.gov/pubs/sp/800/53/a/r5/final",
+          "roles": [
+            "fact"
+          ],
+          "locator": "chapter 3 and assessment procedures; assessor, method, object, and evidence",
+          "supports": "Control assessments use defined procedures and evidence to determine whether requirements are implemented and effective."
+        },
+        {
+          "sourceId": "SRC-NIST-CONFORMITY",
+          "title": "NIST: Conformity Assessment Basics",
+          "url": "https://www.nist.gov/standardsgov/conformity-assessment-basics",
+          "roles": [
+            "fact"
+          ],
+          "locator": "First-, second-, third-party and government conformity-assessment roles",
+          "supports": "NIST distinguishes internal or first-party assessment, independent third-party assessment, and government's regulatory role."
+        }
+      ],
+      "reviewer": "primary-source-security-card-review-2026-08-16-v4",
+      "reviewedAt": "2026-08-16T13:33:53+00:00",
+      "reviewBasis": [
+        "CompTIA Security+ SY0-701 V7 objective and acronym scope checked",
+        "At least one independent official primary fact source checked",
+        "Every option, pair, or ordering step adjudicated against the revised front and back",
+        "Vlad-scoped sync history checked (3 matching operation records)"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Compared examinations, assessments, and independent third-party audits; only this stem requires an external review because a regulator mandates it."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "changeSummary": "Added an express statutory or regulatory mandate so A is uniquely distinguished from broader external review types.",
+      "content": {
+        "noteId": "note-1786384200256",
+        "deckId": "sy0-701-objective-5-5",
+        "front": "A statute or regulator expressly requires an organization to undergo an external examination by a qualified outside assessor. Which external-audit type is defined by that mandate?\nA: External — Regulatory\nB: External — Examinations\nC: External — Assessment\nD: External — Independent third-party audit",
+        "back": ">> CORRECT: A |\n\nExternal — Regulatory is uniquely supported because the decisive fact is the mandatory requirement imposed by a statute or regulator. The other options describe broader methods or assessor independence without necessarily establishing a regulatory mandate.\n\nNicht:\nB | Examination is a broad form of external review; the stem asks for the type specifically defined by a statute or regulator's mandate.\nC | Assessment broadly evaluates control or compliance status and can be voluntary; it is not necessarily required by a regulator.\nD | An independent third-party audit identifies assessor independence, but a third party can be voluntarily commissioned without a regulatory mandate.",
+        "tags": [
+          "Audits and Assessments"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "correct",
+          "reason": "External — Regulatory is uniquely supported because the decisive fact is the mandatory requirement imposed by a statute or regulator. The other options describe broader methods or assessor independence without necessarily establishing a regulatory mandate."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Examination is a broad form of external review; the stem asks for the type specifically defined by a statute or regulator's mandate."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Assessment broadly evaluates control or compliance status and can be voluntary; it is not necessarily required by a regulator."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "An independent third-party audit identifies assessor independence, but a third party can be voluntarily commissioned without a regulatory mandate."
+        }
+      }
+    }
+  ]
+}

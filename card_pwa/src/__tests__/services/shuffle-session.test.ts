@@ -6,11 +6,13 @@ import type { Card } from '../../types'
 
 const mockedRuntime = vi.hoisted(() => ({
   listDeckStudyCandidates: vi.fn(async (_deckId: string): Promise<Card[]> => []),
+  listCardsByIds: vi.fn(async (_ids: string[]): Promise<Card[]> => []),
   getSyncedDeckIds: vi.fn(async (_userId?: string): Promise<string[]> => []),
 }))
 
 vi.mock('../../db/queries', () => ({
   listDeckStudyCandidates: mockedRuntime.listDeckStudyCandidates,
+  listCardsByIds: mockedRuntime.listCardsByIds,
 }))
 
 vi.mock('../../services/syncedDeckScope', () => ({
@@ -52,6 +54,8 @@ describe('shuffleSession', () => {
   beforeEach(() => {
     mockedRuntime.listDeckStudyCandidates.mockReset()
     mockedRuntime.listDeckStudyCandidates.mockImplementation(async (): Promise<Card[]> => [])
+    mockedRuntime.listCardsByIds.mockReset()
+    mockedRuntime.listCardsByIds.mockImplementation(async (): Promise<Card[]> => [])
     mockedRuntime.getSyncedDeckIds.mockReset()
     mockedRuntime.getSyncedDeckIds.mockResolvedValue([])
   })
@@ -133,7 +137,7 @@ describe('shuffleSession', () => {
 
     const result = selectShuffleCards(cards, { maxCards: 1, nowMs })
 
-    expect(result.map(card => card.id)).toEqual(['review-a', 'learning-a'])
+    expect(result.map(card => card.id)).toEqual(['review-a'])
   })
 
   it('interleaves decks for broader mixes when four or more decks are present', () => {
@@ -163,5 +167,27 @@ describe('shuffleSession', () => {
     )
 
     expect(result.map(card => card.id)).toEqual(['review-a'])
+  })
+
+  it('restores a persisted shuffle queue exactly without rerolling it', async () => {
+    mockedRuntime.listCardsByIds.mockResolvedValue([
+      createCard({ id: 'second', deckId: 'ignored-by-card-shape' }),
+      createCard({ id: 'first', deckId: 'ignored-by-card-shape' }),
+    ])
+
+    const result = await buildSelectedShuffleCards(
+      { deckIds: ['deck-a', 'deck-b'] },
+      {
+        maxCards: 1,
+        preferredCardIds: ['first', 'second'],
+        preferredCardOrigins: { first: 'deck-a', second: 'deck-b' },
+      },
+    )
+
+    expect(result.map(card => `${card.id}:${card.deckId}`)).toEqual([
+      'first:deck-a',
+      'second:deck-b',
+    ])
+    expect(mockedRuntime.listDeckStudyCandidates).not.toHaveBeenCalled()
   })
 })

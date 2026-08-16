@@ -44,7 +44,7 @@ from server.sync.operations import apply_operation  # noqa: E402
 from server.common.helpers import now_ms  # noqa: E402
 
 
-SCHEMA_VERSION = "security-card-content-review-1"
+SCHEMA_VERSION = "security-card-content-review-2"
 ALLOWED_VERDICTS = {"approved", "corrected", "not_relevant"}
 PUBLICATION_SEMANTIC_CHECKS = (
   "stemUnambiguous",
@@ -62,6 +62,7 @@ OFFICIAL_HOSTS = (
   "owasp.org",
   "cisecurity.org",
   "iso.org",
+  "microsoft.com",
   "europa.eu",
   "mitre.org",
   "iana.org",
@@ -121,10 +122,10 @@ def active_cards(conn: sqlite3.Connection, user_id: str) -> list[dict]:
          FROM shared_card_catalog c
          JOIN server_cards r ON r.user_id=? AND r.id=c.id
          LEFT JOIN server_decks d ON d.user_id=c.canonical_user_id AND d.id=c.deck_id
-         WHERE c.deleted_at IS NULL
+         WHERE c.canonical_user_id=? AND c.deleted_at IS NULL
            AND r.deleted_at IS NULL AND IFNULL(r.is_deleted, 0)=0
          ORDER BY c.id""",
-      (user_id,),
+      (user_id, user_id),
     ).fetchall()
   else:
     rows = conn.execute(
@@ -282,12 +283,15 @@ def validate_review(
   card: dict | None = None,
   *,
   publication: bool = False,
+  expected_user_id: str | None = None,
 ) -> list[str]:
   errors = []
   card_id = str(review.get("cardId") or "")
   prefix = f"card {card_id or '?'}"
   if not card_id:
     errors.append("review without cardId")
+  if expected_user_id is not None and str(review.get("userId") or "") != expected_user_id:
+    errors.append(f"{prefix}: userId does not match Vlad's resolved user_id")
   if review.get("verdict") not in ALLOWED_VERDICTS:
     errors.append(f"{prefix}: invalid verdict")
   if not str(review.get("cardType") or "").strip():
@@ -359,11 +363,28 @@ def validate_review(
 
 def load_registry(path: Path) -> dict:
   if not path.exists():
-    return {"schemaVersion": SCHEMA_VERSION, "profile": "Vlad", "reviews": []}
+    return {
+      "schemaVersion": SCHEMA_VERSION,
+      "profile": "Vlad",
+      "canonicalUserId": None,
+      "identityKey": ["userId", "cardId"],
+      "reviews": [],
+    }
   data = read_json(path)
   if not isinstance(data, dict) or not isinstance(data.get("reviews"), list):
     raise RuntimeError(f"Invalid review registry: {path}")
   return data
+
+
+def registry_scope_errors(registry: dict, user_id: str) -> list[str]:
+  errors = []
+  if str(registry.get("profile") or "").strip().casefold() != "vlad":
+    errors.append("registry profile must be Vlad")
+  if str(registry.get("canonicalUserId") or "") != user_id:
+    errors.append("registry canonicalUserId does not match Vlad's resolved user_id")
+  if registry.get("identityKey") != ["userId", "cardId"]:
+    errors.append("registry identityKey must be ['userId', 'cardId']")
+  return errors
 
 
 def check(conn: sqlite3.Connection, registry_path: Path, *, allow_pending: bool = False) -> dict:
@@ -381,7 +402,7 @@ def check(conn: sqlite3.Connection, registry_path: Path, *, allow_pending: bool 
     else:
       reviews_by_id[card_id] = review
 
-  errors = []
+  errors = registry_scope_errors(registry, user_id)
   for card_id in sorted(set(duplicates)):
     errors.append(f"card {card_id}: duplicate current review records")
   missing = sorted(set(cards_by_id) - set(reviews_by_id))
@@ -389,7 +410,11 @@ def check(conn: sqlite3.Connection, registry_path: Path, *, allow_pending: bool 
   errors.extend(f"card {card_id}: missing current review" for card_id in missing)
   errors.extend(f"card {card_id}: registry entry is not an active card" for card_id in extra)
   for card_id in sorted(set(cards_by_id) & set(reviews_by_id)):
-    errors.extend(validate_review(reviews_by_id[card_id], cards_by_id[card_id]))
+    errors.extend(validate_review(
+      reviews_by_id[card_id],
+      cards_by_id[card_id],
+      expected_user_id=user_id,
+    ))
 
   pending_rows = conn.execute(
     """SELECT id, card_id, content_hash, created_at
@@ -406,9 +431,11 @@ def check(conn: sqlite3.Connection, registry_path: Path, *, allow_pending: bool 
       verdict_counts[verdict] += 1
   result = {
     "ok": not errors,
-    "assurance": "exact-hash and structural review coverage",
+    "assurance": "Vlad-user-scoped exact-hash and structural review coverage",
     "semanticPublicationGate": "strict evidence locators and per-option/item adjudication are required for every new publish/register decision",
     "profile": "Vlad",
+    "canonicalUserId": user_id,
+    "identityKey": ["userId", "cardId"],
     "activeCards": len(cards),
     "currentReviews": len(set(cards_by_id) & set(reviews_by_id)),
     "missingReviews": len(missing),
@@ -432,6 +459,7 @@ def queue_report(conn: sqlite3.Connection) -> dict:
   proposals = []
   for row in rows:
     proposals.append({
+      "userId": user_id,
       "queueId": row["id"],
       "cardId": row["card_id"],
       "opId": row["op_id"],
@@ -443,7 +471,12 @@ def queue_report(conn: sqlite3.Connection) -> dict:
       "reviewedAt": row["reviewed_at"],
       "decision": decode_json(row["decision_json"], None),
     })
-  return {"profile": "Vlad", "proposals": proposals}
+  return {
+    "profile": "Vlad",
+    "canonicalUserId": user_id,
+    "identityKey": ["userId", "cardId"],
+    "proposals": proposals,
+  }
 
 
 def backup_database(db_path: Path) -> Path:
@@ -492,21 +525,35 @@ def publish(
       errors.append(f"invalid or duplicate decision cardId {card_id!r}")
       continue
     seen.add(card_id)
+    if str(decision.get("userId") or "") != user_id:
+      errors.append(
+        f"card {card_id}: decision userId does not match Vlad's resolved user_id"
+      )
     content = decision_content(decision)
     review = {
       **{key: value for key, value in decision.items() if key != "content"},
+      "userId": user_id,
       "cardId": card_id,
       "contentHash": content_hash(content),
       "correctAnswer": keyed_answer(content),
     }
     prospective = {"content": content, "contentHash": review["contentHash"]}
-    errors.extend(validate_review(review, prospective, publication=True))
+    errors.extend(validate_review(
+      review,
+      prospective,
+      publication=True,
+      expected_user_id=user_id,
+    ))
     prepared.append((decision, review, content, current_cards.get(card_id)))
   if errors:
     raise RuntimeError("Decision validation failed:\n- " + "\n- ".join(errors))
 
   backup_path = backup_database(db_path)
   registry = load_registry(registry_path)
+  scope_errors = registry_scope_errors(registry, user_id)
+  if scope_errors:
+    raise RuntimeError("Registry scope validation failed:\n- " + "\n- ".join(scope_errors))
+  registry_backup_path = backup_json(registry_path, "content-review")
   reviews_by_id = {str(item.get("cardId")): item for item in registry.get("reviews", [])}
   published = []
   timestamp = now_ms()
@@ -522,7 +569,10 @@ def publish(
         "updates": {**content, "updatedAt": operation_ts},
         "timestamp": operation_ts,
       }
-      op_id = f"{GATEWAY_SOURCE_CLIENT}:card.update:{card_id}:{review['contentHash'][:16]}"
+      op_id = (
+        f"{GATEWAY_SOURCE_CLIENT}:card.update:{user_id}:"
+        f"{card_id}:{review['contentHash'][:16]}"
+      )
       existing_op = conn.execute(
         "SELECT source, source_client, user_id FROM sync_operations WHERE op_id=?",
         (op_id,),
@@ -579,6 +629,8 @@ def publish(
   registry = {
     "schemaVersion": SCHEMA_VERSION,
     "profile": "Vlad",
+    "canonicalUserId": user_id,
+    "identityKey": ["userId", "cardId"],
     "generatedAt": utc_iso(),
     "reviews": [reviews_by_id[card_id] for card_id in sorted(reviews_by_id)],
   }
@@ -588,6 +640,7 @@ def publish(
     "published": len(published),
     "cardIds": published,
     "backup": str(backup_path),
+    "registryBackup": str(registry_backup_path),
     "registry": str(registry_path),
   }
 
@@ -609,16 +662,26 @@ def register(conn: sqlite3.Connection, registry_path: Path, decisions_path: Path
       errors.append(f"card {card_id}: duplicate decision")
       continue
     seen.add(card_id)
+    if str(decision.get("userId") or "") != user_id:
+      errors.append(
+        f"card {card_id}: decision userId does not match Vlad's resolved user_id"
+      )
     card = cards.get(card_id)
     if not card:
       errors.append(f"card {card_id}: not active")
       continue
     review = {
       **{key: value for key, value in decision.items() if key != "content"},
+      "userId": user_id,
       "contentHash": card["contentHash"],
       "correctAnswer": keyed_answer(card["content"]),
     }
-    errors.extend(validate_review(review, card, publication=True))
+    errors.extend(validate_review(
+      review,
+      card,
+      publication=True,
+      expected_user_id=user_id,
+    ))
     reviews.append(review)
   missing = sorted(set(cards) - seen)
   errors.extend(f"card {card_id}: missing registration decision" for card_id in missing)
@@ -627,11 +690,265 @@ def register(conn: sqlite3.Connection, registry_path: Path, decisions_path: Path
   registry = {
     "schemaVersion": SCHEMA_VERSION,
     "profile": "Vlad",
+    "canonicalUserId": user_id,
+    "identityKey": ["userId", "cardId"],
     "generatedAt": utc_iso(),
     "reviews": sorted(reviews, key=lambda item: item["cardId"]),
   }
   write_json(registry_path, registry)
   return {"ok": True, "registered": len(reviews), "registry": str(registry_path)}
+
+
+def backup_json(path: Path, label: str) -> Path:
+  stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+  target = path.with_name(f"{path.stem}.before-{label}-{stamp}{path.suffix}")
+  shutil.copy2(path, target)
+  return target
+
+
+def bind_registry_scope(
+  conn: sqlite3.Connection,
+  registry_path: Path,
+) -> dict:
+  """One-time upgrade of an exact-hash registry to the composite identity key.
+
+  No verdict or card content is changed.  The upgrade is allowed only when
+  every old hash already matches a card selected inside Vlad's user scope.
+  """
+  if not registry_path.exists():
+    raise RuntimeError(f"Registry does not exist: {registry_path}")
+  user_id = profile_id(conn)
+  cards = {card["cardId"]: card for card in active_cards(conn, user_id)}
+  registry = load_registry(registry_path)
+  reviews = registry.get("reviews", [])
+  errors = []
+  if str(registry.get("profile") or "").strip().casefold() != "vlad":
+    errors.append("registry profile must be Vlad")
+  existing_owner = str(registry.get("canonicalUserId") or "")
+  if existing_owner and existing_owner != user_id:
+    errors.append("registry is already bound to a different canonicalUserId")
+  seen = set()
+  upgraded_reviews = []
+  for review in reviews:
+    card_id = str(review.get("cardId") or "")
+    if not card_id or card_id in seen:
+      errors.append(f"invalid or duplicate registry cardId {card_id!r}")
+      continue
+    seen.add(card_id)
+    existing_review_owner = str(review.get("userId") or "")
+    if existing_review_owner and existing_review_owner != user_id:
+      errors.append(f"card {card_id}: review is bound to another userId")
+      continue
+    card = cards.get(card_id)
+    if not card:
+      errors.append(f"card {card_id}: not an active Vlad card")
+      continue
+    if review.get("contentHash") != card["contentHash"]:
+      errors.append(f"card {card_id}: hash does not match Vlad-scoped content")
+      continue
+    upgraded_review = {**review, "userId": user_id}
+    errors.extend(validate_review(
+      upgraded_review,
+      card,
+      expected_user_id=user_id,
+    ))
+    upgraded_reviews.append(upgraded_review)
+  missing = sorted(set(cards) - seen)
+  errors.extend(f"card {card_id}: missing registry review" for card_id in missing)
+  if errors:
+    raise RuntimeError("Registry scope binding failed:\n- " + "\n- ".join(errors))
+
+  backup_path = backup_json(registry_path, "user-scope")
+  upgraded = {
+    **registry,
+    "schemaVersion": SCHEMA_VERSION,
+    "profile": "Vlad",
+    "canonicalUserId": user_id,
+    "identityKey": ["userId", "cardId"],
+    "generatedAt": utc_iso(),
+    "reviews": sorted(upgraded_reviews, key=lambda item: item["cardId"]),
+  }
+  write_json(registry_path, upgraded)
+  return {
+    "ok": True,
+    "profile": "Vlad",
+    "canonicalUserId": user_id,
+    "identityKey": ["userId", "cardId"],
+    "boundReviews": len(upgraded_reviews),
+    "backup": str(backup_path),
+    "registry": str(registry_path),
+  }
+
+
+def iter_hashed_card_records(value, path: str = "$"):
+  if isinstance(value, dict):
+    if "cardId" in value and "contentHash" in value:
+      yield path, value
+    for key, child in value.items():
+      yield from iter_hashed_card_records(child, f"{path}.{key}")
+  elif isinstance(value, list):
+    for index, child in enumerate(value):
+      yield from iter_hashed_card_records(child, f"{path}[{index}]")
+
+
+def verify_report_scope(
+  conn: sqlite3.Connection,
+  report_path: Path,
+) -> dict:
+  """Verify every report hash using the composite Vlad/card identity."""
+  user_id = profile_id(conn)
+  cards = {card["cardId"]: card for card in active_cards(conn, user_id)}
+  report = read_json(report_path)
+  errors = []
+  if str(report.get("profile") or "").strip().casefold() != "vlad":
+    errors.append("report profile must be Vlad")
+  if str(report.get("canonicalUserId") or "") != user_id:
+    errors.append("report canonicalUserId does not match Vlad's resolved user_id")
+  if report.get("identityKey") != ["userId", "cardId"]:
+    errors.append("report identityKey must be ['userId', 'cardId']")
+  reviewed_count = (report.get("coverage") or {}).get("canonicalCardsReviewed")
+  if reviewed_count != len(cards):
+    errors.append(
+      f"report coverage is {reviewed_count!r}, but Vlad has {len(cards)} active cards"
+    )
+
+  records = list(iter_hashed_card_records(report))
+  if not records:
+    errors.append("report contains no cardId/contentHash records")
+  seen = set()
+  matched = 0
+  for path, record in records:
+    card_id = str(record.get("cardId") or "")
+    record_user_id = str(record.get("userId") or "")
+    key = (record_user_id, card_id)
+    if record_user_id != user_id:
+      errors.append(f"{path}: userId does not match Vlad's resolved user_id")
+    if key in seen:
+      errors.append(f"{path}: duplicate scoped card key {key!r}")
+    seen.add(key)
+    card = cards.get(card_id)
+    if not card:
+      errors.append(f"{path}: card is not active in Vlad's scoped inventory")
+    elif record.get("contentHash") != card["contentHash"]:
+      errors.append(f"{path}: contentHash does not match Vlad-scoped content")
+    else:
+      matched += 1
+  return {
+    "ok": not errors,
+    "profile": "Vlad",
+    "canonicalUserId": user_id,
+    "identityKey": ["userId", "cardId"],
+    "activeCards": len(cards),
+    "reportRecords": len(records),
+    "matchedHashes": matched,
+    "errors": errors,
+  }
+
+
+def add_user_scope_to_hashed_records(value, user_id: str):
+  if isinstance(value, dict):
+    scoped = {
+      key: add_user_scope_to_hashed_records(child, user_id)
+      for key, child in value.items()
+    }
+    if "cardId" in scoped and "contentHash" in scoped:
+      scoped["userId"] = user_id
+    return scoped
+  if isinstance(value, list):
+    return [add_user_scope_to_hashed_records(child, user_id) for child in value]
+  return value
+
+
+def bind_report_scope(
+  conn: sqlite3.Connection,
+  source_path: Path,
+  target_path: Path,
+) -> dict:
+  """Create a user-scoped report only after every old hash matches Vlad."""
+  user_id = profile_id(conn)
+  cards = {card["cardId"]: card for card in active_cards(conn, user_id)}
+  report = read_json(source_path)
+  errors = []
+  if str(report.get("profile") or "").strip().casefold() != "vlad":
+    errors.append("source report profile must be Vlad")
+  existing_owner = str(report.get("canonicalUserId") or "")
+  if existing_owner and existing_owner != user_id:
+    errors.append("source report is bound to a different canonicalUserId")
+  reviewed_count = (report.get("coverage") or {}).get("canonicalCardsReviewed")
+  if reviewed_count != len(cards):
+    errors.append(
+      f"source report coverage is {reviewed_count!r}, but Vlad has {len(cards)} active cards"
+    )
+  records = list(iter_hashed_card_records(report))
+  if not records:
+    errors.append("source report contains no cardId/contentHash records")
+  seen_card_ids = set()
+  for path, record in records:
+    card_id = str(record.get("cardId") or "")
+    record_user_id = str(record.get("userId") or "")
+    if record_user_id and record_user_id != user_id:
+      errors.append(f"{path}: record is already bound to another userId")
+    if card_id in seen_card_ids:
+      errors.append(f"{path}: duplicate Vlad cardId {card_id!r}")
+    seen_card_ids.add(card_id)
+    card = cards.get(card_id)
+    if not card:
+      errors.append(f"{path}: card is not active in Vlad's scoped inventory")
+    elif record.get("contentHash") != card["contentHash"]:
+      errors.append(f"{path}: contentHash does not match Vlad-scoped content")
+  if errors:
+    raise RuntimeError("Report scope binding failed:\n- " + "\n- ".join(errors))
+
+  scoped = add_user_scope_to_hashed_records(report, user_id)
+  scoped["canonicalUserId"] = user_id
+  scoped["identityKey"] = ["userId", "cardId"]
+  scoped["hashScope"] = {
+    "canonicalContent": (
+      "shared_card_catalog.canonical_user_id = :canonicalUserId "
+      "AND shared_card_catalog.id = :cardId"
+    ),
+    "profileReference": (
+      "server_cards.user_id = :canonicalUserId AND server_cards.id = :cardId"
+    ),
+    "rule": "A cardId without userId is never a valid report identity.",
+  }
+  coverage = scoped.get("coverage") if isinstance(scoped.get("coverage"), dict) else {}
+  coverage["scopeVerification"] = {
+    "identityKey": ["userId", "cardId"],
+    "activeVladCards": len(cards),
+    "hashedFindingRecords": len(records),
+    "allFindingHashesMatchVladScopedContent": True,
+  }
+  scoped["coverage"] = coverage
+  scoped["scopeBoundAt"] = utc_iso()
+  if target_path != source_path:
+    try:
+      source_ref = str(source_path.relative_to(REPO_ROOT))
+    except ValueError:
+      source_ref = str(source_path)
+    scoped["supersedes"] = source_ref
+    schema_version = str(scoped.get("schemaVersion") or "")
+    if schema_version.endswith("-2"):
+      scoped["schemaVersion"] = schema_version[:-1] + "3"
+    report_id = str(scoped.get("reportId") or "")
+    if report_id.endswith("-v2"):
+      scoped["reportId"] = report_id[:-1] + "3"
+  backup_path = None
+  if target_path.exists():
+    backup_path = backup_json(target_path, "user-scope")
+  write_json(target_path, scoped)
+  verified = verify_report_scope(conn, target_path)
+  if not verified["ok"]:
+    raise RuntimeError(
+      "Scoped report failed post-write verification:\n- "
+      + "\n- ".join(verified["errors"])
+    )
+  return {
+    **verified,
+    "source": str(source_path),
+    "report": str(target_path),
+    "backup": str(backup_path) if backup_path else None,
+  }
 
 
 def main() -> int:
@@ -642,6 +959,21 @@ def main() -> int:
   check_parser = sub.add_parser("check", help="Require exact review coverage for every active Vlad card")
   check_parser.add_argument("--allow-pending", action="store_true")
   sub.add_parser("queue", help="Print every content review proposal and decision")
+  sub.add_parser(
+    "bind-scope",
+    help="Bind an existing exact-hash registry to Vlad's resolved user_id",
+  )
+  report_parser = sub.add_parser(
+    "verify-report",
+    help="Verify every report hash with the composite (userId, cardId) key",
+  )
+  report_parser.add_argument("report", type=Path)
+  bind_report_parser = sub.add_parser(
+    "bind-report-scope",
+    help="Create a composite-identity report after Vlad-scoped hash verification",
+  )
+  bind_report_parser.add_argument("source", type=Path)
+  bind_report_parser.add_argument("target", type=Path)
   publish_parser = sub.add_parser("publish", help="Publish explicit reviewed decisions")
   publish_parser.add_argument("decisions", type=Path)
   register_parser = sub.add_parser("register", help="Initialize registry from completed review decisions")
@@ -656,6 +988,16 @@ def main() -> int:
       result = check(conn, args.registry.resolve(), allow_pending=args.allow_pending)
     elif args.command == "queue":
       result = queue_report(conn)
+    elif args.command == "bind-scope":
+      result = bind_registry_scope(conn, args.registry.resolve())
+    elif args.command == "verify-report":
+      result = verify_report_scope(conn, args.report.resolve())
+    elif args.command == "bind-report-scope":
+      result = bind_report_scope(
+        conn,
+        args.source.resolve(),
+        args.target.resolve(),
+      )
     elif args.command == "publish":
       result = publish(conn, args.db.resolve(), args.registry.resolve(), args.decisions.resolve())
     else:

@@ -11,7 +11,12 @@ import { ArrowLeft, RotateCcw, CheckCircle, AlertCircle, RefreshCw, Type, Sparkl
 import { useDeckCards } from '../hooks/useCardDb'
 import { recordReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession, readActiveSession } from '../db/queries'
 import { STRINGS, useSettings, type QuestionTextSize } from '../contexts/SettingsContext'
-import { buildStudySessionSelection, enforceDailyDeckCardLimit } from '../utils/studyCardOrdering'
+import {
+  buildStudySessionSelection,
+  chooseRandomSessionCardTarget,
+  enforceDailyDeckCardLimit,
+  hasFixedStudySessionSize,
+} from '../utils/studyCardOrdering'
 import { buildDragMatchModePlan } from '../utils/studyModeSelector'
 import {
   buildPersistedStudySession,
@@ -19,6 +24,7 @@ import {
   parsePersistedStudySession,
   DEFAULT_STUDY_CARD_LIMIT,
   createSessionRunId,
+  isStudySessionExpired,
   normalizeStudyCardLimit,
   type PersistedStudySession,
   type StudyReturnTarget,
@@ -35,6 +41,7 @@ import { useSessionRewards } from '../hooks/useSessionRewards'
 import { useSessionPersistence } from '../hooks/useSessionPersistence'
 import { useStudyAnswerState } from '../hooks/study/useStudyAnswerState'
 import { useCardAnswerTimer } from '../hooks/study/useCardAnswerTimer'
+import { useStudySessionExpiry } from '../hooks/study/useStudySessionExpiry'
 import { useHandsetLayout } from '../hooks/useHandsetLayout'
 import { useWakeLock } from '../hooks/useWakeLock'
 import CardFace from './CardFace.tsx'
@@ -121,6 +128,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
   const studyCardLimit = normalizeStudyCardLimit(settings.studyCardLimit ?? DEFAULT_STUDY_CARD_LIMIT)
   const sessionRef = useRef(session)
   const studyCardLimitRef = useRef(studyCardLimit)
+  const sessionTargetCardCountRef = useRef(studyCardLimit)
   const dragMatchModePlanRef = useRef<Set<string>>(new Set())
   const dragMatchModePlanReadyRef = useRef(false)
   const dragMatchModeSeedRef = useRef(`${Date.now()}:${Math.random()}`)
@@ -142,7 +150,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
 
   useEffect(() => {
     if (session.cards.length > 0 && !session.isDone && sessionWallStartRef.current === null) {
-      sessionWallStartRef.current = Date.now()
+      sessionWallStartRef.current = session.startedAt
     }
     if (session.isDone) {
       // keep start time so completion screen can compute elapsed duration
@@ -151,13 +159,13 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
         navigator.vibrate(noAgain && session.sessionCount >= 3 ? [12, 40, 12, 40, 24] : [16, 60, 16])
       }
     }
-  }, [session.cards.length, session.isDone, session.againCounts, session.sessionCount])
+  }, [session.cards.length, session.isDone, session.againCounts, session.sessionCount, session.startedAt])
 
   useEffect(() => {
     studyCardLimitRef.current = studyCardLimit
   }, [studyCardLimit])
 
-  useSessionPersistence({ deckId: deck.id, sessionRef, studyCardLimitRef, nextDayStartsAt: settings.nextDayStartsAt })
+  useSessionPersistence({ deckId: deck.id, sessionRef, studyCardLimitRef, sessionTargetCardCountRef })
 
 
   useWakeLock()
@@ -171,7 +179,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
   const buildSessionCards = useCallback((inputCards: Card[], limit: number): Card[] => {
     return buildStudySessionSelection(inputCards, {
       sessionId: deck.id,
-      maxCards: normalizeStudyCardLimit(limit),
+      maxCards: Math.max(1, Math.floor(limit)),
       nextDayStartsAt: settings.nextDayStartsAt,
       learnAheadMinutes: settings.learnAheadMinutes,
       runSeed: dragMatchModeSeedRef.current,
@@ -187,12 +195,19 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
     onExit()
   }, [clearPersistedSession, onExit])
 
+  useStudySessionExpiry({
+    active: session.cards.length > 0 && !session.isDone,
+    startedAt: session.startedAt,
+    onExpire: handleExit,
+  })
+
   /** Reparatur-Serie: startet vom Completion-Screen aus eine Mini-Session mit
    *  den schwächsten Karten — der Moment direkt nach dem Scheitern ist der
    *  wirksamste für den erneuten Abruf. */
   const handleStartRepair = useCallback((repairCards: Card[]) => {
     if (repairCards.length === 0) return
     sessionWallStartRef.current = null
+    sessionTargetCardCountRef.current = repairCards.length
     dispatch({ type: 'INIT', cards: repairCards, sessionRunId: createSessionRunId() })
   }, [])
 
@@ -227,9 +242,15 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
 
     const startFresh = () => {
       clearPersistedSession()
+      const fixedSize = hasFixedStudySessionSize(deck.id)
+      const target = fixedSize
+        ? studyCardLimit
+        : chooseRandomSessionCardTarget(studyCardLimit)
+      const selectedCards = buildSessionCards(cards, target)
+      sessionTargetCardCountRef.current = fixedSize ? selectedCards.length : target
       dispatch({
         type: 'INIT',
-        cards: buildSessionCards(cards, studyCardLimit),
+        cards: selectedCards,
         sessionRunId: createSessionRunId(),
       })
     }
@@ -259,6 +280,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
           studyCardLimit,
         )
         if (restoredCards.length > 0) {
+          sessionTargetCardCountRef.current = snapshot.sessionTargetCardCount
           dispatch({ type: 'RESTORE', cards: restoredCards, snapshot })
           return
         }
@@ -293,6 +315,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
       sessionRunId: session.sessionRunId,
       cardIds: session.cards.map(card => card.id),
       cardLimit: studyCardLimit,
+      sessionTargetCardCount: sessionTargetCardCountRef.current,
       sessionCount: session.sessionCount,
       isFlipped: session.isFlipped,
       isDone: session.isDone,
@@ -305,8 +328,8 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
       hardPracticePassCounts: session.hardPracticePassCounts,
       reviewEvents: session.reviewEvents,
       returnTarget,
+      startedAt: session.startedAt,
       startTime: session.startTime,
-      nextDayStartsAt: settings.nextDayStartsAt,
     })
 
     void writeActiveSession(deck.id, JSON.stringify(payload))
@@ -325,10 +348,10 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
     session.hardPracticePassCounts,
     session.reviewEvents,
     returnTarget,
+    session.startedAt,
     session.startTime,
     deck.id,
     studyCardLimit,
-    settings.nextDayStartsAt,
     clearPersistedSession,
   ])
 
@@ -472,6 +495,10 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
   const handleRate = useCallback(
     async (rating: Rating) => {
       if (!currentCard || peeking || session.isSubmitting || session.isDone || isAlgorithmMigrating) return
+      if (isStudySessionExpired(session.startedAt)) {
+        handleExit()
+        return
+      }
 
       // P2.2: MC wrong answer always triggers Again (rating 1) — README §Sonderregel.
       const effectiveRating: Rating = answerWasIncorrect ? 1 : rating
@@ -552,6 +579,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
       session.isDone,
       isAlgorithmMigrating,
       session.startTime,
+      session.startedAt,
       session.againCounts,
       session.hardPracticeCardIds,
       session.sessionRunId,
@@ -565,11 +593,16 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
       t.save_rating_failed,
       t.unknown_error,
       registerSessionReward,
+      handleExit,
     ]
   )
 
   const handleRetry = useCallback(async () => {
     if (!session.lastRating || !currentCard || session.isSubmitting || isAlgorithmMigrating) return
+    if (isStudySessionExpired(session.startedAt)) {
+      handleExit()
+      return
+    }
 
     const { rating, elapsedMs } = session.lastRating
     dispatch({ type: 'CLEAR_ERROR' })
@@ -621,6 +654,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
     }
   }, [
     session.lastRating,
+    session.startedAt,
     session.sessionRunId,
     session.isSubmitting,
     session.againCounts,
@@ -635,6 +669,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
     t.save_failed,
     t.unknown_error,
     registerSessionReward,
+    handleExit,
   ])
 
   // Read-only zurückblättern: zeigt die zuletzt bewertete Karte nur an —
@@ -677,12 +712,18 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
   }, [handleFlip, handleRate, maxSelectableRating, peeking, session.isDone, session.isFlipped, session.error, session.isSubmitting, handleExit])
 
   const handleRestart = useCallback(() => {
-    const sortedCards = buildSessionCards(cards, studyCardLimit)
     clearPersistedSession()
     resetAnswerState()
+    sessionWallStartRef.current = null
     dragMatchModePlanRef.current = new Set()
     dragMatchModePlanReadyRef.current = false
     dragMatchModeSeedRef.current = `${deck.id}:restart:${Date.now()}:${Math.random()}`
+    const fixedSize = hasFixedStudySessionSize(deck.id)
+    const target = fixedSize
+      ? studyCardLimit
+      : chooseRandomSessionCardTarget(studyCardLimit)
+    const sortedCards = buildSessionCards(cards, target)
+    sessionTargetCardCountRef.current = fixedSize ? sortedCards.length : target
     dispatch({ type: 'INIT', cards: sortedCards, sessionRunId: createSessionRunId() })
   }, [buildSessionCards, cards, studyCardLimit, clearPersistedSession, deck.id])
 
@@ -1188,13 +1229,9 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
               animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
               exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
               transition={{ duration: prefersReducedMotion ? 0.12 : 0.15, ease: 'easeOut' }}
-              className="w-full border-t border-ds-border bg-ds-bg px-3 pt-2"
-              style={{
-                height: isHandsetLandscape
-                  ? 'clamp(7.25rem, 21dvh, 10rem)'
-                  : 'clamp(9.25rem, 21dvh, 12.5rem)',
-                paddingBottom: '0.5rem',
-              }}
+              className={`handset-rating-area w-full shrink-0 border-t border-ds-border bg-ds-bg px-3 pt-2 ${
+                isHandsetLandscape ? 'handset-rating-area-landscape' : ''
+              }`}
             >
               <div className="h-full">
                 <RatingBar

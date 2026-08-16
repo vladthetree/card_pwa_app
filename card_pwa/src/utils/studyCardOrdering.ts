@@ -224,6 +224,29 @@ export interface StudySessionSelectionOptions {
   runSeed?: string | number
 }
 
+export const MIN_RANDOM_SESSION_TARGET_RATIO = 0.8
+
+/**
+ * Chooses one workload target for a genuinely new session. The configured
+ * limit remains the hard maximum; persistence stores the result so reloads
+ * and resumes never reroll the learner's workload.
+ */
+export function chooseRandomSessionCardTarget(
+  configuredLimit: unknown,
+  rng: () => number = Math.random,
+): number {
+  const parsedLimit = Number(configuredLimit)
+  if (!Number.isFinite(parsedLimit) || parsedLimit <= 0) return 0
+  const maximum = Math.max(1, Math.floor(parsedLimit))
+  const minimum = Math.max(1, Math.ceil(maximum * MIN_RANDOM_SESSION_TARGET_RATIO))
+  const sample = Math.min(0.999999999999, Math.max(0, Number(rng()) || 0))
+  return minimum + Math.floor(sample * (maximum - minimum + 1))
+}
+
+export function hasFixedStudySessionSize(sessionId: string): boolean {
+  return sessionId === 'daily-quest' || sessionId.startsWith('today-package:')
+}
+
 /**
  * Letzte defensive Schranke fuer normale Decks. Der uebergebene Wert ist immer
  * der aktuelle Reglerwert aus `settings.studyCardLimit`; kleinere Kartenpools
@@ -249,7 +272,7 @@ export function buildStudySessionSelection(
   cards: Card[],
   options: StudySessionSelectionOptions,
 ): Card[] {
-  if (options.sessionId === 'daily-quest' || options.sessionId.startsWith('today-package:')) {
+  if (hasFixedStudySessionSize(options.sessionId)) {
     return cards.filter(isStudyableCard)
   }
   const configuredDeckLimit = Number(options.maxCards)

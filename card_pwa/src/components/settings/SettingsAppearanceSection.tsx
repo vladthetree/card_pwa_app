@@ -52,7 +52,7 @@ const THEME_OPTIONS: ThemeOption[] = [
     helpKey: 'theme_newsprint_dark_help',
     cardBg: 'bg-[#C9C9C2]',
     swatches: [
-      { color: '#141413', label: 'Dark Paper' },
+      { color: '#000000', label: 'OLED Black' },
       { color: '#E8E8E3', label: 'Light Ink' },
       { color: '#FF6166', label: 'Editorial Red' },
       { color: '#2C2C29', label: 'Divider Dark' },

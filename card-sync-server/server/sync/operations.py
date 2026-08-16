@@ -491,14 +491,20 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
     if canonical_writer:
       conn.execute(
         """UPDATE shared_card_catalog
-           SET deleted_at=?, updated_at=?, last_source_client=? WHERE id=?""",
-        (deleted_at, candidate_ts, source_client, card_id),
+           SET deleted_at=?, updated_at=?, last_source_client=?
+           WHERE id=? AND canonical_user_id=?""",
+        (deleted_at, candidate_ts, source_client, card_id, catalog_owner_id),
       )
+      # A canonical deletion intentionally disables every user's reference,
+      # but only after the target is proven to be Vlad's canonical card.
       conn.execute(
         """UPDATE server_cards
            SET deleted_at=?, is_deleted=1, updated_at=?, last_source_client=?
-           WHERE id=?""",
-        (deleted_at, candidate_ts, source_client, card_id),
+           WHERE id=? AND EXISTS (
+             SELECT 1 FROM shared_card_catalog c
+             WHERE c.id=server_cards.id AND c.canonical_user_id=?
+           )""",
+        (deleted_at, candidate_ts, source_client, card_id, catalog_owner_id),
       )
       return
 

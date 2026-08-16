@@ -5,7 +5,6 @@
  * Important: Increment STUDY_SESSION_VERSION when persisted shape changes and keep parse tolerant of older optional fields where possible.
  */
 import type { Card, Rating, SessionReviewEvent } from '../types'
-import { DAY_MS, getDayStartMs } from './time'
 import { generateUuidV7 } from './id'
 import { isStudyableCard } from './sm2'
 import { clamp } from './numeric'
@@ -14,7 +13,7 @@ export type StudySessionKind = 'deck' | 'shuffle'
 export type StudyReturnTarget = 'learning-units'
 
 export interface PersistedStudySession {
-  version: 6
+  version: 7
   /** For shuffle sessions this stores the namespaced key, e.g. shuffle:<id>. */
   deckId: string
   kind?: StudySessionKind
@@ -25,6 +24,8 @@ export interface PersistedStudySession {
   /** Stable across reload/resume; changes only when a genuinely new run starts. */
   sessionRunId: string
   cardLimit?: number
+  /** Randomized target chosen once for this run; resume must never reroll it. */
+  sessionTargetCardCount: number
   sessionCount: number
   isFlipped: boolean
   isDone: boolean
@@ -39,11 +40,14 @@ export interface PersistedStudySession {
   /** Herkunft der Session, damit Zurück/Abschluss auch nach Reload konsistent ist. */
   returnTarget?: StudyReturnTarget
   expiresAt: number
+  /** Immutable wall-clock start of the entire session run. */
+  startedAt: number
+  /** Start of the current card presentation; used only for answer timing. */
   startTime: number
 }
 
-export const STUDY_SESSION_VERSION = 6
-export const STUDY_SESSION_TTL_MS = 45 * 60 * 1000
+export const STUDY_SESSION_VERSION = 7
+export const STUDY_SESSION_MAX_DURATION_MS = 4 * 60 * 60 * 1000
 export const DEFAULT_STUDY_CARD_LIMIT = 50
 export const MIN_STUDY_CARD_LIMIT = 10
 export const MAX_STUDY_CARD_LIMIT = 200
@@ -55,6 +59,14 @@ export function buildShuffleSessionId(collectionId: string): string {
 
 export function createSessionRunId(): string {
   return `study-${generateUuidV7()}`
+}
+
+export function getStudySessionExpiresAt(startedAt: number): number {
+  return startedAt + STUDY_SESSION_MAX_DURATION_MS
+}
+
+export function isStudySessionExpired(startedAt: number, nowMs = Date.now()): boolean {
+  return !Number.isFinite(startedAt) || nowMs >= getStudySessionExpiresAt(startedAt)
 }
 
 export function normalizeStudyCardLimit(value: unknown): number {
@@ -78,10 +90,24 @@ export function parsePersistedStudySession(raw: string | null, sessionId: string
   if (!raw) return null
 
   try {
-    const parsed = JSON.parse(raw) as PersistedStudySession & { version?: number; sessionRunId?: string }
-    if (![5, STUDY_SESSION_VERSION].includes(Number(parsed.version)) || parsed.deckId !== sessionId) return null
-    if (!Number.isFinite(parsed.expiresAt) || parsed.expiresAt <= nowMs) return null
+    const parsed = JSON.parse(raw) as PersistedStudySession & {
+      version?: number
+      sessionRunId?: string
+      sessionTargetCardCount?: number
+      startedAt?: number
+    }
+    if (![5, 6, STUDY_SESSION_VERSION].includes(Number(parsed.version)) || parsed.deckId !== sessionId) return null
     if (!Array.isArray(parsed.cardIds) || parsed.cardIds.length === 0) return null
+    const startedAt = Number.isFinite(parsed.startedAt)
+      ? Number(parsed.startedAt)
+      : Number(parsed.startTime)
+    if (!Number.isFinite(startedAt)) return null
+    const hardExpiresAt = getStudySessionExpiresAt(startedAt)
+    const storedExpiresAt = Number.isFinite(parsed.expiresAt)
+      ? Number(parsed.expiresAt)
+      : hardExpiresAt
+    const expiresAt = Math.min(storedExpiresAt, hardExpiresAt)
+    if (expiresAt <= nowMs) return null
     // Provide default for sessions persisted before againCounts was added.
     if (!parsed.againCounts || typeof parsed.againCounts !== 'object') parsed.againCounts = {}
     if (!Array.isArray(parsed.hardPracticeCardIds)) parsed.hardPracticeCardIds = []
@@ -91,7 +117,20 @@ export function parsePersistedStudySession(raw: string | null, sessionId: string
     const sessionRunId = typeof parsed.sessionRunId === 'string' && parsed.sessionRunId.trim()
       ? parsed.sessionRunId.trim()
       : `legacy-session-${sessionId}-${Number(parsed.startTime) || 0}`
-    return { ...parsed, version: STUDY_SESSION_VERSION, sessionRunId }
+    const configuredLimit = Number.isFinite(parsed.cardLimit)
+      ? Math.max(1, Math.floor(Number(parsed.cardLimit)))
+      : parsed.cardIds.length
+    const sessionTargetCardCount = Number.isFinite(parsed.sessionTargetCardCount)
+      ? clamp(Math.floor(Number(parsed.sessionTargetCardCount)), 1, configuredLimit)
+      : Math.min(configuredLimit, parsed.cardIds.length)
+    return {
+      ...parsed,
+      version: STUDY_SESSION_VERSION,
+      sessionRunId,
+      sessionTargetCardCount,
+      startedAt,
+      expiresAt,
+    }
   } catch {
     return null
   }
@@ -113,6 +152,7 @@ export function buildPersistedStudySession(input: {
   cardIds: string[]
   sessionRunId?: string
   cardLimit: number
+  sessionTargetCardCount?: number
   sessionCount: number
   isFlipped: boolean
   isDone: boolean
@@ -125,17 +165,22 @@ export function buildPersistedStudySession(input: {
   hardPracticePassCounts?: Record<string, number>
   reviewEvents?: SessionReviewEvent[]
   returnTarget?: StudyReturnTarget
+  /** Immutable run start. Older callers fall back to the current-card start. */
+  startedAt?: number
   startTime: number
   nowMs?: number
-  /** Tag-Wechsel-Stunde: verlängert die Gültigkeit bis zur nächsten Tagesgrenze,
-   *  damit mobile Unterbrechungen > 45 min die Session nicht verwerfen. */
+  /** @deprecated A session now has a hard four-hour lifetime independent of day rollover. */
   nextDayStartsAt?: number
 }): PersistedStudySession {
-  const now = input.nowMs ?? Date.now()
-  const ttlExpiresAt = now + STUDY_SESSION_TTL_MS
-  const expiresAt = typeof input.nextDayStartsAt === 'number'
-    ? Math.max(ttlExpiresAt, getDayStartMs(now, input.nextDayStartsAt) + DAY_MS)
-    : ttlExpiresAt
+  const startedAt = Number.isFinite(input.startedAt)
+    ? Number(input.startedAt)
+    : input.startTime
+  const configuredLimit = Number.isFinite(input.cardLimit)
+    ? Math.max(1, Math.floor(input.cardLimit))
+    : Math.max(1, input.cardIds.length)
+  const sessionTargetCardCount = Number.isFinite(input.sessionTargetCardCount)
+    ? clamp(Math.floor(Number(input.sessionTargetCardCount)), 1, configuredLimit)
+    : Math.min(configuredLimit, Math.max(1, input.cardIds.length))
 
   return {
     version: STUDY_SESSION_VERSION,
@@ -146,7 +191,8 @@ export function buildPersistedStudySession(input: {
     cardOrigins: input.cardOrigins,
     cardIds: input.cardIds,
     sessionRunId: input.sessionRunId?.trim() || createSessionRunId(),
-    cardLimit: input.cardLimit,
+    cardLimit: configuredLimit,
+    sessionTargetCardCount,
     sessionCount: input.sessionCount,
     isFlipped: input.isFlipped,
     isDone: input.isDone,
@@ -159,7 +205,8 @@ export function buildPersistedStudySession(input: {
     hardPracticePassCounts: input.hardPracticePassCounts ?? {},
     reviewEvents: input.reviewEvents ?? [],
     returnTarget: input.returnTarget,
-    expiresAt,
+    expiresAt: getStudySessionExpiresAt(startedAt),
+    startedAt,
     startTime: input.startTime,
   }
 }

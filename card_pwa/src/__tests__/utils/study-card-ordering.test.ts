@@ -6,8 +6,10 @@ import {
   buildDailyQuestSelection,
   buildStudySessionSelection,
   buildTodayPackageSelection,
+  chooseRandomSessionCardTarget,
   enforceDailyDeckCardLimit,
   getCardWeight,
+  hasFixedStudySessionSize,
   interleaveCardsByDeck,
   resolveNewCardAllowance,
   sortStudyCards,
@@ -38,6 +40,21 @@ function createCard(overrides: Partial<Card>): Card {
 }
 
 describe('studyCardOrdering', () => {
+  describe('random session target', () => {
+    it('chooses an inclusive value between 80 and 100 percent of the hard limit', () => {
+      expect(chooseRandomSessionCardTarget(50, () => 0)).toBe(40)
+      expect(chooseRandomSessionCardTarget(50, () => 0.999999)).toBe(50)
+      expect(chooseRandomSessionCardTarget(10, () => 0.5)).toBe(9)
+    })
+
+    it('rejects invalid limits and identifies fixed-size packages', () => {
+      expect(chooseRandomSessionCardTarget(Number.NaN)).toBe(0)
+      expect(hasFixedStudySessionSize('daily-quest')).toBe(true)
+      expect(hasFixedStudySessionSize('today-package:objective-1')).toBe(true)
+      expect(hasFixedStudySessionSize('regular-deck')).toBe(false)
+    })
+  })
+
   it('limits session size via maxCards', () => {
     const cards = Array.from({ length: 10 }, (_, idx) =>
       createCard({ id: `n-${idx}`, type: 'new', due: 100 + idx })

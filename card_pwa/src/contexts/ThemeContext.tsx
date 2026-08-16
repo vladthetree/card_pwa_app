@@ -61,7 +61,9 @@ export const THEMES = {
     primary: '#FF6166',
     secondary: '#B3B3AD',
     accent: '#2C2C29',
-    background: '#141413',
+    // True black canvas lets OLED panels switch off pixels outside cards and
+    // controls. Raised content keeps the warmer paper tones below.
+    background: '#000000',
     floor: '#141413',
     card: '#1E1E1C',
     surface: '#1E1E1C',

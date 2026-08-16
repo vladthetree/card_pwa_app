@@ -30,6 +30,9 @@ export interface SessionState {
   hardPracticeCardIds: string[]
   hardPracticePassCounts: Record<string, number>
   reviewEvents: SessionReviewEvent[]
+  /** Immutable start of the whole run; unlike startTime it never resets per card. */
+  startedAt: number
+  /** Start of the current card presentation, used for answer elapsed time. */
   startTime: number
 }
 
@@ -72,6 +75,7 @@ export const initialSessionState: SessionState = {
   hardPracticeCardIds: [],
   hardPracticePassCounts: {},
   reviewEvents: [],
+  startedAt: Date.now(),
   startTime: Date.now(),
 }
 
@@ -84,12 +88,14 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
   switch (action.type) {
     case 'INIT': {
       const cards = action.cards.filter(isStudyableCard)
+      const now = Date.now()
       return {
         ...initialSessionState,
         cards,
         sessionRunId: action.sessionRunId?.trim() || createSessionRunId(),
         isDone: cards.length === 0,
-        startTime: Date.now(),
+        startedAt: now,
+        startTime: now,
       }
     }
     case 'RESTORE': {
@@ -111,6 +117,7 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
         hardPracticeCardIds: [...(action.snapshot.hardPracticeCardIds ?? [])],
         hardPracticePassCounts: { ...(action.snapshot.hardPracticePassCounts ?? {}) },
         reviewEvents: [...(action.snapshot.reviewEvents ?? [])],
+        startedAt: action.snapshot.startedAt,
         startTime: action.snapshot.startTime,
       }
     }
@@ -229,12 +236,16 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
         error: null,
       }
     case 'RESTART':
-      return {
-        ...initialSessionState,
-        cards: [...state.cards],
-        sessionRunId: action.sessionRunId?.trim() || createSessionRunId(),
-        isDone: state.cards.length === 0,
-        startTime: Date.now(),
+      {
+        const now = Date.now()
+        return {
+          ...initialSessionState,
+          cards: [...state.cards],
+          sessionRunId: action.sessionRunId?.trim() || createSessionRunId(),
+          isDone: state.cards.length === 0,
+          startedAt: now,
+          startTime: now,
+        }
       }
     default:
       return state

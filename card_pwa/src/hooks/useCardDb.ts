@@ -337,11 +337,16 @@ export function useShuffleCards(
     nextDayStartsAt?: number
     runSeed?: string | number
     learnAheadMinutes?: number
+    /** Identifies one immutable randomized selection run. */
+    selectionKey?: string
+    preferredCardIds?: readonly string[]
+    preferredCardOrigins?: Readonly<Record<string, string>>
   } = {},
 ) {
   const [cards, setCards] = useState<ShuffleStudyCard[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [loadedSelectionKey, setLoadedSelectionKey] = useState<string | null>(null)
   const loadedCollectionIdRef = useRef<string | null>(null)
   const loadVersionRef = useRef(0)
 
@@ -351,7 +356,9 @@ export function useShuffleCards(
 
     if (!collectionId) {
       loadedCollectionIdRef.current = null
+      setLoadedSelectionKey(null)
       setCards([])
+      setError(null)
       setLoading(false)
       return
     }
@@ -367,6 +374,7 @@ export function useShuffleCards(
       if (loadVersionRef.current !== loadVersion) return
       if (!collection) {
         loadedCollectionIdRef.current = null
+        setLoadedSelectionKey(null)
         setCards([])
         setLoading(false)
         return
@@ -378,10 +386,13 @@ export function useShuffleCards(
         nextDayStartsAt: options.nextDayStartsAt,
         runSeed: options.runSeed,
         learnAheadMinutes: options.learnAheadMinutes,
+        preferredCardIds: options.preferredCardIds,
+        preferredCardOrigins: options.preferredCardOrigins,
       })
       if (loadVersionRef.current !== loadVersion) return
       setCards(selectedCards)
       loadedCollectionIdRef.current = collectionId
+      setLoadedSelectionKey(options.selectionKey ?? null)
     } catch (e) {
       if (loadVersionRef.current !== loadVersion) return
       setError(e instanceof Error ? e.message : String(e))
@@ -393,7 +404,17 @@ export function useShuffleCards(
         setLoading(false)
       }
     }
-  }, [collectionId, options.learnAheadMinutes, options.maxCards, options.nextDayStartsAt, options.runSeed, options.userId])
+  }, [
+    collectionId,
+    options.learnAheadMinutes,
+    options.maxCards,
+    options.nextDayStartsAt,
+    options.preferredCardIds,
+    options.preferredCardOrigins,
+    options.runSeed,
+    options.selectionKey,
+    options.userId,
+  ])
 
   useEffect(() => {
     void load()
@@ -401,7 +422,7 @@ export function useShuffleCards(
 
   useOnShuffleDbChange(load, collectionId)
 
-  return { cards, loading, error, reload: load }
+  return { cards, loading, error, loadedSelectionKey, reload: load }
 }
 
 export function useStats(nextDayStartsAt = 0, dailyCardLimit?: number) {

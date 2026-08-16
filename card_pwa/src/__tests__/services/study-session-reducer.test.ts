@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Vitest coverage for study session reducer; protects services behavior from regressions in the learning PWA.
  */
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { initialSessionState, sessionReducer } from '../../services/studySessionReducer'
 import type { Card, CardSchedulingState } from '../../types'
 
@@ -67,6 +67,31 @@ describe('study session reducer', () => {
     const restarted = sessionReducer(initialized, { type: 'RESTART' })
     expect(restarted.sessionRunId).toMatch(/^study-/)
     expect(restarted.sessionRunId).not.toBe(initialized.sessionRunId)
+  })
+
+  it('keeps the whole-session start immutable while current-card timing advances', () => {
+    vi.useFakeTimers()
+    try {
+      const card = createCard('card-wall-clock')
+      vi.setSystemTime(1_000)
+      let state = sessionReducer(initialSessionState, { type: 'INIT', cards: [card] })
+      expect(state.startedAt).toBe(1_000)
+      expect(state.startTime).toBe(1_000)
+
+      vi.setSystemTime(5_000)
+      state = sessionReducer(state, {
+        type: 'RATE_SUCCESS',
+        rating: 1,
+        cardId: card.id,
+        forcedTomorrow: false,
+        cardState: scheduledState(card, 3),
+      })
+
+      expect(state.startedAt).toBe(1_000)
+      expect(state.startTime).toBe(5_000)
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('removes qa-blocked cards from initialization and resumed queues', () => {

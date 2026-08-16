@@ -1186,6 +1186,24 @@
            active:scale-[0.98];
     transition-property: color, background-color, border-color, opacity, transform, filter, outline-color;
   }
+
+  /* Mobile rating dock: keep the four answer buttons roughly 5% of the
+     visible handset height above the physical bottom edge. The safe-area
+     term wins when a Home Indicator plus the small touch buffer needs more. */
+  .handset-rating-area {
+    --handset-rating-base-height: clamp(9.25rem, 21dvh, 12.5rem);
+    --handset-rating-bottom-gap: max(
+      5dvh,
+      calc(var(--app-bottom-safe-area, env(safe-area-inset-bottom, 0px)) + 0.5rem)
+    );
+    height: calc(var(--handset-rating-base-height) + var(--handset-rating-bottom-gap));
+    padding-bottom: var(--handset-rating-bottom-gap);
+  }
+
+  .handset-rating-area-landscape {
+    --handset-rating-base-height: clamp(7.25rem, 21dvh, 10rem);
+  }
+
   /* Restrict hover lift to pointer-capable devices — on touch screens :hover
      sticks after tap and produces a permanently elevated button (iOS bug). */
   @media (hover: hover) {
@@ -1205,6 +1223,7 @@
      Schlagzeilen. */
   .newsprint-app {
     --news-canvas: #f9f9f7;
+    --news-floor: var(--news-canvas);
     --news-ink: #111111;
     --news-white: #ffffff;
     --news-accent: #cc0000;
@@ -1212,7 +1231,7 @@
     --news-muted-hover: #dcdcd6;
     --news-secondary: #404040;
     --ds-bg: var(--news-canvas);
-    --ds-floor: var(--news-canvas);
+    --ds-floor: var(--news-floor);
     --ds-card: var(--news-white);
     --ds-panel: var(--news-muted);
     --ds-panel-hover: var(--news-muted-hover);
@@ -1248,7 +1267,7 @@
     --theme-secondary: var(--news-secondary);
     --theme-accent: var(--news-muted);
     --theme-background: var(--news-canvas);
-    --theme-floor: var(--news-canvas);
+    --theme-floor: var(--news-floor);
     --theme-card: var(--news-white);
     --theme-surface: var(--news-white);
     --theme-surface-hover: #f5f5f5;
@@ -1614,13 +1633,14 @@
   .learning-units-newsprint,
   .learning-plan-newsprint {
     --neo-canvas: #f9f9f7;
+    --neo-floor: var(--neo-canvas);
     --neo-ink: #111111;
     --neo-accent: #cc0000;
     --neo-secondary: #e5e5e0;
     --neo-muted: #e5e5e0;
     --neo-white: #ffffff;
     --ds-bg: var(--neo-canvas);
-    --ds-floor: var(--neo-canvas);
+    --ds-floor: var(--neo-floor);
     --ds-card: var(--neo-white);
     --ds-panel: var(--neo-muted);
     --ds-panel-hover: #dcdcd6;
@@ -1692,7 +1712,10 @@
      helles Theme nie brauchte (text-black/bg-white/ring-black; vgl.
      Theme-Memory „Hell→Dunkel kehrt die Repaint-Polarität um“). */
   .newsprint-app.newsprint-dark {
-    --news-canvas: #141413;
+    /* OLED canvas: only the page/chrome is true black. Cards, controls and
+       inset floors retain separate tones so hierarchy does not collapse. */
+    --news-canvas: #000000;
+    --news-floor: #141413;
     --news-ink: #e8e8e3;
     --news-white: #1e1e1c;
     --news-accent: #ff6166;
@@ -1745,7 +1768,8 @@
 
   .newsprint-dark .learning-units-newsprint,
   .newsprint-dark .learning-plan-newsprint {
-    --neo-canvas: #141413;
+    --neo-canvas: #000000;
+    --neo-floor: #141413;
     --neo-ink: #e8e8e3;
     --neo-accent: #ff6166;
     --neo-secondary: #2c2c29;

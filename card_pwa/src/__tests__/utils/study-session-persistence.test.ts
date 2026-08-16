@@ -4,9 +4,11 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
   DEFAULT_STUDY_CARD_LIMIT,
-  STUDY_SESSION_TTL_MS,
+  STUDY_SESSION_MAX_DURATION_MS,
   buildPersistedStudySession,
   buildShuffleSessionId,
+  getStudySessionExpiresAt,
+  isStudySessionExpired,
   parsePersistedStudySession,
   restoreCardsByOrder,
   matchesPersistedStudyCardLimit,
@@ -124,8 +126,9 @@ describe('study session persistence helpers', () => {
     expect(restored.map(card => card.id)).toEqual(['c', 'a'])
   })
 
-  it('builds persisted payload with expected ttl window', () => {
+  it('builds a versioned payload with one non-sliding four-hour deadline', () => {
     const now = Date.UTC(2026, 3, 10, 15, 30, 0)
+    const startedAt = now - 30 * 60_000
     vi.useFakeTimers()
     vi.setSystemTime(now)
 
@@ -143,16 +146,20 @@ describe('study session persistence helpers', () => {
       forcedTomorrowCardIds: ['c2'],
       againCounts: {},
       reviewEvents: [{ cardId: 'c1', rating: 3, elapsedMs: 1234 }],
+      sessionTargetCardCount: 43,
+      startedAt,
       startTime: now - 5_000,
     })
 
-    expect(payload.version).toBe(6)
+    expect(payload.version).toBe(7)
     expect(payload.deckId).toBe('deck-1')
     expect(payload.kind).toBe('deck')
     expect(payload.cardIds).toEqual(['c1', 'c2'])
     expect(payload.reviewEvents).toEqual([{ cardId: 'c1', rating: 3, elapsedMs: 1234 }])
     expect(payload.sessionRunId).toBe('run-persisted-1')
-    expect(payload.expiresAt).toBe(now + STUDY_SESSION_TTL_MS)
+    expect(payload.sessionTargetCardCount).toBe(43)
+    expect(payload.startedAt).toBe(startedAt)
+    expect(payload.expiresAt).toBe(startedAt + STUDY_SESSION_MAX_DURATION_MS)
 
     vi.useRealTimers()
   })
@@ -217,11 +224,9 @@ describe('study session persistence helpers', () => {
     expect(resolveStudyReturnTarget('deck-1', {})).toBeNull()
   })
 
-  it('extends expiry to the next study-day boundary when nextDayStartsAt is given', () => {
-    // 15:30 lokal, Tagesgrenze 04:00 → Snapshot gilt bis 04:00 am Folgetag,
-    // nicht nur 45 Minuten (mobile Unterbrechungen > 45 min sind der Normalfall).
-    const now = new Date(2026, 3, 10, 15, 30, 0).getTime()
-    const nextRollover = new Date(2026, 3, 11, 4, 0, 0).getTime()
+  it('does not extend the deadline when a later save or day boundary occurs', () => {
+    const startedAt = new Date(2026, 3, 10, 15, 30, 0).getTime()
+    const laterSave = startedAt + 2 * 60 * 60_000
 
     const payload = buildPersistedStudySession({
       deckId: 'deck-1',
@@ -235,23 +240,30 @@ describe('study session persistence helpers', () => {
       relearnSuccessCounts: {},
       forcedTomorrowCardIds: [],
       againCounts: {},
-      startTime: now,
-      nowMs: now,
+      startedAt,
+      startTime: laterSave,
+      nowMs: laterSave,
       nextDayStartsAt: 4,
     })
 
-    expect(payload.expiresAt).toBe(nextRollover)
+    expect(payload.expiresAt).toBe(startedAt + STUDY_SESSION_MAX_DURATION_MS)
   })
 
-  it('keeps at least the 45-minute TTL right before the day boundary', () => {
-    // 03:50, Grenze 04:00: die Tagesgrenze allein würde die Session in 10 min
-    // verwerfen — das TTL-Minimum schützt den gerade aktiven Lerner.
-    const now = new Date(2026, 3, 10, 3, 50, 0).getTime()
+  it('treats the exact four-hour boundary as expired', () => {
+    const startedAt = Date.UTC(2026, 3, 10, 12, 0, 0)
+    expect(getStudySessionExpiresAt(startedAt)).toBe(startedAt + STUDY_SESSION_MAX_DURATION_MS)
+    expect(isStudySessionExpired(startedAt, startedAt + STUDY_SESSION_MAX_DURATION_MS - 1)).toBe(false)
+    expect(isStudySessionExpired(startedAt, startedAt + STUDY_SESSION_MAX_DURATION_MS)).toBe(true)
+  })
 
-    const payload = buildPersistedStudySession({
+  it('rejects a snapshot after four hours even when stored expiry was extended', () => {
+    const startedAt = Date.UTC(2026, 3, 10, 12, 0, 0)
+    const raw = JSON.stringify({
+      version: 7,
       deckId: 'deck-1',
       cardIds: ['c1'],
       cardLimit: 50,
+      sessionTargetCardCount: 42,
       sessionCount: 0,
       isFlipped: false,
       isDone: false,
@@ -260,12 +272,16 @@ describe('study session persistence helpers', () => {
       relearnSuccessCounts: {},
       forcedTomorrowCardIds: [],
       againCounts: {},
-      startTime: now,
-      nowMs: now,
-      nextDayStartsAt: 4,
+      startedAt,
+      startTime: startedAt + 1_000,
+      expiresAt: startedAt + 24 * 60 * 60_000,
     })
 
-    expect(payload.expiresAt).toBe(now + STUDY_SESSION_TTL_MS)
+    expect(parsePersistedStudySession(
+      raw,
+      'deck-1',
+      startedAt + STUDY_SESSION_MAX_DURATION_MS,
+    )).toBeNull()
   })
 
   it('preserves optional shuffle fields in persisted payloads', () => {

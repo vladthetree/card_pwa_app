@@ -475,3 +475,128 @@ def test_only_vlad_gateway_publication_changes_catalog(review_db):
     assert vlad_ref["front"] is None
     assert vlad_ref["back"] is None
     assert vlad_ref["reps"] == 2
+
+
+def test_registry_scope_binding_uses_vlad_user_id_for_same_card_id(review_db, tmp_path):
+    review_db.execute(
+        """INSERT INTO users
+           (user_id, display_name, profile_name, recovery_code_hash, created_at)
+           VALUES ('learner-user', 'Learner', 'Learner', 'test-hash', 1)"""
+    )
+    review_db.execute(
+        """INSERT INTO server_cards
+           (id, note_id, deck_id, front, back, tags_json, extra_json,
+            reps, due, due_at, is_deleted, created_at, updated_at,
+            last_source_client, user_id)
+           VALUES ('card-1', 'foreign-note', 'foreign-deck',
+                   'Foreign question\nA: Salt\nB: Blockchain',
+                   '>> CORRECT: A |\n\nForeign salt answer.', '[]', '{}',
+                   0, 0, 0, 0, 1, 999, 'foreign-client', 'learner-user')"""
+    )
+    card = security_card_review_gateway.active_cards(review_db, "vlad-user")[0]
+    review = _publication_review(card)
+    registry_path = tmp_path / "registry.json"
+    registry_path.write_text(
+        json.dumps({
+            "schemaVersion": "security-card-content-review-1",
+            "profile": "Vlad",
+            "reviews": [review],
+        }),
+        encoding="utf-8",
+    )
+
+    before = security_card_review_gateway.check(review_db, registry_path)
+    bound = security_card_review_gateway.bind_registry_scope(review_db, registry_path)
+    result = security_card_review_gateway.check(review_db, registry_path)
+    stored = json.loads(registry_path.read_text(encoding="utf-8"))
+
+    assert before["ok"] is False
+    assert any("canonicalUserId" in error for error in before["errors"])
+    assert bound["canonicalUserId"] == "vlad-user"
+    assert stored["identityKey"] == ["userId", "cardId"]
+    assert stored["reviews"][0]["userId"] == "vlad-user"
+    assert stored["reviews"][0]["contentHash"] == card["contentHash"]
+    assert result["ok"] is True
+
+
+def test_report_hash_verification_rejects_other_profiles_same_card_id(review_db, tmp_path):
+    review_db.execute(
+        """INSERT INTO users
+           (user_id, display_name, profile_name, recovery_code_hash, created_at)
+           VALUES ('learner-user', 'Learner', 'Learner', 'test-hash', 1)"""
+    )
+    review_db.execute(
+        """INSERT INTO server_cards
+           (id, note_id, deck_id, front, back, tags_json, extra_json,
+            reps, due, due_at, is_deleted, created_at, updated_at,
+            last_source_client, user_id)
+           VALUES ('card-1', 'foreign-note', 'foreign-deck',
+                   'Foreign question\nA: Salt\nB: Blockchain',
+                   '>> CORRECT: A |\n\nForeign salt answer.', '[]', '{}',
+                   0, 0, 0, 0, 1, 999, 'foreign-client', 'learner-user')"""
+    )
+    vlad_card = security_card_review_gateway.active_cards(review_db, "vlad-user")[0]
+    foreign_content = {
+        "noteId": "foreign-note",
+        "deckId": "foreign-deck",
+        "front": "Foreign question\nA: Salt\nB: Blockchain",
+        "back": ">> CORRECT: A |\n\nForeign salt answer.",
+        "tags": [],
+        "extra": {},
+    }
+    report_path = tmp_path / "report.json"
+    report = {
+        "profile": "Vlad",
+        "canonicalUserId": "vlad-user",
+        "identityKey": ["userId", "cardId"],
+        "coverage": {"canonicalCardsReviewed": 1},
+        "findings": [{
+            "userId": "vlad-user",
+            "cardId": "card-1",
+            "contentHash": security_card_review_gateway.content_hash(foreign_content),
+        }],
+    }
+    report_path.write_text(json.dumps(report), encoding="utf-8")
+
+    rejected = security_card_review_gateway.verify_report_scope(review_db, report_path)
+    report["findings"][0]["userId"] = "learner-user"
+    report["findings"][0]["contentHash"] = vlad_card["contentHash"]
+    report_path.write_text(json.dumps(report), encoding="utf-8")
+    rejected_identity = security_card_review_gateway.verify_report_scope(review_db, report_path)
+    report["findings"][0]["userId"] = "vlad-user"
+    report["findings"][0]["contentHash"] = vlad_card["contentHash"]
+    report_path.write_text(json.dumps(report), encoding="utf-8")
+    accepted = security_card_review_gateway.verify_report_scope(review_db, report_path)
+
+    assert rejected["ok"] is False
+    assert any("Vlad-scoped content" in error for error in rejected["errors"])
+    assert rejected_identity["ok"] is False
+    assert any("userId does not match" in error for error in rejected_identity["errors"])
+    assert accepted["ok"] is True
+    assert accepted["matchedHashes"] == 1
+
+
+def test_catalog_write_rejects_non_vlad_owner_even_for_new_card_id(review_db):
+    review_db.execute(
+        """INSERT INTO users
+           (user_id, display_name, profile_name, recovery_code_hash, created_at)
+           VALUES ('learner-user', 'Learner', 'Learner', 'test-hash', 1)"""
+    )
+
+    with pytest.raises(RuntimeError, match="not Vlad's resolved user_id"):
+        upsert_catalog_content(
+            review_db,
+            card_id="foreign-card",
+            canonical_user_id="learner-user",
+            content={
+                "noteId": "foreign-note",
+                "deckId": "foreign-deck",
+                "front": "Foreign question",
+                "back": "Foreign answer",
+                "tags": [],
+                "extra": {},
+            },
+            created_at=1,
+            updated_at=1,
+            source_client="foreign-client",
+        )

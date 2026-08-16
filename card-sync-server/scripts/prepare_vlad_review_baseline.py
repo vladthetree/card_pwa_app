@@ -20,7 +20,6 @@ REPO_ROOT = SERVER_ROOT.parent
 DB_PATH = SERVER_ROOT / "sync.db"
 REPORTS = REPO_ROOT / "sample_Transcripts" / "improve" / "reports"
 MAPPINGS = REPO_ROOT / "sample_Transcripts" / "Mapping_Knowledge"
-AUTHORED_BACKS = SERVER_ROOT / "scripts" / "style_rewrites_authored.json"
 OUT_DIR = SERVER_ROOT / "reviews"
 REPAIR_PATH = OUT_DIR / "vlad-content-repair-decisions.json"
 REGISTRATION_PATH = OUT_DIR / "vlad-initial-review-decisions.json"
@@ -65,17 +64,6 @@ def decode(value, fallback):
     return json.loads(value) if isinstance(value, str) else value
   except Exception:
     return fallback
-
-
-def canonical(row: sqlite3.Row, authored_backs: dict[str, str]) -> dict:
-  return {
-    "noteId": row["note_id"],
-    "deckId": row["deck_id"],
-    "front": row["front"],
-    "back": authored_backs.get(str(row["id"]), row["back"]),
-    "tags": decode(row["tags_json"], []),
-    "extra": decode(row["extra_json"], {}),
-  }
 
 
 def current(row: sqlite3.Row) -> dict:
@@ -209,7 +197,6 @@ def main():
     data = load(MAPPINGS / f"domain-{domain}-requirement-mapping.json")
     requirements.update({entry["requirementId"]: entry for entry in data["entries"]})
 
-  authored_backs = load(AUTHORED_BACKS)
   historical_repair_ids = set()
   if REPAIR_PATH.exists():
     historical_repair_ids = {
@@ -219,26 +206,29 @@ def main():
     }
   conn = sqlite3.connect(DB_PATH)
   conn.row_factory = sqlite3.Row
-  users = {row["profile_name"]: row["user_id"] for row in conn.execute("SELECT user_id, profile_name FROM users")}
-  default_rows = {
-    str(row["id"]): row for row in conn.execute(
-      """SELECT c.*, d.name AS deck_name FROM server_cards c
-         LEFT JOIN server_decks d ON d.user_id=c.user_id AND d.id=c.deck_id
-         WHERE c.user_id=? AND c.deleted_at IS NULL AND IFNULL(c.is_deleted, 0)=0""",
-      (users["Default"],),
+  vlad_users = conn.execute(
+    """SELECT user_id FROM users
+       WHERE LOWER(TRIM(COALESCE(profile_name, '')))=LOWER('Vlad')"""
+  ).fetchall()
+  if len(vlad_users) != 1:
+    raise SystemExit(
+      f"Refusing baseline: expected exactly one Vlad profile, found {len(vlad_users)}"
     )
-  }
+  vlad_user_id = str(vlad_users[0]["user_id"])
   vlad_rows = {
     str(row["id"]): row for row in conn.execute(
       """SELECT c.*, d.name AS deck_name FROM server_cards c
          LEFT JOIN server_decks d ON d.user_id=c.user_id AND d.id=c.deck_id
          WHERE c.user_id=? AND c.deleted_at IS NULL AND IFNULL(c.is_deleted, 0)=0""",
-      (users["Vlad"],),
+      (vlad_user_id,),
     )
   }
   conn.close()
-  if set(default_rows) != set(vlad_rows):
-    raise SystemExit("Refusing baseline: Default/Vlad active card ID sets differ")
+  if any(row["front"] is None or row["back"] is None for row in vlad_rows.values()):
+    raise SystemExit(
+      "Refusing baseline: Vlad authoring content is no longer stored in server_cards; "
+      "use the scoped review gateway and shared catalog"
+    )
 
   supplemental_ids = set(vlad_rows) - set(reviewed)
   if len(supplemental_ids) != 52:
@@ -248,9 +238,9 @@ def main():
   all_decisions = []
   repairs = []
   for card_id in sorted(vlad_rows):
-    canonical_content = canonical(default_rows[card_id], authored_backs)
+    canonical_content = current(vlad_rows[card_id])
     live_content = current(vlad_rows[card_id])
-    deck_name = default_rows[card_id]["deck_name"] or ""
+    deck_name = vlad_rows[card_id]["deck_name"] or ""
     domain_review = reviewed.get(card_id)
     is_archive = card_id in archived_ids
     is_pbq = card_id in PBQ_EVIDENCE
@@ -294,6 +284,7 @@ def main():
     was_corrected = content_differs or card_id in historical_repair_ids
     verdict = "not_relevant" if is_archive else ("corrected" if was_corrected else "approved")
     decision = {
+      "userId": vlad_user_id,
       "cardId": card_id,
       "verdict": verdict,
       "cardType": card_type(canonical_content["front"]),
@@ -313,12 +304,16 @@ def main():
   dump(REPAIR_PATH, {
     "schemaVersion": "security-card-review-decisions-1",
     "profile": "Vlad",
+    "canonicalUserId": vlad_user_id,
+    "identityKey": ["userId", "cardId"],
     "purpose": "Restore coherent reviewed revisions after stale client overwrite",
     "decisions": repairs,
   })
   dump(REGISTRATION_PATH, {
     "schemaVersion": "security-card-review-decisions-1",
     "profile": "Vlad",
+    "canonicalUserId": vlad_user_id,
+    "identityKey": ["userId", "cardId"],
     "purpose": "Initial exact review registry after completed semantic reviews",
     "decisions": all_decisions,
   })

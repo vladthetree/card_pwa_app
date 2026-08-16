@@ -1,0 +1,753 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": "vlad-security-card-contradictions-3",
+  "reportId": "vlad-canonical-full-deck-contradiction-review-2026-08-16-v3",
+  "generatedAt": "2026-08-15T23:10:00Z",
+  "supersedes": "card-sync-server/reviews/vlad-card-contradictions-2026-08-16-v2.json",
+  "profile": "Vlad",
+  "canonicalUserId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+  "databaseContentCorrectionsApplied": 0,
+  "correctVerifiedCardsChanged": 0,
+  "reviewPolicy": {
+    "correctAnswersProtected": true,
+    "rule": "Eine als richtig belegte Antwort oder Zuordnung wird nicht geändert. Ein Erklärungsfehler, eine veraltete Quellenzuordnung oder eine mehrdeutige Frage wird getrennt ausgewiesen. Ein Prüfkandidat ohne abschließenden Beweis wird nicht veröffentlicht.",
+    "sourcePriority": [
+      "zuständiger Primärstandard oder maßgebliche Behördenpublikation",
+      "offizielle CompTIA-SY0-701-V7-Prüfungsziele für Scope und Exam-Terminologie",
+      "NIST, CISA, RFC Editor, OASIS, ISO und offizielle Herstellerdokumentation",
+      "sample_Transcripts/Mapping_Knowledge nur als Sekundärorientierung"
+    ]
+  },
+  "canonicalCatalog": {
+    "migrationReport": "card-sync-server/reviews/vlad-shared-card-catalog-migration.json",
+    "backup": "card-sync-server/backups/shared-card-catalog/sync.db.before-shared-card-catalog-20260815T230454Z.sqlite",
+    "before": {
+      "physicalCardRowsWithContent": 2150,
+      "distinctCardIds": 1075,
+      "profiles": 2,
+      "sameIdsWithDifferentVladContent": 410
+    },
+    "after": {
+      "canonicalContentRows": 1075,
+      "distinctCardIds": 1075,
+      "referenceRowsContainingContent": 0,
+      "defaultReferencesPerExistingProfile": 1075,
+      "canonicalContentMatchesPreMigrationVlad": true,
+      "studyStatePreservedForEveryExistingReference": true
+    }
+  },
+  "coverage": {
+    "canonicalCardsReviewed": 1075,
+    "physicalDecksReviewed": 36,
+    "cardTypes": {
+      "multipleChoice": 1052,
+      "matching": 16,
+      "ordering": 7
+    },
+    "checks": [
+      "exakter kanonischer Front-/Back-Inhalt und Content-Hash jeder Vlad-Karte",
+      "MC-Stem, alle Optionen, Schlüssel, Antworttext, Erklärung und Distraktorbegründungen",
+      "jede Matching-Zuordnung und jede Ordering-Sequenz",
+      "Front/Back-Kohärenz und bekannte stale-revision-Signaturen",
+      "gleiche und ähnliche Fragen über alle Decks",
+      "offizielle Quellenkonflikte und Sekundärquellenabweichungen",
+      "Incident-Historie der Karte 1772578430967"
+    ],
+    "gatewayAfterCatalogMigration": {
+      "ok": true,
+      "activeCards": 1075,
+      "currentReviews": 1075,
+      "missingReviews": 0,
+      "duplicateReviews": 0,
+      "staleOrInvalidReviews": 0,
+      "pendingProposals": 0,
+      "assurance": "exact-hash and structural review coverage",
+      "semanticPublicationGate": "Jede neue Publikation benötigt Fundstellen, unterstützte Aussagen, Einzelbewertung aller Optionen/Items, Front-/Back-Kohärenz, Revisionshistorie, Cross-Card- und Quellenkonfliktprüfung."
+    },
+    "scopeVerification": {
+      "identityKey": [
+        "userId",
+        "cardId"
+      ],
+      "activeVladCards": 1075,
+      "hashedFindingRecords": 38,
+      "allFindingHashesMatchVladScopedContent": true
+    }
+  },
+  "summary": {
+    "cardsWithProvenContentDefects": 11,
+    "unsupportedAnswerTexts": 2,
+    "multipleDefensibleAnswers": 3,
+    "frontBackOrExplanationContradictions": 3,
+    "malformedQuestionAnswerContracts": 2,
+    "outdatedPrimarySourceAttributions": 1,
+    "additionalSemanticCandidatesNotProvenWrong": 14,
+    "wordingDefectsWithoutProvenAnswerError": 6,
+    "verifiedCorrectCardsExplicitlyProtected": 7,
+    "provenDefectCardIds": [
+      "1778313864610",
+      "1779007738884",
+      "1779724748973",
+      "1780262916264",
+      "1781206500023",
+      "1786384200050",
+      "1786384200074",
+      "1786384200112",
+      "1786384200113",
+      "1786384200114",
+      "1786384200178"
+    ]
+  },
+  "provenContradictions": [
+    {
+      "cardId": "1778313864610",
+      "contentHash": "15ce4ed793469a027b7d429142629d2a3a936704a275ec74120cf138da4cc80b",
+      "deck": "Interaktive Übungen",
+      "cardType": "ordering",
+      "severity": "medium",
+      "findingType": "outdated_primary_source_attribution",
+      "currentClaim": "NIST SP 800-61 ordnet Preparation, Detection and Analysis, Containment, Eradication, Recovery und Post-Incident Activity als diese sechs Schritte.",
+      "proof": "CompTIA führt diese Lernschritte in dieser Reihenfolge. NIST SP 800-61 Rev. 2 fasste Containment, Eradication and Recovery jedoch als eine gemeinsame Phase zusammen; Rev. 3 hat Rev. 2 im April 2025 ersetzt und richtet den Lebenszyklus am CSF 2.0 aus. Die Reihenfolge ist exam-tauglich, die aktuelle pauschale NIST-Zuschreibung nicht.",
+      "answerProtection": {
+        "orderingMustRemain": true,
+        "allowedCorrection": "Nur Quellenzuordnung und Erklärung präzisieren; Reihenfolge nicht verändern."
+      },
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-SP800-61R3",
+        "SRC-NIST-SP800-61R2"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1779007738884",
+      "contentHash": "73f34f06a711cb517c37b66383969829db6a091343d1446103a89ce5e6859901",
+      "deck": "1.1 Security Controls",
+      "cardType": "matching",
+      "severity": "medium",
+      "findingType": "front_back_scope_contradiction",
+      "currentFrontClaim": "Guard shack limiting physical access >> Physical",
+      "currentBackClaim": "Ein Wachposten zählt deshalb hier als operativ; der Schalter oder das Gebäude um die Person ändert nicht, wer die Kontrolle ausführt.",
+      "proof": "Die Front fragt nach dem Wachhäuschen als baulicher Zutrittsbarriere; die Rückseite wechselt ohne Kennzeichnung zur Tätigkeit eines Wachpostens und behauptet pauschal Operational. NIST SP 800-53 PE-3 behandelt Guards innerhalb Physical Access Control. Die Front-Zuordnung ist nicht widerlegt, die Erklärung vermischt zwei verschiedene Szenarien.",
+      "answerProtection": {
+        "mappingMustRemain": true,
+        "allowedCorrection": "Nur Rückseite präzisieren: Gebäude/Barriere versus menschlich ausgeführter Prozess."
+      },
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-SP800-53R5",
+        "SRC-MAPPING-DOMAIN-1"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1779724748973",
+      "contentHash": "e5fd747479a59d305b79740569989ec0550f7bb901013366e2e1c8a3d9df216a",
+      "deck": "Acronym-Bonus (ABCD + PBQ)",
+      "cardType": "matching",
+      "severity": "medium",
+      "findingType": "misleading_explanation",
+      "currentFrontClaim": "ZTNA >> Identity- and context-based access to individual applications",
+      "currentBackClaim": "ZTNA = Cloud-VPN mit Per-Session-Check",
+      "proof": "NIST SP 800-207 verlagert Schutz von Netzwerksegmenten auf einzelne Ressourcen, bewertet Identität/Gerät und gewährt Zugriff pro Sitzung. 'Cloud-VPN' vermittelt dagegen gerade den breiten Netzwerkzugriff, von dem ZTNA wegführt.",
+      "answerProtection": {
+        "mappingMustRemain": true,
+        "allowedCorrection": "Nur die Cloud-VPN-Merkhilfe entfernen oder durch anwendungsbezogenen Per-Session-Zugriff ersetzen."
+      },
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-SP800-207"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1780262916264",
+      "contentHash": "29f8098e55ca6c5b2fea8e522c17f09f61432d171ff780d0dba0c35d89f19319",
+      "deck": "Acronym-Bonus (ABCD + PBQ)",
+      "cardType": "multiple_choice",
+      "severity": "high",
+      "findingType": "unsupported_blended_expansion",
+      "currentCorrectAnswer": {
+        "letter": "B",
+        "text": "Mean Time To Repair / Restore"
+      },
+      "proof": "CompTIA Lernziel 5.2 und NIST nennen Mean Time to Repair. CompTIAs Akronymanhang nennt abweichend Mean Time to Recover. ISO trennt Mean Time to Repair (MTTR) und Mean Time to Restoration (MTTRes). Keine Primärquelle belegt die Slash-Mischform.",
+      "answerProtection": {
+        "currentAnswerProvenCorrect": false,
+        "recommendedAnswer": "Mean Time To Repair"
+      },
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-MTTR",
+        "SRC-NIST-RECOVERY",
+        "SRC-ISO-MTTR"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1781206500023",
+      "contentHash": "16bd36064a7ae452e7ef3b39093a3ce1ca6539d5a24f058dac66c341be9d76ce",
+      "deck": "Acronym-Bonus (ABCD + PBQ)",
+      "cardType": "multiple_choice",
+      "severity": "high",
+      "findingType": "unsupported_blended_expansion",
+      "currentCorrectAnswer": {
+        "letter": "A",
+        "text": "Mean Time To Repair / Restore"
+      },
+      "proof": "Identischer unbelegter Mischbegriff wie bei Karte 1780262916264; Repair, Recovery und Restoration sind keine frei kombinierbare offizielle MTTR-Vollform.",
+      "answerProtection": {
+        "currentAnswerProvenCorrect": false,
+        "recommendedAnswer": "Mean Time To Repair"
+      },
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-MTTR",
+        "SRC-NIST-RECOVERY",
+        "SRC-ISO-MTTR"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200050",
+      "contentHash": "7b5ca0e54e92ba1ff9a939c8335597c402e1e6afb578ead6dd686b6ae0a2f5da",
+      "deck": "2.2 Threat Vectors and Attack Surfaces",
+      "cardType": "multiple_choice",
+      "severity": "high",
+      "findingType": "multiple_defensible_answers",
+      "currentQuestion": "Why is supply chain security critical in cybersecurity risk management?",
+      "currentCorrectAnswer": {
+        "letter": "C",
+        "text": "Supply chain — Suppliers"
+      },
+      "alsoDefensibleOptions": [
+        "A: Supply chain — Managed service providers (MSPs)",
+        "D: Supply chain — Vendors"
+      ],
+      "proof": "Die Frage nennt kein Merkmal, das Suppliers von Vendors oder MSPs trennt. Die eigene Rückseite erklärt für alle drei, dass eine Kompromittierung des Dritten Kunden gefährdet; CompTIA führt alle drei als Supply-Chain-Vektoren.",
+      "answerProtection": {
+        "currentKeyUniquelyProven": false,
+        "safeResolution": "Stem auf kompromittierte Komponenten eines upstream supplier konkretisieren; erst danach C beibehalten."
+      },
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-SP800-161R1"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200074",
+      "contentHash": "dd98e38a8c0c36aee16ace518a736cd51b0b14d280a3a2845b80b4207bd4a79d",
+      "deck": "3.1 Architecture Models",
+      "cardType": "multiple_choice",
+      "severity": "high",
+      "findingType": "front_back_factual_contradiction",
+      "currentQuestion": "The ability to detect and mitigate threats in real time.",
+      "currentCorrectAnswer": {
+        "letter": "C",
+        "text": "Considerations — Responsiveness"
+      },
+      "proof": "Die eigene Rückseite definiert Responsiveness als schnelle Antwort eines Dienstes auf Nutzer-/Serviceanfragen und grenzt sie über Antwortzeit/Performance ab. Die Front beschreibt Security Monitoring/Detection and Response; Karte 1786384200122 ordnet nahezu dieselbe Aussage korrekt Monitoring zu.",
+      "answerProtection": {
+        "currentKeyEntailedByCurrentStem": false,
+        "safeResolution": "Stem auf schnelle Antwort eines Systems oder Dienstes auf Nutzer-/Anwendungsanfragen umschreiben; C erst dann beibehalten."
+      },
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-RESPONSIVENESS",
+        "SRC-MAPPING-DOMAIN-3"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200112",
+      "contentHash": "f493fcf19e66ed153c7a92faa5aa39da1d6ae2bb7fc37cd091200ed8559fad09",
+      "deck": "4.1 Security Techniques",
+      "cardType": "multiple_choice",
+      "severity": "high",
+      "findingType": "malformed_question_answer_contract",
+      "currentQuestion": "What is a major security risk associated with industrial control systems and SCADA?",
+      "currentCorrectAnswer": {
+        "letter": "A",
+        "text": "Hardening targets — ICS/SCADA"
+      },
+      "proof": "Die Antwort benennt die bereits in der Frage genannte Systemklasse, aber keinen Security Risk. Keine der vier Optionen beantwortet 'what is a risk'.",
+      "answerProtection": {
+        "currentKeyUniquelyProven": false,
+        "safeResolution": "Stem als Identifikationsszenario zu PLCs, supervisory control und Industrieprozessen formulieren oder echte Risikooptionen anbieten."
+      },
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-SP800-82R3"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200113",
+      "contentHash": "6635e0de361e5f4ca317087639a0a640fab20b9fdc03b7211d18c8ba83afec13",
+      "deck": "4.1 Security Techniques",
+      "cardType": "multiple_choice",
+      "severity": "high",
+      "findingType": "multiple_defensible_answers",
+      "currentQuestion": "Disabling unnecessary functions and applying firmware updates.",
+      "currentCorrectAnswer": {
+        "letter": "D",
+        "text": "Hardening targets — Embedded systems"
+      },
+      "alsoDefensibleOptions": [
+        "A: Hardening targets — Mobile devices",
+        "B: Hardening targets — RTOS",
+        "C: Hardening targets — IoT devices"
+      ],
+      "proof": "Die beschriebenen Härtungsmaßnahmen gelten für alle genannten Gerätetypen. Die eigene Rückseite nennt Updates beziehungsweise Abschalten unnötiger Funktionen auch für Mobile, RTOS und IoT und liefert im Stem kein Embedded-spezifisches Merkmal.",
+      "answerProtection": {
+        "currentKeyUniquelyProven": false,
+        "safeResolution": "Stem um zweckgebauten Controller, eingeschränkten OS-Zugriff und appliance-spezifische Firmware ergänzen; erst dann D beibehalten."
+      },
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-SP800-82R3"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200114",
+      "contentHash": "9f5b631162b30aa1e8b1553b1f4c13c86c1c9d9524eada2696ae43c96a527d9c",
+      "deck": "4.1 Security Techniques",
+      "cardType": "multiple_choice",
+      "severity": "high",
+      "findingType": "malformed_question_answer_contract",
+      "currentQuestion": "Which of the following is a security challenge associated with real time operating systems?",
+      "currentCorrectAnswer": {
+        "letter": "C",
+        "text": "Hardening targets — RTOS"
+      },
+      "proof": "Die Antwort wiederholt nur den Systemtyp; sie nennt keine Challenge. Keine Option beantwortet die gestellte Frage nach einer Sicherheitsherausforderung.",
+      "answerProtection": {
+        "currentKeyUniquelyProven": false,
+        "safeResolution": "Stem als Identifikation eines deterministischen Echtzeitbetriebssystems formulieren oder echte Challenge-Optionen anbieten."
+      },
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-SP800-82R3"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200178",
+      "contentHash": "858239f4ee00a6a3d5b3bf55be5c160207a9352154b68a2f548f1cafbb503d5e",
+      "deck": "4.6 Identity and Access Management",
+      "cardType": "multiple_choice",
+      "severity": "high",
+      "findingType": "multiple_defensible_answers",
+      "currentQuestion": "To provide temporary access to systems often with an expiration time.",
+      "currentCorrectAnswer": {
+        "letter": "C",
+        "text": "Privileged access management tools — Ephemeral credentials"
+      },
+      "alsoDefensibleOptions": [
+        "A: Privileged access management tools — Just-in-time permissions"
+      ],
+      "proof": "Microsoft definiert JIT ausdrücklich als temporären privilegierten Zugriff, der nach dem genehmigten Zeitraum automatisch entzogen wird. Das ist nahezu wortgleich mit dem Stem. Die Rückseite grenzt selbst korrekt ab: JIT betrifft die temporären Rechte, ephemeral credentials die kurzlebigen Zugangsdaten.",
+      "answerProtection": {
+        "currentKeyUniquelyProven": false,
+        "safeResolution": "Für C ausdrücklich kurzlebige, sitzungsbezogen erzeugte und danach gelöschte Zugangsdaten fragen; bei unverändertem Stem ist A ebenfalls richtig."
+      },
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-MICROSOFT-JIT",
+        "SRC-MAPPING-DOMAIN-4"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    }
+  ],
+  "semanticCandidatesNotProvenWrong": [
+    {
+      "cardId": "1786384200045",
+      "contentHash": "1040e81613f30393a6174b7530993cb4bf875808ec519572fc3a62f25eed8a3a",
+      "issue": "Agentless/external-scanning-Aussage wird von der eigenen Erklärung nicht direkt belegt; Antwort ist ein breiter Vergleichspunkt.",
+      "disposition": "Nicht ändern, bis eine exakte Primärquelle die Aussage trägt.",
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200046",
+      "contentHash": "b731d5f8e0a80c835efccb76df6f405648c99117714b197a5a187013adee0a84",
+      "issue": "Intercept/access network traffic ist ohne Hinweis auf Funkreichweite oder Public Wi-Fi auch für Wired/Bluetooth denkbar.",
+      "disposition": "Stem präzisieren, aber Schlüssel C nicht ohne zusätzliche Evidenz ändern.",
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200049",
+      "contentHash": "e20de4a18cb4f5eceaa97256b2c076df25ac3e868b9177c137980c94a1e3e3a7",
+      "issue": "Die Frage nennt vendors und die Antwort wiederholt vendors; prüft Keyword-Matching statt Wissen.",
+      "disposition": "Qualitätsreview; Antwort D nicht als falsch bewiesen.",
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200067",
+      "contentHash": "0b7b186b12bd282de0048f34e0fda9938ce73478513023ce1cd06a9521666d49",
+      "issue": "Endpoint protection ist Oberbegriff, HIPS eine enthaltene konkrete Technik; der breite Stem passt zu beiden.",
+      "disposition": "Keine Schlüsseländerung; Umbrella-Merkmal im Stem ergänzen.",
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200068",
+      "contentHash": "c09537d0af26823cdb984276e83a5023592c517d8759924caf45759c4fc5576c",
+      "issue": "Removal of software und disabling ports/protocols reduzieren beide die Angriffsfläche; 'eliminating potential vulnerabilities' ist zu breit.",
+      "disposition": "Keine Schlüsseländerung; deinstalling unused applications explizit nennen.",
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200099",
+      "contentHash": "2abac6a151ce403997d58c20de89b5a31b3a26ae028d71a25825ebc7ed7d44db",
+      "issue": "Network/storage/compute resources lassen Infrastructure und Technology überlappen.",
+      "disposition": "Nicht ändern, bis die CompTIA-beabsichtigte Trennlinie quellenfest formuliert ist.",
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200100",
+      "contentHash": "8821d34cbb66925540e728c61c7da2f4d761e4122fef88d34fdb0567f6b36da4",
+      "issue": "Controlled environment for testing incident response kann Simulation oder Tabletop sein; funktionale Durchführung fehlt.",
+      "disposition": "Stem präzisieren; A nicht als falsch bewiesen.",
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200132",
+      "contentHash": "e19916a079bc92c2812df7a639e3984cf1fb0d4acc07fc2d940f3856b0e5b2ec",
+      "issue": "Environmental variables erklären die Faktoren, Prioritize die ausgeführte Handlung; der Stem enthält beides.",
+      "disposition": "Keine Schlüsseländerung; nach dem Analysefaktor statt der Handlung fragen.",
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200138",
+      "contentHash": "192f8210cdb23222bbb8c66d699f3c90fd25d62ca9ec2e0cd79b56e968b4cc61",
+      "issue": "Audit und Verification passen beide zu 'verify effectiveness'; compliance deutet auf Audit, remediation auf Verification.",
+      "disposition": "Keine Schlüsseländerung ohne eindeutig formalen Audit-Stem.",
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200158",
+      "contentHash": "5ff7641abf306ca311d7bd577307ba8ef8ab501e540569e064072b48e60f8cdc",
+      "issue": "Group Policy ist für Windows/AD eindeutig, 'across network systems' schließt andere Policy-Systeme nicht aus.",
+      "disposition": "C nicht ändern; Windows/Active-Directory-Domäne ergänzen.",
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200187",
+      "contentHash": "024655bab08c49f9b697896a9f93dd20fe94ebe5a97e7d2debe5032263fb3180",
+      "issue": "Secure consistent configurations passt sowohl Enforcing baselines als auch Standard infrastructure configurations.",
+      "disposition": "B nicht ändern; kontinuierliche Drift-Erkennung/-Korrektur ergänzen.",
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200188",
+      "contentHash": "7b3560aa90fa3e79ca4d2af1bf99b94878ac3467637f99ea6b433d47f69ef27d",
+      "issue": "Uniform configurations überlappt mit Enforcing baselines.",
+      "disposition": "A nicht ändern; initiales Ausrollen aus derselben Vorlage ergänzen.",
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200254",
+      "contentHash": "a8965c0e3c16a26b6c75f3f3064b30b1f10447173fda5c2918a3cd9ff8b0cfa5",
+      "issue": "Validating internal processes against frameworks kann Compliance oder Self-assessment sein.",
+      "disposition": "C nicht ändern; formale interne Compliance-Prüfung konkretisieren.",
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200256",
+      "contentHash": "a25f95eda82b22db255f8f0d75170ea0dc4bfd45e244ea090377988024742953",
+      "issue": "Evaluation against laws can be regulatory, examination, assessment or independent audit depending actor and mandate.",
+      "disposition": "A nicht ändern; regulatorisch vorgeschriebene Drittprüfung konkretisieren.",
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    }
+  ],
+  "wordingDefectsWithoutProvenAnswerError": [
+    {
+      "cardId": "1786384200078",
+      "contentHash": "7645cb37e91a6cbd1a9b8f9a84cba5e944200c81e36b500eb8dd8e5cdfe17374",
+      "issue": "Tautologisch: power availability fragt direkt nach Power.",
+      "answerMustRemain": true,
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200084",
+      "contentHash": "9c06dabd80b0e830bac2e6b1b6e3cbbf460b00d70132efe1be75f1fbae3f0664",
+      "issue": "Doppelung 'is subject to is subject to'.",
+      "answerMustRemain": true,
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200157",
+      "contentHash": "c744afda482fa4a4cb464b5050bbfebe46e9cc2fdb2cb062ee16ce9ec0ae986e",
+      "issue": "Tautologisch: reputation-based filtering fragt nach Reputation.",
+      "answerMustRemain": true,
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200192",
+      "contentHash": "888c9d5b3243d8f2b46658ca0dcb6eb44a6ba30d460569b9d75e458ffcc487dd",
+      "issue": "Tautologisch: why complexity fragt nach Complexity.",
+      "answerMustRemain": true,
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200222",
+      "contentHash": "e29dc718124d7b7fa042e084fd7e14f039dfaec6800ab34c00ac038db9e6ed2f",
+      "issue": "Frage nach dem Ergebnis von industry-specific regulation, Antwort ist nur die Kategorie Industry.",
+      "answerMustRemain": true,
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200245",
+      "contentHash": "fa0a69f53a02b2a7c4621a82fbe494ee88749d9290276ba5fe77015f52320cb8",
+      "issue": "Frage nach purpose, Antwort wiederholt lediglich External reporting.",
+      "answerMustRemain": true,
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    }
+  ],
+  "verifiedCorrectCardsDoNotChange": [
+    {
+      "cardId": "1772578430967",
+      "contentHash": "2284a8a5aab329ae6e6d4dbdbaac63772be5856717920961552623a4be8c4fbb",
+      "correctAnswer": {
+        "letter": "B",
+        "text": "Blockchain"
+      },
+      "proof": "NIST IR 8202 belegt verteiltes, manipulationsanzeigendes Ledger mit kryptografisch verketteten Blöcken; Salting erfüllt den Stem nicht.",
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-BLOCKCHAIN"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1779669260176",
+      "contentHash": "984cef8972cba736325385bb5dd72bd25aed92d8576421d158c784ce487c34bc",
+      "correctAnswer": {
+        "letter": "D",
+        "text": "Mean Time To Repair"
+      },
+      "proof": "CompTIA Lernziel 5.2, NIST und ISO belegen Repair.",
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-MTTR",
+        "SRC-ISO-MTTR"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1780262916265",
+      "contentHash": "666966bc834c0925349730f3245b1a981304e707fa2d4dfe16ecaf0ad40b7980",
+      "correctAnswer": {
+        "letter": "C",
+        "text": "Domain-based Message Authentication, Reporting and Conformance"
+      },
+      "proof": "RFC 9989 und CompTIA Lernziel 4.5 belegen Domain-based.",
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-RFC-9989"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1781206500008",
+      "contentHash": "c9ad680ee53919644aa92f21eff4f43df09c76cad52d4e070b60161ef2ac9c8d",
+      "correctAnswer": {
+        "letter": "A",
+        "text": "Domain-based Message Authentication, Reporting and Conformance"
+      },
+      "proof": "RFC 9989 und CompTIA Lernziel 4.5 belegen Domain-based.",
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-RFC-9989"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1781206500009",
+      "contentHash": "07fa234f8a0f1881c7d66dbfbca351283ebd461587072a4769bab84c05cb4992",
+      "correctAnswer": {
+        "letter": "A",
+        "text": "Structured Threat Information eXpression"
+      },
+      "proof": "OASIS STIX 2.1 ist der maßgebliche Standard.",
+      "sourceIds": [
+        "SRC-OASIS-STIX-2.1"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1781206500010",
+      "contentHash": "73e86b1f3d55a179da9bdc84e211fb1003d7604ec666c7523ea18b61c741e7bc",
+      "correctAnswer": {
+        "letter": "D",
+        "text": "Trusted Automated eXchange of Intelligence Information"
+      },
+      "proof": "Der Stem nennt Collections/APIs und damit TAXII 2.1; OASIS 2.1 belegt Intelligence Information.",
+      "sourceIds": [
+        "SRC-OASIS-TAXII-2.1"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    },
+    {
+      "cardId": "1786384200072",
+      "contentHash": "8e4c913617ce94484ecf7fefd33599636daf9dce72a804c73b09467c858d03b4",
+      "correctAnswer": {
+        "letter": "A",
+        "text": "Considerations — Resilience"
+      },
+      "proof": "NIST definiert Information System Resilience einschließlich schneller Wiederherstellung unter widrigen Bedingungen.",
+      "sourceIds": [
+        "SRC-COMPTIA-SY0-701-V7",
+        "SRC-NIST-RESILIENCE"
+      ],
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da"
+    }
+  ],
+  "sources": [
+    {
+      "id": "SRC-COMPTIA-SY0-701-V7",
+      "title": "CompTIA Security+ SY0-701 V7 Exam Objectives",
+      "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+      "locators": [
+        "p. 5: Supply chain MSPs, Vendors, Suppliers",
+        "p. 8: Hardening targets including embedded systems, RTOS, ICS/SCADA",
+        "p. 11: JIT permissions and ephemeral credentials",
+        "p. 12: Incident-response process order",
+        "p. 13: Mean time to repair",
+        "pp. 17-21: acronym appendix"
+      ]
+    },
+    {
+      "id": "SRC-NIST-BLOCKCHAIN",
+      "title": "NIST IR 8202: Blockchain Technology Overview",
+      "url": "https://csrc.nist.gov/pubs/ir/8202/final",
+      "locator": "Abstract and section 2"
+    },
+    {
+      "id": "SRC-NIST-SP800-207",
+      "title": "NIST SP 800-207: Zero Trust Architecture",
+      "url": "https://csrc.nist.gov/pubs/sp/800/207/final",
+      "locator": "Abstract and section 2, tenets 3-4"
+    },
+    {
+      "id": "SRC-NIST-SP800-61R3",
+      "title": "NIST SP 800-61 Rev. 3",
+      "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+      "locator": "Publication metadata and section 2.1; published April 2025, supersedes Rev. 2"
+    },
+    {
+      "id": "SRC-NIST-SP800-61R2",
+      "title": "NIST SP 800-61 Rev. 2",
+      "url": "https://csrc.nist.gov/pubs/sp/800/61/r2/final",
+      "locator": "Figure 3-1 and publication status: withdrawn/superseded"
+    },
+    {
+      "id": "SRC-NIST-SP800-53R5",
+      "title": "NIST SP 800-53 Rev. 5",
+      "url": "https://doi.org/10.6028/NIST.SP.800-53r5",
+      "locator": "PE-3 Physical Access Control"
+    },
+    {
+      "id": "SRC-NIST-SP800-161R1",
+      "title": "NIST SP 800-161 Rev. 1: Cybersecurity Supply Chain Risk Management",
+      "url": "https://csrc.nist.gov/pubs/sp/800/161/r1/final",
+      "locator": "Executive summary and C-SCRM scope for products, services and suppliers"
+    },
+    {
+      "id": "SRC-NIST-SP800-82R3",
+      "title": "NIST SP 800-82 Rev. 3: Guide to Operational Technology Security",
+      "url": "https://csrc.nist.gov/pubs/sp/800/82/r3/final",
+      "locator": "Sections 2 and 6: OT/ICS components, constraints and security architecture"
+    },
+    {
+      "id": "SRC-NIST-MTTR",
+      "title": "NIST: A Hierarchical Structure of Key Performance Indicators",
+      "url": "https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=919754",
+      "locator": "p. 10: Mean time to repair (MTTR)"
+    },
+    {
+      "id": "SRC-NIST-RECOVERY",
+      "title": "NIST CSRC Glossary: mean time to recovery",
+      "url": "https://csrc.nist.gov/glossary/term/mean_time_to_recovery",
+      "locator": "Definition"
+    },
+    {
+      "id": "SRC-ISO-MTTR",
+      "title": "ISO/TC 67 terminology update",
+      "url": "https://committee.iso.org/files/live/sites/tc67/files/N2123_Update%20on%20ISOTC67WG%204%20document_Definitions%20and%20Translations_2023.pdf",
+      "locator": "p. 5: MTTR versus MTTRes"
+    },
+    {
+      "id": "SRC-MICROSOFT-JIT",
+      "title": "Microsoft Service Assurance: Identity and access management",
+      "url": "https://learn.microsoft.com/en-us/compliance/assurance/assurance-identity-and-access-management",
+      "locator": "JIT/JEA section: temporary privileged access automatically revoked after approved period"
+    },
+    {
+      "id": "SRC-NIST-RESPONSIVENESS",
+      "title": "NIST: Understanding Consistency Maintenance in Service Discovery Architectures",
+      "url": "https://www.nist.gov/publications/understanding-consistency-maintenance-service-discovery-architectures-response-0",
+      "locator": "Abstract: responsiveness measured as latency required to propagate changes"
+    },
+    {
+      "id": "SRC-NIST-RESILIENCE",
+      "title": "NIST CSRC Glossary: Information System Resilience",
+      "url": "https://csrc.nist.gov/glossary/term/information_system_resilience",
+      "locator": "Definition: continue under adverse conditions and rapidly recover"
+    },
+    {
+      "id": "SRC-RFC-9989",
+      "title": "RFC 9989: DMARC",
+      "url": "https://www.rfc-editor.org/info/rfc9989/",
+      "locator": "Title and abstract"
+    },
+    {
+      "id": "SRC-OASIS-STIX-2.1",
+      "title": "OASIS STIX Version 2.1",
+      "url": "https://docs.oasis-open.org/cti/stix/v2.1/stix-v2.1.pdf",
+      "locator": "p. 1"
+    },
+    {
+      "id": "SRC-OASIS-TAXII-2.1",
+      "title": "OASIS TAXII Version 2.1",
+      "url": "https://docs.oasis-open.org/cti/taxii/v2.1/taxii-v2.1.html",
+      "locator": "section 1.6 and Collections/API sections"
+    },
+    {
+      "id": "SRC-MAPPING-DOMAIN-1",
+      "title": "Lokale Domain-1-Zuordnung",
+      "path": "sample_Transcripts/Mapping_Knowledge/domain-1-requirement-mapping.md",
+      "authority": "secondary"
+    },
+    {
+      "id": "SRC-MAPPING-DOMAIN-3",
+      "title": "Lokale Domain-3-Zuordnung",
+      "path": "sample_Transcripts/Mapping_Knowledge/domain-3-requirement-mapping.md",
+      "locator": "3.1 Responsiveness",
+      "authority": "secondary"
+    },
+    {
+      "id": "SRC-MAPPING-DOMAIN-4",
+      "title": "Lokale Domain-4-Zuordnung",
+      "path": "sample_Transcripts/Mapping_Knowledge/domain-4-requirement-mapping.md",
+      "locator": "4.6 JIT permissions and ephemeral credentials",
+      "authority": "secondary"
+    }
+  ],
+  "finalDisposition": {
+    "contentCorrectionsPublished": 0,
+    "reason": "Dieser Review-Durchlauf erzeugt den quellengebundenen Widerspruchsbericht. Bewiesene richtige Antworten bleiben geschützt; Prüfkandidaten werden nicht als Fehler veröffentlicht.",
+    "nextSafeAction": "Für provenContradictions exakte Gateway-Publikationsentscheidungen vorbereiten. Jede Entscheidung muss die neue strenge Quellen-/Optionsprüfung bestehen; answerProtection ist verbindlich."
+  },
+  "identityKey": [
+    "userId",
+    "cardId"
+  ],
+  "hashScope": {
+    "canonicalContent": "shared_card_catalog.canonical_user_id = :canonicalUserId AND shared_card_catalog.id = :cardId",
+    "profileReference": "server_cards.user_id = :canonicalUserId AND server_cards.id = :cardId",
+    "rule": "A cardId without userId is never a valid report identity."
+  },
+  "scopeBoundAt": "2026-08-15T23:21:00+00:00"
+}

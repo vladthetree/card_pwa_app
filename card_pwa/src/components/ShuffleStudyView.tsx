@@ -7,6 +7,7 @@ import { ArrowLeft, RefreshCw, Shuffle } from 'lucide-react'
 import {
   clearShuffleSession,
   forceCardReviewTomorrow,
+  readShuffleSession,
   recordReview,
   writeShuffleSession,
 } from '../db/queries'
@@ -19,8 +20,13 @@ import {
   buildShuffleSessionId,
   createSessionRunId,
   DEFAULT_STUDY_CARD_LIMIT,
+  isStudySessionExpired,
+  matchesPersistedStudyCardLimit,
   normalizeStudyCardLimit,
+  parsePersistedStudySession,
+  type PersistedStudySession,
 } from '../utils/studySessionPersistence'
+import { chooseRandomSessionCardTarget } from '../utils/studyCardOrdering'
 import { initialSessionState, sessionReducer } from '../services/studySessionReducer'
 import { buildDragMatchModePlan } from '../utils/studyModeSelector'
 import { buildLearningCoachSummary } from '../utils/learningCoach'
@@ -30,6 +36,7 @@ import { flattenDeckTree } from '../utils/securityDeckHierarchy'
 import { useSessionRewards } from '../hooks/useSessionRewards'
 import { useStudyAnswerState } from '../hooks/study/useStudyAnswerState'
 import { useCardAnswerTimer } from '../hooks/study/useCardAnswerTimer'
+import { useStudySessionExpiry } from '../hooks/study/useStudySessionExpiry'
 import CardFace from './CardFace'
 import { CardAnswerTimer } from './CardAnswerTimer'
 import EditCardModal from './EditCardModal'
@@ -40,6 +47,23 @@ import StudyHeaderProgress from './StudyHeaderProgress'
 interface Props {
   collection: ShuffleCollection
   onExit: () => void
+}
+
+interface ShuffleSelectionRun {
+  collectionId: string
+  targetCardCount: number
+  runSeed: string
+  resumeSnapshot?: PersistedStudySession
+  preferredCardIds?: readonly string[]
+  preferredCardOrigins?: Readonly<Record<string, string>>
+}
+
+function createFreshShuffleSelectionRun(collectionId: string, studyCardLimit: number): ShuffleSelectionRun {
+  return {
+    collectionId,
+    targetCardCount: chooseRandomSessionCardTarget(studyCardLimit),
+    runSeed: `${collectionId}:${Date.now()}:${Math.random()}`,
+  }
 }
 
 function buildDeckCounts(cards: Array<Card & { deckId?: string }>): Record<string, number> {
@@ -78,18 +102,26 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   const prefersReducedMotion = useReducedMotion()
   const { isHandsetLayout, isHandsetLandscape } = useHandsetLayout()
   const studyCardLimit = normalizeStudyCardLimit(settings.studyCardLimit ?? DEFAULT_STUDY_CARD_LIMIT)
-  const dragMatchModeSeedRef = useRef(`${Date.now()}:${Math.random()}`)
-  const { cards, loading, error, reload } = useShuffleCards(collection.id, {
-    maxCards: studyCardLimit,
+  const [selectionRun, setSelectionRun] = useState<ShuffleSelectionRun | null>(null)
+  const selectionKey = selectionRun
+    ? `${selectionRun.collectionId}:${selectionRun.runSeed}:${selectionRun.targetCardCount}`
+    : null
+  const dragMatchModeSeedRef = useRef(`${collection.id}:${Date.now()}:${Math.random()}`)
+  const { cards, loading, error, loadedSelectionKey, reload } = useShuffleCards(selectionRun?.collectionId ?? null, {
+    maxCards: selectionRun?.targetCardCount,
     nextDayStartsAt: settings.nextDayStartsAt,
-    runSeed: dragMatchModeSeedRef.current,
+    runSeed: selectionRun?.runSeed,
     learnAheadMinutes: settings.learnAheadMinutes,
+    selectionKey: selectionKey ?? undefined,
+    preferredCardIds: selectionRun?.preferredCardIds,
+    preferredCardOrigins: selectionRun?.preferredCardOrigins,
   })
   const { decks } = useDecks()
 
   const [session, dispatch] = useReducer(sessionReducer, initialSessionState)
   const [editingCard, setEditingCard] = useState<Card | null>(null)
   const [sessionDeckCounts, setSessionDeckCounts] = useState<Record<string, number>>({})
+  const [sessionCardOrigins, setSessionCardOrigins] = useState<Record<string, string>>({})
   const { rewardToast, registerSessionReward } = useSessionRewards({
     language: settings.language,
     nextDayStartsAt: settings.nextDayStartsAt,
@@ -101,10 +133,49 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   useWakeLock()
 
   useEffect(() => {
+    let cancelled = false
+    setSelectionRun(null)
+
+    void (async () => {
+      const persistedRaw = await readShuffleSession(collection.id)
+      if (cancelled) return
+
+      const persisted = parsePersistedStudySession(
+        persistedRaw,
+        buildShuffleSessionId(collection.id),
+      )
+      const canResume = persisted
+        && persisted.kind === 'shuffle'
+        && persisted.collectionId === collection.id
+        && !persisted.isDone
+        && matchesPersistedStudyCardLimit(persisted.cardLimit, studyCardLimit)
+
+      if (canResume) {
+        setSelectionRun({
+          collectionId: collection.id,
+          targetCardCount: persisted.sessionTargetCardCount,
+          runSeed: persisted.sessionRunId,
+          resumeSnapshot: persisted,
+          preferredCardIds: persisted.cardIds,
+          preferredCardOrigins: persisted.cardOrigins,
+        })
+        return
+      }
+
+      if (persistedRaw) await clearShuffleSession(collection.id)
+      if (!cancelled) setSelectionRun(createFreshShuffleSelectionRun(collection.id, studyCardLimit))
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [collection.id, studyCardLimit])
+
+  useEffect(() => {
     dragMatchModePlanRef.current = new Set()
     dragMatchModePlanReadyRef.current = false
-    dragMatchModeSeedRef.current = `${collection.id}:${Date.now()}:${Math.random()}`
-  }, [collection.id])
+    if (selectionRun) dragMatchModeSeedRef.current = selectionRun.runSeed
+  }, [selectionRun])
 
   const sessionId = useMemo(() => buildShuffleSessionId(collection.id), [collection.id])
   const latestShuffleCardById = useMemo(() => new Map(cards.map(card => [card.id, card])), [cards])
@@ -177,17 +248,51 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     onExit()
   }, [clearPersistedSession, onExit])
 
+  const appliedSelectionKeyRef = useRef<string | null>(null)
+
+  useStudySessionExpiry({
+    active: selectionKey !== null
+      && appliedSelectionKeyRef.current === selectionKey
+      && session.cards.length > 0
+      && !session.isDone,
+    startedAt: session.startedAt,
+    onExpire: handleExit,
+  })
+
   useEffect(() => {
+    if (!selectionRun || !selectionKey) return
     if (loading) return
-    if (session.isDone) return
-    if (session.cards.length > 0) return
+    if (loadedSelectionKey !== selectionKey) return
+    if (appliedSelectionKeyRef.current === selectionKey) return
 
-    clearPersistedSession()
+    appliedSelectionKeyRef.current = selectionKey
+    if (cards.length === 0 && selectionRun.resumeSnapshot) {
+      clearPersistedSession()
+      setSelectionRun(createFreshShuffleSelectionRun(collection.id, studyCardLimit))
+      return
+    }
+
     setSessionDeckCounts(buildDeckCounts(cards))
-    dispatch({ type: 'INIT', cards, sessionRunId: createSessionRunId() })
-  }, [cards, clearPersistedSession, loading, session.cards.length, session.isDone])
+    setSessionCardOrigins(Object.fromEntries(cards.map(card => [card.id, card.deckId])))
+    if (selectionRun.resumeSnapshot) {
+      dispatch({ type: 'RESTORE', cards, snapshot: selectionRun.resumeSnapshot })
+    } else {
+      clearPersistedSession()
+      dispatch({ type: 'INIT', cards, sessionRunId: createSessionRunId() })
+    }
+  }, [
+    cards,
+    clearPersistedSession,
+    collection.id,
+    loadedSelectionKey,
+    loading,
+    selectionKey,
+    selectionRun,
+    studyCardLimit,
+  ])
 
   useEffect(() => {
+    if (!selectionRun || !selectionKey || appliedSelectionKeyRef.current !== selectionKey) return
     if (session.isDone) {
       clearPersistedSession()
       return
@@ -195,7 +300,12 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
 
     if (session.cards.length === 0) return
 
-    const cardOrigins = Object.fromEntries(cards.map(card => [card.id, card.deckId]))
+    const cardOrigins = Object.fromEntries(
+      session.cards.flatMap(card => {
+        const deckId = sessionCardOrigins[card.id]
+        return deckId ? [[card.id, deckId]] : []
+      }),
+    )
     const payload = buildPersistedStudySession({
       deckId: sessionId,
       sessionRunId: session.sessionRunId,
@@ -205,6 +315,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       cardOrigins,
       cardIds: session.cards.map(card => card.id),
       cardLimit: studyCardLimit,
+      sessionTargetCardCount: selectionRun.targetCardCount,
       sessionCount: session.sessionCount,
       isFlipped: session.isFlipped,
       isDone: session.isDone,
@@ -216,8 +327,8 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       hardPracticeCardIds: session.hardPracticeCardIds,
       hardPracticePassCounts: session.hardPracticePassCounts,
       reviewEvents: session.reviewEvents,
+      startedAt: session.startedAt,
       startTime: session.startTime,
-      nextDayStartsAt: settings.nextDayStartsAt,
     })
 
     void writeShuffleSession(collection.id, JSON.stringify(payload))
@@ -239,10 +350,13 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     session.relearnSuccessCounts,
     session.reviewEvents,
     session.sessionCount,
+    sessionCardOrigins,
+    session.startedAt,
     session.startTime,
     sessionId,
+    selectionKey,
+    selectionRun,
     studyCardLimit,
-    settings.nextDayStartsAt,
   ])
 
   useEffect(() => {
@@ -284,6 +398,10 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
 
   const handleRate = useCallback(async (rating: Rating) => {
     if (!currentCard || peeking || session.isSubmitting || session.isDone || isAlgorithmMigrating) return
+    if (isStudySessionExpired(session.startedAt)) {
+      handleExit()
+      return
+    }
 
     const effectiveRating: Rating = answerWasIncorrect ? 1 : rating
     const elapsedMs = Date.now() - session.startTime
@@ -360,6 +478,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     session.sessionRunId,
     session.isDone,
     session.isSubmitting,
+    session.startedAt,
     session.startTime,
     settings.algorithm,
     settings.algorithmParams,
@@ -370,10 +489,15 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     t.save_rating_failed,
     t.unknown_error,
     registerSessionReward,
+    handleExit,
   ])
 
   const handleRetry = useCallback(async () => {
     if (!session.lastRating || !currentCard || session.isSubmitting || isAlgorithmMigrating) return
+    if (isStudySessionExpired(session.startedAt)) {
+      handleExit()
+      return
+    }
 
     const { rating, elapsedMs } = session.lastRating
     dispatch({ type: 'CLEAR_ERROR' })
@@ -430,6 +554,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     session.againCounts,
     session.isSubmitting,
     session.lastRating,
+    session.startedAt,
     session.sessionRunId,
     settings.algorithm,
     settings.algorithmParams,
@@ -440,6 +565,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     t.save_failed,
     t.unknown_error,
     registerSessionReward,
+    handleExit,
   ])
 
   // Read-only zurückblättern: zeigt die zuletzt bewertete Karte nur an —
@@ -457,9 +583,8 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   const handleRestart = useCallback(() => {
     clearPersistedSession()
     resetAnswerState()
-    setSessionDeckCounts(buildDeckCounts(cards))
-    dispatch({ type: 'INIT', cards, sessionRunId: createSessionRunId() })
-  }, [cards, clearPersistedSession])
+    setSelectionRun(createFreshShuffleSelectionRun(collection.id, studyCardLimit))
+  }, [clearPersistedSession, collection.id, studyCardLimit])
 
   const handleEditCard = useCallback(() => {
     if (!currentCard) return
@@ -499,7 +624,11 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     )
   }
 
-  if (!loading && session.isDone) {
+  const selectionReady = selectionKey !== null
+    && loadedSelectionKey === selectionKey
+    && appliedSelectionKeyRef.current === selectionKey
+
+  if (selectionReady && !loading && session.isDone) {
     const coachSummary = buildLearningCoachSummary({
       reviewEvents: session.reviewEvents,
       cards,
@@ -757,11 +886,9 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
             animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
             transition={{ duration: prefersReducedMotion ? 0.12 : 0.15, ease: 'easeOut' }}
-            className="w-full border-t border-[#18181b] bg-[#050505] px-3 pt-2"
-            style={{
-              height: isHandsetLandscape ? 'clamp(7.25rem, 21dvh, 10rem)' : 'clamp(9.25rem, 21dvh, 12.5rem)',
-              paddingBottom: '0.5rem',
-            }}
+            className={`handset-rating-area w-full shrink-0 border-t border-[#18181b] bg-[#050505] px-3 pt-2 ${
+              isHandsetLandscape ? 'handset-rating-area-landscape' : ''
+            }`}
           >
             <div className="h-full">
               <RatingBar

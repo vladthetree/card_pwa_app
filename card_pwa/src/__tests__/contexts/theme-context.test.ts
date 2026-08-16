@@ -24,7 +24,8 @@ describe('ThemeContext', () => {
     expect(THEMES.newsprintDark).toMatchObject({
       name: 'Newsprint Dark',
       primary: '#FF6166',
-      background: '#141413',
+      background: '#000000',
+      floor: '#141413',
       text: '#E8E8E3',
     })
   })

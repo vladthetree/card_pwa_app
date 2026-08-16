@@ -2,7 +2,7 @@
  * AI_CONTEXT: Application service for shuffle sessions; owns business logic outside React components for learning, sync, profile, update, or session flows.
  */
 import type { ShuffleCollectionRecord } from '../db'
-import { listDeckStudyCandidates } from '../db/queries'
+import { listCardsByIds, listDeckStudyCandidates } from '../db/queries'
 import { DAY_MS, resolveDueAtMs } from '../utils/time'
 import type { Card } from '../types'
 import { compareByDueRank, getCardTypePriority, seededRank } from '../utils/cardOrdering'
@@ -19,6 +19,10 @@ interface ShuffleSelectionOptions {
   nextDayStartsAt?: number
   runSeed?: string | number
   learnAheadMinutes?: number
+  /** Exact remaining queue from a persisted run; this bypasses reselection. */
+  preferredCardIds?: readonly string[]
+  /** Persisted source-deck ownership used to reconstruct shuffle cards. */
+  preferredCardOrigins?: Readonly<Record<string, string>>
 }
 
 export function getShuffleWeight(card: Card, nowMs = Date.now()): number {
@@ -129,13 +133,31 @@ export function selectShuffleCards(
   const nowMs = options.nowMs ?? Date.now()
   const sorted = asShuffleStudyCards(sortStudyCards(pool, options))
   const weighted = [...sorted].sort((a, b) => compareShuffleCards(a, b, nowMs, options.runSeed))
-  return interleaveDecks(weighted)
+  const maximum = Number.isFinite(options.maxCards)
+    ? Math.max(1, Math.floor(Number(options.maxCards)))
+    : weighted.length
+  // Select the highest-priority cards before interleaving. This keeps the
+  // configured session target a hard cap without allowing deck mixing to push
+  // a due/learning card out in favour of a lower-priority card.
+  return interleaveDecks(weighted.slice(0, maximum))
 }
 
 export async function buildSelectedShuffleCards(
   collection: Pick<ShuffleCollectionRecord, 'deckIds'>,
   options: ShuffleSelectionOptions & { userId?: string } = {},
 ): Promise<ShuffleStudyCard[]> {
+  if (options.preferredCardIds && options.preferredCardIds.length > 0) {
+    const allowedDeckIds = new Set(collection.deckIds)
+    const cards = await listCardsByIds([...options.preferredCardIds])
+    const cardById = new Map(cards.map(card => [card.id, card]))
+    return options.preferredCardIds.flatMap(cardId => {
+      const card = cardById.get(cardId)
+      const deckId = options.preferredCardOrigins?.[cardId]
+      if (!card || !deckId || !allowedDeckIds.has(deckId)) return []
+      return [{ ...card, deckId }]
+    })
+  }
+
   const pool = await buildShufflePool(collection, {
     userId: options.userId,
     nextDayStartsAt: options.nextDayStartsAt,
