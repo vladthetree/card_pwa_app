@@ -48,11 +48,20 @@ const captured = vi.hoisted(() => ({
   shuffleSectionProps: null as Record<string, unknown> | null,
 }))
 
+const syncMocks = vi.hoisted(() => ({
+  reload: vi.fn(async () => undefined),
+  runSyncCycleNow: vi.fn(async () => true),
+}))
+
 vi.mock('../../hooks/useCardDb', () => ({
-  useDecks: () => ({ decks: [deck, reviewRoot], loading: false, error: null, reload: vi.fn() }),
+  useDecks: () => ({ decks: [deck, reviewRoot], loading: false, error: null, reload: syncMocks.reload }),
   useShuffleCollections: () => ({ collections: [shuffleCollection] }),
   useStats: () => ({ stats: {} }),
   useGamificationProfile: () => ({ profile: {} }),
+}))
+
+vi.mock('../../services/syncCoordinator', () => ({
+  runSyncCycleNow: syncMocks.runSyncCycleNow,
 }))
 
 vi.mock('../../contexts/SettingsContext', () => ({
@@ -396,5 +405,32 @@ describe('HomeView shell wiring', () => {
         outOfScopeDecks: 0,
       },
     })
+  })
+
+  it('reloads decks after a successful pull sync and stays silent when sync is unavailable', async () => {
+    syncMocks.reload.mockClear()
+    syncMocks.runSyncCycleNow.mockReset()
+      .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce(false)
+
+    const { default: HomeView } = await import('../../components/HomeView')
+    renderToStaticMarkup(
+      <HomeView
+        onStartStudy={() => undefined}
+        onStartShuffleStudy={() => undefined}
+        initialHomeTab="decks"
+      />,
+    )
+
+    const pullRefresh = captured.deckListProps?.onPullRefresh as (() => Promise<boolean>) | undefined
+    expect(pullRefresh).toBeTypeOf('function')
+    if (!pullRefresh) throw new Error('pull refresh callback missing')
+    await expect(pullRefresh()).resolves.toBe(true)
+    expect(syncMocks.runSyncCycleNow).toHaveBeenNthCalledWith(1, { force: true })
+    expect(syncMocks.reload).toHaveBeenCalledTimes(1)
+
+    await expect(pullRefresh()).resolves.toBe(false)
+    expect(syncMocks.runSyncCycleNow).toHaveBeenNthCalledWith(2, { force: true })
+    expect(syncMocks.reload).toHaveBeenCalledTimes(1)
   })
 })

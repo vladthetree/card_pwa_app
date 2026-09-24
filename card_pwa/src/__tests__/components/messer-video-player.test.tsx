@@ -33,6 +33,6 @@ describe('MesserVideoPlayer recall pause', () => {
       labels,
     }))
 
-    expect(markup).toContain('autoplay')
+    expect(markup.toLowerCase()).toContain('autoplay')
   })
 })

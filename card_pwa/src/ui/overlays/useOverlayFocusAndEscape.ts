@@ -8,7 +8,7 @@ import { useEffect, type RefObject } from 'react'
 import type { CloseReason } from './overlayTypes'
 
 export function useOverlayFocusAndEscape(
-  initialFocusRef: RefObject<HTMLElement>,
+  initialFocusRef: RefObject<HTMLElement | null>,
   requestClose: (reason: CloseReason) => void,
 ): void {
   useEffect(() => {

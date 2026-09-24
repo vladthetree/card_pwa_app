@@ -4,7 +4,6 @@
 import {
   fetchWithTimeout,
   getSyncBaseEndpoint,
-  isSyncActive,
   SYNC_RUNTIME_CONFIG_CHANGED_EVENT,
 } from './syncConfig'
 
@@ -27,6 +26,10 @@ let runtimeRefCount = 0
 let disposeRuntime: (() => void) | null = null
 
 const listeners = new Set<(state: SyncReachabilityState) => void>()
+
+function hasConfiguredSyncEndpoint(): boolean {
+  return Boolean(getSyncBaseEndpoint())
+}
 
 function setReachabilityState(nextState: SyncReachabilityState): void {
   if (currentState === nextState) return
@@ -90,7 +93,9 @@ export function subscribeToSyncReachability(
 }
 
 export async function checkSyncServerReachable(force = false): Promise<boolean> {
-  if (typeof navigator === 'undefined' || !navigator.onLine || !isSyncActive()) {
+  // Reachability and authentication are separate concerns. The settings UI
+  // must be able to show a reachable server before a profile/token is linked.
+  if (typeof navigator === 'undefined' || !navigator.onLine || !hasConfiguredSyncEndpoint()) {
     resetReachabilityCache()
     setReachabilityState('disconnected')
     return false
@@ -137,7 +142,7 @@ function requestServiceWorkerHeartbeatCheck(): void {
 }
 
 export function notifyServiceWorkerAppVisible(): void {
-  if (!isSyncActive()) return
+  if (!hasConfiguredSyncEndpoint()) return
 
   const payload = { type: 'APP_VISIBLE' }
 
@@ -157,8 +162,8 @@ export function notifyServiceWorkerAppVisible(): void {
 }
 
 function handleServiceWorkerHeartbeatMessage(event: MessageEvent): void {
-  if (event.data?.type !== 'SERVER_HEARTBEAT' || !isSyncActive()) {
-    if (!isSyncActive()) {
+  if (event.data?.type !== 'SERVER_HEARTBEAT' || !hasConfiguredSyncEndpoint()) {
+    if (!hasConfiguredSyncEndpoint()) {
       resetReachabilityCache()
       setReachabilityState('disconnected')
     }
@@ -201,7 +206,7 @@ export function startSyncReachabilityRuntime(): () => void {
     }
 
     const onSyncConfigChanged = () => {
-      if (!isSyncActive()) {
+      if (!hasConfiguredSyncEndpoint()) {
         resetReachabilityCache()
         setReachabilityState('disconnected')
         return
@@ -220,7 +225,7 @@ export function startSyncReachabilityRuntime(): () => void {
       // Hidden → kein Polling; beim Sichtbarwerden erzwingt onVisibilityChange
       // ohnehin einen frischen Check.
       if (document.visibilityState === 'hidden') return
-      if (!navigator.onLine || !isSyncActive()) return
+      if (!navigator.onLine || !hasConfiguredSyncEndpoint()) return
 
       // Mit aktivem SW ist dessen sichtbarkeits-gegateter Heartbeat (20 s) die
       // Quelle: der Broadcast füllt unseren Cache. Nur wenn der Cache auffällig
@@ -236,7 +241,7 @@ export function startSyncReachabilityRuntime(): () => void {
       void checkSyncServerReachable(false)
     }, REACHABILITY_INTERVAL_MS)
 
-    if (navigator.onLine && isSyncActive()) {
+    if (navigator.onLine && hasConfiguredSyncEndpoint()) {
       notifyServiceWorkerAppVisible()
       refreshReachability(true)
     } else {

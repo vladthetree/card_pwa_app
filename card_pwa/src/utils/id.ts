@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT: Utility module for id; provides pure helpers for scheduling, parsing, scoring, tags, video notes, backup, or app data transformations.
  */
-function fillRandomBytes(bytes: Uint8Array): void {
+function fillRandomBytes(bytes: Uint8Array<ArrayBuffer>): void {
   if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
     crypto.getRandomValues(bytes)
     return

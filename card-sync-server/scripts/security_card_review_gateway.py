@@ -46,6 +46,27 @@ from server.common.helpers import now_ms  # noqa: E402
 
 SCHEMA_VERSION = "security-card-content-review-2"
 ALLOWED_VERDICTS = {"approved", "corrected", "not_relevant"}
+CREATE_STATE_FIELDS = {
+  "type", "queue", "due", "dueAt", "learningStep", "lastReviewedAt",
+  "interval", "factor", "stability", "difficulty", "retrievability",
+  "reps", "lapses", "algorithm", "metadata",
+}
+CREATE_STATE_DEFAULTS = {
+  "type": 0,
+  "queue": 0,
+  "due": 0,
+  "dueAt": 0,
+  "learningStep": 0,
+  "lastReviewedAt": None,
+  "interval": 0,
+  "factor": 2500,
+  "stability": None,
+  "difficulty": None,
+  "retrievability": None,
+  "reps": 0,
+  "lapses": 0,
+  "algorithm": "fsrs",
+}
 PUBLICATION_SEMANTIC_CHECKS = (
   "stemUnambiguous",
   "frontBackConsistent",
@@ -63,6 +84,9 @@ OFFICIAL_HOSTS = (
   "cisecurity.org",
   "iso.org",
   "microsoft.com",
+  "docs.aws.amazon.com",
+  "access.redhat.com",
+  "gnu.org",
   "europa.eu",
   "mitre.org",
   "iana.org",
@@ -409,12 +433,17 @@ def check(conn: sqlite3.Connection, registry_path: Path, *, allow_pending: bool 
   extra = sorted(set(reviews_by_id) - set(cards_by_id))
   errors.extend(f"card {card_id}: missing current review" for card_id in missing)
   errors.extend(f"card {card_id}: registry entry is not an active card" for card_id in extra)
+  strict_review_errors: dict[str, list[str]] = {}
   for card_id in sorted(set(cards_by_id) & set(reviews_by_id)):
-    errors.extend(validate_review(
+    card_errors = validate_review(
       reviews_by_id[card_id],
       cards_by_id[card_id],
+      publication=True,
       expected_user_id=user_id,
-    ))
+    )
+    if card_errors:
+      strict_review_errors[card_id] = card_errors
+      errors.extend(card_errors)
 
   pending_rows = conn.execute(
     """SELECT id, card_id, content_hash, created_at
@@ -429,20 +458,52 @@ def check(conn: sqlite3.Connection, registry_path: Path, *, allow_pending: bool 
     verdict = review.get("verdict")
     if verdict in verdict_counts:
       verdict_counts[verdict] += 1
+  current_card_ids = sorted(set(cards_by_id) & set(reviews_by_id))
+  strict_review_count = len(current_card_ids) - len(strict_review_errors)
   result = {
     "ok": not errors,
-    "assurance": "Vlad-user-scoped exact-hash and structural review coverage",
-    "semanticPublicationGate": "strict evidence locators and per-option/item adjudication are required for every new publish/register decision",
+    "assurance": (
+      "Vlad-user-scoped exact-hash, structural, and strict semantic-review "
+      "evidence coverage" if not errors else "not established"
+    ),
+    "assuranceLimit": (
+      "The gateway validates exact content binding and auditable semantic-review "
+      "evidence; it does not independently establish technical truth."
+    ),
+    "semanticReviewGate": {
+      "requiredForEveryCurrentReview": True,
+      "passingReviews": strict_review_count,
+      "failingReviews": len(strict_review_errors),
+      "requirements": (
+        "exact source locators and supported claims, per-option/item adjudication, "
+        "front/back coherence, cross-card comparison, revision-history inspection, "
+        "and source-conflict checks"
+      ),
+    },
     "profile": "Vlad",
     "canonicalUserId": user_id,
     "identityKey": ["userId", "cardId"],
+    "coverage": {
+      "canonicalCardsReviewed": len(current_card_ids),
+      "strictSemanticReviewsPassing": strict_review_count,
+    },
     "activeCards": len(cards),
-    "currentReviews": len(set(cards_by_id) & set(reviews_by_id)),
+    "currentReviews": len(current_card_ids),
     "missingReviews": len(missing),
     "duplicateReviews": len(set(duplicates)),
-    "staleOrInvalidReviews": len(errors) - len(missing) - len(extra) - len(set(duplicates)) - (1 if pending_rows and not allow_pending else 0),
+    "staleOrInvalidReviews": len(strict_review_errors),
     "pendingProposals": len(pending_rows),
     "verdicts": verdict_counts,
+    "reviewRecords": [
+      {
+        "userId": user_id,
+        "cardId": card_id,
+        "contentHash": cards_by_id[card_id]["contentHash"],
+        "verdict": reviews_by_id[card_id].get("verdict"),
+        "strictSemanticReview": card_id not in strict_review_errors,
+      }
+      for card_id in current_card_ids
+    ],
     "errors": errors,
   }
   return result
@@ -503,6 +564,24 @@ def decision_content(decision: dict) -> dict:
   return canonical_content(content)
 
 
+def decision_create_state(decision: dict) -> dict:
+  state = decision.get("createState")
+  if state is None:
+    state = {}
+  if not isinstance(state, dict):
+    raise RuntimeError(f"card {decision.get('cardId')}: createState must be an object")
+  unknown = sorted(set(state) - CREATE_STATE_FIELDS)
+  if unknown:
+    raise RuntimeError(
+      f"card {decision.get('cardId')}: createState has unknown field(s): "
+      + ", ".join(unknown)
+    )
+  metadata = state.get("metadata")
+  if metadata is not None and not isinstance(metadata, dict):
+    raise RuntimeError(f"card {decision.get('cardId')}: createState.metadata must be an object")
+  return {**CREATE_STATE_DEFAULTS, **state}
+
+
 def publish(
   conn: sqlite3.Connection,
   db_path: Path,
@@ -513,6 +592,14 @@ def publish(
   decisions = raw.get("decisions") if isinstance(raw, dict) else raw
   if not isinstance(decisions, list) or not decisions:
     raise RuntimeError("Decision file must contain a non-empty decisions list")
+  replace_registry = bool(isinstance(raw, dict) and raw.get("replaceRegistry") is True)
+  deck = raw.get("deck") if isinstance(raw, dict) else None
+  if deck is not None and not isinstance(deck, dict):
+    raise RuntimeError("deck must be an object")
+  deck_id = str((deck or {}).get("id") or "").strip()
+  deck_name = str((deck or {}).get("name") or "").strip()
+  if deck is not None and (not deck_id or not deck_name):
+    raise RuntimeError("deck requires non-empty id and name")
 
   user_id = profile_id(conn)
   current_cards = {card["cardId"]: card for card in active_cards(conn, user_id)}
@@ -530,8 +617,24 @@ def publish(
         f"card {card_id}: decision userId does not match Vlad's resolved user_id"
       )
     content = decision_content(decision)
+    operation = str(decision.get("operation") or "update").strip().casefold()
+    current = current_cards.get(card_id)
+    if current is None and operation != "create":
+      errors.append(f"card {card_id}: a new card requires operation='create'")
+    if current is not None and operation == "create":
+      errors.append(f"card {card_id}: operation='create' targets an active card")
+    if operation not in {"create", "update"}:
+      errors.append(f"card {card_id}: unsupported publication operation {operation!r}")
+    create_state = decision_create_state(decision) if operation == "create" else None
+    if operation == "create" and deck is None:
+      errors.append(f"card {card_id}: reviewed creation requires a deck descriptor")
+    if deck is not None and content.get("deckId") != deck_id:
+      errors.append(f"card {card_id}: content deckId does not match reviewed deck descriptor")
     review = {
-      **{key: value for key, value in decision.items() if key != "content"},
+      **{
+        key: value for key, value in decision.items()
+        if key not in {"content", "createState"}
+      },
       "userId": user_id,
       "cardId": card_id,
       "contentHash": content_hash(content),
@@ -544,7 +647,13 @@ def publish(
       publication=True,
       expected_user_id=user_id,
     ))
-    prepared.append((decision, review, content, current_cards.get(card_id)))
+    prepared.append((decision, review, content, current, operation, create_state))
+  if replace_registry:
+    omitted = sorted(set(current_cards) - seen)
+    errors.extend(
+      f"card {card_id}: replaceRegistry cannot omit an active card"
+      for card_id in omitted
+    )
   if errors:
     raise RuntimeError("Decision validation failed:\n- " + "\n- ".join(errors))
 
@@ -554,23 +663,84 @@ def publish(
   if scope_errors:
     raise RuntimeError("Registry scope validation failed:\n- " + "\n- ".join(scope_errors))
   registry_backup_path = backup_json(registry_path, "content-review")
-  reviews_by_id = {str(item.get("cardId")): item for item in registry.get("reviews", [])}
+  reviews_by_id = (
+    {} if replace_registry
+    else {str(item.get("cardId")): item for item in registry.get("reviews", [])}
+  )
   published = []
+  created = []
   timestamp = now_ms()
   try:
     conn.execute("BEGIN IMMEDIATE")
-    for offset, (decision, review, content, current) in enumerate(prepared):
-      card_id = review["cardId"]
-      if not current:
-        raise RuntimeError(f"card {card_id}: new cards require an explicit reviewed create workflow")
-      operation_ts = timestamp + offset
-      payload = {
-        "cardId": card_id,
-        "updates": {**content, "updatedAt": operation_ts},
-        "timestamp": operation_ts,
+    if deck is not None:
+      deck_payload = {
+        "id": deck_id,
+        "name": deck_name,
+        "parentDeckId": deck.get("parentDeckId"),
+        "source": "reviewed-security-card-import",
+        "createdAt": timestamp,
+        "updatedAt": timestamp,
+        "timestamp": timestamp,
       }
+      deck_op_id = f"{GATEWAY_SOURCE_CLIENT}:deck.create:{user_id}:{deck_id}"
+      existing_deck_op = conn.execute(
+        "SELECT source, source_client, user_id FROM sync_operations WHERE op_id=?",
+        (deck_op_id,),
+      ).fetchone()
+      if existing_deck_op:
+        if (
+          existing_deck_op["source"] != GATEWAY_SOURCE
+          or existing_deck_op["source_client"] != GATEWAY_SOURCE_CLIENT
+          or existing_deck_op["user_id"] != user_id
+        ):
+          raise RuntimeError(f"deck {deck_id}: operation ID collision")
+      else:
+        conn.execute(
+          """INSERT INTO sync_operations
+             (op_id, op_type, payload_json, client_timestamp, source,
+              source_client, created_at, user_id)
+             VALUES (?, 'deck.create', ?, ?, ?, ?, ?, ?)""",
+          (
+            deck_op_id,
+            json.dumps(deck_payload, ensure_ascii=False),
+            timestamp,
+            GATEWAY_SOURCE,
+            GATEWAY_SOURCE_CLIENT,
+            int(time.time()),
+            user_id,
+          ),
+        )
+        apply_operation(
+          conn,
+          "deck.create",
+          deck_payload,
+          timestamp,
+          GATEWAY_SOURCE_CLIENT,
+          op_id=deck_op_id,
+          user_id=user_id,
+        )
+    for offset, (decision, review, content, current, operation, create_state) in enumerate(prepared, start=1):
+      card_id = review["cardId"]
+      operation_ts = timestamp + offset
+      if operation == "create":
+        payload = {
+          "id": card_id,
+          **content,
+          **(create_state or {}),
+          "createdAt": operation_ts,
+          "updatedAt": operation_ts,
+          "timestamp": operation_ts,
+        }
+        op_type = "card.create"
+      else:
+        payload = {
+          "cardId": card_id,
+          "updates": {**content, "updatedAt": operation_ts},
+          "timestamp": operation_ts,
+        }
+        op_type = "card.update"
       op_id = (
-        f"{GATEWAY_SOURCE_CLIENT}:card.update:{user_id}:"
+        f"{GATEWAY_SOURCE_CLIENT}:{op_type}:{user_id}:"
         f"{card_id}:{review['contentHash'][:16]}"
       )
       existing_op = conn.execute(
@@ -589,9 +759,10 @@ def publish(
           """INSERT INTO sync_operations
              (op_id, op_type, payload_json, client_timestamp, source,
               source_client, created_at, user_id)
-             VALUES (?, 'card.update', ?, ?, ?, ?, ?, ?)""",
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
           (
             op_id,
+            op_type,
             json.dumps(payload, ensure_ascii=False),
             operation_ts,
             GATEWAY_SOURCE,
@@ -602,7 +773,7 @@ def publish(
         )
         apply_operation(
           conn,
-          "card.update",
+          op_type,
           payload,
           operation_ts,
           GATEWAY_SOURCE_CLIENT,
@@ -621,6 +792,8 @@ def publish(
           raise RuntimeError(f"card {card_id}: pending queueId {queue_id} not found")
       reviews_by_id[card_id] = review
       published.append(card_id)
+      if operation == "create":
+        created.append(card_id)
     conn.commit()
   except Exception:
     conn.rollback()
@@ -638,7 +811,9 @@ def publish(
   return {
     "ok": True,
     "published": len(published),
+    "created": len(created),
     "cardIds": published,
+    "deckId": deck_id or None,
     "backup": str(backup_path),
     "registryBackup": str(registry_backup_path),
     "registry": str(registry_path),
@@ -956,8 +1131,15 @@ def main() -> int:
   parser.add_argument("--db", type=Path, default=DEFAULT_DB)
   parser.add_argument("--registry", type=Path, default=DEFAULT_REGISTRY)
   sub = parser.add_subparsers(dest="command", required=True)
-  check_parser = sub.add_parser("check", help="Require exact review coverage for every active Vlad card")
+  check_parser = sub.add_parser(
+    "check",
+    help=(
+      "Require exact-hash coverage and strict semantic-review evidence for "
+      "every active Vlad card"
+    ),
+  )
   check_parser.add_argument("--allow-pending", action="store_true")
+  check_parser.add_argument("--output", type=Path, help="Also write the JSON check report")
   sub.add_parser("queue", help="Print every content review proposal and decision")
   sub.add_parser(
     "bind-scope",
@@ -1002,6 +1184,8 @@ def main() -> int:
       result = publish(conn, args.db.resolve(), args.registry.resolve(), args.decisions.resolve())
     else:
       result = register(conn, args.registry.resolve(), args.decisions.resolve())
+    if args.command == "check" and args.output:
+      write_json(args.output.resolve(), result)
   finally:
     conn.close()
   print(json.dumps(result, ensure_ascii=False, indent=2))

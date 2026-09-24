@@ -61,7 +61,7 @@ describe('syncReachability', () => {
     })
   })
 
-  it('returns false without fetching when offline or sync is inactive', async () => {
+  it('returns false without fetching when offline or no endpoint is configured', async () => {
     const { checkSyncServerReachable } = await import('../../services/syncReachability')
 
     Object.defineProperty(globalThis, 'navigator', {
@@ -72,7 +72,7 @@ describe('syncReachability', () => {
     await expect(checkSyncServerReachable(true)).resolves.toBe(false)
     expect(fetchWithTimeoutMock).not.toHaveBeenCalled()
 
-    state.syncActive = false
+    state.endpoint = ''
     Object.defineProperty(globalThis, 'navigator', {
       value: { ...navigator, onLine: true },
       configurable: true,
@@ -80,6 +80,15 @@ describe('syncReachability', () => {
 
     await expect(checkSyncServerReachable(true)).resolves.toBe(false)
     expect(fetchWithTimeoutMock).not.toHaveBeenCalled()
+  })
+
+  it('checks server reachability before a profile token activates sync', async () => {
+    state.syncActive = false
+    const { checkSyncServerReachable, getSyncReachabilityState } = await import('../../services/syncReachability')
+
+    await expect(checkSyncServerReachable(true)).resolves.toBe(true)
+    expect(fetchWithTimeoutMock).toHaveBeenCalledTimes(1)
+    expect(getSyncReachabilityState()).toBe('connected')
   })
 
   it('builds the health URL and caches successful checks', async () => {

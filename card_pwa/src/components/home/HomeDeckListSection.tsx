@@ -1,6 +1,7 @@
 /**
  * AI_CONTEXT: Home-screen React component for home Deck List Section; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from '../../ui/motion'
 import { RefreshCw, AlertCircle, Upload, Shuffle, Layers3, Pencil, Trash2, BarChart3 } from 'lucide-react'
 import { DeckCard } from '../DeckCard'
@@ -26,6 +27,7 @@ interface Props {
   shuffleCollections: ShuffleCollection[]
   shuffleSummaries: Record<string, ShuffleCollectionSummary>
   onReload: () => void
+  onPullRefresh: () => Promise<boolean>
   onShowImport: () => void
   onStartStudy: (deck: Deck) => void
   onStartShuffleStudy: (collection: ShuffleCollection) => void
@@ -51,6 +53,7 @@ export function HomeDeckListSection({
   shuffleCollections,
   shuffleSummaries,
   onReload,
+  onPullRefresh,
   onShowImport,
   onStartStudy,
   onStartShuffleStudy,
@@ -61,6 +64,74 @@ export function HomeDeckListSection({
   onShowMetrics,
   onManageCards,
 }: Props) {
+  const [pullDistance, setPullDistance] = useState(0)
+  const [refreshing, setRefreshing] = useState(false)
+  const touchStartYRef = useRef<number | null>(null)
+  const rawPullDistanceRef = useRef(0)
+  const refreshingRef = useRef(false)
+  const mountedRef = useRef(true)
+
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
+
+  const resetPull = useCallback(() => {
+    touchStartYRef.current = null
+    rawPullDistanceRef.current = 0
+    setPullDistance(0)
+  }, [])
+
+  const isHandsetViewport = () => {
+    if (typeof window === 'undefined') return false
+    return typeof window.matchMedia === 'function'
+      ? window.matchMedia('(max-width: 639px)').matches
+      : window.innerWidth < 640
+  }
+
+  const handleTouchStart = useCallback((event: React.TouchEvent<HTMLDivElement>) => {
+    if (refreshingRef.current || !isHandsetViewport()) return
+    if (event.touches.length !== 1 || event.currentTarget.scrollTop > 0) return
+    touchStartYRef.current = event.touches[0].clientY
+    rawPullDistanceRef.current = 0
+  }, [])
+
+  const handleTouchMove = useCallback((event: React.TouchEvent<HTMLDivElement>) => {
+    const startY = touchStartYRef.current
+    if (startY === null || event.touches.length !== 1) return
+    if (event.currentTarget.scrollTop > 0) {
+      resetPull()
+      return
+    }
+
+    const rawDistance = event.touches[0].clientY - startY
+    if (rawDistance <= 0) {
+      rawPullDistanceRef.current = 0
+      setPullDistance(0)
+      return
+    }
+
+    rawPullDistanceRef.current = rawDistance
+    setPullDistance(Math.min(72, rawDistance * 0.45))
+  }, [resetPull])
+
+  const finishPull = useCallback(() => {
+    const shouldRefresh = rawPullDistanceRef.current >= 72 && !refreshingRef.current
+    resetPull()
+    if (!shouldRefresh) return
+
+    refreshingRef.current = true
+    setRefreshing(true)
+    void onPullRefresh()
+      .catch(() => false)
+      .finally(() => {
+        refreshingRef.current = false
+        if (mountedRef.current) setRefreshing(false)
+      })
+  }, [onPullRefresh, resetPull])
+
   const renderShuffleCards = () => (
     <>
       {shuffleModeEnabled && shuffleCollections.map(collection => {
@@ -136,7 +207,37 @@ export function HomeDeckListSection({
       className="home-bottom-scroll-padding relative z-0 min-h-0 flex-1 overflow-y-auto no-scrollbar pr-1 sm:pb-4"
       style={{ WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'contain', touchAction: 'pan-y' }}
       data-testid="home-deck-list-scroll"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={finishPull}
+      onTouchCancel={resetPull}
     >
+      <div
+        className="pointer-events-none sticky top-0 z-20 flex h-0 justify-center sm:hidden"
+        data-testid="home-deck-pull-refresh"
+        role="status"
+        aria-live="polite"
+        aria-label={refreshing
+          ? (language === 'de' ? 'Decks werden aktualisiert' : 'Refreshing decks')
+          : undefined}
+      >
+        <div
+          className={`mt-2 flex h-9 w-9 items-center justify-center rounded-full border border-ds-border bg-ds-panel text-[--brand-primary] shadow-card transition-opacity duration-150 ${refreshing ? 'opacity-100' : ''}`}
+          style={{
+            opacity: refreshing ? 1 : Math.min(1, pullDistance / 36),
+            transform: `translateY(${refreshing ? 8 : Math.max(0, pullDistance - 28)}px) scale(${refreshing ? 1 : 0.8 + Math.min(0.2, pullDistance / 180)})`,
+          }}
+          aria-hidden="true"
+        >
+          <RefreshCw
+            size={17}
+            strokeWidth={2}
+            className={refreshing ? 'animate-spin' : ''}
+            style={refreshing ? undefined : { transform: `rotate(${Math.min(300, pullDistance * 4)}deg)` }}
+          />
+        </div>
+      </div>
+
       {error && (
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-4 flex items-center justify-between rounded-ds border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300 shadow-card">
           <div className="flex items-center gap-2"><AlertCircle size={16} strokeWidth={1.5} /><span>{error}</span></div>

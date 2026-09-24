@@ -4,7 +4,7 @@
  * Used by: App.tsx for the home and shuffle-management modes.
  * Important: Most state is delegated to hooks/home/*; keep this file as orchestration/glue, not raw data-query logic.
  */
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import { ArrowLeft, Play } from 'lucide-react'
 import { useDecks, useGamificationProfile, useShuffleCollections, useStats } from '../hooks/useCardDb'
@@ -31,6 +31,7 @@ import { computeExamDaysLeft } from '../utils/todayPackage'
 import { flattenDeckTree } from '../utils/securityDeckHierarchy'
 import { isReviewDeck } from '../utils/reviewDecks'
 import { pickDailyQuestCards } from '../db/queries'
+import { runSyncCycleNow } from '../services/syncCoordinator'
 
 // Lerneinheiten und Labs als Home-Modi (Nutzerentscheidung 2026-07-19): die
 // Inhalte rendern unter der Homebar; die Chunks laden weiterhin lazy.
@@ -131,6 +132,12 @@ export default function HomeView({
   const { isConnected } = useServerHeartbeat(settings.language)
   const { storageUsedBytes, storageQuotaBytes, storageEstimateUnavailable } = useHomeStorageEstimate()
   const isShuffleManageMode = mode === 'shuffle-manage'
+  const handleDeckPullRefresh = useCallback(async () => {
+    const synced = await runSyncCycleNow({ force: true })
+    if (!synced) return false
+    await reload()
+    return true
+  }, [reload])
   const homeDecks = useMemo(
     () => settings.showReviewDecks ? decks : decks.filter(deck => !isReviewDeck(deck)),
     [decks, settings.showReviewDecks],
@@ -525,6 +532,7 @@ export default function HomeView({
                 shuffleCollections={shuffleCollections}
                 shuffleSummaries={derivedData.shuffleSummaries}
                 onReload={reload}
+                onPullRefresh={handleDeckPullRefresh}
                 onShowImport={controller.openImport}
                 onStartStudy={onStartStudy}
                 onStartShuffleStudy={onStartShuffleStudy}

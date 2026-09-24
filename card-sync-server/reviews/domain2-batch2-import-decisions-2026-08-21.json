@@ -1,0 +1,1748 @@
+{
+  "schemaVersion": "reviewed-domain2-batch2-import-1",
+  "profile": "Vlad",
+  "canonicalUserId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+  "identityKey": [
+    "userId",
+    "cardId"
+  ],
+  "replaceRegistry": false,
+  "deck": {
+    "id": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+    "name": "Chapter 2: Domain 2.0: Threats, Vulnerabilities, and Mitigations",
+    "parentDeckId": null
+  },
+  "sourceDirectory": "NEW_INFO/Chapter 2: Domain 2.0: Threats, Vulnerabilities, and Mitigations",
+  "sourceFile": "Alle_Fragen(1).json",
+  "answerPolicy": "answers[].correct and correct are authoritative; selected is not a solution key; no question, option, key, or explanation is rewritten",
+  "decisions": [
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-dd75ca2eb0143e5d9299",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.4:malware-attacks:virus"
+      ],
+      "evidence": "The exact keyed answer 'A virus' is entailed by the cited definition or control and the source explanation; all four options were checked individually.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Official objectives: 2.4: Malware attacks > Virus",
+          "supports": "The official objectives include the mapped topic(s): 2.4: Malware attacks > Virus."
+        },
+        {
+          "url": "https://csrc.nist.gov/glossary/term/virus",
+          "title": "NIST CSRC Glossary: virus",
+          "locator": "Definitions sourced from CNSSI 4009, NIST SP 800-28 Version 2, and NIST SP 800-82 Rev. 3",
+          "supports": "NIST defines a virus as self-replicating software that propagates by copying itself into or attaching to other programs or files.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-21",
+      "reviewedAt": "2026-08-20T23:18:27+00:00",
+      "reviewBasis": [
+        "answers[].correct and the explicit correct field agree exactly",
+        "question, option texts, keyed letter, and explanation preserved from Alle_Fragen(1).json",
+        "selected wrong answer ignored as a solution key",
+        "all four options and the complete explanation inspected",
+        "official SY0-701 scope and authoritative primary fact sources checked",
+        "all active Vlad cards compared by composite identity and normalized stem",
+        "archived predecessor history inspected where present",
+        "responseSeconds copied into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 33 cumulative Chapter 2 source stems were compared with all 82 active Vlad cards; no active duplicate exists. Collision versus second-preimage and bluejacking versus bluesnarfing were explicitly distinguished."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "A Trojan is malware disguised as desirable software; that does not describe the copying behavior in the stem."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "A virus can copy itself and propagate through infected files, matching the shared-file propagation described."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "A keylogger records keystrokes; the stem instead describes malware propagation between workstations."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "A rootkit is used to conceal or retain privileged access; it is not defined by the copying behavior in the stem."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-dd75ca2eb0143e5d9299",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "The malware that Joseph is working to counter has copied itself to workstations across his environment due to a central, shared fileshare. What type of malware is Joseph most likely fighting?\nA: A Trojan\nB: A virus\nC: A keylogger\nD: A rootkit",
+        "back": ">> CORRECT: B |\n\nJoseph is most likely fighting a virus, which is capable of copying itself to new locations. A Trojan is malware that is disguised to look like desirable software, a keylogger captures keystrokes, and a rootkit is intended to allow attackers to retain access to compromised systems.\n\nNicht:\nA | A Trojan is malware disguised as desirable software; that does not describe the copying behavior in the stem.\nC | A keylogger records keystrokes; the stem instead describes malware propagation between workstations.\nD | A rootkit is used to conceal or retain privileged access; it is not defined by the copying behavior in the stem.",
+        "tags": [
+          "Malware attacks",
+          "Virus"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen(1).json",
+        "sourceId": "EAT_1705092781000_1_2934177880652524, tb211388.SecplPT3E.c02.075",
+        "responseSeconds": 10,
+        "selectedAnswersIgnoredForKey": [
+          "A"
+        ],
+        "textPolicy": "Question, answer-option text, keyed answer, and source explanation preserved exactly; only A. source delimiters are represented as A: in the card schema.",
+        "archivedPredecessorReactivated": null
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 10,
+            "totalAnswerTimeSeconds": 10,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-693737d670fe6e20b778",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.4:physical-attacks:environmental"
+      ],
+      "evidence": "The exact keyed answer 'Temperature monitoring sensors' is entailed by the cited definition or control and the source explanation; all four options were checked individually.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Official objectives: 2.4: Physical attacks > Environmental",
+          "supports": "The official objectives include the mapped topic(s): 2.4: Physical attacks > Environmental."
+        },
+        {
+          "url": "https://doi.org/10.6028/NIST.SP.800-53r5",
+          "title": "NIST SP 800-53 Rev. 5",
+          "locator": "Control PE-14, Environmental Controls",
+          "supports": "PE-14 requires monitoring temperature, humidity, and other environmental conditions in facilities containing systems.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-21",
+      "reviewedAt": "2026-08-20T23:18:27+00:00",
+      "reviewBasis": [
+        "answers[].correct and the explicit correct field agree exactly",
+        "question, option texts, keyed letter, and explanation preserved from Alle_Fragen(1).json",
+        "selected wrong answer ignored as a solution key",
+        "all four options and the complete explanation inspected",
+        "official SY0-701 scope and authoritative primary fact sources checked",
+        "all active Vlad cards compared by composite identity and normalized stem",
+        "archived predecessor history inspected where present",
+        "responseSeconds copied into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 33 cumulative Chapter 2 source stems were compared with all 82 active Vlad cards; no active duplicate exists. Collision versus second-preimage and bluejacking versus bluesnarfing were explicitly distinguished."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Video cameras provide visual monitoring but do not directly measure datacenter temperature or similar environmental conditions."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Intrusion alarms detect unauthorized physical entry rather than temperature or other environmental conditions."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "Temperature monitoring sensors directly measure an environmental condition and are the best listed monitoring control."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Log analysis can consume sensor events but does not itself measure the physical environmental condition."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-693737d670fe6e20b778",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Grayson’s organization is concerned about environmental attacks against their datacenter. What type of monitoring is best suited to detecting environmental attacks in a scenario like this?\nA: Video cameras\nB: Intrusion alarm systems\nC: Temperature monitoring sensors\nD: Log analysis",
+        "back": ">> CORRECT: C |\n\nEnvironmental monitoring involves things like temperature, water or flood sensors, and other detection capabilities that help organizations know if a natural disaster or other environmental issue has occurred. Video cameras cannot detect many of these and are not typically deployed to places where they would detect things like under‐floor leaks or floods. Intrusion alarm systems do not provide this type of detection, and log analysis would require environmental monitoring sensors.\n\nNicht:\nA | Video cameras provide visual monitoring but do not directly measure datacenter temperature or similar environmental conditions.\nB | Intrusion alarms detect unauthorized physical entry rather than temperature or other environmental conditions.\nD | Log analysis can consume sensor events but does not itself measure the physical environmental condition.",
+        "tags": [
+          "Physical attacks",
+          "Environmental"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen(1).json",
+        "sourceId": "EAT_1705092781347_1_4465758501231463, tb211388.SecplPT3E.c02.078",
+        "responseSeconds": 16,
+        "selectedAnswersIgnoredForKey": [
+          "A"
+        ],
+        "textPolicy": "Question, answer-option text, keyed answer, and source explanation preserved exactly; only A. source delimiters are represented as A: in the card schema.",
+        "archivedPredecessorReactivated": null
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 16,
+            "totalAnswerTimeSeconds": 16,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-c48e51ffd457b1e0b13e",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.3:misconfiguration",
+        "req:sy0701:v7:2.3:cloud-specific"
+      ],
+      "evidence": "The exact keyed answer 'Misconfigurations' is entailed by the cited definition or control and the source explanation; all four options were checked individually.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Official objectives: 2.3: Misconfiguration; 2.3: Cloud-specific",
+          "supports": "The official objectives include the mapped topic(s): 2.3: Misconfiguration; 2.3: Cloud-specific."
+        },
+        {
+          "url": "https://docs.aws.amazon.com/wellarchitected/latest/framework/sec_protect_compute_reduce_manual_management.html",
+          "title": "AWS Well-Architected Framework: SEC06-BP03",
+          "locator": "Implementation guidance, step 4, security-group ingress rules and misconfiguration detection",
+          "supports": "AWS tells customers to inspect security-group ingress and use AWS Config to detect misconfigured security groups.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-21",
+      "reviewedAt": "2026-08-20T23:18:27+00:00",
+      "reviewBasis": [
+        "answers[].correct and the explicit correct field agree exactly",
+        "question, option texts, keyed letter, and explanation preserved from Alle_Fragen(1).json",
+        "selected wrong answer ignored as a solution key",
+        "all four options and the complete explanation inspected",
+        "official SY0-701 scope and authoritative primary fact sources checked",
+        "all active Vlad cards compared by composite identity and normalized stem",
+        "archived predecessor history inspected where present",
+        "responseSeconds copied into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 33 cumulative Chapter 2 source stems were compared with all 82 active Vlad cards; no active duplicate exists. Collision versus second-preimage and bluejacking versus bluesnarfing were explicitly distinguished."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "The scenario identifies customer-managed security-group rules, not a defect in an AWS-provided API."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "Failure to manage security-group rules effectively is a cloud configuration error and therefore a misconfiguration."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "No malicious insider activity is described; the problem is how administrators configure security groups."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Security-group rules control network traffic and do not by themselves describe an MFA-based attack."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-c48e51ffd457b1e0b13e",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Amanda is assessing the potential for issues with her organization’s recently adopted IaaS vendor. What cloud vulnerability should she worry about if her system administrators do not effectively manage security groups in AWS?\nA: Insecure APIs\nB: Misconfigurations\nC: Malicious insiders\nD: MFA‐based attacks",
+        "back": ">> CORRECT: B |\n\nSecurity groups are used like firewall rules in Amazon Web Services (AWS), and since Amanda’s system administrators are not effectively managing security groups, this is most likely to create a misconfiguration issue. Application programming interfaces (APIs) are provided by the vendor, and thus their security is typically a vendor issue or a misconfiguration issue. Malicious insiders are not mentioned, and security group misconfiguration does not drive multifactor authentication (MFA)‐based attacks.\n\nNicht:\nA | The scenario identifies customer-managed security-group rules, not a defect in an AWS-provided API.\nC | No malicious insider activity is described; the problem is how administrators configure security groups.\nD | Security-group rules control network traffic and do not by themselves describe an MFA-based attack.",
+        "tags": [
+          "Misconfiguration"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen(1).json",
+        "sourceId": "EAT_1705092782061_1_9014390041279983, tb211388.SecplPT3E.c02.080",
+        "responseSeconds": 36,
+        "selectedAnswersIgnoredForKey": [
+          "A"
+        ],
+        "textPolicy": "Question, answer-option text, keyed answer, and source explanation preserved exactly; only A. source delimiters are represented as A: in the card schema.",
+        "archivedPredecessorReactivated": null
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 36,
+            "totalAnswerTimeSeconds": 36,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1772662005082",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.4:cryptographic-attacks:collision"
+      ],
+      "evidence": "The exact keyed answer 'Two files that both have the same hash but have different contents.' is entailed by the cited definition or control and the source explanation; all four options were checked individually.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Official objectives: 2.4: Cryptographic attacks > Collision",
+          "supports": "The official objectives include the mapped topic(s): 2.4: Cryptographic attacks > Collision."
+        },
+        {
+          "url": "https://doi.org/10.6028/NIST.SP.800-107r1",
+          "title": "NIST SP 800-107 Rev. 1",
+          "locator": "Section 3, collision resistance definition",
+          "supports": "NIST defines a collision as two different inputs to a hash function that produce the same hash value.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-21",
+      "reviewedAt": "2026-08-20T23:18:27+00:00",
+      "reviewBasis": [
+        "answers[].correct and the explicit correct field agree exactly",
+        "question, option texts, keyed letter, and explanation preserved from Alle_Fragen(1).json",
+        "selected wrong answer ignored as a solution key",
+        "all four options and the complete explanation inspected",
+        "official SY0-701 scope and authoritative primary fact sources checked",
+        "all active Vlad cards compared by composite identity and normalized stem",
+        "archived predecessor history inspected where present",
+        "responseSeconds copied into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 33 cumulative Chapter 2 source stems were compared with all 82 active Vlad cards; no active duplicate exists. Collision versus second-preimage and bluejacking versus bluesnarfing were explicitly distinguished."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "A hash collision does not reveal a private decryption key or decrypt encrypted file contents."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "The defining output is a hash value, not an encrypted output produced by encryption."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "Two different file contents producing the same hash are exactly the outcome of a cryptographic collision."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "A hash collision does not bypass public-key decryption or reveal the plaintext of an encrypted file."
+        }
+      },
+      "content": {
+        "noteId": "IyFLd2sZKE",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "What is the likely outcome of a cryptographic collision attack?\nA: Attackers can decrypt a file without the private key.\nB: Two files that have the same encrypted output but are different files.\nC: Two files that both have the same hash but have different contents.\nD: Attackers can decrypt the file without the public key.",
+        "back": ">> CORRECT: C |\n\nCollision attacks target hashes and attempt to produce a file that results in the same hash algorithm output but with different content that they can control.\n\nNicht:\nA | A hash collision does not reveal a private decryption key or decrypt encrypted file contents.\nB | The defining output is a hash value, not an encrypted output produced by encryption.\nD | A hash collision does not bypass public-key decryption or reveal the plaintext of an encrypted file.",
+        "tags": [
+          "Cryptographic attacks",
+          "Collision"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen(1).json",
+        "sourceId": "EAT_1705092782274_1_113572571953278, tb211388.SecplPT3E.c02.082",
+        "responseSeconds": 11,
+        "selectedAnswersIgnoredForKey": [
+          "B"
+        ],
+        "textPolicy": "Question, answer-option text, keyed answer, and source explanation preserved exactly; only A. source delimiters are represented as A: in the card schema.",
+        "archivedPredecessorReactivated": "1772662005082"
+      },
+      "createState": {
+        "type": 0,
+        "queue": 0,
+        "due": 0,
+        "dueAt": 0,
+        "learningStep": 0,
+        "lastReviewedAt": null,
+        "interval": 0,
+        "factor": 2500,
+        "stability": 0.0,
+        "difficulty": 0.0,
+        "retrievability": null,
+        "reps": 0,
+        "lapses": 0,
+        "algorithm": "fsrs",
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 11,
+            "totalAnswerTimeSeconds": 11,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-126218593e5d359c32fa",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.1:threat-actors:hacktivist"
+      ],
+      "evidence": "The exact keyed answer 'Hacktivists' is entailed by the cited definition or control and the source explanation; all four options were checked individually.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Official objectives: 2.1: Threat actors > Hacktivist",
+          "supports": "The official objectives include the mapped topic(s): 2.1: Threat actors > Hacktivist."
+        },
+        {
+          "url": "https://www.cisa.gov/sites/default/files/Monitors/ICS-CERT_Monitor_Feb2012.pdf",
+          "title": "CISA ICS-CERT Monitor, February 2012",
+          "locator": "Page 4, footnote a, hacktivist definition and tactics",
+          "supports": "CISA describes hacktivists as ideologically motivated actors who attack to promote change or make a political statement, including through web defacement.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-21",
+      "reviewedAt": "2026-08-20T23:18:27+00:00",
+      "reviewBasis": [
+        "answers[].correct and the explicit correct field agree exactly",
+        "question, option texts, keyed letter, and explanation preserved from Alle_Fragen(1).json",
+        "selected wrong answer ignored as a solution key",
+        "all four options and the complete explanation inspected",
+        "official SY0-701 scope and authoritative primary fact sources checked",
+        "all active Vlad cards compared by composite identity and normalized stem",
+        "archived predecessor history inspected where present",
+        "responseSeconds copied into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 33 cumulative Chapter 2 source stems were compared with all 82 active Vlad cards; no active duplicate exists. Collision versus second-preimage and bluejacking versus bluesnarfing were explicitly distinguished."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "A script is a tool or code artifact, not the threat-actor category indicated by a political message."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Nation-state activity is not established by the political website defacement described in the stem."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Organized crime is commonly financially motivated, while the stated motive is opposition to public policies."
+        },
+        "D": {
+          "verdict": "correct",
+          "reason": "Political messaging combined with website defacement directly matches hacktivist motivation and tactics."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-126218593e5d359c32fa",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Daryl is investigating a recent breach of his company’s web server. The attacker used sophisticated techniques and then defaced the website, leaving messages that were denouncing the company’s public policies. He and his team are trying to determine the type of actor who most likely committed the breach. Based on the information provided, who was the most likely threat actor?\nA: A script\nB: A nation‐state\nC: Organized crime\nD: Hacktivists",
+        "back": ">> CORRECT: D |\n\nThe fact that the website is defaced in a manner related to the company’s public indicates that the attackers were most likely engaging in hacktivism to make a political or belief‐based point. Scripts, nation‐state actors, and organized crime actors don’t account for the statements adverse to the company’s policies, which is why hacktivism is the real cause.\n\nNicht:\nA | A script is a tool or code artifact, not the threat-actor category indicated by a political message.\nB | Nation-state activity is not established by the political website defacement described in the stem.\nC | Organized crime is commonly financially motivated, while the stated motive is opposition to public policies.",
+        "tags": [
+          "Threat actors",
+          "Hacktivist"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen(1).json",
+        "sourceId": "EAT_1705092783321_1_3140581262492415, tb211388.SecplPT3E.c02.091",
+        "responseSeconds": 45,
+        "selectedAnswersIgnoredForKey": [
+          "C"
+        ],
+        "textPolicy": "Question, answer-option text, keyed answer, and source explanation preserved exactly; only A. source delimiters are represented as A: in the card schema.",
+        "archivedPredecessorReactivated": null
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 45,
+            "totalAnswerTimeSeconds": 45,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-150ce784cae6d74a8d2b",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.2:vulnerable-software:client-based-vs-agentless"
+      ],
+      "evidence": "The exact keyed answer 'Agentless software does not have an agent that may be potentially vulnerable to attack.' is entailed by the cited definition or control and the source explanation; all four options were checked individually.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Official objectives: 2.2: Vulnerable software > Client-based vs. agentless",
+          "supports": "The official objectives include the mapped topic(s): 2.2: Vulnerable software > Client-based vs. agentless."
+        },
+        {
+          "url": "https://doi.org/10.6028/NIST.SP.800-92",
+          "title": "NIST SP 800-92",
+          "locator": "Section 3.4, agentless and agent-based collection",
+          "supports": "NIST distinguishes agentless collection, which requires no special software on each host, from agent-based collection, which installs an agent program on the host.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-21",
+      "reviewedAt": "2026-08-20T23:18:27+00:00",
+      "reviewBasis": [
+        "answers[].correct and the explicit correct field agree exactly",
+        "question, option texts, keyed letter, and explanation preserved from Alle_Fragen(1).json",
+        "selected wrong answer ignored as a solution key",
+        "all four options and the complete explanation inspected",
+        "official SY0-701 scope and authoritative primary fact sources checked",
+        "all active Vlad cards compared by composite identity and normalized stem",
+        "archived predecessor history inspected where present",
+        "responseSeconds copied into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 33 cumulative Chapter 2 source stems were compared with all 82 active Vlad cards; no active duplicate exists. Collision versus second-preimage and bluejacking versus bluesnarfing were explicitly distinguished."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Agentless systems can still consume endpoint, server, network, and control-plane resources during queries and actions."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Greater endpoint visibility is a possible capability difference, not the primary threat-vector distinction asked here."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "Agentless deployment removes the endpoint agent itself as an installed component that could contain exploitable vulnerabilities."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Both agent-based and agentless product components can receive security patches; patchability is not exclusive to client agents."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-150ce784cae6d74a8d2b",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "What is the primary difference in threat vectors between agent client‐based and agentless software deployments?\nA: Agentless software does not consume resources and thus cannot result in a resource consumption‐based denial‐of‐service condition.\nB: Client‐based software provides a better view of system resources and is able to manage its resource consumption better to avoid issues.\nC: Agentless software does not have an agent that may be potentially vulnerable to attack.\nD: Client‐based software allows for greater security because it can be patched.",
+        "back": ">> CORRECT: C |\n\nAgentless software does not have an agent installed that can be targeted. That means that the server or control system is the only target for attackers. Agentless software can still consume resources as queries and actions are taken by the server or control plane. Client‐based software often has better insights into systems, and may offer additional security features if it is a security tool. Client‐based software and agentless software can both be patched to address security issues.\n\nNicht:\nA | Agentless systems can still consume endpoint, server, network, and control-plane resources during queries and actions.\nB | Greater endpoint visibility is a possible capability difference, not the primary threat-vector distinction asked here.\nD | Both agent-based and agentless product components can receive security patches; patchability is not exclusive to client agents.",
+        "tags": [
+          "Vulnerable software",
+          "Client-based vs. agentless"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen(1).json",
+        "sourceId": "EAT_1705092784110_1_5849492237181806, tb211388.SecplPT3E.c02.093",
+        "responseSeconds": 48,
+        "selectedAnswersIgnoredForKey": [
+          "B"
+        ],
+        "textPolicy": "Question, answer-option text, keyed answer, and source explanation preserved exactly; only A. source delimiters are represented as A: in the card schema.",
+        "archivedPredecessorReactivated": null
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 48,
+            "totalAnswerTimeSeconds": 48,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-19770051b5597b933309",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.4:application-attacks:privilege-escalation"
+      ],
+      "evidence": "The exact keyed answer 'Privilege escalation' is entailed by the cited definition or control and the source explanation; all four options were checked individually.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Official objectives: 2.4: Application attacks > Privilege escalation",
+          "supports": "The official objectives include the mapped topic(s): 2.4: Application attacks > Privilege escalation."
+        },
+        {
+          "url": "https://attack.mitre.org/techniques/T1068/",
+          "title": "MITRE ATT&CK T1068: Exploitation for Privilege Escalation",
+          "locator": "Technique description, elevation from user-level permissions to SYSTEM or root",
+          "supports": "MITRE states that exploiting a software vulnerability to move from lower privileges to SYSTEM or root is privilege escalation.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-21",
+      "reviewedAt": "2026-08-20T23:18:27+00:00",
+      "reviewBasis": [
+        "answers[].correct and the explicit correct field agree exactly",
+        "question, option texts, keyed letter, and explanation preserved from Alle_Fragen(1).json",
+        "selected wrong answer ignored as a solution key",
+        "all four options and the complete explanation inspected",
+        "official SY0-701 scope and authoritative primary fact sources checked",
+        "all active Vlad cards compared by composite identity and normalized stem",
+        "archived predecessor history inspected where present",
+        "responseSeconds copied into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 33 cumulative Chapter 2 source stems were compared with all 82 active Vlad cards; no active duplicate exists. Collision versus second-preimage and bluejacking versus bluesnarfing were explicitly distinguished."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Cross-site scripting executes attacker-controlled script in a web context; it does not define obtaining root privileges."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "Moving from the initial web-application context to root privileges is vertical privilege escalation."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "SQL injection manipulates database queries; the defining result in the stem is elevated operating-system privilege."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "A race condition depends on timing between operations, which is not the defining behavior described."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-19770051b5597b933309",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Charles discovers that an attacker has used a vulnerability in a web application that his company runs and has then used that exploit to obtain root privileges on the web server. What type of attack has he discovered?\nA: Cross‐site scripting\nB: Privilege escalation\nC: A SQL injection\nD: A race condition",
+        "back": ">> CORRECT: B |\n\nA privilege escalation attack can occur horizontally, where attackers obtain similar levels of privilege but for other users, or vertically where they obtain more advanced rights. In this case, Charles has discovered a vertical privilege escalation attack that has allowed the attacker to obtain administrative rights. Cross‐site scripting and SQL injection are both common types of web application attacks, and a race condition occurs when data can be changed between when it is checked and when it is used.\n\nNicht:\nA | Cross-site scripting executes attacker-controlled script in a web context; it does not define obtaining root privileges.\nC | SQL injection manipulates database queries; the defining result in the stem is elevated operating-system privilege.\nD | A race condition depends on timing between operations, which is not the defining behavior described.",
+        "tags": [
+          "Application attacks",
+          "Privilege escalation"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen(1).json",
+        "sourceId": "EAT_1705092784370_1_9405233925578593, tb211388.SecplPT3E.c02.095",
+        "responseSeconds": 35,
+        "selectedAnswersIgnoredForKey": [
+          "C"
+        ],
+        "textPolicy": "Question, answer-option text, keyed answer, and source explanation preserved exactly; only A. source delimiters are represented as A: in the card schema.",
+        "archivedPredecessorReactivated": null
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 35,
+            "totalAnswerTimeSeconds": 35,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-330571f56ea95cfcc5c3",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.4:network-attacks:domain-name-system-dns-attacks"
+      ],
+      "evidence": "The exact keyed answer 'DNS poisoning' is entailed by the cited definition or control and the source explanation; all four options were checked individually.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Official objectives: 2.4: Network attacks > Domain Name System (DNS) attacks",
+          "supports": "The official objectives include the mapped topic(s): 2.4: Network attacks > Domain Name System (DNS) attacks."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc5452.html",
+          "title": "RFC 5452: Measures for Making DNS More Resilient against Forged Answers",
+          "locator": "Section 3, Description of DNS Spoofing",
+          "supports": "RFC 5452 explains that forged DNS data accepted by a cache makes clients contact the wrong and potentially malicious servers.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-21",
+      "reviewedAt": "2026-08-20T23:18:27+00:00",
+      "reviewBasis": [
+        "answers[].correct and the explicit correct field agree exactly",
+        "question, option texts, keyed letter, and explanation preserved from Alle_Fragen(1).json",
+        "selected wrong answer ignored as a solution key",
+        "all four options and the complete explanation inspected",
+        "official SY0-701 scope and authoritative primary fact sources checked",
+        "all active Vlad cards compared by composite identity and normalized stem",
+        "archived predecessor history inspected where present",
+        "responseSeconds copied into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 33 cumulative Chapter 2 source stems were compared with all 82 active Vlad cards; no active duplicate exists. Collision versus second-preimage and bluejacking versus bluesnarfing were explicitly distinguished."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "A backdoor bypasses normal access controls and does not describe falsified DNS records."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "An advanced persistent threat is an actor or campaign category, not the DNS-record manipulation technique."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "False DNS mappings that redirect legitimate names to malicious addresses are DNS poisoning."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "A Trojan is malware disguised as legitimate software and does not describe altered DNS records."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-330571f56ea95cfcc5c3",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "You have discovered that there are entries in your network’s domain name server that point legitimate domains to unknown and potentially harmful IP addresses. What best describes this type of attack?\nA: A backdoor\nB: An APT\nC: DNS poisoning\nD: A Trojan horse",
+        "back": ">> CORRECT: C |\n\nDNS poisoning occurs when false DNS information is inserted into legitimate DNS servers, resulting in traffic being redirected to unwanted or malicious sites. A backdoor provides access to the system by circumventing normal authentication. An APT is an advanced persistent threat. A Trojan horse ties a malicious program to a legitimate program.\n\nNicht:\nA | A backdoor bypasses normal access controls and does not describe falsified DNS records.\nB | An advanced persistent threat is an actor or campaign category, not the DNS-record manipulation technique.\nD | A Trojan is malware disguised as legitimate software and does not describe altered DNS records.",
+        "tags": [
+          "Network attacks",
+          "Domain Name System (DNS) attacks"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen(1).json",
+        "sourceId": "EAT_1705092784615_1_3738070583973223, tb211388.SecplPT3E.c02.097",
+        "responseSeconds": 33,
+        "selectedAnswersIgnoredForKey": [
+          "B"
+        ],
+        "textPolicy": "Question, answer-option text, keyed answer, and source explanation preserved exactly; only A. source delimiters are represented as A: in the card schema.",
+        "archivedPredecessorReactivated": null
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 33,
+            "totalAnswerTimeSeconds": 33,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-06204f1c314c63aa12c2",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:1.4:public-key-infrastructure-pki:private-key",
+        "req:sy0701:v7:4.1:application-security:code-signing"
+      ],
+      "evidence": "The exact keyed answer 'The private key for the signing certificate' is entailed by the cited definition or control and the source explanation; all four options were checked individually.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Official objectives: 1.4: Public key infrastructure (PKI) > Private key; 4.1: Application security > Code signing",
+          "supports": "The official objectives include the mapped topic(s): 1.4: Public key infrastructure (PKI) > Private key; 4.1: Application security > Code signing."
+        },
+        {
+          "url": "https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf",
+          "title": "NIST FIPS 186-5: Digital Signature Standard",
+          "locator": "Sections 5.1-5.2 and 6.2, signature generation and private/public key pairs",
+          "supports": "FIPS 186-5 assigns the private key to signature generation and the associated public key to signature verification.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-21",
+      "reviewedAt": "2026-08-20T23:18:27+00:00",
+      "reviewBasis": [
+        "answers[].correct and the explicit correct field agree exactly",
+        "question, option texts, keyed letter, and explanation preserved from Alle_Fragen(1).json",
+        "selected wrong answer ignored as a solution key",
+        "all four options and the complete explanation inspected",
+        "official SY0-701 scope and authoritative primary fact sources checked",
+        "all active Vlad cards compared by composite identity and normalized stem",
+        "archived predecessor history inspected where present",
+        "responseSeconds copied into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 33 cumulative Chapter 2 source stems were compared with all 82 active Vlad cards; no active duplicate exists. Collision versus second-preimage and bluejacking versus bluesnarfing were explicitly distinguished."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "correct",
+          "reason": "Possession of the signing private key enables generation of a signature that verifies under the trusted public key."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "A collision with a legitimate update hash is not required when the attacker can generate a valid signature with the private key."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "The public key verifies signatures but does not provide the secret signing capability needed to sign the malicious update."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Matching the hash of another malicious file would not establish trust or create a signature accepted under the trusted certificate."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-06204f1c314c63aa12c2",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Eric is conducting a penetration test and wants to release a malicious update for an organization’s application. The organization uses public key encryption to sign updates. What does Eric need to deliver an update that systems will accept?\nA: The private key for the signing certificate\nB: A collision with the hashed value of a legitimate update\nC: The public key for the signing certificate\nD: A collision with the hashed value of a malicious update",
+        "back": ">> CORRECT: A |\n\nIn order to deliver a malicious update that uses a signing certificate, Eric will need to gain access to the private key for the signing certificate. The public key is exactly that—public—and having it will not allow Eric to sign the update. Hashes and collisions are not needed for this type of exploit.\n\nNicht:\nB | A collision with a legitimate update hash is not required when the attacker can generate a valid signature with the private key.\nC | The public key verifies signatures but does not provide the secret signing capability needed to sign the malicious update.\nD | Matching the hash of another malicious file would not establish trust or create a signature accepted under the trusted certificate.",
+        "tags": [
+          "Public key infrastructure (PKI)",
+          "Private key"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen(1).json",
+        "sourceId": "EAT_1705092784868_1_1327775549592651, tb211388.SecplPT3E.c02.099",
+        "responseSeconds": 45,
+        "selectedAnswersIgnoredForKey": [
+          "C"
+        ],
+        "textPolicy": "Question, answer-option text, keyed answer, and source explanation preserved exactly; only A. source delimiters are represented as A: in the card schema.",
+        "archivedPredecessorReactivated": null
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 45,
+            "totalAnswerTimeSeconds": 45,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1772662005110",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.4:password-attacks:brute-force"
+      ],
+      "evidence": "The exact keyed answer 'The Windows SAM and the Linux /etc/shadow file' is entailed by the cited definition or control and the source explanation; all four options were checked individually.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Official objectives: 2.4: Password attacks > Brute force",
+          "supports": "The official objectives include the mapped topic(s): 2.4: Password attacks > Brute force."
+        },
+        {
+          "url": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/hh994565%28v%3Dws.11%29",
+          "title": "Microsoft Learn: Cached and Stored Credentials Technical Overview",
+          "locator": "Security Accounts Manager database section",
+          "supports": "Microsoft documents that the local SAM database stores account information including NT password hashes.",
+          "roles": [
+            "fact"
+          ]
+        },
+        {
+          "url": "https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security_guide/sect-security_guide-workstation_security-password_security",
+          "title": "Red Hat Enterprise Linux Security Guide: Password Security",
+          "locator": "Shadow passwords and offline password cracking discussion",
+          "supports": "Red Hat documents that password hashes are stored in /etc/shadow and that stolen hash data can be attacked offline.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-21",
+      "reviewedAt": "2026-08-20T23:18:27+00:00",
+      "reviewBasis": [
+        "answers[].correct and the explicit correct field agree exactly",
+        "question, option texts, keyed letter, and explanation preserved from Alle_Fragen(1).json",
+        "selected wrong answer ignored as a solution key",
+        "all four options and the complete explanation inspected",
+        "official SY0-701 scope and authoritative primary fact sources checked",
+        "all active Vlad cards compared by composite identity and normalized stem",
+        "archived predecessor history inspected where present",
+        "responseSeconds copied into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 33 cumulative Chapter 2 source stems were compared with all 82 active Vlad cards; no active duplicate exists. Collision versus second-preimage and bluejacking versus bluesnarfing were explicitly distinguished."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "The Windows Registry is too broad, and modern Linux password hashes are not stored in /etc/passwd."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "The Windows SAM is relevant, but Linux stores protected password hashes in /etc/shadow rather than /etc/passwd."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "The Windows SAM and Linux /etc/shadow contain the local password-hash material targeted by offline cracking."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Linux /etc/shadow is relevant, but the Windows target is specifically the SAM database rather than the Registry generally."
+        }
+      },
+      "content": {
+        "noteId": "qaIBodOrgc",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "What two files are commonly attacked using offline brute‐force attacks?\nA: The Windows Registry and the Linux /etc/passwd file\nB: The Windows SAM and the Linux /etc/passwd file\nC: The Windows SAM and the Linux /etc/shadow file\nD: The Windows Registry and the Linux /etc/shadow file",
+        "back": ">> CORRECT: C |\n\nThe Windows Security Account Manager (SAM) file and the /etc/shadow file for Linux systems both contain passwords and are popular targets for offline brute‐force attacks.\n\nNicht:\nA | The Windows Registry is too broad, and modern Linux password hashes are not stored in /etc/passwd.\nB | The Windows SAM is relevant, but Linux stores protected password hashes in /etc/shadow rather than /etc/passwd.\nD | Linux /etc/shadow is relevant, but the Windows target is specifically the SAM database rather than the Registry generally.",
+        "tags": [
+          "Password attacks",
+          "Brute force"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen(1).json",
+        "sourceId": "EAT_1705092787006_1_6883763563012153, tb211388.SecplPT3E.c02.110",
+        "responseSeconds": 18,
+        "selectedAnswersIgnoredForKey": [
+          "D"
+        ],
+        "textPolicy": "Question, answer-option text, keyed answer, and source explanation preserved exactly; only A. source delimiters are represented as A: in the card schema.",
+        "archivedPredecessorReactivated": "1772662005110"
+      },
+      "createState": {
+        "type": 0,
+        "queue": 0,
+        "due": 0,
+        "dueAt": 0,
+        "learningStep": 0,
+        "lastReviewedAt": null,
+        "interval": 0,
+        "factor": 2500,
+        "stability": 0.0,
+        "difficulty": 0.0,
+        "retrievability": null,
+        "reps": 0,
+        "lapses": 0,
+        "algorithm": "fsrs",
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 18,
+            "totalAnswerTimeSeconds": 18,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-0e709da5349ed93a555e",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.2:unsecure-networks:bluetooth"
+      ],
+      "evidence": "The exact keyed answer 'Bluesnarfing' is entailed by the cited definition or control and the source explanation; all four options were checked individually.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Official objectives: 2.2: Unsecure networks > Bluetooth",
+          "supports": "The official objectives include the mapped topic(s): 2.2: Unsecure networks > Bluetooth."
+        },
+        {
+          "url": "https://doi.org/10.6028/NIST.SP.800-121r2-upd1",
+          "title": "NIST SP 800-121 Rev. 2 Update 1",
+          "locator": "Section 4.2, Bluetooth Threats, Bluesnarfing",
+          "supports": "NIST defines bluesnarfing as forcing a Bluetooth connection that provides access to data stored on the device.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-21",
+      "reviewedAt": "2026-08-20T23:18:27+00:00",
+      "reviewBasis": [
+        "answers[].correct and the explicit correct field agree exactly",
+        "question, option texts, keyed letter, and explanation preserved from Alle_Fragen(1).json",
+        "selected wrong answer ignored as a solution key",
+        "all four options and the complete explanation inspected",
+        "official SY0-701 scope and authoritative primary fact sources checked",
+        "all active Vlad cards compared by composite identity and normalized stem",
+        "archived predecessor history inspected where present",
+        "responseSeconds copied into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 33 cumulative Chapter 2 source stems were compared with all 82 active Vlad cards; no active duplicate exists. Collision versus second-preimage and bluejacking versus bluesnarfing were explicitly distinguished."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Bluejacking sends unsolicited Bluetooth messages; it does not describe stealing stored phone data."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "Bluesnarfing is unauthorized access to data on a Bluetooth device and matches the unexplained connection and theft."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "An evil twin is a rogue Wi-Fi access point imitating a legitimate network, not a Bluetooth data-access attack."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "The scenario provides evidence of an unauthorized Bluetooth connection, not installation of a remote-access Trojan."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-0e709da5349ed93a555e",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "You have noticed that when in a crowded area, data from your cell phone is stolen. Later investigation shows a Bluetooth connection to your phone, one that you cannot explain. What describes this attack?\nA: Bluejacking\nB: Bluesnarfing\nC: An evil twin attack\nD: A remote‐access Trojan",
+        "back": ">> CORRECT: B |\n\nBluesnarfing involves accessing data from a Bluetooth device when it is in range. Bluejacking involves sending unsolicited messages to Bluetooth devices when they are in range. Evil twin attacks use a rogue access point whose name is similar or identical to that of a legitimate access point. Nothing in this scenario points to a remote‐access Trojan being the cause of the stolen data.\n\nNicht:\nA | Bluejacking sends unsolicited Bluetooth messages; it does not describe stealing stored phone data.\nC | An evil twin is a rogue Wi-Fi access point imitating a legitimate network, not a Bluetooth data-access attack.\nD | The scenario provides evidence of an unauthorized Bluetooth connection, not installation of a remote-access Trojan.",
+        "tags": [
+          "Unsecure networks",
+          "Bluetooth"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen(1).json",
+        "sourceId": "EAT_1705092787159_1_4291293310876025, tb211388.SecplPT3E.c02.111",
+        "responseSeconds": 17,
+        "selectedAnswersIgnoredForKey": [
+          "A"
+        ],
+        "textPolicy": "Question, answer-option text, keyed answer, and source explanation preserved exactly; only A. source delimiters are represented as A: in the card schema.",
+        "archivedPredecessorReactivated": null
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 17,
+            "totalAnswerTimeSeconds": 17,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-1b480a342c015178f342",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.5:access-control:permissions"
+      ],
+      "evidence": "The exact keyed answer 'Open or weak permissions' is entailed by the cited definition or control and the source explanation; all four options were checked individually.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Official objectives: 2.5: Access control > Permissions",
+          "supports": "The official objectives include the mapped topic(s): 2.5: Access control > Permissions."
+        },
+        {
+          "url": "https://www.gnu.org/s/coreutils/manual/html_node/Numeric-Modes.html",
+          "title": "GNU Coreutils Manual: Numeric Modes",
+          "locator": "Section 27.3, octal read, write, and execute bits for owner, group, and other",
+          "supports": "GNU documents that octal digit 7 grants read, write, and execute/search and that the three digits apply to owner, group, and other.",
+          "roles": [
+            "fact"
+          ]
+        },
+        {
+          "url": "https://doi.org/10.6028/NIST.SP.800-53r5",
+          "title": "NIST SP 800-53 Rev. 5",
+          "locator": "Control AC-6, Least Privilege",
+          "supports": "AC-6 requires allowing only the accesses necessary to accomplish assigned tasks, making universal rwx access a weak permission configuration.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-21",
+      "reviewedAt": "2026-08-20T23:18:27+00:00",
+      "reviewBasis": [
+        "answers[].correct and the explicit correct field agree exactly",
+        "question, option texts, keyed letter, and explanation preserved from Alle_Fragen(1).json",
+        "selected wrong answer ignored as a solution key",
+        "all four options and the complete explanation inspected",
+        "official SY0-701 scope and authoritative primary fact sources checked",
+        "all active Vlad cards compared by composite identity and normalized stem",
+        "archived predecessor history inspected where present",
+        "responseSeconds copied into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 33 cumulative Chapter 2 source stems were compared with all 82 active Vlad cards; no active duplicate exists. Collision versus second-preimage and bluejacking versus bluesnarfing were explicitly distinguished."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "correct",
+          "reason": "Mode 777 grants read, write, and execute/search to owner, group, and all other users, which is an open or weak permission setting."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "The finding is specifically the access mode assigned to the directory, not a file-handling workflow issue."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "No attacker is shown gaining higher privileges; Alex is identifying an insecure permission configuration."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Open or weak permissions directly describes mode 777 on a sensitive system directory, so none-of-the-above is false."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-1b480a342c015178f342",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Charles sets the permissions on the /etc directory on a Linux system to 777 using the chmod command. If Alex later discovers this, what should he report his finding as?\nA: Open or weak permissions\nB: Improper file handling\nC: A privilege escalation attack\nD: None of the above",
+        "back": ">> CORRECT: A |\n\nLinux privileges can be set numerically, and 777 sets user, group, and world to all have read, write, and execute access to the entire /etc directory—a very insecure, and thus open or weak permission. Setting permissions like this is a common workaround when permissions aren’t working but can expose data or make binaries executable by users who should not have access to them. When you set permissions for a system, remember to set them according to the rule of least privilege: only the permissions that are required for the role or task should be configured.\n\nNicht:\nB | The finding is specifically the access mode assigned to the directory, not a file-handling workflow issue.\nC | No attacker is shown gaining higher privileges; Alex is identifying an insecure permission configuration.\nD | Open or weak permissions directly describes mode 777 on a sensitive system directory, so none-of-the-above is false.",
+        "tags": [
+          "Access control",
+          "Permissions"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen(1).json",
+        "sourceId": "EAT_1705092787738_1_8333508421230627, tb211388.SecplPT3E.c02.115",
+        "responseSeconds": 12,
+        "selectedAnswersIgnoredForKey": [
+          "C"
+        ],
+        "textPolicy": "Question, answer-option text, keyed answer, and source explanation preserved exactly; only A. source delimiters are represented as A: in the card schema.",
+        "archivedPredecessorReactivated": null
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 12,
+            "totalAnswerTimeSeconds": 12,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-c32deda7d264ded6841b",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.4:indicators:concurrent-session-usage",
+        "req:sy0701:v7:2.4:indicators:impossible-travel"
+      ],
+      "evidence": "The exact keyed answer 'When they occur in two different locations at the same time' is entailed by the cited definition or control and the source explanation; all four options were checked individually.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Official objectives: 2.4: Indicators > Concurrent session usage; 2.4: Indicators > Impossible travel",
+          "supports": "The official objectives include the mapped topic(s): 2.4: Indicators > Concurrent session usage; 2.4: Indicators > Impossible travel."
+        },
+        {
+          "url": "https://learn.microsoft.com/en-us/entra/id-protection/concept-identity-protection-risks",
+          "title": "Microsoft Entra ID Protection: Risk detections",
+          "locator": "Impossible travel detection",
+          "supports": "Microsoft describes user activity from geographically distant locations within an impossible travel time as a risk that may indicate another user has the credentials.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-21",
+      "reviewedAt": "2026-08-20T23:18:27+00:00",
+      "reviewBasis": [
+        "answers[].correct and the explicit correct field agree exactly",
+        "question, option texts, keyed letter, and explanation preserved from Alle_Fragen(1).json",
+        "selected wrong answer ignored as a solution key",
+        "all four options and the complete explanation inspected",
+        "official SY0-701 scope and authoritative primary fact sources checked",
+        "all active Vlad cards compared by composite identity and normalized stem",
+        "archived predecessor history inspected where present",
+        "responseSeconds copied into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 33 cumulative Chapter 2 source stems were compared with all 82 active Vlad cards; no active duplicate exists. Collision versus second-preimage and bluejacking versus bluesnarfing were explicitly distinguished."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Multiple sessions on the same system can be normal and provide no geographic inconsistency by themselves."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "A user may legitimately use two assigned systems; location and timing are needed to establish a stronger indicator."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "Simultaneous activity from different locations can create impossible travel and may indicate credential compromise."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Concurrent sessions in the same location do not by themselves create the geographic anomaly associated with compromise."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-c32deda7d264ded6841b",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Under what circumstances are concurrent sessions most commonly considered indicators of compromise?\nA: When they occur on the same system\nB: When they occur on two different systems issued to the same user\nC: When they occur in two different locations at the same time\nD: When they occur in the same location at the same time",
+        "back": ">> CORRECT: C |\n\nConcurrent sessions can be relatively common in some applications, so additional data is important when assessing if the event is an IoC. If the event occurs in two different locations, particularly if travel between them would be classified as impossible travel it would more likely be an indicator of compromise or misuse.\n\nNicht:\nA | Multiple sessions on the same system can be normal and provide no geographic inconsistency by themselves.\nB | A user may legitimately use two assigned systems; location and timing are needed to establish a stronger indicator.\nD | Concurrent sessions in the same location do not by themselves create the geographic anomaly associated with compromise.",
+        "tags": [
+          "Indicators",
+          "Concurrent session usage"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen(1).json",
+        "sourceId": "EAT_1705092787924_1_834586689007875, tb211388.SecplPT3E.c02.116",
+        "responseSeconds": 40,
+        "selectedAnswersIgnoredForKey": [
+          "B"
+        ],
+        "textPolicy": "Question, answer-option text, keyed answer, and source explanation preserved exactly; only A. source delimiters are represented as A: in the card schema.",
+        "archivedPredecessorReactivated": null
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 40,
+            "totalAnswerTimeSeconds": 40,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-9f4158aeae99d2d315a7",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.3:cloud-specific",
+        "req:sy0701:v7:2.1:motivations:service-disruption"
+      ],
+      "evidence": "The exact keyed answer 'Review the cloud service provider’s security tools and enable logging and anti‐DoS tools if they exist.' is entailed by the cited definition or control and the source explanation; all four options were checked individually.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Official objectives: 2.3: Cloud-specific; 2.1: Motivations > Service disruption",
+          "supports": "The official objectives include the mapped topic(s): 2.3: Cloud-specific; 2.1: Motivations > Service disruption."
+        },
+        {
+          "url": "https://docs.aws.amazon.com/whitepapers/latest/aws-best-practices-ddos-resiliency/metrics-and-alarms.html",
+          "title": "AWS Best Practices for DDoS Resiliency: Metrics and alarms",
+          "locator": "Metrics and alarms guidance and AWS Shield/CloudWatch detection metrics",
+          "supports": "AWS recommends provider monitoring tools, CloudWatch metrics and alarms, and Shield DDoS-detection metrics to determine whether cloud resources are under attack.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-21",
+      "reviewedAt": "2026-08-20T23:18:27+00:00",
+      "reviewBasis": [
+        "answers[].correct and the explicit correct field agree exactly",
+        "question, option texts, keyed letter, and explanation preserved from Alle_Fragen(1).json",
+        "selected wrong answer ignored as a solution key",
+        "all four options and the complete explanation inspected",
+        "official SY0-701 scope and authoritative primary fact sources checked",
+        "all active Vlad cards compared by composite identity and normalized stem",
+        "archived predecessor history inspected where present",
+        "responseSeconds copied into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 33 cumulative Chapter 2 source stems were compared with all 82 active Vlad cards; no active duplicate exists. Collision versus second-preimage and bluejacking versus bluesnarfing were explicitly distinguished."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Cloud providers do offer security, logging, monitoring, and DDoS-protection capabilities."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Calling support may be an escalation path, but reviewing and enabling the available customer-facing tools is the direct detection action."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "Provider security tools, logging, metrics, and anti-DoS capabilities give Frank the visibility needed to detect an attack."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "The cloud provider manages its ISP relationship; Frank should use the controls exposed by his cloud provider."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-9f4158aeae99d2d315a7",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Frank’s organization operates in a shared responsibility cloud environment. What can Frank do to determine if he is suffering from a denial‐of‐service (DoS) attack against his cloud hosting environment?\nA: Nothing; cloud services do not provide security tools.\nB: Call the cloud service provider to have them stop the DoS attack.\nC: Review the cloud service provider’s security tools and enable logging and anti‐DoS tools if they exist.\nD: Call the cloud service provider’s Internet service provider (ISP) and ask them to enable DoS prevention.",
+        "back": ">> CORRECT: C |\n\nFrank’s best option is to review the anti‐denial‐of‐service and other security tools that his cloud hosting provider provides and to make appropriate use of them. The major infrastructure‐as‐a‐service (IaaS) providers have a variety of security tools that can help both detect and prevent DoS attacks from taking down sites that are hosted in their infrastructure. Calling the cloud service provider’s ISP will not work because the ISP works with the cloud provider, not with Frank! It is possible the cloud service provider might be able to assist Frank, but they are most likely to instruct him to use the existing tools that they already provide.\n\nNicht:\nA | Cloud providers do offer security, logging, monitoring, and DDoS-protection capabilities.\nB | Calling support may be an escalation path, but reviewing and enabling the available customer-facing tools is the direct detection action.\nD | The cloud provider manages its ISP relationship; Frank should use the controls exposed by his cloud provider.",
+        "tags": [
+          "Cloud-specific"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen(1).json",
+        "sourceId": "EAT_1705092788732_1_7192886639159624, tb211388.SecplPT3E.c02.118",
+        "responseSeconds": 39,
+        "selectedAnswersIgnoredForKey": [
+          "D"
+        ],
+        "textPolicy": "Question, answer-option text, keyed answer, and source explanation preserved exactly; only A. source delimiters are represented as A: in the card schema.",
+        "archivedPredecessorReactivated": null
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 39,
+            "totalAnswerTimeSeconds": 39,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-cf11779f8e878b239ae2",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.2:open-service-ports",
+        "req:sy0701:v7:2.5:hardening-techniques:disabling-ports-protocols"
+      ],
+      "evidence": "The exact keyed answer 'A configuration review' is entailed by the cited definition or control and the source explanation; all four options were checked individually.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Official objectives: 2.2: Open service ports; 2.5: Hardening techniques > Disabling ports/protocols",
+          "supports": "The official objectives include the mapped topic(s): 2.2: Open service ports; 2.5: Hardening techniques > Disabling ports/protocols."
+        },
+        {
+          "url": "https://doi.org/10.6028/NIST.SP.800-53r5",
+          "title": "NIST SP 800-53 Rev. 5",
+          "locator": "Control CM-7 and CM-7(1), Least Functionality and Periodic Review",
+          "supports": "CM-7 requires reviewing systems to identify and disable unnecessary functions, ports, protocols, software, and services.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-21",
+      "reviewedAt": "2026-08-20T23:18:27+00:00",
+      "reviewBasis": [
+        "answers[].correct and the explicit correct field agree exactly",
+        "question, option texts, keyed letter, and explanation preserved from Alle_Fragen(1).json",
+        "selected wrong answer ignored as a solution key",
+        "all four options and the complete explanation inspected",
+        "official SY0-701 scope and authoritative primary fact sources checked",
+        "all active Vlad cards compared by composite identity and normalized stem",
+        "archived predecessor history inspected where present",
+        "responseSeconds copied into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 33 cumulative Chapter 2 source stems were compared with all 82 active Vlad cards; no active duplicate exists. Collision versus second-preimage and bluejacking versus bluesnarfing were explicitly distinguished."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Passive capture only reveals services that generate observed traffic and can miss listening services that remain unused during capture."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "A configuration review can enumerate configured ports and services without relying on a vulnerability scanner or observed traffic."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Packet capture observes traffic rather than comprehensively enumerating every configured but currently unused service."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Logs may not contain entries for listening services that have not been accessed, so log review can miss open ports."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-cf11779f8e878b239ae2",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Ryan needs to verify that no unnecessary ports and services are available on his systems, but he cannot run a vulnerability scanner. What is his best option?\nA: Passive network traffic capture to detect services\nB: A configuration review\nC: Active network traffic capture to detect services\nD: Log review",
+        "back": ">> CORRECT: B |\n\nConfiguration reviews, either using automated tool or manual validation, can be a useful proactive way to ensure that unnecessary ports and services are not accessible. Configuration management tools can also help ensure that expected configurations are in place. Neither passive nor active network packet capture will show services that are not accessed, meaning that open ports could be missed, and log review won’t show all open ports either.\n\nNicht:\nA | Passive capture only reveals services that generate observed traffic and can miss listening services that remain unused during capture.\nC | Packet capture observes traffic rather than comprehensively enumerating every configured but currently unused service.\nD | Logs may not contain entries for listening services that have not been accessed, so log review can miss open ports.",
+        "tags": [
+          "Open service ports"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen(1).json",
+        "sourceId": "EAT_1705092789039_1_1812486244703277, tb211388.SecplPT3E.c02.120",
+        "responseSeconds": 28,
+        "selectedAnswersIgnoredForKey": [
+          "A"
+        ],
+        "textPolicy": "Question, answer-option text, keyed answer, and source explanation preserved exactly; only A. source delimiters are represented as A: in the card schema.",
+        "archivedPredecessorReactivated": null
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 28,
+            "totalAnswerTimeSeconds": 28,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      }
+    }
+  ]
+}

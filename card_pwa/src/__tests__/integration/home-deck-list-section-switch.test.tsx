@@ -58,6 +58,7 @@ function renderSection(showShuffleOnly: boolean): string {
         },
       }}
       onReload={() => undefined}
+      onPullRefresh={async () => true}
       onShowImport={() => undefined}
       onStartStudy={() => undefined}
       onStartShuffleStudy={() => undefined}
@@ -72,6 +73,12 @@ function renderSection(showShuffleOnly: boolean): string {
 }
 
 describe('HomeDeckListSection shuffle/deck switch', () => {
+  it('renders the mobile pull-to-refresh status without changing the deck list', () => {
+    const html = renderSection(false)
+    expect(html).toContain('data-testid="home-deck-pull-refresh"')
+    expect(html).toContain('Alpha Deck')
+  })
+
   it('shows only regular decks when shuffle-only mode is disabled', () => {
     const html = renderSection(false)
     expect(html).toContain('Alpha Deck')

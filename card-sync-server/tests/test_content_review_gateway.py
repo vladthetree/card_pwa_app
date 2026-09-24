@@ -286,6 +286,206 @@ def test_publication_validation_accepts_explicit_semantic_adjudication(review_db
     ) == []
 
 
+def test_reviewed_publish_can_create_catalog_card_with_timing_metadata(review_db, tmp_path, monkeypatch):
+    # A deleted seed keeps shared-catalog mode enabled without introducing an
+    # active card that the replacement registry would have to cover.
+    upsert_catalog_content(
+        review_db,
+        card_id="hidden-seed",
+        canonical_user_id="vlad-user",
+        content={
+            "noteId": "hidden-note",
+            "deckId": "hidden-deck",
+            "front": "Hidden",
+            "back": "Hidden",
+            "tags": [],
+            "extra": {},
+        },
+        created_at=1,
+        updated_at=1,
+        deleted_at=1,
+        source_client="security-card-review-gateway-v1",
+    )
+    review_db.commit()
+    content = {
+        "noteId": "note-new",
+        "deckId": "deck-domain-1",
+        "front": "Which concept?\nA: Salt\nB: Blockchain",
+        "back": ">> CORRECT: B |\n\nReviewed blockchain explanation.",
+        "tags": ["Domain 1.0"],
+        "extra": {"acronym": "", "examples": "", "port": "", "protocol": ""},
+    }
+    prospective = {
+        "cardId": "card-new",
+        "content": content,
+        "contentHash": security_card_review_gateway.content_hash(content),
+    }
+    decision = {
+        **_publication_review(prospective),
+        "userId": "vlad-user",
+        "operation": "create",
+        "content": content,
+        "createState": {
+            "metadata": {
+                "answerTiming": {
+                    "averageAnswerTimeSeconds": 39,
+                    "totalAnswerTimeSeconds": 39,
+                    "answerTimeSampleCount": 1,
+                    "studySessionCount": 1,
+                }
+            }
+        },
+    }
+    decisions_path = tmp_path / "decisions.json"
+    decisions_path.write_text(json.dumps({
+        "replaceRegistry": True,
+        "deck": {"id": "deck-domain-1", "name": "Domain 1.0"},
+        "decisions": [decision],
+    }), encoding="utf-8")
+    registry_path = tmp_path / "registry.json"
+    registry_path.write_text(json.dumps({
+        "schemaVersion": security_card_review_gateway.SCHEMA_VERSION,
+        "profile": "Vlad",
+        "canonicalUserId": "vlad-user",
+        "identityKey": ["userId", "cardId"],
+        "reviews": [],
+    }), encoding="utf-8")
+    db_path = Path(review_db.execute("PRAGMA database_list").fetchone()[2])
+    monkeypatch.setattr(security_card_review_gateway, "BACKUP_DIR", tmp_path / "backups")
+
+    result = security_card_review_gateway.publish(
+        review_db,
+        db_path,
+        registry_path,
+        decisions_path,
+    )
+
+    catalog = review_db.execute(
+        "SELECT front, back, deck_id FROM shared_card_catalog WHERE id='card-new'"
+    ).fetchone()
+    reference = review_db.execute(
+        "SELECT type, queue, reps, metadata_json FROM server_cards WHERE user_id='vlad-user' AND id='card-new'"
+    ).fetchone()
+    registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    assert result["created"] == 1
+    assert result["deckId"] == "deck-domain-1"
+    assert catalog["front"].endswith("B: Blockchain")
+    assert "CORRECT: B" in catalog["back"]
+    assert reference["type"] == 0
+    assert reference["queue"] == 0
+    assert reference["reps"] == 0
+    assert json.loads(reference["metadata_json"])["answerTiming"]["averageAnswerTimeSeconds"] == 39
+    assert [review["cardId"] for review in registry["reviews"]] == ["card-new"]
+    assert security_card_review_gateway.check(review_db, registry_path)["ok"] is True
+
+
+def test_non_gateway_cannot_create_unknown_catalog_card(review_db):
+    upsert_catalog_content(
+        review_db,
+        card_id="hidden-seed",
+        canonical_user_id="vlad-user",
+        content={
+            "noteId": "hidden-note",
+            "deckId": "hidden-deck",
+            "front": "Hidden",
+            "back": "Hidden",
+            "tags": [],
+            "extra": {},
+        },
+        created_at=1,
+        updated_at=1,
+        deleted_at=1,
+        source_client="security-card-review-gateway-v1",
+    )
+    apply_operation(
+        review_db,
+        "card.create",
+        {
+            "id": "unreviewed-new",
+            "deckId": "deck-1",
+            "front": "Unreviewed",
+            "back": "Unreviewed",
+            "tags": [],
+            "extra": {},
+        },
+        500,
+        "learner-device",
+        op_id="unreviewed-create",
+        user_id="vlad-user",
+    )
+
+    assert review_db.execute(
+        "SELECT 1 FROM shared_card_catalog WHERE id='unreviewed-new'"
+    ).fetchone() is None
+    assert review_db.execute(
+        "SELECT 1 FROM server_cards WHERE user_id='vlad-user' AND id='unreviewed-new'"
+    ).fetchone() is None
+
+
+def _write_scoped_registry(path, review):
+    path.write_text(
+        json.dumps({
+            "schemaVersion": security_card_review_gateway.SCHEMA_VERSION,
+            "profile": "Vlad",
+            "canonicalUserId": "vlad-user",
+            "identityKey": ["userId", "cardId"],
+            "reviews": [{**review, "userId": "vlad-user"}],
+        }),
+        encoding="utf-8",
+    )
+
+
+def test_check_rejects_legacy_review_without_strict_semantic_evidence(review_db, tmp_path):
+    card = security_card_review_gateway.active_cards(review_db, "vlad-user")[0]
+    review = _publication_review(card)
+    for source in review["sources"]:
+        source.pop("locator")
+        source.pop("supports")
+    review.pop("semanticChecks")
+    review.pop("sourceConflicts")
+    review.pop("crossCardCheck")
+    review.pop("revisionConsistency")
+    review.pop("optionAssessments")
+    registry_path = tmp_path / "legacy-registry.json"
+    _write_scoped_registry(registry_path, review)
+
+    result = security_card_review_gateway.check(review_db, registry_path)
+
+    assert result["ok"] is False
+    assert result["assurance"] == "not established"
+    assert result["semanticReviewGate"]["passingReviews"] == 0
+    assert result["semanticReviewGate"]["failingReviews"] == 1
+    assert result["staleOrInvalidReviews"] == 1
+    assert result["reviewRecords"][0]["strictSemanticReview"] is False
+    assert any("exact locator" in error for error in result["errors"])
+    assert any("optionAssessments missing" in error for error in result["errors"])
+
+
+def test_check_accepts_strict_reviews_and_emits_verifiable_report(review_db, tmp_path):
+    card = security_card_review_gateway.active_cards(review_db, "vlad-user")[0]
+    registry_path = tmp_path / "strict-registry.json"
+    _write_scoped_registry(registry_path, _publication_review(card))
+
+    result = security_card_review_gateway.check(review_db, registry_path)
+    report_path = tmp_path / "check-report.json"
+    report_path.write_text(json.dumps(result), encoding="utf-8")
+    verified = security_card_review_gateway.verify_report_scope(review_db, report_path)
+
+    assert result["ok"] is True
+    assert result["semanticReviewGate"]["passingReviews"] == 1
+    assert result["semanticReviewGate"]["failingReviews"] == 0
+    assert result["coverage"]["canonicalCardsReviewed"] == 1
+    assert result["reviewRecords"] == [{
+        "userId": "vlad-user",
+        "cardId": "card-1",
+        "contentHash": card["contentHash"],
+        "verdict": "approved",
+        "strictSemanticReview": True,
+    }]
+    assert verified["ok"] is True
+    assert verified["matchedHashes"] == 1
+
+
 def test_vlad_catalog_replaces_conflicting_user_content_but_preserves_state(review_db):
     review_db.execute(
         """INSERT INTO users

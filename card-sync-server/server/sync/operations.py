@@ -323,7 +323,9 @@ def apply_operation(conn, op_type, payload, client_timestamp, source_client, op_
       return
     candidate_ts = _card_candidate_ts()
     canonical = catalog_row(conn, card_id) if shared_catalog else None
-    if shared_catalog and not canonical:
+    # Unknown shared-catalog content may only be introduced by Vlad's reviewed
+    # publication gateway. Learner devices still cannot create canonical cards.
+    if shared_catalog and not canonical and not canonical_writer:
       return
 
     if canonical_writer:

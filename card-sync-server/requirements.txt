@@ -1,2 +1,2 @@
 # Runtime dependencies
-pywebpush>=2,<3
+pywebpush>=2.5,<3

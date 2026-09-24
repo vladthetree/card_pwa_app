@@ -1,0 +1,1386 @@
+{
+  "ok": true,
+  "assurance": "Vlad-user-scoped exact-hash, structural, and strict semantic-review evidence coverage",
+  "assuranceLimit": "The gateway validates exact content binding and auditable semantic-review evidence; it does not independently establish technical truth.",
+  "semanticReviewGate": {
+    "requiredForEveryCurrentReview": true,
+    "passingReviews": 193,
+    "failingReviews": 0,
+    "requirements": "exact source locators and supported claims, per-option/item adjudication, front/back coherence, cross-card comparison, revision-history inspection, and source-conflict checks"
+  },
+  "profile": "Vlad",
+  "canonicalUserId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+  "identityKey": [
+    "userId",
+    "cardId"
+  ],
+  "coverage": {
+    "canonicalCardsReviewed": 193,
+    "strictSemanticReviewsPassing": 193
+  },
+  "activeCards": 193,
+  "currentReviews": 193,
+  "missingReviews": 0,
+  "duplicateReviews": 0,
+  "staleOrInvalidReviews": 0,
+  "pendingProposals": 2,
+  "verdicts": {
+    "approved": 186,
+    "corrected": 7,
+    "not_relevant": 0
+  },
+  "reviewRecords": [
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1772662005082",
+      "contentHash": "edb6f60f503c54a8a8007f3b1c93fd1f554644ad59eff187ca8868922cfe3580",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "1772662005110",
+      "contentHash": "58b1081876f41b2641c1b5dca9334509b81874c6c89ce161ca25b119d2009d05",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-0082622d319180fab5dd",
+      "contentHash": "f60119ee0efff27bf2fdf344326e31921e2eeb173c7c45dfe64aebfff1bc18c5",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-0556f3a5d66456152968",
+      "contentHash": "15093bcfdaac16c77871ea55ea309b57421c9403fc1ec6409c667bfd6700f03a",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-07b6ded1ac2b19bf08c5",
+      "contentHash": "939b6bb950e7bd76c2ed18d9b09949f09351468526c7d9fedfe72376ef33b874",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-095b6483aa40d2a38b66",
+      "contentHash": "66b7316cd0d3832a2809f14d58c010c166881b18a291a95553fc936febc9eae3",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-0bc388814321cf19e350",
+      "contentHash": "3d11f99e77acf654678f2f95f8672421f1b8726621383fd3b998b88d621a0c52",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-1741adea3c2b0726595e",
+      "contentHash": "8cfb927572bfa16ac221baf95f9a84d393a0cdc3e578a780962184bb44c87a9b",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-1778d8f81d9713e1a6d7",
+      "contentHash": "4fc4e7b9316693816e1228767dfe3a3d0c54a1b79ca927bb05647685e972e97a",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-18ea1dbbb4160093c17c",
+      "contentHash": "b7bdd3cf6edee8c74f5480a8b6060fb0a5b72592dea41e6d11de02d0067fd2dd",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-202bf7113bff1e0d27f5",
+      "contentHash": "cbf8b33719cd1545a5482ce92b4b20401ce7cd94ad1bc2111f3f0dbd14f2b6e3",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-271dccf26519bc3e48e2",
+      "contentHash": "ced298acc9a6dfc89d89abee9b5f514552055e3837cabbc58b5c7bdbb9dc8330",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-27866507713d38e110a5",
+      "contentHash": "f8e03235d3253ea817c787656ed0ca38b61522b169731c5606c755ca9797a98d",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-2944ef508e92a6af38de",
+      "contentHash": "675b15f17b1ab207b8e63de00ebf24002469f09c9eed273abf6e6a24c0e98988",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-2a56944121299403df3d",
+      "contentHash": "809ea3008d7c9ee4b15c99e6672bed14e196fa3158acabb5f4d142ec6e57f72d",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-2ece3ae2f15f612d554a",
+      "contentHash": "33c8ed47774c391023970b708f020f5c22f7028eca629c245b5515b23f812cdc",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-3babb3d978ecc9928a7b",
+      "contentHash": "dbfc894d4b32e37042f50fa2acffc8ab6e49c2c51c5bafdf9c50c617800c3a72",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-3d6df44d578bd822949e",
+      "contentHash": "b30eae6f0f7ac54883f3fa8a73a65f22afe35acf0e34fbc6afbf1c6ea3a937a1",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-40ccc6dbd2fb8a20a414",
+      "contentHash": "f9e093b83e9d155b815305ff27ea3660655afc580e1f548203507d0d017f326d",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-42b601a780554e626b74",
+      "contentHash": "a6bb39609cd92cb3413f84e3a8f5d33795333e5a1b4304fc81b7b81b866fb189",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-4960286277c84d62073d",
+      "contentHash": "7e467c27bd35a48a0722b9b84fa2fc806de2409170ca42910bcc4a2f48c95468",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-50574d6a1f0a162a5dc5",
+      "contentHash": "c850e8431c5813fb01f6e20f1617a1556f12ef48ae5ca40fed8b02847d53afb5",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-52565e10bfeb31b1318e",
+      "contentHash": "9e14a3e2f98b2ae5ce86e1e92a69eb48c09e25813c32236637edd8dd8a5ce9c1",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-5aa73588278d71677b81",
+      "contentHash": "b37ce5e3dd39fb7b5938cb99c8151a381db868a4a3561459c0949ed90d40eca7",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-5c7b750297b5384d6f1e",
+      "contentHash": "e17086a8c921069d6cec6a888de0981d796eaa14b14dbe69c28fedfe55bfabe0",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-5fd591ee19f1274007bd",
+      "contentHash": "7f63021f5b643860c087cf30cdfe4a0c7296335e6148e9254c0979bfec2d81f4",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-6144462aafa22ed65e8e",
+      "contentHash": "64c2bd7090e1a7b19a4acb168f689d19c4d1d4246f59e208bb6e9208e34c2533",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-660560c913991e5f479b",
+      "contentHash": "f77a7fcd2d776efe8a5b9174f8c209eef9c6731fc36f6304214798b53877c37c",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-6af1b4dc380a1a7e2fe1",
+      "contentHash": "864dde8574b29ff0dd34dc64918532704a08ca8042954280e6390bd691b4608f",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-6dbc72d7f118723b9758",
+      "contentHash": "ee9f950fafeb2d229719d5ff79704016702d7dab048afb2a82b6d4337a05e737",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-739e4be822f5616501ca",
+      "contentHash": "d671a8e1ef884bb91195a5d6ce765404d9b798499f51c2e18e74ed8d779ad0b0",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-787d8f98dd4e10454c77",
+      "contentHash": "81d300c7aef30e020bbe54a15f1837afbc6b69b3a690d894385b2d88cff68360",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-7955d58f09209cab6c63",
+      "contentHash": "4732dce5ae5b85444e9a33dfd4a4766ce67178c25cd9fee0cdedbd76b42cd6ad",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-7ba057a1288ccbb97e5a",
+      "contentHash": "77c6f98c2f0ae5ad4101ac7005aa6337c9c25482d3ce8dc2e4515495370ae31b",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-842d2fdde1fd1812b721",
+      "contentHash": "19ea3fe7e2f6093caf057ca1f6cb58fb2fb29f37bcf9e38c72a01bc206803d8e",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-84e7fb89a067b04e03c1",
+      "contentHash": "fe437f80686e7028af6d0f57f3fff5e83498d3e69ee7fa40809b27a097966c6f",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-87b284e062d26bd6a8c4",
+      "contentHash": "f68cc18ffd33f55eed3270e1375ae3f10a3d783638f69126ac86e75af55447d9",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-908e1757b39d295cb5d6",
+      "contentHash": "b7e3d13abbe2e421b2fd7409019fe99478263b44096374aaf67770046136d5c7",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-976226a2804e2dce3e0b",
+      "contentHash": "2148aaf88546c801b9acb734304f60909d81bfedcd94dc347d8ec1e643febe49",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-99f57e723f96df5f193d",
+      "contentHash": "cd0a6e82f6bf8d86fd9684ed06cd03078c777a0b5f648667754eadb0fc520897",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-9bfad29d5e00e401badf",
+      "contentHash": "e3e28dbc0c5c234063d3244bfe601f261f133fd025d50c99904fd6d412dab405",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-9e293c3363eaf23c445e",
+      "contentHash": "044a7e2b58e9011806dae5ed988af012d719e25012de80f83dab1514c4d7b97b",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-a300ea9763500b37291a",
+      "contentHash": "bdbb1b6736e32bf28081e3cce4b836c4d0d6e39449aef24bc94ac04dcd0994a6",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-a334fe0cbb3fb36d6648",
+      "contentHash": "7e78debc75bdd671ad71ec0a67919433ca12b56c8fbee98c0a7106faa9837051",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-a51f86347c52a9a25fee",
+      "contentHash": "9f45084ccefbf5543c626651ce2debd8c63ffe6046042b391253f65423bb6437",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-ae4db314f4b5d8b5ea0c",
+      "contentHash": "989c828abd93791e7ea4dc43bceb65ccffc5df233736769791df6aa7414eef92",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-ba2129b21257166bc33f",
+      "contentHash": "3c93eb7d2f0525f64b27b3b44f294320213cfd4c6311284bcfc9ec0f22f9ae12",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-ba3491b9dca24c78a70f",
+      "contentHash": "1374cd2ee245665a30783060b8e7f616a85444b21aa152d386e7f43fb4160976",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-bf6ac10a97662fba6072",
+      "contentHash": "49fd21925dd141d09e0d3f40140b28305f887a768d0d8c7f349d98ea434e832e",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-c6829dc728e8d68666c9",
+      "contentHash": "2b99710b00fb11e723840225931102883c49246e6ff77902a42c1576eb55cf83",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-c89e3ac97690fcf35909",
+      "contentHash": "611071a0a9a634ac319d86dbb50119974e3667816504835893a83ccc2b013188",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-ca6cb7bbe7216bdc5568",
+      "contentHash": "9f973ef5016fadd9007bcedb2fda4862ade3ab2590102f2fa32816f515d90ab7",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-ce2febf434d118050f5c",
+      "contentHash": "c9e74fc4743b1dd6848e4483897aaeda362d2895868d5b55d9094a24d7907bcb",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-cf0fe1ba08ddadc258d1",
+      "contentHash": "22fb5fed947af48a1fd37e8dd617b3cdabdfb4c80d7c2ca54ca836b4a7fa53ae",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-d37fb1c0db09fe5cd071",
+      "contentHash": "dee4b91f214b6b9a7667e35ab9343145d673b821251622bf8697d1c3802d8df5",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-dab65815ebdc7aca6e10",
+      "contentHash": "c13380656ebb295c515a5bc29bbc3d4f2c930f2828052b4238748535e992167c",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-de053794481c325de262",
+      "contentHash": "e235cf5fb7891a7cdd5974317856bd69fa3deb9d6aeb1cbc8b3b651034e6ed5e",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-e24ae95b67dba5f5054d",
+      "contentHash": "4ab721a39be23700acf7756fd03d1d208e86cc10919300f3b1b88e88d91c6870",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-e3585fa31c7bd2100940",
+      "contentHash": "b836a698fd2fedc00c38f920e6a70fa2daf99f9a5458ee97bd24af5634f4323d",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-e5e9262df6f8616ab2d1",
+      "contentHash": "0a5ef70db84ed347c7e80e2b1744a380b2c61f3022d9307d4d36411ee9d46bc0",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-eb5599280b1b668f4761",
+      "contentHash": "57cb1e87903afbc9d76f5faf723b2c9550314f3cc0b086527f14bc70494eb71e",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-efe5e2748078a12d85fb",
+      "contentHash": "161d09fde598fbded0d3eb72bd5a92470757bf878eee53862ec955b25fe591f8",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-f11f206cc2e9c71bf362",
+      "contentHash": "990428ecdfb0299e9ff1ad80e0f9eca3d015fd181b308dae212127dee5df96e4",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-f461e5231b8ca0ebd7da",
+      "contentHash": "bef3e3da951670ddc1bca0ad5b911797b5f36427a11e05355dd193838d61f992",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-f78891497a56f319be21",
+      "contentHash": "430c0aae027b27eb7d1b61104958afe2a3f00fca750670b70b08f99dd40b8234",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-f818a1b8df3c041ed1f5",
+      "contentHash": "f60749856b2b2f72092a78959f43e8b6ba754fae7c59445855d25f1938b87e86",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain1-fd99c1f75af8407650b8",
+      "contentHash": "6969ac19c9bca4b4585c0c15bdbbdf3ef3f4bb6dc8a79cd5f7cbfad9c4175811",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-027758d3953c578d9aa0",
+      "contentHash": "54c3c6019ba862c574b3d3584c6dbad59d36c332a0f9338c425ac7ef6373c613",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-06204f1c314c63aa12c2",
+      "contentHash": "853858b1c8428f7c5f2638e8e5718b8add23c7bfd068c27864879f22e2ad11a3",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-06c38eb9ef3173e43569",
+      "contentHash": "c41669a2ca8516d3aacba3f5c89b78b083e2ba44040fd297b118388aae87035b",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-0e709da5349ed93a555e",
+      "contentHash": "6cb2a041f3a66995e19f8c34f7bb3a3a14f4f703dbff66a0469f5e748749560a",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-126218593e5d359c32fa",
+      "contentHash": "7e36a22dd742f2a7c43dbf84ad9c4df24789ab76d97e5baea95bbc2a6c311bc6",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-150ce784cae6d74a8d2b",
+      "contentHash": "e28bf4a2f773432f6ac286fc26d3b9b077d151d4387cbe3d5796f3b60642eaf9",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-19770051b5597b933309",
+      "contentHash": "592392c5807c012aef533666414c25484931ebc04ab6102c1ed7d0fc40490845",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-1b09bb0bc5923ded4806",
+      "contentHash": "679fab5924e2916b397a54fd2e2f62948d1dfc59cee1c2778ae9a765b94782b9",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-1b480a342c015178f342",
+      "contentHash": "0f2bd1ce22f236babbfbfdae31dd9907c367b817dda1c90b272c4a36054fce82",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-2e6f53fed616cf96da82",
+      "contentHash": "37c3d068ac846872f71ebeac76edf2c6d02805ff04f928990ed740f688e0226d",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-330571f56ea95cfcc5c3",
+      "contentHash": "2ccb54ed1571585033797da6172ca66a11802a9e3ff8febd7ad886c6b7e7c2eb",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-3e68fcbd38fe42bff7e0",
+      "contentHash": "6393dd10f5ebb519c1426e7342fb835051e9d66e483a659d8424bc14f928e629",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-487572276ce70d1697a0",
+      "contentHash": "3aa2e12184042e1d3c60c6ffa07525554283511b0513bf84173a7e903d6ad2e2",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-50574d6a1f0a162a5dc5",
+      "contentHash": "e0c4298d06702c73d00619d659db2d8d9218876be0d865b97a068dd2b2d3580f",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-5444dfbe83ac3d1b24e3",
+      "contentHash": "abe38b5135a1e699479c037b25768df3dd504127dbb2bd736f74254948946853",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-5464a523a5d4d0ef9c95",
+      "contentHash": "7c44731e00bf2a462c67f3fe26ffc639d95aeca3419a99fa4f26604f8543ecaf",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-61ef94df4d140b849ec8",
+      "contentHash": "57eab2e4d618318ac5931795b5e9b0e6804cf361951fc2b48247eb6508aa2017",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-6684bbc1b6c47d4924ee",
+      "contentHash": "b44ee916bc600052e2b17c6c06f2ce9cc2cf1f3e7a5063b80def95166492a418",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-669950635981f85fb5de",
+      "contentHash": "ce5a9f80b96f26c01a0e256ba079dfa08ee2aecf74fef9ff77804d2feccd92d8",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-693737d670fe6e20b778",
+      "contentHash": "f761ea8a4fe68bff139ce009d14726c56339a9ea48eba0f751816d162b795f15",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-889f8a9bb127c9a24ffa",
+      "contentHash": "faa10a4809b219c812998e0e65ff0bed2ee8a35013e930ca91830c369ab0c99b",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-898e1712f71572f06ff2",
+      "contentHash": "0f206208ae0ec5dbd13a660105f5278f2f624728f8582ba6021b9e451a5b22d8",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-8f8529c6d042668a043c",
+      "contentHash": "ae3484e03345974a2216eaf33963c55c93a6a848090df414b1ad94f10de234a3",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-97b81eedc5bd18f548aa",
+      "contentHash": "843efbf9207352c1ae20608d4d3a093c53b5cf5d6f1683a8c730cfc50200d0e1",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-9f4158aeae99d2d315a7",
+      "contentHash": "123a1bbe4b35b1a36c12322d094a0c5880e8148a874053b00be9ff83626e5b92",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-aead01e81046f9d22ef9",
+      "contentHash": "9f05ac39c1039d1525d5f85ab03c8a0969cee64c9730c9f84381640545e0c376",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-c172a584ba00dba45403",
+      "contentHash": "8c1a98feac6de834064fac5aee76eb51c34d4a77fe1b6af2302c3418e36f26fd",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-c32deda7d264ded6841b",
+      "contentHash": "926a2dbb36bbd6bc0cd2af3fc2148bb6ad570453a42f480192d1cb454bdcf309",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-c48e51ffd457b1e0b13e",
+      "contentHash": "0b9177ffbbbbff70e35ebdcb353de0bfd9f0b2fa32a587cbae28a445c3ac7127",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-cf11779f8e878b239ae2",
+      "contentHash": "89378fb9fd7fc92536b850cf7acd488c793c36f20cf874fe32a8ac9bc54bf8f7",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-dd75ca2eb0143e5d9299",
+      "contentHash": "19cb466554dbc467c2a236ae2d2cbcf8c119394fdfb731a423dea456578fc708",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-0620a7cc30ce351624be",
+      "contentHash": "c010b796a03089c8113ffbb759167eec531cae18d7c97d525bbfb11eaff7854e",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-09086e0034e35c301958",
+      "contentHash": "fcbab44da3ea9fac91623f3bbb4d6e80c42607fef4eaf16a495f7dadc0741a76",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-0912eea0aa64bacd6948",
+      "contentHash": "7759aaf828ed76debcd25ff00df7fc544ab5db5c1103f749642db358dd6ca32b",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-0aa9c07302003e1ea65a",
+      "contentHash": "3b330b4af420ec4a0601c1f9e493a8272f3b9547a1fc3ec6ccbcbc19b1d06a63",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-0be3b0147f90b3cf7333",
+      "contentHash": "984d026e9206e17c5c2f35befef77c0d25bb36dd76960461cfe4a64eb33a8ffb",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-0fda65849012414ec2ef",
+      "contentHash": "f64376f0b302950e6739112a86c46569a51fdc9b640f50201a2c628318983d9f",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-13158da28a877eb4bafe",
+      "contentHash": "a930cbcf59b36b9aa502dcd30cc3503d631d7e22f59c25576fdae4aa13881e0d",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-14125fa1de4cb9ecb08d",
+      "contentHash": "b748a406ea60e1092b0c3efd6fdc06c61c7aca39cb5d42dbd6e2cc9ea6fd7693",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-149d31b4d3523cebc7ee",
+      "contentHash": "db41f7704fce6f7693dce4e37172e7596a931f8837ebd4aff4affb93dfc795f1",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-19359ad8d0906b85305a",
+      "contentHash": "ce89ec266cd6af1bb24afe4abf03e96369afe7a95c55da594409c2e47b3b2c38",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-1c3145688a856e829ea4",
+      "contentHash": "5596dc5a5eb310e919c0700196fdf3ed5d2c1e3ec5a27c02374d9e182b895920",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-1d55f706c37cc33e53a9",
+      "contentHash": "4099238ca0a7b5ad164dbcc0071a23423fea62e102526c95e092d46ba6e3ffc5",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-1d853a480e0fdc484e89",
+      "contentHash": "468e66a3fc0d81d8e62fd41cc79773f3419cb26c7178120acd562a7d8e9609b1",
+      "verdict": "corrected",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-1ece64772e21d98a559d",
+      "contentHash": "fda5cd941b1543fdf7938213a9a0dc8b34b07220a772658a62cc65aac782129f",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-1f5619a29b4eb9f4193a",
+      "contentHash": "64ac82a5e18d3b632eaed4230d0d23edb734cdc9f4ecb53c32221c5bed8f56c5",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-20fd2d4c29326f73658a",
+      "contentHash": "5aeb4c4fc1c0ea1c38c46f12560914b5d1c4b4c6faf750c5417b8d64d1433f8b",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-23c48bddcb9768dcee5e",
+      "contentHash": "d1dcd10afcb7826e40b614e70e9b4dd8a90d031e3a1da205d8a3210b020dc561",
+      "verdict": "corrected",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-26f13d076fa67f4ec2ff",
+      "contentHash": "f07bcbbf307152a1f3ade5e1026d04eb8c224ac80139c98499a68b9677d81c24",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-2a67533f90618715b776",
+      "contentHash": "cad02eb7df46d510b11089c68f556b2f0d8e332e538cf832823601958fa4ff92",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-2ac7a34cf9ee06bd6222",
+      "contentHash": "0e2bab308074657c2758458b0ec43e96313a6cb247a8e0aa1a0016d4285c1b63",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-2b138c2e1beaba91cff5",
+      "contentHash": "dadf85f6b1ba1a0bd22fb0774795b245f349edbcf10cbc6d53784f542fb9c6c8",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-2beb55e17faf1ce6b1af",
+      "contentHash": "efa173bd8edfed8c41c008fc2c97a4a77fcd91d48994be051c35a0f5a2550d0e",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-3ef45b3383b6b0898fa6",
+      "contentHash": "c0e8c08ba3c860edb9b33750bf5a5c34b765de002fbb0771a0f47d68b56fedc2",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-42242ae15344ac3c69cd",
+      "contentHash": "b785dd5a16b1a1189e9eed5a51112a97732a19e3090fd5320e44071c2987f44e",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-443855717d0fd2bc35da",
+      "contentHash": "675c9807f503a334544843e702b1cbc27649d8ae1ee00214f7d6a559c13a6173",
+      "verdict": "corrected",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-452e6cd17175c07a1bd6",
+      "contentHash": "e4ef07ae61baa22831ef22055e644b68b9e67c71fc0169778b9b9adffa3b55f4",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-477b21b834e5cd782f1e",
+      "contentHash": "6a9e6969105b956d4ee1b9c8fa8f6b9a544597c61bd9b582aeb0b787316a76e7",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-478185dd330f237a4a60",
+      "contentHash": "68ac477dea8e858fd7b148880e10f8468a72052bf63a4087a6a3b7b01d966d60",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-4787608ad9a8431f8f41",
+      "contentHash": "80068691ebc2d23009ab78d50977e19b5d7bcf17b007e33abefbe8be4182d28d",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-49cee70a4a71bbbacd9c",
+      "contentHash": "418d9267bc5c423fbe5413cf1abe771f39cf75a601fad30a66cea84e8a53760d",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-4b63e39e01e48b2172c1",
+      "contentHash": "74adf016349014b68813d060230ca39e0a42b48afa15873732bb8c657f4b780c",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-4d29bccebe9c75f09b0d",
+      "contentHash": "942b5ba40a4e80908ac476bc90f33a8d518efa9d684f39d9eaf205cf26c6c1c9",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-4e6223e41aaf39b7b1ab",
+      "contentHash": "8a2978f90c987fc65d055e2a10bc6e6c7bf4e4ce0bb3808b07e56e500b409677",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-567e799156c580734d0b",
+      "contentHash": "994e6614cb26c25d1d38b4b8cc71e61263b27cd757cdb792ace5be7515fdac63",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-592a989487fc8ff2f67f",
+      "contentHash": "6aff6c2270919224532cbb5532e0f3fa4f1b994702f0bcf10d60840d67a48d6f",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-5f931eaf15a9495f4352",
+      "contentHash": "bec42a18db0dcbfa8b4ea9f163333ff8b4dddb8d8574b118d983e122f785dd14",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-6042055fc7f60579fe87",
+      "contentHash": "3f2942710b29ff191e271e5c5dace5814387b0a83b69be04d75eec03ccfd966e",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-62206835c58b1dad89ba",
+      "contentHash": "d0bf6262ce8cc1d8f811b4b1f106eca7d0d875ca95e025084c161c8106268252",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-6a2b1966154cc1ccfde7",
+      "contentHash": "d4f1576cd09c2db6b6783fa506fe5b8b741ccb989420e822912b2b6b40887998",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-6ae238259e17f08498e8",
+      "contentHash": "724ed8391fadf60163bbcf53696af4ff8a1aacf5e101ae53f34b1f0ab4afba71",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-6ef8da1f6fc950814270",
+      "contentHash": "6446e81988cccfa505fe4e544a649f5a03f28a2f624d7a23d9018cf1a0cf5230",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-70c27442fc95dc694576",
+      "contentHash": "cd548625f01372243a9250a38b7f8726c72f88f3888cf978426802bbc358c296",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-712e17eaa165c421efee",
+      "contentHash": "30702fdaf25589428e1159a17c17deedcd07e32544dfc10bc967c59342a1a0fe",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-71fba783e2fb52b49af3",
+      "contentHash": "884c407c88b7f675b77468a6d01f2a8881cbbf0d5c5466e9cab92f86ef6d1a78",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-749be287af21b710ca4f",
+      "contentHash": "9caf195659816d6acd97fbd5d612d29dcc8be5908f37b2984f3b97ea0c8b42d2",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-7622c97c8c7b68f2ed5c",
+      "contentHash": "b19ccf25a0d69282926372457a0081193b092cff15a154d5067950b3ab6b8d13",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-8314f7338784c6344d05",
+      "contentHash": "40784b43c3f78c9eed7f92180ce9c65482f16b96f292bad4edd924deca7fd14b",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-85a4b02b8f6ad0772f8f",
+      "contentHash": "c64ec75e4e491d1ca02c3efe4ace32a2f7161ca06a738238372cb4340a7c4e71",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-87cdd22e9ab11f67d542",
+      "contentHash": "b6370a67d12f5cc628fbc58920f0e6a0fefe5f4e36451326023b6773247f226e",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-8bdb387714e4ca9a759b",
+      "contentHash": "1e3c9fbacd225f30bfac485d33bd95c2d23b0e4ad4e55d75932dd2a994def242",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-8dabe8f28f52da566eaa",
+      "contentHash": "a3c65d45577bd04656865730eb663e7208ce074bf7938a1c2f9149258235ab97",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-8fa21cfb190e6ea25df0",
+      "contentHash": "e0c916ff236c98735768475bc06ded7127709436084b8a8f9bdb2f2e10c1b3bf",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-94109c5c9f3fdd50c376",
+      "contentHash": "19dabbd924a703c2e2e9ef0d89901416548d0e4d03cb0d2118adbf3667e24e1f",
+      "verdict": "corrected",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-945918cab3f17d896c7b",
+      "contentHash": "6e657a37dce929ebb78fc38e39fe9a0fccad39df8a988f04496a2fc92cb31b67",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-9a0a9096001ace2df50a",
+      "contentHash": "3e9f91f4492c0e4071c1b7f1e341d5782a36213698db6ed118acdad05bf541b5",
+      "verdict": "corrected",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-9b43243bbfc4b48edac3",
+      "contentHash": "e5a3af1d6f547e3b7205a15a7f40c7fa745507dd6fd16c4211fb8d5d5d7f08e2",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-9c055bb9237a5f219854",
+      "contentHash": "349c800102aeb071ecad025d00baa01869ae622e5158a796f407907b273eae92",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-9ccb7f677ab2b37ccd0e",
+      "contentHash": "73e5d00d34f1df8edb3047c6bb582dcb5880ba017b329b59906698ad6f497905",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-9efd0a7941db5b8522a7",
+      "contentHash": "43211d179099f977125c99e557d23b1089316081889c2341f9b951d72618fa3f",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-9f5e5635d333f7b59d6e",
+      "contentHash": "09e0ada1f1efb5e4fb3047052187fafc083dc305228862b47979160da5894a7d",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-a15258c96bb19eabbbe3",
+      "contentHash": "8ff47c027d485933892a3ab73e085d9ca25f71589b43e53920b9c51e8aadc7c9",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-a38be6ef6ead788f57e7",
+      "contentHash": "5d19cf87e3536759d3a643386af71f8b46076ec62c56b8b403aae7ce3f3d1794",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-b1097e64f83ccf30f253",
+      "contentHash": "d579a5076cd6937766917af69ea4fb0c4bb5195ab5db0440daf01ac86f877db7",
+      "verdict": "corrected",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-b2de6dfba71633072772",
+      "contentHash": "d6cb5ba9af2caa3c99de558d622b4a7a5214a3a9426192383049455e19fa65bc",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-b5dc50cb59072e4179a0",
+      "contentHash": "aee12e007fb7cd0a5ff521855f76a66b7eaf0c1ed24ac4b55df416ba6f6394f5",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-ba7a82d3697e33667b9c",
+      "contentHash": "fc0f37768547f68db0aa635f92b47ed164eba6b299bb6717f6d9b11137cc9ba3",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-bf4b238b827974ce0cfb",
+      "contentHash": "8248fce306cfe35e5255a572955057f73e8933740082117545bf8ad449b98454",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-c2884969ebc1da8a995e",
+      "contentHash": "f8a97be86696793f0d8294dc49aac45f697733823806e3d60fda7b1c5c699d05",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-c3f1967171fa2ef9e73f",
+      "contentHash": "e36f95ebee38b11798ef81e236c445ea8924b10a4f6a14a3bd5344cdfa38ae8e",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-c6d8de3659f873250546",
+      "contentHash": "742a0ac4dcddd6389b950610b14dce063dd2c8adc08b26d1dd91834b09fad501",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-c7cc39b17a9a61008bff",
+      "contentHash": "894a035ec0dba5dd2bad37888605675af052176b91c7daa845bc38275da08748",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-c9db0ef2d6f7214e8a86",
+      "contentHash": "552d2aa4172cab2161b91204d91795845f4b2557b324d45e4f9a9c7f2ce6e297",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-c9df948b9adc0caa38f1",
+      "contentHash": "17c3ad48fb19838ebe1ab91e25dfb65469038d403b14983317f485e50535633d",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-ca5d200fc6ca7b5aafe6",
+      "contentHash": "420182e36536521eff13469a6e4ad795deb8035ea665981b0cf29164a8290c8b",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-cb2a6461a356aa060e98",
+      "contentHash": "63ee7ffe8e779955a5b97a6f5ef010e15d8fa9769a014ab2ff8d3649532c6235",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-cda92ee75f31dbd490f9",
+      "contentHash": "16d532b5f3247ef7a208a10892358037c6f74aff08bcd2bee3b105928249f923",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-d53cb8e91ee7529998b6",
+      "contentHash": "8c7dce3f77ddb77d9c5390e74abbc885484bcbeb2d86450613f729a4a523d043",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-d85080d72f94bbb6564c",
+      "contentHash": "7ce1e539b0992088d24da085187ced32e070f1c6f9e3d929cbc1128cf00297aa",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-d94f1848678b4583ce18",
+      "contentHash": "3a77fc7766e83824cf607e40efc60b75129df06ea08b2bcb65c4857c6f21dd28",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-da5fef62d98015049316",
+      "contentHash": "90019267f9100d3fecb846f7953b9d5a73b55a6033cc8270cae9e48e826fa901",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-e10be920c24ebf2f0b23",
+      "contentHash": "01c0f9d75787a0d2247c8737d61e6678fddeece35e1974d4ee45959b497b804b",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-e162efea26482e80bd6c",
+      "contentHash": "077e6d2076a902106c0dbceb9a25f57d76270265533d41d08b8e3ff7c889f307",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-e7be02185b830640523f",
+      "contentHash": "20518e686cf6a114ffc0b75e3ed9b2be062f660e0ca333a196d35c028fc02223",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-eb6c9cfe0f5384638a8c",
+      "contentHash": "9e057402082468c157fbee08089ac7bf6b33b9a752c8f3d1ffc8b225b9d179fc",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-ec0dd7399188ccd962a9",
+      "contentHash": "dc56cb9bb3456f33f934245f4a2f8ff4e5331830ecbeed3da4547b9fb321efd7",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-ec6d60c18fd3d682d832",
+      "contentHash": "71754e6d4af6784387bcbf82144e74c97f463f1af75adeb5643e7936e51bdc6d",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-eef40a7566bb94391afb",
+      "contentHash": "f956950b566e99ecddcae566df14a8a3873a53dd234c15adf9e7460cfaf62c64",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-f0ed601599c493887850",
+      "contentHash": "2769f8ba3062331e8aa68a43c35987af4b6d8acc277e32b0aff4827202d4115f",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-f10d6b174be605b53d14",
+      "contentHash": "7afe4cff02a12c336b5313568b1ac9e1413595235d49b2c54b456055d9483616",
+      "verdict": "corrected",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-f179149009f2850dba68",
+      "contentHash": "28434bb4239877331d368595280a6a209481c721509e2395cf43107198a709f9",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-f331a0e67a659130dd0d",
+      "contentHash": "e94ceddb794741064d151719cad6765d86268cd89a0465a6fff151a149633ba5",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-f33de315c80bb1c838ad",
+      "contentHash": "1e00ccc36f5495101818991977e31bc73beadb8c7dffdc81d923484585eb7e59",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-f60583306ac9545a73ce",
+      "contentHash": "51e21e2c5eaf047c006859b0d5b46d961926234ea3ef70301e26b5dde8682499",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-fbaec191f19ab8d818c1",
+      "contentHash": "801d07e5202db75bca28aa1a9da657e3936382e5e425362aca9f086920719502",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain5-fd9cd3bc3ebd4ea03062",
+      "contentHash": "95a6e2ee93fae143f14dec9a805972f354fd69241d2eb6bff41f6107a24a7389",
+      "verdict": "approved",
+      "strictSemanticReview": true
+    }
+  ],
+  "errors": []
+}

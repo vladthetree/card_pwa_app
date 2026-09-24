@@ -18,8 +18,8 @@
 #   ./setup.sh --force-deps    # Abhängigkeiten neu installieren
 #   ./setup.sh --help
 #
-# Voraussetzungen: bash, node (>=18), npm, python3, openssl, systemctl, sudo, curl.
-# sudo wird nur für den Frontend-System-Service (und optional Linger) verwendet.
+# Voraussetzungen je nach Ziel: Python 3 (Backend), Node 20.19+ oder 22.12+ + npm (Frontend),
+# OpenSSL sowie für die Dienstinstallation systemctl/curl und beim Frontend sudo.
 # ============================================================================
 
 set -euo pipefail
@@ -68,6 +68,18 @@ skip() { echo -e "  ${c_yellow}↷${c_off} $* (übersprungen)"; }
 warn() { echo -e "  ${c_yellow}⚠${c_off}  $*" >&2; }
 die()  { echo -e "${c_red}✗ $*${c_off}" >&2; trap - ERR; exit 1; }
 
+needs_backend()  { [ "$TARGET" = "all" ] || [ "$TARGET" = "backend" ]; }
+needs_frontend() { [ "$TARGET" = "all" ] || [ "$TARGET" = "frontend" ]; }
+
+require_cmd() {
+  local cmd="$1"
+  if command -v "$cmd" >/dev/null 2>&1; then
+    ok "$cmd"
+  else
+    die "Benötigtes Programm fehlt: $cmd  (bitte installieren)"
+  fi
+}
+
 upsert_env_var() {
   local file="$1"
   local key="$2"
@@ -108,21 +120,36 @@ check_prereqs() {
    (Wo root nötig ist, fragt das Script gezielt nach sudo.)"
   fi
 
-  for cmd in bash node npm python3 openssl systemctl sudo curl; do
-    if command -v "$cmd" >/dev/null 2>&1; then
-      ok "$cmd"
-    else
-      die "Benötigtes Programm fehlt: $cmd  (bitte installieren)"
-    fi
-  done
+  require_cmd openssl
 
-  # Node muss neu genug für Vite 5 sein, sonst scheitert der Build kryptisch.
-  local node_major
-  node_major="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)"
-  if [ "${node_major:-0}" -lt 18 ]; then
-    die "Node $(node --version 2>/dev/null) ist zu alt – benötigt wird Node 18 oder neuer."
+  if needs_backend; then
+    require_cmd python3
   fi
-  ok "Node $(node --version) (>= 18)"
+
+  if needs_frontend; then
+    require_cmd node
+    require_cmd npm
+  fi
+
+  if [ "$SKIP_SYSTEMD" -eq 0 ]; then
+    require_cmd systemctl
+    require_cmd curl
+    if needs_frontend; then
+      require_cmd sudo
+    fi
+  fi
+
+  # Vite 8 unterstützt Node 20 ab 20.19 sowie Node 22 ab 22.12.
+  if needs_frontend; then
+    if ! node -e '
+      const [major, minor] = process.versions.node.split(".").map(Number)
+      const supported = (major === 20 && minor >= 19) || (major === 22 && minor >= 12) || major > 22
+      process.exit(supported ? 0 : 1)
+    '; then
+      die "Node $(node --version 2>/dev/null) wird nicht unterstützt – benötigt wird Node 20.19+ oder 22.12+."
+    fi
+    ok "Node $(node --version) (Vite-8-kompatibel)"
+  fi
 }
 
 # ── Backend ─────────────────────────────────────────────────────────────────
@@ -131,15 +158,28 @@ setup_backend() {
   [ -d "$BACKEND_DIR" ] || die "Backend-Verzeichnis fehlt: $BACKEND_DIR"
   cd "$BACKEND_DIR"
 
-  # 1) Python venv
+  # 1) Python venv + Runtime-Abhängigkeiten
+  local venv_created=0
   if [ "$FORCE_DEPS" -eq 1 ] || [ ! -x ".venv/bin/python3" ]; then
     if [ "$FORCE_DEPS" -eq 1 ]; then rm -rf .venv; fi
     python3 -m venv .venv
+    venv_created=1
     ok "venv erstellt (.venv)"
   else
     skip "venv existiert"
   fi
-  # Runtime nutzt nur die Python-Standardbibliothek -> kein pip nötig.
+
+  [ -f "requirements.txt" ] || die "Backend-Abhängigkeiten fehlen: $BACKEND_DIR/requirements.txt"
+  local requirements_hash requirements_stamp
+  requirements_stamp=".venv/.requirements.sha256"
+  requirements_hash="$(.venv/bin/python3 -c 'import hashlib, pathlib; print(hashlib.sha256(pathlib.Path("requirements.txt").read_bytes()).hexdigest())')"
+  if [ "$venv_created" -eq 1 ] || [ ! -f "$requirements_stamp" ] || [ "$(cat "$requirements_stamp")" != "$requirements_hash" ]; then
+    .venv/bin/python3 -m pip install --disable-pip-version-check -r requirements.txt
+    printf '%s\n' "$requirements_hash" > "$requirements_stamp"
+    ok "Backend-Abhängigkeiten installiert"
+  else
+    skip "Backend-Abhängigkeiten unverändert"
+  fi
 
   # 2) HTTPS-Zertifikat
   if [ "$FORCE_CERTS" -eq 1 ] || [ ! -f "certs/cert.pem" ] || [ ! -f "certs/key.pem" ]; then
@@ -207,11 +247,18 @@ setup_frontend() {
   cd "$FRONTEND_DIR"
 
   # 1) Abhängigkeiten
-  if [ "$FORCE_DEPS" -eq 1 ] || [ ! -d "node_modules" ]; then
-    if [ -f "package-lock.json" ]; then npm ci; else npm install; fi
+  if [ "$FORCE_DEPS" -eq 1 ] || [ ! -x "node_modules/.bin/tsc" ] || [ ! -x "node_modules/.bin/vite" ]; then
+    if [ "$FORCE_DEPS" -eq 1 ]; then rm -rf node_modules; fi
+    # Das FSRS-Optimizer-Paket deklariert absichtlich cpu=wasm32. npm benötigt
+    # deshalb auf dem Host denselben --force-Modus wie CI und deploy_prod.sh.
+    if [ -f "package-lock.json" ]; then
+      npm ci --include=dev --force
+    else
+      npm install --include=dev --force
+    fi
     ok "npm-Abhängigkeiten installiert"
   else
-    skip "node_modules existiert"
+    skip "npm-Abhängigkeiten vorhanden"
   fi
 
   # 2) .env.production
@@ -247,15 +294,18 @@ setup_frontend() {
 install_frontend_service() {
   local template="$FRONTEND_DIR/deploy/systemd/card-pwa-prod.service"
   local unit="/etc/systemd/system/card-pwa-prod.service"
+  local node_bin
   [ -f "$template" ] || die "Unit-Vorlage fehlt: $template"
+  node_bin="$(command -v node)"
 
-  # Unit aus Vorlage erzeugen, Pfade/User auf diese Umgebung anpassen.
+  # Unit aus Vorlage erzeugen, Projektpfad, Node-Binary und User anpassen.
   local tmp; tmp="$(mktemp)"
-  sed -e "s#/home/_vb/card_pwa_app/card_pwa#$FRONTEND_DIR#g" \
+  sed -e "s#/home/_vb/card_pwa_app#$ROOT_DIR#g" \
       -e "s#^User=.*#User=$SERVICE_USER#" \
       -e "s#^Group=.*#Group=$SERVICE_GROUP#" \
       -e "s#^Environment=PWA_PORT=.*#Environment=PWA_PORT=$PWA_PORT#" \
       -e "s#^Environment=PWA_SYNC_PROXY_TARGET=.*#Environment=PWA_SYNC_PROXY_TARGET=https://127.0.0.1:$SYNC_PORT#" \
+      -e "s#^ExecStart=/usr/bin/node #ExecStart=$node_bin #" \
       "$template" > "$tmp"
 
   if ! sudo -n true 2>/dev/null; then
@@ -297,15 +347,28 @@ verify() {
 
 # ── Abschlussinfo ───────────────────────────────────────────────────────────
 summary() {
-  local ip; ip="$(hostname -I 2>/dev/null | awk '{print $1}')"
+  local ip
+  ip="$(hostname -I 2>/dev/null | awk '{print $1}' || true)"
   echo -e "\n${c_green}━━━ Setup abgeschlossen ━━━${c_off}"
-  echo    "App im Browser:   https://${ip:-<lan-ip>}:$PWA_PORT   (oder https://localhost:$PWA_PORT)"
-  echo    "Backend-Health:   https://127.0.0.1:$SYNC_PORT/health"
-  echo    "Root-CA fürs Handy: $FRONTEND_DIR/.cert/pwa-rootCA.cer  (installieren & vertrauen)"
+  if needs_frontend; then
+    echo "App im Browser:   https://${ip:-<lan-ip>}:$PWA_PORT   (oder https://localhost:$PWA_PORT)"
+    echo "Root-CA fürs Handy: $FRONTEND_DIR/.cert/pwa-rootCA.cer  (installieren & vertrauen)"
+  fi
+  if needs_backend; then
+    echo "Backend-Health:   https://127.0.0.1:$SYNC_PORT/health"
+  fi
   echo
-  echo    "Status:"
-  echo    "  systemctl --user status card-sync-server.service"
-  echo    "  systemctl status card-pwa-prod.service"
+  if [ "$SKIP_SYSTEMD" -eq 1 ]; then
+    echo "Dienste: nicht installiert/gestartet (--skip-systemd)"
+  else
+    echo "Status:"
+    if needs_backend; then
+      echo "  systemctl --user status card-sync-server.service"
+    fi
+    if needs_frontend; then
+      echo "  systemctl status card-pwa-prod.service"
+    fi
+  fi
 }
 
 # ── Ablauf ──────────────────────────────────────────────────────────────────

@@ -1,0 +1,1924 @@
+{
+  "schemaVersion": "reviewed-domain2-import-1",
+  "replaceRegistry": false,
+  "deck": {
+    "id": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+    "name": "Chapter 2: Domain 2.0: Threats, Vulnerabilities, and Mitigations",
+    "parentDeckId": null
+  },
+  "sourceDirectory": "NEW_INFO/Chapter 2: Domain 2.0: Threats, Vulnerabilities, and Mitigations",
+  "answerPolicy": "answers[].correct and correct are authoritative; selected is not a solution key",
+  "metricsPolicy": {
+    "sourceField": "responseSeconds",
+    "targetField": "createState.metadata.answerTiming",
+    "missingValues": "omitted, never invented"
+  },
+  "decisions": [
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-06c38eb9ef3173e43569",
+      "operation": "create",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.3:supply-chain:hardware-provider"
+      ],
+      "evidence": "The exact keyed answer 'Third-party hardware modifications' follows from the corrected or original stem and the defining source claim. The coherent explanation is: Third-party hardware modifications are direct physical changes to supplied devices. Malware preinstalled on hardware and malicious firmware modifications concern software or firmware, while lack of availability is a supplier or logistics risk.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.3: Supply chain > Hardware provider",
+          "supports": "The official objectives place '2.3: Supply chain > Hardware provider' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://doi.org/10.6028/NIST.SP.800-161r1-upd1",
+          "title": "NIST SP 800-161 Rev. 1 Update 1: Cybersecurity Supply Chain Risk Management Practices",
+          "locator": "Sections 2.2-2.3 and Appendix F, supply-chain threats including tampering, counterfeit components, compromised products, and supplier availability",
+          "supports": "NIST identifies product tampering, compromised hardware or firmware, provenance, supplier support, and availability as distinct supply-chain risks.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [
+        "Original wording was revised without changing the marked answer: Die nicht belegbare Häufigkeitsaussage wurde durch eine eindeutige Begriffsfrage ersetzt; Antwort C bleibt unverändert."
+      ],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Malware preinstalled on hardware does not satisfy the defining condition; the keyed result is Third-party hardware modifications. Malware preinstalled on hardware and malicious firmware modifications concern software or firmware, while lack of availability is a supplier or logistics risk."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Lack of availability of hardware does not satisfy the defining condition; the keyed result is Third-party hardware modifications. Malware preinstalled on hardware and malicious firmware modifications concern software or firmware, while lack of availability is a supplier or logistics risk."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "Third-party hardware modifications matches the defining condition in the stem. Third-party hardware modifications are direct physical changes to supplied devices."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Malicious firmware modifications does not satisfy the defining condition; the keyed result is Third-party hardware modifications. Malware preinstalled on hardware and malicious firmware modifications concern software or firmware, while lack of availability is a supplier or logistics risk."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-06c38eb9ef3173e43569",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Which option specifically describes a third party physically modifying hardware in the vendor supply chain?\nA: Malware preinstalled on hardware\nB: Lack of availability of hardware\nC: Third-party hardware modifications\nD: Malicious firmware modifications",
+        "back": ">> CORRECT: C |\n\nThird-party hardware modifications are direct physical changes to supplied devices. Malware preinstalled on hardware and malicious firmware modifications concern software or firmware, while lack of availability is a supplier or logistics risk.\n\nNicht:\nA | Malware preinstalled on hardware does not satisfy the defining condition; the keyed result is Third-party hardware modifications. Malware preinstalled on hardware and malicious firmware modifications concern software or firmware, while lack of availability is a supplier or logistics risk.\nB | Lack of availability of hardware does not satisfy the defining condition; the keyed result is Third-party hardware modifications. Malware preinstalled on hardware and malicious firmware modifications concern software or firmware, while lack of availability is a supplier or logistics risk.\nD | Malicious firmware modifications does not satisfy the defining condition; the keyed result is Third-party hardware modifications. Malware preinstalled on hardware and malicious firmware modifications concern software or firmware, while lack of availability is a supplier or logistics risk.",
+        "tags": [
+          "Supply chain",
+          "Hardware provider"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 29,
+            "totalAnswerTimeSeconds": 29,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092775345_1_9031365957417363, tb211388.SecplPT3E.c02.013",
+        "originalQuestion": "Which of the following is not a common concern related to the hardware vendor supply chain?",
+        "responseSeconds": 29,
+        "selectedAnswersIgnoredForKey": [
+          "B"
+        ],
+        "correction": {
+          "beforeQuestion": "Which of the following is not a common concern related to the hardware vendor supply chain?",
+          "afterQuestion": "Which option specifically describes a third party physically modifying hardware in the vendor supply chain?",
+          "answer": "C: Third-party hardware modifications",
+          "reason": "Die nicht belegbare Häufigkeitsaussage wurde durch eine eindeutige Begriffsfrage ersetzt; Antwort C bleibt unverändert."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-5444dfbe83ac3d1b24e3",
+      "operation": "create",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.1:motivations:blackmail"
+      ],
+      "evidence": "The exact keyed answer 'Blackmail' follows from the corrected or original stem and the defining source claim. The coherent explanation is: Blackmail is coercion applied to an insider and can drive that person to act for an external threat actor. Espionage and war describe broader objectives, while political beliefs are more commonly associated with ideological actors.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.1: Motivations > Blackmail",
+          "supports": "The official objectives place '2.1: Motivations > Blackmail' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://www.cisa.gov/sites/default/files/publications/Insider%20Threat%20Mitigation%20Guide_Final_508.pdf",
+          "title": "CISA Insider Threat Mitigation Guide",
+          "locator": "Sections 1.1-1.3, insider-threat intent, motivation, and exploitation by external actors",
+          "supports": "CISA explains that an insider may intentionally act or be exploited or coerced by an external actor, which includes coercion through blackmail.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [
+        "Original wording was revised without changing the marked answer: Die unbelegte Rangfolge 'most likely' wurde durch die eindeutig zur Antwort B passende Formulierung ersetzt."
+      ],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Espionage does not satisfy the defining condition; the keyed result is Blackmail. Espionage and war describe broader objectives, while political beliefs are more commonly associated with ideological actors."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "Blackmail matches the defining condition in the stem. Blackmail is coercion applied to an insider and can drive that person to act for an external threat actor."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "War does not satisfy the defining condition; the keyed result is Blackmail. Blackmail is coercion applied to an insider and can drive that person to act for an external threat actor."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Political beliefs does not satisfy the defining condition; the keyed result is Blackmail. Espionage and war describe broader objectives, while political beliefs are more commonly associated with ideological actors."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-5444dfbe83ac3d1b24e3",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Which listed motivation could coerce an internal person into acting as an insider threat?\nA: Espionage\nB: Blackmail\nC: War\nD: Political beliefs",
+        "back": ">> CORRECT: B |\n\nBlackmail is coercion applied to an insider and can drive that person to act for an external threat actor. Espionage and war describe broader objectives, while political beliefs are more commonly associated with ideological actors.\n\nNicht:\nA | Espionage does not satisfy the defining condition; the keyed result is Blackmail. Espionage and war describe broader objectives, while political beliefs are more commonly associated with ideological actors.\nC | War does not satisfy the defining condition; the keyed result is Blackmail. Blackmail is coercion applied to an insider and can drive that person to act for an external threat actor.\nD | Political beliefs does not satisfy the defining condition; the keyed result is Blackmail. Espionage and war describe broader objectives, while political beliefs are more commonly associated with ideological actors.",
+        "tags": [
+          "Motivations",
+          "Blackmail"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 13,
+            "totalAnswerTimeSeconds": 13,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092775401_1_6508941106795623, tb211388.SecplPT3E.c02.015",
+        "originalQuestion": "Nick is assessing internal threat actors and considering what motivations are likely to drive them. Which of the following is the most likely motivation for an internal threat actor?",
+        "responseSeconds": 13,
+        "selectedAnswersIgnoredForKey": [
+          "A"
+        ],
+        "correction": {
+          "beforeQuestion": "Nick is assessing internal threat actors and considering what motivations are likely to drive them. Which of the following is the most likely motivation for an internal threat actor?",
+          "afterQuestion": "Which listed motivation could coerce an internal person into acting as an insider threat?",
+          "answer": "B: Blackmail",
+          "reason": "Die unbelegte Rangfolge 'most likely' wurde durch die eindeutig zur Antwort B passende Formulierung ersetzt."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-61ef94df4d140b849ec8",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.2:human-vectors-social-engineering:typosquatting"
+      ],
+      "evidence": "The exact keyed answer 'Typo squatting' follows from the corrected or original stem and the defining source claim. The coherent explanation is: From the description it appears that they are not connecting to the real web server but rather a fake server. That indicates typo squatting: having a URL that is named very similarly to a real site so that when users mistype the real site’s URL they will go to the fake site.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.2: Human vectors/social engineering > Typosquatting",
+          "supports": "The official objectives place '2.2: Human vectors/social engineering > Typosquatting' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://attack.mitre.org/techniques/T1583/001/",
+          "title": "MITRE ATT&CK T1583.001: Acquire Infrastructure—Domains",
+          "locator": "Procedure and detection discussion for lookalike and typosquatted domains",
+          "supports": "MITRE describes adversaries registering lookalike or typosquatted domains to impersonate legitimate services and misdirect users.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "correct",
+          "reason": "Typo squatting matches the defining condition in the stem. That indicates typo squatting: having a URL that is named very similarly to a real site so that when users mistype the real site’s URL they will go to the fake site."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "SQL injection does not satisfy the defining condition; the keyed result is Typo squatting. From the description it appears that they are not connecting to the real web server but rather a fake server."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Cross-site scripting does not satisfy the defining condition; the keyed result is Typo squatting. That indicates typo squatting: having a URL that is named very similarly to a real site so that when users mistype the real site’s URL they will go to the fake site."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Cross-site request forgery does not satisfy the defining condition; the keyed result is Typo squatting. That indicates typo squatting: having a URL that is named very similarly to a real site so that when users mistype the real site’s URL they will go to the fake site."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-61ef94df4d140b849ec8",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Coleen is the web security administrator for an online auction website. A small number of users are complaining that when they visit the website it does not appear to be the correct site. Coleen checks and she can visit the site without any problem, even from computers outside the network. She also checks the web server log and there is no record of those users ever connecting. Which of the following might best explain this?\nA: Typo squatting\nB: SQL injection\nC: Cross-site scripting\nD: Cross-site request forgery",
+        "back": ">> CORRECT: A |\n\nFrom the description it appears that they are not connecting to the real web server but rather a fake server. That indicates typo squatting: having a URL that is named very similarly to a real site so that when users mistype the real site’s URL they will go to the fake site.\n\nNicht:\nB | SQL injection does not satisfy the defining condition; the keyed result is Typo squatting. From the description it appears that they are not connecting to the real web server but rather a fake server.\nC | Cross-site scripting does not satisfy the defining condition; the keyed result is Typo squatting. That indicates typo squatting: having a URL that is named very similarly to a real site so that when users mistype the real site’s URL they will go to the fake site.\nD | Cross-site request forgery does not satisfy the defining condition; the keyed result is Typo squatting. That indicates typo squatting: having a URL that is named very similarly to a real site so that when users mistype the real site’s URL they will go to the fake site.",
+        "tags": [
+          "Human vectors/social engineering",
+          "Typosquatting"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 43,
+            "totalAnswerTimeSeconds": 43,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092775594_1_621996574587187, tb211388.SecplPT3E.c02.021",
+        "originalQuestion": "Coleen is the web security administrator for an online auction website. A small number of users are complaining that when they visit the website it does not appear to be the correct site. Coleen checks and she can visit the site without any problem, even from computers outside the network. She also checks the web server log and there is no record of those users ever connecting. Which of the following might best explain this?",
+        "responseSeconds": 43,
+        "selectedAnswersIgnoredForKey": [
+          "D"
+        ],
+        "correction": null
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-6684bbc1b6c47d4924ee",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.3:supply-chain:software-provider"
+      ],
+      "evidence": "The exact keyed answer 'Lack of control over open source dependencies' follows from the corrected or original stem and the defining source claim. The coherent explanation is: Open source software dependencies are a primary challenge when considering open source supply chain concerns. In this case, Lucia is using a third-party vendor who can provide support, open source code is auditable, and updates are likely to occur with a vendor involved.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.3: Supply chain > Software provider",
+          "supports": "The official objectives place '2.3: Supply chain > Software provider' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://doi.org/10.6028/NIST.SP.800-218",
+          "title": "NIST SP 800-218: Secure Software Development Framework",
+          "locator": "PS.3.1-PS.3.2, provenance and verification of third-party software components",
+          "supports": "NIST requires organizations to track, verify, and assess third-party components and their provenance because dependencies introduce supply-chain risk.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Lack of vendor support does not satisfy the defining condition; the keyed result is Lack of control over open source dependencies. In this case, Lucia is using a third-party vendor who can provide support, open source code is auditable, and updates are likely to occur with a vendor involved."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Lack of code auditability does not satisfy the defining condition; the keyed result is Lack of control over open source dependencies. In this case, Lucia is using a third-party vendor who can provide support, open source code is auditable, and updates are likely to occur with a vendor involved."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "Lack of control over open source dependencies matches the defining condition in the stem. Open source software dependencies are a primary challenge when considering open source supply chain concerns."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Lack of updates does not satisfy the defining condition; the keyed result is Lack of control over open source dependencies. In this case, Lucia is using a third-party vendor who can provide support, open source code is auditable, and updates are likely to occur with a vendor involved."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-6684bbc1b6c47d4924ee",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Lucia’s organization has adopted open source software provided by a third-party vendor as part of their web application. What concern should she express about her software supply chain?\nA: Lack of vendor support\nB: Lack of code auditability\nC: Lack of control over open source dependencies\nD: Lack of updates",
+        "back": ">> CORRECT: C |\n\nOpen source software dependencies are a primary challenge when considering open source supply chain concerns. In this case, Lucia is using a third-party vendor who can provide support, open source code is auditable, and updates are likely to occur with a vendor involved.\n\nNicht:\nA | Lack of vendor support does not satisfy the defining condition; the keyed result is Lack of control over open source dependencies. In this case, Lucia is using a third-party vendor who can provide support, open source code is auditable, and updates are likely to occur with a vendor involved.\nB | Lack of code auditability does not satisfy the defining condition; the keyed result is Lack of control over open source dependencies. In this case, Lucia is using a third-party vendor who can provide support, open source code is auditable, and updates are likely to occur with a vendor involved.\nD | Lack of updates does not satisfy the defining condition; the keyed result is Lack of control over open source dependencies. In this case, Lucia is using a third-party vendor who can provide support, open source code is auditable, and updates are likely to occur with a vendor involved.",
+        "tags": [
+          "Supply chain",
+          "Software provider"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 30,
+            "totalAnswerTimeSeconds": 30,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092775681_1_5976323497586111, tb211388.SecplPT3E.c02.023",
+        "originalQuestion": "Lucia’s organization has adopted open source software provided by a third-party vendor as part of their web application. What concern should she express about her software supply chain?",
+        "responseSeconds": 30,
+        "selectedAnswersIgnoredForKey": [
+          "A"
+        ],
+        "correction": null
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-027758d3953c578d9aa0",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.4:network-attacks:distributed-denial-of-service-ddos:amplified",
+        "req:sy0701:v7:2.4:network-attacks:distributed-denial-of-service-ddos:reflected"
+      ],
+      "evidence": "The exact keyed answer 'DDoS' follows from the corrected or original stem and the defining source claim. The coherent explanation is: His machines are part of a distributed denial-of-service (DDoS) attack. This scenario describes a generic DDoS, not a specific one like SYN flood, which would involve many SYN packets being sent without a full three-way TCP handshake. These machines could be part of a botnet or they may just have a trigger that causes them to launch the attack at a specific time. The real key in this scenario is the DDoS attack. Finally, a backdoor gives an attacker access to the target system.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.4: Network attacks > Distributed denial-of-service (DDoS) > Amplified; 2.4: Network attacks > Distributed denial-of-service (DDoS) > Reflected",
+          "supports": "The official objectives place '2.4: Network attacks > Distributed denial-of-service (DDoS) > Amplified; 2.4: Network attacks > Distributed denial-of-service (DDoS) > Reflected' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc4732",
+          "title": "RFC 4732: Internet Denial-of-Service Considerations",
+          "locator": "Sections 2.1-2.3, attack amplification, compromised hosts, and distributed attacks",
+          "supports": "RFC 4732 describes denial-of-service traffic generated by many compromised hosts as a distributed denial-of-service attack.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "SYN flood does not satisfy the defining condition; the keyed result is DDoS. This scenario describes a generic DDoS, not a specific one like SYN flood, which would involve many SYN packets being sent without a full three-way TCP handshake."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "DDoS matches the defining condition in the stem. His machines are part of a distributed denial-of-service (DDoS) attack."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Botnet does not satisfy the defining condition; the keyed result is DDoS. These machines could be part of a botnet or they may just have a trigger that causes them to launch the attack at a specific time."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Backdoor does not satisfy the defining condition; the keyed result is DDoS. Finally, a backdoor gives an attacker access to the target system."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-027758d3953c578d9aa0",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Frank is a network administrator for a small college. He discovers that several machines on his network are infected with malware. That malware is sending a flood of packets to a target external to the network. What best describes this attack?\nA: SYN flood\nB: DDoS\nC: Botnet\nD: Backdoor",
+        "back": ">> CORRECT: B |\n\nHis machines are part of a distributed denial-of-service (DDoS) attack. This scenario describes a generic DDoS, not a specific one like SYN flood, which would involve many SYN packets being sent without a full three-way TCP handshake. These machines could be part of a botnet or they may just have a trigger that causes them to launch the attack at a specific time. The real key in this scenario is the DDoS attack. Finally, a backdoor gives an attacker access to the target system.\n\nNicht:\nA | SYN flood does not satisfy the defining condition; the keyed result is DDoS. This scenario describes a generic DDoS, not a specific one like SYN flood, which would involve many SYN packets being sent without a full three-way TCP handshake.\nC | Botnet does not satisfy the defining condition; the keyed result is DDoS. These machines could be part of a botnet or they may just have a trigger that causes them to launch the attack at a specific time.\nD | Backdoor does not satisfy the defining condition; the keyed result is DDoS. Finally, a backdoor gives an attacker access to the target system.",
+        "tags": [
+          "Network attacks",
+          "Amplified"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 15,
+            "totalAnswerTimeSeconds": 15,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092775927_1_3964578830493959, tb211388.SecplPT3E.c02.029",
+        "originalQuestion": "Frank is a network administrator for a small college. He discovers that several machines on his network are infected with malware. That malware is sending a flood of packets to a target external to the network. What best describes this attack?",
+        "responseSeconds": 15,
+        "selectedAnswersIgnoredForKey": [
+          "C"
+        ],
+        "correction": null
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-889f8a9bb127c9a24ffa",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.2:unsecure-networks:bluetooth"
+      ],
+      "evidence": "The exact keyed answer 'Bluejacking' follows from the corrected or original stem and the defining source claim. The coherent explanation is: Bluejacking involves sending unsolicited messages to Bluetooth devices when they are in range. Bluesnarfing involves getting data from the Bluetooth device. An evil twin attack uses a rogue access point whose name is similar or identical to that of a legitimate access point.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.2: Unsecure networks > Bluetooth",
+          "supports": "The official objectives place '2.2: Unsecure networks > Bluetooth' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://doi.org/10.6028/NIST.SP.800-121r2-upd1",
+          "title": "NIST SP 800-121 Rev. 2 Update 1: Guide to Bluetooth Security",
+          "locator": "Section 3.3, Bluetooth security threats including bluejacking and bluesnarfing",
+          "supports": "NIST distinguishes bluejacking as unsolicited Bluetooth messages from bluesnarfing, which accesses information on a Bluetooth device.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "correct",
+          "reason": "Bluejacking matches the defining condition in the stem. Bluejacking involves sending unsolicited messages to Bluetooth devices when they are in range."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Bluesnarfing does not satisfy the defining condition; the keyed result is Bluejacking. Bluesnarfing involves getting data from the Bluetooth device."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Evil twin does not satisfy the defining condition; the keyed result is Bluejacking. An evil twin attack uses a rogue access point whose name is similar or identical to that of a legitimate access point."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Rogue access point does not satisfy the defining condition; the keyed result is Bluejacking. An evil twin attack uses a rogue access point whose name is similar or identical to that of a legitimate access point."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-889f8a9bb127c9a24ffa",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "You have noticed that when in a crowded area, you sometimes get a stream of unwanted text messages. The messages end when you leave the area. What describes this attack?\nA: Bluejacking\nB: Bluesnarfing\nC: Evil twin\nD: Rogue access point",
+        "back": ">> CORRECT: A |\n\nBluejacking involves sending unsolicited messages to Bluetooth devices when they are in range. Bluesnarfing involves getting data from the Bluetooth device. An evil twin attack uses a rogue access point whose name is similar or identical to that of a legitimate access point.\n\nNicht:\nB | Bluesnarfing does not satisfy the defining condition; the keyed result is Bluejacking. Bluesnarfing involves getting data from the Bluetooth device.\nC | Evil twin does not satisfy the defining condition; the keyed result is Bluejacking. An evil twin attack uses a rogue access point whose name is similar or identical to that of a legitimate access point.\nD | Rogue access point does not satisfy the defining condition; the keyed result is Bluejacking. An evil twin attack uses a rogue access point whose name is similar or identical to that of a legitimate access point.",
+        "tags": [
+          "Unsecure networks",
+          "Bluetooth"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 16,
+            "totalAnswerTimeSeconds": 16,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092776680_1_3220009607986576, tb211388.SecplPT3E.c02.033",
+        "originalQuestion": "You have noticed that when in a crowded area, you sometimes get a stream of unwanted text messages. The messages end when you leave the area. What describes this attack?",
+        "responseSeconds": 16,
+        "selectedAnswersIgnoredForKey": [
+          "B"
+        ],
+        "correction": null
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-5464a523a5d4d0ef9c95",
+      "operation": "create",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.4:network-attacks:on-path"
+      ],
+      "evidence": "The exact keyed answer 'All traffic meant for remote systems' follows from the corrected or original stem and the defining source claim. The coherent explanation is: Because Dennis's system is acting as the affected host's gateway, all traffic bound for remote systems traverses it. Encrypted traffic is still visible as traffic and ciphertext, although its protected contents are not readable without decryption.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.4: Network attacks > On-path",
+          "supports": "The official objectives place '2.4: Network attacks > On-path' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://csrc.nist.gov/glossary/term/man_in_the_middle_attack",
+          "title": "NIST CSRC Glossary: Man-in-the-Middle Attack",
+          "locator": "Definition and cited CNSSI 4009 source",
+          "supports": "NIST defines an on-path or man-in-the-middle attacker as positioned between communicating parties so traffic traverses the attacker's system.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [
+        "Original wording was revised without changing the marked answer: Die Gateway-Rolle wurde im Fragetext ausdrücklich gemacht, damit Antwort A nicht zu weit formuliert ist."
+      ],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "correct",
+          "reason": "All traffic meant for remote systems matches the defining condition in the stem. Because Dennis's system is acting as the affected host's gateway, all traffic bound for remote systems traverses it."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "All traffic meant for local systems does not satisfy the defining condition; the keyed result is All traffic meant for remote systems. Because Dennis's system is acting as the affected host's gateway, all traffic bound for remote systems traverses it."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Only unencrypted traffic does not satisfy the defining condition; the keyed result is All traffic meant for remote systems. Because Dennis's system is acting as the affected host's gateway, all traffic bound for remote systems traverses it."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Only unencrypted traffic meant for his system does not satisfy the defining condition; the keyed result is All traffic meant for remote systems. Because Dennis's system is acting as the affected host's gateway, all traffic bound for remote systems traverses it."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-5464a523a5d4d0ef9c95",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Dennis uses an on-path attack and makes his system the affected host's network gateway before forwarding traffic to the intended servers. What traffic will traverse and therefore be visible from Dennis's system?\nA: All traffic meant for remote systems\nB: All traffic meant for local systems\nC: Only unencrypted traffic\nD: Only unencrypted traffic meant for his system",
+        "back": ">> CORRECT: A |\n\nBecause Dennis's system is acting as the affected host's gateway, all traffic bound for remote systems traverses it. Encrypted traffic is still visible as traffic and ciphertext, although its protected contents are not readable without decryption.\n\nNicht:\nB | All traffic meant for local systems does not satisfy the defining condition; the keyed result is All traffic meant for remote systems. Because Dennis's system is acting as the affected host's gateway, all traffic bound for remote systems traverses it.\nC | Only unencrypted traffic does not satisfy the defining condition; the keyed result is All traffic meant for remote systems. Because Dennis's system is acting as the affected host's gateway, all traffic bound for remote systems traverses it.\nD | Only unencrypted traffic meant for his system does not satisfy the defining condition; the keyed result is All traffic meant for remote systems. Because Dennis's system is acting as the affected host's gateway, all traffic bound for remote systems traverses it.",
+        "tags": [
+          "Network attacks",
+          "On-path"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 44,
+            "totalAnswerTimeSeconds": 44,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092776733_1_040753970394245, tb211388.SecplPT3E.c02.034",
+        "originalQuestion": "Dennis uses an on-path attack to cause a system to send traffic to his system and then forwards it to the actual server the traffic is intended for. What information will be visible from his system as it passed through it?",
+        "responseSeconds": 44,
+        "selectedAnswersIgnoredForKey": [
+          "B"
+        ],
+        "correction": {
+          "beforeQuestion": "Dennis uses an on-path attack to cause a system to send traffic to his system and then forwards it to the actual server the traffic is intended for. What information will be visible from his system as it passed through it?",
+          "afterQuestion": "Dennis uses an on-path attack and makes his system the affected host's network gateway before forwarding traffic to the intended servers. What traffic will traverse and therefore be visible from Dennis's system?",
+          "answer": "A: All traffic meant for remote systems",
+          "reason": "Die Gateway-Rolle wurde im Fragetext ausdrücklich gemacht, damit Antwort A nicht zu weit formuliert ist."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-1b09bb0bc5923ded4806",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.5:segmentation"
+      ],
+      "evidence": "The exact keyed answer 'Segmentation' follows from the corrected or original stem and the defining source claim. The coherent explanation is: Segmentation can be used to separate systems and applications of different sensitivity levels. A breach of one segmented group should not automatically mean that the other groupings are in immediate danger. Application allow lists control what applications can be installed but do not introduce separation between systems and applications. Monitoring would allow visibility but does not meet the goal Rick has. Least privilege is an effective practice to ensure only the rights required are in place, but again this does not meet the goal.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.5: Segmentation",
+          "supports": "The official objectives place '2.5: Segmentation' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://doi.org/10.6028/NIST.SP.800-207",
+          "title": "NIST SP 800-207: Zero Trust Architecture",
+          "locator": "Sections 2.1 and 3.1, resource protection and limiting implicit trust zones",
+          "supports": "NIST recommends protecting resources individually and limiting trust zones, supporting segmentation between workloads of different sensitivity.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Application allow lists does not satisfy the defining condition; the keyed result is Segmentation. Application allow lists control what applications can be installed but do not introduce separation between systems and applications."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Monitoring does not satisfy the defining condition; the keyed result is Segmentation. Monitoring would allow visibility but does not meet the goal Rick has."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Least privilege does not satisfy the defining condition; the keyed result is Segmentation. Least privilege is an effective practice to ensure only the rights required are in place, but again this does not meet the goal."
+        },
+        "D": {
+          "verdict": "correct",
+          "reason": "Segmentation matches the defining condition in the stem. Segmentation can be used to separate systems and applications of different sensitivity levels."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-1b09bb0bc5923ded4806",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Rick has three major categories of data and applications in use in his virtualization environment: highly sensitive; business sensitive; and unclassified, or public information. He wants to ensure that data and applications of different sensitivity are not compromised in the event of a breach. What mitigation technique is best suited to this type of requirement?\nA: Application allow lists\nB: Monitoring\nC: Least privilege\nD: Segmentation",
+        "back": ">> CORRECT: D |\n\nSegmentation can be used to separate systems and applications of different sensitivity levels. A breach of one segmented group should not automatically mean that the other groupings are in immediate danger. Application allow lists control what applications can be installed but do not introduce separation between systems and applications. Monitoring would allow visibility but does not meet the goal Rick has. Least privilege is an effective practice to ensure only the rights required are in place, but again this does not meet the goal.\n\nNicht:\nA | Application allow lists does not satisfy the defining condition; the keyed result is Segmentation. Application allow lists control what applications can be installed but do not introduce separation between systems and applications.\nB | Monitoring does not satisfy the defining condition; the keyed result is Segmentation. Monitoring would allow visibility but does not meet the goal Rick has.\nC | Least privilege does not satisfy the defining condition; the keyed result is Segmentation. Least privilege is an effective practice to ensure only the rights required are in place, but again this does not meet the goal.",
+        "tags": [
+          "Segmentation"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 33,
+            "totalAnswerTimeSeconds": 33,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092776888_1_949268453357266, tb211388.SecplPT3E.c02.037",
+        "originalQuestion": "Rick has three major categories of data and applications in use in his virtualization environment: highly sensitive; business sensitive; and unclassified, or public information. He wants to ensure that data and applications of different sensitivity are not compromised in the event of a breach. What mitigation technique is best suited to this type of requirement?",
+        "responseSeconds": 33,
+        "selectedAnswersIgnoredForKey": [
+          "C"
+        ],
+        "correction": null
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-c172a584ba00dba45403",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.2:human-vectors-social-engineering:vishing"
+      ],
+      "evidence": "The exact keyed answer 'Vishing' follows from the corrected or original stem and the defining source claim. The coherent explanation is: This is vishing, or using voice calls for phishing. Spear phishing is targeting a small, specific group. War dialing is dialing numbers hoping a computer modem answers. Robocalling is used to place unsolicited telemarketing calls.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.2: Human vectors/social engineering > Vishing",
+          "supports": "The official objectives place '2.2: Human vectors/social engineering > Vishing' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://www.cisa.gov/secure-our-world/recognize-and-report-phishing",
+          "title": "CISA: Recognize and Report Phishing",
+          "locator": "Recognize phishing and common communication methods sections",
+          "supports": "CISA explains that phishing uses email, text, direct messages, or phone calls to trick targets into revealing sensitive information or following malicious instructions.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Spear phishing does not satisfy the defining condition; the keyed result is Vishing. Spear phishing is targeting a small, specific group."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "Vishing matches the defining condition in the stem. This is vishing, or using voice calls for phishing."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "War dialing does not satisfy the defining condition; the keyed result is Vishing. War dialing is dialing numbers hoping a computer modem answers."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Robocalling does not satisfy the defining condition; the keyed result is Vishing. Robocalling is used to place unsolicited telemarketing calls."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-c172a584ba00dba45403",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Users in your company report someone has been calling their extension and claiming to be doing a survey for a large vendor. Based on the questions asked in the survey, you suspect that this is a scam to elicit information from your company’s employees. What best describes this?\nA: Spear phishing\nB: Vishing\nC: War dialing\nD: Robocalling",
+        "back": ">> CORRECT: B |\n\nThis is vishing, or using voice calls for phishing. Spear phishing is targeting a small, specific group. War dialing is dialing numbers hoping a computer modem answers. Robocalling is used to place unsolicited telemarketing calls.\n\nNicht:\nA | Spear phishing does not satisfy the defining condition; the keyed result is Vishing. Spear phishing is targeting a small, specific group.\nC | War dialing does not satisfy the defining condition; the keyed result is Vishing. War dialing is dialing numbers hoping a computer modem answers.\nD | Robocalling does not satisfy the defining condition; the keyed result is Vishing. Robocalling is used to place unsolicited telemarketing calls.",
+        "tags": [
+          "Human vectors/social engineering",
+          "Vishing"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 66,
+            "totalAnswerTimeSeconds": 66,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092776941_1_7058317185415683, tb211388.SecplPT3E.c02.038",
+        "originalQuestion": "Users in your company report someone has been calling their extension and claiming to be doing a survey for a large vendor. Based on the questions asked in the survey, you suspect that this is a scam to elicit information from your company’s employees. What best describes this?",
+        "responseSeconds": 66,
+        "selectedAnswersIgnoredForKey": [
+          "C"
+        ],
+        "correction": null
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-487572276ce70d1697a0",
+      "operation": "create",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.2:human-vectors-social-engineering:phishing"
+      ],
+      "evidence": "The exact keyed answer 'Email addresses' follows from the corrected or original stem and the defining source claim. The coherent explanation is: Email addresses are commonly used to deliver phishing messages. The information a phishing attempt is designed to steal is more typically passwords, payment-card data, or other personal and sensitive information.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.2: Human vectors/social engineering > Phishing",
+          "supports": "The official objectives place '2.2: Human vectors/social engineering > Phishing' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://www.cisa.gov/secure-our-world/recognize-and-report-phishing",
+          "title": "CISA: Recognize and Report Phishing",
+          "locator": "Recognize phishing and common communication methods sections",
+          "supports": "CISA explains that phishing uses email, text, direct messages, or phone calls to trick targets into revealing sensitive information or following malicious instructions.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [
+        "Original wording was revised without changing the marked answer: Die unscharfe Häufigkeitsaussage wurde zu einer eindeutigen Abgrenzung umformuliert; Antwort B bleibt erhalten."
+      ],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Passwords does not satisfy the defining condition; the keyed result is Email addresses. The information a phishing attempt is designed to steal is more typically passwords, payment-card data, or other personal and sensitive information."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "Email addresses matches the defining condition in the stem. Email addresses are commonly used to deliver phishing messages."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Credit card numbers does not satisfy the defining condition; the keyed result is Email addresses. The information a phishing attempt is designed to steal is more typically passwords, payment-card data, or other personal and sensitive information."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Personal information does not satisfy the defining condition; the keyed result is Email addresses. The information a phishing attempt is designed to steal is more typically passwords, payment-card data, or other personal and sensitive information."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-487572276ce70d1697a0",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Which item is normally used to address or deliver a phishing message, rather than being the sensitive information the phishing attempt is designed to steal?\nA: Passwords\nB: Email addresses\nC: Credit card numbers\nD: Personal information",
+        "back": ">> CORRECT: B |\n\nEmail addresses are commonly used to deliver phishing messages. The information a phishing attempt is designed to steal is more typically passwords, payment-card data, or other personal and sensitive information.\n\nNicht:\nA | Passwords does not satisfy the defining condition; the keyed result is Email addresses. The information a phishing attempt is designed to steal is more typically passwords, payment-card data, or other personal and sensitive information.\nC | Credit card numbers does not satisfy the defining condition; the keyed result is Email addresses. The information a phishing attempt is designed to steal is more typically passwords, payment-card data, or other personal and sensitive information.\nD | Personal information does not satisfy the defining condition; the keyed result is Email addresses. The information a phishing attempt is designed to steal is more typically passwords, payment-card data, or other personal and sensitive information.",
+        "tags": [
+          "Human vectors/social engineering",
+          "Phishing"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 13,
+            "totalAnswerTimeSeconds": 13,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092777321_1_3999626488356092, tb211388.SecplPT3E.c02.044",
+        "originalQuestion": "What type of information is phishing not commonly intended to acquire?",
+        "responseSeconds": 13,
+        "selectedAnswersIgnoredForKey": [
+          "C"
+        ],
+        "correction": {
+          "beforeQuestion": "What type of information is phishing not commonly intended to acquire?",
+          "afterQuestion": "Which item is normally used to address or deliver a phishing message, rather than being the sensitive information the phishing attempt is designed to steal?",
+          "answer": "B: Email addresses",
+          "reason": "Die unscharfe Häufigkeitsaussage wurde zu einer eindeutigen Abgrenzung umformuliert; Antwort B bleibt erhalten."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-898e1712f71572f06ff2",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.2:supply-chain:suppliers"
+      ],
+      "evidence": "The exact keyed answer 'All of the above' follows from the corrected or original stem and the defining source claim. The coherent explanation is: Acquisition via the gray market can lead to lack of vendor support, lack of warranty coverage, and the inability to validate where the devices came from. Nick should express concerns about the supply chain, and if his devices need to be from a trusted source or supplier with real support he may need to change his organization’s acquisition practices.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.2: Supply chain > Suppliers",
+          "supports": "The official objectives place '2.2: Supply chain > Suppliers' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://doi.org/10.6028/NIST.SP.800-161r1-upd1",
+          "title": "NIST SP 800-161 Rev. 1 Update 1: Cybersecurity Supply Chain Risk Management Practices",
+          "locator": "Sections 2.2-2.3 and Appendix F, supply-chain threats including tampering, counterfeit components, compromised products, and supplier availability",
+          "supports": "NIST identifies product tampering, compromised hardware or firmware, provenance, supplier support, and availability as distinct supply-chain risks.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Lack of vendor support does not satisfy the defining condition; the keyed result is All of the above. Acquisition via the gray market can lead to lack of vendor support, lack of warranty coverage, and the inability to validate where the devices came from."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Lack of warranty coverage does not satisfy the defining condition; the keyed result is All of the above. Acquisition via the gray market can lead to lack of vendor support, lack of warranty coverage, and the inability to validate where the devices came from."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Inability to validate the source of the devices does not satisfy the defining condition; the keyed result is All of the above. Acquisition via the gray market can lead to lack of vendor support, lack of warranty coverage, and the inability to validate where the devices came from."
+        },
+        "D": {
+          "verdict": "correct",
+          "reason": "All of the above matches the defining condition in the stem. Acquisition via the gray market can lead to lack of vendor support, lack of warranty coverage, and the inability to validate where the devices came from."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-898e1712f71572f06ff2",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Nick purchases his network devices through a gray market supplier that imports them into his region without an official relationship with the network device manufacturer. What risk should Nick identify when he assesses his supply chain risk?\nA: Lack of vendor support\nB: Lack of warranty coverage\nC: Inability to validate the source of the devices\nD: All of the above",
+        "back": ">> CORRECT: D |\n\nAcquisition via the gray market can lead to lack of vendor support, lack of warranty coverage, and the inability to validate where the devices came from. Nick should express concerns about the supply chain, and if his devices need to be from a trusted source or supplier with real support he may need to change his organization’s acquisition practices.\n\nNicht:\nA | Lack of vendor support does not satisfy the defining condition; the keyed result is All of the above. Acquisition via the gray market can lead to lack of vendor support, lack of warranty coverage, and the inability to validate where the devices came from.\nB | Lack of warranty coverage does not satisfy the defining condition; the keyed result is All of the above. Acquisition via the gray market can lead to lack of vendor support, lack of warranty coverage, and the inability to validate where the devices came from.\nC | Inability to validate the source of the devices does not satisfy the defining condition; the keyed result is All of the above. Acquisition via the gray market can lead to lack of vendor support, lack of warranty coverage, and the inability to validate where the devices came from.",
+        "tags": [
+          "Supply chain",
+          "Suppliers"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 14,
+            "totalAnswerTimeSeconds": 14,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092777451_1_307428650723435, tb211388.SecplPT3E.c02.046",
+        "originalQuestion": "Nick purchases his network devices through a gray market supplier that imports them into his region without an official relationship with the network device manufacturer. What risk should Nick identify when he assesses his supply chain risk?",
+        "responseSeconds": 14,
+        "selectedAnswersIgnoredForKey": [
+          "A"
+        ],
+        "correction": null
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-2e6f53fed616cf96da82",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.4:network-attacks:credential-replay"
+      ],
+      "evidence": "The exact keyed answer 'NTLM' follows from the corrected or original stem and the defining source claim. The coherent explanation is: While dated, NTLM was historically one of the most common targets of credential relay attacks. RDP, SQL, and TLS are less commonly associated with credential relay attacks. Modern protocols implement encryption, session, IDs, and one-time passwords to prevent this type of attack.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.4: Network attacks > Credential replay",
+          "supports": "The official objectives place '2.4: Network attacks > Credential replay' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://learn.microsoft.com/en-us/security-updates/securityadvisories/2009/974926",
+          "title": "Microsoft Security Advisory 974926: Credential Relaying Attacks on Integrated Windows Authentication",
+          "locator": "Executive Summary and Overview, NTLM credential reflection and relay",
+          "supports": "Microsoft documents credential-relay attacks against Integrated Windows Authentication and specifically identifies NTLM authentication in the affected flow.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "RDP does not satisfy the defining condition; the keyed result is NTLM. While dated, NTLM was historically one of the most common targets of credential relay attacks."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "NTLM matches the defining condition in the stem. While dated, NTLM was historically one of the most common targets of credential relay attacks."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "SQL does not satisfy the defining condition; the keyed result is NTLM. While dated, NTLM was historically one of the most common targets of credential relay attacks."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "TLS does not satisfy the defining condition; the keyed result is NTLM. While dated, NTLM was historically one of the most common targets of credential relay attacks."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-2e6f53fed616cf96da82",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Which of the following protocols is most commonly associated with credential relaying attacks?\nA: RDP\nB: NTLM\nC: SQL\nD: TLS",
+        "back": ">> CORRECT: B |\n\nWhile dated, NTLM was historically one of the most common targets of credential relay attacks. RDP, SQL, and TLS are less commonly associated with credential relay attacks. Modern protocols implement encryption, session, IDs, and one-time passwords to prevent this type of attack.\n\nNicht:\nA | RDP does not satisfy the defining condition; the keyed result is NTLM. While dated, NTLM was historically one of the most common targets of credential relay attacks.\nC | SQL does not satisfy the defining condition; the keyed result is NTLM. While dated, NTLM was historically one of the most common targets of credential relay attacks.\nD | TLS does not satisfy the defining condition; the keyed result is NTLM. While dated, NTLM was historically one of the most common targets of credential relay attacks.",
+        "tags": [
+          "Network attacks",
+          "Credential replay"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 12,
+            "totalAnswerTimeSeconds": 12,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092778645_1_4682120074437346, tb211388.SecplPT3E.c02.055",
+        "originalQuestion": "Which of the following protocols is most commonly associated with credential relaying attacks?",
+        "responseSeconds": 12,
+        "selectedAnswersIgnoredForKey": [
+          "A"
+        ],
+        "correction": null
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-669950635981f85fb5de",
+      "operation": "create",
+      "verdict": "corrected",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.4:cryptographic-attacks:collision"
+      ],
+      "evidence": "The exact keyed answer 'He needs to prepare both a correct and a malicious document, then find ways to modify the malicious document until its hash matches the hash of the correct document.' follows from the corrected or original stem and the defining source claim. The coherent explanation is: A second-preimage attack starts with a fixed legitimate document and its hash, then searches for a different malicious document with the same hash. That is the process described by answer D. A birthday collision attack instead searches by varying both messages.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.4: Cryptographic attacks > Collision",
+          "supports": "The official objectives place '2.4: Cryptographic attacks > Collision' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://doi.org/10.6028/NIST.SP.800-107r1",
+          "title": "NIST SP 800-107 Rev. 1: Recommendation for Applications Using Approved Hash Algorithms",
+          "locator": "Sections 3 and 5.1, collision resistance and second-preimage resistance",
+          "supports": "NIST distinguishes finding two colliding messages from finding a second message that matches the hash of a fixed first message.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [
+        "Original wording was revised without changing the marked answer: Der ursprüngliche Begriff 'birthday attack' widersprach dem beschriebenen Second-Preimage-Verfahren; Antwort D bleibt unverändert."
+      ],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "He needs to prepare both a correct and a malicious document and find ways to modify the correct document until its encryption matches the malicious document. does not satisfy the defining condition; the keyed result is He needs to prepare both a correct and a malicious document, then find ways to modify the malicious document until its hash matches the hash of the correct document.. A second-preimage attack starts with a fixed legitimate document and its hash, then searches for a different malicious document with the same hash."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "He needs to make sure all dates match in both a correct and a malicious document. does not satisfy the defining condition; the keyed result is He needs to prepare both a correct and a malicious document, then find ways to modify the malicious document until its hash matches the hash of the correct document.. A second-preimage attack starts with a fixed legitimate document and its hash, then searches for a different malicious document with the same hash."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "He needs to ensure that the file length and creation date match for both a correct document and a malicious document. does not satisfy the defining condition; the keyed result is He needs to prepare both a correct and a malicious document, then find ways to modify the malicious document until its hash matches the hash of the correct document.. A second-preimage attack starts with a fixed legitimate document and its hash, then searches for a different malicious document with the same hash."
+        },
+        "D": {
+          "verdict": "correct",
+          "reason": "He needs to prepare both a correct and a malicious document, then find ways to modify the malicious document until its hash matches the hash of the correct document. matches the defining condition in the stem. A second-preimage attack starts with a fixed legitimate document and its hash, then searches for a different malicious document with the same hash."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-669950635981f85fb5de",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Derek wants to conduct a second-preimage attack against a document protected by a digital signature. Which of the following best describes the process he would need to take?\nA: He needs to prepare both a correct and a malicious document and find ways to modify the correct document until its encryption matches the malicious document.\nB: He needs to make sure all dates match in both a correct and a malicious document.\nC: He needs to ensure that the file length and creation date match for both a correct document and a malicious document.\nD: He needs to prepare both a correct and a malicious document, then find ways to modify the malicious document until its hash matches the hash of the correct document.",
+        "back": ">> CORRECT: D |\n\nA second-preimage attack starts with a fixed legitimate document and its hash, then searches for a different malicious document with the same hash. That is the process described by answer D. A birthday collision attack instead searches by varying both messages.\n\nNicht:\nA | He needs to prepare both a correct and a malicious document and find ways to modify the correct document until its encryption matches the malicious document. does not satisfy the defining condition; the keyed result is He needs to prepare both a correct and a malicious document, then find ways to modify the malicious document until its hash matches the hash of the correct document.. A second-preimage attack starts with a fixed legitimate document and its hash, then searches for a different malicious document with the same hash.\nB | He needs to make sure all dates match in both a correct and a malicious document. does not satisfy the defining condition; the keyed result is He needs to prepare both a correct and a malicious document, then find ways to modify the malicious document until its hash matches the hash of the correct document.. A second-preimage attack starts with a fixed legitimate document and its hash, then searches for a different malicious document with the same hash.\nC | He needs to ensure that the file length and creation date match for both a correct document and a malicious document. does not satisfy the defining condition; the keyed result is He needs to prepare both a correct and a malicious document, then find ways to modify the malicious document until its hash matches the hash of the correct document.. A second-preimage attack starts with a fixed legitimate document and its hash, then searches for a different malicious document with the same hash.",
+        "tags": [
+          "Cryptographic attacks",
+          "Collision"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 24,
+            "totalAnswerTimeSeconds": 24,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092778801_1_1348619860925693, tb211388.SecplPT3E.c02.057",
+        "originalQuestion": "Derek wants to conduct a birthday attack against a digital signature. Which of the following best describes the process he would need to take to achieve his goal?",
+        "responseSeconds": 24,
+        "selectedAnswersIgnoredForKey": [
+          "A"
+        ],
+        "correction": {
+          "beforeQuestion": "Derek wants to conduct a birthday attack against a digital signature. Which of the following best describes the process he would need to take to achieve his goal?",
+          "afterQuestion": "Derek wants to conduct a second-preimage attack against a document protected by a digital signature. Which of the following best describes the process he would need to take?",
+          "answer": "D: He needs to prepare both a correct and a malicious document, then find ways to modify the malicious document until its hash matches the hash of the correct document.",
+          "reason": "Der ursprüngliche Begriff 'birthday attack' widersprach dem beschriebenen Second-Preimage-Verfahren; Antwort D bleibt unverändert."
+        }
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-97b81eedc5bd18f548aa",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.4:network-attacks:distributed-denial-of-service-ddos:amplified",
+        "req:sy0701:v7:2.4:network-attacks:distributed-denial-of-service-ddos:reflected"
+      ],
+      "evidence": "The exact keyed answer 'A reflected DDoS' follows from the corrected or original stem and the defining source claim. The coherent explanation is: Ashley’s organization was the target of a reflected (and amplified) DDoS where attackers took advantage of DNS queries to make small amounts of spoofed traffic into very large amounts of data sent to her servers. DNS floods, mirrored DDoSs, and supersized query attacks were made up for this question.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.4: Network attacks > Distributed denial-of-service (DDoS) > Amplified; 2.4: Network attacks > Distributed denial-of-service (DDoS) > Reflected",
+          "supports": "The official objectives place '2.4: Network attacks > Distributed denial-of-service (DDoS) > Amplified; 2.4: Network attacks > Distributed denial-of-service (DDoS) > Reflected' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc5358",
+          "title": "RFC 5358: Preventing Use of Recursive Nameservers in Reflector Attacks",
+          "locator": "Sections 1-3, spoofed-source DNS requests, reflection, and amplification",
+          "supports": "RFC 5358 describes spoofed DNS requests sent to open resolvers whose larger replies are reflected to the victim, producing an amplified reflected DDoS.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "correct",
+          "reason": "A reflected DDoS matches the defining condition in the stem. Ashley’s organization was the target of a reflected (and amplified) DDoS where attackers took advantage of DNS queries to make small amounts of spoofed traffic into very large amounts of data sent to her servers."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "A DNS flood does not satisfy the defining condition; the keyed result is A reflected DDoS. DNS floods, mirrored DDoSs, and supersized query attacks were made up for this question."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "A mirrored DDoS does not satisfy the defining condition; the keyed result is A reflected DDoS. DNS floods, mirrored DDoSs, and supersized query attacks were made up for this question."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "A supersized query attack does not satisfy the defining condition; the keyed result is A reflected DDoS. DNS floods, mirrored DDoSs, and supersized query attacks were made up for this question."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-97b81eedc5bd18f548aa",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Ashley’s organization has recently come under attack and has suffered a DNS outage. As she investigated, she found that requests to her DNS servers were sent to open DNS resolvers using spoofed IP addresses with requests that would result in very large responses from the DNS resolvers to the IP addresses that appeared to be making the request. What type of attack targeted Ashley’s organization?\nA: A reflected DDoS\nB: A DNS flood\nC: A mirrored DDoS\nD: A supersized query attack",
+        "back": ">> CORRECT: A |\n\nAshley’s organization was the target of a reflected (and amplified) DDoS where attackers took advantage of DNS queries to make small amounts of spoofed traffic into very large amounts of data sent to her servers. DNS floods, mirrored DDoSs, and supersized query attacks were made up for this question.\n\nNicht:\nB | A DNS flood does not satisfy the defining condition; the keyed result is A reflected DDoS. DNS floods, mirrored DDoSs, and supersized query attacks were made up for this question.\nC | A mirrored DDoS does not satisfy the defining condition; the keyed result is A reflected DDoS. DNS floods, mirrored DDoSs, and supersized query attacks were made up for this question.\nD | A supersized query attack does not satisfy the defining condition; the keyed result is A reflected DDoS. DNS floods, mirrored DDoSs, and supersized query attacks were made up for this question.",
+        "tags": [
+          "Network attacks",
+          "Amplified"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 34,
+            "totalAnswerTimeSeconds": 34,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092778885_1_2730200543425914, tb211388.SecplPT3E.c02.058",
+        "originalQuestion": "Ashley’s organization has recently come under attack and has suffered a DNS outage. As she investigated, she found that requests to her DNS servers were sent to open DNS resolvers using spoofed IP addresses with requests that would result in very large responses from the DNS resolvers to the IP addresses that appeared to be making the request. What type of attack targeted Ashley’s organization?",
+        "responseSeconds": 34,
+        "selectedAnswersIgnoredForKey": [
+          "C"
+        ],
+        "correction": null
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-3e68fcbd38fe42bff7e0",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.2:human-vectors-social-engineering:misinformation-disinformation"
+      ],
+      "evidence": "The exact keyed answer 'A disinformation campaign' follows from the corrected or original stem and the defining source claim. The coherent explanation is: Annie’s company is facing a disinformation campaign. If users were simply getting facts wrong, this would be misinformation, but since bots are intentionally misstating information, it is disinformation. Pretexting would attempt to exploit human behaviors to explain why something needed to occur or why an attacker was asking for something. Impersonation occurs when an attacker pretends to be someone they are not.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.2: Human vectors/social engineering > Misinformation/disinformation",
+          "supports": "The official objectives place '2.2: Human vectors/social engineering > Misinformation/disinformation' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://www.cisa.gov/topics/cyber-threats-and-advisories/misinformation-disinformation-mal-information-mdm",
+          "title": "CISA: Misinformation, Disinformation, Malinformation",
+          "locator": "Definitions of misinformation and disinformation",
+          "supports": "CISA distinguishes disinformation as deliberately created or disseminated false information, unlike unintentional misinformation.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "A misinformation campaign does not satisfy the defining condition; the keyed result is A disinformation campaign. Annie’s company is facing a disinformation campaign."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "A pretexting campaign does not satisfy the defining condition; the keyed result is A disinformation campaign. Annie’s company is facing a disinformation campaign."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "An impersonation campaign does not satisfy the defining condition; the keyed result is A disinformation campaign. Annie’s company is facing a disinformation campaign."
+        },
+        "D": {
+          "verdict": "correct",
+          "reason": "A disinformation campaign matches the defining condition in the stem. Annie’s company is facing a disinformation campaign."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-3e68fcbd38fe42bff7e0",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "Annie’s organization has been facing negative social media campaigns for months and is struggling to address them. Numerous bot posts about the company are providing incorrect information about the company. What type of attack is Annie’s company facing?\nA: A misinformation campaign\nB: A pretexting campaign\nC: An impersonation campaign\nD: A disinformation campaign",
+        "back": ">> CORRECT: D |\n\nAnnie’s company is facing a disinformation campaign. If users were simply getting facts wrong, this would be misinformation, but since bots are intentionally misstating information, it is disinformation. Pretexting would attempt to exploit human behaviors to explain why something needed to occur or why an attacker was asking for something. Impersonation occurs when an attacker pretends to be someone they are not.\n\nNicht:\nA | A misinformation campaign does not satisfy the defining condition; the keyed result is A disinformation campaign. Annie’s company is facing a disinformation campaign.\nB | A pretexting campaign does not satisfy the defining condition; the keyed result is A disinformation campaign. Annie’s company is facing a disinformation campaign.\nC | An impersonation campaign does not satisfy the defining condition; the keyed result is A disinformation campaign. Annie’s company is facing a disinformation campaign.",
+        "tags": [
+          "Human vectors/social engineering",
+          "Misinformation/disinformation"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 17,
+            "totalAnswerTimeSeconds": 17,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092779132_1_2730108446675135, tb211388.SecplPT3E.c02.061",
+        "originalQuestion": "Annie’s organization has been facing negative social media campaigns for months and is struggling to address them. Numerous bot posts about the company are providing incorrect information about the company. What type of attack is Annie’s company facing?",
+        "responseSeconds": 17,
+        "selectedAnswersIgnoredForKey": [
+          "A"
+        ],
+        "correction": null
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-aead01e81046f9d22ef9",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.4:indicators:out-of-cycle-logging"
+      ],
+      "evidence": "The exact keyed answer 'Out-of-cycle logging' follows from the corrected or original stem and the defining source claim. The coherent explanation is: Jennifer should note this as out-of-cycle logging. It could simply indicate a flaw in the script or another innocuous issue, or it could indicate an attacker exploring scripts to identify what information can be obtained. Concurrent session use occurs when a session is in use from multiple browsers or systems, missing logs are when logs are entirely missing or empty rather than occurring with more frequency than expected, and impossible travel occurs when events or logins occur from different locations by the same user who could not have traveled that distance in the time between the events.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.4: Indicators > Out-of-cycle logging",
+          "supports": "The official objectives place '2.4: Indicators > Out-of-cycle logging' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://doi.org/10.6028/NIST.SP.800-92",
+          "title": "NIST SP 800-92: Guide to Computer Security Log Management",
+          "locator": "Sections 2 and 4, event baselines, review, analysis, and anomalous log activity",
+          "supports": "NIST recommends reviewing logs against expected activity so unexpected event frequency or timing can be treated as an indicator requiring investigation.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Concurrent session use does not satisfy the defining condition; the keyed result is Out-of-cycle logging. Concurrent session use occurs when a session is in use from multiple browsers or systems, missing logs are when logs are entirely missing or empty rather than occurring with more frequency than expected, and impossible travel occurs when events or logins occur from different locations by the same user who could not have traveled that distance in the time between the events."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "Out-of-cycle logging matches the defining condition in the stem. Jennifer should note this as out-of-cycle logging."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Missing logs does not satisfy the defining condition; the keyed result is Out-of-cycle logging. Concurrent session use occurs when a session is in use from multiple browsers or systems, missing logs are when logs are entirely missing or empty rather than occurring with more frequency than expected, and impossible travel occurs when events or logins occur from different locations by the same user who could not have traveled that distance in the time between the events."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Impossible travel does not satisfy the defining condition; the keyed result is Out-of-cycle logging. Concurrent session use occurs when a session is in use from multiple browsers or systems, missing logs are when logs are entirely missing or empty rather than occurring with more frequency than expected, and impossible travel occurs when events or logins occur from different locations by the same user who could not have traveled that distance in the time between the events."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-aead01e81046f9d22ef9",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "During a regular review of logs, Jennifer notices that a regularly scheduled script that copies files to another server every hour has run multiple times within the last hour. What indicator of compromise should she categorize this as?\nA: Concurrent session use\nB: Out-of-cycle logging\nC: Missing logs\nD: Impossible travel",
+        "back": ">> CORRECT: B |\n\nJennifer should note this as out-of-cycle logging. It could simply indicate a flaw in the script or another innocuous issue, or it could indicate an attacker exploring scripts to identify what information can be obtained. Concurrent session use occurs when a session is in use from multiple browsers or systems, missing logs are when logs are entirely missing or empty rather than occurring with more frequency than expected, and impossible travel occurs when events or logins occur from different locations by the same user who could not have traveled that distance in the time between the events.\n\nNicht:\nA | Concurrent session use does not satisfy the defining condition; the keyed result is Out-of-cycle logging. Concurrent session use occurs when a session is in use from multiple browsers or systems, missing logs are when logs are entirely missing or empty rather than occurring with more frequency than expected, and impossible travel occurs when events or logins occur from different locations by the same user who could not have traveled that distance in the time between the events.\nC | Missing logs does not satisfy the defining condition; the keyed result is Out-of-cycle logging. Concurrent session use occurs when a session is in use from multiple browsers or systems, missing logs are when logs are entirely missing or empty rather than occurring with more frequency than expected, and impossible travel occurs when events or logins occur from different locations by the same user who could not have traveled that distance in the time between the events.\nD | Impossible travel does not satisfy the defining condition; the keyed result is Out-of-cycle logging. Concurrent session use occurs when a session is in use from multiple browsers or systems, missing logs are when logs are entirely missing or empty rather than occurring with more frequency than expected, and impossible travel occurs when events or logins occur from different locations by the same user who could not have traveled that distance in the time between the events.",
+        "tags": [
+          "Indicators",
+          "Out-of-cycle logging"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 26,
+            "totalAnswerTimeSeconds": 26,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092780404_1_6538125031294815, tb211388.SecplPT3E.c02.069",
+        "originalQuestion": "During a regular review of logs, Jennifer notices that a regularly scheduled script that copies files to another server every hour has run multiple times within the last hour. What indicator of compromise should she categorize this as?",
+        "responseSeconds": 26,
+        "selectedAnswersIgnoredForKey": [
+          "A"
+        ],
+        "correction": null
+      }
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "newinfo-domain2-8f8529c6d042668a043c",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:2.4:application-attacks:forgery"
+      ],
+      "evidence": "The exact keyed answer 'Cross-site request forgery' follows from the corrected or original stem and the defining source claim. The coherent explanation is: Cross-site request forgery (XSRF or CSRF) sends fake requests to a website that purport to be from a trusted, authenticated user. Cross-site scripting (XSS) exploits the trust the user has for the website and embeds scripts into that website. Bluejacking is a Bluetooth attack. Nothing in this scenario requires or describes an evil twin, which is an attack that uses a malicious access point that duplicates a legitimate AP.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives, Version 7.0",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Domain 2.0 objectives: 2.4: Application attacks > Forgery",
+          "supports": "The official objectives place '2.4: Application attacks > Forgery' in the assessed Domain 2.0 scope."
+        },
+        {
+          "url": "https://owasp.org/www-community/attacks/csrf",
+          "title": "OWASP: Cross Site Request Forgery",
+          "locator": "Description and attack examples",
+          "supports": "OWASP defines CSRF as causing an authenticated user's browser to submit an unwanted request that the target site accepts under the user's session.",
+          "roles": [
+            "fact"
+          ]
+        }
+      ],
+      "reviewer": "Codex primary-source semantic review 2026-08-18",
+      "reviewedAt": "2026-08-17T22:28:05+00:00",
+      "reviewBasis": [
+        "explicit answers[].correct and correct fields cross-checked",
+        "selected wrong answer ignored as a solution key",
+        "stem, keyed answer, explanation, and each distractor inspected",
+        "official Domain 2.0 scope and a primary technical source checked",
+        "active Vlad stems compared to prevent cross-deck duplication",
+        "responseSeconds copied exactly into answerTiming metadata"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "All 18 source stems were compared with every active Vlad card; the existing Chapter 1 file-encryption duplicate was not recreated."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Cross-site scripting does not satisfy the defining condition; the keyed result is Cross-site request forgery. Cross-site scripting (XSS) exploits the trust the user has for the website and embeds scripts into that website."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "Cross-site request forgery matches the defining condition in the stem. Cross-site request forgery (XSRF or CSRF) sends fake requests to a website that purport to be from a trusted, authenticated user."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "Bluejacking does not satisfy the defining condition; the keyed result is Cross-site request forgery. Bluejacking is a Bluetooth attack."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "Evil twin does not satisfy the defining condition; the keyed result is Cross-site request forgery. Nothing in this scenario requires or describes an evil twin, which is an attack that uses a malicious access point that duplicates a legitimate AP."
+        }
+      },
+      "content": {
+        "noteId": "newinfo-domain2-note-8f8529c6d042668a043c",
+        "deckId": "newinfo-chapter-2-domain-2-threats-vulnerabilities-mitigations",
+        "front": "What type of attack exploits the trust that a website has for an authenticated user to attack that website by spoofing requests from the trusted user?\nA: Cross-site scripting\nB: Cross-site request forgery\nC: Bluejacking\nD: Evil twin",
+        "back": ">> CORRECT: B |\n\nCross-site request forgery (XSRF or CSRF) sends fake requests to a website that purport to be from a trusted, authenticated user. Cross-site scripting (XSS) exploits the trust the user has for the website and embeds scripts into that website. Bluejacking is a Bluetooth attack. Nothing in this scenario requires or describes an evil twin, which is an attack that uses a malicious access point that duplicates a legitimate AP.\n\nNicht:\nA | Cross-site scripting does not satisfy the defining condition; the keyed result is Cross-site request forgery. Cross-site scripting (XSS) exploits the trust the user has for the website and embeds scripts into that website.\nC | Bluejacking does not satisfy the defining condition; the keyed result is Cross-site request forgery. Bluejacking is a Bluetooth attack.\nD | Evil twin does not satisfy the defining condition; the keyed result is Cross-site request forgery. Nothing in this scenario requires or describes an evil twin, which is an attack that uses a malicious access point that duplicates a legitimate AP.",
+        "tags": [
+          "Application attacks",
+          "Forgery"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "",
+          "protocol": ""
+        }
+      },
+      "createState": {
+        "metadata": {
+          "answerTiming": {
+            "averageAnswerTimeSeconds": 12,
+            "totalAnswerTimeSeconds": 12,
+            "answerTimeSampleCount": 1,
+            "studySessionCount": 1
+          }
+        }
+      },
+      "importTrace": {
+        "sourceFile": "Alle_Fragen.json",
+        "sourceId": "EAT_1705092780799_1_1736975863618109, tb211388.SecplPT3E.c02.073",
+        "originalQuestion": "What type of attack exploits the trust that a website has for an authenticated user to attack that website by spoofing requests from the trusted user?",
+        "responseSeconds": 12,
+        "selectedAnswersIgnoredForKey": [
+          "D"
+        ],
+        "correction": null
+      }
+    }
+  ]
+}
