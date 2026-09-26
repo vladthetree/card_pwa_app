@@ -47,6 +47,8 @@ interface Settings {
   algorithmParams: AlgorithmParams
   studyCardLimit: number
   shuffleModeEnabled: boolean
+  /** Use Drag-Match for every eligible multiple-choice card. */
+  dragMatchEnabled: boolean
   /** Show and record the per-card answer timer in every desktop deck. */
   answerTimerEnabled: boolean
   fontFamily: FontFamily
@@ -104,6 +106,7 @@ interface SettingsContextType {
   setShowReviewDecks: (enabled: boolean) => void
   setStudyCardLimit: (limit: number) => void
   setShuffleModeEnabled: (enabled: boolean) => void
+  setDragMatchEnabled: (enabled: boolean) => void
   setAnswerTimerEnabled: (enabled: boolean) => void
   setNextDayStartsAt: (hour: number) => void
   setDailyGoal: (goal: number) => void
@@ -189,6 +192,7 @@ const DEFAULT_SETTINGS: Settings = {
   algorithmParams: DEFAULT_ALGORITHM_PARAMS,
   studyCardLimit: 50,
   shuffleModeEnabled: true,
+  dragMatchEnabled: false,
   answerTimerEnabled: false,
   fontFamily: 'industrial',
   questionTextSize: 'default',
@@ -236,6 +240,7 @@ export function normalizeSettings(input: Partial<Settings> | undefined): Setting
     algorithmParams: normalizeAlgorithmParams(input?.algorithmParams),
     studyCardLimit: normalizeStudyCardLimit(input?.studyCardLimit),
     shuffleModeEnabled: input?.shuffleModeEnabled !== false,
+    dragMatchEnabled: input?.dragMatchEnabled === true,
     answerTimerEnabled: typeof input?.answerTimerEnabled === 'boolean'
       ? input.answerTimerEnabled
       : Array.isArray(legacy?.answerTimerDeckIds) && legacy.answerTimerDeckIds.length > 0,
@@ -447,6 +452,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     saveSettings({ ...settings, shuffleModeEnabled })
   }
 
+  const setDragMatchEnabled = (dragMatchEnabled: boolean) => {
+    saveSettings({ ...settings, dragMatchEnabled })
+  }
+
   const setAnswerTimerEnabled = (answerTimerEnabled: boolean) => {
     saveSettings({ ...settings, answerTimerEnabled })
   }
@@ -585,6 +594,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setShowReviewDecks,
         setStudyCardLimit,
         setShuffleModeEnabled,
+        setDragMatchEnabled,
         setAnswerTimerEnabled,
         setNextDayStartsAt,
         setDailyGoal,

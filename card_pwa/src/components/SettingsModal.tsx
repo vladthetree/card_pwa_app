@@ -11,11 +11,8 @@
  * into a child would reset in-flight async status (e.g. FSRS optimizing, PWA reset)
  * every time the user collapses that section, not just when the whole modal closes.
  */
-import { lazy, Suspense, useEffect, useId, useState } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
-import { Settings as SettingsIcon, X } from 'lucide-react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useSettings, STRINGS } from '../contexts/SettingsContext'
-import { getAppStoreState, useAppStore } from '../state/appStore'
 import { getAlgorithmDiagnostics, getYoungCardLapseRate, type AlgorithmDiagnosticsEntry, type YoungCardLapseStats } from '../db/queries'
 import { getErrorLogs, type ErrorLogEntry } from '../services/errorLog'
 import { UI_TOKENS } from '../constants/ui'
@@ -25,6 +22,7 @@ import { SettingsAppearanceSection } from './settings/SettingsAppearanceSection'
 import { SettingsLearningSection } from './settings/SettingsLearningSection'
 import { SettingsNotificationsSection } from './settings/SettingsNotificationsSection'
 import { SettingsDataSection } from './settings/SettingsDataSection'
+import { Dialog } from '../ui/overlays/Dialog'
 
 interface Props {
   isOpen: boolean
@@ -38,32 +36,9 @@ const ImportModal = lazy(() => import('./ImportModal.tsx'))
 export default function SettingsModal({ isOpen, onClose }: Props) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
-  const prefersReducedMotion = useReducedMotion()
   const [openSection, setOpenSection] = useState<SettingsSectionKey | null>(null)
   // Entscheidungsgrundlage für FSRS-Learning-Steps (Audit ⑥): erst messen.
   const [youngLapseStats, setYoungLapseStats] = useState<YoungCardLapseStats | null>(null)
-
-  // Registriert dieses Modal im globalen Overlay-Stack (ADR 001), solange es offen
-  // ist, damit verschachtelte Overlays (z. B. ConfirmModal für destruktive Aktionen)
-  // Escape/Backdrop exklusiv fürs oberste Overlay beanspruchen können.
-  const overlayId = useId()
-  useEffect(() => {
-    if (!isOpen) return
-    getAppStoreState().openOverlay({ id: overlayId })
-    return () => getAppStoreState().closeOverlay(overlayId)
-  }, [isOpen, overlayId])
-  const isTopmost = useAppStore(store => store.topOverlayId() === overlayId)
-
-  // Dialog-Grundverhalten: Escape schließt das Modal — aber nur, wenn kein
-  // verschachteltes Overlay (z. B. eine Lösch-/Reset-Bestätigung) darüber liegt.
-  useEffect(() => {
-    if (!isOpen) return
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isTopmost) onClose()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [isOpen, onClose, isTopmost])
 
   useEffect(() => {
     if (openSection !== 'learning' || youngLapseStats !== null) return
@@ -113,54 +88,16 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
 
   return (
     <>
-    <AnimatePresence initial={false}>
       {isOpen && (
-        <motion.div
-          key="settings-modal"
-          className={UI_TOKENS.modal.overlay}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <Dialog
+          title={t.settings}
+          subtitle={t.settings_expand_sections}
+          closeLabel={settings.language === 'de' ? 'Einstellungen schließen' : 'Close settings'}
+          onClose={() => onClose()}
+          dismissible={!showImportModal && confirmModal === null}
+          size="lg"
+          className="overflow-hidden"
         >
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/80"
-            onClick={() => { if (isTopmost) onClose() }}
-          />
-
-          {/* Modal */}
-          <motion.div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="settings-modal-title"
-            initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
-            transition={{ duration: prefersReducedMotion ? 0.12 : 0.2, ease: 'easeOut' }}
-            className="relative flex min-h-0 w-full max-w-3xl flex-col ds-modal"
-            style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - 2rem)' }}
-            onClick={e => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="sticky top-0 z-10 flex shrink-0 items-center justify-between gap-3 border-b-4 border-black bg-[#FFD93D] px-5 py-4">
-              <div className="flex min-w-0 items-center gap-2">
-                <SettingsIcon size={18} strokeWidth={1.5} className="text-zinc-400" />
-                <div className="min-w-0">
-                  <h2 id="settings-modal-title" className="text-zinc-100 font-black text-lg tracking-tight">{t.settings}</h2>
-                  <p className="text-xs text-zinc-500 mt-0.5">
-                    {t.settings_expand_sections}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={onClose}
-                className="ds-icon-button flex h-9 w-9"
-                aria-label={settings.language === 'de' ? 'Einstellungen schließen' : 'Close settings'}
-              >
-                <X size={18} strokeWidth={1.5} />
-              </button>
-            </div>
-
             <div
               className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5 space-y-3"
               style={{
@@ -223,14 +160,11 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                 {t.close}
               </button>
             </div>
-          </motion.div>
-        </motion.div>
+        </Dialog>
       )}
-    </AnimatePresence>
 
-    {/* Bewusst außerhalb der AnimatePresence: das sind keine animierten
-        Wechselkinder — innerhalb erzeugten sie doppelte Leer-Keys (React-Warnung,
-        riskiert verschluckte Kinder bei Exit-Animationen). */}
+    {/* Verschachtelte Overlays bleiben Geschwister im React-Baum; das gemeinsame
+        Portal und der Overlay-Stack steuern Fokus, Escape und Backdrop. */}
     <Suspense fallback={null}>
       {showImportModal && (
         <ImportModal

@@ -39,8 +39,10 @@ export function useCloseGuard(input: {
   const isTopmost = useAppStore(store => store.topOverlayId() === overlayId)
   const { onClose } = input
 
-  return useCallback((reason: CloseReason) => {
+  const requestClose = useCallback((reason: CloseReason) => {
     if (!computeShouldHandleOverlayClose(reason, dismissible, isTopmost)) return
     onClose(reason)
   }, [dismissible, isTopmost, onClose])
+
+  return { requestClose, isTopmost, overlayId }
 }

@@ -23,7 +23,7 @@ Das frühere Dossier vom 2026-07-27 war in mehreren Kernpunkten nicht mehr aktue
 | HTTP-Schnittstelle | 18 Endpunkte | 20 explizite GET-/POST-Endpunkte, zusätzlich `OPTIONS *` |
 | Hauptdatenbank | Schema v19 | Schema v22 mit `syncOutbox` und erweiterten Review-/Scheduler-Daten |
 | Lerneinheiten | zehn Stores | weiterhin zehn Stores, jetzt Schema v2 inklusive `labAttempts` |
-| Tests | 112 Testdateien | 124 `*.test.ts(x)`-Dateien; 127 TS/TSX-Dateien im Testbereich einschließlich Hilfsdateien |
+| Tests | 112 Testdateien | 125 `*.test.ts(x)`-Dateien; 128 TS/TSX-Dateien im Testbereich einschließlich Hilfsdateien |
 
 ## 2. Kennzahlen
 
@@ -31,13 +31,13 @@ Die Zählung umfasst `.ts` und `.tsx` unter `card_pwa/src/`.
 
 | Kennzahl | Wert |
 |---|---:|
-| TS/TSX-Dateien gesamt | 434 |
-| Produktivdateien außerhalb von `__tests__` | 307 |
-| Dateien im Testbereich `__tests__` | 127 |
-| davon eigentliche `*.test.ts(x)`-Dateien | 124 |
-| Produktivcode | 87.000 LOC |
-| Testbereich einschließlich Fixtures/Helfer | 19.416 LOC |
-| `src/components/` | 86 Dateien / 23.237 LOC |
+| TS/TSX-Dateien gesamt | 436 |
+| Produktivdateien außerhalb von `__tests__` | 308 |
+| Dateien im Testbereich `__tests__` | 128 |
+| davon eigentliche `*.test.ts(x)`-Dateien | 125 |
+| Produktivcode | 86.908 LOC |
+| Testbereich einschließlich Fixtures/Helfer | 19.530 LOC |
+| `src/components/` | 86 Dateien / 22.951 LOC |
 | `src/hooks/` | 55 Dateien / 5.761 LOC |
 | `src/services/` | 28 Dateien / 6.702 LOC |
 | `src/db/` | 17 Dateien / 4.749 LOC |
@@ -116,7 +116,7 @@ App/Views → Komponenten → Hooks/Controller → Services oder db/queries → 
 - `utils` darf grundsätzlich weder Komponenten noch Hooks oder Services importieren; drei dokumentierte Alt-Ausnahmen sind zugelassen.
 - Direkte Dexie-Tabellenzugriffe außerhalb von `db/` benötigen eine explizite Ausnahme, insbesondere für Sync-, Import-, Backup- und Migrationsgrenzen.
 
-**Prüfstatus am 2026-09-24:** `npm run check:architecture` schlägt aktuell für `src/services/dbBackup.ts` und `src/services/importPipeline.ts` fehl. Beide Dateien greifen als technische Batch-Grenzen direkt auf Dexie zu; die Ausnahme-Baseline nennt noch ihre früheren Pfade unter `src/utils/`. Damit sind entweder die Baseline-Pfade nachzuziehen oder die Zugriffe hinter eine freigegebene Datenzugriffsschicht zu verschieben.
+**Prüfstatus am 2026-09-24:** `npm run check:architecture` ist grün. Die Ausnahme-Baseline führt die technischen Batch-Grenzen `src/services/dbBackup.ts` und `src/services/importPipeline.ts` unter ihren aktuellen Pfaden.
 
 ## 4. Bootstrap, Shell und Navigation
 
@@ -357,34 +357,62 @@ Zusätzlich beantwortet der Server `OPTIONS` für CORS-Preflight.
 
 - `Dialog`: allgemeiner modaler Dialog.
 - `AlertDialog`: Bestätigungs- und Destruktivdialog.
-- `Sheet`: dünner Adapter; derzeit ohne produktiven Nutzer.
-- `FullscreenPanel`: dünner Adapter; derzeit ohne produktiven Nutzer.
+- `Sheet`: Bottom-/Left-/Right-Sheet mit tatsächlich angewendeter Placement-Semantik.
+- `FullscreenPanel`: bildschirmfüllende Fläche mit Safe-Area-Regeln.
+- `OverlayPortal`: gemeinsames Portal mit referenzgezählter Scroll-Sperre und Hintergrund-Inertheit.
 - `OverlayHeader`, `overlayTokens`, `overlayTypes`: gemeinsame Darstellung und Verträge.
 - `useCloseGuard`: registriert Overlays im globalen Stack und lässt Escape/Backdrop nur am obersten dismissible Overlay zu.
-- `useOverlayFocusAndEscape`: Initialfokus, Escape-Verarbeitung und Fokus-Rückgabe.
+- `useOverlayFocusAndEscape`: Initialfokus, Fokus-Trap, Escape-Verarbeitung und Fokus-Rückgabe.
 
 ### Aktueller Migrationsstand
 
-Direkte Nutzer von `Dialog`:
+Direkte Nutzer von `Dialog` sind inzwischen:
 
+- `CardFormModal`
+- `DeckMetricsModal`, `ShuffleMetricsModal`
+- `FaqModal`, `ImportModal`, `SettingsModal`
 - `InstallHintModal`
 - `FutureForecastModal`
 - `HomeExportModal`
 - `HomeCreateDeckModal`
+- `HomeDeckCardsModal`, `HomeShuffleCollectionModal`
+- `VideoTranscriptPanel`
 
 `ConfirmModal` adaptiert `AlertDialog`.
 
-Noch mit eigener Overlay-Implementierung arbeiten unter anderem:
+Damit verwenden alle eigentlichen `*Modal`-Komponenten die gemeinsame
+Dialogschicht; `CreateCardModal` und `EditCardModal` bleiben dünne Adapter um
+`CardFormModal`. `DuplicateReviewModal` ist eingebetteter Inhalt innerhalb des
+Import-Flows und erzeugt kein eigenes Backdrop-Root.
 
-- `CardFormModal` (mit `CreateCardModal`/`EditCardModal` als dünnen Adaptern)
-- `DeckMetricsModal`, `ShuffleMetricsModal`
-- `FaqModal`, `ImportModal`, `SettingsModal`
-- `HomeDeckCardsModal`, `HomeShuffleCollectionModal`
-- Lernplan-, Lerneinheiten-, Video- und Mobile-Bottom-Sheet-Overlays
+Noch mit eigener Overlay-Implementierung arbeiten vor allem spezialisierte
+Arbeitsflächen:
 
-`DuplicateReviewModal` ist eingebetteter Dialoginhalt innerhalb des Import-Flows und erzeugt kein eigenes Backdrop-Root.
+- `LearningPlanPanel` und einzelne Lerneinheiten-Dialoge,
+- `TagCollectionPanel`, `VideoTagSidebar`, `VideoRecallCheck` sowie der
+  Video-Player-Overlaymodus,
+- `MobileBottomSheet`.
 
-Damit ist die Migration begonnen, aber nicht abgeschlossen. Die Aussage, die Overlay-Architektur sei bereits vollständig vereinheitlicht, wäre falsch. Insbesondere manuelle Panels verwenden noch eigene Fokus-, Escape-, Portal- und z-Index-Regeln.
+### Bewertung der gemeinsamen Dialogschicht
+
+| Kriterium | Bewertung (1–5) | Begründung |
+|---|---:|---|
+| Wiederverwendbarkeit | 5 | Alle eigentlichen Modal-Komponenten nutzen `Dialog` oder `AlertDialog`; Sheet und Fullscreen bleiben getrennte Semantiken. |
+| Konsistenz | 4 | Close-Gründe, Stack, Portal, Fokus, ARIA und Motion sind für Modals zentral; spezialisierte Panels stehen noch aus. |
+| API-Qualität | 4 | Typisierte Größen, Dismissibility, Initialfokus, Beschreibung, Rolle und Test-ID; keine Fachzustände in der UI-Basis. |
+| Accessibility | 4 | Dialogrolle, Modalität, Label/Description, Fokus-Trap, Fokus-Rückgabe und inakter Hintergrund sind implementiert und im DOM getestet. |
+| Fokusmanagement | 4 | Nur das oberste Overlay verarbeitet Tastaturereignisse; Tab/Shift+Tab bleiben im Dialog. |
+| Testbarkeit | 4 | Reine Policy-Tests plus `happy-dom`-Vertragstests für ARIA, Fokus, Inertheit, Scroll-Sperre und verschachteltes Escape. |
+| Erweiterbarkeit | 4 | Gemeinsamer interner Kern, aber getrennte öffentliche Primitives; Placement und Fullscreen sind explizit modelliert. |
+| Kopplung | 4 | Abhängigkeiten beschränken sich auf UI-Tokens, Motion, ReactDOM-Portal und den kleinen UI-Store. |
+| Responsiveness | 4 | Safe Areas, `100dvh`, Größen und drei Sheet-Platzierungen sind zentral vorhanden. |
+| Fehlerrobustheit | 4 | Referenzzählung verhindert vorzeitiges Entsperren bei verschachtelten Overlays; Close-Policy und Stack sind getestet. |
+| Verbreitung | 4 | Sämtliche Modal-Komponenten und ein Video-Panel sind migriert; Spezialpanels verhindern derzeit eine 5. |
+
+Die Modal-Architektur erreicht damit durchgehend mindestens Stufe 4. Für Stufe
+5 im gesamten Overlay-Bereich müssen die verbliebenen spezialisierten Panels
+und das Mobile Bottom Sheet noch auf `Sheet`/`FullscreenPanel` beziehungsweise
+den gemeinsamen internen Lebenszyklus migriert werden.
 
 ## 10. PWA, Offline und Worker
 
@@ -435,9 +463,9 @@ npm run verify:phase5
 
 ## 12. Aktuelle Architektur-Risiken
 
-### 12.1 Unvollständige Overlay-Migration
+### 12.1 Verbleibende Panel-Migration
 
-Nur fünf Dialogpfade verwenden aktuell die neuen `Dialog`-/`AlertDialog`-Primitives. Mehrere komplexe Overlays besitzen weiterhin eigene Implementierungen. Das erhöht das Risiko unterschiedlicher Escape-, Fokus- und Stack-Semantik.
+Alle eigentlichen Modal-Komponenten verwenden die gemeinsame Dialogschicht. Mehrere komplexe Lernplan-, Lerneinheiten- und Video-Panels sowie `MobileBottomSheet` besitzen weiterhin eigene Implementierungen. Dort bleibt ein Risiko unterschiedlicher Escape-, Fokus- und Stack-Semantik.
 
 ### 12.2 Zwei Persistenzwelten für Einstellungen und Domänendaten
 
@@ -449,7 +477,7 @@ Der direkte Service-Worker-Flush ist für Background Sync notwendig, dupliziert 
 
 ### 12.4 Bewusste Import-Ausnahmen
 
-Der Architekturcheck enthält eine Baseline direkter Dexie- und Layer-Zugriffe. Diese Ausnahmen sind technisch begründet, sollten aber nicht ungeprüft wachsen. Der aktuelle Fehler für `services/dbBackup.ts` und `services/importPipeline.ts` zeigt außerdem, dass Dateiverschiebungen zusammen mit dieser Baseline gepflegt werden müssen.
+Der Architekturcheck enthält eine Baseline direkter Dexie- und Layer-Zugriffe. Diese Ausnahmen sind technisch begründet, sollten aber nicht ungeprüft wachsen. Dateiverschiebungen technischer Batch-Grenzen müssen zusammen mit dieser Baseline gepflegt werden.
 
 ### 12.5 Große statische Datenmodule
 
@@ -472,7 +500,7 @@ Bei Widersprüchen gelten die folgenden Quellstellen vor diesem Dossier:
 | Lerneinheiten-Datenbank | `src/db/learningUnitsDb.ts` |
 | Sync-Queue | `src/services/syncQueue.ts` |
 | Sync-Operationen | `src/services/syncMutationContract.ts`, `src/services/syncPull/apply.ts` |
-| Overlay-Vertrag | `src/ui/overlays/*`, `docs/adr/001-overlay-primitive.md` |
+| Overlay-Vertrag | `src/ui/overlays/*`, `src/state/slices/overlaySlice.ts` |
 | Importgrenzen | `scripts/check-architecture-imports.mjs` |
 | Server-Routing | `card-sync-server/sync_server.py` |
 | Serverimplementierung | `card-sync-server/server/**` |

@@ -2,11 +2,10 @@
  * AI_CONTEXT: Reusable React component for shuffle Metrics Modal; contributes to the card-learning UI and shared app interactions.
  */
 import { useEffect, useMemo, useState } from 'react'
-import { motion } from '../ui/motion'
-import { BarChart3, TrendingDown, TrendingUp, Minus, X } from 'lucide-react'
+import { TrendingDown, TrendingUp, Minus } from 'lucide-react'
 import { getShuffleCollectionMetricsSnapshot } from '../db/queries'
 import { STRINGS } from '../contexts/SettingsContext'
-import { UI_TOKENS } from '../constants/ui'
+import { Dialog } from '../ui/overlays/Dialog'
 import { formatDeckName } from '../utils/cardTextParser'
 import type { Deck, MetricsPeriod, ShuffleCollection, ShuffleCollectionMetricsSnapshot } from '../types'
 
@@ -54,38 +53,16 @@ export function ShuffleMetricsModal({ collection, decks, language, onClose }: Pr
     : <Minus size={14} strokeWidth={1.5} className="text-white/55" />
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className={UI_TOKENS.modal.overlay}
+    <Dialog
+      title={collection.name}
+      subtitle={language === 'de'
+        ? 'Shuffle-Metriken · aggregiert aus den Originaldecks der Sammlung.'
+        : 'Shuffle metrics · aggregated from the source decks in this collection.'}
+      closeLabel={language === 'de' ? 'Metriken schließen' : 'Close metrics'}
+      onClose={() => onClose()}
+      size="lg"
+      className="overflow-y-auto p-4 sm:p-5"
     >
-      <button type="button" className={UI_TOKENS.modal.backdrop} onClick={onClose} />
-      <motion.div
-        initial={{ opacity: 0, y: 10, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 10, scale: 0.98 }}
-        className={`${UI_TOKENS.modal.shell} max-w-3xl`}
-      >
-        <div className={UI_TOKENS.modal.header}>
-          <div>
-            <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-amber-200/75">
-              <BarChart3 size={14} strokeWidth={1.5} />
-              <span>{language === 'de' ? 'Shuffle-Metriken' : 'Shuffle metrics'}</span>
-            </div>
-            <h3 className={`${UI_TOKENS.modal.title} mt-2`}>{collection.name}</h3>
-            <p className={UI_TOKENS.modal.subtitle}>
-              {language === 'de'
-                ? 'Aggregiert aus den Originaldecks der Sammlung.'
-                : 'Aggregated from the source decks in this collection.'}
-            </p>
-          </div>
-          <button type="button" onClick={onClose} className={UI_TOKENS.modal.closeButton}>
-            <X size={16} strokeWidth={1.5} />
-          </button>
-        </div>
-
-        <div className={UI_TOKENS.modal.body}>
         <div className="mt-1 inline-flex w-full overflow-hidden rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] transition-all duration-300 ease-out sm:w-auto">
           <button
             type="button"
@@ -186,8 +163,6 @@ export function ShuffleMetricsModal({ collection, decks, language, onClose }: Pr
             </div>
           </>
         )}
-        </div>
-      </motion.div>
-    </motion.div>
+    </Dialog>
   )
 }

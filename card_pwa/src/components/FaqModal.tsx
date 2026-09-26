@@ -2,20 +2,18 @@
  * AI_CONTEXT: Reusable React component for faq Modal; contributes to the card-learning UI and shared app interactions.
  */
 import { useState } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
 import {
-  HelpCircle,
   Upload,
   FileText,
   Database,
   CheckCircle2,
   Lightbulb,
-  X,
 } from 'lucide-react'
 import { STRINGS } from '../contexts/SettingsContext'
 import { useSettings } from '../contexts/SettingsContext'
 import { UI_TOKENS } from '../constants/ui'
 import { AccordionSection } from './AccordionSection'
+import { Dialog } from '../ui/overlays/Dialog'
 
 interface Props {
   isOpen: boolean
@@ -27,7 +25,6 @@ type FaqSectionKey = 'import_export' | 'study' | 'csv' | 'mc' | 'txt' | 'apkg' |
 export default function FaqModal({ isOpen, onClose }: Props) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
-  const prefersReducedMotion = useReducedMotion()
   const [openSection, setOpenSection] = useState<FaqSectionKey | null>(null)
 
   const toggleSection = (section: FaqSectionKey) => {
@@ -42,53 +39,20 @@ export default function FaqModal({ isOpen, onClose }: Props) {
     ))
   }
 
+  if (!isOpen) return null
+
   return (
-    <AnimatePresence initial={false}>
-      {isOpen && (
-        <motion.div
-          className={UI_TOKENS.modal.overlay}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/80"
-            onClick={onClose}
-          />
-
-          {/* Modal */}
-          <motion.div
-            initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
-            transition={{ duration: prefersReducedMotion ? 0.12 : 0.2, ease: 'easeOut' }}
-            className={`${UI_TOKENS.modal.shell} max-w-2xl`}
-            onClick={e => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b-4 border-black bg-[#C4B5FD] px-5 py-4">
-              <div className="flex items-center gap-2">
-                <HelpCircle size={20} strokeWidth={1.5} className="text-white" />
-                <div>
-                  <h2 className="text-white font-black text-lg tracking-tight">{t.faq}</h2>
-                  <p className="text-xs text-white/55 mt-0.5">
-                    {t.faq_expand_sections}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={onClose}
-                className="ds-icon-button h-9 w-9"
-              >
-                <X size={18} strokeWidth={1.5} />
-              </button>
-            </div>
-
-            <div
-              className="overflow-y-auto px-4 py-4 sm:px-5 sm:py-5 space-y-4"
-              style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - 9.25rem)' }}
-            >
+    <Dialog
+      title={t.faq}
+      subtitle={t.faq_expand_sections}
+      closeLabel={t.close}
+      onClose={() => onClose()}
+      size="lg"
+      className="overflow-hidden"
+    >
+      <div
+        className="max-h-[calc(100dvh-env(safe-area-inset-top,0px)-12rem)] space-y-4 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5"
+      >
               <AccordionSection
                 variant="faq"
                 title={t.faq_import_export}
@@ -217,20 +181,16 @@ export default function FaqModal({ isOpen, onClose }: Props) {
                   {renderContent(t.faq_tips_content)}
                 </div>
               </AccordionSection>
-            </div>
+      </div>
 
-            {/* Footer */}
-            <div className="sticky bottom-0 flex gap-3 border-t-4 border-black bg-[#FFFDF5] px-5 py-4">
-              <button
-                onClick={onClose}
-                className={`${UI_TOKENS.button.footerSecondary} text-sm font-medium hover:bg-white/5`}
-              >
-                {t.close}
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      <div className="sticky bottom-0 flex gap-3 border-t-4 border-black bg-[#FFFDF5] px-5 py-4">
+        <button
+          onClick={onClose}
+          className={`${UI_TOKENS.button.footerSecondary} text-sm font-medium hover:bg-white/5`}
+        >
+          {t.close}
+        </button>
+      </div>
+    </Dialog>
   )
 }

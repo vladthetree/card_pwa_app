@@ -80,6 +80,12 @@ function render(flipped: boolean) {
 describe('DragMatchCard — Vorderseite (rekonstruiert aus Drag-Match1)', () => {
   const html = render(false)
 
+  it('zeigt auf Desktop die Frage links und die antippbaren Optionen rechts', () => {
+    expect(html).toContain('lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]')
+    expect(html).toContain('lg:grid-cols-1')
+    expect((html.match(/data-testid="dragmatch-option-/g) ?? []).length).toBe(4)
+  })
+
   it('zeigt das DRAG-MATCH-Badge und den "FRAGE"-Header', () => {
     expect(html).toContain('Drag-Match')          // dragmatch_type_badge
     expect(html).toContain('Frage')               // t.question

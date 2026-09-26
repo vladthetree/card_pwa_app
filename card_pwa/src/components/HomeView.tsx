@@ -649,7 +649,6 @@ export default function HomeView({
             <HomeShuffleCollectionModal
               isOpen
               language={settings.language}
-              prefersReducedMotion={prefersReducedMotion}
               decks={selectableDecks}
               syncedDeckIds={derivedData.syncedDeckIds}
               studyCardLimit={settings.studyCardLimit}

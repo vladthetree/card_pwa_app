@@ -169,7 +169,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   // fallen auf die bestehende Inline-Darstellung unten zurück.
   const question = useMemo(() => parseMcQuestion(card.front), [card.front])
   const answered = useMemo(() => parseMcAnswer(card.back), [card.back])
-  if (useDragMatchMode && isDragMatchShape(question, answered)) {
+  if (settings.dragMatchEnabled === true && useDragMatchMode && isDragMatchShape(question, answered)) {
     return (
       <Suspense fallback={null}>
         <DragMatchCard
@@ -392,13 +392,13 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                   </div>
                 </div>
 
-                <div className={`${bodyClass} flex flex-col`}>
-                  <p className={`card-face-text font-sans font-medium leading-[1.55] text-ds-fg ${compactQuestionClass}`}>
+                <div className={`${bodyClass} flex flex-col ${!compact && hasOptions ? 'lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-start lg:gap-8' : ''}`}>
+                  <p className={`card-face-text min-w-0 font-sans font-medium leading-[1.55] text-ds-fg ${compactQuestionClass}`}>
                     {question.question}
                   </p>
 
                   {hasOptions && (
-                    <div className="mt-5 flex flex-col gap-2.5">
+                    <div className={`mt-5 flex min-w-0 flex-col gap-2.5 ${!compact ? 'lg:mt-0' : ''}`}>
                       {displayOptions.map(({ key, text, displayLetter }) => {
                         const isSelected = selectedAnswer === key
                         // hasAnswered zählt mit: Nach dem Zurückblättern auf die

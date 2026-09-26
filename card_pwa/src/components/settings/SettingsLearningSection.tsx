@@ -83,6 +83,7 @@ export function SettingsLearningSection({
     setShowReviewDecks,
     setStudyCardLimit,
     setShuffleModeEnabled,
+    setDragMatchEnabled,
     setNextDayStartsAt,
     setDailyGoal,
     setNewCardsPerDay,
@@ -271,6 +272,24 @@ export function SettingsLearningSection({
           onValueChange={setStudyCardLimit}
           help={t.study_weight_hint.replace('{count}', String(settings.studyCardLimit))}
         />
+
+        <div>
+          <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
+            {settings.language === 'de' ? 'Antwortdarstellung' : 'Answer display'}
+          </label>
+          <div className={`${UI_TOKENS.surface.panelSoft} p-4`}>
+            <SettingsSwitchRow
+              label={settings.language === 'de' ? 'Drag & Drop für Multiple Choice' : 'Drag & drop for multiple choice'}
+              labelClassName="text-sm font-medium text-white"
+              description={settings.language === 'de'
+                ? 'Ein: auf allen passenden Karten. Aus: Antworten immer in der normalen Ansicht auswählen.'
+                : 'On: use it on every eligible card. Off: always select answers in the standard view.'}
+              descriptionClassName="mt-1 text-xs leading-relaxed text-white/45"
+              checked={settings.dragMatchEnabled}
+              onCheckedChange={setDragMatchEnabled}
+            />
+          </div>
+        </div>
 
         <div>
           <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">

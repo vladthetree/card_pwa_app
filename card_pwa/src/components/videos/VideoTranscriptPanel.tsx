@@ -4,8 +4,9 @@
  * Used by: VideosView study bar ("Transkript" button).
  * Important: Pure display — it must not interact with FSRS, notes, or progress; a missing transcript is a normal state.
  */
-import { FileText, Loader2, X } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { useMesserVideoTranscript } from '../../hooks/useMesserVideoTranscript'
+import { Dialog } from '../../ui/overlays/Dialog'
 
 const COPY = {
   de: {
@@ -38,33 +39,16 @@ export default function VideoTranscriptPanel({ videoIndex, objective, videoTitle
   const { status, transcript } = useMesserVideoTranscript(videoIndex)
 
   return (
-    <div
-      className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/85 px-4 py-6 backdrop-blur-sm pt-safe-2 pb-safe-4"
-      role="dialog"
-      aria-modal="true"
-      aria-label={copy.title}
+    <Dialog
+      title={copy.title}
+      subtitle={`${objective} · ${videoTitle}`}
+      closeLabel={copy.close}
+      closeButtonTestId="video-transcript-close"
+      onClose={() => onClose()}
+      size="lg"
+      className="overflow-hidden p-0"
     >
-      <div className="flex max-h-full w-full max-w-2xl flex-col overflow-hidden rounded-ds-sheet border border-[#1f1f23] bg-[#0a0a0a] shadow-2xl">
-        <div className="flex items-center gap-2 border-b border-[#18181b] px-4 py-3">
-          <FileText size={16} strokeWidth={1.5} className="shrink-0 text-[--brand-secondary]" />
-          <div className="min-w-0 flex-1">
-            <div className="font-mono text-[14px] font-bold text-white">{copy.title}</div>
-            <div className="truncate font-mono text-[11px] text-zinc-500">
-              {objective} · {videoTitle}
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="ds-icon-button flex h-9 w-9 shrink-0"
-            aria-label={copy.close}
-            data-testid="video-transcript-close"
-          >
-            <X size={16} />
-          </button>
-        </div>
-
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4" data-testid="video-transcript-body">
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4" data-testid="video-transcript-body">
           {status === 'loading' && (
             <div className="flex items-center justify-center gap-2 py-12 font-mono text-[12px] text-zinc-500">
               <Loader2 size={16} className="animate-spin" />
@@ -85,12 +69,11 @@ export default function VideoTranscriptPanel({ videoIndex, objective, videoTitle
               ))}
             </div>
           )}
-        </div>
-
-        <div className="border-t border-[#18181b] px-4 py-2.5">
-          <p className="font-mono text-[10px] leading-relaxed text-zinc-600">{copy.source}</p>
-        </div>
       </div>
-    </div>
+
+      <div className="border-t border-[#18181b] px-4 py-2.5">
+        <p className="font-mono text-[10px] leading-relaxed text-zinc-600">{copy.source}</p>
+      </div>
+    </Dialog>
   )
 }

@@ -5,7 +5,7 @@
  * Important: This is the canonical manual-card editor; keep parser-compatible front/back formats aligned with cardTextParser and cardVariant.
  */
 import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
+import { AnimatePresence } from '../ui/motion'
 import { X, Plus, Loader2, CheckCircle, Trash2, Info, Copy } from 'lucide-react'
 import { createCard, updateCard, deleteCard, createDeck, listDeckOptions } from '../db/queries'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
@@ -22,6 +22,7 @@ import { UI_TOKENS } from '../constants/ui'
 import { generateUuidV7 } from '../utils/id'
 import type { Card, Deck } from '../types'
 import ConfirmModal from './ConfirmModal'
+import { Dialog } from '../ui/overlays/Dialog'
 
 type DeckOption = Pick<Deck, 'id' | 'name'>
 
@@ -77,7 +78,6 @@ export default function CardFormModal(props: Props) {
   const { onClose } = props
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
-  const prefersReducedMotion = useReducedMotion()
 
   const [decks, setDecks] = useState<DeckOption[]>([])
   const [createNewDeck, setCreateNewDeck] = useState(false)
@@ -402,36 +402,14 @@ export default function CardFormModal(props: Props) {
   const isBusy = status === 'saving' || status === 'deleting'
 
   return (
-    <AnimatePresence initial={false}>
-      <motion.div
-        className={UI_TOKENS.modal.overlay}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
-        <div className={UI_TOKENS.modal.backdrop} onClick={onClose} />
-
-        <motion.div
-          initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
-          transition={{ duration: prefersReducedMotion ? 0.12 : 0.2, ease: 'easeOut' }}
-          className={`${UI_TOKENS.modal.shell} max-w-none self-end rounded-b-none sm:max-w-lg md:max-w-3xl sm:self-auto sm:rounded-b-[2rem]`}
-          onClick={e => e.stopPropagation()}
-        >
-          {/* Header */}
-          <div className={UI_TOKENS.modal.header}>
-            <h2 className={UI_TOKENS.modal.title}>
-              {props.mode === 'create' ? t.new_card : t.edit_card}
-            </h2>
-            <button
-              onClick={onClose}
-              className={UI_TOKENS.modal.closeButton}
-            >
-              <X size={18} strokeWidth={1.5} />
-            </button>
-          </div>
-
+    <Dialog
+      title={props.mode === 'create' ? t.new_card : t.edit_card}
+      closeLabel={settings.language === 'de' ? 'Kartenformular schließen' : 'Close card form'}
+      onClose={() => { if (!isBusy && !showDeleteConfirm) onClose() }}
+      dismissible={!isBusy && !showDeleteConfirm}
+      size="xl"
+      className="max-w-none self-end overflow-hidden rounded-b-none p-0 sm:max-w-lg sm:self-auto sm:rounded-b-[2rem] md:max-w-3xl"
+    >
           {props.mode === 'edit' && (
             <div
               className="flex items-center gap-3 border-b border-ds-border bg-ds-floor/70 px-6 py-2.5"
@@ -802,17 +780,17 @@ export default function CardFormModal(props: Props) {
           )}
 
           {/* Delete confirmation — edit mode only */}
-          <ConfirmModal
-            isOpen={showDeleteConfirm}
-            title={t.delete_card_title}
-            message={t.delete_card_description}
-            confirmLabel={status === 'deleting' ? t.deleting : t.yes_delete}
-            variant="danger"
-            onConfirm={() => { void handleDelete() }}
-            onCancel={() => setShowDeleteConfirm(false)}
-          />
-	        </motion.div>
-	      </motion.div>
-	    </AnimatePresence>
+      <AnimatePresence>
+        <ConfirmModal
+          isOpen={showDeleteConfirm}
+          title={t.delete_card_title}
+          message={t.delete_card_description}
+          confirmLabel={status === 'deleting' ? t.deleting : t.yes_delete}
+          variant="danger"
+          onConfirm={() => { void handleDelete() }}
+          onCancel={() => setShowDeleteConfirm(false)}
+        />
+      </AnimatePresence>
+    </Dialog>
   )
 }

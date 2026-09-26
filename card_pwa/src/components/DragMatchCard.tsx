@@ -263,62 +263,64 @@ const DragMatchCard = memo(function DragMatchCard({
           </div>
         </div>
 
-        <div className={`${bodyClass} flex flex-col`}>
-          <p className={`font-sans font-medium leading-[1.55] text-ds-fg ${compact ? 'text-[15px]' : 'text-[16px] md:text-lg'}`}>
-            {question.question}
-          </p>
+        <div className={`${bodyClass} flex flex-col ${!compact ? 'lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-start lg:gap-8' : ''}`}>
+          <div className="min-w-0">
+            <p className={`font-sans font-medium leading-[1.55] text-ds-fg ${compact ? 'text-[15px]' : 'text-[16px] md:text-lg'}`}>
+              {question.question}
+            </p>
 
-          {/* Drop-Zone */}
-          <div
-            ref={dropZoneRef}
-            data-testid="dragmatch-dropzone"
-            className={`mt-5 flex min-h-[120px] flex-col items-center justify-center rounded-ds border-2 border-dashed px-4 py-5 text-center transition-colors duration-200 ${
-              !submitted
-                ? 'border-zinc-700 text-zinc-500'
-                : isCorrect
-                ? 'border-emerald-500/60 bg-emerald-500/8 text-emerald-300'
-                : 'border-rose-500/70 bg-rose-500/5 text-rose-300'
-            }`}
-          >
-            {!submitted && (
-              <span className="font-mono text-[11px] uppercase tracking-[0.18em]">
-                {inputLocked ? t.answer_revealed_locked : t.dragmatch_dropzone_hint}
-              </span>
-            )}
-            {submitted && isCorrect && (
-              <span className="font-mono text-[15px] font-semibold">{correctText}</span>
-            )}
+            {/* Drop-Zone bleibt bei der Frage; Antworten stehen auf Desktop rechts. */}
+            <div
+              ref={dropZoneRef}
+              data-testid="dragmatch-dropzone"
+              className={`mt-5 flex min-h-[120px] flex-col items-center justify-center rounded-ds border-2 border-dashed px-4 py-5 text-center transition-colors duration-200 ${
+                !submitted
+                  ? 'border-zinc-700 text-zinc-500'
+                  : isCorrect
+                  ? 'border-emerald-500/60 bg-emerald-500/8 text-emerald-300'
+                  : 'border-rose-500/70 bg-rose-500/5 text-rose-300'
+              }`}
+            >
+              {!submitted && (
+                <span className="font-mono text-[11px] uppercase tracking-[0.18em]">
+                  {inputLocked ? t.answer_revealed_locked : t.dragmatch_dropzone_hint}
+                </span>
+              )}
+              {submitted && isCorrect && (
+                <span className="font-mono text-[15px] font-semibold">{correctText}</span>
+              )}
+              {submitted && !isCorrect && (
+                <span className="font-mono text-[15px] font-bold uppercase tracking-[0.18em]">{t.dragmatch_wrong}</span>
+              )}
+            </div>
+
+            {/* Falsch-Feedback: Deine/Richtige Antwort + Erklärung aus der Karte */}
             {submitted && !isCorrect && (
-              <span className="font-mono text-[15px] font-bold uppercase tracking-[0.18em]">{t.dragmatch_wrong}</span>
+              <div className="mt-3 flex flex-col gap-3">
+                <div className="rounded-ds border border-rose-500/40 bg-rose-500/5 px-3 py-3">
+                  <div className="flex items-center gap-2">
+                    <X size={14} strokeWidth={2} className="shrink-0 text-rose-400" />
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-rose-300">{t.dragmatch_your_answer}</span>
+                  </div>
+                  <p className="mt-1 font-mono text-[14px] text-rose-200">{selectedText}</p>
+                  <div className="my-2 h-px bg-rose-500/20" />
+                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-zinc-500">{t.dragmatch_correct_answer}</span>
+                  <p className="mt-1 font-mono text-[14px] font-medium text-ds-fg">{correctText}</p>
+                </div>
+
+                {answer.answer && (
+                  <div className="rounded-ds border border-ds-border bg-ds-floor px-3 py-3">
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-zinc-500">{t.dragmatch_explanation}</span>
+                    <p className="mt-1.5 font-sans text-[14px] leading-[1.5] text-zinc-300">{answer.answer}</p>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
-          {/* Falsch-Feedback: Deine/Richtige Antwort + Erklärung aus der Karte */}
-          {submitted && !isCorrect && (
-            <div className="mt-3 flex flex-col gap-3">
-              <div className="rounded-ds border border-rose-500/40 bg-rose-500/5 px-3 py-3">
-                <div className="flex items-center gap-2">
-                  <X size={14} strokeWidth={2} className="shrink-0 text-rose-400" />
-                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-rose-300">{t.dragmatch_your_answer}</span>
-                </div>
-                <p className="mt-1 font-mono text-[14px] text-rose-200">{selectedText}</p>
-                <div className="my-2 h-px bg-rose-500/20" />
-                <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-zinc-500">{t.dragmatch_correct_answer}</span>
-                <p className="mt-1 font-mono text-[14px] font-medium text-ds-fg">{correctText}</p>
-              </div>
-
-              {answer.answer && (
-                <div className="rounded-ds border border-ds-border bg-ds-floor px-3 py-3">
-                  <span className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-zinc-500">{t.dragmatch_explanation}</span>
-                  <p className="mt-1.5 font-sans text-[14px] leading-[1.5] text-zinc-300">{answer.answer}</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Options-Chips (ziehbar + antippbar). mt-auto verankert sie unten →
-              reservierter Fokus-Leerraum darüber, exakt wie im Screenshot. */}
-          <div className="mt-auto grid grid-cols-2 gap-2.5 pt-6">
+          {/* Options-Chips (ziehbar + antippbar): mobil unter der Frage,
+              auf Desktop rechts daneben. */}
+          <div className={`mt-auto grid min-w-0 grid-cols-2 gap-2.5 pt-6 ${!compact ? 'lg:mt-0 lg:grid-cols-1 lg:pt-0' : ''}`}>
             {shuffledOptions.map(({ key, text, displayLetter }) => {
               const isSel = selectedKey === key
               const chipLocked = submitted || inputLocked

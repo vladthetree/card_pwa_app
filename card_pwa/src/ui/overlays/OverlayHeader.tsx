@@ -11,26 +11,28 @@ interface Props {
   title: ReactNode
   subtitle?: ReactNode
   titleId: string
+  subtitleId?: string
   closeLabel: string
+  closeButtonTestId?: string
   onClose: (reason: CloseReason) => void
 }
 
-export function OverlayHeader({ title, subtitle, titleId, closeLabel, onClose }: Props) {
+export function OverlayHeader({ title, subtitle, titleId, subtitleId, closeLabel, closeButtonTestId, onClose }: Props) {
   return (
     <div className="flex items-start justify-between gap-3">
       <div className="min-w-0">
         <h3 id={titleId} className={UI_TOKENS.modal.title}>{title}</h3>
-        {subtitle && <p className={UI_TOKENS.modal.subtitle}>{subtitle}</p>}
+        {subtitle && <p id={subtitleId} className={UI_TOKENS.modal.subtitle}>{subtitle}</p>}
       </div>
       <button
         type="button"
         onClick={() => onClose('close-button')}
         className={UI_TOKENS.modal.closeButton}
         aria-label={closeLabel}
+        data-testid={closeButtonTestId}
       >
         <X size={16} strokeWidth={1.5} />
       </button>
     </div>
   )
 }
-

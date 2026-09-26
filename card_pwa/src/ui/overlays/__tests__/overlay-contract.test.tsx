@@ -12,5 +12,11 @@ describe('overlay contract tokens', () => {
       'toast',
     ])
   })
-})
 
+  it('defines every supported sheet placement', () => {
+    expect(Object.keys(overlayTokens.sheetPlacement).sort()).toEqual(['bottom', 'left', 'right'])
+    expect(overlayTokens.sheetPlacement.bottom).toContain('bottom-0')
+    expect(overlayTokens.sheetPlacement.left).toContain('left-0')
+    expect(overlayTokens.sheetPlacement.right).toContain('right-0')
+  })
+})

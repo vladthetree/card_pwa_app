@@ -4,15 +4,14 @@
  * Used by: HomeView import action.
  * Important: Heavy parsing is lazy-loaded through services/importPipeline; keep this component focused on user flow and status states.
  */
-import { useState, useRef, useCallback, useEffect, useId } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
-import { Upload, AlertCircle, CheckCircle, Loader2, X } from 'lucide-react'
+import { Upload, AlertCircle, CheckCircle, Loader2 } from 'lucide-react'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
-import { getAppStoreState, useAppStore } from '../state/appStore'
 import DuplicateReviewModal from './DuplicateReviewModal'
 import type { ImportPlan, ParsedImport } from '../utils/import/types'
-import { UI_TOKENS } from '../constants/ui'
 import ProgressBar from './ProgressBar'
+import { Dialog } from '../ui/overlays/Dialog'
 
 const ACCEPTED = '.apkg,.colpkg,.txt,.csv,.json'
 const ACCEPTED_TYPES = new Set(['apkg', 'colpkg', 'txt', 'csv', 'json'])
@@ -92,29 +91,6 @@ export default function ImportModal({ isOpen, onClose, initialFile = null }: Pro
       backupExtrasRef.current = null
     }
   }, [isOpen])
-
-  // Registers this modal in the global overlay stack (ADR 001) while open, so a
-  // caller stacked underneath (e.g. SettingsModal opening Import) correctly cedes
-  // Escape/backdrop to Import instead of also reacting to the same event.
-  const overlayId = useId()
-  useEffect(() => {
-    if (!isOpen) return
-    getAppStoreState().openOverlay({ id: overlayId })
-    return () => getAppStoreState().closeOverlay(overlayId)
-  }, [isOpen, overlayId])
-  const isTopmost = useAppStore(store => store.topOverlayId() === overlayId)
-
-  // Close on Escape — only while actually open, on top of the overlay stack, and
-  // not mid-import (previously fired even while closed: no `isOpen` guard here).
-  useEffect(() => {
-    if (!isOpen) return
-    const onKey = (e: KeyboardEvent) => {
-      const processing = status.phase === 'parsing' || status.phase === 'importing'
-      if (e.key === 'Escape' && !processing && isTopmost) onClose()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [isOpen, onClose, status.phase, isTopmost])
 
   const handleConflictsResolved = useCallback(
     async (resolvedPlan: ImportPlan) => {
@@ -202,67 +178,39 @@ export default function ImportModal({ isOpen, onClose, initialFile = null }: Pro
     e.target.value = ''
   }, [processFile])
 
-  // Conflict review takes over the whole modal area
+  if (!isOpen) return null
+
+  // Conflict review takes over the whole modal area.
   if (status.phase === 'reviewing') {
     return (
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-              className={UI_TOKENS.modal.overlay}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          >
-            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setStatus({ phase: 'idle' })} />
-            <DuplicateReviewModal
-              plan={status.plan}
-              onResolved={handleConflictsResolved}
-              onCancel={() => setStatus({ phase: 'idle' })}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Dialog
+        title={t.import_action}
+        closeLabel={t.close}
+        onClose={() => setStatus({ phase: 'idle' })}
+        size="lg"
+        className="overflow-y-auto p-0"
+      >
+        <DuplicateReviewModal
+          plan={status.plan}
+          onResolved={handleConflictsResolved}
+          onCancel={() => setStatus({ phase: 'idle' })}
+        />
+      </Dialog>
     )
   }
 
   const isProcessing = status.phase === 'parsing' || status.phase === 'importing'
 
   return (
-    <AnimatePresence initial={false}>
-      {isOpen && (
-        <motion.div
-          className={UI_TOKENS.modal.overlay}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          {/* Backdrop */}
-          <div
-            className={UI_TOKENS.modal.backdrop}
-            onClick={() => { if (!isProcessing && isTopmost) onClose() }}
-          />
-
-          {/* Modal */}
-          <motion.div
-            initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
-            transition={{ duration: prefersReducedMotion ? 0.12 : 0.2, ease: 'easeOut' }}
-            className={`${UI_TOKENS.modal.shell} max-w-md`}
-            onClick={e => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className={UI_TOKENS.modal.header}>
-              <p className={UI_TOKENS.modal.title}>
-                {t.import_action}
-              </p>
-              {!isProcessing && (
-                <button onClick={onClose} className={UI_TOKENS.modal.closeButton}>
-                  <X size={18} strokeWidth={1.5} />
-                </button>
-              )}
-            </div>
-
-            {/* Drop zone */}
-            <div className="p-6">
+    <Dialog
+      title={t.import_action}
+      closeLabel={t.close}
+      onClose={() => { if (!isProcessing) onClose() }}
+      dismissible={!isProcessing}
+      size="md"
+      className="overflow-hidden"
+    >
+      <div className="p-6">
               <div
                 onDragOver={e => { e.preventDefault(); if (!isProcessing) setIsDragOver(true) }}
                 onDragLeave={() => setIsDragOver(false)}
@@ -385,10 +333,7 @@ export default function ImportModal({ isOpen, onClose, initialFile = null }: Pro
                   )}
                 </AnimatePresence>
               </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      </div>
+    </Dialog>
   )
 }

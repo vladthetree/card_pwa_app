@@ -17,7 +17,6 @@ import {
   enforceDailyDeckCardLimit,
   hasFixedStudySessionSize,
 } from '../utils/studyCardOrdering'
-import { buildDragMatchModePlan } from '../utils/studyModeSelector'
 import {
   buildPersistedStudySession,
   matchesPersistedStudyCardLimit,
@@ -129,9 +128,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
   const sessionRef = useRef(session)
   const studyCardLimitRef = useRef(studyCardLimit)
   const sessionTargetCardCountRef = useRef(studyCardLimit)
-  const dragMatchModePlanRef = useRef<Set<string>>(new Set())
-  const dragMatchModePlanReadyRef = useRef(false)
-  const dragMatchModeSeedRef = useRef(`${Date.now()}:${Math.random()}`)
+  const selectionRunSeedRef = useRef(`${Date.now()}:${Math.random()}`)
   // Tracks wall-clock start of the active study session for display only.
   const sessionWallStartRef = useRef<number | null>(null)
 
@@ -171,9 +168,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
   useWakeLock()
 
   useEffect(() => {
-    dragMatchModePlanRef.current = new Set()
-    dragMatchModePlanReadyRef.current = false
-    dragMatchModeSeedRef.current = `${deck.id}:${Date.now()}:${Math.random()}`
+    selectionRunSeedRef.current = `${deck.id}:${Date.now()}:${Math.random()}`
   }, [deck.id])
 
   const buildSessionCards = useCallback((inputCards: Card[], limit: number): Card[] => {
@@ -182,7 +177,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
       maxCards: Math.max(1, Math.floor(limit)),
       nextDayStartsAt: settings.nextDayStartsAt,
       learnAheadMinutes: settings.learnAheadMinutes,
-      runSeed: dragMatchModeSeedRef.current,
+      runSeed: selectionRunSeedRef.current,
     })
   }, [settings.nextDayStartsAt, settings.learnAheadMinutes, deck.id])
 
@@ -415,14 +410,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
     sessionCount: session.sessionCount,
     isFlipped: session.isFlipped,
   })
-  if (!loading && session.cards.length > 0 && !dragMatchModePlanReadyRef.current) {
-    dragMatchModePlanRef.current = buildDragMatchModePlan(session.cards, dragMatchModeSeedRef.current)
-    dragMatchModePlanReadyRef.current = true
-  }
-  const useDragMatchForCurrentCard = currentCard
-    ? dragMatchModePlanRef.current.has(currentCard.id) && (session.againCounts[currentCard.id] ?? 0) === 0
-    : false
-
   const sessionPendingCount = session.cards.length
   const maxSelectableRating: Rating = answerWasIncorrect ? 3 : 4
   const answerTimerEnabled = settings.answerTimerEnabled === true
@@ -715,9 +702,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
     clearPersistedSession()
     resetAnswerState()
     sessionWallStartRef.current = null
-    dragMatchModePlanRef.current = new Set()
-    dragMatchModePlanReadyRef.current = false
-    dragMatchModeSeedRef.current = `${deck.id}:restart:${Date.now()}:${Math.random()}`
+    selectionRunSeedRef.current = `${deck.id}:restart:${Date.now()}:${Math.random()}`
     const fixedSize = hasFixedStudySessionSize(deck.id)
     const target = fixedSize
       ? studyCardLimit
@@ -1114,7 +1099,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
                         onFlip={handleFlip}
                         onEdit={() => setEditingCard(session.lastRatedCard)}
                         compact={isHandsetLayout}
-                        useDragMatchMode={dragMatchModePlanRef.current.has(session.lastRatedCard.id)}
                         readOnly
                       />
                     </div>
@@ -1151,7 +1135,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
                         onEdit={handleEditCard}
                         onAnswerEvaluated={handleAnswerEvaluated}
                         compact={isHandsetLayout}
-                        useDragMatchMode={useDragMatchForCurrentCard}
                         answerRevealed={answerRevealed}
                       />
                     </div>

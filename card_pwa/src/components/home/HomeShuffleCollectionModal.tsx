@@ -2,17 +2,16 @@
  * AI_CONTEXT: Home-screen React component for home Shuffle Collection Modal; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
 import { useEffect, useMemo, useState } from 'react'
-import { motion } from '../../ui/motion'
-import { Check, Layers3, Save, X } from 'lucide-react'
+import { Check, Layers3, Save } from 'lucide-react'
 import { UI_TOKENS } from '../../constants/ui'
 import type { Deck, ShuffleCollection } from '../../types'
 import { createShuffleCollection, listDeckCards, updateShuffleCollection } from '../../db/queries'
 import { buildSelectedShuffleCards } from '../../services/shuffleSession'
+import { Dialog } from '../../ui/overlays/Dialog'
 
 interface Props {
   isOpen: boolean
   language: 'de' | 'en'
-  prefersReducedMotion: boolean | null
   decks: Deck[]
   syncedDeckIds: string[]
   studyCardLimit: number
@@ -26,7 +25,6 @@ interface Props {
 export function HomeShuffleCollectionModal({
   isOpen,
   language,
-  prefersReducedMotion,
   decks,
   syncedDeckIds,
   studyCardLimit,
@@ -145,31 +143,16 @@ export function HomeShuffleCollectionModal({
   if (!isOpen) return null
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className={UI_TOKENS.modal.overlay}
+    <Dialog
+      title={title}
+      subtitle={subtitle}
+      closeLabel={language === 'de' ? 'Shuffle-Sammlung schließen' : 'Close shuffle collection'}
+      onClose={() => onClose()}
+      dismissible={!isSaving}
+      size="lg"
+      className="overflow-hidden"
     >
-      <div className={UI_TOKENS.modal.backdrop} onClick={onClose} />
-      <motion.div
-        initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
-        transition={{ duration: prefersReducedMotion ? 0.12 : 0.2, ease: 'easeOut' }}
-        className={`${UI_TOKENS.modal.shell} max-w-2xl`}
-      >
-        <div className={UI_TOKENS.modal.header}>
-          <div>
-            <h3 className={UI_TOKENS.modal.title}>{title}</h3>
-            <p className={UI_TOKENS.modal.subtitle}>{subtitle}</p>
-          </div>
-          <button onClick={onClose} className={UI_TOKENS.modal.closeButton}>
-            <X size={16} strokeWidth={1.5} />
-          </button>
-        </div>
-
-        <div className={UI_TOKENS.modal.body}>
+      <div className={UI_TOKENS.modal.body}>
           <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-white/50">
             {language === 'de' ? 'Name' : 'Name'}
           </label>
@@ -253,25 +236,24 @@ export function HomeShuffleCollectionModal({
           </div>
 
           {error && <p className="mt-3 text-xs text-rose-300">{error}</p>}
-        </div>
+      </div>
 
-        <div className={UI_TOKENS.modal.footer}>
-          <button type="button" onClick={onClose} className={UI_TOKENS.button.footerSecondary}>
-            {language === 'de' ? 'Abbrechen' : 'Cancel'}
-          </button>
-          <button
-            type="button"
-            onClick={() => { void handleSubmit() }}
-            disabled={isSaving}
-            className={UI_TOKENS.button.footerPrimary}
-          >
-            <span className="inline-flex items-center gap-2">
-              <Save size={15} strokeWidth={1.5} />
-              {isSaving ? (language === 'de' ? 'Speichere…' : 'Saving…') : saveLabel}
-            </span>
-          </button>
-        </div>
-      </motion.div>
-    </motion.div>
+      <div className={UI_TOKENS.modal.footer}>
+        <button type="button" onClick={onClose} disabled={isSaving} className={UI_TOKENS.button.footerSecondary}>
+          {language === 'de' ? 'Abbrechen' : 'Cancel'}
+        </button>
+        <button
+          type="button"
+          onClick={() => { void handleSubmit() }}
+          disabled={isSaving}
+          className={UI_TOKENS.button.footerPrimary}
+        >
+          <span className="inline-flex items-center gap-2">
+            <Save size={15} strokeWidth={1.5} />
+            {isSaving ? (language === 'de' ? 'Speichere…' : 'Saving…') : saveLabel}
+          </span>
+        </button>
+      </div>
+    </Dialog>
   )
 }

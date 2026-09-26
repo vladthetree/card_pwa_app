@@ -5,6 +5,15 @@
 import { describe, it, expect } from 'vitest'
 import { normalizeSettings } from '../../contexts/SettingsContext'
 
+describe('normalizeSettings — Drag-Match', () => {
+  it('is optional and disabled for existing settings without the flag', () => {
+    expect(normalizeSettings(undefined).dragMatchEnabled).toBe(false)
+    expect(normalizeSettings({}).dragMatchEnabled).toBe(false)
+    expect(normalizeSettings({ dragMatchEnabled: true }).dragMatchEnabled).toBe(true)
+    expect(normalizeSettings({ dragMatchEnabled: false }).dragMatchEnabled).toBe(false)
+  })
+})
+
 describe('normalizeSettings — globaler Karten-Timer', () => {
   it('ist standardmäßig deaktiviert', () => {
     expect(normalizeSettings(undefined).answerTimerEnabled).toBe(false)

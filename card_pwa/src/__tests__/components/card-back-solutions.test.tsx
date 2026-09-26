@@ -98,6 +98,29 @@ describe('OrderingCard — Rückseite trägt die Lösung', () => {
 })
 
 describe('CardFace (MC) — Rückseite trägt die Lösung', () => {
+  it('ordnet auf Desktop Frage links und auswählbare Antworten rechts an', () => {
+    const desktop = renderToStaticMarkup(
+      createElement(CardFace, {
+        card: { ...baseCard, front: MC_FRONT, back: MC_BACK },
+        flipped: false,
+        onFlip: () => {},
+      }),
+    )
+    const mobile = renderToStaticMarkup(
+      createElement(CardFace, {
+        card: { ...baseCard, front: MC_FRONT, back: MC_BACK },
+        flipped: false,
+        onFlip: () => {},
+        compact: true,
+      }),
+    )
+
+    expect(desktop).toContain('lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]')
+    expect(desktop).toContain('lg:mt-0')
+    expect((desktop.match(/<button/g) ?? []).length).toBe(4)
+    expect(mobile).not.toContain('lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]')
+  })
+
   it('zeigt das "Richtig:"-Banner auch, wenn keine Option getippt wurde', () => {
     const html = renderToStaticMarkup(
       createElement(CardFace, {

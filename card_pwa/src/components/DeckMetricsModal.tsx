@@ -2,11 +2,10 @@
  * AI_CONTEXT: Reusable React component for deck Metrics Modal; contributes to the card-learning UI and shared app interactions.
  */
 import { useEffect, useState } from 'react'
-import { motion } from '../ui/motion'
-import { TrendingUp, TrendingDown, Minus, X } from 'lucide-react'
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { getDeckMetricsSnapshot } from '../db/queries'
 import { STRINGS } from '../contexts/SettingsContext'
-import { UI_TOKENS } from '../constants/ui'
+import { Dialog } from '../ui/overlays/Dialog'
 import { formatDeckName } from '../utils/cardTextParser'
 import { resolveDateLocale } from '../utils/time'
 import type { Deck, MetricsPeriod, DeckMetricsSnapshot } from '../types'
@@ -55,34 +54,14 @@ export function DeckMetricsModal({ deck, language, onClose }: { deck: Deck; lang
     : <Minus size={14} strokeWidth={1.5} className="text-white/55" />
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className={UI_TOKENS.modal.overlay}
+    <Dialog
+      title={t.metrics_success_rate}
+      subtitle={formatDeckName(deck.name)}
+      closeLabel={language === 'de' ? 'Metriken schließen' : 'Close metrics'}
+      onClose={() => onClose()}
+      size="lg"
+      className="overflow-y-auto p-4 sm:p-5"
     >
-      <button type="button" className={UI_TOKENS.modal.backdrop} onClick={onClose} />
-      <motion.div
-        initial={{ opacity: 0, y: 10, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 10, scale: 0.98 }}
-        className={`${UI_TOKENS.modal.shell} max-w-3xl`}
-      >
-        <div className={UI_TOKENS.modal.header}>
-          <div>
-            <h3 className={UI_TOKENS.modal.title}>{t.metrics_success_rate}</h3>
-            <p className={UI_TOKENS.modal.subtitle}>{formatDeckName(deck.name)}</p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className={UI_TOKENS.modal.closeButton}
-          >
-            <X size={16} strokeWidth={1.5} />
-          </button>
-        </div>
-
-        <div className={UI_TOKENS.modal.body}>
         <div className="mt-1 inline-flex w-full overflow-hidden rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] transition-all duration-300 ease-out sm:w-auto">
           <button
             type="button"
@@ -156,8 +135,6 @@ export function DeckMetricsModal({ deck, language, onClose }: { deck: Deck; lang
             </div>
           </>
         )}
-        </div>
-      </motion.div>
-    </motion.div>
+    </Dialog>
   )
 }

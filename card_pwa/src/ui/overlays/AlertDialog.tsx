@@ -8,6 +8,7 @@ import { motion, useReducedMotion } from '../motion'
 import { UI_TOKENS } from '../../constants/ui'
 import { useCloseGuard } from './useCloseGuard'
 import { useOverlayFocusAndEscape } from './useOverlayFocusAndEscape'
+import { OverlayPortal } from './OverlayPortal'
 import type { CloseReason } from './overlayTypes'
 
 interface AlertDialogProps {
@@ -34,18 +35,19 @@ export function AlertDialog({
   dismissible = true,
 }: AlertDialogProps) {
   const titleId = useId()
+  const messageId = useId()
   const cancelRef = useRef<HTMLButtonElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const prefersReducedMotion = useReducedMotion()
-  const requestClose = useCloseGuard({ dismissible, onClose })
-  useOverlayFocusAndEscape(cancelRef, requestClose)
+  const { requestClose, isTopmost } = useCloseGuard({ dismissible, onClose })
+  useOverlayFocusAndEscape(panelRef, requestClose, { initialFocusRef: cancelRef, isTopmost })
 
   const confirmClass = variant === 'danger'
     ? 'flex-1 py-2.5 rounded-ds-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold transition-all duration-200 active:scale-[0.98]'
     : 'flex-1 py-2.5 rounded-ds-xl bg-white text-black hover:bg-white/90 font-semibold transition-all duration-200 active:scale-[0.98]'
 
   return (
-    <motion.div
+    <OverlayPortal><motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -60,6 +62,7 @@ export function AlertDialog({
         role="alertdialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        aria-describedby={messageId}
         initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.97 }}
@@ -85,7 +88,7 @@ export function AlertDialog({
             <h3 id={titleId} className="text-base font-bold leading-tight text-white">
               {title}
             </h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-white/55">{message}</p>
+            <p id={messageId} className="mt-1.5 text-sm leading-relaxed text-white/55">{message}</p>
           </div>
         </div>
 
@@ -110,7 +113,6 @@ export function AlertDialog({
           </button>
         </div>
       </motion.div>
-    </motion.div>
+    </motion.div></OverlayPortal>
   )
 }
-

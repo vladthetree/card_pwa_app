@@ -28,7 +28,6 @@ import {
 } from '../utils/studySessionPersistence'
 import { chooseRandomSessionCardTarget } from '../utils/studyCardOrdering'
 import { initialSessionState, sessionReducer } from '../services/studySessionReducer'
-import { buildDragMatchModePlan } from '../utils/studyModeSelector'
 import { buildLearningCoachSummary } from '../utils/learningCoach'
 import type { Card, Rating, ShuffleCollection } from '../types'
 import { formatDeckName } from '../utils/cardTextParser'
@@ -106,7 +105,6 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   const selectionKey = selectionRun
     ? `${selectionRun.collectionId}:${selectionRun.runSeed}:${selectionRun.targetCardCount}`
     : null
-  const dragMatchModeSeedRef = useRef(`${collection.id}:${Date.now()}:${Math.random()}`)
   const { cards, loading, error, loadedSelectionKey, reload } = useShuffleCards(selectionRun?.collectionId ?? null, {
     maxCards: selectionRun?.targetCardCount,
     nextDayStartsAt: settings.nextDayStartsAt,
@@ -127,8 +125,6 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     nextDayStartsAt: settings.nextDayStartsAt,
     resetKey: collection.id,
   })
-  const dragMatchModePlanRef = useRef<Set<string>>(new Set())
-  const dragMatchModePlanReadyRef = useRef(false)
 
   useWakeLock()
 
@@ -171,12 +167,6 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     }
   }, [collection.id, studyCardLimit])
 
-  useEffect(() => {
-    dragMatchModePlanRef.current = new Set()
-    dragMatchModePlanReadyRef.current = false
-    if (selectionRun) dragMatchModeSeedRef.current = selectionRun.runSeed
-  }, [selectionRun])
-
   const sessionId = useMemo(() => buildShuffleSessionId(collection.id), [collection.id])
   const latestShuffleCardById = useMemo(() => new Map(cards.map(card => [card.id, card])), [cards])
   const deckNameById = useMemo(
@@ -210,13 +200,6 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     sessionCount: session.sessionCount,
     isFlipped: session.isFlipped,
   })
-  if (!loading && session.cards.length > 0 && !dragMatchModePlanReadyRef.current) {
-    dragMatchModePlanRef.current = buildDragMatchModePlan(session.cards, dragMatchModeSeedRef.current)
-    dragMatchModePlanReadyRef.current = true
-  }
-  const useDragMatchForCurrentCard = currentCard
-    ? dragMatchModePlanRef.current.has(currentCard.id) && (session.againCounts[currentCard.id] ?? 0) === 0
-    : false
   const sessionDeckSummary = useMemo(() => (
     Object.entries(sessionDeckCounts)
       .map(([deckId, count]) => ({
@@ -809,7 +792,6 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
                     onFlip={handleFlip}
                     onEdit={() => setEditingCard(session.lastRatedCard)}
                     compact={isHandsetLayout}
-                    useDragMatchMode={dragMatchModePlanRef.current.has(session.lastRatedCard.id)}
                     readOnly
                   />
                 </div>
@@ -840,7 +822,6 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
                     onEdit={handleEditCard}
                     onAnswerEvaluated={handleAnswerEvaluated}
                     compact={isHandsetLayout}
-                    useDragMatchMode={useDragMatchForCurrentCard}
                     answerRevealed={answerRevealed}
                   />
                 </div>

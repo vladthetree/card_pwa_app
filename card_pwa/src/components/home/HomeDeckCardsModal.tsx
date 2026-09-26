@@ -2,8 +2,8 @@
  * AI_CONTEXT: Home-screen React component for home Deck Cards Modal; supports dashboard, deck browsing, tag browsing, export, or quick study workflows.
  */
 import { useMemo, useState } from 'react'
-import { motion, AnimatePresence } from '../../ui/motion'
-import { X, Plus } from 'lucide-react'
+import { AnimatePresence } from '../../ui/motion'
+import { Plus } from 'lucide-react'
 import { useDeckCards } from '../../hooks/useCardDb'
 import { STRINGS } from '../../contexts/SettingsContext'
 import { UI_TOKENS } from '../../constants/ui'
@@ -12,6 +12,7 @@ import { formatDeckName, parseMcAnswer, parseQuestion } from '../../utils/cardTe
 import { getCardVariant } from '../../utils/cardVariant'
 import EditCardModal from '../EditCardModal.tsx'
 import CreateCardModal from '../CreateCardModal.tsx'
+import { Dialog } from '../../ui/overlays/Dialog'
 
 interface Props {
   deck: Deck
@@ -59,42 +60,24 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
   }), [cards, language])
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className={UI_TOKENS.modal.overlay}
+    <Dialog
+      title={t.deck_cards_title}
+      subtitle={formatDeckName(deck.name)}
+      closeLabel={language === 'de' ? 'Deckkarten schließen' : 'Close deck cards'}
+      onClose={() => onClose()}
+      dismissible={!editingCard && !showCreateCard}
+      size="lg"
+      className="overflow-hidden p-5 sm:p-6"
     >
-      <button type="button" className={UI_TOKENS.modal.backdrop} onClick={onClose} />
-      <motion.div
-        initial={{ opacity: 0, y: 10, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 10, scale: 0.98 }}
-        className={`${UI_TOKENS.modal.shell} max-w-2xl p-5 sm:p-6 overflow-hidden`}
-        style={{ maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - 2rem)' }}
-      >
-        <div className="flex items-start justify-between gap-3 mb-4">
-          <div>
-            <h3 className={UI_TOKENS.modal.title}>{t.deck_cards_title}</h3>
-            <p className={UI_TOKENS.modal.subtitle}>{formatDeckName(deck.name)}</p>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={() => setShowCreateCard(true)}
-              className="flex items-center gap-1.5 rounded-ds-lg border border-[--brand-primary-25] bg-[--brand-primary-08] px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[--brand-primary] transition hover:bg-[--brand-primary-12]"
-            >
-              <Plus size={11} strokeWidth={2} /> {t.create_card}
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className={UI_TOKENS.modal.closeButton}
-            >
-              <X size={16} strokeWidth={1.5} />
-            </button>
-          </div>
-        </div>
+      <div className="mb-4 flex justify-end">
+        <button
+          type="button"
+          onClick={() => setShowCreateCard(true)}
+          className="flex items-center gap-1.5 rounded-ds-lg border border-[--brand-primary-25] bg-[--brand-primary-08] px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[--brand-primary] transition hover:bg-[--brand-primary-12]"
+        >
+          <Plus size={11} strokeWidth={2} /> {t.create_card}
+        </button>
+      </div>
 
         <div className="overflow-y-auto pr-1 max-h-[65vh]">
           {loading ? (
@@ -162,8 +145,6 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
           )}
         </div>
 
-      </motion.div>
-
       <AnimatePresence>
         {editingCard && (
           <EditCardModal
@@ -180,6 +161,6 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
           />
         )}
       </AnimatePresence>
-    </motion.div>
+    </Dialog>
   )
 }

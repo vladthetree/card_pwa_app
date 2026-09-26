@@ -16,8 +16,10 @@ const allowedDexieRuntimeAccess = new Set([
   'src/hooks/useHeatmap.ts',
   'src/hooks/useStreak.ts',
   'src/services/algorithmMigration.ts',
+  'src/services/dbBackup.ts',
   'src/services/deckHierarchy.ts',
   'src/services/fsrsOptimizer.ts',
+  'src/services/importPipeline.ts',
   'src/services/profileService.ts',
   'src/services/syncPull/apply.ts',
   'src/services/syncPull/bootstrapUpload.ts',
@@ -26,8 +28,6 @@ const allowedDexieRuntimeAccess = new Set([
   'src/services/syncPull/snapshot.ts',
   'src/services/syncQueue.ts',
   'src/services/syncedDeckScope.ts',
-  'src/utils/dbBackup.ts',
-  'src/utils/import/importPipeline.ts',
 ])
 
 const allowedUtilsLayerImports = new Set([
@@ -141,6 +141,18 @@ for (const file of walk(srcRoot)) {
         rule: 'direct Dexie table access outside db/ requires an explicit architecture exception',
       })
     }
+  }
+
+  if (
+    fileRel.startsWith('src/components/') &&
+    fileRel.endsWith('Modal.tsx') &&
+    /\bUI_TOKENS\.modal\.(overlay|backdrop)\b/.test(code)
+  ) {
+    violations.push({
+      file: fileRel,
+      import: 'UI_TOKENS.modal.*',
+      rule: 'modal components must use ui/overlays Dialog or AlertDialog instead of rebuilding the overlay shell',
+    })
   }
 }
 
