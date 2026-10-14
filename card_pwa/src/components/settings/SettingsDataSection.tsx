@@ -1,7 +1,7 @@
 /**
  * AI_CONTEXT:
  * Role: Settings domain subcomponent — Data & maintenance accordion (import/export,
- * optional sync auth token, algorithm diagnostics, manual notification test, error
+ * optional sync auth token, algorithm diagnostics, error
  * log, video/learning-progress resets, IndexedDB reset, and due-date normalization).
  * Used by: SettingsModal.
  * Important: the destructive "PWA full reset" button lives in the separate
@@ -34,7 +34,6 @@ import { resetLocalStudyDataForProfileSwitch } from '../../services/profileServi
 import { clearVideoProgress } from '../../hooks/useMesserVideoProgress'
 import { exportDbBackupAsCsv, exportDbBackupAsJson, exportDbBackupAsTxt } from '../../services/dbBackup'
 import { unregisterAppServiceWorkers, deleteAppCaches } from './settingsResetHelpers'
-import { useNotificationPermissionFlow } from './useNotificationPermissionFlow'
 import { SettingsSection } from '../SettingsSection'
 import { SettingsPwaFullReset } from './SettingsPwaFullReset'
 
@@ -49,6 +48,7 @@ interface ConfirmModalRequest {
 interface Props {
   isOpen: boolean
   onToggle: () => void
+  presentation?: 'accordion' | 'panel'
   diagnostics: AlgorithmDiagnosticsEntry[]
   setDiagnostics: (entries: AlgorithmDiagnosticsEntry[]) => void
   errorLogs: ErrorLogEntry[]
@@ -57,10 +57,6 @@ interface Props {
   setDataExportStatus: (status: string | null) => void
   localDataStatus: string | null
   setLocalDataStatus: (status: string | null) => void
-  notificationPermission: NotificationPermission | 'unsupported'
-  setNotificationPermission: (permission: NotificationPermission | 'unsupported') => void
-  notificationTestStatus: string | null
-  setNotificationTestStatus: (status: string | null) => void
   setConfirmModal: (request: ConfirmModalRequest | null) => void
   onOpenImportModal: () => void
 }
@@ -68,6 +64,7 @@ interface Props {
 export function SettingsDataSection({
   isOpen,
   onToggle,
+  presentation,
   diagnostics,
   setDiagnostics,
   errorLogs,
@@ -76,64 +73,12 @@ export function SettingsDataSection({
   setDataExportStatus,
   localDataStatus,
   setLocalDataStatus,
-  notificationPermission,
-  setNotificationPermission,
-  notificationTestStatus,
-  setNotificationTestStatus,
   setConfirmModal,
   onOpenImportModal,
 }: Props) {
   const { settings, profile } = useSettings()
   const t = STRINGS[settings.language]
   const isDE = settings.language === 'de'
-  const { requestNotificationPermission, ensureNotificationPermission, postServiceWorkerMessage } =
-    useNotificationPermissionFlow({ setNotificationPermission, setNotificationTestStatus })
-
-  const notificationPermissionLabel = notificationPermission === 'granted'
-    ? t.notification_test_permission_granted_label
-    : notificationPermission === 'denied'
-      ? t.notification_test_permission_denied_label
-      : notificationPermission === 'default'
-        ? t.notification_test_permission_default_label
-        : t.notification_test_permission_unsupported_label
-
-  const triggerServerStatusTest = async (connected: boolean) => {
-    const hasPermission = await ensureNotificationPermission()
-    if (!hasPermission) {
-      return
-    }
-
-    const ok = await postServiceWorkerMessage({
-      type: 'SERVER_STATUS_NOTIFICATION',
-      title: connected ? t.notification_test_online_title : t.notification_test_offline_title,
-      body: connected ? t.notification_test_online_body : t.notification_test_offline_body,
-      connected,
-    })
-
-    if (ok) {
-      setNotificationTestStatus(connected ? t.notification_test_online_sent : t.notification_test_offline_sent)
-    }
-  }
-
-  const triggerPushTest = async () => {
-    const hasPermission = await ensureNotificationPermission()
-    if (!hasPermission) {
-      return
-    }
-
-    const ok = await postServiceWorkerMessage({
-      type: 'TEST_PUSH_NOTIFICATION',
-      language: settings.language,
-      title: t.notification_test_push_title,
-      body: t.notification_test_push_body,
-      tag: 'card-pwa-test-push',
-      url: '/?view=study',
-    })
-
-    if (ok) {
-      setNotificationTestStatus(t.notification_test_push_sent)
-    }
-  }
 
   const [syncAuthToken, setSyncAuthToken] = useState(() => readSyncAuthTokenFromSettings())
   const [syncQueueDiagnostics, setSyncQueueDiagnostics] = useState<SyncQueueDiagnostics | null>(null)
@@ -345,6 +290,7 @@ export function SettingsDataSection({
       icon={<Database size={18} />}
       isOpen={isOpen}
       onToggle={onToggle}
+      presentation={presentation}
     >
       <div className="pt-5 space-y-4">
         <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
@@ -389,6 +335,21 @@ export function SettingsDataSection({
             <p className="text-xs text-emerald-300/90 leading-relaxed">{dataExportStatus}</p>
           )}
         </div>
+
+        <details className="group/advanced rounded-ds-xl border border-[#18181b] bg-[#080808] p-3">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-left">
+            <span>
+              <span className="block text-xs font-semibold uppercase tracking-wide text-white/60">
+                {isDE ? 'Erweiterte Diagnose' : 'Advanced diagnostics'}
+              </span>
+              <span className="mt-1 block text-xs text-white/40">
+                {isDE ? 'Sync-Queue, Auth-Token, Algorithmus-Checks und Fehlerprotokoll.' : 'Sync queue, auth token, algorithm checks, and error log.'}
+              </span>
+            </span>
+            <span className="text-lg leading-none text-white/30 group-open/advanced:hidden">+</span>
+            <span className="hidden text-lg leading-none text-white/30 group-open/advanced:inline">−</span>
+          </summary>
+          <div className="mt-3 space-y-3 border-t border-[#18181b] pt-3">
 
         <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
           <p className="text-xs text-white/50 font-medium uppercase tracking-wide">Optional Sync Auth Token</p>
@@ -475,86 +436,6 @@ export function SettingsDataSection({
 
         <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
           <p className="text-xs text-white/50 font-medium uppercase tracking-wide">
-            <span className="inline-flex items-center gap-2">
-              {t.notification_test_title}
-            </span>
-          </p>
-          <p className="text-xs text-white/40 leading-relaxed">
-            {t.notification_test_description}
-          </p>
-          <div className="rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-3 space-y-3">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-xs text-white/60 uppercase tracking-wide">{t.notification_test_permission_label}</p>
-              <span className={`rounded-full px-2.5 py-1 text-[11px] font-medium border ${
-                notificationPermission === 'granted'
-                  ? 'border-emerald-500/35 text-emerald-200 bg-emerald-500/10'
-                  : notificationPermission === 'denied'
-                    ? 'border-rose-500/35 text-rose-200 bg-rose-500/10'
-                    : 'border-[#18181b] text-zinc-300 bg-[#0c0c0c]'
-              }`}>
-                {notificationPermissionLabel}
-              </span>
-            </div>
-            <p className="text-xs text-white/45 leading-relaxed">
-              {notificationPermission === 'granted'
-                ? t.notification_test_permission_granted_help
-                : notificationPermission === 'denied'
-                  ? t.notification_test_permission_denied_help
-                  : notificationPermission === 'unsupported'
-                    ? t.notification_test_permission_unsupported_help
-                    : t.notification_test_permission_default_help}
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => { void requestNotificationPermission() }}
-                className={`${UI_TOKENS.button.ghost} py-2`}
-              >
-                {t.notification_test_request_permission}
-              </button>
-              <button
-                type="button"
-                onClick={() => setNotificationPermission(typeof Notification === 'undefined' ? 'unsupported' : Notification.permission)}
-                className={`${UI_TOKENS.button.ghost} py-2`}
-              >
-                {t.notification_test_refresh_permission}
-              </button>
-            </div>
-            <p className="text-[11px] text-white/40 leading-relaxed">
-              {t.notification_test_ios_hint}
-            </p>
-          </div>
-
-          {notificationTestStatus && (
-            <p className="text-xs text-amber-300/90 leading-relaxed">{notificationTestStatus}</p>
-          )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => { void triggerPushTest() }}
-              className={`${UI_TOKENS.button.ghost} py-2`}
-            >
-              {t.notification_test_push_button}
-            </button>
-            <button
-              type="button"
-              onClick={() => { void triggerServerStatusTest(false) }}
-              className={`${UI_TOKENS.button.ghost} py-2`}
-            >
-              {t.notification_test_offline_button}
-            </button>
-            <button
-              type="button"
-              onClick={() => { void triggerServerStatusTest(true) }}
-              className={`${UI_TOKENS.button.ghost} py-2`}
-            >
-              {t.notification_test_online_button}
-            </button>
-          </div>
-        </div>
-
-        <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
-          <p className="text-xs text-white/50 font-medium uppercase tracking-wide">
             {t.error_log_title}
           </p>
           <p className="text-xs text-white/40 leading-relaxed">
@@ -594,7 +475,23 @@ export function SettingsDataSection({
             </button>
           </div>
         </div>
+          </div>
+        </details>
 
+        <details className="group/reset rounded-ds-xl border border-rose-400/25 bg-rose-500/[0.04] p-3">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-left">
+            <span>
+              <span className="block text-xs font-semibold uppercase tracking-wide text-rose-200/90">
+                {isDE ? 'Zurücksetzen & Reparieren' : 'Reset & repair'}
+              </span>
+              <span className="mt-1 block text-xs text-white/40">
+                {isDE ? 'Fortschritt, lokale App-Daten oder Fälligkeiten gezielt zurücksetzen.' : 'Reset progress, local app data, or due dates selectively.'}
+              </span>
+            </span>
+            <span className="text-lg leading-none text-rose-200/50 group-open/reset:hidden">+</span>
+            <span className="hidden text-lg leading-none text-rose-200/50 group-open/reset:inline">−</span>
+          </summary>
+          <div className="mt-3 space-y-3 border-t border-rose-400/15 pt-3">
         <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
           <p className="text-xs text-white/50 font-medium uppercase tracking-wide">
             {settings.language === 'de' ? 'Lernvideo-Fortschritt' : 'Video progress'}
@@ -660,6 +557,8 @@ export function SettingsDataSection({
           </button>
           {localDataStatus && <p className="text-xs text-amber-300/90 leading-relaxed">{localDataStatus}</p>}
         </div>
+          </div>
+        </details>
       </div>
     </SettingsSection>
   )

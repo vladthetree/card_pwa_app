@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 UNIT_DIR="$HOME/.config/systemd/user"
-UNIT_SOURCE_ROOT="%h/card_pwa_app/card-sync-server"
+UNIT_SOURCE_ROOT="%h/projekt/card_pwa_app/card-sync-server"
 
 mkdir -p "$UNIT_DIR"
 mkdir -p "$ROOT_DIR/logs"

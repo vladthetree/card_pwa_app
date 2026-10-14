@@ -12,6 +12,8 @@ import { isDragMatchShape, isFreeRecallCard } from '../utils/cardVariant'
 import { seededShuffle } from '../utils/hash'
 import type { AnswerEvaluatedHandler, Card } from '../types'
 import IncorrectReasonsSection from './IncorrectReasonsSection'
+import { SecurityVisualization } from './SecurityVisualization'
+import { getSecurityVisualForCard } from '../utils/securityVisuals'
 import { TYPE_BADGE, OriginBadge, getCardShellClass, getCardBodyClass } from './cardRendererShared'
 
 const OrderingCard   = lazy(() => import('./OrderingCard'))
@@ -100,6 +102,21 @@ function getCorrectAnswerTextClass(size: 'default' | 'large' | 'xlarge' | 'xxlar
   return 'text-[10px] sm:text-xs'
 }
 
+function getExplanationTextClass(compact: boolean, size: 'default' | 'large' | 'xlarge' | 'xxlarge' | 'xxxlarge'): string {
+  if (compact) {
+    if (size === 'xxxlarge') return 'text-[21px]'
+    if (size === 'xxlarge') return 'text-[19px]'
+    if (size === 'xlarge') return 'text-[17px]'
+    if (size === 'large') return 'text-[16px]'
+    return 'text-[15px]'
+  }
+  if (size === 'xxxlarge') return 'text-[28px] md:text-[32px]'
+  if (size === 'xxlarge') return 'text-[25px] md:text-[29px]'
+  if (size === 'xlarge') return 'text-[22px] md:text-[26px]'
+  if (size === 'large') return 'text-[20px] md:text-[23px]'
+  return 'text-[19px] md:text-[21px]'
+}
+
 
 /**
  * CardFace: Renders front/back of flashcard with interactive elements
@@ -108,6 +125,7 @@ function getCorrectAnswerTextClass(size: 'default' | 'large' | 'xlarge' | 'xxlar
 const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswerEvaluated, compact = false, originDeckName, useDragMatchMode = true, answerRevealed = false, readOnly = false }: Props) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
+  const securityVisual = getSecurityVisualForCard(card)
 
   // Antwort-Eingaben sperren, sobald die Rückseite schon sichtbar war oder die
   // Karte nur angesehen wird. Free Recall ist die Ausnahme: dort gehört das
@@ -232,6 +250,11 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
   const compactQuestionClass = getQuestionTextClass(compact, frontContentDensity, settings.questionTextSize)
   const optionTextClass = getOptionTextClass(compact, frontContentDensity, settings.questionTextSize)
   const correctAnswerTextClass = getCorrectAnswerTextClass(settings.questionTextSize)
+  const hasIncorrectReasons = Object.entries(answered.incorrectReasons).some(
+    ([key, reason]) => !correctKeys.includes(key) && Boolean(question.options[key]) && Boolean(reason.trim())
+  )
+  const hasAnswerSidebar = Boolean(securityVisual || hasIncorrectReasons || answered.nicht)
+  const splitAnswer = !compact && Boolean(answered.answer) && hasAnswerSidebar
   const revealPendingLabel = settings.language === 'de' ? 'Antwort wird angezeigt...' : 'Showing answer...'
 
   /**
@@ -504,7 +527,7 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
 
                 <div
                   data-study-scroll="allow"
-                  className={`${bodyClass} flex flex-col overscroll-y-contain`}
+                  className={`${bodyClass} flex flex-col ${compact ? 'overscroll-y-contain' : ''}`}
                 >
                   {correctKeys.length > 0 && (
                     <>
@@ -525,12 +548,15 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                     </>
                   )}
 
+                  <div data-study-answer-layout={splitAnswer ? 'adaptive' : 'stacked'} className={`${splitAnswer ? 'study-answer-split min-[1400px]:grid min-[1400px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] min-[1400px]:items-start min-[1400px]:gap-6' : ''} min-w-0`}>
+                    <div className="min-w-0">
+
                   {answered.answer && (
                     <section>
                       <h3 className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-emerald-300">
                         {t.why_correct}
                       </h3>
-                      <p className={`card-face-text ${compact ? 'text-[15px]' : 'text-[19px] md:text-[21px]'} font-sans font-medium leading-[1.55] text-ds-fg`}>
+                      <p className={`card-face-text ${getExplanationTextClass(compact, settings.questionTextSize)} font-sans font-medium leading-[1.55] text-ds-fg`}>
                         {answered.answer}
                       </p>
                     </section>
@@ -547,12 +573,21 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                     </div>
                   )}
 
-                  <IncorrectReasonsSection
-                    answer={answered}
-                    options={question.options}
-                    selectedKey={selectedAnswer}
-                    compact={compact}
-                  />
+                    </div>
+                    <div className="study-answer-sidebar min-w-0">
+
+                  {securityVisual && (
+                    <SecurityVisualization key={card.id} visual={securityVisual} />
+                  )}
+
+                  {securityVisual?.condenseDistractors ? (
+                    <details className="mt-3 border border-ds-border bg-ds-floor px-3 py-2" data-testid="visual-answer-details">
+                      <summary className="cursor-pointer font-mono text-xs text-ds-fg">Andere Antwortpaare im Detail</summary>
+                      <IncorrectReasonsSection answer={answered} options={question.options} selectedKey={selectedAnswer} compact={compact} />
+                    </details>
+                  ) : (
+                    <IncorrectReasonsSection answer={answered} options={question.options} selectedKey={selectedAnswer} compact={compact} />
+                  )}
 
                   {hasExtra && (
                     <div className={`${answered.merkhilfe || answered.nicht ? 'mt-3' : 'mt-auto pt-4'} grid grid-cols-1 gap-2 border-t border-ds-border pt-3 text-xs sm:grid-cols-2`}>
@@ -582,6 +617,8 @@ const CardFace = memo(function CardFace({ card, flipped, onFlip, onEdit, onAnswe
                       )}
                     </div>
                   )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

@@ -244,7 +244,8 @@ export function chooseRandomSessionCardTarget(
 }
 
 export function hasFixedStudySessionSize(sessionId: string): boolean {
-  return sessionId === 'daily-quest' || sessionId.startsWith('today-package:')
+  return sessionId === 'daily-quest'
+    || sessionId.startsWith('today-package:')
 }
 
 /**

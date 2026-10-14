@@ -51,6 +51,7 @@ describe('studyCardOrdering', () => {
       expect(chooseRandomSessionCardTarget(Number.NaN)).toBe(0)
       expect(hasFixedStudySessionSize('daily-quest')).toBe(true)
       expect(hasFixedStudySessionSize('today-package:objective-1')).toBe(true)
+      expect(hasFixedStudySessionSize('visual-poc:security-principles')).toBe(false)
       expect(hasFixedStudySessionSize('regular-deck')).toBe(false)
     })
   })

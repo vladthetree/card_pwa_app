@@ -83,6 +83,8 @@ describe('HomeDeckListSection shuffle/deck switch', () => {
     const html = renderSection(false)
     expect(html).toContain('Alpha Deck')
     expect(html).not.toContain('Mixed Stack')
+    expect(html).not.toContain('Security-Prinzipien visuell')
+    expect(html).not.toContain('security-visual-poc-deck')
   })
 
   it('shows only shuffle decks when shuffle-only mode is enabled', () => {

@@ -1,9 +1,9 @@
 /**
  * AI_CONTEXT: Reusable React component for shuffle Study View; contributes to the card-learning UI and shared app interactions.
  */
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from '../ui/motion'
-import { ArrowLeft, RefreshCw, Shuffle } from 'lucide-react'
+import { ArrowLeft, Moon, RefreshCw, Shuffle, Sun } from 'lucide-react'
 import {
   clearShuffleSession,
   forceCardReviewTomorrow,
@@ -12,6 +12,7 @@ import {
   writeShuffleSession,
 } from '../db/queries'
 import { STRINGS, useSettings } from '../contexts/SettingsContext'
+import { getThemeToggleTarget, isDarkThemeKey, useTheme } from '../contexts/ThemeContext'
 import { useDecks, useShuffleCards } from '../hooks/useCardDb'
 import { useHandsetLayout } from '../hooks/useHandsetLayout'
 import { useWakeLock } from '../hooks/useWakeLock'
@@ -41,7 +42,11 @@ import { CardAnswerTimer } from './CardAnswerTimer'
 import EditCardModal from './EditCardModal'
 import RatingBar from './RatingBar'
 import SessionCoachPanel from './SessionCoachPanel'
+import { extractObjectiveCodes } from '../utils/securityDomain'
 import StudyHeaderProgress from './StudyHeaderProgress'
+
+// Der Dungeon-Gang wird erst auf dem Abschlussbildschirm gebraucht und belastet den Start der ersten Karte nicht.
+const DungeonRunPanel = lazy(() => import('./hero/DungeonRunPanel').then(module => ({ default: module.DungeonRunPanel })))
 
 interface Props {
   collection: ShuffleCollection
@@ -97,9 +102,11 @@ function ErrorAlert({ message, onRetry }: { message: string; onRetry: () => void
 
 export default function ShuffleStudyView({ collection, onExit }: Props) {
   const { settings, isAlgorithmMigrating } = useSettings()
+  const { themeKey, setTheme } = useTheme()
   const t = STRINGS[settings.language]
   const prefersReducedMotion = useReducedMotion()
   const { isHandsetLayout, isHandsetLandscape } = useHandsetLayout()
+  const desktopCardScrollRef = useRef<HTMLDivElement | null>(null)
   const studyCardLimit = normalizeStudyCardLimit(settings.studyCardLimit ?? DEFAULT_STUDY_CARD_LIMIT)
   const [selectionRun, setSelectionRun] = useState<ShuffleSelectionRun | null>(null)
   const selectionKey = selectionRun
@@ -200,6 +207,9 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
     sessionCount: session.sessionCount,
     isFlipped: session.isFlipped,
   })
+  useEffect(() => {
+    if (desktopCardScrollRef.current) desktopCardScrollRef.current.scrollTop = 0
+  }, [currentCard?.id, session.sessionCount, session.isFlipped, peeking])
   const sessionDeckSummary = useMemo(() => (
     Object.entries(sessionDeckCounts)
       .map(([deckId, count]) => ({
@@ -639,6 +649,17 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
               summary={coachSummary}
               onEditCard={card => setEditingCard(card)}
             />
+            <Suspense fallback={null}><DungeonRunPanel
+              deckIds={sessionDeckSummary.map(entry => entry.deckId)}
+              touchedObjectives={(() => {
+                const reviewed = new Set(session.reviewEvents.map(event => event.cardId))
+                return cards.filter(card => reviewed.has(card.id)).flatMap(card => extractObjectiveCodes(card.tags))
+              })()}
+              reviewedDeckIds={(() => {
+                const reviewed = new Set(session.reviewEvents.map(event => event.cardId))
+                return cards.filter(card => reviewed.has(card.id)).map(card => card.deckId).filter((id): id is string => Boolean(id))
+              })()}
+            /></Suspense>
             {sessionDeckSummary.length > 0 && (
               <div className="mt-6 rounded-ds-2xl border border-[#18181b] bg-[#0a0a0a] p-4 text-left shadow-card">
                 <div className="text-[11px] uppercase tracking-[0.18em] text-white/40">
@@ -705,7 +726,7 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
   const showHandsetRatingArea = isHandsetLayout && !peeking && session.isFlipped && !!currentCard
 
   return (
-    <div className={`${isHandsetLayout ? 'fixed inset-0' : 'min-h-screen'} flex flex-col overflow-hidden bg-[#050505] text-white`}>
+    <div className={`${isHandsetLayout ? 'fixed inset-0' : 'h-[100dvh]'} flex flex-col overflow-hidden bg-[#050505] text-white`}>
       <div
         className={`sticky top-0 z-20 border-b border-[#18181b] bg-[#050505]/95 backdrop-blur ${isHandsetLayout ? 'pt-safe-2 pb-2 px-3' : ''}`}
       >
@@ -725,6 +746,16 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
             </div>
             <div className="truncate text-lg font-semibold">{collection.name}</div>
           </div>
+          <button
+            type="button"
+            onClick={() => setTheme(getThemeToggleTarget(themeKey))}
+            className={`ds-icon-button inline-flex h-11 w-11 flex-shrink-0 ${focusHidden}`}
+            title={isDarkThemeKey(themeKey) ? 'Hellmodus' : 'Dunkelmodus'}
+            aria-label={isDarkThemeKey(themeKey) ? 'Hellmodus einschalten' : 'Dunkelmodus einschalten'}
+            data-testid="shuffle-study-theme-toggle"
+          >
+            {isDarkThemeKey(themeKey) ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
           <div className={`rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] px-3 py-2 text-xs font-mono text-white/60 ${focusHidden}`}>
             {collection.deckIds.length} {settings.language === 'de' ? 'Decks' : 'decks'}
           </div>
@@ -740,7 +771,9 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
       </div>
 
       <div
-        className={`relative flex-1 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-2' : 'overflow-y-auto px-3 py-4 sm:px-4 sm:py-6'}`}
+        ref={desktopCardScrollRef}
+        data-study-scroll="allow"
+        className={`relative min-h-0 flex-1 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-2' : 'study-desktop-scroll overflow-y-auto overscroll-y-contain px-3 py-4 sm:px-4 sm:py-6'}`}
       >
         {answerTimerEnabled && currentCard && !peeking && (
           <div className="pointer-events-none absolute right-8 top-6 z-30 flex w-48 justify-end">
@@ -829,17 +862,6 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
             </motion.div>
           )}
 
-        {!isHandsetLayout && !peeking && session.isFlipped && currentCard && (
-          <div className="mx-auto mt-5 w-full max-w-5xl">
-            <RatingBar
-              onRate={handleRate}
-              maxRating={maxSelectableRating}
-              disabled={session.isSubmitting || !!session.error}
-              layout="row"
-            />
-          </div>
-        )}
-
         {!isHandsetLayout && session.lastRatedCard && !session.isSubmitting && !peeking && (
           <div className="mt-3 flex justify-center">
             <button
@@ -859,6 +881,14 @@ export default function ShuffleStudyView({ collection, onExit }: Props) {
           </motion.div>
         )}
       </div>
+
+      {!isHandsetLayout && !peeking && session.isFlipped && currentCard && (
+        <div className="relative z-10 w-full shrink-0 border-t border-[#18181b] bg-[#050505] px-3 py-3 sm:px-4" data-testid="study-desktop-rating-area">
+          <div className="mx-auto w-full max-w-5xl">
+            <RatingBar onRate={handleRate} maxRating={maxSelectableRating} disabled={session.isSubmitting || !!session.error} layout="row" />
+          </div>
+        </div>
+      )}
 
       {showHandsetRatingArea && (
         <AnimatePresence initial={false}>

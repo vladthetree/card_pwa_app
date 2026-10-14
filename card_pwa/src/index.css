@@ -196,6 +196,24 @@
     font-family: 'Lora', Georgia, serif !important;
   }
 
+  /* Lernansicht: Schriftwahl überschreibt gezielt die Theme-Vorgabe, ohne
+     Karteninhalte oder die übrige App-Typografie zu verändern. */
+  .study-font-serif .card-face-text {
+    font-family: 'Lora', Georgia, serif !important;
+  }
+
+  .study-font-sans .card-face-text {
+    font-family: var(--app-font-family-sans) !important;
+  }
+
+  @media (min-width: 1400px) {
+    .study-answer-split .study-answer-sidebar > section[aria-label='Visualisierung des Sicherheitsprinzips'] {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
+    }
+  }
+
   #root {
     min-height: 100vh;
     min-height: 100svh;
@@ -1122,22 +1140,26 @@
      liegen. Nur Maus-/Trackpad-Geräte erhalten deshalb eine schmale, themen-
      abhängige Scroll-Affordance; Touch-Layouts bleiben unverändert. */
   @media (hover: hover) and (pointer: fine) {
-    .learning-units-scroll {
+    .learning-units-scroll,
+    .study-desktop-scroll {
       scrollbar-width: thin;
       scrollbar-color: var(--ds-border) transparent;
     }
 
-    .learning-units-scroll::-webkit-scrollbar {
+    .learning-units-scroll::-webkit-scrollbar,
+    .study-desktop-scroll::-webkit-scrollbar {
       display: block;
       width: 8px;
     }
 
-    .learning-units-scroll::-webkit-scrollbar-track {
+    .learning-units-scroll::-webkit-scrollbar-track,
+    .study-desktop-scroll::-webkit-scrollbar-track {
       display: block;
       background: transparent;
     }
 
-    .learning-units-scroll::-webkit-scrollbar-thumb {
+    .learning-units-scroll::-webkit-scrollbar-thumb,
+    .study-desktop-scroll::-webkit-scrollbar-thumb {
       display: block;
       border: 2px solid transparent;
       background: var(--ds-border);
@@ -1800,6 +1822,268 @@
   .newsprint-dark .learning-units-toolbar-newsprint button,
   .newsprint-dark .learning-units-toolbar-newsprint span {
     color: var(--news-ink);
+  }
+
+  /* ── Editorial Night ─────────────────────────────────────────────────────
+     Eine modernere Dark-Newsprint-Variante: warmes Zeitungspapier statt
+     OLED-Schwarz, feinere Regeln, weichere Radien und ruhige Tiefenstaffelung.
+     Sie erbt die robuste Newsprint-Dark-Polarität und überschreibt nur die
+     visuelle Sprache. */
+  .newsprint-app.editorial-modern {
+    --news-canvas: #100f0e;
+    --news-floor: #151411;
+    --news-ink: #f2ede2;
+    --news-white: #1d1b18;
+    --news-accent: #e08a70;
+    --news-muted: #292620;
+    --news-muted-hover: #312d26;
+    --news-secondary: #c7b88a;
+    --editorial-rule: #555047;
+    --ds-text-normal: #d0c8ba;
+    --ds-muted: #aaa193;
+    --ds-subtle: #8e867a;
+    --ds-code-bg: #24211d;
+    --ds-border: var(--editorial-rule);
+    --ds-border-strong: #777064;
+    --ds-border-hover: #a49a89;
+    --theme-border: var(--editorial-rule);
+    --theme-border-strong: #777064;
+    --theme-border-hover: #a49a89;
+    --theme-surface-hover: #25221e;
+    --theme-text-secondary: #d0c8ba;
+    --theme-text-muted: #aaa193;
+    --card-border-color: var(--editorial-rule);
+    --radius-ds-sm: 4px;
+    --radius-ds-md: 6px;
+    --radius-ds-lg: 8px;
+    --radius-ds-xl: 10px;
+    --radius-ds-2xl: 12px;
+    --radius-ds-sheet: 14px;
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.24), 0 1px 0 rgba(242, 237, 226, 0.035) inset;
+    --shadow-menu: 0 16px 44px rgba(0, 0, 0, 0.34);
+    --shadow-modal: 0 24px 72px rgba(0, 0, 0, 0.46);
+    background-color: var(--news-canvas) !important;
+  }
+
+  .newsprint-app.editorial-modern::before,
+  .newsprint-app.editorial-modern #root {
+    background-color: var(--news-canvas) !important;
+  }
+
+  .newsprint-app.editorial-modern::before {
+    background-image:
+      radial-gradient(circle at 18% 8%, rgba(224, 138, 112, 0.055), transparent 26rem),
+      repeating-linear-gradient(0deg, rgba(242, 237, 226, 0.012) 0, rgba(242, 237, 226, 0.012) 1px, transparent 1px, transparent 4px) !important;
+  }
+
+  .editorial-modern :is(h1, h2, h3, h4, h5, h6):not(.font-sans) {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 650;
+    letter-spacing: -0.015em;
+  }
+
+  .editorial-modern [class*='rounded-']:not(.rounded-full),
+  .editorial-modern .rounded {
+    border-radius: var(--radius-ds-md) !important;
+  }
+
+  .editorial-modern [class~='border'],
+  .editorial-modern .border-black,
+  .editorial-modern .border-\[\#18181b\],
+  .editorial-modern .border-\[\#1f1f22\],
+  .editorial-modern .border-\[\#1f1f23\],
+  .editorial-modern .border-\[\#27272a\],
+  .editorial-modern .border-\[\#3f3f46\] {
+    border-color: var(--editorial-rule) !important;
+  }
+
+  .editorial-modern :is(.ds-card, .ds-panel, .glass) {
+    border: 1px solid var(--editorial-rule);
+    border-radius: var(--radius-ds-xl);
+    background: var(--news-white);
+    box-shadow: var(--shadow-card);
+  }
+
+  .editorial-modern :is(.ds-modal, .ds-menu) {
+    border: 1px solid #777064;
+    border-radius: var(--radius-ds-sheet);
+    background: var(--news-white);
+    box-shadow: var(--shadow-modal);
+  }
+
+  .editorial-modern .ds-icon-button {
+    border: 1px solid var(--editorial-rule);
+    border-radius: var(--radius-ds-md);
+    background: #211f1b;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.24);
+    color: var(--news-ink);
+  }
+
+  .editorial-modern .ds-icon-button:active {
+    transform: scale(0.96);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+  }
+
+  .editorial-modern .neo-keep-dark,
+  .editorial-modern .neo-keep-dark .bg-black {
+    --ds-fg: #f2ede2;
+    --brand-primary: #e08a70;
+    --brand-primary-08: rgba(224, 138, 112, 0.08);
+    --brand-primary-12: rgba(224, 138, 112, 0.12);
+    --brand-primary-15: rgba(224, 138, 112, 0.15);
+    --brand-primary-20: rgba(224, 138, 112, 0.2);
+    --brand-primary-25: rgba(224, 138, 112, 0.25);
+    --brand-primary-50: rgba(224, 138, 112, 0.5);
+    --brand-primary-80: rgba(224, 138, 112, 0.8);
+    --brand-primary-100: #e08a70;
+    --brand-secondary: #c7b88a;
+    --brand-secondary-08: rgba(199, 184, 138, 0.08);
+    --brand-secondary-12: rgba(199, 184, 138, 0.12);
+    --brand-secondary-15: rgba(199, 184, 138, 0.15);
+    --brand-secondary-20: rgba(199, 184, 138, 0.2);
+    --brand-secondary-25: rgba(199, 184, 138, 0.25);
+    --brand-secondary-50: rgba(199, 184, 138, 0.5);
+    --brand-secondary-80: rgba(199, 184, 138, 0.8);
+    --brand-secondary-100: #c7b88a;
+    background: #100f0e !important;
+    color: #f2ede2 !important;
+  }
+
+  .editorial-modern .neo-keep-dark [class*='bg-[#0'],
+  .editorial-modern .neo-keep-dark [class*='bg-[#111]'] {
+    background-color: #1d1b18 !important;
+  }
+
+  .editorial-modern .neo-keep-dark .ds-icon-button {
+    border-color: #555047 !important;
+    background: #211f1b !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    color: #f2ede2 !important;
+  }
+
+  .editorial-modern :is(input, select, textarea) {
+    border-bottom-color: #777064 !important;
+  }
+
+  .editorial-modern :is(input, select, textarea):focus-visible {
+    background: #25221e !important;
+    box-shadow: 0 2px 0 var(--news-accent);
+  }
+
+  .editorial-modern [data-testid^='theme-option-'] {
+    border-color: var(--editorial-rule) !important;
+    border-radius: var(--radius-ds-lg) !important;
+    background-color: var(--news-white) !important;
+    box-shadow: var(--shadow-card) !important;
+  }
+
+  .editorial-modern .learning-units-newsprint,
+  .editorial-modern .learning-plan-newsprint {
+    --neo-canvas: #100f0e;
+    --neo-floor: #151411;
+    --neo-ink: #f2ede2;
+    --neo-accent: #e08a70;
+    --neo-secondary: #292620;
+    --neo-muted: #292620;
+    --neo-white: #1d1b18;
+    --ds-border: #555047;
+    --ds-border-strong: #777064;
+    --neo-shadow-ink: rgba(0, 0, 0, 0.34);
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.24);
+    --shadow-menu: 0 16px 44px rgba(0, 0, 0, 0.34);
+    --shadow-modal: 0 24px 72px rgba(0, 0, 0, 0.46);
+  }
+
+  .editorial-modern .learning-units-toolbar-newsprint {
+    --ds-card: #1d1b18;
+    --ds-panel: #292620;
+    --ds-panel-hover: #312d26;
+    --ds-border: #555047;
+    --ds-border-hover: #a49a89;
+  }
+
+  .editorial-modern .learning-units-toolbar-newsprint > div {
+    border-color: #555047;
+    border-radius: var(--radius-ds-lg);
+    background: #1d1b18;
+    box-shadow: var(--shadow-card);
+  }
+
+  @media (hover: hover) {
+    .editorial-modern :is(.ds-card, .ds-panel, .ds-icon-button, [data-testid^='theme-option-']) {
+      transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .editorial-modern :is(.ds-card, .ds-panel, .ds-icon-button):hover {
+      border-color: #8b8274 !important;
+      transform: translateY(-1px);
+    }
+  }
+
+  /* Helden-Idle: Sprite-Streifen mit 8 Frames per steps() abspielen — ohne JavaScript-Timer, nur ohne Reduced Motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes hero-strip-idle {
+      from { background-position: 0 0; }
+      to { background-position: calc(var(--fw) * -8) 0; }
+    }
+
+    .hero-strip-idle { animation: hero-strip-idle var(--idle-dur, 1.6s) steps(8) infinite; }
+  }
+
+  /* Dungeon-Gang (Sessionende): Wackeln, Schweif, schwebende Zahl und Fackel — nur ohne Reduced Motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes hero-shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-2px); }
+      75% { transform: translateX(2px); }
+    }
+    @keyframes hero-float {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(-26px); opacity: 0; }
+    }
+    @keyframes hero-spark {
+      from { transform: translateX(0) scale(1); opacity: 1; }
+      to { transform: translateX(26px) scale(0.2); opacity: 0; }
+    }
+    @keyframes hero-torch {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    @keyframes hero-flash {
+      0%, 100% { filter: none; }
+      30% { filter: brightness(2.4) saturate(0.3); }
+      60% { filter: brightness(1.4); }
+    }
+
+    .hero-flash { animation: hero-flash 360ms steps(4) 1; }
+    .hero-shake { animation: hero-shake 120ms steps(3) 2; }
+    .hero-float { animation: hero-float 700ms ease-out forwards; }
+    .hero-spark { animation: hero-spark 360ms ease-out forwards; }
+    .hero-torch { animation: hero-torch 600ms steps(2, jump-none) infinite; }
+  }
+
+  /* Begleiter-Sprite: zwei harte Frames wie ein Pixel-Idle, nur ohne Reduced Motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes companion-idle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+    }
+
+    .companion-idle {
+      animation: companion-idle 1.2s steps(2, jump-none) infinite;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes editorial-enter {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .editorial-modern :is(.ds-modal, .ds-menu) {
+      animation: editorial-enter 180ms ease-out both;
+    }
   }
 
 }

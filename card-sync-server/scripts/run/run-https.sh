@@ -5,7 +5,7 @@
 
 set -e
 
-CARD_SYNC_DIR="/home/_vb/card_pwa_app/card-sync-server"
+CARD_SYNC_DIR="/home/_vb/projekt/card_pwa_app/card-sync-server"
 HOSTNAME="pi.local"
 PORT=8787
 

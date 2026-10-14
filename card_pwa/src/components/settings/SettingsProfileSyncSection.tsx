@@ -9,9 +9,10 @@ import ProfileSyncSection from '../ProfileSyncSection'
 interface Props {
   isOpen: boolean
   onToggle: () => void
+  presentation?: 'accordion' | 'panel'
 }
 
-export function SettingsProfileSyncSection({ isOpen, onToggle }: Props) {
+export function SettingsProfileSyncSection({ isOpen, onToggle, presentation }: Props) {
   const { settings } = useSettings()
 
   return (
@@ -21,6 +22,7 @@ export function SettingsProfileSyncSection({ isOpen, onToggle }: Props) {
       icon={<User size={18} />}
       isOpen={isOpen}
       onToggle={onToggle}
+      presentation={presentation}
     >
       <ProfileSyncSection language={settings.language === 'de' ? 'de' : 'en'} />
     </SettingsSection>

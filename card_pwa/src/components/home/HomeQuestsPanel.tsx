@@ -4,6 +4,9 @@
  * Reine Anzeige der Belohnungsschleife — startet nichts und plant nichts.
  */
 import type { GamificationProfile } from '../../types'
+import { CompanionSprite } from '../companion/CompanionSprite'
+import { DungeonLoopScene } from '../hero/DungeonLoopScene'
+import { useCompanionSettings } from '../../contexts/SettingsContext'
 
 const QUEST_TITLE_KEYS: Record<string, string> = {
   'daily-review-goal': 'quest_reviews_title',
@@ -26,12 +29,17 @@ export function HomeQuestsPanel({ t, profile }: Props) {
   const todayXp = profile?.todayXp ?? 0
   const totalXp = profile?.totalXp ?? 0
 
+  const companionSettings = useCompanionSettings()
+  const showLoop = companionSettings.enabled && companionSettings.showInQuests && companionSettings.dashboardLoopEnabled
+
   return (
     <div
       className="relative w-full min-w-0 overflow-hidden rounded-ds border border-ds-border bg-ds-floor px-3 py-2.5 shadow-card before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-white/[0.06]"
       aria-label={t.quests_panel_label}
     >
-      <div className="flex items-baseline justify-between gap-2">
+      {showLoop && <DungeonLoopScene level={level} label={t.hero_panel_title} className="mb-2" />}
+      <CompanionSprite t={t} level={level} />
+      <div className="mt-2 flex items-baseline justify-between gap-2">
         <div className="truncate font-mono text-[9px] uppercase tracking-[0.08em] text-ds-muted 2xl:text-xs">
           {t.level_label} {level} · {rankLabel}
         </div>

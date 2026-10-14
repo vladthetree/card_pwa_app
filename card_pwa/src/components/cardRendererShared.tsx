@@ -29,5 +29,5 @@ export function getCardShellClass(compact: boolean, toneClass: string, extraBefo
 export function getCardBodyClass(compact: boolean): string {
   return compact
     ? 'min-h-0 flex-1 overflow-y-auto px-[14px] py-[16px] no-scrollbar'
-    : 'flex-1 overflow-y-auto no-scrollbar px-6 py-6 md:px-8 md:py-8'
+    : 'flex-1 px-6 py-6 md:px-8 md:py-8'
 }

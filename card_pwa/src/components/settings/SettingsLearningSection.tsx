@@ -8,7 +8,7 @@
  * see SettingsModal's own comment on why that state stays up there.
  */
 import { useEffect, useMemo, useState } from 'react'
-import { Brain, ChevronDown, RefreshCw } from 'lucide-react'
+import { Brain, ChevronDown } from 'lucide-react'
 import { useSettings, STRINGS } from '../../contexts/SettingsContext'
 import type { YoungCardLapseStats } from '../../db/queries'
 import { UI_TOKENS } from '../../constants/ui'
@@ -42,6 +42,7 @@ import { SY0701_COVERAGE_SUMMARY } from '../../data/sy0701Coverage'
 interface Props {
   isOpen: boolean
   onToggle: () => void
+  presentation?: 'accordion' | 'panel'
   youngLapseStats: YoungCardLapseStats | null
   fsrsOptimizationStatus: string | null
   setFsrsOptimizationStatus: (status: string | null) => void
@@ -68,6 +69,7 @@ function updateNumber(value: string, updater: (nextValue: number) => void) {
 export function SettingsLearningSection({
   isOpen,
   onToggle,
+  presentation,
   youngLapseStats,
   fsrsOptimizationStatus,
   setFsrsOptimizationStatus,
@@ -84,6 +86,8 @@ export function SettingsLearningSection({
     setStudyCardLimit,
     setShuffleModeEnabled,
     setDragMatchEnabled,
+    setFocusMode,
+    setAnswerTimerEnabled,
     setNextDayStartsAt,
     setDailyGoal,
     setNewCardsPerDay,
@@ -259,6 +263,7 @@ export function SettingsLearningSection({
       icon={<Brain size={18} />}
       isOpen={isOpen}
       onToggle={onToggle}
+      presentation={presentation}
     >
       <div className="pt-5 space-y-5">
         <SettingsSliderRow
@@ -272,6 +277,36 @@ export function SettingsLearningSection({
           onValueChange={setStudyCardLimit}
           help={t.study_weight_hint.replace('{count}', String(settings.studyCardLimit))}
         />
+
+        <div>
+          <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
+            {settings.language === 'de' ? 'Lernansicht' : 'Study view'}
+          </label>
+          <div className={`${UI_TOKENS.surface.panelSoft} space-y-4 p-4`}>
+            <SettingsSwitchRow
+              label={settings.language === 'de' ? 'Session-Header beim Lernen ausblenden' : 'Hide session header while studying'}
+              labelClassName="text-sm font-medium text-white"
+              description={settings.language === 'de'
+                ? 'Blendet Statistiken und Fortschritt aus. Der Zurück-Button bleibt sichtbar.'
+                : 'Hides stats and progress. The back button remains visible.'}
+              descriptionClassName="mt-1 text-xs leading-relaxed text-white/45"
+              checked={settings.focusMode}
+              onCheckedChange={setFocusMode}
+            />
+            <div className="border-t border-ds-border pt-4">
+              <SettingsSwitchRow
+                label={settings.language === 'de' ? 'Beantwortungszeit anzeigen' : 'Show answer timer'}
+                labelClassName="text-sm font-medium text-white"
+                description={settings.language === 'de'
+                  ? 'Zeigt in Deck-Sessions einen Sekundentimer und speichert die erste Antwortzeit pro Karte.'
+                  : 'Shows a seconds timer in deck sessions and stores the first answer time per card.'}
+                descriptionClassName="mt-1 text-xs leading-relaxed text-white/45"
+                checked={settings.answerTimerEnabled}
+                onCheckedChange={setAnswerTimerEnabled}
+              />
+            </div>
+          </div>
+        </div>
 
         <div>
           <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
@@ -650,17 +685,6 @@ export function SettingsLearningSection({
           </div>
         </details>
 
-        <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-2`}>
-          <p className="text-xs text-white/50 font-medium uppercase tracking-wide">
-            <span className="inline-flex items-center gap-2">
-              <RefreshCw size={12} strokeWidth={1.5} />
-              {t.migration_section_title}
-            </span>
-          </p>
-          <p className="text-xs text-white/40 leading-relaxed">
-            {t.migration_section_description}
-          </p>
-        </div>
       </div>
     </SettingsSection>
   )

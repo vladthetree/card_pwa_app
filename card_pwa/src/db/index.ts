@@ -90,6 +90,19 @@ export interface CardRecord {
   metadata?: CardMetadata
 }
 
+/** Helden-Ausrüstung eines Profils. Gold ist NICHT gespeichert (verdient − Käufe, aus Reviews abgeleitet);
+ *  gespeichert werden nur Käufe, Ausrüstungswahl, Skill-Belegung und die gesehene Bestiary-Liste. */
+export interface HeroLoadoutRecord {
+  profileId: string
+  purchases: Array<{ slot: string; tier: number; variant: number; pricePaid: number; purchasedAt: number }>
+  equipped: Record<string, number>
+  skillNodeIds: string[]
+  seenMonsterIds: string[]
+  /** Zuletzt gesehene Zahl offener Etagen je Domäne ("1".."5") — damit ein neuer Sieg nur einmal gefeiert wird. */
+  seenFloors?: Record<string, number>
+  updatedAt: number
+}
+
 export interface ReviewRecord {
   id?: number       // auto-increment primary key
   opId?: string
@@ -272,6 +285,7 @@ export class CardPwaDB extends Dexie {
   videoDownloads!: Table<VideoDownloadRecord, string>
   videoBlobs!: Table<VideoBlobRecord, string>
   videoTagMeta!: Table<VideoTagMetaRecord, [string, string]>
+  heroLoadout!: Table<HeroLoadoutRecord, string>
 
   constructor() {
     super(DATABASE_NAMES.app)
@@ -606,6 +620,11 @@ export class CardPwaDB extends Dexie {
     // schemaless for non-indexed fields; declaring the version documents the
     // persisted contract without adding write overhead.
     this.version(22).stores({})
+
+    // Version 23: Helden-Ausrüstung (Käufe, Skilltree). Ein Datensatz je Profil.
+    this.version(23).stores({
+      heroLoadout: 'profileId',
+    })
   }
 }
 

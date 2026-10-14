@@ -50,33 +50,67 @@ class BaseRoutesMixin:
       return None, 400, "invalid_json"
 
   def _cors_origin(self):
+    """
+    Resolve the Access-Control-Allow-Origin value, or None to send no CORS
+    headers at all (browser then blocks the cross-origin request).
+
+    The app's normal flow (Node prod-server.mjs proxying /sync, /auth, /push
+    same-origin) never needs CORS — the browser only consults these headers
+    for genuine cross-origin calls, e.g. the documented direct-LAN-endpoint
+    fallback in .env.example. Without an explicit SYNC_CORS_ALLOWED_ORIGINS,
+    default to deny rather than "*": this server binds 0.0.0.0 by default,
+    so an unconfigured wildcard would let *any* website's script call the
+    auth/sync/push API of every device on the LAN.
+    """
     allowed = [o.strip() for o in str(CORS_ALLOWED_ORIGINS).split(",") if o.strip()]
-    if not allowed or "*" in allowed:
+    if "*" in allowed:
       return "*"
+    if not allowed:
+      return None
     origin = self.headers.get("Origin", "")
     if origin in allowed:
       return origin
     return allowed[0]
 
   def _send_cors_headers(self):
-    self.send_header("Access-Control-Allow-Origin", self._cors_origin())
+    origin = self._cors_origin()
+    if origin is None:
+      return
+    self.send_header("Access-Control-Allow-Origin", origin)
     self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Idempotency-Key, Authorization")
     self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+    # Private Network Access: only grant it alongside an actual allow-listed
+    # origin (never as a blanket grant to unmatched/default requests).
     self.send_header("Access-Control-Allow-Private-Network", "true")
-    if self._cors_origin() != "*":
+    if origin != "*":
       self.send_header("Vary", "Origin")
+
+  def _send_security_headers(self):
+    """
+    Defense-in-depth for direct access: SYNC_HOST defaults to 0.0.0.0, so this
+    API can be reached without going through the Node proxy in front of the
+    PWA (scripts/prod-server.mjs), which already sets the app's security
+    headers. Keep both layers in sync rather than relying solely on the proxy.
+    """
+    self.send_header("X-Content-Type-Options", "nosniff")
+    self.send_header("X-Frame-Options", "DENY")
+    self.send_header("Referrer-Policy", "no-referrer")
+    self.send_header("Cache-Control", "no-store")
+    self.send_header("Strict-Transport-Security", "max-age=15552000; includeSubDomains")
 
   def _send_json(self, status, data):
     body = json.dumps(data).encode("utf-8")
     self.send_response(status)
     self.send_header("Content-Type",   "application/json; charset=utf-8")
     self.send_header("Content-Length", str(len(body)))
+    self._send_security_headers()
     self._send_cors_headers()
     self.end_headers()
     self.wfile.write(body)
 
   def _send_no_content(self):
     self.send_response(204)
+    self._send_security_headers()
     self._send_cors_headers()
     self.send_header("Content-Length", "0")
     self.end_headers()

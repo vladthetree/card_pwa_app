@@ -1,0 +1,19 @@
+[Unit]
+Description=Card Sync Server (HTTPS, instance 2)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# SYNC_DB_PATH bleibt ungesetzt -> Default "sync.db" relativ zum WorkingDirectory
+# (= card_pwa_app/card-sync-server/sync.db).
+WorkingDirectory=%h/projekt/card_pwa_app/card-sync-server
+EnvironmentFile=-%h/projekt/card_pwa_app/card-sync-server/.env.sync-server
+ExecStart=%h/projekt/card_pwa_app/card-sync-server/.venv/bin/python3 %h/projekt/card_pwa_app/card-sync-server/sync_server.py
+Restart=always
+RestartSec=3
+StandardOutput=append:%h/projekt/card_pwa_app/card-sync-server/logs/systemd-sync-server.out.log
+StandardError=append:%h/projekt/card_pwa_app/card-sync-server/logs/systemd-sync-server.err.log
+
+[Install]
+WantedBy=default.target

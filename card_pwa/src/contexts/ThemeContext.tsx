@@ -81,6 +81,29 @@ export const THEMES = {
     cardBorder: '#E8E8E3',
     glow: 'rgba(255,97,102,0.2)',
   },
+  editorial: {
+    name: 'Editorial Night',
+    primary: '#E08A70',
+    secondary: '#C7B88A',
+    accent: '#2B2924',
+    background: '#100F0E',
+    floor: '#151411',
+    card: '#1D1B18',
+    surface: '#1D1B18',
+    surfaceHover: '#25221E',
+    panel: '#292620',
+    panelHover: '#312D26',
+    border: '#555047',
+    borderStrong: '#777064',
+    borderHover: '#A49A89',
+    text: '#F2EDE2',
+    textSecondary: '#D0C8BA',
+    textMuted: '#AAA193',
+    subtle: '#8E867A',
+    codeBg: '#24211D',
+    cardBorder: '#555047',
+    glow: 'rgba(224,138,112,0.16)',
+  },
 } as const
 
 export type ThemeKey = keyof typeof THEMES
@@ -93,8 +116,6 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
-const APP_CHROME_COLOR = '#000000'
-
 interface ThemeProviderProps {
   children: ReactNode
 }
@@ -114,11 +135,10 @@ function hexToRgbTuple(hex: string): [number, number, number] {
 }
 
 function getThemeChromeColor(key: ThemeKey): string {
-  // Chrome-Farbe (theme-color-Meta + body-Fallback) bleibt bewusst echtes
-  // Schwarz, damit iOS Status-/Home-Indicator-Zonen keine getönten Streifen
-  // gegen den App-Hintergrund zeigen.
-  void key
-  return APP_CHROME_COLOR
+  // iOS sampelt Kamera-/Status- und Home-Indicator-Zonen aus dem Seitenfond.
+  // Derselbe Wert für Meta, html-Variable und body verhindert sichtbare
+  // Streifen, insbesondere bei den warmen Editorial-Flächen.
+  return THEMES[key].background
 }
 
 export function normalizeSavedThemeKey(value: string | null): ThemeKey {
@@ -126,6 +146,14 @@ export function normalizeSavedThemeKey(value: string | null): ThemeKey {
     return value as ThemeKey
   }
   return 'default'
+}
+
+export function isDarkThemeKey(key: ThemeKey): boolean {
+  return key === 'newsprintDark' || key === 'editorial'
+}
+
+export function getThemeToggleTarget(key: ThemeKey): ThemeKey {
+  return isDarkThemeKey(key) ? 'newsprint' : 'editorial'
 }
 
 // Lernplan-Views setzen zusätzlich zur Body-Klasse eine lokal gescopte
@@ -137,7 +165,7 @@ export function normalizeSavedThemeKey(value: string | null): ThemeKey {
 export function themeScopeClass(themeKey: ThemeKey, base: string): string {
   const suffix = themeKey === 'default'
     ? 'neo'
-    : themeKey === 'newsprintDark'
+    : themeKey === 'newsprintDark' || themeKey === 'editorial'
       ? 'newsprint'
       : themeKey
   return `${base}-${suffix}`
@@ -152,11 +180,13 @@ const THEME_BODY_CLASS: Record<ThemeKey, string> = {
   default: 'neo-app',
   newsprint: 'newsprint-app',
   newsprintDark: 'newsprint-app newsprint-dark',
+  editorial: 'newsprint-app newsprint-dark editorial-modern',
 }
 const THEME_DATA_ATTR: Record<ThemeKey, string> = {
   default: 'neo',
   newsprint: 'newsprint',
   newsprintDark: 'newsprint-dark',
+  editorial: 'editorial-modern',
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {

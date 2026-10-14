@@ -5,12 +5,13 @@
  * Important: Scheduling writes happen through db/queries recordReview; local UI state belongs in studySessionReducer and studySessionPersistence.
  * Bewertungen sind endgültig: Zurückblättern ist read-only (kein erneutes Antworten, kein zweites XP).
  */
-import { useState, useEffect, useCallback, useMemo, useReducer, useRef } from 'react'
+import { lazy, Suspense, useState, useEffect, useCallback, useMemo, useReducer, useRef } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from '../ui/motion'
-import { ArrowLeft, RotateCcw, CheckCircle, AlertCircle, RefreshCw, Type, Sparkles } from 'lucide-react'
+import { ArrowLeft, RotateCcw, CheckCircle, AlertCircle, RefreshCw, Type, Sparkles, Sun, Moon } from 'lucide-react'
 import { useDeckCards } from '../hooks/useCardDb'
 import { recordReview, forceCardReviewTomorrow, writeActiveSession, clearActiveSession, readActiveSession } from '../db/queries'
 import { STRINGS, useSettings, type QuestionTextSize } from '../contexts/SettingsContext'
+import { getThemeToggleTarget, isDarkThemeKey, useTheme } from '../contexts/ThemeContext'
 import {
   buildStudySessionSelection,
   chooseRandomSessionCardTarget,
@@ -49,8 +50,12 @@ import RatingBar from './RatingBar.tsx'
 import StreakBadge from './StreakBadge.tsx'
 import DailyGoalRing from './DailyGoalRing.tsx'
 import SessionCoachPanel from './SessionCoachPanel'
+import { extractObjectiveCodes } from '../utils/securityDomain'
 import StudyHeaderProgress from './StudyHeaderProgress'
 import { CardAnswerTimer } from './CardAnswerTimer'
+
+// Der Dungeon-Gang wird erst auf dem Abschlussbildschirm gebraucht und belastet den Start der ersten Karte nicht.
+const DungeonRunPanel = lazy(() => import('./hero/DungeonRunPanel').then(module => ({ default: module.DungeonRunPanel })))
 
 interface Props {
   /** Deck to study */
@@ -108,13 +113,22 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
   const loading = preloadedCards ? false : deckLoading
   const error = preloadedCards ? null : deckError
   const { settings, isAlgorithmMigrating, setQuestionTextSize } = useSettings()
+  const { themeKey, setTheme } = useTheme()
   const t = STRINGS[settings.language]
   const prefersReducedMotion = useReducedMotion()
 
   const [session, dispatch] = useReducer(sessionReducer, initialSessionState)
   const [editingCard, setEditingCard] = useState<Card | null>(null)
+  const [displaySettingsOpen, setDisplaySettingsOpen] = useState(false)
+  const [readingFont, setReadingFont] = useState<'serif' | 'sans'>(() => {
+    const saved = localStorage.getItem('study-reading-font')
+    return saved === 'serif' || saved === 'sans'
+      ? saved
+      : themeKey === 'default' ? 'sans' : 'serif'
+  })
   const { isHandsetLayout, isHandsetLandscape } = useHandsetLayout()
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
+  const desktopCardScrollRef = useRef<HTMLDivElement | null>(null)
   // Konkrete Antwort der aktuellen Karte (MC/Drag-Match/Reihenfolge/Zuordnung),
   // bis sie mit der Bewertung als Review persistiert ist. Ref statt State: die
   // Zuordnung zur cardId passiert im selben Closure wie recordReview, und der
@@ -140,6 +154,10 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
     xxxlarge: 'XXL',
   }
   const questionTextSizeLabel = QUESTION_SIZE_LABEL[settings.questionTextSize] ?? 'S'
+
+  useEffect(() => {
+    localStorage.setItem('study-reading-font', readingFont)
+  }, [readingFont])
 
   useEffect(() => {
     sessionRef.current = session
@@ -268,12 +286,12 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
         && matchesPersistedStudyCardLimit(snapshot.cardLimit, studyCardLimit)
       ) {
         const byId = new Map(cards.map(card => [card.id, card]))
-        const restoredCards = enforceDailyDeckCardLimit(
-          snapshot.cardIds
-            .map(id => byId.get(id))
-            .filter((card): card is Card => Boolean(card)),
-          studyCardLimit,
-        )
+        const snapshotCards = snapshot.cardIds
+          .map(id => byId.get(id))
+          .filter((card): card is Card => Boolean(card))
+        const restoredCards = hasFixedStudySessionSize(deck.id)
+          ? buildSessionCards(snapshotCards, snapshotCards.length)
+          : enforceDailyDeckCardLimit(snapshotCards, studyCardLimit)
         if (restoredCards.length > 0) {
           sessionTargetCardCountRef.current = snapshot.sessionTargetCardCount
           dispatch({ type: 'RESTORE', cards: restoredCards, snapshot })
@@ -412,6 +430,12 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
   })
   const sessionPendingCount = session.cards.length
   const maxSelectableRating: Rating = answerWasIncorrect ? 3 : 4
+  useEffect(() => {
+    // Lange Antworten wachsen über die verfügbare Höhe hinaus. Bei einer neuen
+    // Kartenansicht wieder am Anfang starten; die Bewertung bleibt separat
+    // unten erreichbar und ist nicht Teil dieses Scrollbereichs.
+    if (desktopCardScrollRef.current) desktopCardScrollRef.current.scrollTop = 0
+  }, [currentCard?.id, session.sessionCount, session.isFlipped, peeking])
   const answerTimerEnabled = settings.answerTimerEnabled === true
   const answerTimer = useCardAnswerTimer({
     enabled: answerTimerEnabled,
@@ -869,6 +893,18 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
               onStartRepair={() => handleStartRepair(coachSummary.problemCards.slice(0, 5).map(problem => problem.card))}
             />
 
+            <Suspense fallback={null}><DungeonRunPanel
+              deckId={deck.id}
+              touchedObjectives={(() => {
+                const reviewed = new Set(session.reviewEvents.map(event => event.cardId))
+                return cards.filter(card => reviewed.has(card.id)).flatMap(card => extractObjectiveCodes(card.tags))
+              })()}
+              reviewedDeckIds={(() => {
+                const reviewed = new Set(session.reviewEvents.map(event => event.cardId))
+                return cards.filter(card => reviewed.has(card.id)).map(card => card.deckId).filter((id): id is string => Boolean(id))
+              })()}
+            /></Suspense>
+
             {forcedCount > 0 && (
               <p className="text-xs text-white/40 my-4">
                 {forcedCount} {t.completion_forced_tomorrow}
@@ -917,7 +953,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
 
   // Study Screen
   return (
-    <div className={`${isHandsetLayout ? 'fixed inset-0' : 'h-[100dvh]'} flex flex-col overflow-hidden`}>
+    <div className={`${isHandsetLayout ? 'fixed inset-0' : 'h-[100dvh]'} study-font-${readingFont} flex flex-col overflow-hidden bg-ds-bg text-ds-fg`}>
       {/* Top navigation */}
       <div
         className={`relative z-20 w-full shrink-0 bg-ds-bg/94 px-4 pb-0 backdrop-blur-sm md:px-8 ${isHandsetLayout ? 'pt-safe-2' : 'pt-5'}`}
@@ -951,7 +987,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
 
             {/* Right: Action buttons */}
             <div className={`flex items-center gap-1 flex-shrink-0 ${focusHidden}`}>
-              <StreakBadge compact />
+              <StreakBadge compact iconButton />
               {answerTimerEnabled && currentCard && !peeking && (
                 <CardAnswerTimer
                   compact
@@ -962,6 +998,16 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
                   onTogglePaused={answerTimer.togglePaused}
                 />
               )}
+              <button
+                type="button"
+                onClick={() => setTheme(getThemeToggleTarget(themeKey))}
+                className="ds-icon-button inline-flex h-11 w-11 flex-shrink-0"
+                title={isDarkThemeKey(themeKey) ? 'Hellmodus' : 'Dunkelmodus'}
+                aria-label={isDarkThemeKey(themeKey) ? 'Hellmodus einschalten' : 'Dunkelmodus einschalten'}
+                data-testid="study-theme-toggle"
+              >
+                {isDarkThemeKey(themeKey) ? <Sun size={14} /> : <Moon size={14} />}
+              </button>
               <button
                 type="button"
                 onClick={cycleQuestionTextSize}
@@ -1000,16 +1046,50 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
 
               <div className="flex-1" aria-hidden="true" />
 
-              {/* Right: only the card-text control remains in the header. */}
-              <button
-                type="button"
-                onClick={cycleQuestionTextSize}
-                className={`ds-icon-button inline-flex h-10 w-10 flex-shrink-0 ${focusHidden}`}
-                title={`${t.question_text_size}: ${questionTextSizeLabel}`}
-                aria-label={`${t.question_text_size}: ${questionTextSizeLabel}`}
-              >
-                <Type size={16} />
-              </button>
+              <div className={`relative flex shrink-0 items-center gap-2 ${focusHidden}`}>
+                <button
+                  type="button"
+                  onClick={() => setTheme(getThemeToggleTarget(themeKey))}
+                  className="ds-icon-button inline-flex h-10 w-10"
+                  title={isDarkThemeKey(themeKey) ? 'Hellmodus' : 'Dunkelmodus'}
+                  aria-label={isDarkThemeKey(themeKey) ? 'Hellmodus einschalten' : 'Dunkelmodus einschalten'}
+                  data-testid="study-theme-toggle"
+                >
+                  {isDarkThemeKey(themeKey) ? <Sun size={16} /> : <Moon size={16} />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDisplaySettingsOpen(open => !open)}
+                  className="ds-icon-button inline-flex h-10 w-10"
+                  title={`${t.question_text_size}: ${questionTextSizeLabel}`}
+                  aria-label={settings.language === 'de' ? 'Schriftart und Schriftgröße' : 'Font and text size'}
+                  aria-expanded={displaySettingsOpen}
+                  aria-controls="study-display-settings"
+                  data-testid="study-typography-toggle"
+                >
+                  <Type size={16} />
+                </button>
+                {displaySettingsOpen && (
+                  <div id="study-display-settings" className="absolute right-0 top-full z-50 mt-2 w-64 border border-ds-border bg-ds-card p-3 text-ds-fg shadow-modal" role="group" aria-label={settings.language === 'de' ? 'Schrifteinstellungen' : 'Typography settings'}>
+                    <div className="mb-2 font-mono text-[10px] uppercase tracking-widest text-ds-muted">{settings.language === 'de' ? 'Schriftart' : 'Font'}</div>
+                    <div className="mb-4 grid grid-cols-2 gap-2">
+                      {(['serif', 'sans'] as const).map(font => (
+                        <button key={font} type="button" onClick={() => setReadingFont(font)} aria-pressed={readingFont === font} className={`border px-2 py-2 text-sm ${readingFont === font ? 'border-[--brand-primary] bg-[--brand-primary-08]' : 'border-ds-border'}`}>
+                          {font === 'serif' ? 'Serif' : 'Sans Serif'}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="mb-2 font-mono text-[10px] uppercase tracking-widest text-ds-muted">{settings.language === 'de' ? 'Schriftgröße' : 'Text size'}</div>
+                    <div className="grid grid-cols-5 gap-1">
+                      {(['default', 'large', 'xlarge', 'xxlarge', 'xxxlarge'] as const).map(size => (
+                        <button key={size} type="button" onClick={() => setQuestionTextSize(size)} aria-pressed={settings.questionTextSize === size} className={`border px-1 py-2 font-mono text-xs ${settings.questionTextSize === size ? 'border-[--brand-primary] bg-[--brand-primary-08]' : 'border-ds-border'}`}>
+                          {QUESTION_SIZE_LABEL[size]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
             <div className={focusHidden}>
               <StudyHeaderProgress
@@ -1051,7 +1131,9 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
           </div>
         )}
         <div
-          className={`flex-1 min-h-0 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-2' : 'flex flex-col overflow-y-auto px-3 sm:px-4 py-4 sm:py-6'}`}
+          ref={desktopCardScrollRef}
+          data-study-scroll="allow"
+          className={`flex-1 min-h-0 ${isHandsetLayout ? 'overflow-hidden px-2 pt-2 pb-2' : 'study-desktop-scroll flex flex-col overflow-y-auto overscroll-y-contain px-3 sm:px-4 py-4 sm:py-6'}`}
         >
           {/* Error alert */}
           <AnimatePresence>
@@ -1071,7 +1153,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
                 initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 22, scale: 0.96 }}
                 animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: prefersReducedMotion ? 0.12 : 0.22, ease: [0.22, 1, 0.36, 1] }}
-                className={`w-full ${isHandsetLayout ? 'flex h-full min-h-0 flex-col' : 'mx-auto my-auto max-w-5xl'}`}
+                className={`w-full ${isHandsetLayout ? 'flex h-full min-h-0 flex-col' : 'mx-auto my-auto max-w-[1480px] shrink-0'}`}
                 style={isHandsetLayout ? { maxHeight: '100%' } : undefined}
               >
                 <div className="mb-2 flex shrink-0 items-center justify-between gap-3 rounded-ds border border-amber-500/30 bg-amber-500/10 px-3 py-1.5">
@@ -1113,7 +1195,7 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
                 initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 22, scale: 0.96 }}
                 animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: prefersReducedMotion ? 0.12 : 0.22, ease: [0.22, 1, 0.36, 1] }}
-                className={`w-full ${isHandsetLayout ? 'flex h-full min-h-0 flex-col' : 'mx-auto my-auto max-w-5xl'}`}
+                className={`w-full ${isHandsetLayout ? 'flex h-full min-h-0 flex-col' : 'mx-auto my-auto max-w-[1480px] shrink-0'}`}
                 style={isHandsetLayout ? { maxHeight: '100%' } : undefined}
               >
                 {settings.hardPracticeEnabled && session.hardPracticeCardIds.includes(currentCard.id) && (
@@ -1142,23 +1224,6 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
                 </div>
               </motion.div>
             )}
-
-          {/* Desktop/Tablet rating bar remains inline */}
-          {!isHandsetLayout && (
-            <AnimatePresence initial={false}>
-              {!peeking && session.isFlipped && currentCard && (
-                <motion.div
-                  initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
-                  animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-                  exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
-                  transition={{ duration: prefersReducedMotion ? 0.12 : 0.15, ease: 'easeOut' }}
-                  className="mx-auto w-full max-w-5xl mt-5 sm:mt-6"
-                >
-                  <RatingBar onRate={handleRate} maxRating={maxSelectableRating} disabled={session.isSubmitting || !!session.error} layout="row" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          )}
 
           {!isHandsetLayout && session.lastRatedCard && !session.isSubmitting && !peeking && (
             <div className="mt-3 flex justify-center">
@@ -1203,6 +1268,15 @@ export default function StudyView({ deck, preloadedCards, allowResume = false, r
           )}
 
         </div>
+
+        {/* Desktop/Tablet: unabhängig von der Kartenhöhe immer erreichbar. */}
+        {!isHandsetLayout && !peeking && session.isFlipped && currentCard && (
+          <div className="relative z-10 w-full shrink-0 border-t border-ds-border bg-ds-bg px-3 py-3 sm:px-4" data-testid="study-desktop-rating-area">
+            <div className="mx-auto w-full max-w-[1480px]">
+              <RatingBar onRate={handleRate} maxRating={maxSelectableRating} disabled={session.isSubmitting || !!session.error} layout="row" />
+            </div>
+          </div>
+        )}
 
         {/* Handset rating area: permanently reserved lower area in answer state */}
         {showHandsetRatingArea && (

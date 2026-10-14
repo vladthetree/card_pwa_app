@@ -143,7 +143,6 @@ export default function HomeView({
     [decks, settings.showReviewDecks],
   )
   const selectableDecks = useMemo(() => flattenDeckTree(homeDecks), [homeDecks])
-
   const controller = useHomeViewController({
     t,
     settings: {
@@ -268,6 +267,7 @@ export default function HomeView({
       storageEstimateUnavailable={storageEstimateUnavailable}
       storageUsedBytes={storageUsedBytes}
       storageQuotaBytes={storageQuotaBytes}
+      companionLevel={gamificationProfile?.level ?? 1}
       onInstall={() => { void controller.handleInstall() }}
       onRequestNotificationPermission={() => { void controller.requestNotificationPermission() }}
       onShowSettings={controller.openSettings}

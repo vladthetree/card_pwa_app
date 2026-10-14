@@ -4,9 +4,8 @@
  * notifications toggle, per-channel enable/template editing, daily reminder time).
  * Used by: SettingsModal.
  * Important: notificationPermission/notificationTestStatus are owned by the parent
- * (not local state here) so they survive this accordion section collapsing; the
- * manual notification-test buttons live in SettingsDataSection, matching the
- * original layout (this section only handles the daily-reminder permission gate).
+ * (not local state here) so they survive category switches. Notification tests
+ * remain here as part of the same user-facing workflow.
  */
 import { Bell } from 'lucide-react'
 import {
@@ -23,7 +22,10 @@ import { useNotificationPermissionFlow } from './useNotificationPermissionFlow'
 interface Props {
   isOpen: boolean
   onToggle: () => void
+  presentation?: 'accordion' | 'panel'
+  notificationPermission: NotificationPermission | 'unsupported'
   setNotificationPermission: (permission: NotificationPermission | 'unsupported') => void
+  notificationTestStatus: string | null
   setNotificationTestStatus: (status: string | null) => void
 }
 
@@ -47,7 +49,10 @@ function mapWebPushStatusToText(status: WebPushSubscribeStatus, strings: Record<
 export function SettingsNotificationsSection({
   isOpen,
   onToggle,
+  presentation,
+  notificationPermission,
   setNotificationPermission,
+  notificationTestStatus,
   setNotificationTestStatus,
 }: Props) {
   const {
@@ -61,7 +66,42 @@ export function SettingsNotificationsSection({
   const t = STRINGS[settings.language]
   const isDE = settings.language === 'de'
   const isIosRuntime = typeof window !== 'undefined' && /iphone|ipad|ipod/i.test(window.navigator.userAgent)
-  const { ensureNotificationPermission } = useNotificationPermissionFlow({ setNotificationPermission, setNotificationTestStatus })
+  const { requestNotificationPermission, ensureNotificationPermission, postServiceWorkerMessage } =
+    useNotificationPermissionFlow({ setNotificationPermission, setNotificationTestStatus })
+
+  const notificationPermissionLabel = notificationPermission === 'granted'
+    ? t.notification_test_permission_granted_label
+    : notificationPermission === 'denied'
+      ? t.notification_test_permission_denied_label
+      : notificationPermission === 'default'
+        ? t.notification_test_permission_default_label
+        : t.notification_test_permission_unsupported_label
+
+  const triggerServerStatusTest = async (connected: boolean) => {
+    const hasPermission = await ensureNotificationPermission()
+    if (!hasPermission) return
+    const ok = await postServiceWorkerMessage({
+      type: 'SERVER_STATUS_NOTIFICATION',
+      title: connected ? t.notification_test_online_title : t.notification_test_offline_title,
+      body: connected ? t.notification_test_online_body : t.notification_test_offline_body,
+      connected,
+    })
+    if (ok) setNotificationTestStatus(connected ? t.notification_test_online_sent : t.notification_test_offline_sent)
+  }
+
+  const triggerPushTest = async () => {
+    const hasPermission = await ensureNotificationPermission()
+    if (!hasPermission) return
+    const ok = await postServiceWorkerMessage({
+      type: 'TEST_PUSH_NOTIFICATION',
+      language: settings.language,
+      title: t.notification_test_push_title,
+      body: t.notification_test_push_body,
+      tag: 'card-pwa-test-push',
+      url: '/?view=study',
+    })
+    if (ok) setNotificationTestStatus(t.notification_test_push_sent)
+  }
 
   const notificationChannels: Array<{
     key: NotificationChannelKey
@@ -180,6 +220,7 @@ export function SettingsNotificationsSection({
       icon={<Bell size={18} />}
       isOpen={isOpen}
       onToggle={onToggle}
+      presentation={presentation}
     >
       <div className="pt-5 space-y-4">
         <div className={`${UI_TOKENS.surface.panelSoft} p-4 space-y-3`}>
@@ -286,6 +327,41 @@ export function SettingsNotificationsSection({
                 </div>
               )
             })}
+          </div>
+        </details>
+
+        <details className="group/test rounded-ds-xl border border-[#18181b] bg-[#080808] p-3">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-left">
+            <span>
+              <span className="block text-xs font-semibold uppercase tracking-wide text-white/60">{t.notification_test_title}</span>
+              <span className="mt-1 block text-xs text-white/40">{t.notification_test_description}</span>
+            </span>
+            <span className="text-lg leading-none text-white/30 group-open/test:hidden">+</span>
+            <span className="hidden text-lg leading-none text-white/30 group-open/test:inline">−</span>
+          </summary>
+          <div className="mt-3 space-y-3 border-t border-[#18181b] pt-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs text-white/55">{t.notification_test_permission_label}</span>
+              <span className="rounded-full border border-[#27272a] px-2.5 py-1 text-[11px] text-white/75">{notificationPermissionLabel}</span>
+            </div>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <button type="button" onClick={() => { void requestNotificationPermission() }} className={`${UI_TOKENS.button.ghost} py-2`}>
+                {t.notification_test_request_permission}
+              </button>
+              <button type="button" onClick={() => setNotificationPermission(typeof Notification === 'undefined' ? 'unsupported' : Notification.permission)} className={`${UI_TOKENS.button.ghost} py-2`}>
+                {t.notification_test_refresh_permission}
+              </button>
+              <button type="button" onClick={() => { void triggerPushTest() }} className={`${UI_TOKENS.button.ghost} py-2`}>
+                {t.notification_test_push_button}
+              </button>
+              <button type="button" onClick={() => { void triggerServerStatusTest(false) }} className={`${UI_TOKENS.button.ghost} py-2`}>
+                {t.notification_test_offline_button}
+              </button>
+              <button type="button" onClick={() => { void triggerServerStatusTest(true) }} className={`${UI_TOKENS.button.ghost} py-2 sm:col-span-2`}>
+                {t.notification_test_online_button}
+              </button>
+            </div>
+            {notificationTestStatus && <p className="text-xs text-amber-300/90" role="status">{notificationTestStatus}</p>}
           </div>
         </details>
       </div>

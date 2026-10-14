@@ -69,6 +69,18 @@ const THEME_PAIRS = {
     { name: 'gap-bucket accent-hex/text (dark chip)', bg: '#2C2C29', fg: '#E8E8E3', min: AA_NORMAL },
     { name: 'input focus-bg/text', bg: '#262623', fg: '#E8E8E3', min: AA_NORMAL },
   ],
+  'editorial (Editorial Night)': [
+    { name: 'warm canvas/text', bg: '#100F0E', fg: '#F2EDE2', min: AA_NORMAL },
+    { name: 'inset floor/text', bg: '#151411', fg: '#F2EDE2', min: AA_NORMAL },
+    { name: 'card/text', bg: '#1D1B18', fg: '#F2EDE2', min: AA_NORMAL },
+    { name: 'panel/text', bg: '#292620', fg: '#F2EDE2', min: AA_NORMAL },
+    { name: 'canvas/text-secondary', bg: '#100F0E', fg: '#D0C8BA', min: AA_NORMAL },
+    { name: 'canvas/text-muted', bg: '#100F0E', fg: '#AAA193', min: AA_NORMAL },
+    { name: 'canvas/subtle', bg: '#100F0E', fg: '#8E867A', min: AA_LARGE },
+    { name: 'coral accent/canvas', bg: '#100F0E', fg: '#E08A70', min: AA_NORMAL },
+    { name: 'coral accent/dark ink', bg: '#E08A70', fg: '#151411', min: AA_NORMAL },
+    { name: 'input focus-bg/text', bg: '#25221E', fg: '#F2EDE2', min: AA_NORMAL },
+  ],
 }
 
 let failed = false

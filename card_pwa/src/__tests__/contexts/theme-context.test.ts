@@ -3,11 +3,11 @@
  * and the saved-theme-key normalization used to hydrate ThemeProvider from localStorage.
  */
 import { describe, expect, it } from 'vitest'
-import { THEMES, normalizeSavedThemeKey, themeScopeClass } from '../../contexts/ThemeContext'
+import { THEMES, getThemeToggleTarget, isDarkThemeKey, normalizeSavedThemeKey, themeScopeClass } from '../../contexts/ThemeContext'
 
 describe('ThemeContext', () => {
-  it('exposes Neo-Brutalismus, Newsprint, and Newsprint Dark as the embedded designs', () => {
-    expect(Object.keys(THEMES)).toEqual(['default', 'newsprint', 'newsprintDark'])
+  it('exposes all four embedded designs', () => {
+    expect(Object.keys(THEMES)).toEqual(['default', 'newsprint', 'newsprintDark', 'editorial'])
     expect(THEMES.default).toMatchObject({
       name: 'Neo-Brutalismus',
       primary: '#FF6B6B',
@@ -28,12 +28,20 @@ describe('ThemeContext', () => {
       floor: '#141413',
       text: '#E8E8E3',
     })
+    expect(THEMES.editorial).toMatchObject({
+      name: 'Editorial Night',
+      primary: '#E08A70',
+      background: '#100F0E',
+      card: '#1D1B18',
+      text: '#F2EDE2',
+    })
   })
 
   it('normalizeSavedThemeKey round-trips known keys', () => {
     expect(normalizeSavedThemeKey('default')).toBe('default')
     expect(normalizeSavedThemeKey('newsprint')).toBe('newsprint')
     expect(normalizeSavedThemeKey('newsprintDark')).toBe('newsprintDark')
+    expect(normalizeSavedThemeKey('editorial')).toBe('editorial')
   })
 
   it('normalizeSavedThemeKey falls back to default for unknown/missing values', () => {
@@ -52,5 +60,20 @@ describe('ThemeContext', () => {
     // Newsprint Dark teilt den Newsprint-Scope; dunkel wird er über die
     // Body-Modifier-Klasse `newsprint-dark`, nicht über einen eigenen Scope.
     expect(themeScopeClass('newsprintDark', 'learning-units')).toBe('learning-units-newsprint')
+    expect(themeScopeClass('editorial', 'learning-units')).toBe('learning-units-newsprint')
+  })
+
+  it('identifies both dark editorial themes', () => {
+    expect(isDarkThemeKey('default')).toBe(false)
+    expect(isDarkThemeKey('newsprint')).toBe(false)
+    expect(isDarkThemeKey('newsprintDark')).toBe(true)
+    expect(isDarkThemeKey('editorial')).toBe(true)
+  })
+
+  it('uses Editorial Night as the preferred dark toggle target', () => {
+    expect(getThemeToggleTarget('default')).toBe('editorial')
+    expect(getThemeToggleTarget('newsprint')).toBe('editorial')
+    expect(getThemeToggleTarget('newsprintDark')).toBe('newsprint')
+    expect(getThemeToggleTarget('editorial')).toBe('newsprint')
   })
 })

@@ -21,6 +21,7 @@ import type { ProfileRecord } from '../db'
 import { saveDraftLearnerExamPlan } from '../db/queries/learningUnits'
 import { normalizeExamDateIso, normalizeExamDateUpdatedAt } from '../utils/examDate'
 import { clamp, finiteOr } from '../utils/numeric'
+import { DEFAULT_HERO_CLASS, isHeroClassId, type HeroClassId } from '../data/heroClassCatalog'
 
 export type Language = 'de' | 'en'
 export type Algorithm = 'sm2' | 'fsrs'
@@ -39,6 +40,23 @@ export type NotificationChannels = Record<NotificationChannelKey, NotificationCh
 export const FONT_FAMILY_OPTIONS: Record<FontFamily, string> = {
   industrial: 'var(--app-font-family-mono)',
   modern: 'var(--app-font-family-sans)',
+}
+
+/** Begleiter ("Wächter") und alles Spielerische darum. Rein Darstellung — beeinflusst
+ *  weder FSRS noch Kartenauswahl noch XP. */
+export interface CompanionSettings {
+  /** Gewählte Heldenklasse (nur Optik/Metapher). */
+  classId: HeroClassId
+  /** Hauptschalter: aus = der Begleiter erscheint nirgends. */
+  enabled: boolean
+  showInHeader: boolean
+  showInQuests: boolean
+  /** Dungeon-Gang auf dem Abschlussbildschirm einer Session. */
+  dungeonRunEnabled: boolean
+  /** Endlos-Kampfszene im Dashboard (Quest-Panel). */
+  dashboardLoopEnabled: boolean
+  /** Idle-Bewegung; zusätzlich gilt immer prefers-reduced-motion. */
+  animationsEnabled: boolean
 }
 
 interface Settings {
@@ -86,6 +104,7 @@ interface Settings {
   hardPracticeMaxPasses: number
   /** How early intraday learning steps may be pulled into a session. */
   learnAheadMinutes: number
+  companion: CompanionSettings
 }
 
 interface SettingsContextType {
@@ -118,6 +137,7 @@ interface SettingsContextType {
   setHardPracticeGoodStreak: (count: number) => void
   setHardPracticeMaxPasses: (count: number) => void
   setLearnAheadMinutes: (minutes: number) => void
+  setCompanionSettings: (patch: Partial<CompanionSettings>) => void
   setSm2Params: (params: Partial<SM2Params>) => void
   setFsrsParams: (params: Partial<FSRSParams>) => void
   resetAlgorithmParams: () => void
@@ -186,6 +206,29 @@ function normalizeDailyReminderTime(value: unknown): string {
   return trimmed
 }
 
+export const DEFAULT_COMPANION_SETTINGS: CompanionSettings = {
+  classId: DEFAULT_HERO_CLASS,
+  enabled: true,
+  showInHeader: true,
+  showInQuests: true,
+  dungeonRunEnabled: true,
+  dashboardLoopEnabled: true,
+  animationsEnabled: true,
+}
+
+export function normalizeCompanionSettings(input: unknown): CompanionSettings {
+  const source = (input && typeof input === 'object') ? input as Partial<CompanionSettings> : {}
+  return {
+    classId: isHeroClassId(source.classId) ? source.classId : DEFAULT_HERO_CLASS,
+    enabled: source.enabled !== false,
+    showInHeader: source.showInHeader !== false,
+    showInQuests: source.showInQuests !== false,
+    dungeonRunEnabled: source.dungeonRunEnabled !== false,
+    dashboardLoopEnabled: source.dashboardLoopEnabled !== false,
+    animationsEnabled: source.animationsEnabled !== false,
+  }
+}
+
 const DEFAULT_SETTINGS: Settings = {
   language: 'de',
   algorithm: 'fsrs',
@@ -212,6 +255,7 @@ const DEFAULT_SETTINGS: Settings = {
   hardPracticeGoodStreak: 2,
   hardPracticeMaxPasses: 0,
   learnAheadMinutes: 20,
+  companion: DEFAULT_COMPANION_SETTINGS,
 }
 
 function normalizeInteger(value: unknown, fallback: number, min: number, max: number): number {
@@ -268,6 +312,7 @@ export function normalizeSettings(input: Partial<Settings> | undefined): Setting
     hardPracticeGoodStreak: normalizeInteger(input?.hardPracticeGoodStreak, 2, 1, 5),
     hardPracticeMaxPasses: normalizeInteger(input?.hardPracticeMaxPasses, 0, 0, 20),
     learnAheadMinutes: normalizeInteger(input?.learnAheadMinutes, 20, 0, 60),
+    companion: normalizeCompanionSettings(input?.companion),
   }
 }
 
@@ -460,6 +505,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     saveSettings({ ...settings, answerTimerEnabled })
   }
 
+  const setCompanionSettings = (patch: Partial<CompanionSettings>) => {
+    saveSettings({ ...settings, companion: normalizeCompanionSettings({ ...settings.companion, ...patch }) })
+  }
+
   const setNextDayStartsAt = (hour: number) => {
     const normalized = Number.isInteger(hour) && hour >= 0 && hour <= 23 ? hour : 4
     saveSettings({ ...settings, nextDayStartsAt: normalized })
@@ -606,6 +655,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setHardPracticeGoodStreak,
         setHardPracticeMaxPasses,
         setLearnAheadMinutes,
+        setCompanionSettings,
         setSm2Params,
         setFsrsParams,
         resetAlgorithmParams,
@@ -624,6 +674,12 @@ export function useSettings() {
     throw new Error('useSettings muss innerhalb von SettingsProvider verwendet werden')
   }
   return context
+}
+
+/** Begleiter-Einstellungen; ohne Provider (isolierte Tests/Stories) gelten die Defaults. */
+export function useCompanionSettings(): CompanionSettings {
+  const context = useContext(SettingsContext)
+  return context?.settings.companion ?? DEFAULT_COMPANION_SETTINGS
 }
 
 export { STRINGS } from '../i18n'

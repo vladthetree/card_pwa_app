@@ -26,7 +26,10 @@ SERVER_LOG_LEVEL = os.environ.get("SYNC_LOG_LEVEL", "INFO")
 SERVER_LOG_KEEP_DAYS = os.environ.get("SYNC_LOG_KEEP_DAYS", "30")
 DB_BUSY_TIMEOUT_MS = os.environ.get("SYNC_DB_BUSY_TIMEOUT_MS", "10000")
 MAX_BODY_BYTES = os.environ.get("SYNC_MAX_BODY_BYTES", "10000000")
-CORS_ALLOWED_ORIGINS = os.environ.get("SYNC_CORS_ALLOWED_ORIGINS", "*")
+# Deny cross-origin calls unless explicitly allow-listed. Same-origin use via
+# the Node proxy (scripts/prod-server.mjs) never consults this; it only
+# matters for the direct-LAN-endpoint fallback documented in .env.example.
+CORS_ALLOWED_ORIGINS = os.environ.get("SYNC_CORS_ALLOWED_ORIGINS", "")
 WEB_PUSH_VAPID_PRIVATE_KEY = os.environ.get("WEB_PUSH_VAPID_PRIVATE_KEY", "")
 WEB_PUSH_VAPID_SUBJECT = os.environ.get("WEB_PUSH_VAPID_SUBJECT", "mailto:admin@card-pwa.local")
 PUSH_DAILY_SCHEDULER_ENABLED = os.environ.get("PUSH_DAILY_SCHEDULER_ENABLED", "1")

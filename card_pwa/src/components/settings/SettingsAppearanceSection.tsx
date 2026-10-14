@@ -1,16 +1,15 @@
 /**
- * AI_CONTEXT: Settings domain subcomponent — Appearance accordion (language, font, theme, focus mode, desktop answer timer).
+ * AI_CONTEXT: Settings domain subcomponent — Appearance settings (language, font, and theme).
  */
 import { Palette } from 'lucide-react'
 import { useSettings, STRINGS, type FontFamily, FONT_FAMILY_OPTIONS } from '../../contexts/SettingsContext'
 import { useTheme, type ThemeKey } from '../../contexts/ThemeContext'
-import { UI_TOKENS } from '../../constants/ui'
 import { SettingsSection } from '../SettingsSection'
-import { SettingsSwitchRow } from '../SettingsSwitchRow'
 
 interface Props {
   isOpen: boolean
   onToggle: () => void
+  presentation?: 'accordion' | 'panel'
 }
 
 interface ThemeOption {
@@ -58,10 +57,22 @@ const THEME_OPTIONS: ThemeOption[] = [
       { color: '#2C2C29', label: 'Divider Dark' },
     ],
   },
+  {
+    key: 'editorial',
+    nameKey: 'theme_editorial_name',
+    helpKey: 'theme_editorial_help',
+    cardBg: 'bg-[#D8D1C4]',
+    swatches: [
+      { color: '#100F0E', label: 'Charcoal Paper' },
+      { color: '#F2EDE2', label: 'Warm Ink' },
+      { color: '#E08A70', label: 'Editorial Coral' },
+      { color: '#555047', label: 'Soft Rule' },
+    ],
+  },
 ]
 
-export function SettingsAppearanceSection({ isOpen, onToggle }: Props) {
-  const { settings, setLanguage, setFontFamily, setFocusMode, setAnswerTimerEnabled } = useSettings()
+export function SettingsAppearanceSection({ isOpen, onToggle, presentation }: Props) {
+  const { settings, setLanguage, setFontFamily } = useSettings()
   const { themeKey, setTheme } = useTheme()
   const t = STRINGS[settings.language]
 
@@ -83,10 +94,11 @@ export function SettingsAppearanceSection({ isOpen, onToggle }: Props) {
   return (
     <SettingsSection
       title={settings.language === 'de' ? 'Darstellung' : 'Appearance'}
-      description={settings.language === 'de' ? 'Sprache, Schrift und Fokus-Modus.' : 'Language, font, and focus mode.'}
+      description={settings.language === 'de' ? 'Sprache, Schrift und Design.' : 'Language, font, and design.'}
       icon={<Palette size={18} />}
       isOpen={isOpen}
       onToggle={onToggle}
+      presentation={presentation}
     >
       <div className="pt-5 space-y-4">
         <div>
@@ -154,13 +166,13 @@ export function SettingsAppearanceSection({ isOpen, onToggle }: Props) {
         </div>
 
         <div>
-          <label className="mb-2 block text-xs font-black uppercase tracking-wide text-black">
+          <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-white/50">
             {t.theme}
           </label>
-          <p className="mb-3 text-xs font-bold leading-relaxed text-black">
+          <p className="mb-3 text-xs leading-relaxed text-white/40">
             {t.theme_help}
           </p>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
             {THEME_OPTIONS.map(option => {
               const selected = option.key === themeKey
               const name = t[option.nameKey]
@@ -173,22 +185,22 @@ export function SettingsAppearanceSection({ isOpen, onToggle }: Props) {
                   onClick={() => setTheme(option.key)}
                   aria-pressed={selected}
                   data-testid={`theme-option-${option.key === 'default' ? 'neo' : option.key}`}
-                  className={`w-full border-4 border-black ${option.cardBg} p-4 text-left shadow-[7px_7px_0_0_#000] transition-all duration-100 active:translate-x-[7px] active:translate-y-[7px] active:shadow-none`}
+                  className={`w-full min-w-0 border-4 border-black ${option.cardBg} p-3 text-left shadow-[5px_5px_0_0_#000] transition-all duration-100 active:translate-x-[5px] active:translate-y-[5px] active:shadow-none sm:p-4 sm:shadow-[7px_7px_0_0_#000] sm:active:translate-x-[7px] sm:active:translate-y-[7px]`}
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-base font-black uppercase text-black">{name}</p>
-                      <p className="mt-1 text-xs font-bold text-black">{help}</p>
+                  <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                    <div className="min-w-0">
+                      <p className="break-words text-xs font-black uppercase leading-tight text-black sm:text-base">{name}</p>
+                      <p className="mt-1 text-[10px] font-bold leading-snug text-black sm:text-xs">{help}</p>
                     </div>
                     {selected && (
-                      <span className="border-2 border-black bg-[#FFD93D] px-2 py-1 text-[10px] font-black uppercase tracking-widest text-black">
+                      <span className="self-start border-2 border-black bg-[#FFD93D] px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide text-black sm:px-2 sm:py-1 sm:text-[10px] sm:tracking-widest">
                         {t.current_selection}
                       </span>
                     )}
                   </div>
-                  <div className="mt-4 grid grid-cols-4 border-2 border-black">
+                  <div className="mt-3 grid grid-cols-4 border-2 border-black sm:mt-4">
                     {option.swatches.map(swatch => (
-                      <span key={swatch.label} className="h-8" style={{ backgroundColor: swatch.color }} aria-label={swatch.label} />
+                      <span key={swatch.label} className="h-5 sm:h-8" style={{ backgroundColor: swatch.color }} aria-label={swatch.label} />
                     ))}
                   </div>
                 </button>
@@ -197,35 +209,6 @@ export function SettingsAppearanceSection({ isOpen, onToggle }: Props) {
           </div>
         </div>
 
-        <div>
-          <label className="block text-xs text-white/50 font-medium mb-3 uppercase tracking-wide">
-            {settings.language === 'de' ? 'Fokus-Modus' : 'Focus mode'}
-          </label>
-          <div className={`${UI_TOKENS.surface.panelSoft} space-y-4 p-4`}>
-            <SettingsSwitchRow
-              label={settings.language === 'de' ? 'Session-Header beim Lernen ausblenden' : 'Hide session header while studying'}
-              labelClassName="text-sm font-medium text-white"
-              description={settings.language === 'de'
-                ? 'Blendet Statistiken und Fortschritt in der Lernansicht aus. Der Platz bleibt reserviert, die Karte springt nicht; der Zurück-Button bleibt sichtbar.'
-                : 'Hides stats and progress in the study view. The space stays reserved so the card does not jump; the back button remains visible.'}
-              descriptionClassName="mt-1 text-xs leading-relaxed text-white/45"
-              checked={settings.focusMode}
-              onCheckedChange={setFocusMode}
-            />
-            <div className="border-t border-ds-border pt-4">
-              <SettingsSwitchRow
-                label={settings.language === 'de' ? 'Beantwortungszeit anzeigen' : 'Show answer timer'}
-                labelClassName="text-sm font-medium text-white"
-                description={settings.language === 'de'
-                  ? 'Zeigt den Sekundentimer in jeder Deck-Session an (mobil dezent im Header) und speichert pro Karte die erste Antwortzeit der Session.'
-                  : 'Shows the seconds timer in every deck session (a subtle header timer on mobile) and stores the first answer time per card and session.'}
-                descriptionClassName="mt-1 text-xs leading-relaxed text-white/45"
-                checked={settings.answerTimerEnabled}
-                onCheckedChange={setAnswerTimerEnabled}
-              />
-            </div>
-          </div>
-        </div>
       </div>
     </SettingsSection>
   )

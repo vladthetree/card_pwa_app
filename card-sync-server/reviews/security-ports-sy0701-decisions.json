@@ -1,0 +1,2045 @@
+{
+  "schemaVersion": "reviewed-security-ports-1",
+  "profile": "Vlad",
+  "canonicalUserId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+  "identityKey": [
+    "userId",
+    "cardId"
+  ],
+  "replaceRegistry": false,
+  "deck": {
+    "id": "sy0701-security-ports",
+    "name": "Security+ SY0-701 · Ports & Protokolle",
+    "parentDeckId": null
+  },
+  "concept": {
+    "exam": "SY0-701 V7",
+    "objective": "4.5",
+    "cards": 20,
+    "groups": [
+      "Basisdienste",
+      "Dateidienste",
+      "Dateitransfer",
+      "E-Mail",
+      "Fernzugriff",
+      "Identität",
+      "Logging",
+      "Monitoring",
+      "Namensauflösung",
+      "VPN",
+      "Web"
+    ],
+    "rule": "Standardports in konkreten Sicherheitsaufgaben; keine Behauptung, dass ein Dienst nur auf diesem Port laufen kann."
+  },
+  "decisions": [
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-ssh",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails 'TCP 22' (22/TCP). SSH transport normally runs over TCP with server port 22. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc4253.html",
+          "title": "RFC 4253, SSH Transport Layer",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Section 4.1, Use over TCP/IP",
+          "supports": "SSH transport normally runs over TCP with server port 22."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 22/TCP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 22/TCP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "correct",
+          "reason": "TCP 22 ist der SSH-Dienstport."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "TCP 23 gehört zu Telnet; dessen Sitzung ist nicht durch SSH geschützt."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "TCP 3389 ist der Standardport von RDP, nicht der Unix-Shell."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "UDP 161 ist SNMP-Abfrageverkehr, keine interaktive Shell."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-ssh-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Ein Administrator braucht eine verschlüsselte Shell zu einem Linux-Server. Welchen Standard-Zielport gibt die Firewall für SSH frei?\nA: TCP 22\nB: TCP 23\nC: TCP 3389\nD: UDP 161",
+        "back": ">> CORRECT: A |\n\nSSH nutzt standardmäßig TCP 22 und schützt die Remote-Shell kryptografisch. Die Regel gehört nur für die benötigten Quellnetze geöffnet.\n\nNicht:\nB | TCP 23 gehört zu Telnet; dessen Sitzung ist nicht durch SSH geschützt.\nC | TCP 3389 ist der Standardport von RDP, nicht der Unix-Shell.\nD | UDP 161 ist SNMP-Abfrageverkehr, keine interaktive Shell.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "Fernzugriff",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "22",
+          "protocol": "TCP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-telnet",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails 'Telnet; Alternative SSH auf TCP 22' (23/TCP). Telnet is a remote terminal protocol registered on TCP 23; SSH is separately registered on TCP 22. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc854.html",
+          "title": "RFC 854, Telnet Protocol",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Introduction and IANA telnet/TCP 23 service registration",
+          "supports": "Telnet is a remote terminal protocol registered on TCP 23; SSH is separately registered on TCP 22."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 23/TCP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 23/TCP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "RDP ist für Remote Desktop und standardmäßig Port 3389."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "Telnet erklärt Port 23; SSH ist der sichere Shell-Ersatz auf Port 22."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "SNMP verwendet typischerweise UDP 161/162 und dient der Netzverwaltung."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "FTP hat seinen Steuerkanal auf TCP 21, nicht 23."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-telnet-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Ein Scan zeigt TCP 23 auf einem Netzwerkgerät. Welcher Dienst ist damit typischerweise gemeint, und was ist die sichere Shell-Alternative?\nA: RDP; Alternative VNC\nB: Telnet; Alternative SSH auf TCP 22\nC: SNMP; Alternative NTP\nD: FTP; Alternative HTTPS",
+        "back": ">> CORRECT: B |\n\nTCP 23 ist der Standardport von Telnet. Für interaktive Administration sollte SSH auf TCP 22 verwendet werden, weil Telnet keinen vergleichbaren Sitzungsschutz bietet.\n\nNicht:\nA | RDP ist für Remote Desktop und standardmäßig Port 3389.\nC | SNMP verwendet typischerweise UDP 161/162 und dient der Netzverwaltung.\nD | FTP hat seinen Steuerkanal auf TCP 21, nicht 23.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "Fernzugriff",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "23",
+          "protocol": "TCP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-https",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails 'TCP 443' (443/TCP). The default port of an https URI without an explicit port is TCP 443; TLS protects HTTP communication. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc9110.html",
+          "title": "RFC 9110, HTTP Semantics",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Section 4.2.2, https URI Scheme",
+          "supports": "The default port of an https URI without an explicit port is TCP 443; TLS protects HTTP communication."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 443/TCP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 443/TCP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "TCP 80 ist der HTTP-Standardport ohne durch das Schema gefordertes TLS."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "TCP 443 ist der Standardport des https-URI-Schemas."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "UDP 53 ist DNS, kein Webtransport."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "TCP 8080 kann konfiguriert werden, ist aber nicht der HTTPS-Standardport."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-https-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Eine Webanwendung soll über den normalen HTTPS-Standardport erreichbar sein. Welche eingehende Verbindung passt?\nA: TCP 80\nB: TCP 443\nC: UDP 53\nD: TCP 8080",
+        "back": ">> CORRECT: B |\n\nHTTPS verwendet standardmäßig TCP 443 für HTTP über TLS. Port 80 ist der Standard für unverschlüsseltes HTTP; eine Portnummer allein beweist aber keine korrekte TLS-Konfiguration.\n\nNicht:\nA | TCP 80 ist der HTTP-Standardport ohne durch das Schema gefordertes TLS.\nC | UDP 53 ist DNS, kein Webtransport.\nD | TCP 8080 kann konfiguriert werden, ist aber nicht der HTTPS-Standardport.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "Web",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "443",
+          "protocol": "TCP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-dns",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails 'TCP und UDP 53' (53/TCP/UDP). DNS server access uses TCP port 53 and UDP port 53; UDP is common for queries while reliable transfer uses TCP. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc1035.html",
+          "title": "RFC 1035, Domain Names",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Section 4.2, Transport",
+          "supports": "DNS server access uses TCP port 53 and UDP port 53; UDP is common for queries while reliable transfer uses TCP."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 53/TCP/UDP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 53/TCP/UDP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "Nur UDP 53 kann TCP-basierte DNS-Vorgänge blockieren."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "Nur TCP 53 schließt die üblichen UDP-Abfragen aus."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "Beide Transporte sind für klassisches DNS auf Port 53 vorgesehen."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "TCP 853 ist DNS over TLS; UDP 443 ist kein klassischer DNS-Standardport."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-dns-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Eine Firewall soll klassische DNS-Abfragen ermöglichen, ohne größere Antworten oder Zonentransfers allein wegen des Transports auszuschließen. Welche Zielports sind richtig?\nA: Nur UDP 53\nB: Nur TCP 53\nC: TCP und UDP 53\nD: TCP 853 und UDP 443",
+        "back": ">> CORRECT: C |\n\nKlassisches DNS kann UDP und TCP auf Port 53 nutzen. UDP ist häufig für Abfragen; TCP wird unter anderem für Zonentransfers und weitere Fälle benötigt.\n\nNicht:\nA | Nur UDP 53 kann TCP-basierte DNS-Vorgänge blockieren.\nB | Nur TCP 53 schließt die üblichen UDP-Abfragen aus.\nD | TCP 853 ist DNS over TLS; UDP 443 ist kein klassischer DNS-Standardport.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "Namensauflösung",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "53",
+          "protocol": "TCP/UDP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-dhcp",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails 'Server 67, Client 68' (67/68/UDP). DHCPv4 sends client-to-server messages to UDP 67 and server-to-client messages to UDP 68. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc2131.html",
+          "title": "RFC 2131, DHCP",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Section 4.1, Constructing and sending DHCP messages",
+          "supports": "DHCPv4 sends client-to-server messages to UDP 67 and server-to-client messages to UDP 68."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 67/68/UDP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 67/68/UDP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "53/53 ist DNS und trennt DHCP-Rollen nicht."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "UDP 67 ist der DHCPv4-Serverport, UDP 68 der Clientport."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "68/67 vertauscht die Rollen von Client und Server."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "UDP 123 gehört zur Zeitsynchronisation mit NTP."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-dhcp-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Ein DHCPv4-Client ohne Adresse sendet eine Anfrage an den DHCP-Server. Welches UDP-Portpaar beschreibt Server und Client?\nA: Server 53, Client 53\nB: Server 67, Client 68\nC: Server 68, Client 67\nD: Server 123, Client 123",
+        "back": ">> CORRECT: B |\n\nDHCPv4 verwendet UDP 67 auf der Serverseite und UDP 68 auf der Clientseite. Die Richtung ist wichtig: Serverantworten gehen zum Client-Port 68.\n\nNicht:\nA | 53/53 ist DNS und trennt DHCP-Rollen nicht.\nC | 68/67 vertauscht die Rollen von Client und Server.\nD | UDP 123 gehört zur Zeitsynchronisation mit NTP.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "Basisdienste",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "67/68",
+          "protocol": "UDP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-smtp-relay",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails 'TCP 25' (25/TCP). Mail relay continues on SMTP port 25, while normal message submission is separated onto port 587. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc6409.html",
+          "title": "RFC 6409, Message Submission for Mail",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Abstract and Section 3.1, Submission Identification",
+          "supports": "Mail relay continues on SMTP port 25, while normal message submission is separated onto port 587."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 25/TCP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 25/TCP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "correct",
+          "reason": "TCP 25 ist der SMTP-Relay-Port zwischen MTAs."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "TCP 587 dient normalerweise der Mail-Submission durch Clients."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "TCP 993 ist IMAP über TLS zum Lesen von Postfächern."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "UDP 53 ist DNS; MX-Abfragen ersetzen keinen SMTP-Transport."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-smtp-relay-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Zwei Mailserver sollen E-Mails per SMTP untereinander weiterleiten. Welcher Standard-Zielport gehört zum Server-zu-Server-Relay?\nA: TCP 25\nB: TCP 587\nC: TCP 993\nD: UDP 53",
+        "back": ">> CORRECT: A |\n\nSMTP-Relay zwischen Mailservern nutzt standardmäßig TCP 25. Die Einreichung durch einen Mailclient ist davon getrennt und läuft normalerweise über TCP 587.\n\nNicht:\nB | TCP 587 dient normalerweise der Mail-Submission durch Clients.\nC | TCP 993 ist IMAP über TLS zum Lesen von Postfächern.\nD | UDP 53 ist DNS; MX-Abfragen ersetzen keinen SMTP-Transport.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "E-Mail",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "25",
+          "protocol": "TCP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-smtp-submission",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails 'TCP 587' (587/TCP). Port 587 is reserved for email message submission, separate from relay on port 25. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc6409.html",
+          "title": "RFC 6409, Message Submission for Mail",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Section 3.1, Submission Identification",
+          "supports": "Port 587 is reserved for email message submission, separate from relay on port 25."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 587/TCP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 587/TCP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "TCP 25 ist typischerweise der Relay-Port zwischen Mailservern."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "TCP 110 ist POP3 ohne implizites TLS, kein Versand."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "TCP 587 ist für die Einreichung durch einen Mailclient reserviert."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "TCP 995 ist POP3 über implizites TLS zum Abrufen von Mail."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-smtp-submission-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Ein Mailclient soll eine Nachricht bei seinem Submission-Server einreichen; es geht nicht um Relay zwischen Mailservern. Welcher Standardport passt?\nA: TCP 25\nB: TCP 110\nC: TCP 587\nD: TCP 995",
+        "back": ">> CORRECT: C |\n\nTCP 587 ist der Standardport für Message Submission. Das ist von SMTP-Relay auf TCP 25 zu unterscheiden; TLS und Authentisierung müssen passend konfiguriert sein.\n\nNicht:\nA | TCP 25 ist typischerweise der Relay-Port zwischen Mailservern.\nB | TCP 110 ist POP3 ohne implizites TLS, kein Versand.\nD | TCP 995 ist POP3 über implizites TLS zum Abrufen von Mail.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "E-Mail",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "587",
+          "protocol": "TCP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-imaps",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails 'TCP 993' (993/TCP). IMAP over implicit TLS uses TCP 993 and begins TLS immediately after connection establishment. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc8314.html",
+          "title": "RFC 8314, TLS for Email Submission and Access",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Sections 3.3 and 7.2, IMAPS",
+          "supports": "IMAP over implicit TLS uses TCP 993 and begins TLS immediately after connection establishment."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 993/TCP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 993/TCP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "TCP 143 ist IMAP; TLS kann dort nach STARTTLS beginnen, nicht sofort beim Verbindungsaufbau."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "TCP 993 ist IMAPS mit implizitem TLS."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "TCP 995 ist POP3S und bietet nicht die gefragte IMAP-Ordnersemantik."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "TCP 587 ist SMTP-Submission für den Versand."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-imaps-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Ein Client soll Postfachordner per IMAP abrufen und unmittelbar beim Verbindungsaufbau TLS starten. Welcher Standardport ist gemeint?\nA: TCP 143\nB: TCP 993\nC: TCP 995\nD: TCP 587",
+        "back": ">> CORRECT: B |\n\nIMAP mit implizitem TLS beginnt auf TCP 993 sofort mit dem TLS-Handshake. TCP 143 kann mit STARTTLS ebenfalls abgesichert werden, ist aber nicht der hier gefragte implizite-TLS-Port.\n\nNicht:\nA | TCP 143 ist IMAP; TLS kann dort nach STARTTLS beginnen, nicht sofort beim Verbindungsaufbau.\nC | TCP 995 ist POP3S und bietet nicht die gefragte IMAP-Ordnersemantik.\nD | TCP 587 ist SMTP-Submission für den Versand.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "E-Mail",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "993",
+          "protocol": "TCP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-pop3s",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails 'TCP 995' (995/TCP). POP3 over implicit TLS uses TCP 995 with TLS negotiated before POP commands. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc8314.html",
+          "title": "RFC 8314, TLS for Email Submission and Access",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Sections 3.4 and 7.1, POP3S",
+          "supports": "POP3 over implicit TLS uses TCP 995 with TLS negotiated before POP commands."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 995/TCP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 995/TCP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "TCP 110 ist klassisches POP3 ohne sofortigen TLS-Handshake."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "TCP 143 ist IMAP und nicht POP3."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "TCP 993 ist IMAP über implizites TLS."
+        },
+        "D": {
+          "verdict": "correct",
+          "reason": "TCP 995 ist POP3 über implizites TLS."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-pop3s-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Ein älterer Mailclient nutzt POP3 zum Abrufen und verlangt implizites TLS bereits ab Verbindungsbeginn. Welcher Standardport passt?\nA: TCP 110\nB: TCP 143\nC: TCP 993\nD: TCP 995",
+        "back": ">> CORRECT: D |\n\nPOP3 über implizites TLS verwendet TCP 995. TCP 110 ist der klassische POP3-Port; dort ist eine abgesicherte Variante per STLS möglich, aber nicht implizites TLS.\n\nNicht:\nA | TCP 110 ist klassisches POP3 ohne sofortigen TLS-Handshake.\nB | TCP 143 ist IMAP und nicht POP3.\nC | TCP 993 ist IMAP über implizites TLS.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "E-Mail",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "995",
+          "protocol": "TCP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-smb",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails 'TCP 445' (445/TCP). An SMB server using Direct TCP should listen on TCP port 445; TCP 139 is the older NetBIOS session path. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb/f906c680-330c-43ae-9a71-f854e24aeee6",
+          "title": "Microsoft MS-SMB Transport",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Section 2.1, Direct TCP transport",
+          "supports": "An SMB server using Direct TCP should listen on TCP port 445; TCP 139 is the older NetBIOS session path."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 445/TCP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 445/TCP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "TCP 139 ist der NetBIOS-Session-Dienst, nicht direktes SMB über TCP."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "TCP 445 ist der registrierte Serverport für direktes SMB."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "TCP 3389 gehört zum Remote Desktop Protocol."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "UDP 137 dient NetBIOS-Namensauflösung, nicht der SMB-Dateisitzung."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-smb-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Ein Windows-Dateiserver bietet SMB direkt über TCP an, ohne NetBIOS-Sitzung. Welcher Standardport wird am Server benötigt?\nA: TCP 139\nB: TCP 445\nC: TCP 3389\nD: UDP 137",
+        "back": ">> CORRECT: B |\n\nDirekt gehostetes SMB verwendet TCP 445. TCP 139 ist der ältere NetBIOS-Session-Pfad; SMB sollte nicht unnötig ins Internet exponiert werden.\n\nNicht:\nA | TCP 139 ist der NetBIOS-Session-Dienst, nicht direktes SMB über TCP.\nC | TCP 3389 gehört zum Remote Desktop Protocol.\nD | UDP 137 dient NetBIOS-Namensauflösung, nicht der SMB-Dateisitzung.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "Dateidienste",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "445",
+          "protocol": "TCP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-rdp",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails '3389' (3389/TCP/UDP). Standard RDP traffic uses port 3389 over TCP and UDP. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://learn.microsoft.com/en-us/troubleshoot/windows-server/remote/ports-used-by-rds",
+          "title": "Microsoft, Ports used by RDS",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Remote Desktop Session Host port table",
+          "supports": "Standard RDP traffic uses port 3389 over TCP and UDP."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 3389/TCP/UDP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 3389/TCP/UDP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "22 ist SSH und keine Windows-Remote-Desktop-Standardnummer."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "443 ist typischerweise HTTPS oder ein gesondert konfigurierter Gateway-Pfad."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "3389 ist der Standardport für RDP; je nach Transport TCP und UDP."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "5900 ist typischerweise VNC, nicht der RDP-Standard."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-rdp-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Eine interne Firewall soll eine Windows-Remote-Desktop-Sitzung zum Standard-RDP-Port zulassen. Welche Portnummer ist richtig?\nA: 22\nB: 443\nC: 3389\nD: 5900",
+        "back": ">> CORRECT: C |\n\nRDP lauscht standardmäßig auf Port 3389; moderne RDP-Transporte können TCP und UDP verwenden. Externer Zugriff sollte über geeignete Zugangskontrollen und nicht pauschal erfolgen.\n\nNicht:\nA | 22 ist SSH und keine Windows-Remote-Desktop-Standardnummer.\nB | 443 ist typischerweise HTTPS oder ein gesondert konfigurierter Gateway-Pfad.\nD | 5900 ist typischerweise VNC, nicht der RDP-Standard.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "Fernzugriff",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "3389",
+          "protocol": "TCP/UDP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-ldaps",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails 'TCP 636' (636/TCP). AD DS supports protected LDAPS on TCP 636 and STARTTLS on regular LDAP TCP 389. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/8e73932f-70cf-46d6-88b1-8d9f86235e81",
+          "title": "Microsoft MS-ADTS, Using SSL/TLS",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Section 2.1, SSL/TLS connection modes",
+          "supports": "AD DS supports protected LDAPS on TCP 636 and STARTTLS on regular LDAP TCP 389."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 636/TCP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 636/TCP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "TCP 389 ist normaler LDAP-Port; STARTTLS kann ihn schützen, aber TLS startet nicht sofort."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "TCP 636 ist der AD-LDAPS-Port mit TLS vor LDAP-Nachrichten."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "TCP 88 gehört zu Kerberos, nicht LDAP-Abfragen."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "UDP 1812 ist RADIUS-Authentisierung."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-ldaps-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Ein Active-Directory-Client soll LDAP mit TLS ab dem ersten Byte der Verbindung nutzen, nicht erst STARTTLS nach Verbindungsaufbau. Welcher Port passt?\nA: TCP 389\nB: TCP 636\nC: TCP 88\nD: UDP 1812",
+        "back": ">> CORRECT: B |\n\nLDAPS mit TLS ab Verbindungsbeginn nutzt in Active Directory TCP 636. LDAP auf TCP 389 kann per STARTTLS ebenfalls abgesichert werden; '389' bedeutet daher nicht automatisch unverschlüsselt.\n\nNicht:\nA | TCP 389 ist normaler LDAP-Port; STARTTLS kann ihn schützen, aber TLS startet nicht sofort.\nC | TCP 88 gehört zu Kerberos, nicht LDAP-Abfragen.\nD | UDP 1812 ist RADIUS-Authentisierung.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "Identität",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "636",
+          "protocol": "TCP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-kerberos",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails '88' (88/TCP/UDP). Kerberos KDC discovery uses port 88 for both UDP and TCP SRV records unless configured otherwise. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc4120.html",
+          "title": "RFC 4120, Kerberos V5",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Section 7.2.3.2, KDC DNS SRV records",
+          "supports": "Kerberos KDC discovery uses port 88 for both UDP and TCP SRV records unless configured otherwise."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 88/TCP/UDP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 88/TCP/UDP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "53 gehört zur DNS-Namensauflösung, nicht zum Ticketdienst."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "88 ist der von IANA zugewiesene Kerberos-KDC-Port."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "389 ist LDAP und ersetzt keine Kerberos-Ticketausgabe."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "445 ist SMB-Dateiverkehr."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-kerberos-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Ein Kerberos-Client muss seinen KDC für Tickets erreichen. Welche Standardportnummer muss der Administrator berücksichtigen?\nA: 53\nB: 88\nC: 389\nD: 445",
+        "back": ">> CORRECT: B |\n\nKerberos verwendet standardmäßig Port 88 für den KDC; die Spezifikation kennt UDP und TCP. Die Firewall-Regel muss zum tatsächlich genutzten Transport passen.\n\nNicht:\nA | 53 gehört zur DNS-Namensauflösung, nicht zum Ticketdienst.\nC | 389 ist LDAP und ersetzt keine Kerberos-Ticketausgabe.\nD | 445 ist SMB-Dateiverkehr.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "Identität",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "88",
+          "protocol": "TCP/UDP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-radius",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails '1812 und 1813' (1812/1813/UDP). RADIUS authentication uses UDP 1812 and RADIUS accounting uses UDP 1813 as specified in RFC 2866. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc2865.html",
+          "title": "RFC 2865, RADIUS Authentication",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Section 3, Packet Format; RFC 2866 Section 3 for Accounting",
+          "supports": "RADIUS authentication uses UDP 1812 and RADIUS accounting uses UDP 1813 as specified in RFC 2866."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 1812/1813/UDP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 1812/1813/UDP."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc2866.html",
+          "title": "RFC 2866, RADIUS Accounting",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Section 3, Packet Format",
+          "supports": "RADIUS Accounting uses the officially assigned UDP destination port 1813."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "49 ist TACACS+ über TCP; 50 bildet kein RADIUS-Accounting-Paar."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "161/162 sind SNMP-Abfrage und -Benachrichtigung."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "1812/1813 trennen RADIUS-Authentisierung und Accounting."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "389/636 sind LDAP-Varianten, kein RADIUS-Paar."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-radius-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Ein Netzwerkgerät nutzt RADIUS für Anmeldung und separates Accounting. Welche üblichen UDP-Zielports gehören zu diesen beiden Funktionen?\nA: 49 und 50\nB: 161 und 162\nC: 1812 und 1813\nD: 389 und 636",
+        "back": ">> CORRECT: C |\n\nRADIUS-Authentisierung verwendet UDP 1812; Accounting verwendet UDP 1813. Die älteren Ports 1645/1646 existieren in Altinstallationen, sind hier aber nicht die offiziell zugewiesene Paarung.\n\nNicht:\nA | 49 ist TACACS+ über TCP; 50 bildet kein RADIUS-Accounting-Paar.\nB | 161/162 sind SNMP-Abfrage und -Benachrichtigung.\nD | 389/636 sind LDAP-Varianten, kein RADIUS-Paar.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "Identität",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "1812/1813",
+          "protocol": "UDP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-tacacs",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails 'TCP 49' (49/TCP). TACACS+ uses TCP transport and IANA-allocated TCP server port 49. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc8907.html",
+          "title": "RFC 8907, TACACS+",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Section 3.4, Connection",
+          "supports": "TACACS+ uses TCP transport and IANA-allocated TCP server port 49."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 49/TCP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 49/TCP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "49 ist richtig, aber TACACS+ nutzt TCP und nicht UDP."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "TCP 49 ist der zugewiesene TACACS+-Servertransport."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "UDP 1812 ist RADIUS und kein TACACS+."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "TCP 636 ist LDAPS für Verzeichniszugriff."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-tacacs-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Ein Router soll für die Geräteadministration einen TACACS+-Server kontaktieren. Welcher Standardtransport passt?\nA: UDP 49\nB: TCP 49\nC: UDP 1812\nD: TCP 636",
+        "back": ">> CORRECT: B |\n\nTACACS+ verwendet TCP 49 für die Verbindung zum Server. UDP 1812 gehört hingegen zu RADIUS-Authentisierung.\n\nNicht:\nA | 49 ist richtig, aber TACACS+ nutzt TCP und nicht UDP.\nC | UDP 1812 ist RADIUS und kein TACACS+.\nD | TCP 636 ist LDAPS für Verzeichniszugriff.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "Identität",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "49",
+          "protocol": "TCP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-snmp",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails '161 und 162' (161/162/UDP). SNMP command responders listen on UDP 161 and notification receivers on UDP 162 in the preferred UDP mapping. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc3417.html",
+          "title": "RFC 3417, SNMP Transport Mappings",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Section 3.2, Well-known Values",
+          "supports": "SNMP command responders listen on UDP 161 and notification receivers on UDP 162 in the preferred UDP mapping."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 161/162/UDP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 161/162/UDP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "correct",
+          "reason": "UDP 161 ist Abfrageziel; UDP 162 ist Trap-Empfangsziel."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "162/161 vertauscht Command Responder und Notification Receiver."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "514/6514 betrifft Syslog-Transporte."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "67/68 sind die DHCPv4-Rollenports."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-snmp-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Ein Monitoring-System fragt regelmäßig SNMP-Werte ab; ein Gerät schickt zusätzlich ungefragte Traps. Welche UDP-Zielports entsprechen Anfrage und Trap-Empfang?\nA: 161 und 162\nB: 162 und 161\nC: 514 und 6514\nD: 67 und 68",
+        "back": ">> CORRECT: A |\n\nSNMP-Command-Responder lauschen gewöhnlich auf UDP 161. Notification-Receiver für Traps lauschen gewöhnlich auf UDP 162; die Gegenrichtung darf nicht vertauscht werden.\n\nNicht:\nB | 162/161 vertauscht Command Responder und Notification Receiver.\nC | 514/6514 betrifft Syslog-Transporte.\nD | 67/68 sind die DHCPv4-Rollenports.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "Monitoring",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "161/162",
+          "protocol": "UDP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-ntp",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails 'UDP 123' (123/UDP). NTPv4 specifies service port 123 and commonly operates using UDP. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc5905.html",
+          "title": "RFC 5905, NTPv4",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Section 7.2, Global Parameters; Section 16, IANA Considerations",
+          "supports": "NTPv4 specifies service port 123 and commonly operates using UDP."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 123/UDP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 123/UDP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "UDP 53 gehört zu DNS-Abfragen."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "UDP 123 ist der typische NTP-Dienstport."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "TCP 443 ist der HTTPS-Standardport."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "UDP 500 gehört zur IKE-Aushandlung von IPsec."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-ntp-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Die Uhrzeit eines Servers wird per klassischem NTPv4 mit einem Zeitserver synchronisiert. Welcher Standard-Zielport ist zu erwarten?\nA: UDP 53\nB: UDP 123\nC: TCP 443\nD: UDP 500",
+        "back": ">> CORRECT: B |\n\nKlassisches NTPv4 verwendet üblicherweise UDP 123. Die richtige Zeit unterstützt auch die Auswertung und Korrelation von Sicherheitslogs.\n\nNicht:\nA | UDP 53 gehört zu DNS-Abfragen.\nC | TCP 443 ist der HTTPS-Standardport.\nD | UDP 500 gehört zur IKE-Aushandlung von IPsec.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "Basisdienste",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "123",
+          "protocol": "UDP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-syslog-tls",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails 'TCP 6514' (6514/TCP). Syslog over TLS uses TCP port 6514 by default. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc5425.html",
+          "title": "RFC 5425, TLS Transport Mapping for Syslog",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Section 4.1, Port Assignment",
+          "supports": "Syslog over TLS uses TCP port 6514 by default."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 6514/TCP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 6514/TCP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "UDP 514 ist der klassische Syslog-Datagrammtransport ohne TLS."
+        },
+        "B": {
+          "verdict": "incorrect",
+          "reason": "TCP 514 ist nicht der im TLS-Syslog-RFC zugewiesene Standardport."
+        },
+        "C": {
+          "verdict": "correct",
+          "reason": "TCP 6514 ist für Syslog über TLS vorgesehen."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "UDP 162 ist SNMP-Trap-Empfang."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-syslog-tls-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Ein Log-Collector soll Syslog direkt über TLS empfangen. Welcher Standard-Zielport ist dafür vorgesehen?\nA: UDP 514\nB: TCP 514\nC: TCP 6514\nD: UDP 162",
+        "back": ">> CORRECT: C |\n\nSyslog over TLS hat TCP 6514 als Standardport. UDP 514 ist klassisches Syslog ohne die hier geforderte TLS-Transportbindung.\n\nNicht:\nA | UDP 514 ist der klassische Syslog-Datagrammtransport ohne TLS.\nB | TCP 514 ist nicht der im TLS-Syslog-RFC zugewiesene Standardport.\nD | UDP 162 ist SNMP-Trap-Empfang.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "Logging",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "6514",
+          "protocol": "TCP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-ipsec-nat-t",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails 'UDP 4500' (4500/UDP). UDP 4500 carries NAT-traversed ESP and IKE traffic after NAT detection. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://www.rfc-editor.org/rfc/rfc3948.html",
+          "title": "RFC 3948, UDP Encapsulation of IPsec ESP Packets",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Sections 2.1 and 2.2, UDP 4500 encapsulation",
+          "supports": "UDP 4500 carries NAT-traversed ESP and IKE traffic after NAT detection."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 4500/UDP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 4500/UDP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "UDP 500 ist der anfängliche IKE-Port, nicht der hier gefragte NAT-T-Kapselungsport."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "UDP 4500 trägt IKE und UDP-gekapseltes ESP nach NAT-Erkennung."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "TCP 443 ist HTTPS und kein IPsec-NAT-T-Standard."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "UDP 1701 gehört zu L2TP, nicht zur ESP-Kapselung."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-ipsec-nat-t-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Ein IPsec-Tunnel muss ESP durch einen NAT-Router transportieren. Welcher UDP-Port wird nach der NAT-Erkennung für gekapseltes ESP verwendet?\nA: UDP 500\nB: UDP 4500\nC: TCP 443\nD: UDP 1701",
+        "back": ">> CORRECT: B |\n\nNAT-Traversal kapselt ESP in UDP 4500. IKE beginnt häufig auf UDP 500 und wechselt bei erkannter NAT-Situation auf 4500; ESP ohne UDP-Kapselung ist kein TCP/UDP-Port.\n\nNicht:\nA | UDP 500 ist der anfängliche IKE-Port, nicht der hier gefragte NAT-T-Kapselungsport.\nC | TCP 443 ist HTTPS und kein IPsec-NAT-T-Standard.\nD | UDP 1701 gehört zu L2TP, nicht zur ESP-Kapselung.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "VPN",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "4500",
+          "protocol": "UDP"
+        }
+      },
+      "createState": {}
+    },
+    {
+      "userId": "fbe23414-9399-4a3b-9d89-19867a3b71da",
+      "cardId": "sy0701-ports-sftp",
+      "operation": "create",
+      "verdict": "approved",
+      "cardType": "mc",
+      "requirements": [
+        "req:sy0701:v7:4.5:secure-protocols:ports-and-transport"
+      ],
+      "evidence": "The scenario specifically entails 'TCP 22' (22/TCP). Microsoft documents SFTP as running over SSH; the IANA SSH service registration gives TCP 22 as the standard server port. The four choices and their distinct distractor rationales were checked together.",
+      "sources": [
+        {
+          "url": "https://lecbyo.files.cmp.optimizely.com/download/cf25ec24b8a511ef9ecbb69c0f9687be",
+          "title": "CompTIA Security+ SY0-701 Exam Objectives V7",
+          "roles": [
+            "scope"
+          ],
+          "locator": "Objective 4.5, Firewall ports/protocols and implementation of secure protocols",
+          "supports": "Official SY0-701 objective 4.5 requires selecting secure protocols, ports, and transport methods in operational scenarios."
+        },
+        {
+          "url": "https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh-overview",
+          "title": "Microsoft OpenSSH for Windows overview",
+          "roles": [
+            "fact"
+          ],
+          "locator": "OpenSSH commands: sftp runs over SSH",
+          "supports": "Microsoft documents SFTP as running over SSH; the IANA SSH service registration gives TCP 22 as the standard server port."
+        },
+        {
+          "url": "https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml",
+          "title": "IANA Service Name and Transport Protocol Port Number Registry",
+          "roles": [
+            "fact"
+          ],
+          "locator": "Service registration row(s) for 22/TCP",
+          "supports": "IANA maintains the assigned service and transport port records relevant to 22/TCP."
+        }
+      ],
+      "reviewer": "Codex primary-source Security+ ports review",
+      "reviewedAt": "2026-09-27T17:49:51+00:00",
+      "reviewBasis": [
+        "Official SY0-701 objective 4.5 checked for scope",
+        "Exact fact-source section and IANA registry checked",
+        "Question, four options, key, explanation, and individual distractors reviewed as one authored revision",
+        "All 628 active Vlad cards inventoried across 628 card identities; exact stem compared; Vlad-scoped ID history checked"
+      ],
+      "semanticChecks": {
+        "stemUnambiguous": true,
+        "frontBackConsistent": true,
+        "sourceConflictChecked": true,
+        "answerEntailedBySources": true
+      },
+      "sourceConflicts": [],
+      "crossCardCheck": {
+        "performed": true,
+        "result": "Exact normalized stem compared against all 628 active Vlad cards; no duplicate found. This ports deck isolates standard-port scenarios from existing chapter content."
+      },
+      "revisionConsistency": {
+        "frontBackSameRevision": true,
+        "historyChecked": true
+      },
+      "optionAssessments": {
+        "A": {
+          "verdict": "incorrect",
+          "reason": "TCP 21 ist der FTP-Steuerkanal, nicht das SSH-Subsystem."
+        },
+        "B": {
+          "verdict": "correct",
+          "reason": "TCP 22 trägt SSH und damit üblicherweise SFTP."
+        },
+        "C": {
+          "verdict": "incorrect",
+          "reason": "TCP 990 ist der klassische implizite FTPS-Steuerport, nicht SFTP."
+        },
+        "D": {
+          "verdict": "incorrect",
+          "reason": "TCP 445 ist SMB-Dateifreigabe."
+        }
+      },
+      "content": {
+        "noteId": "sy0701-ports-sftp-note",
+        "deckId": "sy0701-security-ports",
+        "front": "Ein Team will Dateien über die bestehende SSH-Infrastruktur übertragen. Welche Standardverbindung ist SFTP, nicht FTPS?\nA: TCP 21\nB: TCP 22\nC: TCP 990\nD: TCP 445",
+        "back": ">> CORRECT: B |\n\nSFTP läuft als SSH-Subsystem über die SSH-Verbindung auf TCP 22. FTPS ist FTP mit TLS und verwendet andere FTP-Portmodelle; die beiden Namen sind nicht austauschbar.\n\nNicht:\nA | TCP 21 ist der FTP-Steuerkanal, nicht das SSH-Subsystem.\nC | TCP 990 ist der klassische implizite FTPS-Steuerport, nicht SFTP.\nD | TCP 445 ist SMB-Dateifreigabe.",
+        "tags": [
+          "Security+ SY0-701",
+          "Ports & Protokolle",
+          "Dateitransfer",
+          "Objective 4.5"
+        ],
+        "extra": {
+          "acronym": "",
+          "examples": "",
+          "port": "22",
+          "protocol": "TCP"
+        }
+      },
+      "createState": {}
+    }
+  ]
+}

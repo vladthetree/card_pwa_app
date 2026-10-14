@@ -1,0 +1,14 @@
+Grafik-Gate für Security-Lernkarten
+
+Eine Grafik wird nur veröffentlicht, wenn sie die **konkrete Unterscheidung der zugehörigen Frage** sichtbar macht. Eine hübsche Folge von Kästen oder ein allgemeines Schema reicht nicht.
+
+## Freigabe vor jeder neuen oder geänderten Grafik
+
+1. **Kartenbezug:** Die Darstellung beantwortet genau die geprüfte Frage. Frage, Antwortschlüssel und Grafik sind miteinander verknüpft; ändert sich die Frage oder richtige Option, bleibt die Grafik verborgen.
+2. **Bildliche Aussage:** Form, Position, Grenze, Pfeil oder Markierung vermitteln die entscheidende Beziehung. Entfernt man Titel und Begleittext, muss die Kernaussage noch erkennbar bleiben. Andernfalls vereinfachen, anderes Diagramm wählen oder die Grafik weglassen.
+3. **Fachliche Prüfung:** Aussagen und Zahlen sind mit einer geeigneten Primärquelle abgeglichen. Schematische Beispiele sind als solche gekennzeichnet; kein Beispiel wird zur universellen Regel erklärt.
+4. **Interaktion mit Zweck:** Eine Bedienung darf nur erscheinen, wenn sie eine fachliche Änderung sichtbar macht. Beispiel: Risikoeinstufung bei anderer Eintrittswahrscheinlichkeit oder RTO-Ergebnis bei anderer Wiederherstellungszeit.
+5. **Darstellung prüfen:** Auf Desktop und Mobilgerät testen; Kontrast, Lesereihenfolge, Tastaturbedienung und Beschriftungen kontrollieren. Verdeckte Informationen dürfen nicht allein über Farbe vermittelt werden.
+6. **Wiederverwendung nur bei gleicher Aussage:** Eine vorhandene Grafik darf mehrere Karten bedienen, wenn ihr konkretes Modell dieselbe geprüfte Beziehung zeigt. Titel, Schlussfolgerung, Frage-Fingerprint und Antwortschlüssel bleiben pro Karte individuell.
+
+`npm run check:security-visuals` prüft für alle 188 zugeordneten Karten kartenbezogene sichtbare Elemente, Quellen, Frage-/Antwortbindung und die interaktiven Vergleiche. Der normale `npm run build` führt diesen Test zuerst aus. **Die visuelle und fachliche Freigabe nach obiger Checkliste bleibt zusätzlich erforderlich; ein automatischer Test kann die Aussagekraft einer Grafik nicht beweisen.**

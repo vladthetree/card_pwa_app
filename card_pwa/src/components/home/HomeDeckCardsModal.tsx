@@ -3,7 +3,7 @@
  */
 import { useMemo, useState } from 'react'
 import { AnimatePresence } from '../../ui/motion'
-import { Plus } from 'lucide-react'
+import { ChevronDown, Plus } from 'lucide-react'
 import { useDeckCards } from '../../hooks/useCardDb'
 import { STRINGS } from '../../contexts/SettingsContext'
 import { UI_TOKENS } from '../../constants/ui'
@@ -13,6 +13,8 @@ import { getCardVariant } from '../../utils/cardVariant'
 import EditCardModal from '../EditCardModal.tsx'
 import CreateCardModal from '../CreateCardModal.tsx'
 import { Dialog } from '../../ui/overlays/Dialog'
+import { getSecurityVisualForCard } from '../../utils/securityVisuals'
+import { SecurityVisualization } from '../SecurityVisualization'
 
 interface Props {
   deck: Deck
@@ -25,6 +27,8 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
   const { cards, loading, error, reload } = useDeckCards(deck.id)
   const [editingCard, setEditingCard] = useState<Card | null>(null)
   const [showCreateCard, setShowCreateCard] = useState(false)
+  const [openVisualCardId, setOpenVisualCardId] = useState<string | null>(null)
+  const [onlyCardsWithVisual, setOnlyCardsWithVisual] = useState(false)
 
   const handleCardSaved = async () => {
     setEditingCard(null)
@@ -56,8 +60,13 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
 
     const optionEntries = anyQuestion.type === 'standard' ? Object.entries(anyQuestion.options) : []
 
-    return { card, variant, frontPreview, optionEntries, parsedAnswer }
+    return { card, variant, frontPreview, optionEntries, parsedAnswer, securityVisual: getSecurityVisualForCard(card) }
   }), [cards, language])
+  const graphicCount = useMemo(() => cardRows.filter(row => row.securityVisual !== null).length, [cardRows])
+  const visibleCardRows = useMemo(
+    () => onlyCardsWithVisual ? cardRows.filter(row => row.securityVisual !== null) : cardRows,
+    [cardRows, onlyCardsWithVisual],
+  )
 
   return (
     <Dialog
@@ -69,7 +78,16 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
       size="lg"
       className="overflow-hidden p-5 sm:p-6"
     >
-      <div className="mb-4 flex justify-end">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <label className="inline-flex cursor-pointer items-center gap-2 text-xs font-semibold text-ds-fg">
+          <input
+            type="checkbox"
+            checked={onlyCardsWithVisual}
+            onChange={event => setOnlyCardsWithVisual(event.target.checked)}
+            className="h-4 w-4 accent-[--brand-primary]"
+          />
+          <span>{language === 'de' ? 'Nur Karten mit Grafik' : 'Cards with graphics only'} ({graphicCount})</span>
+        </label>
         <button
           type="button"
           onClick={() => setShowCreateCard(true)}
@@ -86,9 +104,13 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
             <div className="rounded-ds-xl border border-rose-500/30 bg-rose-950/30 p-3 text-rose-300 text-sm">{error}</div>
           ) : cards.length === 0 ? (
             <div className="rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-4 text-zinc-400 text-sm shadow-card">{t.no_cards_in_deck}</div>
+          ) : visibleCardRows.length === 0 ? (
+            <div className="rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-4 text-zinc-400 text-sm shadow-card">
+              {language === 'de' ? 'In diesem Deck gibt es noch keine Karten mit Grafik.' : 'No cards in this deck have graphics yet.'}
+            </div>
           ) : (
             <div className="space-y-2">
-              {cardRows.map(({ card, variant, frontPreview, optionEntries, parsedAnswer }) => {
+              {visibleCardRows.map(({ card, variant, frontPreview, optionEntries, parsedAnswer, securityVisual }) => {
                 const variantBadge = variant === 'ordering'
                   ? <span className="rounded-[3px] border border-violet-500/30 bg-violet-500/10 px-1.5 py-px font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-violet-400">{language === 'de' ? 'Reihenfolge' : 'Ordering'}</span>
                   : variant === 'matching'
@@ -96,7 +118,7 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
                   : null
 
                 return (
-                  <div key={card.id} className="rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-3 space-y-3 shadow-card">
+                  <div key={card.id} data-managed-card-id={card.id} className="rounded-ds-xl border border-[#18181b] bg-[#0c0c0c] p-3 space-y-3 shadow-card">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                         <div className="min-w-0">
@@ -138,6 +160,25 @@ export function HomeDeckCardsModal({ deck, language, onClose }: Props) {
                         {parsedAnswer.answer || card.back.replace(/\n+/g, ' ')}
                       </p>
                     </div>
+                    {securityVisual && (
+                      <div>
+                        <button
+                          type="button"
+                          aria-expanded={openVisualCardId === card.id}
+                          aria-controls={`deck-card-visual-${card.id}`}
+                          onClick={() => setOpenVisualCardId(current => current === card.id ? null : card.id)}
+                          className="flex w-full items-center justify-between gap-2 rounded-ds border border-ds-border bg-ds-floor px-3 py-2 text-left text-xs font-semibold text-ds-fg hover:border-[--brand-primary]"
+                        >
+                          <span>{language === 'de' ? 'Grafik ansehen' : 'View graphic'} · {securityVisual.title}</span>
+                          <ChevronDown size={15} aria-hidden="true" className={`shrink-0 transition-transform ${openVisualCardId === card.id ? 'rotate-180' : ''}`} />
+                        </button>
+                        {openVisualCardId === card.id && (
+                          <div id={`deck-card-visual-${card.id}`} className="mt-2 rounded-ds border border-ds-border bg-ds-panel p-3">
+                            <SecurityVisualization visual={securityVisual} />
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )
               })}

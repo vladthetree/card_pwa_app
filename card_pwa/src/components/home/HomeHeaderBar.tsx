@@ -8,6 +8,7 @@ import { UI_TOKENS } from '../../constants/ui'
 import { formatBytes } from '../../utils/formatBytes'
 import StreakBadge from '../StreakBadge'
 import DailyGoalRing from '../DailyGoalRing'
+import { CompanionBadge } from '../companion/CompanionSprite'
 
 interface Props {
   t: Record<string, string>
@@ -20,6 +21,7 @@ interface Props {
   storageEstimateUnavailable: boolean
   storageUsedBytes: number | null
   storageQuotaBytes: number | null
+  companionLevel?: number
   onInstall: () => void
   onRequestNotificationPermission: () => void
   onShowSettings: () => void
@@ -37,6 +39,7 @@ export function HomeHeaderBar({
   storageEstimateUnavailable,
   storageUsedBytes,
   storageQuotaBytes,
+  companionLevel = 1,
   onInstall,
   onRequestNotificationPermission,
   onShowSettings,
@@ -48,6 +51,7 @@ export function HomeHeaderBar({
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-ds border border-ds-border bg-ds-card p-1.5 shadow-card sm:h-10 sm:w-10">
           <img src={PWA_Logo} alt={APP_NAME} className="h-full w-full object-contain" />
         </div>
+        <CompanionBadge t={t} level={companionLevel} />
         <div className="min-w-0">
           <h1 className="truncate font-sans text-base font-semibold text-white sm:text-2xl">{APP_NAME}</h1>
           <div className="mt-0.5 flex items-center gap-1.5 sm:hidden">

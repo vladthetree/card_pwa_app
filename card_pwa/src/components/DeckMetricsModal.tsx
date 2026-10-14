@@ -46,6 +46,20 @@ export function DeckMetricsModal({ deck, language, onClose }: { deck: Deck; lang
   }, [deck.id, period])
 
   const hasReviews = (metrics?.totalReviews ?? 0) > 0
+  const ratingSegments = metrics
+    ? ([
+        { rating: 1 as const, label: t.rating_again, color: 'bg-rose-500' },
+        { rating: 2 as const, label: t.rating_hard, color: 'bg-amber-400' },
+        { rating: 3 as const, label: t.rating_good, color: 'bg-sky-400' },
+        { rating: 4 as const, label: t.rating_easy, color: 'bg-emerald-400' },
+      ]).map(segment => ({
+        ...segment,
+        count: metrics.ratingCounts[segment.rating],
+        percent: metrics.totalReviews > 0
+          ? (metrics.ratingCounts[segment.rating] / metrics.totalReviews) * 100
+          : 0,
+      }))
+    : []
 
   const trendIcon = metrics && metrics.trendDelta !== 0
     ? metrics.trendDelta > 0
@@ -122,6 +136,37 @@ export function DeckMetricsModal({ deck, language, onClose }: { deck: Deck; lang
 
             <div className="mt-4 rounded-ds-xl border border-[#18181b] bg-[#0a0a0a] p-3">
               <p className="text-xs font-light text-white/55 mb-2">{t.metrics_rating_distribution}</p>
+              {hasReviews && (
+                <div className="mb-3">
+                  <div
+                    className="flex h-8 w-full overflow-hidden rounded-[6px] border border-white/10 bg-[#070707]"
+                    role="img"
+                    aria-label={ratingSegments.map(segment => `${segment.label}: ${segment.count}`).join(', ')}
+                    data-testid="rating-distribution-bar"
+                  >
+                    {ratingSegments.filter(segment => segment.count > 0).map(segment => (
+                      <div
+                        key={segment.rating}
+                        className={`flex min-w-0 items-center justify-center ${segment.color} text-[10px] font-black text-black`}
+                        style={{ width: `${segment.percent}%` }}
+                        title={`${segment.label}: ${segment.count} (${Math.round(segment.percent)}%)`}
+                        data-rating={segment.rating}
+                      >
+                        {segment.percent >= 12 ? `${Math.round(segment.percent)}%` : null}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 sm:grid-cols-4">
+                    {ratingSegments.map(segment => (
+                      <div key={segment.rating} className="flex min-w-0 items-center gap-1.5 text-[10px] text-white/60">
+                        <span className={`h-2 w-2 shrink-0 rounded-sm ${segment.color}`} aria-hidden="true" />
+                        <span className="truncate">{segment.label}</span>
+                        <span className="ml-auto font-mono tabular-nums text-white/85">{Math.round(segment.percent)}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {[1, 2, 3, 4].map((rating) => (
                   <div key={rating} className="rounded-[6px] border border-[#18181b] bg-[#0c0c0c] px-2 py-2 text-center">

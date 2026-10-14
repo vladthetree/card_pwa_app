@@ -7,9 +7,10 @@ import { useStreak } from '../hooks/useStreak'
 
 interface Props {
   compact?: boolean
+  iconButton?: boolean
 }
 
-export default function StreakBadge({ compact = false }: Props) {
+export default function StreakBadge({ compact = false, iconButton = false }: Props) {
   const { settings } = useSettings()
   const t = STRINGS[settings.language]
   const { days, atRisk } = useStreak(settings.nextDayStartsAt)
@@ -25,11 +26,15 @@ export default function StreakBadge({ compact = false }: Props) {
 
   return (
     <div
-      className={`inline-flex items-center gap-1.5 rounded-ds-xl border px-2 py-1 font-mono text-xs tracking-wide ${colorClass}`}
+      className={`inline-flex items-center rounded-ds-xl border font-mono text-xs tracking-wide ${
+        iconButton
+          ? 'h-11 w-11 flex-shrink-0 justify-center gap-1 p-0'
+          : 'gap-1.5 px-2 py-1'
+      } ${colorClass}`}
       title={title}
       aria-label={title}
     >
-      <Flame size={compact ? 12 : 13} strokeWidth={1.5} className={atRisk ? '' : 'streak-flame-glow'} aria-hidden="true" />
+      <Flame size={iconButton ? 14 : compact ? 12 : 13} strokeWidth={1.5} className={atRisk ? '' : 'streak-flame-glow'} aria-hidden="true" />
       <span className="font-bold tabular-nums">{days}</span>
       {!compact && <span className="opacity-70 text-[10px] uppercase">{t.streak_days}</span>}
     </div>

@@ -1,0 +1,24 @@
+[Unit]
+Description=Card PWA Production HTTPS Server (instance 2)
+After=network.target card-sync-server-instance2.service
+Wants=card-sync-server-instance2.service
+
+[Service]
+Type=simple
+WorkingDirectory=%h/projekt/card_pwa_app/card_pwa
+Environment=NODE_ENV=production
+Environment=PWA_HOST=0.0.0.0
+Environment=PWA_PORT=8445
+Environment=PWA_CERT_FILE=.cert/prod-cert.pem
+Environment=PWA_KEY_FILE=.cert/prod-key.pem
+Environment=PWA_CA_FILE=.cert/rootCA.pem
+Environment=PWA_LOG_DIR=logs
+Environment=PWA_SYNC_PROXY_TARGET=https://127.0.0.1:8788
+Environment=PWA_SYNC_PROXY_TLS_VERIFY=0
+Environment="PWA_MEDIA_DIR=%h/youtube-playlists/CompTIA SY0-701 Security+ Training Course [PLG49S3nxzAnl4QDVqK-hOnoqcSKEIDDuv]"
+ExecStart=/usr/bin/node %h/projekt/card_pwa_app/card_pwa/scripts/prod-server.mjs
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target
